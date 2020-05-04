@@ -1,0 +1,33 @@
+﻿@using EPlast.ViewModels
+@model List<ClubViewModel>
+@{
+    ViewData["Title"] = "ChooseAClub";
+}
+    <div class="content-wrapper">
+        <div class="all-clubs-view">
+            <h1 class="all-clubs-title">Оберіть курінь</h1>
+            <div class="club-list">
+                @foreach (var item in Model)
+                {
+                    <a method="post" class="club-block-wrapper" asp-controller="Club" asp-action="AddAsClubFollower" asp-route-clubIndex="@item.Club.ID">
+                        <span class="club-block club-wrappers-radius">
+                            <div class="club-block-submit rounded ">
+                                <div class="club-img-wrapper">
+                                    @if (item.Club.Logo != null)
+                                    {
+                                        <div class="club-img" style="background-image:url('/images/Club/@item.Club.Logo')"></div>
+                                    }
+                                    else
+                                    {
+                                        <div class="club-img" style="background-image:url('/images/Club/default.jpg')"></div>
+                                    }
+                                </div>
+                                    <p class="club-name">@item.Club.ClubName</p>
+                                <input value="@item.Club.ID" type="hidden" name="index" id="clubId" />
+                            </div>
+                        </span>
+                    </a>
+                }
+            </div>
+        </div>
+        </div>

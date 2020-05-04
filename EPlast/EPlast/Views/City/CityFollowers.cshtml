@@ -1,0 +1,21 @@
+﻿@using EPlast.ViewModels
+@using Microsoft.AspNetCore.Identity
+@model CityViewModel
+@{
+    ViewData["Title"] = "Члени Станиці";
+}
+<div class="cityMembesWrapper">
+    <div class="d-flex flex-shrink-0 justify-content-center flex-wrap">
+        @foreach (var follCity in Model.Followers)
+        {
+            <div class="card border rounded shadow-none d-inline float-left">
+                <div class="float-left d-xl-flex justify-content-xl-center align-items-xl-center"><a class="d-xl-flex justify-content-xl-end"><i class="fa fa-gear" style="font-size: 24px;"></i></a><a class="float-none d-xl-flex"><i class="fa fa-close" style="font-size: 24px;"></i></a></div>
+                <div class="border rounded-circle" style="background-image: url('../../images/Users/@follCity.User.ImagePath');"></div>
+                <div class="d-inline">
+                    <p class="text-center d-xl-flex justify-content-xl-center">@follCity.User.FirstName</p>
+                    <p class="text-center d-xl-flex justify-content-xl-center">@follCity.User.LastName</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
