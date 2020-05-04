@@ -1,0 +1,1 @@
+![ASP.NET Core CI](https://github.com/IrynaZavushchak/EPlast/workflows/ASP.NET%20Core%20CI/badge.svg)
