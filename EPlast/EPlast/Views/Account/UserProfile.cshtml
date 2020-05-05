@@ -20,7 +20,7 @@
             <a class="nav-link" data-toggle="tab" href="#">З'їзди</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#">Бланки</a>
+            <a class="nav-link" asp-action="Blank" asp-controller="Account">Бланки</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#approvers">Поручення</a>
@@ -109,7 +109,6 @@
                                         <label for="text" class="col-6 col-form-label font-weight-bold">Національність</label>
 
                                         <p class="col-6 col-form-label">@Model.User.UserProfile.Nationality.Name</p>
-
                                     </div>
                                 }
                                 @if (@Model.User.UserProfile.Religion != null)
@@ -133,7 +132,6 @@
                                         <label for="email" class="col-6 col-form-label font-weight-bold">Стать</label>
 
                                         <p class="col-6 col-form-label">@Model.User.UserProfile.Gender.Name</p>
-
                                     </div>
                                 }
                                 @if (@Model.User.UserProfile.Education != null)
@@ -185,7 +183,7 @@
                                     <a asp-controller="Club" asp-action="ChooseAClub"><p style="color: #3c5438;font-weight: bolder; padding-left: 15px;">Додати/ змінити курінь</p></a>
                                 </div>
                             </div>
-                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -290,7 +288,7 @@
                 </div>
 
                 <div class="col-md-8">
-                    <div >
+                    <div>
                         <div class="row">
                             <div class="col-md-12">
                                 <h4>@Model.User.FirstName @Model.User.LastName</h4>
@@ -300,10 +298,10 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="text-center">
-                                    <h3 >
+                                    <h3>
                                         Поручення дійсних членів
                                     </h3>
-                                    <div >
+                                    <div>
                                         <div id="insideCard">
                                             <div class="row">
                                                 <div class="card-group">
@@ -324,19 +322,16 @@
                                                                                 <p>@item.ConfirmDate.ToString("dd-MM-yyyy")</p>
                                                                             </div>
                                                                         </div>
-
-                                                                        
                                                                     </a>
-                                                                        @if (item.Approver.UserID == _userManager.GetUserId(User))
-                                                                        {
-                                                                            <div class="card-footer">
-                                                                                <a class="btn btn-danger" asp-action="ApproverDelete" asp-controller="Account" asp-route-userId="@Model.User.Id">Скасувати</a>
-                                                                            </div>
-                                                                        }
+                                                                    @if (item.Approver.UserID == _userManager.GetUserId(User))
+                                                                    {
+                                                                        <div class="card-footer">
+                                                                            <a class="btn btn-danger" asp-action="ApproverDelete" asp-controller="Account" asp-route-userId="@Model.User.Id">Скасувати</a>
+                                                                        </div>
+                                                                    }
                                                                 </div>
                                                             </div>
                                                         }
-
 
                                                     }
                                                     @if (Model.canApprove && User.IsInRole("Пластун"))
@@ -347,7 +342,7 @@
                                                                     <div class="approversImg">
                                                                         <img class="card-img-top" src="/images/add_user.png" alt="Generic placeholder image" />
                                                                     </div>
-                                                                    
+
                                                                     <div class="card-body">
                                                                         <div class="card-text">
                                                                             <h5>Поручитись</h5>
@@ -358,20 +353,15 @@
                                                         </div>
                                                     }
                                                 </div>
-                                                
                                             </div>
-                                            
                                         </div>
                                     </div>
                                 </div>
-
-
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
     <partial name="_SuccessModal" model='""' />
