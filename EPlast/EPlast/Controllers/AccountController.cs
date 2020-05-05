@@ -947,6 +947,17 @@ namespace EPlast.Controllers
                 return NotFound("Не вдалося завершити каденцію діловодства!");
             }
         }
+
+        public IActionResult Blank()
+        {
+            var model = new UserViewModel
+            {
+                User = _repoWrapper.User.
+                                        FindByCondition(q => q.Id == _userManager.GetUserId(User))
+                                        .First(),
+            };
+            return View(model);
+        }
     }
 
     public interface IDateTime

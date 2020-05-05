@@ -1,0 +1,51 @@
+﻿@{
+    ViewData["Title"] = "Бланки";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using Microsoft.AspNetCore.Identity;
+@model EPlast.ViewModels.UserViewModel
+@inject UserManager<EPlast.DataAccess.Entities.User> _userManager
+
+<div class="container bg-light m-5 pt-2 pb-5 pr-5 pl-5 user-profile">
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" asp-action="UserProfile" asp-controller="Account">Персональні дані</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#">Дійсне членство</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#positions">Діловодства</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-action="EventUser" asp-controller="EventUser">Події</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#">З'їзди</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" asp-action="Blank" asp-controller="Account">Бланки</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#approvers">Поручення</a>
+        </li>
+        @if (_userManager.GetUserId(User) == Model.User.Id || User.IsInRole("Admin"))
+        {
+            <li class="nav-item">
+                <a class="nav-link" asp-action="Edit" asp-controller="Account">Редагувати профіль</a>
+            </li>
+        }
+    </ul>
+    <div class="tab-content">
+        <h1 style="text-align:center;margin-top:10rem;">
+            Пішло-поїзало!
+
+        </h1>
+    </div>
+    <partial name="_SuccessModal" model='""' />
+    <partial name="_ErrorModal" model='""' />
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
