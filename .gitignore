@@ -370,9 +370,6 @@ EPlast/EPlast/wwwroot/documents/*
 # Ignore eventGallery
 EPlast/EPlast/wwwroot/images/EventsGallery/*
 
-# Ignore UsersPhoto
-EPlast/EPlast/wwwroot/images/Users/*
-
 # Ignore CityLogotypes
 EPlast/EPlast/wwwroot/images/Cities/*
 
