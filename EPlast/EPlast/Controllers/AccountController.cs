@@ -651,7 +651,7 @@ namespace EPlast.Controllers
                 _repoWrapper.Save();
                 return RedirectToAction("UserProfile", "Account", new { userId = userId });
             }
-            return RedirectToAction("HandleError", "Error", new { code = 505 });
+            return RedirectToAction("HandleError", "Error", new { code = 500 });
         }
 
         public IActionResult ApproverDelete(int confirmedId, string userId)
