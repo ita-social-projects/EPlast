@@ -306,61 +306,153 @@
                                     <div >
                                         <div id="insideCard">
                                             <div class="row">
-                                                <div class="card-group">
-                                                    @if (Model.User.ConfirmedUsers.Count() != 0)
+                                                @if (Model.ConfirmedUsers.Count() != 0)
+                                                {
+                                                    @foreach (var item in Model.ConfirmedUsers.ToList())
                                                     {
-                                                        @foreach (var item in Model.User.ConfirmedUsers.ToList())
-                                                        {
-                                                            <div class="col">
-                                                                <div class="card h-100">
-                                                                    <a asp-action="UserProfile" asp-controller="Account" asp-route-userId="@item.Approver.User.Id" class="btn">
-                                                                        <div class="approversImg">
-                                                                            <img class="card-img-top" src="/images/Users/@item.Approver.User.ImagePath" alt="Generic placeholder image" />
-                                                                        </div>
-
-                                                                        <div class="card-body">
-                                                                            <div class="card-text">
-                                                                                <h5>@item.Approver.User.FirstName @item.Approver.User.LastName</h5>
-                                                                                <p>@item.ConfirmDate.ToString("dd-MM-yyyy")</p>
-                                                                            </div>
-                                                                        </div>
-
-                                                                        
-                                                                    </a>
-                                                                        @if (item.Approver.UserID == _userManager.GetUserId(User))
-                                                                        {
-                                                                            <div class="card-footer">
-                                                                                <a class="btn btn-danger" asp-action="ApproverDelete" asp-controller="Account" asp-route-userId="@Model.User.Id">Скасувати</a>
-                                                                            </div>
-                                                                        }
-                                                                </div>
-                                                            </div>
-                                                        }
-
-
-                                                    }
-                                                    @if (Model.canApprove && User.IsInRole("Пластун"))
-                                                    {
-                                                        <div class="col">
-                                                            <div class="">
-                                                                <a asp-action="ApproveUser" asp-route-userId="@Model.User.Id" class="btn">
+                                                        <div class="col-4">
+                                                            <div class="card h-100">
+                                                                <a asp-action="UserProfile" asp-controller="Account" asp-route-userId="@item.Approver.User.Id" class="btn">
                                                                     <div class="approversImg">
-                                                                        <img class="card-img-top" src="/images/add_user.png" alt="Generic placeholder image" />
+                                                                        <img class="app-img" src="/images/Users/@item.Approver.User.ImagePath" alt="Generic placeholder image" />
                                                                     </div>
-                                                                    
+
                                                                     <div class="card-body">
                                                                         <div class="card-text">
-                                                                            <h5>Поручитись</h5>
+                                                                            <h5>@item.Approver.User.FirstName @item.Approver.User.LastName</h5>
+                                                                            <p>@item.ConfirmDate.ToString("dd-MM-yyyy")</p>
                                                                         </div>
                                                                     </div>
+
+
                                                                 </a>
+                                                                @if (item.Approver.UserID == _userManager.GetUserId(User))
+                                                                {
+                                                                    <div class="card-footer">
+                                                                        <a class="btn btn-danger" asp-action="ApproverDelete" asp-controller="Account" asp-route-confirmedId="@item.ID" asp-route-userId="@Model.User.Id">Скасувати</a>
+                                                                    </div>
+                                                                }
                                                             </div>
                                                         </div>
                                                     }
-                                                </div>
-                                                
+                                                }
+                                                @if (Model.canApprove && User.IsInRole("Пластун"))
+                                                {
+                                                    <div class="col-4">
+                                                        
+                                                            <a asp-action="ApproveUser" asp-route-userId="@Model.User.Id" class="btn">
+                                                                <div class="approversImg">
+                                                                    <img class="app-img" src="/images/add_user.png" alt="Generic placeholder image" />
+                                                                </div>
+
+                                                                <div class="card-body">
+                                                                    <div class="card-text">
+                                                                        <h5>Поручитись</h5>
+                                                                    </div>
+                                                                </div>
+                                                            </a>
+                                                        
+                                                    </div>
+                                                }
                                             </div>
-                                            
+                                            <br />
+
+                                            <div class="row">
+
+                                                @{
+                                                    if (Model.ClubApprover != null)
+                                                    {
+
+                                                        <div class="col">
+                                                            <div class="card h-100">
+                                                                <a asp-action="UserProfile" asp-controller="Account" asp-route-userId="@Model.ClubApprover.Approver.User.Id" class="btn">
+                                                                    <div class="approversImg">
+                                                                        <img class="app-img" src="/images/Users/@Model.ClubApprover.Approver.User.ImagePath" alt="Generic placeholder image" />
+                                                                    </div>
+
+                                                                    <div class="card-body">
+                                                                        <div class="card-text">
+                                                                            <h5>@Model.ClubApprover.Approver.User.FirstName @Model.ClubApprover.Approver.User.LastName</h5>
+                                                                            <p>@Model.ClubApprover.ConfirmDate.ToString("dd-MM-yyyy")</p>
+                                                                            <p>Курінний</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </a>
+                                                                @if (Model.ClubApprover.Approver.UserID == _userManager.GetUserId(User))
+                                                                {
+                                                                    <div class="card-footer">
+                                                                        <a class="btn btn-danger" asp-action="ApproverDelete" asp-controller="Account" asp-route-confirmedId="@Model.ClubApprover.ID" asp-route-userId="@Model.User.Id">Скасувати</a>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    else if (_userManager.GetUserId(User) != Model.User.Id && User.IsInRole("Голова Куреня"))
+                                                    {
+                                                        <div class="col">
+                                                            <a asp-action="ApproveUser" asp-route-userId="@Model.User.Id" asp-route-_isClubAdmin="true" class="btn">
+                                                                <div class="approversImg">
+                                                                    <img class="app-img" src="/images/add_user.png" alt="Generic placeholder image" />
+                                                                </div>
+
+                                                                <div class="card-body">
+                                                                    <div class="card-text">
+                                                                        <h5>Поручитись як курінний</h5>
+                                                                    </div>
+                                                                </div>
+                                                            </a>
+                                                        </div>
+                                                    }
+                                                }
+
+                                            </div>
+                                            <br />
+                                            <div class="row">
+                                                @{
+                                                    if (Model.CityApprover != null)
+                                                    {
+                                                        <div class="col">
+                                                            <div class="card h-100">
+                                                                <a asp-action="UserProfile" asp-controller="Account" asp-route-userId="@Model.CityApprover.Approver.User.Id" class="btn">
+                                                                    <div class="approversImg">
+                                                                        <img class="app-img" src="/images/Users/@Model.CityApprover.Approver.User.ImagePath" alt="Generic placeholder image" />
+                                                                    </div>
+
+                                                                    <div class="card-body">
+                                                                        <div class="card-text">
+                                                                            <h5>@Model.CityApprover.Approver.User.FirstName @Model.CityApprover.Approver.User.LastName</h5>
+                                                                            <p>@Model.CityApprover.ConfirmDate.ToString("dd-MM-yyyy")</p>
+                                                                            <p>Станичний</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </a>
+                                                                @if (Model.CityApprover.Approver.UserID == _userManager.GetUserId(User))
+                                                                {
+                                                                    <div class="card-footer">
+                                                                        <a class="btn btn-danger" asp-action="ApproverDelete" asp-controller="Account" asp-route-confirmedId="@Model.CityApprover.ID" asp-route-userId="@Model.User.Id">Скасувати</a>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    else if (_userManager.GetUserId(User) != Model.User.Id && User.IsInRole("Голова Станиці"))
+                                                    {
+                                                        <div class="col">
+                                                            <a asp-action="ApproveUser" asp-route-userId="@Model.User.Id" asp-route-_isCityAdmin="true" class="btn">
+                                                                <div class="approversImg">
+                                                                    <img class="app-img" src="/images/add_user.png" alt="Generic placeholder image" />
+                                                                </div>
+
+                                                                <div class="card-body">
+                                                                    <div class="card-text">
+                                                                        <h5>Поручитись як станичний</h5>
+                                                                    </div>
+                                                                </div>
+                                                            </a>
+                                                        </div>
+                                                    }
+                                                }
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
