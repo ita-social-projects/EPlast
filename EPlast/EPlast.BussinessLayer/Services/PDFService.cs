@@ -9,7 +9,8 @@ namespace EPlast.BussinessLayer
         {
             IPDFSettings pdfSettings = new PDFSettings()
             {
-                Title = string.Format("Бланк")
+                Title = string.Format("Бланк"),
+                ImagePath = null
             };
             IPDFCreator creator = new PDFCreator(new BlankDocument(pdfData, pdfSettings));
             return await Task.Run(() => creator.GetPDFBytes());

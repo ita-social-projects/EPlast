@@ -20,6 +20,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using Ical.Net.DataTypes;
+using EPlast.BussinessLayer;
 
 namespace EPlast.Controllers
 {
@@ -32,6 +33,7 @@ namespace EPlast.Controllers
         private readonly IEmailConfirmation _emailConfirmation;
         private readonly IHostingEnvironment _env;
         private readonly IUserAccessManager _userAccessManager;
+        private readonly IPDFService _PDFService;
 
         public AccountController(UserManager<User> userManager,
             SignInManager<User> signInManager,
@@ -39,7 +41,8 @@ namespace EPlast.Controllers
             ILogger<AccountController> logger,
             IEmailConfirmation emailConfirmation,
             IHostingEnvironment env,
-            IUserAccessManager userAccessManager)
+            IUserAccessManager userAccessManager,
+            IPDFService PDFService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -48,6 +51,7 @@ namespace EPlast.Controllers
             _emailConfirmation = emailConfirmation;
             _env = env;
             _userAccessManager = userAccessManager;
+            _PDFService = PDFService;
         }
 
         [HttpGet]
@@ -957,6 +961,25 @@ namespace EPlast.Controllers
                                         .First(),
             };
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> CreatePDFAsync(string userId)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(userId))
+                {
+                    throw new ArgumentException("Cannot crated pdf id is not valid");
+                }
+                var blankModel = new BlankModel();
+                byte[] arr = await _PDFService.BlankCreatePDFAsync(blankModel);
+                return File(arr, "application/pdf");
+            }
+            catch
+            {
+                return RedirectToAction("HandleError", "Error");
+            }
         }
     }
 

@@ -30,11 +30,14 @@ namespace EPlast.BussinessLayer
             DefineStyles(document);
 
             section = document.AddSection();
-            Image image = section.AddImage(settings.ImagePath);
-            image.Width = 600;
-            image.RelativeHorizontal = RelativeHorizontal.Page;
-            image.RelativeVertical = RelativeVertical.Page;
 
+            if (!string.IsNullOrEmpty(settings.ImagePath))
+            {
+                Image image = section.AddImage(settings.ImagePath);
+                image.Width = 600;
+                image.RelativeHorizontal = RelativeHorizontal.Page;
+                image.RelativeVertical = RelativeVertical.Page;
+            }
             SetDocumentBody(section);
 
             return document;

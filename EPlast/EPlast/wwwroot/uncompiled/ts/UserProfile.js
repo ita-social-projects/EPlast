@@ -108,6 +108,9 @@ $(document).ready(function () {
             return;
         }
     });
+    $("#TheVYO").click(function () {
+        window.open(`/Account/CreatePDFAsync?userId=${$("#userId").val()}`, "_blank");
+    });
 });
 function setRowSelected(tr, disabledElements) {
     setDisabled(disabledElements, true);

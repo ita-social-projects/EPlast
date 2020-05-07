@@ -38,8 +38,8 @@
     </ul>
     <div class="tab-content">
         <h1 style="text-align:center;margin-top:10rem;">
-            Пішло-поїзало!
-
+            <a id="TheVYO" onclick="">Пішло-поїхало!</a>
+            @Html.Hidden("userId", Model.User.Id)
         </h1>
     </div>
     <partial name="_SuccessModal" model='""' />
