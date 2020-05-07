@@ -437,7 +437,7 @@
                                                     
                                                 <div class="col-xl-4 col-md-8">
                                                     <h3>
-                                                        Поручення Голови Станиці
+                                                        Поручення Голови Округу
                                                     </h3>
                                                     @if (Model.CityApprover != null)
                                                     {
@@ -451,7 +451,7 @@
                                                                     <div class="card-text">
                                                                         <h5>@Model.CityApprover.Approver.User.FirstName @Model.CityApprover.Approver.User.LastName</h5>
                                                                         <p>@Model.CityApprover.ConfirmDate.ToString("dd-MM-yyyy")</p>
-                                                                        <p>Станичний</p>
+                                                                        <p>Голова Округу</p>
                                                                     </div>
                                                                 </div>
                                                             </a>
@@ -470,7 +470,7 @@
                                                         </div>
                                                     }
 
-                                                    else if (_userManager.GetUserId(User) != Model.User.Id && User.IsInRole("Голова Станиці"))
+                                                    else if (_userManager.GetUserId(User) != Model.User.Id && User.IsInRole("Голова Округу"))
                                                     {
 
                                                         <a asp-action="ApproveUser" asp-route-userId="@Model.User.Id" asp-route-_isCityAdmin="true" class="btn">
@@ -480,7 +480,7 @@
 
                                                             <div class="card-body">
                                                                 <div class="card-text">
-                                                                    <h5>Поручитись як станичний</h5>
+                                                                    <h5>Поручитись як окружний</h5>
                                                                 </div>
                                                             </div>
                                                         </a>
@@ -491,7 +491,7 @@
                                                         <div class="h5  text-muted">
                                                             <br />
                                                             <br />
-                                                            На жаль порука станичного відсутня
+                                                            На жаль порука окружного відсутня
                                                         </div>
                                                     }
                                                 </div>
