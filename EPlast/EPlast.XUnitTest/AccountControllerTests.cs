@@ -48,6 +48,7 @@ namespace EPlast.XUnitTest
             _hostEnv = new Mock<IHostingEnvironment>();
             _userAccessManager = new Mock<IUserAccessManager>();
         }
+
         [Fact]
         public void UserProfileTest()
         {
@@ -82,7 +83,7 @@ namespace EPlast.XUnitTest
             _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns("1");
 
             var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
-                _userAccessManager.Object);
+                _userAccessManager.Object, null);
             // Act
             var result = controller.UserProfile("1");
             // Assert
@@ -94,12 +95,13 @@ namespace EPlast.XUnitTest
         public void UserProfileTestFailure()
         {
             var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
-                _userAccessManager.Object);
+                _userAccessManager.Object, null);
             // Act
             var result = controller.UserProfile("1");
             // Assert
             Assert.IsType<RedirectToActionResult>(result);
         }
+
         [Fact]
         public void EditTest()
         {
@@ -132,7 +134,7 @@ namespace EPlast.XUnitTest
                     Work = new Work { PlaceOfwork = "SoftServe", Position = "ProjectManager" },
                     Gender = new Gender { Name = "Чоловік" }
                 }
-            } }.AsQueryable() );
+            } }.AsQueryable());
 
             _repoWrapper.Setup(r => r.Gender.FindAll()).Returns(new List<Gender>().AsQueryable());
             _repoWrapper.Setup(r => r.Nationality.FindAll()).Returns(new List<Nationality>().AsQueryable());
@@ -144,14 +146,14 @@ namespace EPlast.XUnitTest
 
             _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(expected.Id);
             _userManager.Setup(x => x.CreateSecurityTokenAsync(expected));
-            
+
             var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
-                _userAccessManager.Object);
+                _userAccessManager.Object, null);
             var mockFile = new Mock<IFormFile>();
-            var user = new EditUserViewModel { User = expected,EducationView=new EducationViewModel(),WorkView=new WorkViewModel(),Birthday= "18-04-2020" };
+            var user = new EditUserViewModel { User = expected, EducationView = new EducationViewModel(), WorkView = new WorkViewModel(), Birthday = "18-04-2020" };
 
             // Act
-            var resultPost =controller.Edit(user,mockFile.Object);
+            var resultPost = controller.Edit(user, mockFile.Object);
 
             // Assert
             _repoWrapper.Verify(r => r.User.Update(It.IsAny<User>()), Times.Once());
@@ -164,7 +166,7 @@ namespace EPlast.XUnitTest
         {
             // Arrange
             var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
-                _userAccessManager.Object);
+                _userAccessManager.Object, null);
             var mockFile = new Mock<IFormFile>();
             var user = new EditUserViewModel();
 
@@ -174,6 +176,7 @@ namespace EPlast.XUnitTest
             // Assert
             Assert.IsType<RedirectToActionResult>(result);
         }
+
         [Fact]
         public void DeletePositionTrueRemoveRoleTrueTest()
         {
@@ -192,7 +195,7 @@ namespace EPlast.XUnitTest
             _userAccessManager.Setup(uam => uam.HasAccess(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(true);
             var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
-                _userAccessManager.Object);
+                _userAccessManager.Object, null);
 
             // Act
             var result = controller.DeletePosition(cityAdministrations[0].ID);
@@ -220,7 +223,7 @@ namespace EPlast.XUnitTest
             _userAccessManager.Setup(uam => uam.HasAccess(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(true);
             var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
-                _userAccessManager.Object);
+                _userAccessManager.Object, null);
 
             // Act
             var result = controller.DeletePosition(cityAdministrations[0].ID);
@@ -237,7 +240,7 @@ namespace EPlast.XUnitTest
             _repoWrapper.Setup(r => r.CityAdministration.FindByCondition(It.IsAny<Expression<Func<CityAdministration, bool>>>()))
                 .Returns(new List<CityAdministration>().AsQueryable());
             var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
-                _userAccessManager.Object);
+                _userAccessManager.Object, null);
 
             // Act
             var result = controller.DeletePosition(0);
@@ -268,7 +271,7 @@ namespace EPlast.XUnitTest
             _userAccessManager.Setup(uam => uam.HasAccess(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(true);
             var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
-                _userAccessManager.Object);
+                _userAccessManager.Object, null);
 
             // Act
             var result = controller.EndPosition(cityAdministrations[0].ID);
@@ -285,7 +288,7 @@ namespace EPlast.XUnitTest
             _repoWrapper.Setup(r => r.CityAdministration.FindByCondition(It.IsAny<Expression<Func<CityAdministration, bool>>>()))
                 .Returns(new List<CityAdministration>().AsQueryable());
             var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
-                _userAccessManager.Object);
+                _userAccessManager.Object, null);
 
             // Act
             var result = controller.EndPosition(0);

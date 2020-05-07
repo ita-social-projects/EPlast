@@ -78,7 +78,7 @@ namespace EPlast.XUnitTest
             Mock<IHostingEnvironment> mockHosting = new Mock<IHostingEnvironment>();
 
             AccountController accountController = new AccountController(mockUserManager.Object, mockSignInManager.Object,
-                mockRepositoryWrapper.Object, mockLogger.Object, mockEmailConfirmation.Object, mockHosting.Object, null);
+                mockRepositoryWrapper.Object, mockLogger.Object, mockEmailConfirmation.Object, mockHosting.Object, null, null);
 
             return (mockSignInManager, mockUserManager, mockEmailConfirmation, accountController);
         }
@@ -115,7 +115,7 @@ namespace EPlast.XUnitTest
 
             //Act
             var result = await accountController.Login(GetTestLoginViewModel(), GetTestReturnUrl());
-            
+
             //Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsType<LoginViewModel>(viewResult.ViewData.Model);
@@ -196,7 +196,7 @@ namespace EPlast.XUnitTest
 
             //Act
             var result = await accountController.Login(GetTestLoginViewModel(), GetTestReturnUrl()) as RedirectToActionResult;
-            
+
             //Assert
             Assert.Equal("AccountLocked", result.ActionName);
             Assert.NotNull(result);
@@ -225,7 +225,7 @@ namespace EPlast.XUnitTest
 
             //Act
             var result = await accountController.Login(GetTestLoginViewModel(), GetTestReturnUrl()) as RedirectToActionResult;
-            
+
             //Assert
             Assert.Equal("UserProfile", result.ActionName);
             Assert.NotNull(result);
@@ -254,7 +254,7 @@ namespace EPlast.XUnitTest
 
             //Act
             var result = await accountController.Login(GetTestLoginViewModel(), GetTestReturnUrl());
-            
+
             //Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsType<LoginViewModel>(viewResult.ViewData.Model);
@@ -268,10 +268,10 @@ namespace EPlast.XUnitTest
         {
             //Arrange
             var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountController) = CreateAccountController();
-            
+
             //Act
             var result = accountController.Register();
-            
+
             //Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("Register", viewResult.ViewName);
@@ -284,10 +284,10 @@ namespace EPlast.XUnitTest
             //Arrange
             var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountController) = CreateAccountController();
             accountController.ModelState.AddModelError("NameError", "Required");
-            
+
             //Act
             var result = await accountController.Register(GetTestRegisterViewModel());
-            
+
             //Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("Register", viewResult.ViewName);
@@ -327,7 +327,7 @@ namespace EPlast.XUnitTest
 
             //Act
             var result = await accountController.Register(GetTestRegisterViewModel());
-            
+
             //Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("Register", viewResult.ViewName);
@@ -366,7 +366,7 @@ namespace EPlast.XUnitTest
 
             //Act
             var result = await accountController.Register(GetTestRegisterViewModel());
-            
+
             //Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("AcceptingEmail", viewResult.ViewName);
@@ -379,10 +379,10 @@ namespace EPlast.XUnitTest
         {
             //Arrange
             var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountController) = CreateAccountController();
-            
+
             //Act
             var result = accountController.ConfirmedEmail();
-            
+
             //Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("ConfirmedEmail", viewResult.ViewName);
@@ -475,10 +475,10 @@ namespace EPlast.XUnitTest
         {
             //Arrange
             var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountController) = CreateAccountController();
-            
+
             //Act
             var result = accountController.AccountLocked();
-            
+
             //Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("AccountLocked", viewResult.ViewName);
@@ -497,7 +497,7 @@ namespace EPlast.XUnitTest
 
             //Act
             var result = await accountController.Logout() as RedirectToActionResult;
-            
+
             //Assert
             Assert.Equal("Login", result.ActionName);
             Assert.NotNull(result);
@@ -509,10 +509,10 @@ namespace EPlast.XUnitTest
         {
             //Arrange
             var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountController) = CreateAccountController();
-            
+
             //Act
             var result = accountController.ForgotPassword();
-            
+
             //Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("ForgotPassword", viewResult.ViewName);
@@ -525,10 +525,10 @@ namespace EPlast.XUnitTest
             //Arrange
             var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountController) = CreateAccountController();
             accountController.ModelState.AddModelError("NameError", "Required");
-            
+
             //Act
             var result = await accountController.ForgotPassword(GetTestForgotViewModel());
-            
+
             //Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("ForgotPassword", viewResult.ViewName);
@@ -550,7 +550,7 @@ namespace EPlast.XUnitTest
 
             //Act
             var result = await accountController.ForgotPassword(GetTestForgotViewModel());
-            
+
             //Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("ForgotPassword", viewResult.ViewName);
@@ -586,17 +586,17 @@ namespace EPlast.XUnitTest
 
             accountController.Url = mockUrlHelper.Object;
             accountController.ControllerContext.HttpContext = new DefaultHttpContext();
-            
+
             //Act
             var result = await accountController.ForgotPassword(GetTestForgotViewModel());
-            
+
             //Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("ForgotPasswordConfirmation", viewResult.ViewName);
             Assert.NotNull(viewResult);
         }
 
-        //ResetPassword  
+        //ResetPassword
         [Fact]
         public async Task TestResetPasswordGetReturnsHandleError()
         {
@@ -645,10 +645,10 @@ namespace EPlast.XUnitTest
             //Arrange
             var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountController) = CreateAccountController();
             accountController.ModelState.AddModelError("NameError", "Required");
-            
+
             //Act
             var result = await accountController.ResetPassword(GetTestResetViewModel());
-            
+
             //Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("ResetPassword", viewResult.ViewName);
@@ -666,7 +666,7 @@ namespace EPlast.XUnitTest
 
             //Act
             var result = await accountController.ResetPassword(GetTestResetViewModel());
-            
+
             //Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("ResetPassword", viewResult.ViewName);
@@ -692,7 +692,7 @@ namespace EPlast.XUnitTest
 
             //Act
             var result = await accountController.ResetPassword(GetTestResetViewModel());
-            
+
             //Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("ResetPasswordConfirmation", viewResult.ViewName);
@@ -714,7 +714,7 @@ namespace EPlast.XUnitTest
 
             //Act
             var result = await accountController.ResetPassword(GetTestResetViewModel());
-            
+
             //Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("ResetPassword", viewResult.ViewName);
@@ -733,7 +733,7 @@ namespace EPlast.XUnitTest
 
             //Act
             var result = await accountController.ChangePassword();
-            
+
             //Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("ChangePassword", viewResult.ViewName);
@@ -751,7 +751,7 @@ namespace EPlast.XUnitTest
 
             //Act
             var result = await accountController.ChangePassword();
-            
+
             //Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("ChangePasswordNotAllowed", viewResult.ViewName);
@@ -764,10 +764,10 @@ namespace EPlast.XUnitTest
             //Arrange
             var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountController) = CreateAccountController();
             accountController.ModelState.AddModelError("CurrentPassword", "Required");
-            
+
             //Act
             var result = await accountController.ChangePassword(GetTestChangeViewModel());
-            
+
             //Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("ChangePassword", viewResult.ViewName);
@@ -785,7 +785,7 @@ namespace EPlast.XUnitTest
 
             //Act
             var result = await accountController.ChangePassword(GetTestChangeViewModel()) as RedirectToActionResult;
-            
+
             //Assert
             Assert.Equal("Login", result.ActionName);
             Assert.NotNull(result);
@@ -806,7 +806,7 @@ namespace EPlast.XUnitTest
 
             //Act
             var result = await accountController.ChangePassword(GetTestChangeViewModel());
-            
+
             //Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("ChangePassword", viewResult.ViewName);
@@ -832,7 +832,7 @@ namespace EPlast.XUnitTest
 
             //Act
             var result = await accountController.ChangePassword(GetTestChangeViewModel());
-            
+
             //Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("ChangePasswordConfirmation", viewResult.ViewName);
@@ -864,7 +864,7 @@ namespace EPlast.XUnitTest
 
             //Act
             var result = accountController.ExternalLogin(GetTestProvider(), GetTestReturnUrl());
-            
+
             //Assert
             var challengeResult = Assert.IsType<ChallengeResult>(result);
             Assert.Equal(GetTestProvider(), challengeResult.AuthenticationSchemes[0]);
@@ -883,7 +883,7 @@ namespace EPlast.XUnitTest
 
             //Act
             var result = await accountController.ExternalLoginCallBack(GetTestReturnUrl(), GetTestRemoteError());
-            
+
             //Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsType<LoginViewModel>(viewResult.ViewData.Model);
@@ -906,7 +906,7 @@ namespace EPlast.XUnitTest
 
             //Act
             var result = await accountController.ExternalLoginCallBack(GetTestReturnUrl());
-            
+
             //Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsType<LoginViewModel>(viewResult.ViewData.Model);
@@ -933,7 +933,7 @@ namespace EPlast.XUnitTest
 
             //Act
             var result = await accountController.ExternalLoginCallBack(GetTestReturnUrl()) as LocalRedirectResult;
-            
+
             //Assert
             Assert.Equal(GetTestLoginViewModel().ReturnUrl, result.Url);
             Assert.NotNull(result);
@@ -1061,7 +1061,8 @@ namespace EPlast.XUnitTest
             return authenticationScheme;
         }
 
-        private string GetBadFakeCodeConfirmingEmail() {
+        private string GetBadFakeCodeConfirmingEmail()
+        {
             string code = null;
             return code;
         }
@@ -1098,4 +1099,3 @@ namespace EPlast.XUnitTest
         }
     }
 }
- 

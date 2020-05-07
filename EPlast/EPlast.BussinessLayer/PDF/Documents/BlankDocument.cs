@@ -22,6 +22,7 @@ namespace EPlast.BussinessLayer
 
         public override void SetDocumentBody(Section section)
         {
+            var paragraph = section.AddParagraph();
             //var paragraph = section.AddParagraph($"{blank.Name} від {blank.Date.ToString("dd/MM/yyyy")}");
             //paragraph.Format.Font.Size = 14;
             //paragraph.Format.SpaceAfter = "3cm";

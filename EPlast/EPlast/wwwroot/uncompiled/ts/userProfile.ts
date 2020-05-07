@@ -102,7 +102,7 @@
             }
         });
     })
-    $('#Upload-photo').click(function(e){
+    $('#Upload-photo').click(function (e) {
         let input: HTMLInputElement = <HTMLInputElement>document.getElementById("upload-file");
         var files = input.files;
         if (files[0] != undefined && files[0].size >= 3145728) {
@@ -112,8 +112,9 @@
             return;
         }
     });
-    
-
+    $("#TheVYO").click(function () {
+        window.open(`/Account/CreatePDFAsync?userId=${$("#userId").val()}`, "_blank");
+    });
 })
 
 function setRowSelected(tr: JQuery<HTMLElement>, disabledElements: JQuery<HTMLElement>[]): void {
