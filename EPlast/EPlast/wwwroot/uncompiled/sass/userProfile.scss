@@ -17,8 +17,16 @@
 
     @media (max-width: 1024px) {
         .approvers-row {
-            justify-content:center;
+            justify-content: center;
         }
+    }
+
+    .containerApprovers {
+        height: 150px;
+    }
+
+    .approverKurin{
+        padding-top:30px;
     }
 }
 .UserProfileWrapper {

@@ -321,7 +321,6 @@
                                                                         <div class="card-text">
                                                                             <h5>@item.Approver.User.FirstName @item.Approver.User.LastName</h5>
                                                                             <p>@item.ConfirmDate.ToString("dd-MM-yyyy")</p>
-                                                                            <p>Пластун</p>
                                                                         </div>
                                                                     </div>
                                                                 </a>
@@ -376,10 +375,12 @@
                                                
 
                                                 <div class="col-xl-4 col-md-8">
-                                                    <h3>
-                                                        Поручення Голови Куреня
-                                                    </h3>
-                                                    @if(Model.ClubApprover != null)
+                                                    <div class="containerApprovers approverKurin">
+                                                        <h3>
+                                                            Поручення куреня УСП/УПС
+                                                        </h3>
+                                                    </div>
+                                                    @if (Model.ClubApprover != null)
                                                     {
                                                         <div class="card">
                                                             <a asp-action="UserProfile" asp-controller="Account" asp-route-userId="@Model.ClubApprover.Approver.User.Id" class="btn">
@@ -391,7 +392,6 @@
                                                                     <div class="card-text">
                                                                         <h5>@Model.ClubApprover.Approver.User.FirstName @Model.ClubApprover.Approver.User.LastName</h5>
                                                                         <p>@Model.ClubApprover.ConfirmDate.ToString("dd-MM-yyyy")</p>
-                                                                        <p>Курінний</p>
                                                                     </div>
                                                                 </div>
                                                             </a>
@@ -411,18 +411,18 @@
                                                     }
                                                     else if (_userManager.GetUserId(User) != Model.User.Id && User.IsInRole("Голова Куреня"))
                                                     {
-                                                           
-                                                            <a asp-action="ApproveUser" asp-route-userId="@Model.User.Id" asp-route-_isClubAdmin="true" class="btn">
-                                                                <div class="approversImg">
-                                                                    <img class="app-img" src="/images/add_user.png" alt="Generic placeholder image" />
-                                                                </div>
 
-                                                                <div class="card-body">
-                                                                    <div class="card-text">
-                                                                        <h5>Поручитись як курінний</h5>
-                                                                    </div>
+                                                        <a asp-action="ApproveUser" asp-route-userId="@Model.User.Id" asp-route-_isClubAdmin="true" class="btn">
+                                                            <div class="approversImg">
+                                                                <img class="app-img" src="/images/add_user.png" alt="Generic placeholder image" />
+                                                            </div>
+
+                                                            <div class="card-body">
+                                                                <div class="card-text">
+                                                                    <h5>Поручитись як курінний</h5>
                                                                 </div>
-                                                            </a>
+                                                            </div>
+                                                        </a>
                                                     }
                                                     else
                                                     {
@@ -436,9 +436,12 @@
 
                                                     
                                                 <div class="col-xl-4 col-md-8">
-                                                    <h3>
-                                                        Поручення Голови Округу
-                                                    </h3>
+                                                    <div class="containerApprovers">
+                                                        <h3>
+                                                            Поручення Голови осередку / Осередкового УСП/УПС
+                                                        </h3>
+                                                    </div>
+                                                    
                                                     @if (Model.CityApprover != null)
                                                     {
                                                         <div class="card">
@@ -451,7 +454,6 @@
                                                                     <div class="card-text">
                                                                         <h5>@Model.CityApprover.Approver.User.FirstName @Model.CityApprover.Approver.User.LastName</h5>
                                                                         <p>@Model.CityApprover.ConfirmDate.ToString("dd-MM-yyyy")</p>
-                                                                        <p>Голова Округу</p>
                                                                     </div>
                                                                 </div>
                                                             </a>
@@ -470,7 +472,7 @@
                                                         </div>
                                                     }
 
-                                                    else if (_userManager.GetUserId(User) != Model.User.Id && User.IsInRole("Голова Округу"))
+                                                    else if (_userManager.GetUserId(User) != Model.User.Id && User.IsInRole("Голова Округу") && User.IsInRole("Голова Станиці"))
                                                     {
 
                                                         <a asp-action="ApproveUser" asp-route-userId="@Model.User.Id" asp-route-_isCityAdmin="true" class="btn">
@@ -488,10 +490,10 @@
                                                     }
                                                     else
                                                     {
-                                                        <div class="h5  text-muted">
+                                                        <div class="h5 text-muted">
                                                             <br />
                                                             <br />
-                                                            На жаль порука окружного відсутня
+                                                            На жаль порука окружного/станичного відсутня
                                                         </div>
                                                     }
                                                 </div>
