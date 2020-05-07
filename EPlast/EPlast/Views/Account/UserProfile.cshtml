@@ -321,10 +321,9 @@
                                                                         <div class="card-text">
                                                                             <h5>@item.Approver.User.FirstName @item.Approver.User.LastName</h5>
                                                                             <p>@item.ConfirmDate.ToString("dd-MM-yyyy")</p>
+                                                                            <p>Пластун</p>
                                                                         </div>
                                                                     </div>
-
-
                                                                 </a>
                                                                 @if (item.Approver.UserID == _userManager.GetUserId(User))
                                                                 {
@@ -402,6 +401,12 @@
                                                                     <a class="btn btn-danger" asp-action="ApproverDelete" asp-controller="Account" asp-route-confirmedId="@Model.ClubApprover.ID" asp-route-userId="@Model.User.Id">Відкликати поручення</a>
                                                                 </div>
                                                             }
+                                                            else
+                                                            {
+                                                                <div class="card-footer bg-white border-0">
+
+                                                                </div>
+                                                            }
                                                         </div>
                                                     }
                                                     else if (_userManager.GetUserId(User) != Model.User.Id && User.IsInRole("Голова Куреня"))
@@ -454,6 +459,12 @@
                                                             {
                                                                 <div class="card-footer">
                                                                     <a class="btn btn-danger" asp-action="ApproverDelete" asp-controller="Account" asp-route-confirmedId="@Model.CityApprover.ID" asp-route-userId="@Model.User.Id">Відкликати поручення</a>
+                                                                </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="card-footer bg-white border-0">
+
                                                                 </div>
                                                             }
                                                         </div>
