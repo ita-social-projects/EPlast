@@ -5,6 +5,16 @@ namespace EPlast.BussinessLayer
 {
     public class PDFService : IPDFService
     {
+        public async Task<byte[]> BlankCreatePDFAsync(BlankModel pdfData)
+        {
+            IPDFSettings pdfSettings = new PDFSettings()
+            {
+                Title = string.Format("Бланк")
+            };
+            IPDFCreator creator = new PDFCreator(new BlankDocument(pdfData, pdfSettings));
+            return await Task.Run(() => creator.GetPDFBytes());
+        }
+
         public async Task<byte[]> DecesionCreatePDFAsync(Decesion pdfData)
         {
             IPDFSettings pdfSettings = new PDFSettings()
