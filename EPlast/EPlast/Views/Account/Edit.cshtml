@@ -14,14 +14,14 @@
                 <div class="col-md-4">
                     <div class="portlet light profile-sidebar-portlet bordered">
                         <div class="profile-userpic">
-                            <img src="/images/Users/@Model.User.ImagePath" class="img-thumbnail" alt="">
+                            <img  id="image" src="/images/Users/@Model.User.ImagePath" class="img-thumbnail" alt="">
                         </div>
                     </div>
                     <div class="row rowEditPage">
                         <div id="photo-wrapper" class="photo-wrapper">
                             <div class="Upload-photo">
                                 <button id="upload-btn" class="upload-btn">Вибрати...</button>
-                                <input type="file" class="custom-file-input" id="upload-file" accept=".jpg,.jpeg,.png" name="file" onchange="document.getElementById('img').src = window.URL.createObjectURL(this.files[0])">
+                                <input type="file" class="custom-file-input" id="upload-file" accept=".jpg,.jpeg,.png" name="file">
                             </div>
                             <div class="accept">
                                 <button type="submit" value="Save" id="Upload-photo" class="btn " style="background-color:#3c5438; color:white;">Підтвердити</button>
@@ -64,10 +64,8 @@
                             @foreach (Nationality item in Model.Nationalities)
                             {
                                 <option data-value="@item.ID" value="@item.Name"></option>
-
                             }
                         </datalist>
-
                         @Html.HiddenFor(i => i.User.UserProfile.NationalityId, new { @id = "autocomplete_input_id_0" })
                         <span asp-validation-for="User.UserProfile.Nationality.Name" class="text-danger"></span>
                     </div>
