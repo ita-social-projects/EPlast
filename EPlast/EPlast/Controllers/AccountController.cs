@@ -555,8 +555,10 @@ namespace EPlast.Controllers
                 if (string.IsNullOrEmpty(userId))
                 {
                     userId = _currentUserId;
-                    _logger.Log(LogLevel.Information, "UserId is not null");
                 }
+                _logger.Log(LogLevel.Information, $"UserProfile Id is {userId}");
+                _logger.Log(LogLevel.Information, $"Authenticate userId is {_currentUserId}");
+
                 var user = _repoWrapper.User.
                 FindByCondition(q => q.Id == userId).
                     Include(i => i.UserProfile).
@@ -571,20 +573,48 @@ namespace EPlast.Controllers
                         ThenInclude(g => g.Religion).
                     Include(g => g.UserProfile).
                         ThenInclude(g => g.Work).
+                    FirstOrDefault();
+
+                TimeSpan _timeToJoinPlast = CheckOrAddPlastunRole(user).Result;
+
+                if (user != null)
+                {
+                    var model = new UserViewModel
+                    {
+                        User = user,
+                        timeToJoinPlast = _timeToJoinPlast
+                    };
+
+                    return View(model);
+                }
+                _logger.Log(LogLevel.Error, $"Can`t find this user:{userId}, or smth else");
+                return RedirectToAction("HandleError", "Error", new { code = 500 });
+            }
+            catch
+            {
+                return RedirectToAction("HandleError", "Error", new { code = 500 });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult Approvers(string userId)
+        {
+            try
+            {
+                var _currentUserId = _userManager.GetUserId(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    userId = _currentUserId;
+                }
+                _logger.Log(LogLevel.Information, $"UserProfile Id is {userId}");
+                _logger.Log(LogLevel.Information, $"Authenticate userId is {_currentUserId}");
+
+                var user = _repoWrapper.User.
+                FindByCondition(q => q.Id == userId).
                     Include(x => x.ConfirmedUsers).
                         ThenInclude(q => (q as ConfirmedUser).Approver).
                         ThenInclude(q => q.User).
                     FirstOrDefault();
-                var userPositions = _repoWrapper.CityAdministration
-                    .FindByCondition(ca => ca.UserId == userId)
-                        .Include(ca => ca.AdminType)
-                        .Include(ca => ca.City);
-
-                var edit = Edit(userId);
-                if (edit == null)
-                {
-                    return RedirectToAction("HandleError", "Error", new { code = 500 });
-                }
 
                 var _canApprove = user.ConfirmedUsers.Count < 3
                     && !user.ConfirmedUsers.Any(x => x.Approver.UserID == _currentUserId)
@@ -597,9 +627,6 @@ namespace EPlast.Controllers
                     var model = new UserViewModel
                     {
                         User = user,
-                        UserPositions = userPositions,
-                        HasAccessToManageUserPositions = _userAccessManager.HasAccess(_userManager.GetUserId(User), userId),
-                        EditView = edit,
                         canApprove = _canApprove,
                         timeToJoinPlast = _timeToJoinPlast
                     };
@@ -615,6 +642,50 @@ namespace EPlast.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult Positions(string userId)
+        {
+            try
+            {
+                var _currentUserId = _userManager.GetUserId(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    userId = _currentUserId;
+                }
+                _logger.Log(LogLevel.Information, $"UserProfile Id is {userId}");
+                _logger.Log(LogLevel.Information, $"Authenticate userId is {_currentUserId}");
+
+                var user = _repoWrapper.User.
+                    FindByCondition(q => q.Id == userId).
+                    First();
+
+                var userPositions = _repoWrapper.CityAdministration
+                    .FindByCondition(ca => ca.UserId == userId)
+                        .Include(ca => ca.AdminType)
+                        .Include(ca => ca.City);
+
+                TimeSpan _timeToJoinPlast = CheckOrAddPlastunRole(user).Result;
+
+                if (user != null)
+                {
+                    var model = new UserViewModel
+                    {
+                        User = user,
+                        UserPositions = userPositions,
+                        HasAccessToManageUserPositions = _userAccessManager.HasAccess(_userManager.GetUserId(User), userId),
+                        timeToJoinPlast = _timeToJoinPlast
+                    };
+
+                    return View(model);
+                }
+                _logger.Log(LogLevel.Error, $"Can`t find this user:{userId}, or smth else");
+                return RedirectToAction("HandleError", "Error", new { code = 500 });
+            }
+            catch
+            {
+                return RedirectToAction("HandleError", "Error", new { code = 500 });
+            }
+        }
         private async Task<TimeSpan> CheckOrAddPlastunRole(User user)
         {
             try
@@ -634,6 +705,8 @@ namespace EPlast.Controllers
             }
         }
 
+        [Authorize]
+        [HttpPost]
         public IActionResult ApproveUser(string userId)
         {
             if (userId != null)
@@ -651,6 +724,7 @@ namespace EPlast.Controllers
             return RedirectToAction("HandleError", "Error", new { code = 505 });
         }
 
+        [Authorize]
         public IActionResult ApproverDelete(string userId)
         {
             var id = _userManager.GetUserId(User);
@@ -666,8 +740,16 @@ namespace EPlast.Controllers
             return RedirectToAction("UserProfile", "Account", new { userId = userId });
         }
 
-        private EditUserViewModel Edit(string id)
+        [Authorize]
+        [HttpGet]
+        public IActionResult Edit(string userId)
         {
+            if(userId == null)
+            {
+                _logger.Log(LogLevel.Error, "User id is null");
+                return RedirectToAction("HandleError", "Error", new { code = 500 });
+            }
+
             if (!_repoWrapper.Gender.FindAll().Any())
             {
                 _repoWrapper.Gender.Create(new Gender { Name = "Чоловік" });
@@ -675,10 +757,11 @@ namespace EPlast.Controllers
                 _repoWrapper.Save();
             }
             //!!
+
             try
             {
                 var user = _repoWrapper.User.
-                FindByCondition(q => q.Id == id).
+                FindByCondition(q => q.Id == userId).
                 Include(i => i.UserProfile).
                     ThenInclude(x => x.Nationality).
                 Include(g => g.UserProfile).
@@ -715,12 +798,12 @@ namespace EPlast.Controllers
                     Degrees = _repoWrapper.Degree.FindAll(),
                 };
 
-                return model;
+                return View(model);
             }
             catch (Exception e)
             {
                 _logger.LogError("Exception: {0}", e.Message);
-                return null;
+                return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
 
