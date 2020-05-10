@@ -1,49 +1,22 @@
-﻿@using EPlast.DataAccess.Repositories;
+﻿@{
+    Layout = "~/Views/Account/_ProfileLayout.cshtml";
+    ViewBag.Title = "EventUser";
+    ViewBag.ActiveNav = "EventUser";
+}
+@using EPlast.DataAccess.Repositories;
 @using Microsoft.AspNetCore.Identity;
 @model EPlast.ViewModels.Events.EventUserViewModel;
 @inject IRepositoryWrapper  _repository;
 @inject UserManager<EPlast.DataAccess.Entities.User> _userManager;
 @await Html.PartialAsync("_EventInfoModals")
 
-<div class=" eventUserPage d-md-flex d-xl-flex justify-content-md-center justify-content-xl-center align-items-xl-top container">
-    <div class=" bg-light m-5 pt-2 pb-5 pr-5 pl-5 justify-content-md-center justify-content-xl-center user-profile container">
-        <ul class="nav nav-tabs">
-            <li class="nav-item">
-                <a class="nav-link " asp-action="UserProfile" asp-controller="Account">Персональні дані</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#">Дійсне членство</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#positions">Діловодства</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" asp-action="EventUser" asp-controller="EventUser">Події</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#">З'їзди</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#">Бланки</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#">Поручення</a>
-            </li>
-            @if (_userManager.GetUserId(User) == Model.User.Id || User.IsInRole("Admin"))
-            {
-                <li class="nav-item">
-                    <a class="nav-link" asp-action="Edit" asp-controller="Account" asp-route-model="@Model.EditView">Редагувати профіль</a>
-                </li>
-            }
-        </ul>
-        <div class="tab-content">
+<div class="eventUserPage">
             <div class="d-sm-flex justify-content-sm-center row">
                 <div class="d-flex justify-content-center col-sm">
                     <div class="d-lg-flex align-items-center justify-content-lg-center border shadow events" id="eventPersonalInfo">
                         <div class="text-center justify-content-center box">
                             <img class="img-fluid border rounded-circle imageSize" src="/images/Users/@Model.User.ImagePath">
                             <h4 class="personalInfo">@Model.User.FirstName @Model.User.LastName</h4>
-                            <p>Пластун прихильник</p>
                             <div class="d-lg-flex spliter" id="infoSplit"></div>
                             <p> </p>
                             <a class="btn btn-primary btn-lg" role="button" asp-action="EventCreate" asp-controller="EventUser">
@@ -53,8 +26,7 @@
                     </div>
                 </div>
                 <div class="col-sm big">
-                    <div class="d-flex d-sm-flex justify-content-center justify-content-sm-center row"
-                         id="detailes">
+                    <div class="d-flex d-sm-flex justify-content-center justify-content-sm-center row" id="detailes">
                         <div class="col-sm small">
                             <div id="permitedEvents" class="border shadow events">
                                 <div class="text-center justify-content-center box">
@@ -133,8 +105,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 </div>
 
 
