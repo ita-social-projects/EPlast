@@ -12,14 +12,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
-using Ical.Net.DataTypes;
 
 namespace EPlast.Controllers
 {
@@ -666,6 +664,12 @@ namespace EPlast.Controllers
 
                 TimeSpan _timeToJoinPlast = CheckOrAddPlastunRole(user).Result;
 
+                var _confUsers = user.ConfirmedUsers.Where(x => x.isCityAdmin == false && x.isClubAdmin == false).ToList();
+
+                var _canApprove = _confUsers.Count<3 
+                    && !_confUsers.Any(x => x.Approver.UserID == _currentUserId)
+                    && !(_currentUserId == userId);
+
                 if (user != null)
                 {
                     var model = new UserViewModel
@@ -673,7 +677,12 @@ namespace EPlast.Controllers
                         User = user,
                         UserPositions = userPositions,
                         HasAccessToManageUserPositions = _userAccessManager.HasAccess(_userManager.GetUserId(User), userId),
-                        timeToJoinPlast = _timeToJoinPlast
+                        EditView = edit,
+                        canApprove = _canApprove,
+                        timeToJoinPlast = _timeToJoinPlast,
+                        ConfirmedUsers = _confUsers,
+                        ClubApprover = user.ConfirmedUsers.FirstOrDefault(x => x.isClubAdmin==true),
+                        CityApprover= user.ConfirmedUsers.FirstOrDefault(x => x.isCityAdmin==true)
                     };
 
                     return View(model);
@@ -705,15 +714,13 @@ namespace EPlast.Controllers
             }
         }
 
-        [Authorize]
-        [HttpPost]
-        public IActionResult ApproveUser(string userId)
+        public IActionResult ApproveUser(string userId, bool _isClubAdmin = false, bool _isCityAdmin = false)
         {
             if (userId != null)
             {
                 var id = _userManager.GetUserId(User);
 
-                var conUs = new ConfirmedUser { UserID = userId, ConfirmDate = DateTime.Now };
+                var conUs = new ConfirmedUser { UserID = userId, ConfirmDate = DateTime.Now,isClubAdmin= _isClubAdmin,isCityAdmin= _isCityAdmin };
                 var appUs = new Approver { UserID = id, ConfirmedUser = conUs };
                 conUs.Approver = appUs;
 
@@ -721,21 +728,13 @@ namespace EPlast.Controllers
                 _repoWrapper.Save();
                 return RedirectToAction("UserProfile", "Account", new { userId = userId });
             }
-            return RedirectToAction("HandleError", "Error", new { code = 505 });
+            return RedirectToAction("HandleError", "Error", new { code = 500 });
         }
 
         [Authorize]
         public IActionResult ApproverDelete(string userId)
         {
-            var id = _userManager.GetUserId(User);
-            var user = _repoWrapper.User.FindByCondition(x => x.Id == userId).
-                Include(x => x.ConfirmedUsers).
-                        ThenInclude(q => (q as ConfirmedUser).Approver).
-                        ThenInclude(q => q.User).
-                        FirstOrDefault();
-            var t = user.ConfirmedUsers;
-            var confUser = user.ConfirmedUsers.Where(x => x.Approver.UserID == id).FirstOrDefault();
-            _repoWrapper.ConfirmedUser.Delete(confUser);
+            _repoWrapper.ConfirmedUser.Delete(_repoWrapper.ConfirmedUser.FindByCondition(x=>x.ID== confirmedId).First());
             _repoWrapper.Save();
             return RedirectToAction("UserProfile", "Account", new { userId = userId });
         }

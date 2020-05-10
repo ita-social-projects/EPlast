@@ -5,7 +5,7 @@
         position: relative;
         height: 141px;
 
-        .card-img-top {
+        .app-img {
             position: absolute;
             left: 50%;
             top: 50%;
@@ -13,6 +13,20 @@
             max-width: 100%;
             max-height: 100%;
         }
+    }
+
+    @media (max-width: 1024px) {
+        .approvers-row {
+            justify-content: center;
+        }
+    }
+
+    .containerApprovers {
+        height: 150px;
+    }
+
+    .approverKurin{
+        padding-top:30px;
     }
 }
 .UserProfileWrapper {
