@@ -15,6 +15,5 @@ namespace EPlast.ViewModels
         public TimeSpan timeToJoinPlast { get; set; }
         public ConfirmedUser ClubApprover { get; set; }
         public ConfirmedUser CityApprover { get; set; }
-        public EditUserViewModel EditView { get; set; }
     }
 }
