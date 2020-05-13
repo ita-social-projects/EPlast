@@ -25,8 +25,18 @@
         height: 150px;
     }
 
-    .approverKurin{
-        padding-top:30px;
+    .approverKurin {
+        padding-top: 30px;
+    }
+
+    @media (max-width: 728px) {
+        .approverKurin {
+            padding-top: 0px;
+        }
+
+        .containerApprovers {
+            height: 100px;
+        }
     }
 }
 .UserProfileWrapper {
