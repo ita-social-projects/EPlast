@@ -1,43 +1,50 @@
-﻿@using EPlast.DataAccess.Repositories
+﻿@{
+    Layout = "~/Views/Account/_ProfileLayout.cshtml";
+    ViewBag.Title = "Редагування профілю";
+    ViewBag.ActiveNav = "Edit";
+}
+@using EPlast.DataAccess.Repositories
 @using EPlast.DataAccess.Entities
 @model EPlast.ViewModels.EditUserViewModel
-<form class="bg-light mt-4 editPage" style="background-color:white" asp-action="Edit" enctype="multipart/form-data">
 
-    <div class="row">
-        <div class="col-md-4">
-            <div class="portlet light profile-sidebar-portlet bordered">
-                <div class="profile-userpic">
-                    <img src="/images/Users/@Model.User.ImagePath" class="img-thumbnail" alt="">
-                </div>
-            </div>
-            <div class="row rowEditPage">
-                <div id="photo-wrapper" class="photo-wrapper">
-                    <div class="Upload-photo">
-                        <button id="upload-btn" class="upload-btn">Вибрати...</button>
-                        <input type="file" class="custom-file-input" id="upload-file" accept=".jpg,.jpeg,.png" name="file" onchange="document.getElementById('img').src = window.URL.createObjectURL(this.files[0])">
+    <div id="Edit" class="container tab-pane active">
+        <form class="bg-light mt-4 editPage" style="background-color:white" asp-action="Edit" enctype="multipart/form-data">
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="portlet light profile-sidebar-portlet bordered">
+                        <div class="profile-userpic">
+                            <img  id="image" src="/images/Users/@Model.User.ImagePath" class="img-thumbnail" alt="">
+                        </div>
                     </div>
-                    <div class="accept">
-                        <button type="submit" value="Save" id="Upload-photo" class="btn " style="background-color:#3c5438; color:white;">Підтвердити</button>
+                    <div class="row rowEditPage">
+                        <div id="photo-wrapper" class="photo-wrapper">
+                            <div class="Upload-photo">
+                                <button id="upload-btn" class="upload-btn">Вибрати...</button>
+                                <input type="file" class="custom-file-input" id="upload-file" accept=".jpg,.jpeg,.png" name="file">
+                            </div>
+                            <div class="accept">
+                                <button type="submit" value="Save" id="Upload-photo" class="btn " style="background-color:#3c5438; color:white;">Підтвердити</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-8  col-sm-12 col-lg-8 col-md-12">
-            @Html.HiddenFor(model => model.User.Id)
-            @Html.HiddenFor(model => model.User.UserProfile.ID)
-            @Html.HiddenFor(model => model.User.UserProfile.UserID)
-            @Html.HiddenFor(model => model.User.UserProfile.User)
-            <div class="row mt-4">
-                <div class="col-md-12">
-                    <h2>Редагування профілю</h2>
-                    <hr />
-                </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="User.FirstName" class="control-label"></label>
-                <input asp-for="User.FirstName" class="form-control">
-                <span asp-validation-for="User.FirstName" class="text-danger"></span>
-            </div>
+                <div class="col-8 col-sm-12 col-lg-8 col-md-7 editColumn">
+                    @Html.HiddenFor(model => model.User.Id)
+                    @Html.HiddenFor(model => model.User.UserProfile.ID)
+                    @Html.HiddenFor(model => model.User.UserProfile.UserID)
+                    @Html.HiddenFor(model => model.User.UserProfile.User)
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <h2>Редагування профілю</h2>
+                            <hr />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="User.FirstName" class="control-label"></label>
+                        <input asp-for="User.FirstName" class="form-control">
+                        <span asp-validation-for="User.FirstName" class="text-danger"></span>
+                    </div>
 
             <div class="form-group">
                 <label asp-for="User.LastName" class="control-label"></label>
@@ -83,14 +90,14 @@
                 <span asp-validation-for="User.UserProfile.Religion.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="User.UserProfile.DateTime" class="control-label"></label>
-                @if (@Model.User.UserProfile.DateTime != null)
+                <label asp-for="User.UserProfile.Birthday" class="control-label"></label>
+                @if (@Model.User.UserProfile.Birthday != null)
                 {
-                    <input type="hidden" id="dtOfBrthd" value=@Model.User.UserProfile.DateTime.Value.ToString("dd-MM-yyyy") />
+                    <input type="hidden" id="dtOfBrthd" value=@Model.User.UserProfile.Birthday.Value.ToString("dd-MM-yyyy") />
                 }
-                @Html.TextBoxFor(x => x.User.UserProfile.DateTime,
+                @Html.TextBoxFor(x => x.User.UserProfile.Birthday,
                     new { @autocomplete = "off", @type = "datetime", @placeholder = "Виберіть дату...", @id = "datepickerBirthday", @class = "form-control" })
-                <span asp-validation-for="User.UserProfile.DateTime" />
+                <span asp-validation-for="User.UserProfile.Birthday" />
             </div>
             <div class="form-group">
                 <label asp-for="User.UserProfile.Education.PlaceOfStudy" class="control-label"></label>
@@ -170,6 +177,7 @@
         </div>
     </div>
 </form>
+</div>
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

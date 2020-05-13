@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20200507162408_Additional-field-to-table-ConfirmedUser")]
+    partial class AdditionalfieldtotableConfirmedUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -875,7 +877,7 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<string>("Address")
                         .HasMaxLength(50);
 
-                    b.Property<DateTime?>("Birthday");
+                    b.Property<DateTime?>("DateTime");
 
                     b.Property<int?>("DegreeId");
 

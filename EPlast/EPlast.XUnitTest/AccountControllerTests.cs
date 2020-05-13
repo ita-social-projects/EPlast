@@ -150,7 +150,7 @@ namespace EPlast.XUnitTest
             var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
                 _userAccessManager.Object, null);
             var mockFile = new Mock<IFormFile>();
-            var user = new EditUserViewModel { User = expected, EducationView = new EducationViewModel(), WorkView = new WorkViewModel(), Birthday = "18-04-2020" };
+            var user = new EditUserViewModel { User = expected,EducationView=new EducationViewModel(),WorkView=new WorkViewModel()};
 
             // Act
             var resultPost = controller.Edit(user, mockFile.Object);
