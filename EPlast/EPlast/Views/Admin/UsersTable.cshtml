@@ -57,12 +57,12 @@
                             {<Span>@item.User.UserProfile.Gender.Name</Span>}
                         </td>
 
-                        @if (@item.User.UserProfile.DateTime != null)
+                        @if (@item.User.UserProfile.Birthday != null)
                         {
                             <td data-order="@{
-                                DateTime.UtcNow.Subtract(@item.User.UserProfile.DateTime.Value).TotalSeconds.ToString();
+                                DateTime.UtcNow.Subtract(@item.User.UserProfile.Birthday.Value).TotalSeconds.ToString();
                                     } ">
-                                @item.User.UserProfile.DateTime.Value.ToString("dd-MM-yyyy")
+                                @item.User.UserProfile.Birthday.Value.ToString("dd-MM-yyyy")
                             </td>
 
                         }
