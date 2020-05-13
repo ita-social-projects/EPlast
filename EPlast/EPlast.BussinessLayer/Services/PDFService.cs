@@ -10,7 +10,7 @@ namespace EPlast.BussinessLayer
             IPDFSettings pdfSettings = new PDFSettings()
             {
                 Title = string.Format("Бланк"),
-                ImagePath = null
+                ImagePath = "wwwroot/images/pdf/Header-Eplast-Blank.png"
             };
             IPDFCreator creator = new PDFCreator(new BlankDocument(pdfData, pdfSettings));
             return await Task.Run(() => creator.GetPDFBytes());
@@ -20,7 +20,8 @@ namespace EPlast.BussinessLayer
         {
             IPDFSettings pdfSettings = new PDFSettings()
             {
-                Title = string.Format("Рішення {0}", pdfData.Organization.OrganizationName)
+                Title = string.Format("Рішення {0}", pdfData.Organization.OrganizationName),
+                ImagePath = "wwwroot/images/pdf/Header-Eplast.png"
             };
             IPDFCreator creator = new PDFCreator(new DecisionDocument(pdfData, pdfSettings));
             return await Task.Run(() => creator.GetPDFBytes());

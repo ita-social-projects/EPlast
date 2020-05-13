@@ -31,12 +31,17 @@ namespace EPlast.BussinessLayer
 
             section = document.AddSection();
 
-            if (!string.IsNullOrEmpty(settings.ImagePath))
+            if (!settings.ImagePath.Contains("Blank"))
             {
                 Image image = section.AddImage(settings.ImagePath);
                 image.Width = 600;
                 image.RelativeHorizontal = RelativeHorizontal.Page;
                 image.RelativeVertical = RelativeVertical.Page;
+            }
+            else
+            {
+                Image image = section.AddImage(settings.ImagePath);
+                image.Width = 100;
             }
             SetDocumentBody(section);
 
