@@ -9,15 +9,11 @@ namespace EPlast.ViewModels
         public User User { get; set; }
         public IEnumerable<CityAdministration> UserPositions { get; set; }
 
-        public ICollection<Approver> Approvers { get; set; }
-
-        public UserViewModel()
-        {
-            Approvers = new List<Approver>();
-        }
+        public ICollection<ConfirmedUser> ConfirmedUsers { get; set; }
         public bool HasAccessToManageUserPositions { get; set; }
         public bool canApprove { get; set; }
         public TimeSpan timeToJoinPlast { get; set; }
-        public EditUserViewModel EditView { get; set; }
+        public ConfirmedUser ClubApprover { get; set; }
+        public ConfirmedUser CityApprover { get; set; }
     }
 }

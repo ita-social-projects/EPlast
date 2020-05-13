@@ -10,7 +10,7 @@ namespace EPlast.DataAccess.Entities
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Дата народження")]
-        public DateTime? DateTime { get; set; }
+        public DateTime? Birthday { get; set; }
         public int? EducationId { get; set; }
         public Education Education { get; set; }
         public int? DegreeId { get; set; }

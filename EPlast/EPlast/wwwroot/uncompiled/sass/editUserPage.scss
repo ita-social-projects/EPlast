@@ -71,6 +71,12 @@
         }
     }
 
+    @media(max-width:768px) {
+        .editColumn{
+            margin-left:20px;
+        }
+    }
+
     @media (max-width: 576px) {
         .photo-wrapper .upload-btn {
             font-size: 10px;
