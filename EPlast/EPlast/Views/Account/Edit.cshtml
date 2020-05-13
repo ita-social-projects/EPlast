@@ -83,14 +83,14 @@
                 <span asp-validation-for="User.UserProfile.Religion.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="User.UserProfile.DateTime" class="control-label"></label>
-                @if (@Model.User.UserProfile.DateTime != null)
+                <label asp-for="User.UserProfile.Birthday" class="control-label"></label>
+                @if (@Model.User.UserProfile.Birthday != null)
                 {
-                    <input type="hidden" id="dtOfBrthd" value=@Model.User.UserProfile.DateTime.Value.ToString("dd-MM-yyyy") />
+                    <input type="hidden" id="dtOfBrthd" value=@Model.User.UserProfile.Birthday.Value.ToString("dd-MM-yyyy") />
                 }
-                @Html.TextBoxFor(x => x.User.UserProfile.DateTime,
+                @Html.TextBoxFor(x => x.User.UserProfile.Birthday,
                     new { @autocomplete = "off", @type = "datetime", @placeholder = "Виберіть дату...", @id = "datepickerBirthday", @class = "form-control" })
-                <span asp-validation-for="User.UserProfile.DateTime" />
+                <span asp-validation-for="User.UserProfile.Birthday" />
             </div>
             <div class="form-group">
                 <label asp-for="User.UserProfile.Education.PlaceOfStudy" class="control-label"></label>
