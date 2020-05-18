@@ -61,7 +61,7 @@
                                     </a>
                                     <div id="layout-gear" class="dropdown-menu" aria-labelledby="navbarDropdown">
                                         <a class="dropdown-item" asp-controller="Account" asp-action="ChangePassword" style="color:#3c5438;">Змінити пароль</a>
-                                        <a class="dropdown-item" style="color:#3c5438;" asp-controller="Account" asp-action="Edit" asp-route-id="@UserManager.GetUserId(User)">Редагувати профіль</a>
+                                        <a class="dropdown-item" style="color:#3c5438;" asp-controller="Account" asp-action="Edit" asp-route-userId="@UserManager.GetUserId(User)">Редагувати профіль</a>
                                     </div>
                                 </li>
                             </ul>
