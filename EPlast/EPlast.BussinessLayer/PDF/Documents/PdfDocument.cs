@@ -41,7 +41,11 @@ namespace EPlast.BussinessLayer
             else
             {
                 Image image = section.AddImage(settings.ImagePath);
-                image.Width = 100;
+                image.Width = 84;
+                image.Left = 40;
+                image.Top = 20;
+                image.RelativeHorizontal = RelativeHorizontal.Page;
+                image.RelativeVertical = RelativeVertical.Page;
             }
             SetDocumentBody(section);
 
