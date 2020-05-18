@@ -1,32 +1,35 @@
-﻿using MigraDoc.Rendering;
+﻿using System;
 using System.IO;
+using System.Text;
+using MigraDoc.Rendering;
 
 namespace EPlast.BussinessLayer
 {
     internal class PDFCreator : IPDFCreator
     {
-        private PdfDocumentRenderer renderer;
         private readonly IPDFDocument document;
+        private PdfDocumentRenderer renderer;
 
         public PDFCreator(IPDFDocument document)
         {
-            this.document = document ?? throw new System.ArgumentNullException(nameof(document));
-            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            this.document = document ?? throw new ArgumentNullException(nameof(document));
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         }
 
         public byte[] GetPDFBytes()
         {
-            CreatPDF();
-            byte[] fileContents = null;
-            using (MemoryStream stream = new MemoryStream())
+            CreatePDF();
+            byte[] fileContents;
+            using (var stream = new MemoryStream())
             {
                 renderer.PdfDocument.Save(stream, true);
                 fileContents = stream.ToArray();
             }
+
             return fileContents;
         }
 
-        private void CreatPDF()
+        private void CreatePDF()
         {
             renderer = new PdfDocumentRenderer(true)
             {
