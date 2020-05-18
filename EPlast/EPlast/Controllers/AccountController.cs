@@ -23,29 +23,10 @@ namespace EPlast.Controllers
 {
     public class AccountController : Controller
     {
-        private SignInManager<User> _signInManager;
-        private UserManager<User> _userManager;
-        private readonly IRepositoryWrapper _repoWrapper;
-        private readonly ILogger _logger;
-        private readonly IEmailConfirmation _emailConfirmation;
-        private readonly IHostingEnvironment _env;
-        private readonly IUserAccessManager _userAccessManager;
-
-        public AccountController(UserManager<User> userManager,
-            SignInManager<User> signInManager,
-            IRepositoryWrapper repoWrapper,
-            ILogger<AccountController> logger,
-            IEmailConfirmation emailConfirmation,
-            IHostingEnvironment env,
-            IUserAccessManager userAccessManager)
+        private readonly IAccountService _accountService;
+        public AccountController(IAccountService accountService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _repoWrapper = repoWrapper;
-            _logger = logger;
-            _emailConfirmation = emailConfirmation;
-            _env = env;
-            _userAccessManager = userAccessManager;
+            _accountService = accountService;
         }
 
         [HttpGet]
@@ -63,7 +44,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError("Exception: {0}", e.Message);
+                _logger.LogError("Exception: {0}", e.Message);   //ото тож у сервіси
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
@@ -126,7 +107,7 @@ namespace EPlast.Controllers
             return View("Register");
         }
 
-        [HttpPost]
+        /*[HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel registerVM)
         {
@@ -1023,18 +1004,19 @@ namespace EPlast.Controllers
                 return NotFound("Не вдалося завершити каденцію діловодства!");
             }
         }
-    }
+    }*/
 
-    public interface IDateTime
-    {
-        DateTime GetCurrentTime();
-    }
-
-    public class DateTimeHelper : IDateTime
-    {
-        DateTime IDateTime.GetCurrentTime()
+        /*public interface IDateTime
         {
-            return DateTime.Now;
+            DateTime GetCurrentTime();
         }
+
+        public class DateTimeHelper : IDateTime
+        {
+            DateTime IDateTime.GetCurrentTime()
+            {
+                return DateTime.Now;
+            }
+        }*/
     }
 }

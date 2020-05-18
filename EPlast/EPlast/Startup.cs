@@ -54,6 +54,8 @@ namespace EPlast
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddScoped<IAccountService, AccountService>();
+
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
             services.AddScoped<IEmailConfirmation, EmailConfirmation>();
             services.AddScoped<IAnnualReportVMInitializer, AnnualReportVMInitializer>();
