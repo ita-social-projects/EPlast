@@ -1,7 +1,6 @@
 ﻿using EPlast.BussinessLayer.ExtensionMethods;
 using EPlast.DataAccess.Entities;
 using MigraDoc.DocumentObjectModel;
-using MigraDoc.DocumentObjectModel.Shapes;
 
 namespace EPlast.BussinessLayer
 {

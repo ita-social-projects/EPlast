@@ -9,7 +9,7 @@ namespace EPlast.BussinessLayer
         {
             IPDFSettings pdfSettings = new PDFSettings()
             {
-                Title = string.Format("Рішення {0}", pdfData.Organization.OrganizationName)
+                Title = $"Рішення {pdfData.Organization.OrganizationName}"
             };
             IPDFCreator creator = new PDFCreator(new DecisionDocument(pdfData, pdfSettings));
             return await Task.Run(() => creator.GetPDFBytes());
