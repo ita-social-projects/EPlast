@@ -18,6 +18,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
+using NLog.Fluent;
+using EPlast.BussinessLayer.DTO.Account;
 
 namespace EPlast.Controllers
 {
@@ -35,16 +37,16 @@ namespace EPlast.Controllers
         {
             try
             {
-                LoginViewModel loginmVM = new LoginViewModel
+                LoginViewModel loginViewModel = new LoginViewModel
                 {
                     ReturnUrl = returnUrl,
-                    ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList()
+                    ExternalLogins = (_accountService.GetAuthenticationSchemes()).ToList()
                 };
-                return View(loginmVM);
+                return View(loginViewModel);
             }
             catch (Exception e)
             {
-                _logger.LogError("Exception: {0}", e.Message);   //ото тож у сервіси
+                //_logger.LogError("Exception: {0}", e.Message);   //ото тож у сервіси
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
@@ -54,28 +56,13 @@ namespace EPlast.Controllers
         public async Task<IActionResult> Login(LoginViewModel loginVM, string returnUrl)
         {
             try
-            {
+            { 
                 loginVM.ReturnUrl = returnUrl;
                 loginVM.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
                 if (ModelState.IsValid)
                 {
-                    var user = await _userManager.FindByEmailAsync(loginVM.Email);
-                    if (user == null)
-                    {
-                        ModelState.AddModelError("", "Ви не зареєстровані в системі, або не підтвердили свою електронну пошту");
-                        return View(loginVM);
-                    }
-                    else
-                    {
-                        if (!await _userManager.IsEmailConfirmedAsync(user))
-                        {
-                            ModelState.AddModelError("", "Ваш акаунт не підтверджений, будь ласка увійдіть та зробіть підтвердження");
-                            return View(loginVM);
-                        }
-                    }
-
-                    var result = await _signInManager.PasswordSignInAsync(user, loginVM.Password, loginVM.RememberMe, true);
+                    var result = await _accountService.SignIn(user, loginVM.Password, loginVM.RememberMe, true);
                     if (result.IsLockedOut)
                     {
                         return RedirectToAction("AccountLocked", "Account");
@@ -95,7 +82,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError("Exception: {0}", e.Message);
+                //_logger.LogError("Exception: {0}", e.Message);
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
@@ -107,9 +94,9 @@ namespace EPlast.Controllers
             return View("Register");
         }
 
-        /*[HttpPost]
+        [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(RegisterViewModel registerVM)
+        public async Task<IActionResult> Register(RegisterViewModel registerVM)  //може біля сервісів треба забрати await і async у контрооллера
         {
             try
             {
@@ -119,7 +106,7 @@ namespace EPlast.Controllers
                     return View("Register");
                 }
 
-                var registeredUser = await _userManager.FindByEmailAsync(registerVM.Email);
+                var registeredUser = await _accountService.FindByEmailAsync(registerVM.Email);
                 if (registeredUser != null)
                 {
                     ModelState.AddModelError("", "Користувач з введеною електронною поштою вже зареєстрований в системі, " +
@@ -128,19 +115,8 @@ namespace EPlast.Controllers
                 }
                 else
                 {
-                    var user = new User()
-                    {
-                        Email = registerVM.Email,
-                        UserName = registerVM.Email,
-                        LastName = registerVM.SurName,
-                        FirstName = registerVM.Name,
-                        RegistredOn = DateTime.Now,
-                        ImagePath = "default.png",
-                        SocialNetworking = false,
-                        UserProfile = new UserProfile()
-                    };
-
-                    var result = await _userManager.CreateAsync(user, registerVM.Password);
+                    //все ок просто передавати змаплені dto 
+                    //var result = await _accountService.Create();
 
                     if (!result.Succeeded)
                     {
@@ -149,30 +125,20 @@ namespace EPlast.Controllers
                     }
                     else
                     {
-                        await _userManager.AddToRoleAsync(user, "Прихильник");
-                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                        var confirmationLink = Url.Action(
-                            nameof(ConfirmingEmail),
-                            "Account",
-                            new { code = code, userId = user.Id },
-                            protocol: HttpContext.Request.Scheme);
-
-                        user.EmailSendedOnRegister = DateTime.Now;
-                        await _userManager.UpdateAsync(user);
-                        await _emailConfirmation.SendEmailAsync(registerVM.Email, "Підтвердження реєстрації ",
-                            $"Підтвердіть реєстрацію, перейшовши за :  <a href='{confirmationLink}'>посиланням</a> ", "Адміністрація сайту EPlast");
-
+                        //все ок просто передавати змаплені
+                        //_accountService.AddRoleAsync(user);
+                        //_accountService.SendEmailUser(user, registerDto);
                         return View("AcceptingEmail");
                     }
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError("Exception: {0}", e.Message);
+                //_logger.LogError("Exception: {0}", e.Message);
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
-
+        
         [HttpGet]
         public IActionResult ConfirmedEmail()
         {
@@ -183,26 +149,18 @@ namespace EPlast.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ResendEmailForRegistering(string userId)
         {
-            var user = await _userManager.FindByIdAsync(userId);
+            //тут тож перероблено
+            var user = await _accountService.FindByIdAsync(userId);
             if (user == null)
             {
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var confirmationLink = Url.Action(
-                nameof(ConfirmingEmail),
-                "Account",
-                new { code = code, userId = user.Id },
-                protocol: HttpContext.Request.Scheme);
-
-            user.EmailSendedOnRegister = DateTime.Now;
-            await _userManager.UpdateAsync(user);
-            await _emailConfirmation.SendEmailAsync(user.Email, "Підтвердження реєстрації ",
-                $"Підтвердіть реєстрацію, перейшовши за :  <a href='{confirmationLink}'>посиланням</a> ", "Адміністрація сайту EPlast");
+            //тут тож все винесено і перероблено
+            //_accountService.SendEmailUser(user, registerDto);
             return View("ResendEmailConfirmation");
         }
-
-        [HttpGet]
+        
+        /*[HttpGet]                   оце потім переробити тому шо можуть бути питання з імейл сервісом
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmingEmail(string userId, string code)
         {
@@ -235,8 +193,9 @@ namespace EPlast.Controllers
             {
                 return View("ConfirmEmailNotAllowed", user);
             }
-        }
+        }*/
 
+        
         [HttpGet]
         [AllowAnonymous]
         public IActionResult AccountLocked()
@@ -247,9 +206,10 @@ namespace EPlast.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> Logout()
+        public IActionResult Logout()
         {
-            await _signInManager.SignOutAsync();
+            //тут ше все детально подивитись з async і зі всім
+            _accountService.SignOut();
             return RedirectToAction("Login", "Account");
         }
 
@@ -269,24 +229,15 @@ namespace EPlast.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var user = await _userManager.FindByEmailAsync(forgotpasswordVM.Email);
-                    if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                    //ше все переробити
+                    //var user = _accountService.FindByEmailAsync(ForgotPasswordDto.Email);
+                    if (user == null || /*!_accountService.IsEmailConfirmedInUser(user)*/)
                     {
                         ModelState.AddModelError("", "Користувача із заданою електронною поштою немає в системі або він не підтвердив свою реєстрацію");
                         return View("ForgotPassword");
                     }
 
-                    var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                    var callbackUrl = Url.Action(
-                        nameof(ResetPassword),
-                        "Account",
-                        new { userId = user.Id, code = HttpUtility.UrlEncode(code) },
-                        protocol: HttpContext.Request.Scheme);
-
-                    user.EmailSendedOnForgotPassword = DateTime.Now;
-                    await _userManager.UpdateAsync(user);
-                    await _emailConfirmation.SendEmailAsync(forgotpasswordVM.Email, "Скидування пароля",
-                        $"Для скидування пароля перейдіть за : <a href='{callbackUrl}'>посиланням</a>", "Адміністрація сайту EPlast");
+                    
                     return View("ForgotPasswordConfirmation");
                 }
                 return View("ForgotPassword");
@@ -1006,7 +957,7 @@ namespace EPlast.Controllers
         }
     }*/
 
-        /*public interface IDateTime
+        public interface IDateTime
         {
             DateTime GetCurrentTime();
         }
@@ -1017,6 +968,6 @@ namespace EPlast.Controllers
             {
                 return DateTime.Now;
             }
-        }*/
+        }
     }
 }
