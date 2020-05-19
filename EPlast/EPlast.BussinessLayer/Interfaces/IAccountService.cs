@@ -29,6 +29,8 @@ namespace EPlast.BussinessLayer.Interfaces
         void RefreshSignIn(User user);
         AuthenticationProperties GetAuthenticationProperties(string provider, string returnUrl);
 
+        void GoogleAuthentication(string email, User user, ExternalLoginInfo externalLoginInfo);
+        void FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo);
 
     }
 }
