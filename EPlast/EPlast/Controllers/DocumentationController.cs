@@ -310,7 +310,7 @@ namespace EPlast.Controllers
                     throw new ArgumentException("Cannot crated pdf id is not valid");
                 }
 
-                byte[] arr = await _PDFService.DecesionCreatePDFAsync(_repoWrapper.Decesion.Include(x => x.DecesionTarget,
+                byte[] arr = await _PDFService.DecisionCreatePDFAsync(_repoWrapper.Decesion.Include(x => x.DecesionTarget,
                         x => x.Organization)
                     .FirstOrDefault(x => x.ID == objId));
                 return File(arr, "application/pdf");

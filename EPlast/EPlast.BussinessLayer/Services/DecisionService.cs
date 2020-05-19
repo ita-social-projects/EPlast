@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EPlast.BussinessLayer
 {
-    public class DecesionService
+    public class DecisionService
     {
     }
 }

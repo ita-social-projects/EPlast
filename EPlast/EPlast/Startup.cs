@@ -3,7 +3,6 @@ using EPlast.BussinessLayer.Interfaces;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using EPlast.DataAccess.Repositories.Contracts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -22,6 +21,7 @@ using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using EPlast.Wrapper;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
+using AutoMapper;
 
 namespace EPlast
 {
@@ -81,7 +81,6 @@ namespace EPlast
 
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
-                
             });
 
             services.AddAuthentication()
@@ -108,6 +107,7 @@ namespace EPlast
             });
 
             services.AddMvc();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         }
 
         private async Task CreateRoles(IServiceProvider serviceProvider)
