@@ -28,6 +28,7 @@ namespace EPlast.BussinessLayer.Services
         private readonly IEmailConfirmation _emailConfirmation;
         private readonly IHostingEnvironment _env;
         private readonly IUserAccessManager _userAccessManager;
+        private readonly IDateTimeHelper _dateTimeHelper;
 
         public AccountService(UserManager<User> userManager,
             SignInManager<User> signInManager,
@@ -35,7 +36,8 @@ namespace EPlast.BussinessLayer.Services
             ILogger<AccountService> logger,
             IEmailConfirmation emailConfirmation,
             IHostingEnvironment env,
-            IUserAccessManager userAccessManager)
+            IUserAccessManager userAccessManager,
+            IDateTimeHelper dateTimeHelper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -44,6 +46,7 @@ namespace EPlast.BussinessLayer.Services
             _emailConfirmation = emailConfirmation;
             _env = env;
             _userAccessManager = userAccessManager;
+            _dateTimeHelper = dateTimeHelper;
         }
 
         public async Task<IEnumerable<AuthenticationScheme>> GetAuthenticationSchemes()
@@ -52,19 +55,26 @@ namespace EPlast.BussinessLayer.Services
             return externalLogins;
         }
 
-        /*public async Task<SignInResult> SignIn(User user, string Password, bool RememberMe, bool flag)
+        public async Task<SignInResult> SignIn(LoginDto loginDto)
         {
-            var result = await _signInManager.PasswordSignInAsync(user, Password, RememberMe, flag);
+            var user = _userManager.FindByEmailAsync(loginDto.Email);
+            var result = await _signInManager.PasswordSignInAsync(user.Result, loginDto.Password, loginDto.RememberMe, true);
             return result;
-        }*/
+        }
 
-        /*public async Task<User> FindByEmailAsync(string email)
+        public async Task<User> FindByEmailAsync(string email)
         {
             var result = await _userManager.FindByEmailAsync(email);
             return result;
         }
 
-        public async Task<IdentityResult> Create(RegisterDto registerDto)
+        public async Task<bool> IsEmailConfirmedInUser(User user)
+        {
+            bool result = await _userManager.IsEmailConfirmedAsync(user);
+            return result;
+        }
+
+        public async Task<IdentityResult> CreateUser(RegisterDto registerDto)
         {
             var user = new User()
             {
@@ -82,23 +92,20 @@ namespace EPlast.BussinessLayer.Services
             return result;
         }
 
-        public async void AddRoleAsync(User user)
+        public async Task<string> AddRoleAndToken(RegisterDto registerDto)    //тут перевірити (FindByEmail) чи дійсно робить "Прихильник"
         {
+            var user = _userManager.FindByEmailAsync(registerDto.Email).Result;
             await _userManager.AddToRoleAsync(user, "Прихильник");
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            return code;
         }
 
-        public async void SendEmailUserForRegistration(User user, RegisterDto registerDto)
+        public async void SendEmailUserForRegistration(string confirmationLink, RegisterDto registerDto)
         {
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var confirmationLink = Url.Action(
-                nameof(ConfirmingEmail),
-                "Account",
-                new { code = code, userId = user.Id },
-                protocol: HttpContext.Request.Scheme);
-
+            var user = _userManager.FindByEmailAsync(registerDto.Email).Result;
             user.EmailSendedOnRegister = DateTime.Now;
-            await _userManager.UpdateAsync(user);
-            await _emailConfirmation.SendEmailAsync(registerDto.Email, "Підтвердження реєстрації ",
+            _userManager.UpdateAsync(user);   //тут має бути походу await але там не рахує час
+            await _emailConfirmation.SendEmailAsync(user.Email, "Підтвердження реєстрації ",
                 $"Підтвердіть реєстрацію, перейшовши за :  <a href='{confirmationLink}'>посиланням</a> ", "Адміністрація сайту EPlast");
         }
 
@@ -108,16 +115,25 @@ namespace EPlast.BussinessLayer.Services
             return user;
         }
 
-        public async void SignOut()
+        public async Task<IdentityResult> ConfirmEmail(User user, string code)
+        {
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+            return result;
+        }
+
+        public int GetTimeAfterRegistering(User user)
+        {
+            IDateTimeHelper dateTimeConfirming = new DateTimeHelper();
+            int totalTime = (int)dateTimeConfirming.GetCurrentTime().Subtract(user.EmailSendedOnRegister).TotalMinutes;
+            return totalTime;
+        }
+
+        /*public async void SignOut()
         {
             await _signInManager.SignOutAsync();
         }
 
-        public async Task<bool> IsEmailConfirmedInUser(User user)
-        {
-            bool result = await _userManager.IsEmailConfirmedAsync(user);
-            return result;
-        }
+        
         public async void SendEmailForResetingPassword(User user, ForgotPasswordDto forgotPasswordDto)
         {
             var code = await _userManager.GeneratePasswordResetTokenAsync(user);

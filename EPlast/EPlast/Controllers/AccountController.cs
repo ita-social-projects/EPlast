@@ -44,7 +44,7 @@ namespace EPlast.Controllers
                 LoginViewModel loginViewModel = new LoginViewModel
                 {
                     ReturnUrl = returnUrl,
-                    //ExternalLogins = (_accountService.GetAuthenticationSchemes()).ToList()
+                    ExternalLogins = (_accountService.GetAuthenticationSchemes()).Result.ToList()
                 };
                 return View(loginViewModel);
             }
@@ -55,23 +55,37 @@ namespace EPlast.Controllers
             }
         }
 
-        /*[HttpPost]
+        [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel loginVM, string returnUrl)
         {
             try
             { 
                 loginVM.ReturnUrl = returnUrl;
-                loginVM.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+                loginVM.ExternalLogins = (_accountService.GetAuthenticationSchemes()).Result.ToList();
 
                 if (ModelState.IsValid)
                 {
-                    var result = await _accountService.SignIn(user, loginVM.Password, loginVM.RememberMe, true);
+                    var loginDto = _mapper.Map<LoginDto>(loginVM);
+                    var user = await _accountService.FindByEmailAsync(loginDto.Email);
+                    if(user == null)
+                    {
+                        ModelState.AddModelError("", "Ви не зареєстровані в системі, або не підтвердили свою електронну пошту");
+                        return View(loginVM);
+                    }
+                    else
+                    {
+                        if (!await _accountService.IsEmailConfirmedInUser(user))
+                        {
+                            ModelState.AddModelError("", "Ваш акаунт не підтверджений, будь ласка увійдіть та зробіть підтвердження");
+                            return View(loginVM);
+                        }
+                    }
+                    var result = await _accountService.SignIn(loginDto);
                     if (result.IsLockedOut)
                     {
                         return RedirectToAction("AccountLocked", "Account");
                     }
-
                     if (result.Succeeded)
                     {
                         return RedirectToAction("UserProfile", "Account");
@@ -119,8 +133,8 @@ namespace EPlast.Controllers
                 }
                 else
                 {
-                    //все ок просто передавати змаплені dto 
-                    //var result = await _accountService.Create();
+                    var registerDto = _mapper.Map<RegisterDto>(registerVM);
+                    var result = await _accountService.CreateUser(registerDto);
 
                     if (!result.Succeeded)
                     {
@@ -129,9 +143,14 @@ namespace EPlast.Controllers
                     }
                     else
                     {
-                        //все ок просто передавати змаплені
-                        //_accountService.AddRoleAsync(user);
-                        //_accountService.SendEmailUser(user, registerDto);
+                        var code = _accountService.AddRoleAndToken(registerDto);
+                        var user = _accountService.FindByEmailAsync(registerDto.Email).Result;
+                        var confirmationLink = Url.Action(
+                            nameof(ConfirmingEmail),
+                            "Account",
+                            new { code = code, userId = user.Id },
+                              protocol: HttpContext.Request.Scheme);
+                        _accountService.SendEmailUserForRegistration(confirmationLink, registerDto);
                         return View("AcceptingEmail");
                     }
                 }
@@ -149,7 +168,7 @@ namespace EPlast.Controllers
             return View("ConfirmedEmail");
         }
 
-        [HttpGet]
+        /*[HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> ResendEmailForRegistering(string userId)
         {
@@ -164,17 +183,16 @@ namespace EPlast.Controllers
             return View("ResendEmailConfirmation");
         }*/
         
-        /*[HttpGet]                   оце потім переробити тому шо можуть бути питання з імейл сервісом
+        [HttpGet]                 //  рішити проблему із часом
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmingEmail(string userId, string code)
         {
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = _accountService.FindByIdAsync(userId).Result;
             if (user == null)
             {
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
-            IDateTime dateTimeConfirming = new DateTimeHelper();
-            var totalTime = dateTimeConfirming.GetCurrentTime().Subtract(user.EmailSendedOnRegister).TotalMinutes;
+            int totalTime = _accountService.GetTimeAfterRegistering(user);
             if (totalTime < 180)
             {
                 if (string.IsNullOrWhiteSpace(userId) && string.IsNullOrWhiteSpace(code))
@@ -182,7 +200,7 @@ namespace EPlast.Controllers
                     return RedirectToAction("HandleError", "Error", new { code = 500 });
                 }
 
-                var result = await _userManager.ConfirmEmailAsync(user, code);
+                var result = await _accountService.ConfirmEmail(user, code);
 
                 if (result.Succeeded)
                 {
@@ -197,7 +215,7 @@ namespace EPlast.Controllers
             {
                 return View("ConfirmEmailNotAllowed", user);
             }
-        }*/
+        }
 
         
         /*[HttpGet]
@@ -920,18 +938,5 @@ namespace EPlast.Controllers
             }
         }
     }*/
-
-        public interface IDateTime
-        {
-            DateTime GetCurrentTime();
-        }
-
-        public class DateTimeHelper : IDateTime
-        {
-            DateTime IDateTime.GetCurrentTime()
-            {
-                return DateTime.Now;
-            }
-        }
     }
 }
