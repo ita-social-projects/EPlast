@@ -5,7 +5,7 @@ namespace EPlast.BussinessLayer
 {
     public class PDFService : IPDFService
     {
-        public async Task<byte[]> DecesionCreatePDFAsync(Decesion pdfData)
+        public async Task<byte[]> DecisionCreatePDFAsync(Decesion pdfData)
         {
             IPDFSettings pdfSettings = new PDFSettings()
             {
