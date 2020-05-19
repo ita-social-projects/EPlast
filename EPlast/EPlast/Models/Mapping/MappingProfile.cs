@@ -8,12 +8,14 @@ using System.Threading.Tasks;
 
 namespace EPlast.Models.Mapping
 {
-    public class LoginMappingProfile : Profile
+    public class MappingProfile : Profile
     {
-        public LoginMappingProfile()
+        public MappingProfile()
         {
             CreateMap<LoginViewModel, LoginDto>();
             CreateMap<LoginDto, LoginViewModel>();
+            CreateMap<RegisterViewModel, RegisterDto>();
+            CreateMap<RegisterDto, RegisterViewModel>();
         }
     }
 }

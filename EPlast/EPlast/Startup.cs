@@ -25,6 +25,7 @@ using System.Globalization;
 using AutoMapper;
 using EPlast.Models.Mapping;
 using EPlast.BussinessLayer.Services;
+using Ical.Net.DataTypes;
 
 namespace EPlast
 {
@@ -74,6 +75,7 @@ namespace EPlast
             services.AddScoped<ICityAccessManager, CityAccessManager>();
             services.AddScoped<IUserAccessManagerSettings, UserAccessManagerSettings>();
             services.AddScoped<IUserAccessManager, UserAccessManager>();
+            services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
             services.Configure<IdentityOptions>(options =>
             {
@@ -114,7 +116,7 @@ namespace EPlast
 
             var mappingConfig = new MapperConfiguration(mc =>
             {
-                mc.AddProfile(new LoginMappingProfile());
+                mc.AddProfile(new MappingProfile());
             });
             IMapper mapper = mappingConfig.CreateMapper();
             services.AddSingleton(mapper);

@@ -13,14 +13,18 @@ namespace EPlast.BussinessLayer.Interfaces
     public interface IAccountService
     {
         Task<IEnumerable<AuthenticationScheme>> GetAuthenticationSchemes();
-        /*Task<SignInResult> SignIn(User user, string password, bool rememberMe, bool flag);
+        Task<SignInResult> SignIn(LoginDto loginDto);
         Task<User> FindByEmailAsync(string email);
-        Task<IdentityResult> Create(RegisterDto registerDto);
-        void SendEmailUserForRegistration(User user, RegisterDto registerDto);
-        Task<User> FindByIdAsync(string id);
-        void AddRoleAsync(User user);
-        void SignOut();
         Task<bool> IsEmailConfirmedInUser(User user);
+        Task<IdentityResult> CreateUser(RegisterDto registerDto);
+        Task<string> AddRoleAndToken(RegisterDto registerDto);
+        void SendEmailUserForRegistration(string confirmationLink, RegisterDto registerDto);
+        Task<User> FindByIdAsync(string id);
+        Task<IdentityResult> ConfirmEmail(User user, string code);
+        int GetTimeAfterRegistering(User user);
+        
+        /*void SignOut();
+        
         void SendEmailForResetingPassword(User user, ForgotPasswordDto forgotPasswordDto);
         Task<IdentityResult> ResetPassword(User user, ResetPasswordDto resetPasswordDto);
         void CheckingForLocking(User user);
