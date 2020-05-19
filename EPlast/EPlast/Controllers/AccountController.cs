@@ -20,15 +20,19 @@ using System.Threading.Tasks;
 using System.Web;
 using NLog.Fluent;
 using EPlast.BussinessLayer.DTO.Account;
+using AutoMapper;
+using Microsoft.AspNetCore.Identity.UI.V3.Pages.Internal.Account.Manage;
 
 namespace EPlast.Controllers
 {
     public class AccountController : Controller
     {
         private readonly IAccountService _accountService;
-        public AccountController(IAccountService accountService)
+        private readonly IMapper _mapper;
+        public AccountController(IAccountService accountService, IMapper mapper)
         {
             _accountService = accountService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -40,7 +44,7 @@ namespace EPlast.Controllers
                 LoginViewModel loginViewModel = new LoginViewModel
                 {
                     ReturnUrl = returnUrl,
-                    ExternalLogins = (_accountService.GetAuthenticationSchemes()).ToList()
+                    //ExternalLogins = (_accountService.GetAuthenticationSchemes()).ToList()
                 };
                 return View(loginViewModel);
             }
@@ -51,7 +55,7 @@ namespace EPlast.Controllers
             }
         }
 
-        [HttpPost]
+        /*[HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel loginVM, string returnUrl)
         {
@@ -158,7 +162,7 @@ namespace EPlast.Controllers
             //тут тож все винесено і перероблено
             //_accountService.SendEmailUser(user, registerDto);
             return View("ResendEmailConfirmation");
-        }
+        }*/
         
         /*[HttpGet]                   оце потім переробити тому шо можуть бути питання з імейл сервісом
         [AllowAnonymous]
@@ -196,7 +200,7 @@ namespace EPlast.Controllers
         }*/
 
         
-        [HttpGet]
+        /*[HttpGet]
         [AllowAnonymous]
         public IActionResult AccountLocked()
         {
@@ -218,9 +222,9 @@ namespace EPlast.Controllers
         public IActionResult ForgotPassword()
         {
             return View("ForgotPassword");
-        }
+        }*/
 
-        [HttpPost]
+        /*[HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel forgotpasswordVM)
@@ -231,7 +235,7 @@ namespace EPlast.Controllers
                 {
                     //ше все переробити
                     //var user = _accountService.FindByEmailAsync(ForgotPasswordDto.Email);
-                    if (user == null || /*!_accountService.IsEmailConfirmedInUser(user)*/)
+                    if (user == null || !_accountService.IsEmailConfirmedInUser(user))
                     {
                         ModelState.AddModelError("", "Користувача із заданою електронною поштою немає в системі або він не підтвердив свою реєстрацію");
                         return View("ForgotPassword");
@@ -247,7 +251,7 @@ namespace EPlast.Controllers
                 //_logger.LogError("Exception: {0}", e.Message);
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
-        }
+        }*/
 
         /*[HttpGet]        пізніше подивитись шоб не було такого як із confirm
         [AllowAnonymous]
@@ -279,7 +283,7 @@ namespace EPlast.Controllers
             }
         }*/
 
-        [HttpPost]
+        /*[HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel resetpasswordVM)

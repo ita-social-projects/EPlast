@@ -13,7 +13,7 @@ namespace EPlast.BussinessLayer.Interfaces
     public interface IAccountService
     {
         Task<IEnumerable<AuthenticationScheme>> GetAuthenticationSchemes();
-        Task<SignInResult> SignIn(User user, string password, bool rememberMe, bool flag);
+        /*Task<SignInResult> SignIn(User user, string password, bool rememberMe, bool flag);
         Task<User> FindByEmailAsync(string email);
         Task<IdentityResult> Create(RegisterDto registerDto);
         void SendEmailUserForRegistration(User user, RegisterDto registerDto);
@@ -30,7 +30,6 @@ namespace EPlast.BussinessLayer.Interfaces
         AuthenticationProperties GetAuthenticationProperties(string provider, string returnUrl);
 
         void GoogleAuthentication(string email, User user, ExternalLoginInfo externalLoginInfo);
-        void FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo);
-
+        void FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo);*/
     }
 }

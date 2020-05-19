@@ -22,6 +22,9 @@ using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using EPlast.Wrapper;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
+using AutoMapper;
+using EPlast.Models.Mapping;
+using EPlast.BussinessLayer.Services;
 
 namespace EPlast
 {
@@ -109,6 +112,12 @@ namespace EPlast
                 options.LogoutPath = "/Account/Logout";
             });
 
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new LoginMappingProfile());
+            });
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
             services.AddMvc();
         }
 
