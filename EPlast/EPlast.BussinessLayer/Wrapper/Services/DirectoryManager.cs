@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace EPlast.Wrapper
+namespace EPlast.BussinessLayer
 {
     public class DirectoryManager : IDirectoryManager
     {

@@ -1,4 +1,4 @@
-﻿namespace EPlast.Wrapper
+﻿namespace EPlast.BussinessLayer
 {
     public interface IFileManager
     {

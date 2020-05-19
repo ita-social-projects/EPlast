@@ -5,16 +5,14 @@ namespace EPlast.BussinessLayer
 {
     public interface IDecisionService
     {
-        Task<DecisionDto> GetDecision(int id);
+        Task<DecisionDto> GetDecision(int decisionId);
 
-        List<DecisionDto> GetDecisionList();
-
-        Task<bool> CreateDecision(DecisionDto decision);
+        Task<List<DecisionDto>> GetDecisionList();
 
         Task<bool> ChangeDecision(DecisionDto decision);
 
-        Task<bool> SaveDecisionAsync();
+        Task<bool> SaveDecision(DecisionDto decision);
 
-        Task<byte[]> DownloadDecision();
+        Task<byte[]> DownloadDecisionFile(int decisionId);
     }
 }

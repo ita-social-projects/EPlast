@@ -1,4 +1,5 @@
 ﻿using EPlast.BussinessLayer;
+using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Models.ViewModelInitializations.Interfaces;
@@ -15,8 +16,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.Wrapper;
-using EPlast.BussinessLayer.AccessManagers.Interfaces;
+using IDirectoryManager = EPlast.Wrapper.IDirectoryManager;
+using IFileManager = EPlast.Wrapper.IFileManager;
+using IFileStreamManager = EPlast.Wrapper.IFileStreamManager;
 
 namespace EPlast.Controllers
 {
@@ -148,41 +150,6 @@ namespace EPlast.Controllers
 
                 decesionViewModel.Decesion.HaveFile = decesionViewModel.File != null ? true : false;
 
-                _repoWrapper.Decesion.Attach(decesionViewModel.Decesion);
-                _repoWrapper.Decesion.Create(decesionViewModel.Decesion);
-                _repoWrapper.Save();
-
-                if (decesionViewModel.Decesion.HaveFile)
-                {
-                    try
-                    {
-                        string path = _appEnvironment.WebRootPath + DecesionsDocumentFolder + decesionViewModel.Decesion.ID;
-                        _directoryManager.CreateDirectory(path);
-
-                        if (!_directoryManager.Exists(path))
-                        {
-                            throw new ArgumentException($"directory '{path}' is not exist");
-                        }
-
-                        if (decesionViewModel.File != null)
-                        {
-                            path = Path.Combine(path, decesionViewModel.File.FileName);
-
-                            using (var stream = _fileStreamManager.GenerateFileStreamManager(path, FileMode.Create))
-                            {
-                                await _fileStreamManager.CopyToAsync(decesionViewModel.File, stream.GetStream());
-                                if (!_fileManager.Exists(path))
-                                {
-                                    throw new ArgumentException($"File was not created it '{path}' directory");
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        return Json(new { success = false, text = e.Message });
-                    }
-                }
                 return Json(new
                 {
                     success = true,
@@ -310,9 +277,7 @@ namespace EPlast.Controllers
                     throw new ArgumentException("Cannot crated pdf id is not valid");
                 }
 
-                byte[] arr = await _PDFService.DecisionCreatePDFAsync(_repoWrapper.Decesion.Include(x => x.DecesionTarget,
-                        x => x.Organization)
-                    .FirstOrDefault(x => x.ID == objId));
+                byte[] arr = await _PDFService.DecisionCreatePDFAsync(objId);
                 return File(arr, "application/pdf");
             }
             catch

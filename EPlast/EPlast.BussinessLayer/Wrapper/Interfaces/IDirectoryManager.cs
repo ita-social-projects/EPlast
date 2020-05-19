@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace EPlast.Wrapper
+namespace EPlast.BussinessLayer
 {
     public interface IDirectoryManager
     {
