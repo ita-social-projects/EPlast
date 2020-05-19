@@ -46,19 +46,19 @@ namespace EPlast.BussinessLayer.Services
             _userAccessManager = userAccessManager;
         }
 
-        public async Task<IEnumerable<AuthenticationScheme>> GetAuthenticationSchemesAsync()
+        public async Task<IEnumerable<AuthenticationScheme>> GetAuthenticationSchemes()
         {
             var externalLogins = await _signInManager.GetExternalAuthenticationSchemesAsync();
             return externalLogins;
         }
 
-        public async Task<SignInResult> SignIn(User user, string Password, bool RememberMe, bool flag)
+        /*public async Task<SignInResult> SignIn(User user, string Password, bool RememberMe, bool flag)
         {
             var result = await _signInManager.PasswordSignInAsync(user, Password, RememberMe, flag);
             return result;
-        }
+        }*/
 
-        public async Task<User> FindByEmailAsync(string email)
+        /*public async Task<User> FindByEmailAsync(string email)
         {
             var result = await _userManager.FindByEmailAsync(email);
             return result;
@@ -221,7 +221,7 @@ namespace EPlast.BussinessLayer.Services
             await _userManager.AddToRoleAsync(user, "Прихильник");
             await _userManager.AddLoginAsync(user, externalLoginInfo);
             await _signInManager.SignInAsync(user, isPersistent: false);
-        }
+        }*/
 
     }
 }
