@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,5 +22,13 @@ namespace EPlast.BussinessLayer.Interfaces
         void SignOut();
         Task<bool> IsEmailConfirmedInUser(User user);
         void SendEmailForResetingPassword(User user, ForgotPasswordDto forgotPasswordDto);
+        Task<IdentityResult> ResetPassword(User user, ResetPasswordDto resetPasswordDto);
+        void CheckingForLocking(User user);
+        Task<User> GetUser(ClaimsPrincipal claimsPrincipal);
+        Task<IdentityResult> ChangePasswordForUser(User user, ChangePasswordDto changePasswordDto);
+        void RefreshSignIn(User user);
+        AuthenticationProperties GetAuthenticationProperties(string provider, string returnUrl);
+
+
     }
 }
