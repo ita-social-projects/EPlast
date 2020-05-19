@@ -22,6 +22,10 @@ using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using EPlast.Wrapper;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
+using AutoMapper;
+using EPlast.BussinessLayer.Services;
+using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.Mapping;
 
 namespace EPlast
 {
@@ -37,6 +41,9 @@ namespace EPlast
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
+            
+            
             services.AddOptions();
             services.AddDbContextPool<EPlastDBContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("EPlastDBConnection")));
@@ -60,6 +67,7 @@ namespace EPlast
             services.AddScoped<IViewAnnualReportsVMInitializer, ViewAnnualReportsVMInitializer>();
             services.AddScoped<IDecisionVMIitializer, DecisionVMIitializer>();
             services.AddScoped<IPDFService, PDFService>();
+            services.AddScoped<IUserService, UserService>();
 
             services.AddScoped<IDirectoryManager, DirectoryManager>();
             services.AddScoped<IFileManager, FileManager>();
@@ -106,7 +114,21 @@ namespace EPlast
                 options.LoginPath = "/Account/Login";
                 options.LogoutPath = "/Account/Logout";
             });
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new Mapping.UserProfile());
+                mc.AddProfile(new Mapping.UserProfileProfile());
+                mc.AddProfile(new Mapping.EducationProfile());
+                mc.AddProfile(new Mapping.WorkProfile());
+                mc.AddProfile(new Mapping.ReligionProfile());
+                mc.AddProfile(new Mapping.NationalityProfile());
+                mc.AddProfile(new Mapping.GenderProfile());
+                mc.AddProfile(new Mapping.DegreeProfile());
+            });
 
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddMvc();
         }
 
@@ -137,7 +159,7 @@ namespace EPlast
                 LastName = "Admin",
                 EmailConfirmed = true,
                 ImagePath = "default.png",
-                UserProfile = new UserProfile(),
+                UserProfile = new DataAccess.Entities.UserProfile(),
                 RegistredOn = DateTime.Now
             };
             if (await userManager.FindByEmailAsync(admin["Email"]) == null)

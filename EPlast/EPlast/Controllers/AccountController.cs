@@ -18,6 +18,9 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
+using AutoMapper;
+using EPlast.BussinessLayer.DTO;
+using EPlast.BussinessLayer.Services.Interfaces;
 
 namespace EPlast.Controllers
 {
@@ -30,6 +33,8 @@ namespace EPlast.Controllers
         private readonly IEmailConfirmation _emailConfirmation;
         private readonly IHostingEnvironment _env;
         private readonly IUserAccessManager _userAccessManager;
+        private readonly IUserService _userService;
+        private readonly IMapper _mapper;
 
         public AccountController(UserManager<User> userManager,
             SignInManager<User> signInManager,
@@ -37,7 +42,9 @@ namespace EPlast.Controllers
             ILogger<AccountController> logger,
             IEmailConfirmation emailConfirmation,
             IHostingEnvironment env,
-            IUserAccessManager userAccessManager)
+            IUserAccessManager userAccessManager,
+            IUserService userService,
+            IMapper mapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -46,6 +53,8 @@ namespace EPlast.Controllers
             _emailConfirmation = emailConfirmation;
             _env = env;
             _userAccessManager = userAccessManager;
+            _userService = userService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -545,6 +554,7 @@ namespace EPlast.Controllers
             }
         }
 
+        [Authorize]
         public IActionResult UserProfile(string userId)
         {
             try
@@ -557,36 +567,18 @@ namespace EPlast.Controllers
                 _logger.Log(LogLevel.Information, $"UserProfile Id is {userId}");
                 _logger.Log(LogLevel.Information, $"Authenticate userId is {_currentUserId}");
 
-                var user = _repoWrapper.User.
-                FindByCondition(q => q.Id == userId).
-                    Include(i => i.UserProfile).
-                        ThenInclude(x => x.Nationality).
-                    Include(g => g.UserProfile).
-                    ThenInclude(g => g.Gender).
-                    Include(g => g.UserProfile).
-                        ThenInclude(g => g.Education).
-                    Include(g => g.UserProfile).
-                        ThenInclude(g => g.Degree).
-                    Include(g => g.UserProfile).
-                        ThenInclude(g => g.Religion).
-                    Include(g => g.UserProfile).
-                        ThenInclude(g => g.Work).
-                    FirstOrDefault();
 
-                TimeSpan _timeToJoinPlast = CheckOrAddPlastunRole(user).Result;
+                var user = _userService.GetUserProfile(userId);
+                var time = _userService.CheckOrAddPlastunRole((_mapper.Map<UserDTO, User>(user) as IdentityUser).Id, user.RegistredOn);
 
-                if (user != null)
+                var model = new UserViewModel
                 {
-                    var model = new UserViewModel
-                    {
-                        User = user,
-                        timeToJoinPlast = _timeToJoinPlast
-                    };
-
-                    return View(model);
-                }
-                _logger.Log(LogLevel.Error, $"Can`t find this user:{userId}, or smth else");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
+                    User = _mapper.Map<UserDTO,User>(user),
+                    timeToJoinPlast = time.Result
+                };
+                return View(model);
+                //_logger.Log(LogLevel.Error, $"Can`t find this user:{userId}, or smth else");
+               // return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
             catch
             {
@@ -645,6 +637,25 @@ namespace EPlast.Controllers
             }
         }
 
+        public async Task<TimeSpan> CheckOrAddPlastunRole(User user)
+        {
+            try
+            {
+                var timeToJoinPlast = user.RegistredOn.AddYears(1) - DateTime.Now;
+                if (timeToJoinPlast <= TimeSpan.Zero)
+                {
+                    var us = await _userManager.FindByIdAsync(user.Id);
+                    await _userManager.AddToRoleAsync(us, "Пластун");
+                    return TimeSpan.Zero;
+                }
+                return timeToJoinPlast;
+            }
+            catch
+            {
+                return TimeSpan.Zero;
+            }
+        }
+
         [HttpGet]
         public IActionResult Positions(string userId)
         {
@@ -689,24 +700,7 @@ namespace EPlast.Controllers
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
-        private async Task<TimeSpan> CheckOrAddPlastunRole(User user)
-        {
-            try
-            {
-                var _timeToJoinPlast = user.RegistredOn.AddYears(1) - DateTime.Now;
-                if (_timeToJoinPlast <= TimeSpan.Zero)
-                {
-                    var us = await _userManager.FindByIdAsync(user.Id);
-                    await _userManager.AddToRoleAsync(us, "Пластун");
-                    return TimeSpan.Zero;
-                }
-                return _timeToJoinPlast;
-            }
-            catch
-            {
-                return TimeSpan.Zero;
-            }
-        }
+       
 
         public IActionResult ApproveUser(string userId, bool _isClubAdmin = false, bool _isCityAdmin = false)
         {
