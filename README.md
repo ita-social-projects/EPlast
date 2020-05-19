@@ -38,18 +38,3 @@ Before sending any pull request, please discuss requirements/changes to be imple
 # 5. Project Deploy
 
 Our project deployed at **http://eplast.azurewebsites.net/**
-
-# 6. Project API
-
-## Auth:
-**https://localhost:44379/Account/Login**
-
-or
-
-**https://eplast.azurewebsites.net/Account/Login/*
-```json
-{
-	"email": "admin@eplast.com",
-	"password": "Aa12345."
-}
-```
