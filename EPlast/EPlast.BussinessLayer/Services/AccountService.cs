@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
@@ -131,9 +132,43 @@ namespace EPlast.BussinessLayer.Services
             await _emailConfirmation.SendEmailAsync(forgotPasswordDto.Email, "Скидування пароля",
                 $"Для скидування пароля перейдіть за : <a href='{callbackUrl}'>посиланням</a>", "Адміністрація сайту EPlast");
         }
+        public async Task<IdentityResult> ResetPassword(User user, ResetPasswordDto resetPasswordDto)
+        {
+            var result = await _userManager.ResetPasswordAsync(user, HttpUtility.UrlDecode(resetPasswordDto.Code), resetPasswordDto.Password);
+            return result;
+        }
 
+        public async void CheckingForLocking(User user)
+        {
+            if (await _userManager.IsLockedOutAsync(user))
+            {
+                await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow);
+            }
+        }
 
+        public async Task<User> GetUser(ClaimsPrincipal claimsPrincipal)
+        {
+            var user = await _userManager.GetUserAsync(claimsPrincipal);
+            return user;
+        }
 
+        public async Task<IdentityResult> ChangePasswordForUser(User user, ChangePasswordDto changePasswordDto)
+        {
+            var result = await _userManager.ChangePasswordAsync(user, changePasswordDto.CurrentPassword, 
+                changePasswordDto.NewPassword);
+            return result;
+        }
+
+        public async void RefreshSignIn(User user)
+        {
+            await _signInManager.RefreshSignInAsync(user);
+        }
+
+        public AuthenticationProperties GetAuthenticationProperties(string provider, string returnUrl)
+        {
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return properties;
+        }
 
     }
 }
