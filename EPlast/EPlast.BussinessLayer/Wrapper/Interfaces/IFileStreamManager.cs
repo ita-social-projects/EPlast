@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EPlast.Wrapper
+namespace EPlast.BussinessLayer
 {
     public interface IFileStreamManager
     {

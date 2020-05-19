@@ -61,9 +61,9 @@ namespace EPlast
             services.AddScoped<IDecisionVMIitializer, DecisionVMIitializer>();
             services.AddScoped<IPDFService, PDFService>();
 
-            services.AddScoped<IDirectoryManager, DirectoryManager>();
-            services.AddScoped<IFileManager, FileManager>();
-            services.AddScoped<IFileStreamManager, FileStreamManager>();
+            services.AddScoped<Wrapper.IDirectoryManager, Wrapper.DirectoryManager>();
+            services.AddScoped<Wrapper.IFileManager, Wrapper.FileManager>();
+            services.AddScoped<Wrapper.IFileStreamManager, Wrapper.FileStreamManager>();
             services.AddScoped<ICreateEventVMInitializer, CreateEventVMInitializer>();
             services.AddScoped<ICityAccessManagerSettings, CityAccessManagerSettings>();
             services.AddScoped<ICityAccessManager, CityAccessManager>();

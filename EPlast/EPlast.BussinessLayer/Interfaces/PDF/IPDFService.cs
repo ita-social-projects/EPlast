@@ -5,6 +5,6 @@ namespace EPlast.BussinessLayer
 {
     public interface IPDFService
     {
-        Task<byte[]> DecisionCreatePDFAsync(Decesion pdfData);
+        Task<byte[]> DecisionCreatePDFAsync(int DecisionId);
     }
 }

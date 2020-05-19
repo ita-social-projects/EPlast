@@ -3,11 +3,11 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace EPlast.Wrapper
+namespace EPlast.BussinessLayer
 {
     public class FileStreamManager : IFileStreamManager, IDisposable
     {
-        private FileStream fileStream;
+        private readonly FileStream fileStream;
 
         public FileStreamManager()
         {
@@ -20,8 +20,7 @@ namespace EPlast.Wrapper
 
         public void Dispose()
         {
-            if (fileStream != null)
-                fileStream.Dispose();
+            fileStream?.Dispose();
         }
 
         public Stream GetStream()
