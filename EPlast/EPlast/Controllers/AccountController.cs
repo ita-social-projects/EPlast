@@ -418,55 +418,13 @@ namespace EPlast.Controllers
                     {
                         if (email != null)
                         {
-                            var user = await _userManager.FindByEmailAsync(email);
-                            if (user == null)
-                            {
-                                user = new User
-                                {
-                                    SocialNetworking = true,
-                                    UserName = info.Principal.FindFirstValue(ClaimTypes.Email),
-                                    Email = info.Principal.FindFirstValue(ClaimTypes.Email),
-                                    FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
-                                    LastName = info.Principal.FindFirstValue(ClaimTypes.Surname),
-                                    ImagePath = "default.png",
-                                    EmailConfirmed = true,
-                                    RegistredOn = DateTime.Now,
-                                    UserProfile = new UserProfile()
-                                };
-                                await _userManager.CreateAsync(user);
-                                await _emailConfirmation.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
-                            "Ви зареєструвались в системі EPlast використовуючи свій Google-акаунт ", "Адміністрація сайту EPlast");
-                            }
-                            await _userManager.AddToRoleAsync(user, "Прихильник");
-                            await _userManager.AddLoginAsync(user, info);
-                            await _signInManager.SignInAsync(user, isPersistent: false);
+                            _accountService.GoogleAuthentication(email, User, info);
                             return LocalRedirect(returnUrl);
                         }
                     }
                     else if (info.LoginProvider.ToString() == "Facebook")
                     {
-                        var nameIdentifier = info.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
-                        var identifierForSearching = email ?? nameIdentifier;
-                        var user = _userManager.Users.FirstOrDefault(u => u.UserName == identifierForSearching);
-                        if (user == null)
-                        {
-                            user = new User
-                            {
-                                SocialNetworking = true,
-                                UserName = (email ?? nameIdentifier),
-                                FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
-                                Email = (email ?? "facebookdefaultmail@gmail.com"),
-                                LastName = info.Principal.FindFirstValue(ClaimTypes.Surname),
-                                ImagePath = "default.png",
-                                EmailConfirmed = true,
-                                RegistredOn = DateTime.Now,
-                                UserProfile = new UserProfile()
-                            };
-                            await _userManager.CreateAsync(user);
-                        }
-                        await _userManager.AddToRoleAsync(user, "Прихильник");
-                        await _userManager.AddLoginAsync(user, info);
-                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        _accountService.FacebookAuthentication(email, info);
                         return LocalRedirect(returnUrl);
                     }
                     return View("Error");
@@ -474,7 +432,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError("Exception: {0}", e.Message);
+                //_logger.LogError("Exception: {0}", e.Message);
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
