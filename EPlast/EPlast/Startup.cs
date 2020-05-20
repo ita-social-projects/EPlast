@@ -117,10 +117,7 @@ namespace EPlast
             {
                 {
                     cfg.CreateMap<EventCategoryDTO, EventCategoryViewModel>();
-                    cfg.CreateMap<EventCategoryViewModel, EventCategoryDTO>();
-                    cfg.CreateMap<GeneralEventViewModel, GeneralEventDTO>();
                     cfg.CreateMap<GeneralEventDTO, GeneralEventViewModel>();
-                    cfg.CreateMap<EventViewModel, EventDTO>();
                     cfg.CreateMap<EventDTO, EventViewModel>();
                 }
             });
