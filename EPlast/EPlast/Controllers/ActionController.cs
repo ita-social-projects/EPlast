@@ -1,7 +1,6 @@
 ﻿using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.ViewModels.Events;
-using EPlast.Wrapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +12,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace EPlast.Controllers
 {
@@ -198,7 +197,6 @@ namespace EPlast.Controllers
             {
                 return StatusCode(500);
             }
-
         }
 
         [HttpPost]

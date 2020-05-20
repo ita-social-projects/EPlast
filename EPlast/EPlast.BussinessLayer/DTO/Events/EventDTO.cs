@@ -3,7 +3,7 @@ using EPlast.DataAccess.Entities;
 
 namespace EPlast.BussinessLayer.DTO.Events
 {
-    class EventDTO
+    public class EventDTO
     {
         public Event Event { get; set; }
         public bool IsUserEventAdmin { get; set; }
