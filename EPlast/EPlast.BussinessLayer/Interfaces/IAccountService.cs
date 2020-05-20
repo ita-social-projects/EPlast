@@ -14,36 +14,30 @@ namespace EPlast.BussinessLayer.Interfaces
 {
     public interface IAccountService
     {
-        Task<IEnumerable<AuthenticationScheme>> GetAuthenticationSchemes();
-        Task<SignInResult> SignIn(LoginDto loginDto);
-        Task<User> FindByEmailAsync(string email);
-        Task<bool> IsEmailConfirmedInUser(User user);
-        Task<IdentityResult> CreateUser(RegisterDto registerDto);
-        Task<string> AddRoleAndToken(RegisterDto registerDto);
-        void SendEmailUserForRegistration(string confirmationLink, RegisterDto registerDto);
-        Task<User> FindByIdAsync(string id);
-        Task<IdentityResult> ConfirmEmail(User user, string code);
-        int GetTimeAfterRegistering(User user);
-        int GetTimeAfterReseting(User user);//тут мож по трохи іншому назвати метод
-        void SignOut();
-        Task<string> GenerateResetToken(User user);
-        void SendEmailForResetingPassword(string confirmationLink, ForgotPasswordDto forgotPasswordDto);
-        Task<IdentityResult> ResetPassword(User user, ResetPasswordDto resetPasswordDto);
+        Task<SignInResult> SignInAsync(LoginDto loginDto);
+        void SignOutAsync();
+        Task<IdentityResult> CreateUserAsync(RegisterDto registerDto);
+        Task<IdentityResult> ConfirmEmailAsync(User user, string code);
+        Task<IdentityResult> ChangePasswordAsync(User user, ChangePasswordDto changePasswordDto);
+        void RefreshSignInAsync(User user);
+        AuthenticationProperties GetAuthProperties(string provider, string returnUrl);
+        Task<ExternalLoginInfo> GetInfoAsync();
+        Task<SignInResult> GetSignInResultAsync(ExternalLoginInfo externalLoginInfo);
+        Task<bool> IsEmailConfirmedAsync(User user);
+        Task<string> AddRoleAndTokenAsync(RegisterDto registerDto);
+        Task<string> GenerateResetTokenAsync(User user);
+        Task<IdentityResult> ResetPasswordAsync(User user, ResetPasswordDto resetPasswordDto);
         void CheckingForLocking(User user);
-        AuthenticationProperties GetAuthenticationProperties(string provider, string returnUrl);
-        Task<ExternalLoginInfo> GetInfo();
-        Task<SignInResult> GetSignInRes(ExternalLoginInfo externalLoginInfo);
+        Task<IEnumerable<AuthenticationScheme>> GetAuthSchemesAsync();
+        Task<User> FindByEmailAsync(string email);
+        Task<User> FindByIdAsync(string id);
         string GetIdForUser(ClaimsPrincipal claimsPrincipal);
+        int GetTimeAfterRegistr(User user);
+        int GetTimeAfterReset(User user);
+        Task<User> GetUserAsync(ClaimsPrincipal claimsPrincipal);
+        void SendEmailRegistr(string confirmationLink, RegisterDto registerDto);
+        void SendEmailReseting(string confirmationLink, ForgotPasswordDto forgotPasswordDto);
         void GoogleAuthentication(string email, ExternalLoginInfo externalLoginInfo);
         void FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo);
-
-
-        /*
-        Task<IdentityResult> ResetPassword(User user, ResetPasswordDto resetPasswordDto);
-        Task<User> GetUser(ClaimsPrincipal claimsPrincipal);
-        Task<IdentityResult> ChangePasswordForUser(User user, ChangePasswordDto changePasswordDto);
-        void RefreshSignIn(User user);
-        AuthenticationProperties GetAuthenticationProperties(string provider, string returnUrl);
-        */
     }
 }
