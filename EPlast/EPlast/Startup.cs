@@ -26,6 +26,7 @@ using AutoMapper;
 using EPlast.Models.Mapping;
 using EPlast.BussinessLayer.Services;
 using Ical.Net.DataTypes;
+using EPlast.BussinessLayer.Services.Interfaces;
 
 namespace EPlast
 {
@@ -127,12 +128,13 @@ namespace EPlast
                 mc.AddProfile(new Mapping.NationalityProfile());
                 mc.AddProfile(new Mapping.GenderProfile());
                 mc.AddProfile(new Mapping.DegreeProfile());
-            });
-
-            var mappingConfig = new MapperConfiguration(mc =>
-            {
                 mc.AddProfile(new MappingProfile());
             });
+
+            /*var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            });*/
             IMapper mapper = mappingConfig.CreateMapper();
             services.AddSingleton(mapper);
             services.AddMvc();

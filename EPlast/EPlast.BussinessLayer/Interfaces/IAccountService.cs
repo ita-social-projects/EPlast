@@ -33,8 +33,10 @@ namespace EPlast.BussinessLayer.Interfaces
         AuthenticationProperties GetAuthenticationProperties(string provider, string returnUrl);
         Task<ExternalLoginInfo> GetInfo();
         Task<SignInResult> GetSignInRes(ExternalLoginInfo externalLoginInfo);
+        string GetIdForUser(ClaimsPrincipal claimsPrincipal);
         void GoogleAuthentication(string email, ExternalLoginInfo externalLoginInfo);
         void FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo);
+
 
         /*
         Task<IdentityResult> ResetPassword(User user, ResetPasswordDto resetPasswordDto);
