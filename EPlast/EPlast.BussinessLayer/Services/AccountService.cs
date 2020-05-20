@@ -121,9 +121,15 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task<string> AddRoleAndTokenAsync(RegisterDto registerDto)    //тут перевірити (FindByEmail) чи дійсно робить "Прихильник"
         {
-            var user = _userManager.FindByEmailAsync(registerDto.Email).Result;
+            var user = await _userManager.FindByEmailAsync(registerDto.Email);
             await _userManager.AddToRoleAsync(user, "Прихильник");
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            return code;
+        }
+
+        public async Task<string> GenerateConfToken(User user)
+        {
+            string code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             return code;
         }
 
@@ -192,11 +198,19 @@ namespace EPlast.BussinessLayer.Services
             return user;
         }
 
+        public async void SendEmailRegistr(string confirmationLink, User user)
+        {
+            user.EmailSendedOnRegister = DateTime.Now;
+            await _userManager.UpdateAsync(user); 
+            await _emailConfirmation.SendEmailAsync(user.Email, "Підтвердження реєстрації ",
+                $"Підтвердіть реєстрацію, перейшовши за :  <a href='{confirmationLink}'>посиланням</a> ", "Адміністрація сайту EPlast");
+        }
+
         public async void SendEmailRegistr(string confirmationLink, RegisterDto registerDto)
         {
             var user = _userManager.FindByEmailAsync(registerDto.Email).Result;
             user.EmailSendedOnRegister = DateTime.Now;
-            _userManager.UpdateAsync(user);   //тут має бути походу await але там не рахує час
+            await _userManager.UpdateAsync(user);  
             await _emailConfirmation.SendEmailAsync(user.Email, "Підтвердження реєстрації ",
                 $"Підтвердіть реєстрацію, перейшовши за :  <a href='{confirmationLink}'>посиланням</a> ", "Адміністрація сайту EPlast");
         }
@@ -205,7 +219,7 @@ namespace EPlast.BussinessLayer.Services
         {
             var user = _userManager.FindByEmailAsync(forgotPasswordDto.Email).Result;
             user.EmailSendedOnForgotPassword = DateTime.Now;
-            _userManager.UpdateAsync(user);    //тут може вілізти та сама ерора
+            await _userManager.UpdateAsync(user); 
             await _emailConfirmation.SendEmailAsync(forgotPasswordDto.Email, "Скидування пароля",
                 $"Для скидування пароля перейдіть за : <a href='{confirmationLink}'>посиланням</a>", "Адміністрація сайту EPlast");
         }
