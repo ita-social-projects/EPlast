@@ -25,7 +25,7 @@ namespace EPlast.Controllers
         private readonly IActionManager _actionManager;
         private readonly IMapper _mapper;
 
-        public ActionController(UserManager<User> userManager, IRepositoryWrapper repoWrapper, IHostingEnvironment env, IActionManager actionManager, IMapper mapper)
+        public ActionController(IActionManager actionManager, IMapper mapper)
         {
             _actionManager = actionManager;
             _mapper = mapper;
