@@ -218,7 +218,7 @@ namespace EPlast.Controllers
         }
 
         
-        /*[HttpGet]
+        [HttpGet]
         [AllowAnonymous]
         public IActionResult AccountLocked()
         {
@@ -230,7 +230,6 @@ namespace EPlast.Controllers
         [Authorize]
         public IActionResult Logout()
         {
-            //тут ше все детально подивитись з async і зі всім
             _accountService.SignOut();
             return RedirectToAction("Login", "Account");
         }
@@ -240,9 +239,9 @@ namespace EPlast.Controllers
         public IActionResult ForgotPassword()
         {
             return View("ForgotPassword");
-        }*/
+        }
 
-        /*[HttpPost]
+        [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel forgotpasswordVM)
@@ -251,15 +250,20 @@ namespace EPlast.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    //ше все переробити
-                    //var user = _accountService.FindByEmailAsync(ForgotPasswordDto.Email);
-                    if (user == null || !_accountService.IsEmailConfirmedInUser(user))
+                    var forgotpasswordDto = _mapper.Map<ForgotPasswordDto>(forgotpasswordVM);
+                    var user = _accountService.FindByEmailAsync(forgotpasswordVM.Email).Result;
+                    if (user == null || !(await _accountService.IsEmailConfirmedInUser(user)))
                     {
                         ModelState.AddModelError("", "Користувача із заданою електронною поштою немає в системі або він не підтвердив свою реєстрацію");
                         return View("ForgotPassword");
                     }
-
-                    //_accountService.SendEmailForResetingPassword(user, forgotPasswordDto);
+                    string code = _accountService.GenerateResetToken(user).Result.ToString();  // тут хз
+                    var confirmationLink = Url.Action(
+                        nameof(ResetPassword),
+                        "Account",
+                        new { userId = user.Id, code = HttpUtility.UrlEncode(code) },
+                        protocol: HttpContext.Request.Scheme);
+                    _accountService.SendEmailForResetingPassword(confirmationLink, forgotpasswordDto);
                     return View("ForgotPasswordConfirmation");
                 }
                 return View("ForgotPassword");
@@ -269,21 +273,18 @@ namespace EPlast.Controllers
                 //_logger.LogError("Exception: {0}", e.Message);
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
-        }*/
+        }
 
-        /*[HttpGet]        пізніше подивитись шоб не було такого як із confirm
+        [HttpGet]        
         [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(string userId, string code = null)
         {
-            var user = _accountService.FindByIdAsync(userId);
+            var user = _accountService.FindByIdAsync(userId).Result;
             if (user == null)
             {
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
-
-            IDateTime dateTimeResetingPassword = new DateTimeHelper();
-            dateTimeResetingPassword.GetCurrentTime();
-            var totalTime = dateTimeResetingPassword.GetCurrentTime().Subtract(user.EmailSendedOnForgotPassword).TotalMinutes;
+            int totalTime = _accountService.GetTimeAfterReseting(user);
             if (totalTime < 180)
             {
                 if (string.IsNullOrWhiteSpace(code))
@@ -299,9 +300,9 @@ namespace EPlast.Controllers
             {
                 return View("ResetPasswordNotAllowed", user);
             }
-        }*/
+        }
 
-        /*[HttpPost]
+        [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel resetpasswordVM)
@@ -312,18 +313,17 @@ namespace EPlast.Controllers
                 {
                     return View("ResetPassword");
                 }
-                var user = _accountService.FindByEmailAsync(resetpasswordVM.Email);
+                var user = _accountService.FindByEmailAsync(resetpasswordVM.Email).Result;
                 if (user == null)
                 {
                     ModelState.AddModelError("", "Користувача із заданою електронною поштою немає в системі або він не підтвердив свою реєстрацію");
                     return View("ResetPassword");
                 }
-                //Переробити під Dto
-                //var result = _accountService.ResetPassword(user, resetpasswordDto);
+                var resetpasswordDto = _mapper.Map<ResetPasswordDto>(resetpasswordVM);
+                var result = _accountService.ResetPassword(user, resetpasswordDto).Result;
                 if (result.Succeeded)
                 {
-                    //тож переписана функція у сервісі
-                    //CheckingForLocking(user);
+                    _accountService.CheckingForLocking(user);
                     return View("ResetPasswordConfirmation");
                 }
                 else
@@ -339,7 +339,7 @@ namespace EPlast.Controllers
             }
         }
 
-        [HttpGet]
+        /*[HttpGet]
         [Authorize]
         public async Task<IActionResult> ChangePassword()
         {
@@ -390,7 +390,7 @@ namespace EPlast.Controllers
                 //_logger.LogError("Exception: {0}", e.Message);
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
-        }
+        }*/
 
         [AllowAnonymous]
         [HttpPost]
@@ -412,7 +412,7 @@ namespace EPlast.Controllers
                 LoginViewModel loginViewModel = new LoginViewModel
                 {
                     ReturnUrl = returnUrl,
-                    ExternalLogins = _accountService.GetAuthenticationSchemes().Result.ToList() //але це хз чи піде
+                    ExternalLogins = _accountService.GetAuthenticationSchemes().Result.ToList()
                 };
 
                 if (remoteError != null)
@@ -420,15 +420,14 @@ namespace EPlast.Controllers
                     ModelState.AddModelError(string.Empty, $"Error from external provider : {remoteError}");
                     return View("Login", loginViewModel);
                 }
-                var info = await _signInManager.GetExternalLoginInfoAsync();
+                var info = _accountService.GetInfo().Result; 
                 if (info == null)
                 {
                     ModelState.AddModelError(string.Empty, "Error loading external login information");
                     return View("Login", loginViewModel);
                 }
 
-                var signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider,
-                    info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+                var signInResult = _accountService.GetSignInRes(info).Result;
                 if (signInResult.Succeeded)
                 {
                     return LocalRedirect(returnUrl);
@@ -440,7 +439,7 @@ namespace EPlast.Controllers
                     {
                         if (email != null)
                         {
-                            _accountService.GoogleAuthentication(email, User, info);
+                            _accountService.GoogleAuthentication(email, info);
                             return LocalRedirect(returnUrl);
                         }
                     }

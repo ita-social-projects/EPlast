@@ -16,6 +16,10 @@ namespace EPlast.Models.Mapping
             CreateMap<LoginDto, LoginViewModel>();
             CreateMap<RegisterViewModel, RegisterDto>();
             CreateMap<RegisterDto, RegisterViewModel>();
+            CreateMap<ForgotPasswordDto, ForgotPasswordViewModel>();
+            CreateMap<ForgotPasswordViewModel, ForgotPasswordDto>();
+            CreateMap<ResetPasswordDto, ResetPasswordViewModel>();
+            CreateMap<ResetPasswordViewModel, ResetPasswordDto>();
         }
     }
 }

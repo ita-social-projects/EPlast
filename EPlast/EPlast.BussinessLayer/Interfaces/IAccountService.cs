@@ -1,7 +1,9 @@
-﻿using EPlast.BussinessLayer.DTO.Account;
+﻿using AutoMapper.Configuration.Conventions;
+using EPlast.BussinessLayer.DTO.Account;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -22,18 +24,24 @@ namespace EPlast.BussinessLayer.Interfaces
         Task<User> FindByIdAsync(string id);
         Task<IdentityResult> ConfirmEmail(User user, string code);
         int GetTimeAfterRegistering(User user);
-        
-        /*void SignOut();
-        
-        void SendEmailForResetingPassword(User user, ForgotPasswordDto forgotPasswordDto);
+        int GetTimeAfterReseting(User user);//тут мож по трохи іншому назвати метод
+        void SignOut();
+        Task<string> GenerateResetToken(User user);
+        void SendEmailForResetingPassword(string confirmationLink, ForgotPasswordDto forgotPasswordDto);
         Task<IdentityResult> ResetPassword(User user, ResetPasswordDto resetPasswordDto);
         void CheckingForLocking(User user);
+        AuthenticationProperties GetAuthenticationProperties(string provider, string returnUrl);
+        Task<ExternalLoginInfo> GetInfo();
+        Task<SignInResult> GetSignInRes(ExternalLoginInfo externalLoginInfo);
+        void GoogleAuthentication(string email, ExternalLoginInfo externalLoginInfo);
+        void FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo);
+
+        /*
+        Task<IdentityResult> ResetPassword(User user, ResetPasswordDto resetPasswordDto);
         Task<User> GetUser(ClaimsPrincipal claimsPrincipal);
         Task<IdentityResult> ChangePasswordForUser(User user, ChangePasswordDto changePasswordDto);
         void RefreshSignIn(User user);
         AuthenticationProperties GetAuthenticationProperties(string provider, string returnUrl);
-
-        void GoogleAuthentication(string email, User user, ExternalLoginInfo externalLoginInfo);
-        void FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo);*/
+        */
     }
 }
