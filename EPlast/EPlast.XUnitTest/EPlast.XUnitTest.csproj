@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Compile Remove="AccountControllerTests.cs" />
-    <Compile Remove="AccountControllerTestsIdentity.cs" />
   </ItemGroup>
 
   <ItemGroup>

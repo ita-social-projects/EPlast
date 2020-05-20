@@ -14,6 +14,7 @@ using EPlast.BussinessLayer.DTO.Account;
 using AutoMapper;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.BussinessLayer.DTO;
+using Microsoft.AspNetCore.Authentication;
 
 namespace EPlast.Controllers
 {
@@ -22,6 +23,7 @@ namespace EPlast.Controllers
         private readonly IAccountService _accountService;
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
+        private readonly UserManager<User> _usermanager;
         public AccountController(IAccountService accountService, IUserService userService, IMapper mapper)
         {
             _accountService = accountService;
@@ -179,7 +181,7 @@ namespace EPlast.Controllers
             return View("ResendEmailConfirmation");
         }
         
-        [HttpGet]                 //проблема із силкою на імейлі
+        [HttpGet]              
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmingEmail(string userId, string code)
         {
@@ -387,10 +389,10 @@ namespace EPlast.Controllers
         [HttpPost]
         public IActionResult ExternalLogin(string provider, string returnUrl)
         {
-            var redirectUrl = Url.Action("ExternalLoginCallBack", 
+            string redirectUrl = Url.Action("ExternalLoginCallBack", 
                 "Account",
                 new { ReturnUrl = returnUrl });
-            var properties = _accountService.GetAuthProperties(provider, returnUrl);
+            AuthenticationProperties properties = _accountService.GetAuthProperties(provider, redirectUrl);
             return new ChallengeResult(provider, properties);
         }
 

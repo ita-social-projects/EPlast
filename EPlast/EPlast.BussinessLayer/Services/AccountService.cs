@@ -18,8 +18,8 @@ namespace EPlast.BussinessLayer.Services
 {
     public class AccountService : IAccountService
     {
-        private SignInManager<User> _signInManager;
         private UserManager<User> _userManager;
+        private SignInManager<User> _signInManager;
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly ILogger _logger;
         private readonly IEmailConfirmation _emailConfirmation;
@@ -58,6 +58,7 @@ namespace EPlast.BussinessLayer.Services
             await _signInManager.SignOutAsync();
         }
 
+        //чогось не показує код
         public async Task<IdentityResult> CreateUserAsync(RegisterDto registerDto)
         {
             var user = new User()
@@ -96,7 +97,7 @@ namespace EPlast.BussinessLayer.Services
 
         public AuthenticationProperties GetAuthProperties(string provider, string returnUrl)
         {
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, returnUrl);
+            AuthenticationProperties properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, returnUrl);
             return properties;
         }
 
@@ -108,7 +109,7 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task<SignInResult> GetSignInResultAsync(ExternalLoginInfo externalLoginInfo)
         {
-            var signInResult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider,
+            SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider,
                     externalLoginInfo.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             return signInResult;
         }
@@ -119,11 +120,11 @@ namespace EPlast.BussinessLayer.Services
             return result;
         }
 
-        public async Task<string> AddRoleAndTokenAsync(RegisterDto registerDto)    //тут перевірити (FindByEmail) чи дійсно робить "Прихильник"
+        public async Task<string> AddRoleAndTokenAsync(RegisterDto registerDto) 
         {
             var user = await _userManager.FindByEmailAsync(registerDto.Email);
             await _userManager.AddToRoleAsync(user, "Прихильник");
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            string code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             return code;
         }
 
@@ -224,7 +225,7 @@ namespace EPlast.BussinessLayer.Services
                 $"Для скидування пароля перейдіть за : <a href='{confirmationLink}'>посиланням</a>", "Адміністрація сайту EPlast");
         }
 
-        public async void GoogleAuthentication(string email, ExternalLoginInfo externalLoginInfo)
+        public async Task GoogleAuthentication(string email, ExternalLoginInfo externalLoginInfo)
         {
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
