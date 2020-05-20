@@ -107,7 +107,7 @@ namespace EPlast.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(RegisterViewModel registerVM)  //може біля сервісів треба забрати await і async у контрооллера
+        public async Task<IActionResult> Register(RegisterViewModel registerVM)
         {
             try
             {
@@ -134,9 +134,9 @@ namespace EPlast.Controllers
                     }
                     else
                     {
-                        var code = _accountService.AddRoleAndTokenAsync(_mapper.Map<RegisterDto>(registerVM));
+                        string code = await _accountService.AddRoleAndTokenAsync(_mapper.Map<RegisterDto>(registerVM));
                         var user = await _accountService.FindByEmailAsync(_mapper.Map<RegisterDto>(registerVM).Email);
-                        var confirmationLink = Url.Action(
+                        string confirmationLink = Url.Action(
                             nameof(ConfirmingEmail),
                             "Account",
                             new { code = code, userId = user.Id },
@@ -168,12 +168,18 @@ namespace EPlast.Controllers
             {
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
-            //тут тож все винесено і перероблено
-            //_accountService.SendEmailUser(user, registerDto);
+            var code = await _accountService.GenerateConfToken(user);
+            var confirmationLink = Url.Action(
+                nameof(ConfirmingEmail),
+                "Account",
+                new { code = code, userId = user.Id },
+                protocol: HttpContext.Request.Scheme);
+
+            _accountService.SendEmailRegistr(confirmationLink, user);
             return View("ResendEmailConfirmation");
         }
         
-        [HttpGet]                 //  рішити проблему із часом
+        [HttpGet]                 //проблема із силкою на імейлі
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmingEmail(string userId, string code)
         {

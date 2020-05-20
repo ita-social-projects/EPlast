@@ -25,6 +25,7 @@ namespace EPlast.BussinessLayer.Interfaces
         Task<SignInResult> GetSignInResultAsync(ExternalLoginInfo externalLoginInfo);
         Task<bool> IsEmailConfirmedAsync(User user);
         Task<string> AddRoleAndTokenAsync(RegisterDto registerDto);
+        Task<string> GenerateConfToken(User user);
         Task<string> GenerateResetTokenAsync(User user);
         Task<IdentityResult> ResetPasswordAsync(User user, ResetPasswordDto resetPasswordDto);
         void CheckingForLocking(User user);
@@ -35,6 +36,7 @@ namespace EPlast.BussinessLayer.Interfaces
         int GetTimeAfterRegistr(User user);
         int GetTimeAfterReset(User user);
         Task<User> GetUserAsync(ClaimsPrincipal claimsPrincipal);
+        void SendEmailRegistr(string confirmationLink, User user);
         void SendEmailRegistr(string confirmationLink, RegisterDto registerDto);
         void SendEmailReseting(string confirmationLink, ForgotPasswordDto forgotPasswordDto);
         void GoogleAuthentication(string email, ExternalLoginInfo externalLoginInfo);
