@@ -16,7 +16,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.BussinessLayer.Services
 {
-    class ActionManager : IActionManager
+    public class ActionManager : IActionManager
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
@@ -239,7 +239,7 @@ namespace EPlast.BussinessLayer.Services
                     }
                 }
                 _repoWrapper.Save();
-                return  StatusCodes.Status200OK;
+                return StatusCodes.Status200OK;
             }
             catch
             {

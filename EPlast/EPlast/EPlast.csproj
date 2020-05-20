@@ -34,6 +34,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="9.0.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Ical.Net" Version="4.1.11" />
     <PackageReference Include="MailKit" Version="2.5.1" />
     <PackageReference Include="Microsoft.AspNet.SignalR" Version="2.2.0" />
@@ -61,7 +63,6 @@
     <Folder Include="wwwroot\compiled\js\" />
     <Folder Include="wwwroot\documents\" />
     <Folder Include="wwwroot\documents\" />
-    <Folder Include="wwwroot\images\EventsGallery\" />
     <Folder Include="wwwroot\images\Users\" />
     <Folder Include="wwwroot\uncompiled\less\" />
     <Folder Include="wwwroot\lib\*" />
