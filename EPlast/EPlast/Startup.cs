@@ -22,6 +22,10 @@ using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using EPlast.Wrapper;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
+using AutoMapper;
+using EPlast.BussinessLayer.DTO.Events;
+using EPlast.BussinessLayer.Services;
+using EPlast.ViewModels.Events;
 
 namespace EPlast
 {
@@ -69,6 +73,8 @@ namespace EPlast
             services.AddScoped<ICityAccessManager, CityAccessManager>();
             services.AddScoped<IUserAccessManagerSettings, UserAccessManagerSettings>();
             services.AddScoped<IUserAccessManager, UserAccessManager>();
+            services.AddScoped<IActionManager, ActionManager>();
+
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
             services.Configure<IdentityOptions>(options =>
             {
@@ -106,6 +112,22 @@ namespace EPlast
                 options.LoginPath = "/Account/Login";
                 options.LogoutPath = "/Account/Logout";
             });
+
+            var mappingConfig = new MapperConfiguration(cfg =>
+            {
+                {
+                    cfg.CreateMap<EventCategoryDTO, EventCategoryViewModel>();
+                    cfg.CreateMap<EventCategoryViewModel, EventCategoryDTO>();
+                    cfg.CreateMap<GeneralEventViewModel, GeneralEventDTO>();
+                    cfg.CreateMap<GeneralEventDTO, GeneralEventViewModel>();
+                    cfg.CreateMap<EventViewModel, EventDTO>();
+                    cfg.CreateMap<EventDTO, EventViewModel>();
+                }
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddMvc();
         }
