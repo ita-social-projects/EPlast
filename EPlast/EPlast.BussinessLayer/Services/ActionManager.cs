@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using EPlast.BussinessLayer.DTO.Events;
 using EPlast.BussinessLayer.Interfaces;
 using EPlast.DataAccess.Entities;
@@ -107,22 +108,22 @@ namespace EPlast.BussinessLayer.Services
             return dto;
         }
 
-        public Status DeleteEvent(int id)
+        public int DeleteEvent(int id)
         {
             try
             {
                 Event objectToDelete = _repoWrapper.Event.FindByCondition(e => e.ID == id).First();
                 _repoWrapper.Event.Delete(objectToDelete);
                 _repoWrapper.Save();
-                return Status.Success;
+                return StatusCodes.Status200OK;
             }
             catch
             {
-                return Status.Fail;
+                return StatusCodes.Status500InternalServerError;
             }
         }
 
-        public Status SubscribeOnEvent(int id, ClaimsPrincipal user)
+        public int SubscribeOnEvent(int id, ClaimsPrincipal user)
         {
             try
             {
@@ -131,19 +132,19 @@ namespace EPlast.BussinessLayer.Services
                 Event targetEvent = _repoWrapper.Event.FindByCondition(e => e.ID == id).First();
                 if (targetEvent.EventStatusID == finishedEvent)
                 {
-                    return Status.Outdated;
+                    return StatusCodes.Status409Conflict;
                 }
                 _repoWrapper.Participant.Create(new Participant() { ParticipantStatusId = participantStatus.ID, EventId = id, UserId = _userManager.GetUserId(user) });
                 _repoWrapper.Save();
-                return Status.Success;
+                return StatusCodes.Status200OK;
             }
             catch
             {
-                return Status.Fail;
+                return StatusCodes.Status500InternalServerError;
             }
         }
 
-        public Status UnSubscribeOnEvent(int id, ClaimsPrincipal user)
+        public int UnSubscribeOnEvent(int id, ClaimsPrincipal user)
         {
             try
             {
@@ -153,19 +154,19 @@ namespace EPlast.BussinessLayer.Services
                 Participant participantToDelete = _repoWrapper.Participant.FindByCondition(p => p.EventId == id && p.UserId == _userManager.GetUserId(user)).First();
                 if (participantToDelete.ParticipantStatusId == rejectedStatus || targetEvent.EventStatusID == finishedEvent)
                 {
-                    return Status.Outdated;
+                    return StatusCodes.Status409Conflict;
                 }
                 _repoWrapper.Participant.Delete(participantToDelete);
                 _repoWrapper.Save();
-                return Status.Success;
+                return StatusCodes.Status200OK;
             }
             catch
             {
-                return Status.Fail;
+                return StatusCodes.Status500InternalServerError;
             }
         }
 
-        public Status ApproveParticipant(int id)
+        public int ApproveParticipant(int id)
         {
             try
             {
@@ -175,15 +176,15 @@ namespace EPlast.BussinessLayer.Services
                 participant.ParticipantStatus = participantStatus;
                 _repoWrapper.Participant.Update(participant);
                 _repoWrapper.Save();
-                return Status.Success;
+                return StatusCodes.Status200OK;
             }
             catch
             {
-                return Status.Fail;
+                return StatusCodes.Status500InternalServerError;
             }
         }
 
-        public Status UnderReviewParticipant(int id)
+        public int UnderReviewParticipant(int id)
         {
             try
             {
@@ -193,15 +194,15 @@ namespace EPlast.BussinessLayer.Services
                 participant.ParticipantStatus = participantStatus;
                 _repoWrapper.Participant.Update(participant);
                 _repoWrapper.Save();
-                return Status.Success;
+                return StatusCodes.Status200OK;
             }
             catch
             {
-                return Status.Fail;
+                return StatusCodes.Status500InternalServerError;
             }
         }
 
-        public Status RejectParticipant(int id)
+        public int RejectParticipant(int id)
         {
             try
             {
@@ -211,42 +212,43 @@ namespace EPlast.BussinessLayer.Services
                 participant.ParticipantStatus = participantStatus;
                 _repoWrapper.Participant.Update(participant);
                 _repoWrapper.Save();
-                return Status.Success;
+                return StatusCodes.Status200OK;
             }
             catch
             {
-                return Status.Fail;
+                return StatusCodes.Status500InternalServerError;
             }
         }
 
-        public Status FillEventGallery(int id, IList<IFormFile> files)
+        public int FillEventGallery(int id, IList<IFormFile> files)
         {
-            //try
-            //{
-            //    foreach (IFormFile file in files)
-            //    {
-            //        if (file != null && file.Length > 0)
-            //        {
-            //            var img = Image.FromStream(file.OpenReadStream());
-            //            var uploads = Path.Combine(_env.WebRootPath, "images\\EventsGallery");
-            //            var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-            //            var filePath = Path.Combine(uploads, fileName);
-            //            img.Save(filePath);
-            //            var gallery = new Gallary() { GalaryFileName = fileName };
-            //            _repoWrapper.Gallary.Create(gallery);
-            //            _repoWrapper.EventGallary.Create(new EventGallary { EventID = id, Gallary = gallery });
-            //        }
-            //    }
-            //    _repoWrapper.Save();
-            //    return Status.Success;
-            //}
-            //catch
-            //{
-            //    return Status.Fail;
-            //}
+            try
+            {
+                foreach (IFormFile file in files)
+                {
+                    if (file != null && file.Length > 0)
+                    {
+                        var img = Image.FromStream(file.OpenReadStream());
+                        var uploads = Path.Combine(_env.WebRootPath, "images\\EventsGallery");
+                        var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                        var filePath = Path.Combine(uploads, fileName);
+                        img.Save(filePath);
+                        var gallery = new Gallary() { GalaryFileName = fileName };
+                        _repoWrapper.Gallary.Create(gallery);
+                        _repoWrapper.EventGallary.Create(new EventGallary { EventID = id, Gallary = gallery });
+                    }
+                }
+                _repoWrapper.Save();
+                return  StatusCodes.Status200OK;
+            }
+            catch
+            {
+                return StatusCodes.Status500InternalServerError;
+            }
         }
 
-        public Status DeletePicture(int id)
+
+        public int DeletePicture(int id)
         {
             try
             {
@@ -258,11 +260,11 @@ namespace EPlast.BussinessLayer.Services
                     File.Delete(picturePath);
                 }
                 _repoWrapper.Save();
-                return Status.Success;
+                return StatusCodes.Status200OK;
             }
             catch
             {
-                return Status.Fail;
+                return StatusCodes.Status500InternalServerError;
             }
         }
 
