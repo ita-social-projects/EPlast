@@ -13,8 +13,8 @@
         </div>
         <div class="d-flex flex-column flex-shrink-0 align-items-center" id="ep-div-right">
             <i class="fas fa-exclamation-triangle" id="ep-icn"></i>
-            <p id="error-page-msg">Page not found !</p>
-            <button class="btn btn-primary border rounded error-page-custom " id="error-page-btn" type="submit" onclick="@("window.location.href='" + @Url.Action("Index", "Home") + "'");">Go back</button>
+            <p id="error-page-msg">Сторінку не знайдено !</p>
+            <a class="btn btn-primary py-3 border rounded error-page-custom " id="error-page-btn"  asp-controller="Home" asp-action="Index">На головну</a>
         </div>
     </div>
 }
@@ -30,8 +30,8 @@ else
         </div>
         <div class="d-flex flex-column flex-shrink-0 align-items-center" id="ep-div-right">
             <i class="fas fa-bug" id="ep-icn"></i>
-            <p id="error-page-msg">Internal server error !</p>
-            <button class="btn btn-primary border rounded error-page-custom" id="error-page-btn" type="submit" onclick="@("window.location.href='" + @Url.Action("Index", "Home") + "'");">Go back</button>
+            <p id="error-page-msg">Внутрішня помилка сервера !</p>
+            <a class="btn btn-primary py-3 border rounded error-page-custom" id="error-page-btn" asp-controller="Home" asp-action="Index">На головну</a>
         </div>
     </div>
 }

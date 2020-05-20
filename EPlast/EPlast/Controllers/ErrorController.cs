@@ -9,7 +9,7 @@ namespace EPlast.Controllers
         public IActionResult HandleError(int code)
         {
             ViewBag.Code = code;
-            
+
             return View("Error");
         }
     }
