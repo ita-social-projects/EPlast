@@ -241,6 +241,12 @@ namespace EPlast.BussinessLayer.Services
             await _signInManager.SignInAsync(user, isPersistent: false);
         }
 
+        public string GetIdForUser(ClaimsPrincipal claimsPrincipal)
+        {
+            var currentUserId = _userManager.GetUserId(claimsPrincipal);
+            return currentUserId;
+        }
+
         /*
         public async Task<User> GetUser(ClaimsPrincipal claimsPrincipal)
         {

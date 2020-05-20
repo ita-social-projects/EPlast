@@ -22,6 +22,8 @@ using NLog.Fluent;
 using EPlast.BussinessLayer.DTO.Account;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity.UI.V3.Pages.Internal.Account.Manage;
+using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.BussinessLayer.DTO;
 
 namespace EPlast.Controllers
 {
@@ -29,9 +31,11 @@ namespace EPlast.Controllers
     {
         private readonly IAccountService _accountService;
         private readonly IMapper _mapper;
-        public AccountController(IAccountService accountService, IMapper mapper)
+        private readonly IUserService _userService;
+        public AccountController(IAccountService accountService, IUserService userService, IMapper mapper)
         {
             _accountService = accountService;
+            _userService = userService;
             _mapper = mapper;
         }
 
@@ -463,13 +467,13 @@ namespace EPlast.Controllers
         {
             try
             {
-                var _currentUserId = _userManager.GetUserId(User);
+                var currentUserId = _accountService.GetIdForUser(User);
                 if (string.IsNullOrEmpty(userId))
                 {
-                    userId = _currentUserId;
+                    userId = currentUserId;
                 }
-                _logger.Log(LogLevel.Information, $"UserProfile Id is {userId}");
-                _logger.Log(LogLevel.Information, $"Authenticate userId is {_currentUserId}");
+                //_logger.Log(LogLevel.Information, $"UserProfile Id is {userId}");
+                //_logger.Log(LogLevel.Information, $"Authenticate userId is {_currentUserId}");
 
 
                 var user = _userService.GetUserProfile(userId);
@@ -490,7 +494,7 @@ namespace EPlast.Controllers
             }
         }
 
-        [HttpGet]
+        /*[HttpGet]
         public IActionResult Approvers(string userId)
         {
             try
@@ -920,7 +924,6 @@ namespace EPlast.Controllers
             {
                 return NotFound("Не вдалося завершити каденцію діловодства!");
             }
-        }
-    }*/
+        }*/
     }
 }
