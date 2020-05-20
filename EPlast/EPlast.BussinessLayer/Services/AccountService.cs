@@ -128,26 +128,35 @@ namespace EPlast.BussinessLayer.Services
             return totalTime;
         }
 
-        /*public async void SignOut()
+        public int GetTimeAfterReseting(User user)
+        {
+            IDateTimeHelper dateTimeResetingPassword = new DateTimeHelper();
+            dateTimeResetingPassword.GetCurrentTime();
+            int totalTime = (int)dateTimeResetingPassword.GetCurrentTime().Subtract(user.EmailSendedOnForgotPassword).TotalMinutes;
+            return totalTime;
+        }
+
+
+        public async void SignOut()
         {
             await _signInManager.SignOutAsync();
         }
 
-        
-        public async void SendEmailForResetingPassword(User user, ForgotPasswordDto forgotPasswordDto)
+        public async Task<string> GenerateResetToken(User user)
         {
-            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var callbackUrl = Url.Action(
-                nameof(ResetPassword),
-                "Account",
-                new { userId = user.Id, code = HttpUtility.UrlEncode(code) },
-                protocol: HttpContext.Request.Scheme);
-
-            user.EmailSendedOnForgotPassword = DateTime.Now;
-            await _userManager.UpdateAsync(user);
-            await _emailConfirmation.SendEmailAsync(forgotPasswordDto.Email, "Скидування пароля",
-                $"Для скидування пароля перейдіть за : <a href='{callbackUrl}'>посиланням</a>", "Адміністрація сайту EPlast");
+            string code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            return code;
         }
+
+        public async void SendEmailForResetingPassword(string confirmationLink, ForgotPasswordDto forgotPasswordDto)
+        {
+            var user = _userManager.FindByEmailAsync(forgotPasswordDto.Email).Result;
+            user.EmailSendedOnForgotPassword = DateTime.Now;
+            _userManager.UpdateAsync(user);    //тут може вілізти та сама ерора
+            await _emailConfirmation.SendEmailAsync(forgotPasswordDto.Email, "Скидування пароля",
+                $"Для скидування пароля перейдіть за : <a href='{confirmationLink}'>посиланням</a>", "Адміністрація сайту EPlast");
+        }
+
         public async Task<IdentityResult> ResetPassword(User user, ResetPasswordDto resetPasswordDto)
         {
             var result = await _userManager.ResetPasswordAsync(user, HttpUtility.UrlDecode(resetPasswordDto.Code), resetPasswordDto.Password);
@@ -162,31 +171,25 @@ namespace EPlast.BussinessLayer.Services
             }
         }
 
-        public async Task<User> GetUser(ClaimsPrincipal claimsPrincipal)
-        {
-            var user = await _userManager.GetUserAsync(claimsPrincipal);
-            return user;
-        }
-
-        public async Task<IdentityResult> ChangePasswordForUser(User user, ChangePasswordDto changePasswordDto)
-        {
-            var result = await _userManager.ChangePasswordAsync(user, changePasswordDto.CurrentPassword, 
-                changePasswordDto.NewPassword);
-            return result;
-        }
-
-        public async void RefreshSignIn(User user)
-        {
-            await _signInManager.RefreshSignInAsync(user);
-        }
-
         public AuthenticationProperties GetAuthenticationProperties(string provider, string returnUrl)
         {
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, returnUrl);
             return properties;
         }
 
-        public async void GoogleAuthentication(string email, User user, ExternalLoginInfo externalLoginInfo)
+        public async Task<ExternalLoginInfo> GetInfo()
+        {
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            return info;
+        }
+
+        public async Task<SignInResult> GetSignInRes(ExternalLoginInfo externalLoginInfo)
+        {
+            var signInResult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider,
+                    externalLoginInfo.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+            return signInResult;
+        }
+        public async void GoogleAuthentication(string email, ExternalLoginInfo externalLoginInfo)
         {
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
@@ -212,6 +215,50 @@ namespace EPlast.BussinessLayer.Services
             await _signInManager.SignInAsync(user, isPersistent: false);
         }
 
+        public async void FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo)
+        {
+            var nameIdentifier = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
+            var identifierForSearching = email ?? nameIdentifier;
+            var user = _userManager.Users.FirstOrDefault(u => u.UserName == identifierForSearching);
+            if (user == null)
+            {
+                user = new User
+                {
+                    SocialNetworking = true,
+                    UserName = (email ?? nameIdentifier),
+                    FirstName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.GivenName),
+                    Email = (email ?? "facebookdefaultmail@gmail.com"),
+                    LastName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Surname),
+                    ImagePath = "default.png",
+                    EmailConfirmed = true,
+                    RegistredOn = DateTime.Now,
+                    UserProfile = new UserProfile()
+                };
+                await _userManager.CreateAsync(user);
+            }
+            await _userManager.AddToRoleAsync(user, "Прихильник");
+            await _userManager.AddLoginAsync(user, externalLoginInfo);
+            await _signInManager.SignInAsync(user, isPersistent: false);
+        }
+
+        /*
+        public async Task<User> GetUser(ClaimsPrincipal claimsPrincipal)
+        {
+            var user = await _userManager.GetUserAsync(claimsPrincipal);
+            return user;
+        }
+
+        public async Task<IdentityResult> ChangePasswordForUser(User user, ChangePasswordDto changePasswordDto)
+        {
+            var result = await _userManager.ChangePasswordAsync(user, changePasswordDto.CurrentPassword, 
+                changePasswordDto.NewPassword);
+            return result;
+        }
+
+        public async void RefreshSignIn(User user)
+        {
+            await _signInManager.RefreshSignInAsync(user);
+        }
 
         public async void FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo)
         {
