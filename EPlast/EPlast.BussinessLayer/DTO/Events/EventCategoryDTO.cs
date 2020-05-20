@@ -2,7 +2,7 @@
 
 namespace EPlast.BussinessLayer.DTO.Events
 {
-    class EventCategoryDTO
+    public class EventCategoryDTO
     {
         public EventCategory EventCategory { get; set; }
     }

@@ -2,7 +2,7 @@
 
 namespace EPlast.BussinessLayer.DTO.Events
 {
-    class GeneralEventDTO
+    public class GeneralEventDTO
     {
         public Event Event { get; set; }
         public bool IsUserEventAdmin { get; set; }
