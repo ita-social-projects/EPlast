@@ -22,17 +22,11 @@ namespace EPlast.Controllers
 {
     public class ActionController : Controller
     {
-        private readonly IRepositoryWrapper _repoWrapper;
-        private readonly UserManager<User> _userManager;
-        private readonly IHostingEnvironment _env;
         private readonly IActionManager _actionManager;
         private readonly IMapper _mapper;
 
         public ActionController(UserManager<User> userManager, IRepositoryWrapper repoWrapper, IHostingEnvironment env, IActionManager actionManager, IMapper mapper)
         {
-            _userManager = userManager;
-            _repoWrapper = repoWrapper;
-            _env = env;
             _actionManager = actionManager;
             _mapper = mapper;
 
@@ -96,22 +90,6 @@ namespace EPlast.Controllers
         [Authorize]
         public IActionResult DeletePicture(int ID)
         {
-            //try
-            //{
-            //    Gallary objectToDelete = _repoWrapper.Gallary.FindByCondition(g =>g.ID == ID).First();
-            //    _repoWrapper.Gallary.Delete(objectToDelete);
-            //    var picturePath = Path.Combine(_env.WebRootPath, "images\\EventsGallery", objectToDelete.GalaryFileName);
-            //    if (System.IO.File.Exists(picturePath))
-            //    {
-            //        System.IO.File.Delete(picturePath);
-            //    }
-            //    _repoWrapper.Save();
-            //    return StatusCode(200);
-            //}
-            //catch
-            //{
-            //    return StatusCode(500);
-            //}
             var code = _actionManager.DeletePicture(ID);
             return StatusCode(code);
         }
