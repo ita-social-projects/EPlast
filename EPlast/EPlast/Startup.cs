@@ -131,10 +131,6 @@ namespace EPlast
                 mc.AddProfile(new MappingProfile());
             });
 
-            /*var mappingConfig = new MapperConfiguration(mc =>
-            {
-                mc.AddProfile(new MappingProfile());
-            });*/
             IMapper mapper = mappingConfig.CreateMapper();
             services.AddSingleton(mapper);
             services.AddMvc();

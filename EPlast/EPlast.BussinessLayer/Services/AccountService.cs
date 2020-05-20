@@ -5,15 +5,12 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Policy;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -49,32 +46,19 @@ namespace EPlast.BussinessLayer.Services
             _dateTimeHelper = dateTimeHelper;
         }
 
-        public async Task<IEnumerable<AuthenticationScheme>> GetAuthenticationSchemes()
-        {
-            var externalLogins = await _signInManager.GetExternalAuthenticationSchemesAsync();
-            return externalLogins;
-        }
-
-        public async Task<SignInResult> SignIn(LoginDto loginDto)
+        public async Task<SignInResult> SignInAsync(LoginDto loginDto)
         {
             var user = _userManager.FindByEmailAsync(loginDto.Email);
             var result = await _signInManager.PasswordSignInAsync(user.Result, loginDto.Password, loginDto.RememberMe, true);
             return result;
         }
 
-        public async Task<User> FindByEmailAsync(string email)
+        public async void SignOutAsync()
         {
-            var result = await _userManager.FindByEmailAsync(email);
-            return result;
+            await _signInManager.SignOutAsync();
         }
 
-        public async Task<bool> IsEmailConfirmedInUser(User user)
-        {
-            bool result = await _userManager.IsEmailConfirmedAsync(user);
-            return result;
-        }
-
-        public async Task<IdentityResult> CreateUser(RegisterDto registerDto)
+        public async Task<IdentityResult> CreateUserAsync(RegisterDto registerDto)
         {
             var user = new User()
             {
@@ -92,7 +76,50 @@ namespace EPlast.BussinessLayer.Services
             return result;
         }
 
-        public async Task<string> AddRoleAndToken(RegisterDto registerDto)    //тут перевірити (FindByEmail) чи дійсно робить "Прихильник"
+        public async Task<IdentityResult> ConfirmEmailAsync(User user, string code)
+        {
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+            return result;
+        }
+
+        public async Task<IdentityResult> ChangePasswordAsync(User user, ChangePasswordDto changePasswordDto)
+        {
+            var result = await _userManager.ChangePasswordAsync(user, changePasswordDto.CurrentPassword,
+                changePasswordDto.NewPassword);
+            return result;
+        }
+
+        public async void RefreshSignInAsync(User user)
+        {
+            await _signInManager.RefreshSignInAsync(user);
+        }
+
+        public AuthenticationProperties GetAuthProperties(string provider, string returnUrl)
+        {
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, returnUrl);
+            return properties;
+        }
+
+        public async Task<ExternalLoginInfo> GetInfoAsync()
+        {
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            return info;
+        }
+
+        public async Task<SignInResult> GetSignInResultAsync(ExternalLoginInfo externalLoginInfo)
+        {
+            var signInResult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider,
+                    externalLoginInfo.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+            return signInResult;
+        }
+
+        public async Task<bool> IsEmailConfirmedAsync(User user)
+        {
+            bool result = await _userManager.IsEmailConfirmedAsync(user);
+            return result;
+        }
+
+        public async Task<string> AddRoleAndTokenAsync(RegisterDto registerDto)    //тут перевірити (FindByEmail) чи дійсно робить "Прихильник"
         {
             var user = _userManager.FindByEmailAsync(registerDto.Email).Result;
             await _userManager.AddToRoleAsync(user, "Прихильник");
@@ -100,64 +127,13 @@ namespace EPlast.BussinessLayer.Services
             return code;
         }
 
-        public async void SendEmailUserForRegistration(string confirmationLink, RegisterDto registerDto)
-        {
-            var user = _userManager.FindByEmailAsync(registerDto.Email).Result;
-            user.EmailSendedOnRegister = DateTime.Now;
-            _userManager.UpdateAsync(user);   //тут має бути походу await але там не рахує час
-            await _emailConfirmation.SendEmailAsync(user.Email, "Підтвердження реєстрації ",
-                $"Підтвердіть реєстрацію, перейшовши за :  <a href='{confirmationLink}'>посиланням</a> ", "Адміністрація сайту EPlast");
-        }
-
-        public async Task<User> FindByIdAsync(string id)
-        {
-            var user = await _userManager.FindByIdAsync(id);
-            return user;
-        }
-
-        public async Task<IdentityResult> ConfirmEmail(User user, string code)
-        {
-            var result = await _userManager.ConfirmEmailAsync(user, code);
-            return result;
-        }
-
-        public int GetTimeAfterRegistering(User user)
-        {
-            IDateTimeHelper dateTimeConfirming = new DateTimeHelper();
-            int totalTime = (int)dateTimeConfirming.GetCurrentTime().Subtract(user.EmailSendedOnRegister).TotalMinutes;
-            return totalTime;
-        }
-
-        public int GetTimeAfterReseting(User user)
-        {
-            IDateTimeHelper dateTimeResetingPassword = new DateTimeHelper();
-            dateTimeResetingPassword.GetCurrentTime();
-            int totalTime = (int)dateTimeResetingPassword.GetCurrentTime().Subtract(user.EmailSendedOnForgotPassword).TotalMinutes;
-            return totalTime;
-        }
-
-
-        public async void SignOut()
-        {
-            await _signInManager.SignOutAsync();
-        }
-
-        public async Task<string> GenerateResetToken(User user)
+        public async Task<string> GenerateResetTokenAsync(User user)
         {
             string code = await _userManager.GeneratePasswordResetTokenAsync(user);
             return code;
         }
 
-        public async void SendEmailForResetingPassword(string confirmationLink, ForgotPasswordDto forgotPasswordDto)
-        {
-            var user = _userManager.FindByEmailAsync(forgotPasswordDto.Email).Result;
-            user.EmailSendedOnForgotPassword = DateTime.Now;
-            _userManager.UpdateAsync(user);    //тут може вілізти та сама ерора
-            await _emailConfirmation.SendEmailAsync(forgotPasswordDto.Email, "Скидування пароля",
-                $"Для скидування пароля перейдіть за : <a href='{confirmationLink}'>посиланням</a>", "Адміністрація сайту EPlast");
-        }
-
-        public async Task<IdentityResult> ResetPassword(User user, ResetPasswordDto resetPasswordDto)
+        public async Task<IdentityResult> ResetPasswordAsync(User user, ResetPasswordDto resetPasswordDto)
         {
             var result = await _userManager.ResetPasswordAsync(user, HttpUtility.UrlDecode(resetPasswordDto.Code), resetPasswordDto.Password);
             return result;
@@ -171,24 +147,69 @@ namespace EPlast.BussinessLayer.Services
             }
         }
 
-        public AuthenticationProperties GetAuthenticationProperties(string provider, string returnUrl)
+        public async Task<IEnumerable<AuthenticationScheme>> GetAuthSchemesAsync()
         {
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, returnUrl);
-            return properties;
+            var externalLogins = await _signInManager.GetExternalAuthenticationSchemesAsync();
+            return externalLogins;
         }
 
-        public async Task<ExternalLoginInfo> GetInfo()
+        public async Task<User> FindByEmailAsync(string email)
         {
-            var info = await _signInManager.GetExternalLoginInfoAsync();
-            return info;
+            var result = await _userManager.FindByEmailAsync(email);
+            return result;
         }
 
-        public async Task<SignInResult> GetSignInRes(ExternalLoginInfo externalLoginInfo)
+        public async Task<User> FindByIdAsync(string id)
         {
-            var signInResult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider,
-                    externalLoginInfo.ProviderKey, isPersistent: false, bypassTwoFactor: true);
-            return signInResult;
+            var user = await _userManager.FindByIdAsync(id);
+            return user;
         }
+
+        public string GetIdForUser(ClaimsPrincipal claimsPrincipal)
+        {
+            var currentUserId = _userManager.GetUserId(claimsPrincipal);
+            return currentUserId;
+        }
+
+        public int GetTimeAfterRegistr(User user)
+        {
+            IDateTimeHelper dateTimeConfirming = new DateTimeHelper();
+            int totalTime = (int)dateTimeConfirming.GetCurrentTime().Subtract(user.EmailSendedOnRegister).TotalMinutes;
+            return totalTime;
+        }
+
+        public int GetTimeAfterReset(User user)
+        {
+            IDateTimeHelper dateTimeResetingPassword = new DateTimeHelper();
+            dateTimeResetingPassword.GetCurrentTime();
+            int totalTime = (int)dateTimeResetingPassword.GetCurrentTime().Subtract(user.EmailSendedOnForgotPassword).TotalMinutes;
+            return totalTime;
+        }
+
+        public async Task<User> GetUserAsync(ClaimsPrincipal claimsPrincipal)
+        {
+            var user = await _userManager.GetUserAsync(claimsPrincipal);
+            return user;
+        }
+
+        public async void SendEmailRegistr(string confirmationLink, RegisterDto registerDto)
+        {
+            var user = _userManager.FindByEmailAsync(registerDto.Email).Result;
+            user.EmailSendedOnRegister = DateTime.Now;
+            _userManager.UpdateAsync(user);   //тут має бути походу await але там не рахує час
+            await _emailConfirmation.SendEmailAsync(user.Email, "Підтвердження реєстрації ",
+                $"Підтвердіть реєстрацію, перейшовши за :  <a href='{confirmationLink}'>посиланням</a> ", "Адміністрація сайту EPlast");
+        }
+
+        public async void SendEmailReseting(string confirmationLink, ForgotPasswordDto forgotPasswordDto)
+        {
+            var user = _userManager.FindByEmailAsync(forgotPasswordDto.Email).Result;
+            user.EmailSendedOnForgotPassword = DateTime.Now;
+            _userManager.UpdateAsync(user);    //тут може вілізти та сама ерора
+            await _emailConfirmation.SendEmailAsync(forgotPasswordDto.Email, "Скидування пароля",
+                $"Для скидування пароля перейдіть за : <a href='{confirmationLink}'>посиланням</a>", "Адміністрація сайту EPlast");
+        }
+
         public async void GoogleAuthentication(string email, ExternalLoginInfo externalLoginInfo)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -240,57 +261,5 @@ namespace EPlast.BussinessLayer.Services
             await _userManager.AddLoginAsync(user, externalLoginInfo);
             await _signInManager.SignInAsync(user, isPersistent: false);
         }
-
-        public string GetIdForUser(ClaimsPrincipal claimsPrincipal)
-        {
-            var currentUserId = _userManager.GetUserId(claimsPrincipal);
-            return currentUserId;
-        }
-
-        /*
-        public async Task<User> GetUser(ClaimsPrincipal claimsPrincipal)
-        {
-            var user = await _userManager.GetUserAsync(claimsPrincipal);
-            return user;
-        }
-
-        public async Task<IdentityResult> ChangePasswordForUser(User user, ChangePasswordDto changePasswordDto)
-        {
-            var result = await _userManager.ChangePasswordAsync(user, changePasswordDto.CurrentPassword, 
-                changePasswordDto.NewPassword);
-            return result;
-        }
-
-        public async void RefreshSignIn(User user)
-        {
-            await _signInManager.RefreshSignInAsync(user);
-        }
-
-        public async void FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo)
-        {
-            var nameIdentifier = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
-            var identifierForSearching = email ?? nameIdentifier;
-            var user = _userManager.Users.FirstOrDefault(u => u.UserName == identifierForSearching);
-            if (user == null)
-            {
-                user = new User
-                {
-                    SocialNetworking = true,
-                    UserName = (email ?? nameIdentifier),
-                    FirstName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.GivenName),
-                    Email = (email ?? "facebookdefaultmail@gmail.com"),
-                    LastName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Surname),
-                    ImagePath = "default.png",
-                    EmailConfirmed = true,
-                    RegistredOn = DateTime.Now,
-                    UserProfile = new UserProfile()
-                };
-                await _userManager.CreateAsync(user);
-            }
-            await _userManager.AddToRoleAsync(user, "Прихильник");
-            await _userManager.AddLoginAsync(user, externalLoginInfo);
-            await _signInManager.SignInAsync(user, isPersistent: false);
-        }*/
-
     }
 }

@@ -20,6 +20,8 @@ namespace EPlast.Models.Mapping
             CreateMap<ForgotPasswordViewModel, ForgotPasswordDto>();
             CreateMap<ResetPasswordDto, ResetPasswordViewModel>();
             CreateMap<ResetPasswordViewModel, ResetPasswordDto>();
+            CreateMap<ChangePasswordDto, ChangePasswordViewModel>();
+            CreateMap<ChangePasswordViewModel, ChangePasswordDto>();
         }
     }
 }
