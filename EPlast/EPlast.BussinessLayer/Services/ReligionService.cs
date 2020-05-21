@@ -5,7 +5,6 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services
 {
@@ -20,7 +19,7 @@ namespace EPlast.BussinessLayer.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ReligionDTO>> GetAll()
+        public IEnumerable<ReligionDTO> GetAll()
         {
             var result = _repoWrapper.Religion.FindAll().ToList();
             return _mapper.Map<IEnumerable<Religion>, IEnumerable<ReligionDTO>>(result);

@@ -9,10 +9,8 @@ namespace EPlast.Mapping
     {
         public ReligionProfile()
         {
-            CreateMap<Religion, ReligionDTO>();
-            CreateMap<ReligionDTO, Religion>();
-            CreateMap<ReligionViewModel, ReligionDTO>();
-            CreateMap<ReligionDTO, ReligionViewModel>();
+            CreateMap<Religion, ReligionDTO>().ReverseMap();
+            CreateMap<ReligionViewModel, ReligionDTO>().ReverseMap();
         }
     }
 }

@@ -5,14 +5,12 @@ using EPlast.ViewModels.UserInformation.UserProfile;
 
 namespace EPlast.Mapping
 {
-    public class GenderProfile:Profile
+    public class GenderProfile : Profile
     {
         public GenderProfile()
         {
-            CreateMap<Gender, GenderDTO>();
-            CreateMap<GenderDTO, Gender>();
-            CreateMap<GenderViewModel, GenderDTO>();
-            CreateMap<GenderDTO, GenderViewModel>();
+            CreateMap<Gender, GenderDTO>().ReverseMap();
+            CreateMap<GenderViewModel, GenderDTO>().ReverseMap();
         }
     }
 }

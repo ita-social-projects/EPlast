@@ -3,7 +3,6 @@ using EPlast.BussinessLayer.Interfaces;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using EPlast.DataAccess.Repositories.Contracts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -25,8 +24,6 @@ using System.Globalization;
 using AutoMapper;
 using EPlast.BussinessLayer.Services;
 using EPlast.BussinessLayer.Services.Interfaces;
-using EPlast.Mapping;
-using EPlast.ViewModels.UserInformation.UserProfile;
 
 namespace EPlast
 {
@@ -42,9 +39,8 @@ namespace EPlast
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
-            
-            
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
             services.AddOptions();
             services.AddDbContextPool<EPlastDBContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("EPlastDBConnection")));
@@ -78,6 +74,7 @@ namespace EPlast
             services.AddScoped<IDegreeService, DegreeService>();
             services.AddScoped<IConfirmedUsersService, ConfirmedUsersService>();
             services.AddScoped<IUserManagerService, UserManagerService>();
+            services.AddScoped<IAdminService, AdminService>();
 
             services.AddScoped<IDirectoryManager, DirectoryManager>();
             services.AddScoped<IFileManager, FileManager>();
@@ -124,23 +121,8 @@ namespace EPlast
                 options.LoginPath = "/Account/Login";
                 options.LogoutPath = "/Account/Logout";
             });
-            var mappingConfig = new MapperConfiguration(mc =>
-            {
-                mc.AddProfile(new Mapping.UserProfile());
-                mc.AddProfile(new Mapping.UserProfileProfile());
-                mc.AddProfile(new Mapping.EducationProfile());
-                mc.AddProfile(new Mapping.WorkProfile());
-                mc.AddProfile(new Mapping.ReligionProfile());
-                mc.AddProfile(new Mapping.NationalityProfile());
-                mc.AddProfile(new Mapping.GenderProfile());
-                mc.AddProfile(new Mapping.DegreeProfile());
-                mc.AddProfile(new Mapping.ConfirmedUserProfile());
-                mc.AddProfile(new Mapping.ApproverProfile());
-            });
-
-            IMapper mapper = mappingConfig.CreateMapper();
-            services.AddSingleton(mapper);
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+           
+           
             services.AddMvc();
         }
 

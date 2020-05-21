@@ -594,14 +594,14 @@ namespace EPlast.Controllers
                     userId = _userManagerService.GetUserId(User);
                 }
 
-                var user = _userService.GetUserProfile(userId).Result;
+                var user = _userService.GetUserProfile(userId);
                 var time = _userService.CheckOrAddPlastunRole(_mapper.Map<UserDTO, UserViewModel>(user).Id, user.RegistredOn);
                 var isUserPlastun = await _userManagerService.IsInRole(user, "Пластун");
 
                 var model = new PersonalDataViewModel
                 {
                     User = _mapper.Map<UserDTO, UserViewModel>(user),
-                    timeToJoinPlast = time.Result,
+                    TimeToJoinPlast = time.Result,
                     IsUserPlastun = isUserPlastun
                 };
                 
@@ -625,12 +625,12 @@ namespace EPlast.Controllers
                     return RedirectToAction("HandleError", "Error", new { code = 500 });
                 }
 
-                var user = _userService.GetUserProfile(userId).Result;
-                var _confUsers = _userService.GetConfirmedUsers(user).Result;
-                var canApprove = _userService.CanApprove(_confUsers, userId, User).Result;
+                var user = _userService.GetUserProfile(userId);
+                var _confUsers = _userService.GetConfirmedUsers(user);
+                var canApprove = _userService.CanApprove(_confUsers, userId, User);
                 var time = _userService.CheckOrAddPlastunRole(user.Id, user.RegistredOn).Result;
-                var clubApprover = _userService.GetClubAdminConfirmedUser(user).Result;
-                var cityApprover = _userService.GetCityAdminConfirmedUser(user).Result;
+                var clubApprover = _userService.GetClubAdminConfirmedUser(user);
+                var cityApprover = _userService.GetCityAdminConfirmedUser(user);
 
                 if (user != null)
                 {
@@ -638,7 +638,7 @@ namespace EPlast.Controllers
                     {
                         User = _mapper.Map<UserDTO, UserViewModel>(user),
                         canApprove = canApprove,
-                        timeToJoinPlast = time,
+                        TimeToJoinPlast = time,
                         ConfirmedUsers = _mapper.Map<IEnumerable<ConfirmedUserDTO>, IEnumerable<ConfirmedUserViewModel>>(_confUsers),
                         ClubApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(clubApprover),
                         CityApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(cityApprover),
@@ -691,7 +691,7 @@ namespace EPlast.Controllers
                         User = user,
                         UserPositions = userPositions,
                         HasAccessToManageUserPositions = _userAccessManager.HasAccess(_userManager.GetUserId(User), userId),
-                        timeToJoinPlast = _timeToJoinPlast,
+                        TimeToJoinPlast = _timeToJoinPlast,
                     };
 
                     return View(model);
@@ -743,29 +743,26 @@ namespace EPlast.Controllers
 
             try
             {
-                var user = _userService.GetUserProfile(userId).Result;
-                ViewBag.genders = (from item in _genderService.GetAll().Result
-                                   select new SelectListItem
-                                   {
-                                       Text = item.Name,
-                                       Value = item.ID.ToString()
-                                   });
+                var user = _userService.GetUserProfile(userId);
 
-                var placeOfStudyUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(_educationService.GetAllGroupByPlace().Result);
-                var specialityUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(_educationService.GetAllGroupBySpeciality().Result);
-                var placeOfWorkUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(_workService.GetAllGroupByPlace().Result); 
-                var positionUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(_workService.GetAllGroupByPosition().Result);
+                var genders = (from item in _genderService.GetAll() select new SelectListItem { Text = item.Name, Value = item.ID.ToString() });
+                                                                                            
+                var placeOfStudyUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(_educationService.GetAllGroupByPlace());
+                var specialityUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(_educationService.GetAllGroupBySpeciality());
+                var placeOfWorkUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(_workService.GetAllGroupByPlace()); 
+                var positionUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(_workService.GetAllGroupByPosition());
 
-                var educView = new EducationUserViewModel { PlaceOfStudyID = user.UserProfile.EducationId, SpecialityID = user.UserProfile.EducationId, PlaceOfStudyList = placeOfStudyUnique, SpecialityList = specialityUnique };
+                var educView = new EducationUserViewModel {PlaceOfStudyID=user.UserProfile.EducationId, SpecialityID = user.UserProfile.EducationId, PlaceOfStudyList = placeOfStudyUnique, SpecialityList = specialityUnique };
                 var workView = new WorkUserViewModel { PlaceOfWorkID = user.UserProfile.WorkId, PositionID = user.UserProfile.WorkId, PlaceOfWorkList = placeOfWorkUnique, PositionList = positionUnique };
                 var model = new EditUserViewModel()
                 {
-                    User = _mapper.Map<UserDTO, User>(user),
-                    Nationalities = _mapper.Map<IEnumerable<NationalityDTO>, IEnumerable<NationalityViewModel>>(_nationalityService.GetAll().Result),
-                    Religions = _mapper.Map<IEnumerable<ReligionDTO>, IEnumerable<ReligionViewModel>>(_religionService.GetAll().Result),
+                    User = _mapper.Map<UserDTO, UserViewModel>(user),
+                    Nationalities = _mapper.Map<IEnumerable<NationalityDTO>, IEnumerable<NationalityViewModel>>(_nationalityService.GetAll()),
+                    Religions = _mapper.Map<IEnumerable<ReligionDTO>, IEnumerable<ReligionViewModel>>(_religionService.GetAll()),
                     EducationView = educView,
                     WorkView = workView,
-                    Degrees = _mapper.Map<IEnumerable<DegreeDTO>, IEnumerable<DegreeViewModel>>(_degreeService.GetAll().Result),
+                    Degrees = _mapper.Map<IEnumerable<DegreeDTO>, IEnumerable<DegreeViewModel>>(_degreeService.GetAll()),
+                    Genders= genders
                 };
 
                 return View(model);
@@ -783,152 +780,7 @@ namespace EPlast.Controllers
         {
             try
             {
-                var oldImageName = _repoWrapper.User.FindByCondition(i => i.Id == model.User.Id).FirstOrDefault().ImagePath;
-                if (file != null && file.Length > 0)
-                {
-                    var img = Image.FromStream(file.OpenReadStream());
-                    var uploads = Path.Combine(_env.WebRootPath, "images\\Users");
-                    if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default.png"))
-                    {
-                        var oldPath = Path.Combine(uploads, oldImageName);
-                        if (System.IO.File.Exists(oldPath))
-                        {
-                            System.IO.File.Delete(oldPath);
-                        }
-                    }
-
-                    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-                    var filePath = Path.Combine(uploads, fileName);
-                    img.Save(filePath);
-                    model.User.ImagePath = fileName;
-                }
-                else
-                {
-                    model.User.ImagePath = oldImageName;
-                }
-
-                //Nationality
-                if (!(model.User.UserProfile.NationalityId == null) && string.IsNullOrEmpty(model.User.UserProfile.Nationality.Name))
-                {
-                    model.User.UserProfile.Nationality = null;
-                }
-               
-
-                //Religion
-                if (model.User.UserProfile.ReligionId == null)
-                {
-                    if (string.IsNullOrEmpty(model.User.UserProfile.Religion.Name))
-                    {
-                        model.User.UserProfile.Religion = null;
-                    }
-                }
-                else
-                {
-                    model.User.UserProfile.Religion = null;
-                }
-
-                //Degree
-                if (model.User.UserProfile.DegreeId == null)
-                {
-                    if (string.IsNullOrEmpty(model.User.UserProfile.Degree.Name))
-                    {
-                        model.User.UserProfile.Degree = null;
-                    }
-                }
-                else
-                {
-                    model.User.UserProfile.Degree = null;
-                }
-
-                //Education
-                if (model.EducationView.SpecialityID == model.EducationView.PlaceOfStudyID)
-                {
-                    model.User.UserProfile.EducationId = model.EducationView.SpecialityID;
-                }
-                else
-                {
-                    var spec = _repoWrapper.Education.FindByCondition(x => x.ID == model.EducationView.SpecialityID).FirstOrDefault();
-                    var placeStudy = _repoWrapper.Education.FindByCondition(x => x.ID == model.EducationView.PlaceOfStudyID).FirstOrDefault();
-                    if (spec != null && spec.PlaceOfStudy == model.User.UserProfile.Education.PlaceOfStudy)
-                    {
-                        model.User.UserProfile.EducationId = spec.ID;
-                    }
-                    else if (placeStudy != null && placeStudy.Speciality == model.User.UserProfile.Education.Speciality)
-                    {
-                        model.User.UserProfile.EducationId = placeStudy.ID;
-                    }
-                    else
-                    {
-                        model.User.UserProfile.EducationId = null;
-                    }
-                }
-
-                if (model.User.UserProfile.EducationId == null || model.User.UserProfile.EducationId == 0)
-                {
-                    if (string.IsNullOrEmpty(model.User.UserProfile.Education.PlaceOfStudy) && string.IsNullOrEmpty(model.User.UserProfile.Education.Speciality))
-                    {
-                        model.User.UserProfile.Education = null;
-                        model.User.UserProfile.EducationId = null;
-                    }
-                }
-                else
-                {
-                    if (string.IsNullOrEmpty(model.User.UserProfile.Education.PlaceOfStudy) || string.IsNullOrEmpty(model.User.UserProfile.Education.Speciality))
-                    {
-                        model.User.UserProfile.EducationId = null;
-                    }
-                    else
-                    {
-                        model.User.UserProfile.Education = null;
-                    }
-                }
-
-                //Work
-                if (model.WorkView.PositionID == model.WorkView.PlaceOfWorkID)
-                {
-                    model.User.UserProfile.WorkId = model.WorkView.PositionID;
-                }
-                else
-                {
-                    var placeWork = _repoWrapper.Work.FindByCondition(x => x.ID == model.WorkView.PlaceOfWorkID).FirstOrDefault();
-                    var position = _repoWrapper.Work.FindByCondition(x => x.ID == model.WorkView.PositionID).FirstOrDefault();
-                    if (placeWork != null && placeWork.Position == model.User.UserProfile.Work.Position)
-                    {
-                        model.User.UserProfile.WorkId = placeWork.ID;
-                    }
-                    else if (position != null && position.PlaceOfwork == model.User.UserProfile.Work.PlaceOfwork)
-                    {
-                        model.User.UserProfile.WorkId = position.ID;
-                    }
-                    else
-                    {
-                        model.User.UserProfile.WorkId = null;
-                    }
-                }
-
-                if (model.User.UserProfile.WorkId == null || model.User.UserProfile.WorkId == 0)
-                {
-                    if (string.IsNullOrEmpty(model.User.UserProfile.Work.PlaceOfwork) && string.IsNullOrEmpty(model.User.UserProfile.Work.Position))
-                    {
-                        model.User.UserProfile.Work = null;
-                        model.User.UserProfile.WorkId = null;
-                    }
-                }
-                else
-                {
-                    if (string.IsNullOrEmpty(model.User.UserProfile.Work.PlaceOfwork) || string.IsNullOrEmpty(model.User.UserProfile.Work.Position))
-                    {
-                        model.User.UserProfile.WorkId = null;
-                    }
-                    else
-                    {
-                        model.User.UserProfile.Work = null;
-                    }
-                }
-
-                _repoWrapper.User.Update(model.User);
-                _repoWrapper.UserProfile.Update(model.User.UserProfile);
-                _repoWrapper.Save();
+                _userService.Update(_mapper.Map<UserViewModel,UserDTO>(model.User), file, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID, model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
                 _logger.LogInformation("User {0} {1} was edited profile and saved in the database", model.User.FirstName, model.User.LastName);
                 return RedirectToAction("UserProfile");
             }
