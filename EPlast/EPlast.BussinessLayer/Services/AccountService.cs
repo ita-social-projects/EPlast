@@ -250,7 +250,7 @@ namespace EPlast.BussinessLayer.Services
             await _signInManager.SignInAsync(user, isPersistent: false);
         }
 
-        public async void FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo)
+        public async Task FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo)
         {
             var nameIdentifier = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
             var identifierForSearching = email ?? nameIdentifier;
