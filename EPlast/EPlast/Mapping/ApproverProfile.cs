@@ -2,10 +2,6 @@
 using EPlast.BussinessLayer.DTO;
 using EPlast.DataAccess.Entities;
 using EPlast.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.Mapping
 {
@@ -13,10 +9,8 @@ namespace EPlast.Mapping
     {
         public ApproverProfile()
         {
-            CreateMap<Approver, ApproverDTO>();
-            CreateMap<ApproverDTO, Approver>();
-            CreateMap<ApproverViewModel, ApproverDTO>();
-            CreateMap<ApproverDTO, ApproverViewModel>();
+            CreateMap<Approver, ApproverDTO>().ReverseMap();
+            CreateMap<ApproverViewModel, ApproverDTO>().ReverseMap();
         }
     }
 }

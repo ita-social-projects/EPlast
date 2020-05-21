@@ -9,10 +9,8 @@ namespace EPlast.Mapping
     {
         public NationalityProfile()
         {
-            CreateMap<Nationality, NationalityDTO>();
-            CreateMap<NationalityDTO, Nationality>();
-            CreateMap<NationalityViewModel, NationalityDTO>();
-            CreateMap<NationalityDTO, NationalityViewModel>();
+            CreateMap<Nationality, NationalityDTO>().ReverseMap();
+            CreateMap<NationalityViewModel, NationalityDTO>().ReverseMap();
         }
     }
 }

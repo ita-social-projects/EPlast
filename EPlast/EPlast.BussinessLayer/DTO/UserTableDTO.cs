@@ -1,10 +1,8 @@
-﻿using EPlast.ViewModels.UserInformation.UserProfile;
-
-namespace EPlast.ViewModels
+﻿namespace EPlast.BussinessLayer.DTO
 {
-    public class UserTableViewModel
+    public class UserTableDTO
     {
-        public UserViewModel User { get; set; }
+        public UserDTO User { get; set; }
         public string RegionName { get; set; }
         public string CityName { get; set; }
         public string ClubName { get; set; }

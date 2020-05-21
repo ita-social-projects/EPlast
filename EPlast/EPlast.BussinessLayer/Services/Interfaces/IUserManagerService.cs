@@ -1,4 +1,5 @@
 ﻿using EPlast.BussinessLayer.DTO;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -9,5 +10,8 @@ namespace EPlast.BussinessLayer.Services.Interfaces
         Task<bool> IsInRole(UserDTO user, params string[] roles);
         Task<bool> IsInRole(ClaimsPrincipal user, params string[] roles);
         string GetUserId(ClaimsPrincipal user);
+        Task<UserDTO> FindById(string userId);
+        Task<IEnumerable<string>> GetRoles(UserDTO user);
+
     }
 }

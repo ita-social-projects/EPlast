@@ -5,7 +5,6 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services
 {
@@ -20,13 +19,13 @@ namespace EPlast.BussinessLayer.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<WorkDTO>> GetAllGroupByPlace()
+        public IEnumerable<WorkDTO> GetAllGroupByPlace()
         {
             var result = _repoWrapper.Work.FindAll().GroupBy(x => x.PlaceOfwork).Select(x => x.FirstOrDefault()).ToList();
             return _mapper.Map<IEnumerable<Work>, IEnumerable<WorkDTO>>(result);
         }
 
-        public async Task<IEnumerable<WorkDTO>> GetAllGroupByPosition()
+        public IEnumerable<WorkDTO> GetAllGroupByPosition()
         {
             var result = _repoWrapper.Work.FindAll().GroupBy(x => x.Position).Select(x => x.FirstOrDefault()).ToList();
             return _mapper.Map<IEnumerable<Work>, IEnumerable<WorkDTO>>(result);

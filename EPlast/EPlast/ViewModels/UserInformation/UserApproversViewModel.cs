@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using EPlast.ViewModels.UserInformation.UserProfile;
 
 namespace EPlast.ViewModels.UserInformation
@@ -11,7 +9,7 @@ namespace EPlast.ViewModels.UserInformation
         public UserViewModel User { get; set; }
         public IEnumerable<ConfirmedUserViewModel> ConfirmedUsers { get; set; }
         public bool canApprove { get; set; }
-        public TimeSpan timeToJoinPlast { get; set; }
+        public TimeSpan TimeToJoinPlast { get; set; }
         public ConfirmedUserViewModel ClubApprover { get; set; }
         public ConfirmedUserViewModel CityApprover { get; set; }
         public bool IsUserPlastun { get; set; }

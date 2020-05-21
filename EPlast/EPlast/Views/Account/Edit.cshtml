@@ -141,7 +141,7 @@
             </div>
             <div class="form-group gender-wrapper">
                 <label asp-for="User.UserProfile.Gender.Name" class="control-label"></label>
-                @Html.DropDownListFor(x => x.User.UserProfile.GenderID, (IEnumerable<SelectListItem>)ViewBag.genders, "-- Виберіть стать... --", new { @placeholder = "Стать", @class = "form-control" })
+                @Html.DropDownListFor(x => x.User.UserProfile.GenderID, Model.Genders, "-- Виберіть стать... --", new { @placeholder = "Стать", @class = "form-control" })
             </div>
             <div class="form-group">
                 <label asp-for="User.UserProfile.Address" class="control-label"></label>

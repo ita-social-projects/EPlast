@@ -4,7 +4,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BussinessLayer.DTO;
@@ -37,7 +36,7 @@ namespace EPlast.BussinessLayer.Services
             throw new NotImplementedException();
         }
 
-        public async Task<UserDTO> GetUserProfile(string userId)
+        public UserDTO GetUserProfile(string userId)
         {
             var user = _repoWrapper.User.
                 FindByCondition(q => q.Id == userId).
@@ -61,24 +60,24 @@ namespace EPlast.BussinessLayer.Services
             return model;
         }
 
-        public async Task<IEnumerable<ConfirmedUserDTO>> GetConfirmedUsers(UserDTO user)
+        public IEnumerable<ConfirmedUserDTO> GetConfirmedUsers(UserDTO user)
         {
             var result = user.ConfirmedUsers.Where(x => x.isCityAdmin == false && x.isClubAdmin == false);
             return result;
         }
 
-        public async Task<ConfirmedUserDTO> GetClubAdminConfirmedUser(UserDTO user)
+        public ConfirmedUserDTO GetClubAdminConfirmedUser(UserDTO user)
         {
             var result = user.ConfirmedUsers.FirstOrDefault(x => x.isClubAdmin == true);
             return result;
         }
 
-        public async Task<ConfirmedUserDTO> GetCityAdminConfirmedUser(UserDTO user)
+        public ConfirmedUserDTO GetCityAdminConfirmedUser(UserDTO user)
         {
             var result = user.ConfirmedUsers.FirstOrDefault(x => x.isCityAdmin == true);
             return result;
         }
-        public async Task<bool> CanApprove(IEnumerable<ConfirmedUserDTO> confUsers, string userId, ClaimsPrincipal user)
+        public bool CanApprove(IEnumerable<ConfirmedUserDTO> confUsers, string userId, ClaimsPrincipal user)
         {
             var currentUserId = _userManager.GetUserId(user);
 
@@ -105,20 +104,93 @@ namespace EPlast.BussinessLayer.Services
                 return TimeSpan.Zero;
             }
         }
-
-        public IEnumerable<UserProfile> GetUserProfiles()
+        public void Update(UserDTO user,IFormFile file, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
-            throw new NotImplementedException();
+            
+            UploadPhoto(ref user, file);
+            user.UserProfile.Nationality = CheckFieldForNull(user.UserProfile.NationalityId, user.UserProfile.Nationality.Name, user.UserProfile.Nationality);
+            user.UserProfile.Religion = CheckFieldForNull(user.UserProfile.ReligionId, user.UserProfile.Religion.Name, user.UserProfile.Religion);
+            user.UserProfile.Degree = CheckFieldForNull(user.UserProfile.DegreeId, user.UserProfile.Degree.Name, user.UserProfile.Degree);
+            user.UserProfile.EducationId = CheckEducationFields(user.UserProfile.Education.PlaceOfStudy, user.UserProfile.Education.Speciality, placeOfStudyId, specialityId);
+            user.UserProfile.Education = CheckFieldForNull(user.UserProfile.EducationId, user.UserProfile.Education.PlaceOfStudy, user.UserProfile.Education.Speciality, user.UserProfile.Education);
+            user.UserProfile.WorkId = CheckWorkFields(user.UserProfile.Work.PlaceOfwork, user.UserProfile.Work.Position, placeOfWorkId, positionId);
+            user.UserProfile.Work = CheckFieldForNull(user.UserProfile.WorkId, user.UserProfile.Work.PlaceOfwork, user.UserProfile.Work.Position, user.UserProfile.Work);
+            var userForUpdate = _mapper.Map<UserDTO, User>(user);
+            _repoWrapper.User.Update(userForUpdate);
+            _repoWrapper.UserProfile.Update(userForUpdate.UserProfile);
+            _repoWrapper.Save();
         }
 
-        public void Update(UserDTO user,IFormFile file)
+        private int? CheckEducationFields(string firstName,string secondName,int? firstId, int? secondId)
         {
-            var userForUpdate=_mapper.Map<UserDTO, User>(user);
-            UploadPhoto(ref userForUpdate, file);
 
-            throw new NotImplementedException();
+            var spec = _repoWrapper.Education.FindByCondition(x => x.ID == secondId).FirstOrDefault();
+            var placeStudy = _repoWrapper.Education.FindByCondition(x => x.ID == firstId).FirstOrDefault();
+            if (secondId == firstId)
+            {
+               return secondId;
+            }
+            else
+            {
+                if (spec != null && spec.PlaceOfStudy == firstName)
+                {
+                  return spec.ID;
+                }
+                else if (placeStudy != null && placeStudy.Speciality == secondName)
+                {
+                    return placeStudy.ID;
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
-        private void UploadPhoto(ref User user,IFormFile file)
+
+        private int? CheckWorkFields(string firstName, string secondName, int? firstId, int? secondId)
+        {
+            var placefWork = _repoWrapper.Work.FindByCondition(x => x.ID == firstId).FirstOrDefault();
+            var position = _repoWrapper.Work.FindByCondition(x => x.ID == secondId).FirstOrDefault();
+            if (secondId == firstId)
+            {
+                return secondId;
+            }
+            else
+            {
+                if (position != null && position.PlaceOfwork == firstName)
+                {
+                    return position.ID;
+                }
+                else if (placefWork != null && placefWork.Position == secondName)
+                {
+                    return placefWork.ID;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        private T CheckFieldForNull<T>(int? id,string name,T model)
+        {
+            if (!(id == null) || string.IsNullOrEmpty(name))
+            {
+               return default(T);
+            }
+            return model;
+        }
+
+        private T CheckFieldForNull<T>(int? id, string firstField,string secondField, T model)
+        {
+            if (!(id == null) || (string.IsNullOrEmpty(firstField) && string.IsNullOrEmpty(secondField)))
+            {
+                return default(T);
+            }
+            return model;
+        }
+
+        private void UploadPhoto(ref UserDTO user,IFormFile file)
         {
             var userId = user.Id;
             var oldImageName = _repoWrapper.User.FindByCondition(i => i.Id == userId).FirstOrDefault().ImagePath;

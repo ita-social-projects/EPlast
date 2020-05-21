@@ -9,10 +9,8 @@ namespace EPlast.Mapping
     {
         public WorkProfile()
         {
-            CreateMap<Work, WorkDTO>();
-            CreateMap<WorkDTO, Work>();
-            CreateMap<WorkViewModel, WorkDTO>();
-            CreateMap<WorkDTO, WorkViewModel>();
+            CreateMap<Work, WorkDTO>().ReverseMap();
+            CreateMap<WorkViewModel, WorkDTO>().ReverseMap();
         }
     }
 }

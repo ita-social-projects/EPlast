@@ -3,10 +3,8 @@ using EPlast.BussinessLayer.DTO;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
-using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services
@@ -57,5 +55,17 @@ namespace EPlast.BussinessLayer.Services
             var id = _userManager.GetUserId(user);
             return id;
         }
+
+        public async Task<UserDTO> FindById(string userId)
+        {
+            var result=_mapper.Map<User,UserDTO>( await _userManager.FindByIdAsync(userId));
+            return result;
+        }
+        public async Task<IEnumerable<string>> GetRoles(UserDTO user)
+        {
+            var result =await _userManager.GetRolesAsync(_mapper.Map<UserDTO, User>(user));
+            return result;
+        }
+        
     }
 }

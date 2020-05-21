@@ -9,10 +9,8 @@ namespace EPlast.Mapping
     {
         public DegreeProfile()
         {
-            CreateMap<Degree, DegreeDTO>();
-            CreateMap<DegreeDTO, Degree>();
-            CreateMap<DegreeViewModel, DegreeDTO>();
-            CreateMap<DegreeDTO, DegreeViewModel>();
+            CreateMap<Degree, DegreeDTO>().ReverseMap();
+            CreateMap<DegreeViewModel, DegreeDTO>().ReverseMap();
         }
     }
 }
