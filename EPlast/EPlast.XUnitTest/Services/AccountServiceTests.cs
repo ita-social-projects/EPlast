@@ -1,4 +1,9 @@
-﻿using EPlast.BussinessLayer.DTO.Account;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using EPlast.BussinessLayer.DTO.Account;
 using EPlast.BussinessLayer.Interfaces;
 using EPlast.BussinessLayer.Services;
 using EPlast.Controllers;
@@ -11,12 +16,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services
@@ -202,7 +201,7 @@ namespace EPlast.XUnitTest.Services
             Assert.NotNull(authResult);
         }
 
-        [Fact]                                                    //Сказати за оці 2 наступні тести
+        [Fact]                                                    //Сказати за оці 2тести
         public async Task TestIsEmailConfirmedAsync()
         {
             //Arrange

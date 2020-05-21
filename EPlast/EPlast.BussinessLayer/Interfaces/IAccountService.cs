@@ -1,14 +1,10 @@
-﻿using AutoMapper.Configuration.Conventions;
-using EPlast.BussinessLayer.DTO.Account;
-using EPlast.DataAccess.Entities;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
+using EPlast.BussinessLayer.DTO.Account;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.BussinessLayer.Interfaces
 {
