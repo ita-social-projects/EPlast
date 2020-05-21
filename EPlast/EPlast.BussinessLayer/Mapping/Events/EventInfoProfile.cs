@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using AutoMapper;
 using EPlast.BussinessLayer.DTO.Events;
 using EPlast.DataAccess.Entities;
 
-namespace EPlast.BussinessLayer.Mapping
+namespace EPlast.BussinessLayer.Mapping.Events
 {
-    public class EventInfoProfile:Profile
+    public class EventInfoProfile : Profile
     {
         public EventInfoProfile()
         {

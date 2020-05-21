@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using EPlast.DataAccess.Entities;
-
+﻿
 namespace EPlast.BussinessLayer.DTO.Events
 {
     public class EventDTO

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO.Events;
 using EPlast.DataAccess.Entities;
 
-namespace EPlast.BussinessLayer.Mapping
+namespace EPlast.BussinessLayer.Mapping.Events
 {
     public class EventAdminProfile : Profile
     {

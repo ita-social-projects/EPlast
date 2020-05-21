@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BussinessLayer.DTO.Events;
 using EPlast.BussinessLayer.Interfaces;
@@ -110,7 +109,7 @@ namespace EPlast.BussinessLayer.Services
 
             if (!dto.IsUserEventAdmin)
             {
-                dto.Event.EventParticipants = dto.Event.EventParticipants.Where(p => p.StatusId==approvedStatus);
+                dto.Event.EventParticipants = dto.Event.EventParticipants.Where(p => p.StatusId == approvedStatus);
             }
 
             return dto;
