@@ -5,7 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="9.0.0" />
     <PackageReference Include="MailKit" Version="2.5.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
     <PackageReference Include="MimeKit" Version="2.5.1" />
     <PackageReference Include="PDFsharp-MigraDoc-gdi" Version="1.50.5147" />
   </ItemGroup>

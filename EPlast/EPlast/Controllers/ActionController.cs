@@ -1,7 +1,6 @@
 ﻿using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.ViewModels.Events;
-using EPlast.Wrapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -58,22 +57,22 @@ namespace EPlast.Controllers
                 int approvedEvent = _repoWrapper.EventStatus.FindByCondition(st => st.EventStatusName == "Затверджений(-на)").First().ID;
                 int finishedEvent = _repoWrapper.EventStatus.FindByCondition(st => st.EventStatusName == "Завершений(-на)").First().ID;
                 int notApprovedEvent = _repoWrapper.EventStatus.FindByCondition(st => st.EventStatusName == "Не затверджені").First().ID;
-                CheckEventsStatuses(ID,actionID,finishedEvent);
+                CheckEventsStatuses(ID, actionID, finishedEvent);
                 List<GeneralEventViewModel> newEvents = _repoWrapper.Event
                  .FindByCondition(e => e.EventCategoryID == ID && e.EventTypeID == actionID)
                  .Include(e => e.EventAdmins)
                  .Include(e => e.Participants)
                  .Select(ev => new GeneralEventViewModel
                  {
-                   Event=ev,
-                   IsUserEventAdmin = (ev.EventAdmins.Any(e => e.UserID == _userManager.GetUserId(User))) || User.IsInRole("Адміністратор подій"),
-                   IsUserParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(User)),
-                   IsUserApprovedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(User) && p.ParticipantStatusId == approvedStatus),
-                   IsUserUndeterminedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(User) && p.ParticipantStatusId == undeterminedStatus),
-                   IsUserRejectedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(User) && p.ParticipantStatusId == rejectedStatus),
-                   IsEventApproved = ev.EventStatusID == approvedEvent,
-                   IsEventNotApproved = ev.EventStatusID == notApprovedEvent,
-                   IsEventFinished = ev.EventStatusID == finishedEvent
+                     Event = ev,
+                     IsUserEventAdmin = (ev.EventAdmins.Any(e => e.UserID == _userManager.GetUserId(User))) || User.IsInRole("Адміністратор подій"),
+                     IsUserParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(User)),
+                     IsUserApprovedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(User) && p.ParticipantStatusId == approvedStatus),
+                     IsUserUndeterminedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(User) && p.ParticipantStatusId == undeterminedStatus),
+                     IsUserRejectedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(User) && p.ParticipantStatusId == rejectedStatus),
+                     IsEventApproved = ev.EventStatusID == approvedEvent,
+                     IsEventNotApproved = ev.EventStatusID == notApprovedEvent,
+                     IsEventFinished = ev.EventStatusID == finishedEvent
                  }).ToList();
                 return View(newEvents);
             }
@@ -82,7 +81,6 @@ namespace EPlast.Controllers
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
-
 
         [Authorize]
         public IActionResult EventInfo(int ID)
@@ -94,7 +92,7 @@ namespace EPlast.Controllers
                 int rejectedStatus = _repoWrapper.ParticipantStatus.FindByCondition(p => p.ParticipantStatusName == "Відмовлено").First().ID;
                 int finishedEvent = _repoWrapper.EventStatus.FindByCondition(st => st.EventStatusName == "Завершений(-на)").First().ID;
                 bool isUserGlobalEventAdmin = User?.IsInRole("Адміністратор подій") ?? false;
-                CheckEventStatus(ID,finishedEvent);
+                CheckEventStatus(ID, finishedEvent);
                 EventViewModel eventModal = _repoWrapper.Event.FindByCondition(e => e.ID == ID)
                        .Include(e => e.Participants)
                             .ThenInclude(p => p.User)
@@ -134,12 +132,11 @@ namespace EPlast.Controllers
             }
         }
 
-
-        void CheckEventsStatuses(int ID, int actionID, int finishedEvent)
+        private void CheckEventsStatuses(int ID, int actionID, int finishedEvent)
         {
             var eventsToCheck = _repoWrapper.Event
                  .FindByCondition(e => e.EventCategoryID == ID && e.EventTypeID == actionID);
-            foreach( var eventToCheck in eventsToCheck)
+            foreach (var eventToCheck in eventsToCheck)
             {
                 if (eventToCheck.EventDateEnd.Date <= DateTime.Now.Date && eventToCheck.EventStatusID != finishedEvent)
                 {
@@ -150,15 +147,15 @@ namespace EPlast.Controllers
             _repoWrapper.Save();
         }
 
-        void CheckEventStatus(int ID, int finishedEvent)
+        private void CheckEventStatus(int ID, int finishedEvent)
         {
             var eventToCheck = _repoWrapper.Event.FindByCondition(e => e.ID == ID).First();
-                if (eventToCheck.EventDateEnd.Date <= DateTime.Now.Date && eventToCheck.EventStatusID != finishedEvent)
-                {
-                    eventToCheck.EventStatusID = finishedEvent;
-                    _repoWrapper.Event.Update(eventToCheck);
-                    _repoWrapper.Save(); 
-                }
+            if (eventToCheck.EventDateEnd.Date <= DateTime.Now.Date && eventToCheck.EventStatusID != finishedEvent)
+            {
+                eventToCheck.EventStatusID = finishedEvent;
+                _repoWrapper.Event.Update(eventToCheck);
+                _repoWrapper.Save();
+            }
         }
 
         [HttpPost]
@@ -184,7 +181,7 @@ namespace EPlast.Controllers
         {
             try
             {
-                Gallary objectToDelete = _repoWrapper.Gallary.FindByCondition(g =>g.ID == ID).First();
+                Gallary objectToDelete = _repoWrapper.Gallary.FindByCondition(g => g.ID == ID).First();
                 _repoWrapper.Gallary.Delete(objectToDelete);
                 var picturePath = Path.Combine(_env.WebRootPath, "images\\EventsGallery", objectToDelete.GalaryFileName);
                 if (System.IO.File.Exists(picturePath))
@@ -198,7 +195,6 @@ namespace EPlast.Controllers
             {
                 return StatusCode(500);
             }
-
         }
 
         [HttpPost]
@@ -210,7 +206,7 @@ namespace EPlast.Controllers
                 ParticipantStatus participantStatus = _repoWrapper.ParticipantStatus.FindByCondition(ps => ps.ParticipantStatusName == "Розглядається").First();
                 int finishedEvent = _repoWrapper.EventStatus.FindByCondition(st => st.EventStatusName == "Завершений(-на)").First().ID;
                 Event targetEvent = _repoWrapper.Event.FindByCondition(e => e.ID == ID).First();
-                if(targetEvent.EventStatusID == finishedEvent)
+                if (targetEvent.EventStatusID == finishedEvent)
                 {
                     return StatusCode(409);
                 }
@@ -234,7 +230,7 @@ namespace EPlast.Controllers
                 int finishedEvent = _repoWrapper.EventStatus.FindByCondition(st => st.EventStatusName == "Завершений(-на)").First().ID;
                 Event targetEvent = _repoWrapper.Event.FindByCondition(e => e.ID == ID).First();
                 Participant participantToDelete = _repoWrapper.Participant.FindByCondition(p => p.EventId == ID && p.UserId == _userManager.GetUserId(User)).First();
-                if(participantToDelete.ParticipantStatusId == rejectedStatus || targetEvent.EventStatusID == finishedEvent)
+                if (participantToDelete.ParticipantStatusId == rejectedStatus || targetEvent.EventStatusID == finishedEvent)
                 {
                     return StatusCode(409);
                 }
@@ -247,7 +243,6 @@ namespace EPlast.Controllers
                 return StatusCode(500);
             }
         }
-
 
         [Authorize]
         public IActionResult ApproveParticipant(int ID)
@@ -324,7 +319,7 @@ namespace EPlast.Controllers
                         _repoWrapper.Gallary.Create(gallery);
                         _repoWrapper.EventGallary.Create(new EventGallary { EventID = ID, Gallary = gallery });
                     }
-                }            
+                }
                 _repoWrapper.Save();
                 return StatusCode(200);
             }

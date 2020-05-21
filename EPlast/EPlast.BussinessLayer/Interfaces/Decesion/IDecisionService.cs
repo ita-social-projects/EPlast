@@ -1,18 +1,32 @@
-﻿using System.Collections.Generic;
+﻿using EPlast.BussinessLayer.DTO;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer
 {
     public interface IDecisionService
     {
-        Task<DecisionDto> GetDecision(int decisionId);
+        DecisionDTO GetDecision(int decisionId);
 
-        Task<List<DecisionDto>> GetDecisionList();
+        bool ChangeDecision(DecisionDTO decision);
 
-        Task<bool> ChangeDecision(DecisionDto decision);
-
-        Task<bool> SaveDecision(DecisionDto decision);
+        Task<bool> SaveDecision(DecisionWrapperDTO decision);
 
         Task<byte[]> DownloadDecisionFile(int decisionId);
+
+        DecisionWrapperDTO CreateDecision();
+
+        OrganizationDTO GetDecisionOrganization(int decisionId);
+
+        List<OrganizationDTO> GetOrganizationList();
+
+        List<DecisionTargetDTO> GetDecisionTargetList();
+
+        List<DecisionWrapperDTO> GetDecisionList();
+
+        IEnumerable<SelectListItem> GetDecisionStatusTypes();
+
+        string GetContentType(int decisionId, string filename);
     }
 }

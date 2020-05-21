@@ -1,7 +1,7 @@
 ﻿@using EPlast.ViewModels
 @using EPlast.BussinessLayer.ExtensionMethods
 @using EPlast.Controllers
-@model Tuple<DecesionViewModel, List<DecesionViewModel>>
+@model Tuple<DecisionViewModel, List<DecisionViewModel>>
 @{
     ViewData["Title"] = "Читання рішень";
 
@@ -13,7 +13,7 @@
             <h1 id="action-title" class="text-center-action decision-heading">Рішення керівних органів</h1>
         </div>
 
-        <table id="dtReadDecesion" class="table table-striped table-bordered table-lg table-responsive-lg" cellspacing="0">
+        <table id="dtReadDecision" class="table table-striped table-bordered table-lg table-responsive-lg" cellspacing="0">
             <thead>
                 <tr>
                     <th class="th-sm">
@@ -45,28 +45,28 @@
             <tbody>
                 @foreach (var item in Model.Item2)
                 {
-                    <tr class="decesion-menu">
-                        <td>@item.Decesion.ID</td>
-                        <td>@item.Decesion.Name</td>
-                        <td>@item.Decesion.Organization.OrganizationName</td>
-                        <td>@item.Decesion.DecesionStatusType.GetDescription()</td>
-                        <td>@item.Decesion.DecesionTarget.TargetName</td>
+                    <tr class="decision-menu">
+                        <td>@item.DecisionWrapper.Decision.ID</td>
+                        <td>@item.DecisionWrapper.Decision.Name</td>
+                        <td>@item.DecisionWrapper.Decision.Organization.OrganizationName</td>
+                        <td>@item.DecisionWrapper.Decision.Description</td>
+                        <td>@item.DecisionWrapper.Decision.DecisionTarget.TargetName</td>
                         <td>
-                            @if (item.Decesion.Description.Length > 50 && item.Decesion.Description.Length - 50 > 15)
+                            @if (item.DecisionWrapper.Decision.Description.Length > 50 && item.DecisionWrapper.Decision.Description.Length - 50 > 15)
                             {
-                                @item.Decesion.Description.Substring(0, 50)<span class="show_hide"><strong>...більше</strong></span>
-                                <p class="hidden">@item.Decesion.Description.Substring(51)<span class="hide_show"><strong>...менше</strong></span></p>
+                                @item.DecisionWrapper.Decision.Description.Substring(0, 50)<span class="show_hide"><strong>...більше</strong></span>
+                                <p class="hidden">@item.DecisionWrapper.Decision.Description.Substring(51)<span class="hide_show"><strong>...менше</strong></span></p>
                             }
                             else
                             {
-                                @item.Decesion.Description
+                                @item.DecisionWrapper.Decision.Description
                             }
                         </td>
-                        <td>@item.Decesion.Date.ToString("dd-MM-yyyy")</td>
+                        <td>@item.DecisionWrapper.Decision.Date.ToString("dd-MM-yyyy")</td>
                         <td>
-                            @if (!string.IsNullOrEmpty(item.Filename))
+                            @if (!string.IsNullOrEmpty(item.DecisionWrapper.Filename))
                             {
-                                <a asp-controller="Documentation" asp-action="Download" asp-route-id="@item.Decesion.ID" asp-route-filename="@item.Filename">додаток.@item.Filename.Split('.')[1]</a>
+                                <a asp-controller="Documentation" asp-action="Download" asp-route-id="@item.DecisionWrapper.Decision.ID" asp-route-filename="@item.DecisionWrapper.Filename">додаток.@item.DecisionWrapper.Filename.Split('.')[1]</a>
                             }
                         </td>
                     </tr>
@@ -76,17 +76,17 @@
     </div>
 </div>
 
-<div id="CreateDecesionModal" role="dialog" tabindex="-1" class="modal">
+<div id="CreateDecisionModal" role="dialog" tabindex="-1" class="modal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <partial name="~/Views/Documentation/_CreateDecesion.cshtml" model="Model.Item1" />
+            <partial name="~/Views/Documentation/_CreateDecision.cshtml" model="Model.Item1" />
         </div>
     </div>
 </div>
-<div id="EditDecesionModal" role="dialog" tabindex="-1" class="modal">
+<div id="EditDecisionModal" role="dialog" tabindex="-1" class="modal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <partial name="~/Views/Documentation/_EditDecesion.cshtml" />
+            <partial name="~/Views/Documentation/_EditDecision.cshtml" />
         </div>
     </div>
 </div>

@@ -1,7 +1,7 @@
 $(document).ready(function () {
-    var createDecisionForm = ["#Decesion-Name", "#datepicker", "#Decesion-Description", "#autocomplete_input"];
-    var editDecisionForm = ["#Edit-Decesion-Name", "#Edit-Decesion-Description"];
-    createDecesionDataTable();
+    var createDecisionForm = ["#Decision-Name", "#datepicker", "#Decision-Description", "#autocomplete_input"];
+    var editDecisionForm = ["#Edit-Decision-Name", "#Edit-Decision-Description"];
+    createDecisionDataTable();
 
     $("#datepicker").datepicker({
         dateFormat: "dd-mm-yy"
@@ -37,37 +37,37 @@ $(document).ready(function () {
         return true;
     }
 
-    $("#CreateDecesionForm-submit").click((e) => {
+    $("#CreateDecisionForm-submit").click((e) => {
         e.preventDefault();
         e.stopPropagation();
         if (!CheckCreateFormData())
             return;
-        let input: HTMLInputElement = <HTMLInputElement>document.getElementById("CreateDecesionFormFile");
+        let input: HTMLInputElement = <HTMLInputElement>document.getElementById("CreateDecisionFormFile");
         var files = input.files;
         if (files[0] != undefined && files[0].size >= 10485760) {
             alert("файл за великий (більше 10 Мб)");
             return;
         }
-        $("#CreateDecesionForm-submit").prop('disabled', true);
+        $("#CreateDecisionForm-submit").prop('disabled', true);
         var formData = new FormData();
-        var decesionName = $("#Decesion-Name").val().toString();
-        var decesionOrganizationId = $("#Decesion-Organization-ID option:selected").val().toString();
-        var decesionTargetName = $("#autocomplete_input").val().toString();
-        var decesionTargetId = $("#autocomplete_input_id_0").val().toString();
-        var decesionDate = $("#datepicker").datepicker().val().toString();
-        var decesionDescription = $("#Decesion-Description").val().toString()
-        var decesionDecesionStatusType = $("#Decesion-DecesionStatusType option:selected").text();
+        var decisionName = $("#Decision-Name").val().toString();
+        var decisionOrganizationId = $("#Decision-Organization-ID option:selected").val().toString();
+        var decisionTargetName = $("#autocomplete_input").val().toString();
+        var decisionTargetId = $("#autocomplete_input_id_0").val().toString();
+        var decisionDate = $("#datepicker").datepicker().val().toString();
+        var decisionDescription = $("#Decision-Description").val().toString()
+        var decisionDecisionStatusType = $("#Decision-DecisionStatusType option:selected").text();
         formData.append("file", files[0]);
-        formData.append("Decesion.Name", decesionName);
-        formData.append("Decesion.Organization.ID", decesionOrganizationId);
-        formData.append("Decesion.DecesionTarget.TargetName", decesionTargetName);
-        formData.append("Decesion.DecesionTarget.ID", decesionTargetId);
-        formData.append("Decesion.Date", decesionDate);
-        formData.append("Decesion.Description", decesionDescription);
-        formData.append("Decesion.DecesionStatusType", decesionDecesionStatusType);
+        formData.append("Decision.Name", decisionName);
+        formData.append("Decision.Organization.ID", decisionOrganizationId);
+        formData.append("Decision.DecisionTarget.TargetName", decisionTargetName);
+        formData.append("Decision.DecisionTarget.ID", decisionTargetId);
+        formData.append("Decision.Date", decisionDate);
+        formData.append("Decision.Description", decisionDescription);
+        formData.append("Decision.DecisionStatusType", decisionDecisionStatusType);
 
         $.ajax({
-            url: "/Documentation/SaveDecesionAsync",
+            url: "/Documentation/SaveDecision",
             type: "POST",
             processData: false,
             contentType: false,
@@ -76,35 +76,35 @@ $(document).ready(function () {
             data: formData,
             success(response) {
                 if (response.success) {
-                    $("#CreateDecesionModal").modal("hide");
+                    $("#CreateDecisionModal").modal("hide");
                     $("#ModalSuccess .modal-body:first p:first strong:first").html(response.text);
                     $("#ModalSuccess").modal("show");
                     var file = "";
-                    if (response.decesion.haveFile) {
-                        file = `<a href="/Documentation/Download/${response.decesion.id}?filename=${files[0].name}">додаток.${files[0].name.split('.')[1]}</a>`
+                    if (response.decision.haveFile) {
+                        file = `<a href="/Documentation/Download/${response.decision.id}?filename=${files[0].name}">додаток.${files[0].name.split('.')[1]}</a>`
                     }
-                    $("#dtReadDecesion").DataTable().row.add(
+                    $("#dtReadDecision").DataTable().row.add(
                         [
-                            response.decesion.id,
-                            response.decesion.name,
-                            response.decesionOrganization,
-                            decesionDecesionStatusType,
-                            decesionTargetName,
-                            decesionDescription,
-                            decesionDate,
+                            response.decision.id,
+                            response.decision.name,
+                            response.decisionOrganization,
+                            decisionDecisionStatusType,
+                            decisionTargetName,
+                            decisionDescription,
+                            decisionDate,
                             file])
                         .draw();
                 } else {
-                    $("#CreateDecesionModal").modal("hide");
+                    $("#CreateDecisionModal").modal("hide");
                     $("#ModalError.modal-body:first p:first strong:first").html("Не можливо додати звіт!");
                 }
                 ClearCreateFormData();
-                $("#CreateDecesionFormFile").val("");
-                $("#CreateDecesionForm-submit").prop('disabled', false);
+                $("#CreateDecisionFormFile").val("");
+                $("#CreateDecisionForm-submit").prop('disabled', false);
             },
             error() {
-                $("#CreateDecesionForm-submit").prop('disabled', false);
-                $("#CreateDecesionModal").modal("hide");
+                $("#CreateDecisionForm-submit").prop('disabled', false);
+                $("#CreateDecisionModal").modal("hide");
                 $("#ModalError.modal-body:first p:first strong:first").html("Не можливо додати звіт!");
             }
         });
@@ -130,66 +130,66 @@ $(document).ready(function () {
             return false;
         return true;
     }
-    $("#EditDecesionForm-submit").click((e) => {
+    $("#EditDecisionForm-submit").click((e) => {
         e.preventDefault();
         e.stopPropagation();
         if (!ChecEditFormData())
             return;
-        $("#CreateDecesionForm-submit").prop('disabled', true);
+        $("#CreateDecisionForm-submit").prop('disabled', true);
         let formData = new FormData();
-        let decesionID = $("#Edit-Decesion-ID").val().toString();
-        let decesionName = $("#Edit-Decesion-Name").val().toString();
-        let decesionDescription = $("#Edit-Decesion-Description").val().toString()
-        formData.append("Decesion.ID", decesionID);
-        formData.append("Decesion.Name", decesionName);
-        formData.append("Decesion.Description", decesionDescription);
+        let decisionID = $("#Edit-Decision-ID").val().toString();
+        let decisionName = $("#Edit-Decision-Name").val().toString();
+        let decisionDescription = $("#Edit-Decision-Description").val().toString()
+        formData.append("Decision.ID", decisionID);
+        formData.append("Decision.Name", decisionName);
+        formData.append("Decision.Description", decisionDescription);
 
         $.ajax({
-            url: "/Documentation/ChangeDecesion",
+            url: "/Documentation/ChangeDecision",
             type: "POST",
             processData: false,
             contentType: false,
             data: formData,
             success(response) {
-                $("#EditDecesionForm-submit").prop('disabled', false);
+                $("#EditDecisionForm-submit").prop('disabled', false);
                 if (response.success) {
                     ClearEditFormData();
-                    $("#EditDecesionModal").modal("hide");
+                    $("#EditDecisionModal").modal("hide");
                     $("#ModalSuccess .modal-body:first p:first strong:first").html(response.text);
                     $("#ModalSuccess").modal("show");
-                    let currectRow = $(`#dtReadDecesion tbody tr td:contains(${response.decesion.id})`).parent();
-                    currectRow.children().eq(5).text(response.decesion.description);
-                    currectRow.children().eq(1).text(response.decesion.name);
+                    let currectRow = $(`#dtReadDecision tbody tr td:contains(${response.decision.id})`).parent();
+                    currectRow.children().eq(5).text(response.decision.description);
+                    currectRow.children().eq(1).text(response.decision.name);
                 } else {
-                    $("#EditDecesionModal").modal("hide");
+                    $("#EditDecisionModal").modal("hide");
                     $("#ModalError.modal-body:first p:first strong:first").html("Не можливо редагувати звіт!");
                 }
             },
             error() {
-                $("#EditDecesionForm-submit").prop('disabled', false);
-                $("#EditDecesionModal").modal("hide");
+                $("#EditDecisionForm-submit").prop('disabled', false);
+                $("#EditDecisionModal").modal("hide");
                 $("#ModalError.modal-body:first p:first strong:first").html("Не можливо редагувати звіт!");
             }
         });
     });
 
     $.contextMenu({
-        selector: '.decesion-menu',
+        selector: ".decision-menu",
 
         callback: function (key) {
             const content = $(this).children().first().text();
             switch (key) {
                 case "edit":
-                    $.get(`/Documentation/GetDecesion?id=${content}`, function (json) {
+                    $.get(`/Documentation/GetDecision?id=${content}`, function (json) {
                         if (!json.success) {
                             $("#ModalError.modal-body:first p:first strong:first").html("ID рішення немає в базі!");
                             return;
                         }
-                        $("#Edit-Decesion-ID").val(json.decesion.id)
-                        $("#Edit-Decesion-Name").val(json.decesion.name)
-                        $("#Edit-Decesion-Description").text(json.decesion.description)
+                        $("#Edit-Decision-ID").val(json.decision.id)
+                        $("#Edit-Decision-Name").val(json.decision.name)
+                        $("#Edit-Decision-Description").text(json.decision.description)
                     });
-                    $("#EditDecesionModal").modal("show");
+                    $("#EditDecisionModal").modal("show");
                     break
                 case "pdf":
                     window.open(`/Documentation/CreatePDFAsync?objId=${content}`, "_blank");
@@ -203,20 +203,20 @@ $(document).ready(function () {
     });
 });
 
-function createDecesionDataTable() {
-    $("#dtReadDecesion").one("preInit.dt", function () {
-        var button = $(`<button id="createDecesionButton" class="btn btn-sm btn-primary btn-management" data-toggle="modal" data-target="#CreateDecesionModal">Додати нове рішення</button>`);
-        $("#dtReadDecesion_filter label").append(button);
+function createDecisionDataTable() {
+    $("#dtReadDecision").one("preInit.dt", function () {
+        var button = $(`<button id="createDecisionButton" class="btn btn-sm btn-primary btn-management" data-toggle="modal" data-target="#CreateDecisionModal">Додати нове рішення</button>`);
+        $("#dtReadDecision_filter label").append(button);
     });
 
-    $("#dtReadDecesion").DataTable({
+    $("#dtReadDecision").DataTable({
         "language": {
             "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Ukrainian.json"
         },
         responsive: true,
         "autoWidth": false,
         "createdRow": function (row, data, dataIndex) {
-            $(row).addClass("decesion-menu");
+            $(row).addClass("decision-menu");
         },
         "columnDefs": [
             { "width": "10px", "targets": 0 },
@@ -251,7 +251,7 @@ function createDecesionDataTable() {
         ]
     });
 
-    $('#dtReadDecesion').on('page.dt', function () {
+    $('#dtReadDecision').on('page.dt', function () {
         $('html, body').animate({
             scrollTop: 100
         }, 200);

@@ -1,4 +1,4 @@
-﻿.Create-decesion-form {
+﻿.Create-decision-form {
     padding: 10px 0px 0px 0;
 
     form {
@@ -119,8 +119,8 @@
         visibility: hidden;
     }
 
-    #dtReadDecesion_wrapper {
-        #dtReadDecesion_filter {
+    #dtReadDecision_wrapper {
+        #dtReadDecision_filter {
             label {
                 button[data-toggle="modal"] {
                     margin: 0 0 3px 2rem;
@@ -149,7 +149,7 @@
 }
 
 @media (max-width: 767px) {
-    .Create-decesion-form {
+    .Create-decision-form {
         padding: 20px 0;
 
         form {
@@ -169,13 +169,13 @@
 
         .dataTables_filter {
             label {
-                #createDecesionButton {
+                #createDecisionButton {
                     min-width: 85px !important;
                 }
             }
         }
 
-        #dtReadDecesion_wrapper {
+        #dtReadDecision_wrapper {
             table.dataTable thead {
                 .sorting, .sorting_desc, .sorting_asc, .sorting_asc_disabled, .sorting_desc_disabled {
                     &:after, &:before {
