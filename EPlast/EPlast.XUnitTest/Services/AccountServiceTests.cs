@@ -202,7 +202,7 @@ namespace EPlast.XUnitTest.Services
             Assert.NotNull(authResult);
         }
 
-        [Fact]
+        [Fact]                                                    //Сказати за оці 2 наступні тести
         public async Task TestIsEmailConfirmedAsync()
         {
             //Arrange
@@ -216,6 +216,25 @@ namespace EPlast.XUnitTest.Services
 
             //Assert
             var authResult = Assert.IsType<bool>(result);
+            Assert.Equal(true, result);
+            Assert.NotNull(authResult);
+        }
+
+        [Fact]
+        public async Task TestIsEmailConfirmedAsyncFalse()
+        {
+            //Arrange
+            var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountService) = CreateAccountService();
+            mockUserManager
+              .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<User>()))
+              .ReturnsAsync(false);
+
+            //Act
+            bool result = await accountService.IsEmailConfirmedAsync(GetTestUserWithAllFields());
+
+            //Assert
+            var authResult = Assert.IsType<bool>(result);
+            Assert.Equal(false, result);
             Assert.NotNull(authResult);
         }
 
@@ -289,6 +308,39 @@ namespace EPlast.XUnitTest.Services
             //Assert
             var result = Assert.IsType<IdentityResult>(identityResult);
             Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task FindByEmailReturnsUser()
+        {
+            //Arrange
+            var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountService) = CreateAccountService();
+            mockUserManager
+                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserWithAllFields());
+
+            //Act
+            var findResult = await accountService.FindByEmailAsync(GetTestEmail());
+
+            //Assert
+            var result = Assert.IsType<User>(findResult);
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task FindByEmailReturnsNull()
+        {
+            //Arrange
+            var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountService) = CreateAccountService();
+            mockUserManager
+                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync((User)null);
+
+            //Act
+            var findResult = await accountService.FindByEmailAsync(GetTestEmail());
+
+            //Assert
+            Assert.Null(findResult);
         }
 
         private string GetTestCode()
@@ -365,6 +417,10 @@ namespace EPlast.XUnitTest.Services
             return authProperties;
         }
 
+        private string GetTestEmail()
+        {
+            return new string("andriishainoha@gmail.com");
+        }
         private string GetTestProvider()
         {
             return new string("fakeProvider");

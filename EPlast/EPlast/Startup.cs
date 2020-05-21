@@ -27,6 +27,7 @@ using EPlast.Models.Mapping;
 using EPlast.BussinessLayer.Services;
 using Ical.Net.DataTypes;
 using EPlast.BussinessLayer.Services.Interfaces;
+using System.Reflection;
 
 namespace EPlast
 {
@@ -42,9 +43,7 @@ namespace EPlast
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
-            
-            
+            services.AddAutoMapper(typeof(MappingProfile));
             services.AddOptions();
             services.AddDbContextPool<EPlastDBContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("EPlastDBConnection")));
@@ -118,6 +117,7 @@ namespace EPlast
                 options.LoginPath = "/Account/Login";
                 options.LogoutPath = "/Account/Logout";
             });
+            
             var mappingConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new Mapping.UserProfile());
@@ -131,7 +131,7 @@ namespace EPlast
                 mc.AddProfile(new MappingProfile());
             });
 
-            IMapper mapper = mappingConfig.CreateMapper();
+            IMapper mapper = new Mapper(mappingConfig);
             services.AddSingleton(mapper);
             services.AddMvc();
         }

@@ -23,7 +23,6 @@ namespace EPlast.Controllers
         private readonly IAccountService _accountService;
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
-        private readonly UserManager<User> _usermanager;
         public AccountController(IAccountService accountService, IUserService userService, IMapper mapper)
         {
             _accountService = accountService;
