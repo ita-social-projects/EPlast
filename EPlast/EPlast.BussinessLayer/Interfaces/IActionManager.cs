@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using EPlast.BussinessLayer.DTO.Events;
-using EPlast.BussinessLayer.Services;
 using Microsoft.AspNetCore.Http;
 
 namespace EPlast.BussinessLayer.Interfaces
 {
-   public interface IActionManager
+    public interface IActionManager
     {
         List<EventCategoryDTO> GetActionCategories();
         List<GeneralEventDTO> GetEvents(int id, ClaimsPrincipal user);

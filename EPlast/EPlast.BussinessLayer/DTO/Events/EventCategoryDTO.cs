@@ -1,4 +1,4 @@
-﻿using EPlast.DataAccess.Entities;
+﻿
 
 namespace EPlast.BussinessLayer.DTO.Events
 {
