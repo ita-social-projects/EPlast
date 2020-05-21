@@ -28,13 +28,22 @@ namespace EPlast.Controllers
             _createEventVMInitializer = createEventVMInitializer;
         }
 
-        public IActionResult EventUser()
+        public IActionResult EventUser(string userId)
         {
+            var _currentUserId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                userId = _currentUserId;
+            }
+
             try
             {
                 EventUserViewModel model = new EventUserViewModel();
+
                 var user = _repoWrapper.User.
-                FindByCondition(q => q.Id == _userManager.GetUserId(User)).First();
+                   FindByCondition(q => q.Id == userId).
+                   First();
+
                 model.User = user;
                 model.EventAdmins = _repoWrapper.EventAdmin.FindByCondition(i => i.UserID == _userManager.GetUserId(User)).
                                 Include(i => i.Event).Include(i => i.User).ToList();
