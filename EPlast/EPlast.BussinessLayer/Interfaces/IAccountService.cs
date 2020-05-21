@@ -36,6 +36,6 @@ namespace EPlast.BussinessLayer.Interfaces
         void SendEmailRegistr(string confirmationLink, RegisterDto registerDto);
         void SendEmailReseting(string confirmationLink, ForgotPasswordDto forgotPasswordDto);
         Task GoogleAuthentication(string email, ExternalLoginInfo externalLoginInfo);
-        void FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo);
+        Task FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo);
     }
 }

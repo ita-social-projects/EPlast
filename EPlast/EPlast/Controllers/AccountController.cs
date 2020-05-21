@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authentication;
 using AutoMapper;
 using EPlast.BussinessLayer.DTO.Account;
 using EPlast.BussinessLayer.Interfaces;
-using EPlast.DataAccess.Entities;
+//using EPlast.DataAccess.Entities;
 using EPlast.ViewModels;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.BussinessLayer.DTO;
@@ -431,13 +431,13 @@ namespace EPlast.Controllers
                     {
                         if (email != null)
                         {
-                            _accountService.GoogleAuthentication(email, info);
+                            await _accountService.GoogleAuthentication(email, info);
                             return LocalRedirect(returnUrl);
                         }
                     }
                     else if (info.LoginProvider.ToString() == "Facebook")
                     {
-                        _accountService.FacebookAuthentication(email, info);
+                        await _accountService.FacebookAuthentication(email, info);
                         return LocalRedirect(returnUrl);
                     }
                     return View("Error");
