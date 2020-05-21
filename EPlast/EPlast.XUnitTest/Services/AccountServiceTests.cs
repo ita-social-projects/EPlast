@@ -201,7 +201,7 @@ namespace EPlast.XUnitTest.Services
             Assert.NotNull(authResult);
         }
 
-        [Fact]                                                    //Сказати за оці 2тести
+        [Fact]                                               
         public async Task TestIsEmailConfirmedAsync()
         {
             //Arrange
@@ -342,9 +342,53 @@ namespace EPlast.XUnitTest.Services
             Assert.Null(findResult);
         }
 
+        [Fact]
+        public async Task GoogleAuthentication()
+        {
+            //Arrange
+            var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountService) = CreateAccountService();
+            mockUserManager
+                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync((User)null);
+
+            //Act
+            var result = accountService.GoogleAuthentication(GetTestEmail(), GetExternalLoginInfoFake());
+
+            //Assert
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task GoogleAuthenticationUserNull()
+        {
+            //Arrange
+            var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountService) = CreateAccountService();
+            mockUserManager
+                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserWithAllFields());
+
+            //Act
+            var result = accountService.GoogleAuthentication(GetTestEmail(), GetExternalLoginInfoFake());
+
+            //Assert
+            Assert.NotNull(result);
+        }
+
         private string GetTestCode()
         {
             return new string("500");
+        }
+
+        private User GetTestUserWithAllFields()
+        {
+            return new User()
+            {
+                UserName = "andriishainoha@gmail.com",
+                FirstName = "Andrii",
+                LastName = "Shainoha",
+                EmailConfirmed = true,
+                SocialNetworking = true
+            };
         }
 
         private LoginDto GetTestLoginDto()
@@ -358,6 +402,7 @@ namespace EPlast.XUnitTest.Services
             };
             return loginDto;
         }
+
         private RegisterDto GetTestRegisterDto()
         {
             var registerDto = new RegisterDto
@@ -369,18 +414,6 @@ namespace EPlast.XUnitTest.Services
                 ConfirmPassword = "andrii123"
             };
             return registerDto;
-        }
-
-        private User GetTestUserWithAllFields()
-        {
-            return new User()
-            {
-                UserName = "andriishainoha@gmail.com",
-                FirstName = "Andrii",
-                LastName = "Shainoha",
-                EmailConfirmed = true,
-                SocialNetworking = true
-            };
         }
 
         private ResetPasswordDto GetTestResetPasswordDto()
@@ -436,6 +469,5 @@ namespace EPlast.XUnitTest.Services
         {
            return new string("500");
         }
-
     }
 }
