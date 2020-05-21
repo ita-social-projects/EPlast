@@ -1,4 +1,6 @@
-﻿using EPlast.BussinessLayer.Interfaces;
+﻿using AutoMapper;
+using EPlast.BussinessLayer.DTO;
+using EPlast.BussinessLayer.Interfaces;
 using EPlast.DataAccess.Repositories;
 using EPlast.Models;
 using EPlast.ViewModels;
@@ -15,12 +17,15 @@ namespace EPlast.Controllers
     {
         private readonly IEmailConfirmation _emailConfirmation;
         private readonly IRepositoryWrapper _repoWrapper;
+        private readonly IHomeService _homeService;
+        private readonly IMapper _mapper;
 
-        public HomeController(IEmailConfirmation emailConfirmation, IRepositoryWrapper repoWrapper)
+        public HomeController(IHomeService homeService, IEmailConfirmation emailConfirmation, IRepositoryWrapper repoWrapper, IMapper mapper)
         {
+            _homeService = homeService;
             _emailConfirmation = emailConfirmation;
             _repoWrapper = repoWrapper;
-
+            _mapper = mapper;
         }
 
         public IActionResult Index()
@@ -55,10 +60,10 @@ namespace EPlast.Controllers
             return View("Views/Account/Login.cshtml");
         }
 
-        
+
         public IActionResult Search(string search)
         {
-            var surnames = _repoWrapper.User.FindByCondition(q=>q.LastName.StartsWith(search));
+            var surnames = _repoWrapper.User.FindByCondition(q => q.LastName.StartsWith(search));
             var names = _repoWrapper.User.FindByCondition(q => q.FirstName.StartsWith(search));
             var model = new SearchSurname();
             model.Users = surnames;
@@ -87,16 +92,20 @@ namespace EPlast.Controllers
                 ModelState.AddModelError("", "Дані введені неправильно");
                 return View("Contacts");
             }
-            else
-            {
-                await _emailConfirmation.SendEmailAsync("eplastdmnstrtr@gmail.com",
-                "Питання користувачів",
-                 $"Контактні дані користувача : Електронна пошта {contactsViewModel.Email}, Ім'я {contactsViewModel.Name}, Телефон {contactsViewModel.PhoneNumber}" +
-                 $"  Опис питання : {contactsViewModel.FeedBackDescription}",
-                 contactsViewModel.Email);
-            }
+
+            ContactDTO contact = null;
+            //contact = _mapper.Map();
+            await _homeService.ConfirmEmail(_emailConfirmation, contact);
+
+            //await _emailConfirmation.SendEmailAsync("eplastdmnstrtr@gmail.com",
+            //    "Питання користувачів",
+            //    $"Контактні дані користувача : Електронна пошта {contactsViewModel.Email}, " +
+            //    $"Ім'я {contactsViewModel.Name}," +
+            //    $"Телефон {contactsViewModel.PhoneNumber}  " +
+            //    $"Опис питання : {contactsViewModel.FeedBackDescription}",
+            //    contactsViewModel.Email);
+
             return RedirectToAction("FeedBackSended", "Home");
         }
-
     }
 }

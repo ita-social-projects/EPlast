@@ -156,7 +156,7 @@ namespace EPlast.Controllers
                         RegistredOn = DateTime.Now,
                         ImagePath = "default.png",
                         SocialNetworking = false,
-                        UserProfile = new UserProfile()
+                        User = new UserProfile()
                     };
 
                     var result = await _userManager.CreateAsync(user, registerVM.Password);
