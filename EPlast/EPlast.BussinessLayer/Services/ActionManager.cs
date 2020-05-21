@@ -32,7 +32,11 @@ namespace EPlast.BussinessLayer.Services
         public List<EventCategoryDTO> GetActionCategories()
         {
             List<EventCategoryDTO> dto = _repoWrapper.EventCategory.FindAll()
-                .Select(eventCategory => new EventCategoryDTO() { EventCategory = eventCategory })
+                .Select(eventCategory => new EventCategoryDTO()
+                {
+                    EventCategoryId = eventCategory.ID,
+                    EventCategoryName = eventCategory.EventCategoryName
+                })
                 .ToList();
             return dto;
         }
@@ -53,7 +57,8 @@ namespace EPlast.BussinessLayer.Services
              .Include(e => e.Participants)
              .Select(ev => new GeneralEventDTO
              {
-                 Event = ev,
+                 EventId = ev.ID,
+                 EventName = ev.EventName,
                  IsUserEventAdmin = (ev.EventAdmins.Any(e => e.UserID == _userManager.GetUserId(user))) || user.IsInRole("Адміністратор подій"),
                  IsUserParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(user)),
                  IsUserApprovedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(user) && p.ParticipantStatusId == approvedStatus),

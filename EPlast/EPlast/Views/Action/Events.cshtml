@@ -11,7 +11,7 @@
         @foreach (var _event in Model)
         {
             <div class=" col-lg-2 col-md-3 col-sm-4  mb-4 mx-0 single-card">
-                <input type="hidden" value=@_event.Event.ID>
+                <input type="hidden" value=@_event.EventId>
                 <div class="card shadow text-center events-card">
                     <div class="card-header events-card-header">
                         <div class="row justify-content-between">
@@ -109,8 +109,8 @@
                     <div class="events-content">
                         <h1 class="event-logo"><i class="far fa-handshake"></i></h1>
                         <h6>
-                            <a asp-controller="Action" asp-action="EventInfo" asp-route-ID=@_event.Event.ID class="title-link event-link-mytext">
-                                @_event.Event.EventName
+                            <a asp-controller="Action" asp-action="EventInfo" asp-route-ID=@_event.EventId class="title-link event-link-mytext">
+                                @_event.EventName
                             </a>
                         </h6>
                     </div>

@@ -432,113 +432,113 @@ namespace EPlast.XUnitTest
         //    Assert.Equal(500, codeResult.StatusCode);
         //}
 
-        [Fact]
-        public void EventinfoFailureTest()
-        {
-            //Arrange
-            _actionManager.Setup(am => am.GetEventInfo(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
-                .Throws(new Exception());
-            _mapper.Setup(m => m.Map<EventDTO, EventViewModel>(It.IsAny<EventDTO>())).Returns(new EventViewModel());
-            int eventID = 3;
-            //Act  
-            var actionsController = new ActionController(_actionManager.Object,_mapper.Object);
-            var actionResult = actionsController.EventInfo(eventID);
-            //Arrange
-            Assert.NotNull(actionResult);
-            var viewResult = Assert.IsType<RedirectToActionResult>(actionResult);
-            Assert.Equal("HandleError", viewResult.ActionName);
-            Assert.Equal("Error", viewResult.ControllerName);
-        }
+        //[Fact]
+        //public void EventinfoFailureTest()
+        //{
+        //    //Arrange
+        //    _actionManager.Setup(am => am.GetEventInfo(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+        //        .Throws(new Exception());
+        //    _mapper.Setup(m => m.Map<EventDTO, EventViewModel>(It.IsAny<EventDTO>())).Returns(new EventViewModel());
+        //    int eventID = 3;
+        //    //Act  
+        //    var actionsController = new ActionController(_actionManager.Object,_mapper.Object);
+        //    var actionResult = actionsController.EventInfo(eventID);
+        //    //Arrange
+        //    Assert.NotNull(actionResult);
+        //    var viewResult = Assert.IsType<RedirectToActionResult>(actionResult);
+        //    Assert.Equal("HandleError", viewResult.ActionName);
+        //    Assert.Equal("Error", viewResult.ControllerName);
+        //}
 
-        [Fact]
-        public void EventinfoSuccessTest()
-        {
-            //Arrange
-            _actionManager.Setup(am => am.GetEventInfo(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
-                .Returns(GetEventDTO());
-            _mapper.Setup(m => m.Map<EventDTO, EventViewModel>(It.IsAny<EventDTO>())).Returns(GetEventVM());
-            int eventID = 3;
-            //Act  
-            var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.EventInfo(eventID);
-            //Arrange
-            Assert.NotNull(actionResult);
-            var viewResult = Assert.IsType<ViewResult>(actionResult);
-            var viewModel = Assert.IsType<EventViewModel>(viewResult.Model);
-            Assert.Equal(3, viewModel.EventParticipants.Count());
-        }
+        //[Fact]
+        //public void EventinfoSuccessTest()
+        //{
+        //    //Arrange
+        //    _actionManager.Setup(am => am.GetEventInfo(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+        //        .Returns(GetEventDTO());
+        //    _mapper.Setup(m => m.Map<EventDTO, EventViewModel>(It.IsAny<EventDTO>())).Returns(GetEventVM());
+        //    int eventID = 3;
+        //    //Act  
+        //    var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
+        //    var actionResult = actionsController.EventInfo(eventID);
+        //    //Arrange
+        //    Assert.NotNull(actionResult);
+        //    var viewResult = Assert.IsType<ViewResult>(actionResult);
+        //    var viewModel = Assert.IsType<EventViewModel>(viewResult.Model);
+        //    Assert.Equal(3, viewModel.EventParticipants.Count());
+        //}
 
-        [Fact]
-        public void GetActionsFailureTest()
-        {
-            //Arrange
-            _actionManager.Setup(am => am.GetActionCategories())
-                .Throws(new Exception());
-            _mapper.Setup(m => m.Map<List<EventCategoryDTO>, List<EventCategoryViewModel>>(It.IsAny<List<EventCategoryDTO>>())).Returns(new List<EventCategoryViewModel>());
-            //Act  
-            var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.GetAction();
-            //Arrange
-            Assert.NotNull(actionResult);
-            var viewResult = Assert.IsType<RedirectToActionResult>(actionResult);
-            Assert.Equal("HandleError", viewResult.ActionName);
-            Assert.Equal("Error", viewResult.ControllerName);
-        }
+        //[Fact]
+        //public void GetActionsFailureTest()
+        //{
+        //    //Arrange
+        //    _actionManager.Setup(am => am.GetActionCategories())
+        //        .Throws(new Exception());
+        //    _mapper.Setup(m => m.Map<List<EventCategoryDTO>, List<EventCategoryViewModel>>(It.IsAny<List<EventCategoryDTO>>())).Returns(new List<EventCategoryViewModel>());
+        //    //Act  
+        //    var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
+        //    var actionResult = actionsController.GetAction();
+        //    //Arrange
+        //    Assert.NotNull(actionResult);
+        //    var viewResult = Assert.IsType<RedirectToActionResult>(actionResult);
+        //    Assert.Equal("HandleError", viewResult.ActionName);
+        //    Assert.Equal("Error", viewResult.ControllerName);
+        //}
 
-        [Fact]
-        public void GetActionEmptyTest()
-        {
-            //Arrange
-            _actionManager.Setup(am => am.GetActionCategories())
-                .Returns(new List<EventCategoryDTO>());
-            _mapper.Setup(m => m.Map<List<EventCategoryDTO>, List<EventCategoryViewModel>>(It.IsAny<List<EventCategoryDTO>>())).Returns(new List<EventCategoryViewModel>());
-            //Act  
-            var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.GetAction() as ViewResult;
-            //Assert
-            Assert.NotNull(actionResult);
-            Assert.NotNull(actionResult.Model);
-            var viewModel = actionResult.Model as List<EventCategoryViewModel>;
-            Assert.NotNull(viewModel);
-            Assert.Empty(viewModel);
-        }
+        //[Fact]
+        //public void GetActionEmptyTest()
+        //{
+        //    //Arrange
+        //    _actionManager.Setup(am => am.GetActionCategories())
+        //        .Returns(new List<EventCategoryDTO>());
+        //    _mapper.Setup(m => m.Map<List<EventCategoryDTO>, List<EventCategoryViewModel>>(It.IsAny<List<EventCategoryDTO>>())).Returns(new List<EventCategoryViewModel>());
+        //    //Act  
+        //    var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
+        //    var actionResult = actionsController.GetAction() as ViewResult;
+        //    //Assert
+        //    Assert.NotNull(actionResult);
+        //    Assert.NotNull(actionResult.Model);
+        //    var viewModel = actionResult.Model as List<EventCategoryViewModel>;
+        //    Assert.NotNull(viewModel);
+        //    Assert.Empty(viewModel);
+        //}
 
-        [Fact]
-        public void GetEventsFailureTest()
-        {
-            //Arrange
-            _actionManager.Setup(am => am.GetEvents(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
-                .Throws(new Exception());
-            _mapper.Setup(m => m.Map<List<GeneralEventDTO>, List<GeneralEventViewModel>>(It.IsAny<List<GeneralEventDTO>>())).Returns(new List<GeneralEventViewModel>());
-            int id = 3;
-            //Act  
-            var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.Events(id);
-            //Arrange
-            Assert.NotNull(actionResult);
-            var viewResult = Assert.IsType<RedirectToActionResult>(actionResult);
-            Assert.Equal("HandleError", viewResult.ActionName);
-            Assert.Equal("Error", viewResult.ControllerName);
-        }
+        //[Fact]
+        //public void GetEventsFailureTest()
+        //{
+        //    //Arrange
+        //    _actionManager.Setup(am => am.GetEvents(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+        //        .Throws(new Exception());
+        //    _mapper.Setup(m => m.Map<List<GeneralEventDTO>, List<GeneralEventViewModel>>(It.IsAny<List<GeneralEventDTO>>())).Returns(new List<GeneralEventViewModel>());
+        //    int id = 3;
+        //    //Act  
+        //    var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
+        //    var actionResult = actionsController.Events(id);
+        //    //Arrange
+        //    Assert.NotNull(actionResult);
+        //    var viewResult = Assert.IsType<RedirectToActionResult>(actionResult);
+        //    Assert.Equal("HandleError", viewResult.ActionName);
+        //    Assert.Equal("Error", viewResult.ControllerName);
+        //}
 
-        [Fact]
-        public void GetEventsEmptyTest()
-        {
-            //Arrange
-            _actionManager.Setup(am => am.GetEvents(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
-                .Returns(new List<GeneralEventDTO>());
-            _mapper.Setup(m => m.Map<List<GeneralEventDTO>, List<GeneralEventViewModel>>(It.IsAny<List<GeneralEventDTO>>())).Returns(new List<GeneralEventViewModel>());
-            int id = 3;
-            //Act  
-            var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.Events(id) as ViewResult;
-            //Assert
-            Assert.NotNull(actionResult);
-            Assert.NotNull(actionResult.Model);
-            var viewModel = actionResult.Model as List<GeneralEventViewModel>;
-            Assert.NotNull(viewModel);
-            Assert.Empty(viewModel);
-        }
+        //[Fact]
+        //public void GetEventsEmptyTest()
+        //{
+        //    //Arrange
+        //    _actionManager.Setup(am => am.GetEvents(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+        //        .Returns(new List<GeneralEventDTO>());
+        //    _mapper.Setup(m => m.Map<List<GeneralEventDTO>, List<GeneralEventViewModel>>(It.IsAny<List<GeneralEventDTO>>())).Returns(new List<GeneralEventViewModel>());
+        //    int id = 3;
+        //    //Act  
+        //    var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
+        //    var actionResult = actionsController.Events(id) as ViewResult;
+        //    //Assert
+        //    Assert.NotNull(actionResult);
+        //    Assert.NotNull(actionResult.Model);
+        //    var viewModel = actionResult.Model as List<GeneralEventViewModel>;
+        //    Assert.NotNull(viewModel);
+        //    Assert.Empty(viewModel);
+        //}
 
 
         //[Fact]
