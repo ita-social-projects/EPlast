@@ -1,27 +1,27 @@
-﻿using EPlast.BussinessLayer;
+﻿using AutoMapper;
+using EPlast.BussinessLayer;
+using EPlast.BussinessLayer.AccessManagers;
+using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using EPlast.BussinessLayer.Interfaces;
+using EPlast.BussinessLayer.Settings;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using EPlast.DataAccess.Repositories.Contracts;
+using EPlast.Models.ViewModelInitializations;
+using EPlast.Models.ViewModelInitializations.Interfaces;
+using EPlast.Wrapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Threading.Tasks;
-using System.Linq;
-using EPlast.Models.ViewModelInitializations.Interfaces;
-using EPlast.Models.ViewModelInitializations;
-using EPlast.BussinessLayer.Settings;
-using EPlast.BussinessLayer.AccessManagers;
-using EPlast.BussinessLayer.AccessManagers.Interfaces;
-using EPlast.Wrapper;
-using Microsoft.AspNetCore.Localization;
 using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast
 {
@@ -37,6 +37,7 @@ namespace EPlast
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddOptions();
             services.AddDbContextPool<EPlastDBContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("EPlastDBConnection")));
@@ -55,6 +56,7 @@ namespace EPlast
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
+            services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IEmailConfirmation, EmailConfirmation>();
             services.AddScoped<IAnnualReportVMInitializer, AnnualReportVMInitializer>();
             services.AddScoped<IViewAnnualReportsVMInitializer, ViewAnnualReportsVMInitializer>();
@@ -81,7 +83,6 @@ namespace EPlast
 
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
-                
             });
 
             services.AddAuthentication()
@@ -114,8 +115,8 @@ namespace EPlast
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
-            var roles = new[] { "Admin", "Прихильник", "Пластун", "Голова Пласту","Адміністратор подій", "Голова Куреня","Діловод Куреня",
-            "Голова Округу","Діловод Округу","Голова Станиці","Діловод Станиці"};
+            var roles = new[] { "Admin", "Прихильник", "Пластун", "Голова Пласту", "Адміністратор подій", "Голова Куреня", "Діловод Куреня",
+            "Голова Округу", "Діловод Округу", "Голова Станиці", "Діловод Станиці"};
             foreach (var role in roles)
             {
                 if (!(await roleManager.RoleExistsAsync(role)))

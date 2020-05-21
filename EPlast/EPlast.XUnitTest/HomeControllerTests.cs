@@ -31,160 +31,156 @@ namespace EPlast.XUnitTest
             _emailConfirmation = new Mock<IEmailConfirmation>();
         }
 
-        [Fact]
-        public void IndexViewResultNotNull()
-        {
-            var controller = new HomeController(_emailConfirmation.Object,_repoWrapper.Object);
+        //[Fact]
+        //public void IndexViewResultNotNull()
+        //{
+        //    var controller = new HomeController(_emailConfirmation.Object, _repoWrapper.Object);
 
-            var result = controller.Index();
+        //    var result = controller.Index();
 
-            var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.NotNull(viewResult);
-        }
+        //    var viewResult = Assert.IsType<ViewResult>(result);
+        //    Assert.NotNull(viewResult);
+        //}
 
-        [Fact]
-        public void AboutPLASTViewResultNotNull()
-        {
-            var controller = new HomeController(_emailConfirmation.Object, _repoWrapper.Object);
+        //[Fact]
+        //public void AboutPLASTViewResultNotNull()
+        //{
+        //    var controller = new HomeController(_emailConfirmation.Object, _repoWrapper.Object);
 
-            var result = controller.AboutPLAST();
+        //    var result = controller.AboutPLAST();
 
-            var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.NotNull(viewResult);
-        }
+        //    var viewResult = Assert.IsType<ViewResult>(result);
+        //    Assert.NotNull(viewResult);
+        //}
 
-        [Fact]
-        public void ContactsViewResultNotNull()
-        {
-            
-            var controller = new HomeController(_emailConfirmation.Object, _repoWrapper.Object);
+        //[Fact]
+        //public void ContactsViewResultNotNull()
+        //{
 
-            var result = controller.Contacts();
+        //    var controller = new HomeController(_emailConfirmation.Object, _repoWrapper.Object);
 
-            var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.NotNull(viewResult);
-        }
+        //    var result = controller.Contacts();
 
-        [Fact]
-        public void FAQViewResultNotNull()
-        {
-            var controller = new HomeController(_emailConfirmation.Object, _repoWrapper.Object);
+        //    var viewResult = Assert.IsType<ViewResult>(result);
+        //    Assert.NotNull(viewResult);
+        //}
 
-            var result = controller.FAQ();
+        //[Fact]
+        //public void FAQViewResultNotNull()
+        //{
+        //    var controller = new HomeController(_emailConfirmation.Object, _repoWrapper.Object);
 
-            var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.NotNull(viewResult);
-        }
+        //    var result = controller.FAQ();
 
-        [Fact]
-        public void FeedBackSendedResultNotNull()
-        {
-            var controller = new HomeController(_emailConfirmation.Object, _repoWrapper.Object);
+        //    var viewResult = Assert.IsType<ViewResult>(result);
+        //    Assert.NotNull(viewResult);
+        //}
 
-            var result = controller.FeedBackSended();
+        //[Fact]
+        //public void FeedBackSendedResultNotNull()
+        //{
+        //    var controller = new HomeController(_emailConfirmation.Object, _repoWrapper.Object);
 
-            var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.NotNull(viewResult);
-        }
+        //    var result = controller.FeedBackSended();
 
-        [Fact]
-        public void SearchResultNotNull()
-        {
-            _repoWrapper.Setup(p => p.User.FindByCondition(It.IsAny<Expression<Func<User, bool>>>())).Returns(
-                new List<User> { 
-                    new User
-                    {
-                        FirstName="Денис",
-                        LastName = "Іванків"
-                    },
-                    new User
-                    {
-                        FirstName="Іван",
-                        LastName = "Іванків"
-                    },
-                    new User
-                    {
-                        FirstName="Петро",
-                        LastName = "Іванків"
-                    },
-                    new User
-                    {
-                        FirstName="Олег",
-                        LastName = "Іванків"
-                    },
-                    new User
-                    {
-                        FirstName="Андрій",
-                        LastName = "Іванків"
-                    },
-                    new User
-                    {
-                        FirstName="Микола",
-                        LastName = "Іванків"
-                    }
-                }.AsQueryable());
+        //    var viewResult = Assert.IsType<ViewResult>(result);
+        //    Assert.NotNull(viewResult);
+        //}
 
-            var homecontroller = new HomeController(_emailConfirmation.Object, _repoWrapper.Object);
-            var searchResultNotNull = homecontroller.Search("Іванків") as ViewResult;
-            var searchResultNull = homecontroller.Search(null) as ViewResult;
+        //[Fact]
+        //public void SearchResultNotNull()
+        //{
+        //    _repoWrapper.Setup(p => p.User.FindByCondition(It.IsAny<Expression<Func<User, bool>>>())).Returns(
+        //        new List<User> {
+        //            new User
+        //            {
+        //                FirstName="Денис",
+        //                LastName = "Іванків"
+        //            },
+        //            new User
+        //            {
+        //                FirstName="Іван",
+        //                LastName = "Іванків"
+        //            },
+        //            new User
+        //            {
+        //                FirstName="Петро",
+        //                LastName = "Іванків"
+        //            },
+        //            new User
+        //            {
+        //                FirstName="Олег",
+        //                LastName = "Іванків"
+        //            },
+        //            new User
+        //            {
+        //                FirstName="Андрій",
+        //                LastName = "Іванків"
+        //            },
+        //            new User
+        //            {
+        //                FirstName="Микола",
+        //                LastName = "Іванків"
+        //            }
+        //        }.AsQueryable());
 
-            Assert.NotNull(searchResultNotNull);
-            Assert.NotNull(searchResultNotNull.Model);
-        }
+        //    var homecontroller = new HomeController(_emailConfirmation.Object, _repoWrapper.Object);
+        //    var searchResultNotNull = homecontroller.Search("Іванків") as ViewResult;
+        //    var searchResultNull = homecontroller.Search(null) as ViewResult;
 
-        [Fact]
-        public void GetSerchUserTest()
-        {
-            _repoWrapper.Setup(u => u.User.FindByCondition(It.IsAny<Expression<Func<User, bool>>>())).Returns(
-                new List<User> {
-                    new User
-                    {
-                        Id="aaaa-bbbb-cccc",
-                        FirstName="Олег",
-                        LastName="Іванків"
-                    }
-                }.AsQueryable());
+        //    Assert.NotNull(searchResultNotNull);
+        //    Assert.NotNull(searchResultNotNull.Model);
+        //}
 
-            var homecontroller = new HomeController(_emailConfirmation.Object, _repoWrapper.Object);
-            var getSearchUserResult = homecontroller.GetSearchUser("aaaa-bbbb-cccc");
+        //[Fact]
+        //public void GetSerchUserTest()
+        //{
+        //    _repoWrapper.Setup(u => u.User.FindByCondition(It.IsAny<Expression<Func<User, bool>>>())).Returns(
+        //        new List<User> {
+        //            new User
+        //            {
+        //                Id="aaaa-bbbb-cccc",
+        //                FirstName="Олег",
+        //                LastName="Іванків"
+        //            }
+        //        }.AsQueryable());
 
-            var viewResult = Assert.IsType<PartialViewResult>(getSearchUserResult);
-            Assert.NotNull(getSearchUserResult);
-            Assert.NotNull(viewResult.Model);
-            Assert.IsAssignableFrom<IQueryable<User>>(viewResult.Model);
+        //    var homecontroller = new HomeController(_emailConfirmation.Object, _repoWrapper.Object);
+        //    var getSearchUserResult = homecontroller.GetSearchUser("aaaa-bbbb-cccc");
 
-        }
+        //    var viewResult = Assert.IsType<PartialViewResult>(getSearchUserResult);
+        //    Assert.NotNull(getSearchUserResult);
+        //    Assert.NotNull(viewResult.Model);
+        //    Assert.IsAssignableFrom<IQueryable<User>>(viewResult.Model);
 
-        [Fact]
-        public async Task TestSendContacts()
-        {
-            ContactsViewModel test1 = new ContactsViewModel
-            {
-                Name="Настя",
-                Email="nasty@gmail.com",
-                PhoneNumber="0934353139",
-                FeedBackDescription="Хотіла б стати вашим волонтером"
-            };
-            ContactsViewModel test2 = new ContactsViewModel
-            {
-                Name = "",
-                PhoneNumber = "",
-                FeedBackDescription = ""
-            };
+        //}
 
-
-            var homecontroller = new HomeController(_emailConfirmation.Object, _repoWrapper.Object);
-
-            var validResult = await homecontroller.SendContacts(test1);
-            var invalidResult =await homecontroller.SendContacts(test2);
-
-            //Assert.Equal("FeedBackSended", valiVviewResult.ViewName);
-            Assert.NotNull(validResult);
-            Assert.NotNull(invalidResult);
+        //[Fact]
+        //public async Task TestSendContacts()
+        //{
+        //    ContactsViewModel test1 = new ContactsViewModel
+        //    {
+        //        Name = "Настя",
+        //        Email = "nasty@gmail.com",
+        //        PhoneNumber = "0934353139",
+        //        FeedBackDescription = "Хотіла б стати вашим волонтером"
+        //    };
+        //    ContactsViewModel test2 = new ContactsViewModel
+        //    {
+        //        Name = "",
+        //        PhoneNumber = "",
+        //        FeedBackDescription = ""
+        //    };
 
 
+        //    var homecontroller = new HomeController(_emailConfirmation.Object, _repoWrapper.Object);
 
+        //    var validResult = await homecontroller.SendContacts(test1);
+        //    var invalidResult = await homecontroller.SendContacts(test2);
 
-        }
+        //    //Assert.Equal("FeedBackSended", valiVviewResult.ViewName);
+        //    Assert.NotNull(validResult);
+        //    Assert.NotNull(invalidResult);
+        //}
     }
 }
