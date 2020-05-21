@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace EPlast.BussinessLayer.DTO.Events
+namespace EPlast.ViewModels.Events
 {
-    public class EventInfoDTO
+    public class EventInfoViewModel
     {
         public int EventId { get; set; }
         public string EventName { get; set; }
@@ -18,8 +19,8 @@ namespace EPlast.BussinessLayer.DTO.Events
         public string FormOfHolding { get; set; }
         public string ForWhom { get; set; }
         public int NumberOfParticipants { get; set; }
-        public List<EventAdminDTO> EventAdmins { get; set; }
-        public IEnumerable<EventParticipantDTO> EventParticipants { get; set; }
-        public List<EventGalleryDTO> EventGallery { get; set; }
+        public List<EventAdminViewModel> EventAdmins { get; set; }
+        public IEnumerable<EventParticipantViewModel> EventParticipants { get; set; }
+        public List<EventGalleryViewModel> EventGallery { get; set; }
     }
 }

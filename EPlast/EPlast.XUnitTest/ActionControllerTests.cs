@@ -743,45 +743,45 @@ namespace EPlast.XUnitTest
         //    Assert.Equal(500, codeResult.StatusCode);
         //}
 
-        public EventDTO GetEventDTO()
-        {
-           var dto = new EventDTO()
-           {
-               EventParticipants = new List<Participant>()
-               {
-                   new Participant(),
-                   new Participant(),
-                   new Participant()
-               },
-               IsEventFinished = true,
-               IsUserApprovedParticipant = true,
-               IsUserEventAdmin = true,
-               IsUserParticipant = false,
-               IsUserRejectedParticipant = false,
-               IsUserUndeterminedParticipant = false
-           };
-            return dto;
-        }
+        //public EventDTO GetEventDTO()
+        //{
+        //   var dto = new EventDTO()
+        //   {
+        //       EventParticipants = new List<Participant>()
+        //       {
+        //           new Participant(),
+        //           new Participant(),
+        //           new Participant()
+        //       },
+        //       IsEventFinished = true,
+        //       IsUserApprovedParticipant = true,
+        //       IsUserEventAdmin = true,
+        //       IsUserParticipant = false,
+        //       IsUserRejectedParticipant = false,
+        //       IsUserUndeterminedParticipant = false
+        //   };
+        //    return dto;
+        //}
 
-        public EventViewModel GetEventVM()
-        {
-            var model = new EventViewModel()
-            {
-                EventParticipants = new List<Participant>()
-                {
-                    new Participant(),
-                    new Participant(),
-                    new Participant()
-                },
-                IsEventFinished = true,
-                IsUserApprovedParticipant = true,
-                IsUserEventAdmin = true,
-                IsUserParticipant = false,
-                IsUserRejectedParticipant = false,
-                IsUserUndeterminedParticipant = false
-            };
-            return model;
-        }
+        //public EventViewModel GetEventVM()
+        //{
+        //    var model = new EventViewModel()
+        //    {
+        //        EventParticipants = new List<Participant>()
+        //        {
+        //            new Participant(),
+        //            new Participant(),
+        //            new Participant()
+        //        },
+        //        IsEventFinished = true,
+        //        IsUserApprovedParticipant = true,
+        //        IsUserEventAdmin = true,
+        //        IsUserParticipant = false,
+        //        IsUserRejectedParticipant = false,
+        //        IsUserUndeterminedParticipant = false
+        //    };
+        //    return model;
+        //}
 
         public IQueryable<Event> GetEvents()
         {

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace EPlast.BussinessLayer.DTO.Events
+namespace EPlast.ViewModels.Events
 {
-    public class EventParticipantDTO
+    public class EventParticipantViewModel
     {
         public int ParticipantId { get; set; }
         public string FullName { get; set; }

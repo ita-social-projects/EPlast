@@ -14,7 +14,8 @@ namespace EPlast.Mapping
         {
             CreateMap<EventCategoryDTO, EventCategoryViewModel>();
             CreateMap<GeneralEventDTO, GeneralEventViewModel>();
-            CreateMap<EventDTO, EventViewModel>();
+            CreateMap<EventDTO, EventViewModel>()
+                .ForMember(d=>d.Event, s=>s.MapFrom(f=>f.Event));
         }
     }
 
