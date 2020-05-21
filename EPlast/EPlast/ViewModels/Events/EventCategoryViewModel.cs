@@ -8,6 +8,7 @@ namespace EPlast.ViewModels.Events
 {
     public class EventCategoryViewModel
     {
-        public EventCategory EventCategory { get; set; }
+        public int EventCategoryId { get; set; }
+        public string EventCategoryName { get; set; }
     }
 }

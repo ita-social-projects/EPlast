@@ -19,4 +19,6 @@ namespace EPlast.ViewModels.Events
         public IEnumerable<Participant> EventParticipants { get; set; }
 
     }
+
+
 }
