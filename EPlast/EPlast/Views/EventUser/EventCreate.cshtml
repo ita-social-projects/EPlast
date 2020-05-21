@@ -11,18 +11,11 @@
                 </div>
             </div>
             <form method="post" asp-action="EventCreate" asp-controller="EventUser">
-
-                <div class="text-center d-xl-flex justify-content-xl-center align-items-xl-center">
-                    <h4 class="text-center">Оберіть тип події:</h4>
-                </div>
                 <div class="row border shadow text-center justify-content-xl-center align-items-xl-center">
-                    
                     @foreach (EventType item in Model.EventTypes)
                     {
-                        <div class="col justify-content-xl-center align-items-xl-center mt-2 py-0" id="block">
-                            <label class="btn btn-success">
-                                <input type="radio" name="options" id="@item.ID" autocomplete="off"> @item.EventTypeName
-                            </label>
+                        <div class="col justify-content-xl-center align-items-xl-center" id="block">
+                            <button class="btn typebutton" id="@item.ID" type="button">@item.EventTypeName</button>
                         </div>
                     }
                     <input type="hidden" id="name" asp-for="Event.EventTypeID" />
@@ -167,7 +160,7 @@
                         <div class="row">
                             <div class="col">
                                 <div class="d-xl-flex justify-content-xl-center align-items-xl-center" style="height: 76px;">
-                                    <textarea class="border TextIinput bigInput" asp-for="Event.Questions"
+                                    <textarea class="border TextIinput bigInput" asp-for="Event.Questions" 
                                               placeholder="Вкажіть питання.. " cols="30" rows="7"></textarea>
                                 </div>
                             </div>
@@ -192,8 +185,8 @@
                         <div class="row">
                             <div class="col">
                                 <div class="d-xl-flex justify-content-xl-center align-items-xl-center" style="height: 76px;">
-                                    <textarea class="border TextIinput bigInput" asp-for="Event.Description"
-                                              placeholder="Вкажіть зміни/додатки ? " cols="30" rows="7"></textarea>
+                                    <textarea class="border TextIinput bigInput" asp-for="Event.Description" 
+                                              placeholder="Вкажіть зміни/додатки.. " cols="30" rows="7"></textarea>
                                 </div>
                             </div>
                         </div>
