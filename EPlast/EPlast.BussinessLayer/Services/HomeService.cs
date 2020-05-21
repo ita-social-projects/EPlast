@@ -9,19 +9,16 @@ namespace EPlast.BussinessLayer
 {
     public class HomeService : IHomeService
     {
-        HomeService()
-        {
-        }
 
-        public Task ConfirmEmail(IEmailConfirmation emailConfirmation, ContactDTO contactsViewModel)
+        public Task ConfirmEmail(IEmailConfirmation emailConfirmation, ContactDTO contactDTO)
         {
             return emailConfirmation.SendEmailAsync("eplastdmnstrtr@gmail.com",
                 "Питання користувачів",
-                $"Контактні дані користувача : Електронна пошта {contactsViewModel.Email}, " +
-                $"Ім'я {contactsViewModel.Name}," +
-                $"Телефон {contactsViewModel.PhoneNumber}  " +
-                $"Опис питання : {contactsViewModel.FeedBackDescription}",
-                contactsViewModel.Email);
+                $"Контактні дані користувача : Електронна пошта {contactDTO.Email}, " +
+                $"Ім'я {contactDTO.Name}," +
+                $"Телефон {contactDTO.PhoneNumber}  " +
+                $"Опис питання : {contactDTO.FeedBackDescription}",
+                contactDTO.Email);
         }
     }
 }

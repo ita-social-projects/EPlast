@@ -77,7 +77,6 @@ namespace EPlast.Controllers
             return PartialView(res);
         }
 
-
         [HttpGet]
         public IActionResult FeedBackSended()
         {
@@ -93,17 +92,9 @@ namespace EPlast.Controllers
                 return View("Contacts");
             }
 
-            ContactDTO contact = null;
-            //contact = _mapper.Map();
-            await _homeService.ConfirmEmail(_emailConfirmation, contact);
+            var contact = _mapper.Map<ContactDTO>(contactsViewModel);
 
-            //await _emailConfirmation.SendEmailAsync("eplastdmnstrtr@gmail.com",
-            //    "Питання користувачів",
-            //    $"Контактні дані користувача : Електронна пошта {contactsViewModel.Email}, " +
-            //    $"Ім'я {contactsViewModel.Name}," +
-            //    $"Телефон {contactsViewModel.PhoneNumber}  " +
-            //    $"Опис питання : {contactsViewModel.FeedBackDescription}",
-            //    contactsViewModel.Email);
+            await _homeService.ConfirmEmail(_emailConfirmation, contact);
 
             return RedirectToAction("FeedBackSended", "Home");
         }
