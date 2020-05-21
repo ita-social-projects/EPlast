@@ -1,21 +1,22 @@
-﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO.Account;
-using EPlast.BussinessLayer.Interfaces;
-using EPlast.BussinessLayer.Services.Interfaces;
-using EPlast.Controllers;
-using EPlast.DataAccess.Entities;
-using EPlast.ViewModels;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Moq;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Xunit;
+using AutoMapper;
+using EPlast.BussinessLayer.DTO.Account;
+using EPlast.BussinessLayer.Interfaces;
+using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.Controllers;
+using EPlast.DataAccess.Entities;
+using EPlast.ViewModels;
+
 
 namespace EPlast.XUnitTest
 {
@@ -79,7 +80,7 @@ namespace EPlast.XUnitTest
             Assert.NotNull(viewResult);
         }
 
-        [Fact]   
+        [Fact]
         public async Task TestLoginPostUserNullReturnsViewWithModel()
         {
             //Arrange
@@ -348,13 +349,13 @@ namespace EPlast.XUnitTest
             return forgotpasswordDto;
         }
 
-        [Fact]
-        public async Task TestRegisterPostReturnsAcceptingEmailView()
+        /*[Fact]
+        public async Task TestRegisterPostReturnsAcceptingEmailView()//переписати
         {
             //Arrange
             var (mockAccountService, mockUserService, mockMapper, accountController) = CreateAccountController();
             mockAccountService
-                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))  // тут не можу настроїти
+                .Setup(s => s.FindByEmailAsync(It.IsAny<string>())) 
                 .ReturnsAsync((User)null);
 
             mockMapper
@@ -368,10 +369,6 @@ namespace EPlast.XUnitTest
             mockAccountService
                 .Setup(i => i.AddRoleAndTokenAsync(It.IsAny<RegisterDto>()))
                 .ReturnsAsync(GetTestCodeForResetPasswordAndConfirmEmail());
-
-            mockAccountService
-                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetTestUserWithAllFields());
 
             var mockUrlHelper = new Mock<IUrlHelper>(MockBehavior.Strict);
             mockUrlHelper
@@ -397,7 +394,7 @@ namespace EPlast.XUnitTest
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("AcceptingEmail", viewResult.ViewName);
             Assert.NotNull(viewResult);
-        }
+        }*/
 
         //ConfirmedEmail
         [Fact]
@@ -822,70 +819,78 @@ namespace EPlast.XUnitTest
             Assert.NotNull(viewResult);
         }
 
-        //    [Fact]
-        //    public async Task TestChangePasswordPostReturnsLoginRedirect()
-        //    {
-        //        //Arrange
-        //        var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountController) = CreateAccountController();
-        //        mockUserManager
-        //            .Setup(s => s.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-        //            .Returns(Task.FromResult(GetTestUserWithNullFields()));
+        [Fact]
+        public async Task TestChangePasswordPostReturnsLoginRedirect()
+        {
+            //Arrange
+            var (mockAccountService, mockUserService, mockMapper, accountController) = CreateAccountController();
+            mockAccountService
+                .Setup(s => s.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .Returns(Task.FromResult(GetTestUserWithNullFields()));
 
-        //        //Act
-        //        var result = await accountController.ChangePassword(GetTestChangeViewModel()) as RedirectToActionResult;
+            //Act
+            var result = await accountController.ChangePassword(GetTestChangeViewModel()) as RedirectToActionResult;
 
-        //        //Assert
-        //        Assert.Equal("Login", result.ActionName);
-        //        Assert.NotNull(result);
-        //    }
+            //Assert
+            Assert.Equal("Login", result.ActionName);
+            Assert.NotNull(result);
+        }
 
-        //    [Fact]
-        //    public async Task TestChangePasswordPostReturnsChangePasswordView()
-        //    {
-        //        //Arrange
-        //        var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountController) = CreateAccountController();
-        //        mockUserManager
-        //            .Setup(s => s.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-        //            .Returns(Task.FromResult(GetTestUserWithAllFields()));
+        [Fact]
+        public async Task TestChangePasswordPostReturnsChangePasswordView()
+        {
+            //Arrange
+            var (mockAccountService, mockUserService, mockMapper, accountController) = CreateAccountController();
+            mockAccountService
+                .Setup(s => s.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .Returns(Task.FromResult(GetTestUserWithAllFields()));
 
-        //        mockUserManager
-        //            .Setup(s => s.ChangePasswordAsync(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()))
-        //            .Returns(Task.FromResult(IdentityResult.Failed(null)));
+            mockMapper
+               .Setup(s => s.Map<ChangePasswordDto>(It.IsAny<ChangePasswordViewModel>()))
+               .Returns(GetTestChangePssswordDto());
 
-        //        //Act
-        //        var result = await accountController.ChangePassword(GetTestChangeViewModel());
+            mockAccountService
+                .Setup(s => s.ChangePasswordAsync(It.IsAny<User>(), It.IsAny<ChangePasswordDto>()))
+                .Returns(Task.FromResult(IdentityResult.Failed(null)));
 
-        //        //Assert
-        //        var viewResult = Assert.IsType<ViewResult>(result);
-        //        Assert.Equal("ChangePassword", viewResult.ViewName);
-        //        Assert.NotNull(viewResult);
-        //    }
+            //Act
+            var result = await accountController.ChangePassword(GetTestChangeViewModel());
 
-        //    [Fact]
-        //    public async Task TestChangePasswordPostReturnChangePasswordConfirmationView()
-        //    {
-        //        //Arrange
-        //        var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountController) = CreateAccountController();
-        //        mockUserManager
-        //            .Setup(s => s.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-        //            .Returns(Task.FromResult(GetTestUserWithAllFields()));
+            //Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            Assert.Equal("ChangePassword", viewResult.ViewName);
+            Assert.NotNull(viewResult);
+        }
 
-        //        mockUserManager
-        //            .Setup(s => s.ChangePasswordAsync(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()))
-        //            .Returns(Task.FromResult(IdentityResult.Success));
+        [Fact]
+        public async Task TestChangePasswordPostReturnChangePasswordConfirmationView()
+        {
+            //Arrange
+            var (mockAccountService, mockUserService, mockMapper, accountController) = CreateAccountController();
+            mockAccountService
+                .Setup(s => s.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .Returns(Task.FromResult(GetTestUserWithAllFields()));
 
-        //        mockSignInManager
-        //            .Setup(s => s.RefreshSignInAsync(It.IsAny<User>()))
-        //            .Verifiable();
+            mockMapper
+               .Setup(s => s.Map<ChangePasswordDto>(It.IsAny<ChangePasswordViewModel>()))
+               .Returns(GetTestChangePssswordDto());
 
-        //        //Act
-        //        var result = await accountController.ChangePassword(GetTestChangeViewModel());
+            mockAccountService
+                .Setup(s => s.ChangePasswordAsync(It.IsAny<User>(), It.IsAny<ChangePasswordDto>()))
+                .Returns(Task.FromResult(IdentityResult.Success));
 
-        //        //Assert
-        //        var viewResult = Assert.IsType<ViewResult>(result);
-        //        Assert.Equal("ChangePasswordConfirmation", viewResult.ViewName);
-        //        Assert.NotNull(viewResult);
-        //    }
+            mockAccountService
+                .Setup(s => s.RefreshSignInAsync(It.IsAny<User>()))
+                .Verifiable();
+
+            //Act
+            var result = await accountController.ChangePassword(GetTestChangeViewModel());
+
+            //Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            Assert.Equal("ChangePasswordConfirmation", viewResult.ViewName);
+            Assert.NotNull(viewResult);
+        }
 
         //ExternalLogin
         [Fact]
@@ -1008,7 +1013,7 @@ namespace EPlast.XUnitTest
                 Password = "andrii123",
                 RememberMe = true,
                 ReturnUrl = "/google.com/",
-                ExternalLogins = (GetTestAuthenticationSchemes()).ToList()
+                ExternalLogins = GetTestAuthenticationSchemes().ToList()
             };
             return loginViewModel;
         }
@@ -1069,6 +1074,17 @@ namespace EPlast.XUnitTest
             return changePasswordViewModel;
         }
 
+        private ChangePasswordDto GetTestChangePssswordDto()
+        {
+            var changePasswordDto = new ChangePasswordDto
+            {
+                CurrentPassword = "password123",
+                NewPassword = "newpassword123",
+                ConfirmPassword = "newpassword123"
+            };
+            return changePasswordDto;
+        }
+
         private User GetTestUserWithAllFields()
         {
             return new User()
@@ -1097,10 +1113,10 @@ namespace EPlast.XUnitTest
         //        };
         //    }
 
-        //    private User GetTestUserWithNullFields()
-        //    {
-        //        return null;
-        //    }
+        private User GetTestUserWithNullFields()
+        {
+            return null;
+        }
 
         private AuthenticationProperties GetAuthenticationProperties()
         {
@@ -1112,13 +1128,13 @@ namespace EPlast.XUnitTest
             return authProperties;
         }
 
-        //    private IEnumerable<AuthenticationScheme> GetTestAuthenticationSchemes()
-        //    {
-        //        AuthenticationScheme[] authenticationScheme = new AuthenticationScheme[2];
-        //        authenticationScheme[0] = new AuthenticationScheme("GoogleExample", "Google", typeof(IAuthenticationHandler));
-        //        authenticationScheme[1] = new AuthenticationScheme("FacebookExample", "Facebook", typeof(IAuthenticationHandler));
-        //        return authenticationScheme;
-        //    }
+        /*private IEnumerable<AuthenticationScheme> GetTestAuthenticationSchemes()
+        {
+            AuthenticationScheme[] authenticationScheme = new AuthenticationScheme[2];
+            authenticationScheme[0] = new AuthenticationScheme("GoogleExample", "Google", typeof(IAuthenticationHandler));
+            authenticationScheme[1] = new AuthenticationScheme("FacebookExample", "Facebook", typeof(IAuthenticationHandler));
+            return authenticationScheme;
+        }*/
 
         private string GetBadFakeCodeConfirmingEmail()
         {
