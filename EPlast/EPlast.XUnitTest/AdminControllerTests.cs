@@ -171,7 +171,7 @@ namespace EPlast.XUnitTest
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.IsAssignableFrom<UserTableViewModel[]>(viewResult.Model);
-
+            Assert.NotNull(result);
         }
     }
 }

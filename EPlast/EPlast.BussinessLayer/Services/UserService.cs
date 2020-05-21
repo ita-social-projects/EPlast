@@ -30,12 +30,6 @@ namespace EPlast.BussinessLayer.Services
             _mapper = mapper;
             _env = env;
         }
-
-        public void Delete(string user)
-        {
-            throw new NotImplementedException();
-        }
-
         public UserDTO GetUserProfile(string userId)
         {
             var user = _repoWrapper.User.
