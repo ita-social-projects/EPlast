@@ -52,14 +52,6 @@ namespace EPlast.XUnitTest
             Assert.NotNull(viewResult);
         }
 
-        private IEnumerable<AuthenticationScheme> GetTestAuthenticationSchemes()
-        {
-            AuthenticationScheme[] authenticationScheme = new AuthenticationScheme[2];
-            authenticationScheme[0] = new AuthenticationScheme("GoogleExample", "Google", typeof(IAuthenticationHandler));
-            authenticationScheme[1] = new AuthenticationScheme("FacebookExample", "Facebook", typeof(IAuthenticationHandler));
-            return authenticationScheme;
-        }
-
         [Fact]
         public async Task TestLoginPostModelIsNotValid()
         {
@@ -106,19 +98,7 @@ namespace EPlast.XUnitTest
             Assert.Equal(GetTestLoginViewModel().ReturnUrl, model.ReturnUrl);
             Assert.NotNull(viewResult);
         }
-
-        private LoginDto GetTestLoginDto()
-        {
-            var loginDto = new LoginDto
-            {
-                Email = "andriishainoha@gmail.com",
-                Password = "andrii123",
-                RememberMe = true,
-                ReturnUrl = "/google.com/"
-            };
-            return loginDto;
-        }
-
+        
         [Fact]
         public async Task TestLoginPostEmailConfReturnsViewWithModel()
         {
@@ -325,28 +305,6 @@ namespace EPlast.XUnitTest
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("Register", viewResult.ViewName);
             Assert.NotNull(viewResult);
-        }
-
-        private RegisterDto GetTestRegisterDto()
-        {
-            var registerDto = new RegisterDto
-            {
-                Email = "andriishainoha@gmail.com",
-                Name = "Andrii",
-                SurName = "Shainoha",
-                Password = "andrii123",
-                ConfirmPassword = "andrii123"
-            };
-            return registerDto;
-        }
-
-        private ForgotPasswordDto GetTestForgotPasswordDto()
-        {
-            var forgotpasswordDto = new ForgotPasswordDto
-            {
-                Email = "andriishainoha@gmail.com"
-            };
-            return forgotpasswordDto;
         }
 
         /*[Fact]
@@ -924,86 +882,86 @@ namespace EPlast.XUnitTest
             Assert.NotNull(challengeResult);
         }
 
-        //    //ExternalLoginCallBack
-        //    [Fact]
-        //    public async Task TestExternalLoginCallBackRemoteErrorNotNull()
-        //    {
-        //        //Arrange
-        //        var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountController) = CreateAccountController();
-        //        mockSignInManager
-        //            .Setup(s => s.GetExternalAuthenticationSchemesAsync())
-        //            .Returns(Task.FromResult<IEnumerable<AuthenticationScheme>>(GetTestAuthenticationSchemes()));
+        //ExternalLoginCallBack
+        [Fact]
+        public async Task TestExternalLoginCallBackRemoteErrorNotNull()
+        {
+            //Arrange
+            var (mockAccountService, mockUserService, mockMapper, accountController) = CreateAccountController();
+            mockAccountService
+                .Setup(s => s.GetAuthSchemesAsync())
+                .Returns(Task.FromResult<IEnumerable<AuthenticationScheme>>(GetTestAuthenticationSchemes()));
 
-        //        //Act
-        //        var result = await accountController.ExternalLoginCallBack(GetTestReturnUrl(), GetTestRemoteError());
+            //Act
+            var result = await accountController.ExternalLoginCallBack(GetTestReturnUrl(), GetTestRemoteError());
 
-        //        //Assert
-        //        var viewResult = Assert.IsType<ViewResult>(result);
-        //        var model = Assert.IsType<LoginViewModel>(viewResult.ViewData.Model);
-        //        Assert.Equal(GetTestLoginViewModel().ReturnUrl, model.ReturnUrl);
-        //        Assert.NotNull(viewResult);
-        //    }
+            //Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var model = Assert.IsType<LoginViewModel>(viewResult.ViewData.Model);
+            Assert.Equal(GetTestLoginViewModel().ReturnUrl, model.ReturnUrl);
+            Assert.NotNull(viewResult);
+        }
 
-        //    [Fact]
-        //    public async Task TestExternalLoginCallBackInfoNull()
-        //    {
-        //        //Arrange
-        //        var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountController) = CreateAccountController();
-        //        mockSignInManager
-        //            .Setup(s => s.GetExternalAuthenticationSchemesAsync())
-        //            .Returns(Task.FromResult<IEnumerable<AuthenticationScheme>>(GetTestAuthenticationSchemes()));
+        [Fact]
+        public async Task TestExternalLoginCallBackInfoNull()
+        {
+            //Arrange
+            var (mockAccountService, mockUserService, mockMapper, accountController) = CreateAccountController();
+            mockAccountService
+                .Setup(s => s.GetAuthSchemesAsync())
+                .Returns(Task.FromResult<IEnumerable<AuthenticationScheme>>(GetTestAuthenticationSchemes()));
 
-        //        mockSignInManager
-        //            .Setup(s => s.GetExternalLoginInfoAsync(It.IsAny<string>()))
-        //            .ReturnsAsync((ExternalLoginInfo)null);
+            mockAccountService
+                .Setup(s => s.GetInfoAsync())
+                .ReturnsAsync((ExternalLoginInfo)null);
 
-        //        //Act
-        //        var result = await accountController.ExternalLoginCallBack(GetTestReturnUrl());
+            //Act
+            var result = await accountController.ExternalLoginCallBack(GetTestReturnUrl());
 
-        //        //Assert
-        //        var viewResult = Assert.IsType<ViewResult>(result);
-        //        var model = Assert.IsType<LoginViewModel>(viewResult.ViewData.Model);
-        //        Assert.Equal(GetTestLoginViewModel().ReturnUrl, model.ReturnUrl);
-        //        Assert.NotNull(viewResult);
-        //    }
+            //Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var model = Assert.IsType<LoginViewModel>(viewResult.ViewData.Model);
+            Assert.Equal(GetTestLoginViewModel().ReturnUrl, model.ReturnUrl);
+            Assert.NotNull(viewResult);
+        }
 
-        //    [Fact]
-        //    public async Task TestExternalLoginCallBackRedirectReturnUrl()
-        //    {
-        //        //Arrange
-        //        var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountController) = CreateAccountController();
-        //        mockSignInManager
-        //            .Setup(s => s.GetExternalAuthenticationSchemesAsync())
-        //            .Returns(Task.FromResult<IEnumerable<AuthenticationScheme>>(GetTestAuthenticationSchemes()));
+        [Fact]
+        public async Task TestExternalLoginCallBackRedirectReturnUrl()
+        {
+            //Arrange
+            var (mockAccountService, mockUserService, mockMapper, accountController) = CreateAccountController();
+            mockAccountService
+                .Setup(s => s.GetAuthSchemesAsync())
+                .Returns(Task.FromResult<IEnumerable<AuthenticationScheme>>(GetTestAuthenticationSchemes()));
 
-        //        mockSignInManager
-        //            .Setup(s => s.GetExternalLoginInfoAsync(It.IsAny<string>()))
-        //            .ReturnsAsync(GetExternalLoginInfoFake());
+            mockAccountService
+                .Setup(s => s.GetInfoAsync())
+                .ReturnsAsync(GetExternalLoginInfoFake());
 
-        //        mockSignInManager
-        //            .Setup(s => s.ExternalLoginSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
-        //            .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
+            mockAccountService
+                .Setup(s => s.GetSignInResultAsync(It.IsAny<ExternalLoginInfo>()))
+                .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
 
-        //        //Act
-        //        var result = await accountController.ExternalLoginCallBack(GetTestReturnUrl()) as LocalRedirectResult;
+            //Act
+            var result = await accountController.ExternalLoginCallBack(GetTestReturnUrl()) as LocalRedirectResult;
 
-        //        //Assert
-        //        Assert.Equal(GetTestLoginViewModel().ReturnUrl, result.Url);
-        //        Assert.NotNull(result);
-        //    }
+            //Assert
+            Assert.Equal(GetTestLoginViewModel().ReturnUrl, result.Url);
+            Assert.NotNull(result);
+        }
 
-        //    //Fakes
-        //    private string GetFakeEmail()
-        //    {
-        //        return new string("fakeExampleEmail");
-        //    }
+        //Fakes
+        private string GetFakeEmail()
+        {
+            return new string("fakeExampleEmail");
+        }
 
-        //    private ExternalLoginInfo GetExternalLoginInfoFake()
-        //    {
-        //        var claims = new List<ClaimsIdentity>();
-        //        var info = new ExternalLoginInfo(new ClaimsPrincipal(claims), "Google", "GoogleExample", "GoogleForDisplay");
-        //        return info;
-        //    }
+        private ExternalLoginInfo GetExternalLoginInfoFake()
+        {
+            var claims = new List<ClaimsIdentity>();
+            var info = new ExternalLoginInfo(new ClaimsPrincipal(claims), "Google", "GoogleExample", "GoogleForDisplay");
+            return info;
+        }
 
         private LoginViewModel GetTestLoginViewModel()
         {
@@ -1074,6 +1032,27 @@ namespace EPlast.XUnitTest
             return changePasswordViewModel;
         }
 
+        private RegisterDto GetTestRegisterDto()
+        {
+            var registerDto = new RegisterDto
+            {
+                Email = "andriishainoha@gmail.com",
+                Name = "Andrii",
+                SurName = "Shainoha",
+                Password = "andrii123",
+                ConfirmPassword = "andrii123"
+            };
+            return registerDto;
+        }
+
+        private ForgotPasswordDto GetTestForgotPasswordDto()
+        {
+            var forgotpasswordDto = new ForgotPasswordDto
+            {
+                Email = "andriishainoha@gmail.com"
+            };
+            return forgotpasswordDto;
+        }
         private ChangePasswordDto GetTestChangePssswordDto()
         {
             var changePasswordDto = new ChangePasswordDto
@@ -1118,6 +1097,18 @@ namespace EPlast.XUnitTest
             return null;
         }
 
+        private LoginDto GetTestLoginDto()
+        {
+            var loginDto = new LoginDto
+            {
+                Email = "andriishainoha@gmail.com",
+                Password = "andrii123",
+                RememberMe = true,
+                ReturnUrl = "/google.com/"
+            };
+            return loginDto;
+        }
+
         private AuthenticationProperties GetAuthenticationProperties()
         {
             Dictionary<string, string> authenticationDictionary = new Dictionary<string, string>(3);
@@ -1128,18 +1119,18 @@ namespace EPlast.XUnitTest
             return authProperties;
         }
 
-        /*private IEnumerable<AuthenticationScheme> GetTestAuthenticationSchemes()
+        private string GetBadFakeCodeConfirmingEmail()
+        {
+            string code = null;
+            return code;
+        }
+
+        private IEnumerable<AuthenticationScheme> GetTestAuthenticationSchemes()
         {
             AuthenticationScheme[] authenticationScheme = new AuthenticationScheme[2];
             authenticationScheme[0] = new AuthenticationScheme("GoogleExample", "Google", typeof(IAuthenticationHandler));
             authenticationScheme[1] = new AuthenticationScheme("FacebookExample", "Facebook", typeof(IAuthenticationHandler));
             return authenticationScheme;
-        }*/
-
-        private string GetBadFakeCodeConfirmingEmail()
-        {
-            string code = null;
-            return code;
         }
 
         private string GetTestIdConfirmingEmail()
@@ -1163,10 +1154,10 @@ namespace EPlast.XUnitTest
             return new string("/google.com/");
         }
 
-        //    private string GetTestRemoteError()
-        //    {
-        //        return new string("remoteErrorExample");
-        //    }
+        private string GetTestRemoteError()
+        {
+            return new string("remoteErrorExample");
+        }
 
         private string GetTestProvider()
         {

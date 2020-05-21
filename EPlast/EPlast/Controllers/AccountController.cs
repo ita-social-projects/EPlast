@@ -11,10 +11,10 @@ using Microsoft.AspNetCore.Authentication;
 using AutoMapper;
 using EPlast.BussinessLayer.DTO.Account;
 using EPlast.BussinessLayer.Interfaces;
-//using EPlast.DataAccess.Entities;
 using EPlast.ViewModels;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.BussinessLayer.DTO;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.Controllers
 {
