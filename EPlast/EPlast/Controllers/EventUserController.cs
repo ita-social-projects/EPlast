@@ -30,20 +30,20 @@ namespace EPlast.Controllers
 
         public IActionResult EventUser(string userId)
         {
-            var _currentUserId = _userManager.GetUserId(User);
-            if (string.IsNullOrEmpty(userId))
-            {
-                userId = _currentUserId;
-            }
-
             try
             {
-                EventUserViewModel model = new EventUserViewModel();
+                var _currentUserId = _userManager.GetUserId(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    userId = _currentUserId;
+                }
 
                 var user = _repoWrapper.User.
-                   FindByCondition(q => q.Id == userId).
-                   First();
+                  FindByCondition(q => q.Id == userId).
+                  First();
 
+                EventUserViewModel model = new EventUserViewModel();
+               
                 model.User = user;
                 model.EventAdmins = _repoWrapper.EventAdmin.FindByCondition(i => i.UserID == _userManager.GetUserId(User)).
                                 Include(i => i.Event).Include(i => i.User).ToList();
