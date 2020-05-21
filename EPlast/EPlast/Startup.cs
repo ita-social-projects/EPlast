@@ -26,6 +26,7 @@ using AutoMapper;
 using EPlast.BussinessLayer.Services;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.Mapping;
+using EPlast.ViewModels.UserInformation.UserProfile;
 
 namespace EPlast
 {
@@ -51,6 +52,7 @@ namespace EPlast
                     .AddEntityFrameworkStores<EPlastDBContext>()
                     .AddDefaultTokenProviders();
 
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("Admin",
@@ -68,6 +70,14 @@ namespace EPlast
             services.AddScoped<IDecisionVMIitializer, DecisionVMIitializer>();
             services.AddScoped<IPDFService, PDFService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<INationalityService, NationalityService>();
+            services.AddScoped<IReligionService, ReligionService>();
+            services.AddScoped<IEducationService, EducationService>();
+            services.AddScoped<IWorkService, WorkService>();
+            services.AddScoped<IGenderService, GenderService>();
+            services.AddScoped<IDegreeService, DegreeService>();
+            services.AddScoped<IConfirmedUsersService, ConfirmedUsersService>();
+            services.AddScoped<IUserManagerService, UserManagerService>();
 
             services.AddScoped<IDirectoryManager, DirectoryManager>();
             services.AddScoped<IFileManager, FileManager>();
@@ -124,6 +134,8 @@ namespace EPlast
                 mc.AddProfile(new Mapping.NationalityProfile());
                 mc.AddProfile(new Mapping.GenderProfile());
                 mc.AddProfile(new Mapping.DegreeProfile());
+                mc.AddProfile(new Mapping.ConfirmedUserProfile());
+                mc.AddProfile(new Mapping.ApproverProfile());
             });
 
             IMapper mapper = mappingConfig.CreateMapper();
