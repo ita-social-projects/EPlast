@@ -98,8 +98,7 @@ namespace EPlast.BussinessLayer.Services
                         .ThenInclude(eg => eg.Gallary)
                    .Select(e => new EventDTO()
                    {
-                       Event = e,
-                       EventParticipants = e.Participants,
+                       Event = _mapper.Map<Event, EventInfoDTO>(e),
                        IsUserEventAdmin = (e.EventAdmins.Any(evAdm => evAdm.UserID == _userManager.GetUserId(user))) || isUserGlobalEventAdmin,
                        IsUserParticipant = e.Participants.Any(p => p.UserId == _userManager.GetUserId(user)),
                        IsUserApprovedParticipant = e.Participants.Any(p => p.UserId == _userManager.GetUserId(user) && p.ParticipantStatusId == approvedStatus),
@@ -111,14 +110,8 @@ namespace EPlast.BussinessLayer.Services
 
             if (!dto.IsUserEventAdmin)
             {
-                dto.EventParticipants = dto.EventParticipants.Where(p => p.ParticipantStatusId == approvedStatus);
+                dto.Event.EventParticipants = dto.Event.EventParticipants.Where(p => p.StatusId==approvedStatus);
             }
-
-            var x = _mapper.Map<List<EventGallary>, List<EventGalleryDTO>>(dto.Event.EventGallarys.ToList());
-            var y = _mapper.Map<List<EventAdmin>, List<EventAdminDTO>>(dto.Event.EventAdmins.ToList());
-            var z = _mapper.Map<List<Participant>, List<EventParticipantDTO>>(dto.Event.Participants.ToList());
-            var v = _mapper.Map<Event, EventInfoDTO>(dto.Event);
-
 
             return dto;
         }
