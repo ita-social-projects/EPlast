@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BussinessLayer.DTO.Events;
 using EPlast.BussinessLayer.Interfaces;
 using EPlast.DataAccess.Entities;
@@ -21,12 +22,15 @@ namespace EPlast.BussinessLayer.Services
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
         private readonly IHostingEnvironment _env;
+        private readonly IMapper _mapper;
 
-        public ActionManager(UserManager<User> userManager, IRepositoryWrapper repoWrapper, IHostingEnvironment env)
+
+        public ActionManager(UserManager<User> userManager, IRepositoryWrapper repoWrapper, IHostingEnvironment env, IMapper mapper)
         {
             _userManager = userManager;
             _repoWrapper = repoWrapper;
             _env = env;
+            _mapper = mapper;
         }
 
         public List<EventCategoryDTO> GetActionCategories()
@@ -109,6 +113,12 @@ namespace EPlast.BussinessLayer.Services
             {
                 dto.EventParticipants = dto.EventParticipants.Where(p => p.ParticipantStatusId == approvedStatus);
             }
+
+            var x = _mapper.Map<List<EventGallary>, List<EventGalleryDTO>>(dto.Event.EventGallarys.ToList());
+            var y = _mapper.Map<List<EventAdmin>, List<EventAdminDTO>>(dto.Event.EventAdmins.ToList());
+            var z = _mapper.Map<List<Participant>, List<EventParticipantDTO>>(dto.Event.Participants.ToList());
+            var v = _mapper.Map<Event, EventInfoDTO>(dto.Event);
+
 
             return dto;
         }
