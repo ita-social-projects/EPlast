@@ -1,10 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO;
 using EPlast.DataAccess.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using EPlast.ViewModels.UserInformation.UserProfile;
 
 namespace EPlast.Mapping
 {
@@ -14,6 +11,8 @@ namespace EPlast.Mapping
         {
             CreateMap<Religion, ReligionDTO>();
             CreateMap<ReligionDTO, Religion>();
+            CreateMap<ReligionViewModel, ReligionDTO>();
+            CreateMap<ReligionDTO, ReligionViewModel>();
         }
     }
 }

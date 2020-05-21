@@ -21,6 +21,9 @@ using System.Web;
 using AutoMapper;
 using EPlast.BussinessLayer.DTO;
 using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.ViewModels.UserInformation;
+using EPlast.ViewModels.UserInformation.UserProfile;
+using System.Collections.Generic;
 
 namespace EPlast.Controllers
 {
@@ -34,6 +37,14 @@ namespace EPlast.Controllers
         private readonly IHostingEnvironment _env;
         private readonly IUserAccessManager _userAccessManager;
         private readonly IUserService _userService;
+        private readonly INationalityService _nationalityService;
+        private readonly IEducationService _educationService;
+        private readonly IReligionService _religionService;
+        private readonly IWorkService _workService;
+        private readonly IGenderService _genderService;
+        private readonly IDegreeService _degreeService;
+        private readonly IUserManagerService _userManagerService;
+        private readonly IConfirmedUsersService _confirmedUserService;
         private readonly IMapper _mapper;
 
         public AccountController(UserManager<User> userManager,
@@ -44,6 +55,14 @@ namespace EPlast.Controllers
             IHostingEnvironment env,
             IUserAccessManager userAccessManager,
             IUserService userService,
+            INationalityService nationalityService,
+            IEducationService educationService,
+            IReligionService religionService,
+            IWorkService workService,
+            IGenderService genderService,
+            IDegreeService degreeService,
+            IConfirmedUsersService confirmedUserService,
+            IUserManagerService userManagerService,
             IMapper mapper)
         {
             _userManager = userManager;
@@ -54,7 +73,15 @@ namespace EPlast.Controllers
             _env = env;
             _userAccessManager = userAccessManager;
             _userService = userService;
+            _nationalityService = nationalityService;
+            _religionService = religionService;
+            _degreeService = degreeService;
+            _workService = workService;
+            _educationService = educationService;
+            _genderService = genderService;
+            _confirmedUserService = confirmedUserService;
             _mapper = mapper;
+            _userManagerService = userManagerService;
         }
 
         [HttpGet]
@@ -555,75 +582,71 @@ namespace EPlast.Controllers
         }
 
         [Authorize]
-        public IActionResult UserProfile(string userId)
+        [HttpGet]
+        public async Task<IActionResult> UserProfile(string userId)
         {
             try
             {
-                var _currentUserId = _userManager.GetUserId(User);
                 if (string.IsNullOrEmpty(userId))
                 {
-                    userId = _currentUserId;
+                    // _logger.Log(LogLevel.Error, "User id is null");
+                    // return RedirectToAction("HandleError", "Error", new { code = 500 });
+                    userId = _userManagerService.GetUserId(User);
                 }
-                _logger.Log(LogLevel.Information, $"UserProfile Id is {userId}");
-                _logger.Log(LogLevel.Information, $"Authenticate userId is {_currentUserId}");
 
+                var user = _userService.GetUserProfile(userId).Result;
+                var time = _userService.CheckOrAddPlastunRole(_mapper.Map<UserDTO, UserViewModel>(user).Id, user.RegistredOn);
+                var isUserPlastun = await _userManagerService.IsInRole(user, "Пластун");
 
-                var user = _userService.GetUserProfile(userId);
-                var time = _userService.CheckOrAddPlastunRole((_mapper.Map<UserDTO, User>(user) as IdentityUser).Id, user.RegistredOn);
-
-                var model = new UserViewModel
+                var model = new PersonalDataViewModel
                 {
-                    User = _mapper.Map<UserDTO,User>(user),
-                    timeToJoinPlast = time.Result
+                    User = _mapper.Map<UserDTO, UserViewModel>(user),
+                    timeToJoinPlast = time.Result,
+                    IsUserPlastun = isUserPlastun
                 };
+                
                 return View(model);
-                //_logger.Log(LogLevel.Error, $"Can`t find this user:{userId}, or smth else");
-               // return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
             catch
             {
+                _logger.Log(LogLevel.Error, "Smth went wrong");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
 
         [HttpGet]
-        public IActionResult Approvers(string userId)
+        public async Task<IActionResult> Approvers(string userId)
         {
             try
             {
-                var _currentUserId = _userManager.GetUserId(User);
                 if (string.IsNullOrEmpty(userId))
                 {
-                    userId = _currentUserId;
+                    _logger.Log(LogLevel.Error, "User id is null");
+                    return RedirectToAction("HandleError", "Error", new { code = 500 });
                 }
-                _logger.Log(LogLevel.Information, $"UserProfile Id is {userId}");
-                _logger.Log(LogLevel.Information, $"Authenticate userId is {_currentUserId}");
 
-                var user = _repoWrapper.User.
-                FindByCondition(q => q.Id == userId).
-                    Include(x => x.ConfirmedUsers).
-                        ThenInclude(q => (q as ConfirmedUser).Approver).
-                        ThenInclude(q => q.User).
-                    FirstOrDefault();
-
-                var _confUsers = user.ConfirmedUsers.Where(x => x.isCityAdmin == false && x.isClubAdmin == false).ToList();
-
-                var _canApprove = _confUsers.Count < 3
-                    && !_confUsers.Any(x => x.Approver.UserID == _currentUserId)
-                    && !(_currentUserId == userId);
-
-                TimeSpan _timeToJoinPlast = CheckOrAddPlastunRole(user).Result;
+                var user = _userService.GetUserProfile(userId).Result;
+                var _confUsers = _userService.GetConfirmedUsers(user).Result;
+                var canApprove = _userService.CanApprove(_confUsers, userId, User).Result;
+                var time = _userService.CheckOrAddPlastunRole(user.Id, user.RegistredOn).Result;
+                var clubApprover = _userService.GetClubAdminConfirmedUser(user).Result;
+                var cityApprover = _userService.GetCityAdminConfirmedUser(user).Result;
 
                 if (user != null)
                 {
-                    var model = new UserViewModel
+                    var model = new UserApproversViewModel
                     {
-                        User = user,
-                        canApprove = _canApprove,
-                        timeToJoinPlast = _timeToJoinPlast,
-                        ConfirmedUsers = _confUsers,
-                        ClubApprover = user.ConfirmedUsers.FirstOrDefault(x => x.isClubAdmin == true),
-                        CityApprover = user.ConfirmedUsers.FirstOrDefault(x => x.isCityAdmin == true)
+                        User = _mapper.Map<UserDTO, UserViewModel>(user),
+                        canApprove = canApprove,
+                        timeToJoinPlast = time,
+                        ConfirmedUsers = _mapper.Map<IEnumerable<ConfirmedUserDTO>, IEnumerable<ConfirmedUserViewModel>>(_confUsers),
+                        ClubApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(clubApprover),
+                        CityApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(cityApprover),
+                        IsUserHeadOfCity = await _userManagerService.IsInRole(user, "Голова Станиці"),
+                        IsUserHeadOfClub = await _userManagerService.IsInRole(user, "Голова Куреня"),
+                        IsUserHeadOfRegion = await _userManagerService.IsInRole(user, "Голова Округу"),
+                        IsUserPlastun = await _userManagerService.IsInRole(user, "Пластун"),
+                        CurrentUserId= _userManagerService.GetUserId(User)
                     };
 
                     return View(model);
@@ -634,25 +657,6 @@ namespace EPlast.Controllers
             catch
             {
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
-            }
-        }
-
-        public async Task<TimeSpan> CheckOrAddPlastunRole(User user)
-        {
-            try
-            {
-                var timeToJoinPlast = user.RegistredOn.AddYears(1) - DateTime.Now;
-                if (timeToJoinPlast <= TimeSpan.Zero)
-                {
-                    var us = await _userManager.FindByIdAsync(user.Id);
-                    await _userManager.AddToRoleAsync(us, "Пластун");
-                    return TimeSpan.Zero;
-                }
-                return timeToJoinPlast;
-            }
-            catch
-            {
-                return TimeSpan.Zero;
             }
         }
 
@@ -678,11 +682,11 @@ namespace EPlast.Controllers
                         .Include(ca => ca.AdminType)
                         .Include(ca => ca.City);
 
-                TimeSpan _timeToJoinPlast = CheckOrAddPlastunRole(user).Result;
+                TimeSpan _timeToJoinPlast = _userService.CheckOrAddPlastunRole(user.Id,user.RegistredOn).Result;
 
                 if (user != null)
                 {
-                    var model = new UserViewModel
+                    var model = new PositionUserViewModel
                     {
                         User = user,
                         UserPositions = userPositions,
@@ -706,15 +710,8 @@ namespace EPlast.Controllers
         {
             if (userId != null)
             {
-                var id = _userManager.GetUserId(User);
-
-                var conUs = new ConfirmedUser { UserID = userId, ConfirmDate = DateTime.Now,isClubAdmin= _isClubAdmin,isCityAdmin= _isCityAdmin };
-                var appUs = new Approver { UserID = id, ConfirmedUser = conUs };
-                conUs.Approver = appUs;
-
-                _repoWrapper.ConfirmedUser.Create(conUs);
-                _repoWrapper.Save();
-                return RedirectToAction("UserProfile", "Account", new { userId = userId });
+                _confirmedUserService.Create(User, userId, _isClubAdmin, _isCityAdmin);
+                return RedirectToAction("Approvers", "Account", new { userId = userId });
             }
             return RedirectToAction("HandleError", "Error", new { code = 500 });
         }
@@ -722,8 +719,7 @@ namespace EPlast.Controllers
         [Authorize]
         public IActionResult ApproverDelete(int confirmedId, string userId)
         {
-            _repoWrapper.ConfirmedUser.Delete(_repoWrapper.ConfirmedUser.FindByCondition(x=>x.ID == confirmedId).First());
-            _repoWrapper.Save();
+            _confirmedUserService.Delete(confirmedId);
             return RedirectToAction("UserProfile", "Account", new { userId = userId });
         }
 
@@ -747,42 +743,29 @@ namespace EPlast.Controllers
 
             try
             {
-                var user = _repoWrapper.User.
-                FindByCondition(q => q.Id == userId).
-                Include(i => i.UserProfile).
-                    ThenInclude(x => x.Nationality).
-                Include(g => g.UserProfile).
-                    ThenInclude(g => g.Gender).
-                Include(g => g.UserProfile).
-                    ThenInclude(g => g.Education).
-                Include(g => g.UserProfile).
-                    ThenInclude(g => g.Degree).
-                Include(g => g.UserProfile).
-                    ThenInclude(g => g.Religion).
-                Include(g => g.UserProfile).
-                    ThenInclude(g => g.Work).
-                FirstOrDefault();
-                ViewBag.genders = (from item in _repoWrapper.Gender.FindAll()
+                var user = _userService.GetUserProfile(userId).Result;
+                ViewBag.genders = (from item in _genderService.GetAll().Result
                                    select new SelectListItem
                                    {
                                        Text = item.Name,
                                        Value = item.ID.ToString()
                                    });
-                var placeOfStudyUnique = _repoWrapper.Education.FindAll().GroupBy(x => x.PlaceOfStudy).Select(x => x.FirstOrDefault()).ToList();
-                var specialityUnique = _repoWrapper.Education.FindAll().GroupBy(x => x.Speciality).Select(x => x.FirstOrDefault()).ToList();
-                var placeOfWorkUnique = _repoWrapper.Work.FindAll().GroupBy(x => x.PlaceOfwork).Select(x => x.FirstOrDefault()).ToList();
-                var positionUnique = _repoWrapper.Work.FindAll().GroupBy(x => x.Position).Select(x => x.FirstOrDefault()).ToList();
 
-                var educView = new EducationViewModel { PlaceOfStudyID = user.UserProfile.EducationId, SpecialityID = user.UserProfile.EducationId, PlaceOfStudyList = placeOfStudyUnique, SpecialityList = specialityUnique };
-                var workView = new WorkViewModel { PlaceOfWorkID = user.UserProfile.WorkId, PositionID = user.UserProfile.WorkId, PlaceOfWorkList = placeOfWorkUnique, PositionList = positionUnique };
+                var placeOfStudyUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(_educationService.GetAllGroupByPlace().Result);
+                var specialityUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(_educationService.GetAllGroupBySpeciality().Result);
+                var placeOfWorkUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(_workService.GetAllGroupByPlace().Result); 
+                var positionUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(_workService.GetAllGroupByPosition().Result);
+
+                var educView = new EducationUserViewModel { PlaceOfStudyID = user.UserProfile.EducationId, SpecialityID = user.UserProfile.EducationId, PlaceOfStudyList = placeOfStudyUnique, SpecialityList = specialityUnique };
+                var workView = new WorkUserViewModel { PlaceOfWorkID = user.UserProfile.WorkId, PositionID = user.UserProfile.WorkId, PlaceOfWorkList = placeOfWorkUnique, PositionList = positionUnique };
                 var model = new EditUserViewModel()
                 {
-                    User = user,
-                    Nationalities = _repoWrapper.Nationality.FindAll(),
-                    Religions = _repoWrapper.Religion.FindAll(),
+                    User = _mapper.Map<UserDTO, User>(user),
+                    Nationalities = _mapper.Map<IEnumerable<NationalityDTO>, IEnumerable<NationalityViewModel>>(_nationalityService.GetAll().Result),
+                    Religions = _mapper.Map<IEnumerable<ReligionDTO>, IEnumerable<ReligionViewModel>>(_religionService.GetAll().Result),
                     EducationView = educView,
                     WorkView = workView,
-                    Degrees = _repoWrapper.Degree.FindAll(),
+                    Degrees = _mapper.Map<IEnumerable<DegreeDTO>, IEnumerable<DegreeViewModel>>(_degreeService.GetAll().Result),
                 };
 
                 return View(model);
@@ -825,17 +808,11 @@ namespace EPlast.Controllers
                 }
 
                 //Nationality
-                if (model.User.UserProfile.NationalityId == null)
-                {
-                    if (string.IsNullOrEmpty(model.User.UserProfile.Nationality.Name))
-                    {
-                        model.User.UserProfile.Nationality = null;
-                    }
-                }
-                else
+                if (!(model.User.UserProfile.NationalityId == null) && string.IsNullOrEmpty(model.User.UserProfile.Nationality.Name))
                 {
                     model.User.UserProfile.Nationality = null;
                 }
+               
 
                 //Religion
                 if (model.User.UserProfile.ReligionId == null)

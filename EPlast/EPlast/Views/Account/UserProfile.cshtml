@@ -4,8 +4,7 @@
     ViewBag.ActiveNav = "UserProfile"; 
 }
 @using Microsoft.AspNetCore.Identity;
-@model EPlast.ViewModels.UserViewModel
-@inject UserManager<EPlast.DataAccess.Entities.User> _userManager
+@model EPlast.ViewModels.UserInformation.PersonalDataViewModel
 
 <div id="userProfile" class="container tab-pane active UserProfileWrapper">
     <div class="row mt-4 d-flex">
@@ -16,7 +15,7 @@
                 </div>
                 <div class="profile-usertitle">
                     <br />
-                    @if (!_userManager.IsInRoleAsync(Model.User, "Пластун").Result)
+                    @if (!Model.IsUserPlastun)
                     {
                         double perc = 100 - @Model.timeToJoinPlast.Days * 100 / 365;
                         int count = @Model.timeToJoinPlast.Days;

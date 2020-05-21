@@ -1,18 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
+using EPlast.ViewModels.UserInformation.UserProfile;
 
-namespace EPlast.BussinessLayer.DTO
+namespace EPlast.ViewModels
 {
-    public class ConfirmedUserDTO
+    public class ConfirmedUserViewModel
     {
         public int ID { get; set; }
         [Required]
-        public UserDTO User { get; set; }
+        public UserViewModel User { get; set; }
         public string UserID { get; set; }
         public int? ApproverID { get; set; }
-        public ApproverDTO Approver { get; set; }
+        public ApproverViewModel Approver { get; set; }
         public DateTime ConfirmDate { get; set; }
         public bool isClubAdmin { get; set; }
         public bool isCityAdmin { get; set; }
