@@ -36,8 +36,7 @@ namespace EPlast.Controllers
 
         public DocumentationController(IRepositoryWrapper repoWrapper, UserManager<User> userManager,
             IAnnualReportVMInitializer annualReportVMCreator,
-            IPDFService PDFService, IHostingEnvironment appEnvironment,
-            IViewAnnualReportsVMInitializer viewAnnualReportsVMInitializer,
+            IPDFService PDFService, IViewAnnualReportsVMInitializer viewAnnualReportsVMInitializer,
             ICityAccessManager cityAccessManager, ILogger<DocumentationController> logger,
             IDecisionService decisionService, IMapper mapper)
         {
