@@ -43,7 +43,7 @@ namespace EPlast
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAutoMapper(typeof(MappingProfile));
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddOptions();
             services.AddDbContextPool<EPlastDBContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("EPlastDBConnection")));
@@ -118,21 +118,6 @@ namespace EPlast
                 options.LogoutPath = "/Account/Logout";
             });
             
-            var mappingConfig = new MapperConfiguration(mc =>
-            {
-                mc.AddProfile(new Mapping.UserProfile());
-                mc.AddProfile(new Mapping.UserProfileProfile());
-                mc.AddProfile(new Mapping.EducationProfile());
-                mc.AddProfile(new Mapping.WorkProfile());
-                mc.AddProfile(new Mapping.ReligionProfile());
-                mc.AddProfile(new Mapping.NationalityProfile());
-                mc.AddProfile(new Mapping.GenderProfile());
-                mc.AddProfile(new Mapping.DegreeProfile());
-                mc.AddProfile(new MappingProfile());
-            });
-
-            IMapper mapper = new Mapper(mappingConfig);
-            services.AddSingleton(mapper);
             services.AddMvc();
         }
 
