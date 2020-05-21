@@ -12,7 +12,6 @@ namespace EPlast.BussinessLayer.Services.Interfaces
     {
         UserDTO GetUserProfile(string userId);
         void Update(UserDTO user, IFormFile file, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId);
-        void Delete(string user);
         Task<TimeSpan> CheckOrAddPlastunRole(string userId, DateTime registeredOn);
         IEnumerable<ConfirmedUserDTO> GetConfirmedUsers(UserDTO user);
         ConfirmedUserDTO GetClubAdminConfirmedUser(UserDTO user);

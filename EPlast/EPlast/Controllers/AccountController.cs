@@ -12,8 +12,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -628,7 +626,7 @@ namespace EPlast.Controllers
                 var user = _userService.GetUserProfile(userId);
                 var _confUsers = _userService.GetConfirmedUsers(user);
                 var canApprove = _userService.CanApprove(_confUsers, userId, User);
-                var time = _userService.CheckOrAddPlastunRole(user.Id, user.RegistredOn).Result;
+                var time = await _userService.CheckOrAddPlastunRole(user.Id, user.RegistredOn);
                 var clubApprover = _userService.GetClubAdminConfirmedUser(user);
                 var cityApprover = _userService.GetCityAdminConfirmedUser(user);
 
@@ -732,14 +730,6 @@ namespace EPlast.Controllers
                 _logger.Log(LogLevel.Error, "User id is null");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
-
-            if (!_repoWrapper.Gender.FindAll().Any())
-            {
-                _repoWrapper.Gender.Create(new Gender { Name = "Чоловік" });
-                _repoWrapper.Gender.Create(new Gender { Name = "Жінка" });
-                _repoWrapper.Save();
-            }
-            //!!
 
             try
             {
