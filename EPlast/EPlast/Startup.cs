@@ -22,6 +22,7 @@ using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using EPlast.Wrapper;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
+using EPlast.BussinessLayer.Services;
 
 namespace EPlast
 {
@@ -60,6 +61,7 @@ namespace EPlast
             services.AddScoped<IViewAnnualReportsVMInitializer, ViewAnnualReportsVMInitializer>();
             services.AddScoped<IDecisionVMIitializer, DecisionVMIitializer>();
             services.AddScoped<IPDFService, PDFService>();
+            services.AddScoped<IClubService, ClubService>();
 
             services.AddScoped<IDirectoryManager, DirectoryManager>();
             services.AddScoped<IFileManager, FileManager>();
