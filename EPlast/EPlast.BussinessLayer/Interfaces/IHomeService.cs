@@ -8,6 +8,6 @@ namespace EPlast.BussinessLayer.Interfaces
 {
     public interface IHomeService
     {
-        Task ConfirmEmail(IEmailConfirmation emailConfirmation, ContactDTO contactsViewModel);
+        Task ConfirmEmail(IEmailConfirmation emailConfirmation, ContactDTO contactDTO);
     }
 }
