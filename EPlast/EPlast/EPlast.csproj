@@ -20,7 +20,7 @@
     <Content Remove="Views\Account\_UserLayout.cshtml" />
     <Content Remove="wwwroot\uncompiled\ts\adminUser.ts" />
     <Content Remove="wwwroot\uncompiled\ts\clubMembers.ts" />
-    <Content Remove="wwwroot\uncompiled\ts\decesion.ts" />
+    <Content Remove="wwwroot\uncompiled\ts\decision.ts" />
     <Content Remove="wwwroot\uncompiled\ts\editClub.ts" />
     <Content Remove="wwwroot\uncompiled\ts\eventGallery.ts" />
     <Content Remove="wwwroot\uncompiled\ts\eventCreate.ts" />
@@ -61,6 +61,7 @@
     <Folder Include="wwwroot\bundles\css" />
     <Folder Include="wwwroot\bundles\js\" />
     <Folder Include="wwwroot\compiled\js\" />
+    <Folder Include="wwwroot\compiled\css\" />
     <Folder Include="wwwroot\documents\" />
     <Folder Include="wwwroot\documents\" />
     <Folder Include="wwwroot\images\EventsGallery\" />

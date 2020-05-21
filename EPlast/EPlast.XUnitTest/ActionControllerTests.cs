@@ -12,7 +12,6 @@ using EPlast.Controllers;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.ViewModels.Events;
-using EPlast.Wrapper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -89,7 +88,7 @@ namespace EPlast.XUnitTest
             Assert.IsType<StatusCodeResult>(actionResult);
             _repoWrapper.Verify(r => r.Event.Delete(It.IsAny<Event>()), Times.Once());
             _repoWrapper.Verify(r => r.Save(), Times.Once());
-            Assert.Equal(200,codeResult.StatusCode);
+            Assert.Equal(200, codeResult.StatusCode);
         }
 
         [Fact]
@@ -108,7 +107,6 @@ namespace EPlast.XUnitTest
             Assert.IsType<StatusCodeResult>(actionResult);
             Assert.Equal(500, codeResult.StatusCode);
         }
-
 
         [Fact]
         public void UnsubscribeOnEventSuccessTest()
@@ -202,11 +200,11 @@ namespace EPlast.XUnitTest
                 {
                     new ParticipantStatus{ID=3 ,ParticipantStatusName = "Розглядається"},
                 }.AsQueryable());
-             _repoWrapper.Setup(x => x.Participant.Create((It.IsAny<Participant>())));
+            _repoWrapper.Setup(x => x.Participant.Create((It.IsAny<Participant>())));
             _repoWrapper.Setup(x => x.EventStatus.FindByCondition(It.IsAny<Expression<Func<EventStatus, bool>>>()))
                 .Returns(new List<EventStatus> { new EventStatus { ID = 1 } }.AsQueryable());
             _repoWrapper.Setup(x => x.Event.FindByCondition(It.IsAny<Expression<Func<Event, bool>>>())).Returns(GetEvents());
-            //Act  
+            //Act
             var actionsController = new ActionController(_userManager.Object, _repoWrapper.Object, _env.Object);
             var actionResult = actionsController.SubscribeOnEvent(testEventId);
             var codeResult = actionResult as StatusCodeResult;
@@ -234,7 +232,7 @@ namespace EPlast.XUnitTest
             _repoWrapper.Setup(x => x.EventStatus.FindByCondition(It.IsAny<Expression<Func<EventStatus, bool>>>()))
                 .Returns(new List<EventStatus> { new EventStatus { ID = 2 } }.AsQueryable());
             _repoWrapper.Setup(x => x.Event.FindByCondition(It.IsAny<Expression<Func<Event, bool>>>())).Returns(GetEvents());
-            //Act  
+            //Act
             var actionsController = new ActionController(_userManager.Object, _repoWrapper.Object, _env.Object);
             var actionResult = actionsController.SubscribeOnEvent(testEventId);
             var codeResult = actionResult as StatusCodeResult;
@@ -254,7 +252,7 @@ namespace EPlast.XUnitTest
             _repoWrapper.Setup(x => x.ParticipantStatus.FindByCondition(It.IsAny<Expression<Func<ParticipantStatus, bool>>>()))
                 .Throws(new Exception());
             _repoWrapper.Setup(x => x.Participant.Create((It.IsAny<Participant>())));
-            //Act  
+            //Act
             var actionsController = new ActionController(_userManager.Object, _repoWrapper.Object, _env.Object);
             var actionResult = actionsController.SubscribeOnEvent(testEventId);
             var codeResult = actionResult as StatusCodeResult;
@@ -279,7 +277,7 @@ namespace EPlast.XUnitTest
                 {
                     new ParticipantStatus{ID=2 ,ParticipantStatusName = "Статус"},
                 }.AsQueryable());
-            //Act  
+            //Act
             var actionsController = new ActionController(_userManager.Object, _repoWrapper.Object, _env.Object);
             var actionResult = actionsController.ApproveParticipant(testParticipantId);
             var codeResult = actionResult as StatusCodeResult;
@@ -306,7 +304,7 @@ namespace EPlast.XUnitTest
                 {
                     new ParticipantStatus{ID=2 ,ParticipantStatusName = "Статус"},
                 }.AsQueryable());
-            //Act  
+            //Act
             var actionsController = new ActionController(_userManager.Object, _repoWrapper.Object, _env.Object);
             var actionResult = actionsController.UndetermineParticipant(testParticipantId);
             var codeResult = actionResult as StatusCodeResult;
@@ -333,7 +331,7 @@ namespace EPlast.XUnitTest
                 {
                     new ParticipantStatus{ID=2 ,ParticipantStatusName = "Статус"},
                 }.AsQueryable());
-            //Act  
+            //Act
             var actionsController = new ActionController(_userManager.Object, _repoWrapper.Object, _env.Object);
             var actionResult = actionsController.RejectParticipant(testParticipantId);
             var codeResult = actionResult as StatusCodeResult;
@@ -361,7 +359,7 @@ namespace EPlast.XUnitTest
                     new ParticipantStatus{ID=2 ,ParticipantStatusName = "Статус"},
                 }.AsQueryable());
             _repoWrapper.Setup(x => x.Participant.Update((It.IsAny<Participant>()))).Throws(new Exception());
-            //Act  
+            //Act
             var actionsController = new ActionController(_userManager.Object, _repoWrapper.Object, _env.Object);
             var actionResult = actionsController.ApproveParticipant(testParticipantId);
             var codeResult = actionResult as StatusCodeResult;
@@ -387,7 +385,7 @@ namespace EPlast.XUnitTest
                     new ParticipantStatus{ID=2 ,ParticipantStatusName = "Статус"},
                 }.AsQueryable());
             _repoWrapper.Setup(x => x.Participant.Update((It.IsAny<Participant>()))).Throws(new Exception());
-            //Act  
+            //Act
             var actionsController = new ActionController(_userManager.Object, _repoWrapper.Object, _env.Object);
             var actionResult = actionsController.UndetermineParticipant(testParticipantId);
             var codeResult = actionResult as StatusCodeResult;
@@ -413,7 +411,7 @@ namespace EPlast.XUnitTest
                     new ParticipantStatus{ID=2 ,ParticipantStatusName = "Статус"},
                 }.AsQueryable());
             _repoWrapper.Setup(x => x.Participant.Update(It.IsAny<Participant>())).Throws(new Exception());
-            //Act  
+            //Act
             var actionsController = new ActionController(_userManager.Object, _repoWrapper.Object, _env.Object);
             var actionResult = actionsController.RejectParticipant(testParticipantId);
             var codeResult = actionResult as StatusCodeResult;
@@ -434,7 +432,7 @@ namespace EPlast.XUnitTest
             string expectedID = "abc-1";
             _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(expectedID);
             _repoWrapper.Setup(x => x.Event.FindByCondition(It.IsAny<Expression<Func<Event, bool>>>())).Throws(new Exception());
-            //Act  
+            //Act
             var actionsController = new ActionController(_userManager.Object, _repoWrapper.Object, _env.Object);
             var actionResult = actionsController.EventInfo(eventID);
             //Arrange
@@ -444,12 +442,11 @@ namespace EPlast.XUnitTest
             Assert.Equal("Error", viewResult.ControllerName);
         }
 
-
         [Fact]
         public void EventInfoWhenUserIsEventAdminTest()
         {
             //Arrange
-           var _userClaims = new Mock<IPrincipal>();
+            var _userClaims = new Mock<IPrincipal>();
             _userClaims.Setup(uc => uc.IsInRole(It.IsAny<string>())).Returns(false);
             _userClaims.Setup(uc => uc.IsInRole(It.IsAny<string>())).Returns(false);
             _repoWrapper.Setup(x => x.ParticipantStatus.FindByCondition(p => p.ParticipantStatusName == "Учасник")).Returns(new List<ParticipantStatus> { new ParticipantStatus { ID = 1 } }.AsQueryable());
@@ -465,11 +462,11 @@ namespace EPlast.XUnitTest
             //Act
             var actionsController = new ActionController(_userManager.Object, _repoWrapper.Object, _env.Object);
             var actionResult = actionsController.EventInfo(eventID);
-            //Assert    
+            //Assert
             Assert.NotNull(actionResult);
             var viewResult = Assert.IsType<ViewResult>(actionResult);
             var viewModel = Assert.IsType<EventViewModel>(viewResult.Model);
-            Assert.Equal(3, viewModel.EventParticipants.Count() );
+            Assert.Equal(3, viewModel.EventParticipants.Count());
         }
 
         [Fact]
@@ -479,8 +476,8 @@ namespace EPlast.XUnitTest
             _repoWrapper.Setup(x => x.ParticipantStatus.FindByCondition(p => p.ParticipantStatusName == "Учасник")).Returns(new List<ParticipantStatus> { new ParticipantStatus { ID = 1 } }.AsQueryable());
             _repoWrapper.Setup(x => x.ParticipantStatus.FindByCondition(p => p.ParticipantStatusName == "Розглядається")).Returns(new List<ParticipantStatus> { new ParticipantStatus { ID = 3 } }.AsQueryable());
             _repoWrapper.Setup(x => x.ParticipantStatus.FindByCondition(p => p.ParticipantStatusName == "Відмовлено")).Returns(new List<ParticipantStatus> { new ParticipantStatus { ID = 2 } }.AsQueryable());
-             int eventID = 1;
-             string expectedID = "abc-2";
+            int eventID = 1;
+            string expectedID = "abc-2";
             _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(expectedID);
             _repoWrapper.Setup(x => x.Event.FindByCondition(It.IsAny<Expression<Func<Event, bool>>>())).Returns(GetEvents());
             _repoWrapper.Setup(x => x.EventStatus.FindByCondition(It.IsAny<Expression<Func<EventStatus, bool>>>()))
@@ -488,7 +485,7 @@ namespace EPlast.XUnitTest
             //Act
             var actionsController = new ActionController(_userManager.Object, _repoWrapper.Object, _env.Object);
             var actionResult = actionsController.EventInfo(eventID);
-            //Assert    
+            //Assert
             Assert.NotNull(actionResult);
             var viewResult = Assert.IsType<ViewResult>(actionResult);
             var viewModel = Assert.IsType<EventViewModel>(viewResult.Model);
@@ -506,7 +503,7 @@ namespace EPlast.XUnitTest
             string expectedID = "abc-1";
             _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(expectedID);
             _repoWrapper.Setup(x => x.Event.FindByCondition(It.IsAny<Expression<Func<Event, bool>>>())).Throws(new Exception());
-            //Act  
+            //Act
             var actionsController = new ActionController(_userManager.Object, _repoWrapper.Object, _env.Object);
             var actionResult = actionsController.Events(eventCategoryID);
             //Arrange
@@ -558,7 +555,7 @@ namespace EPlast.XUnitTest
             var actionsController = new ActionController(_userManager.Object, _repoWrapper.Object, _env.Object);
             var actionResult = actionsController.Events(eventCategoryID) as ViewResult;
             var viewModel = actionResult.Model as List<GeneralEventViewModel>;
-            //Assert    
+            //Assert
             Assert.NotNull(actionResult);
             var viewResult = Assert.IsType<ViewResult>(actionResult);
             Assert.IsAssignableFrom<List<GeneralEventViewModel>>(viewResult.Model);
@@ -610,7 +607,6 @@ namespace EPlast.XUnitTest
             Assert.Equal("Some name", viewModel[0].EventCategory.EventCategoryName);
             Assert.NotNull(viewModel[0].EventCategory.Events);
             Assert.Empty(viewModel[0].EventCategory.Events);
-
         }
 
         [Fact]
@@ -637,7 +633,7 @@ namespace EPlast.XUnitTest
             _repoWrapper.Setup(x => x.EventGallary.Create((It.IsAny<EventGallary>())));
             _env.Setup(e => e.WebRootPath).Returns("Webroot\\");
             int eventID = 5;
-            //Act  
+            //Act
             var actionsController = new ActionController(_userManager.Object, _repoWrapper.Object, _env.Object);
             var actionResult = actionsController.FillEventGallery(eventID, FakeFiles());
             var codeResult = actionResult as StatusCodeResult;
@@ -709,7 +705,7 @@ namespace EPlast.XUnitTest
             fileMock.Setup(_ => _.OpenReadStream()).Returns(ms);
             fileMock.Setup(_ => _.FileName).Returns(fileName);
             fileMock.Setup(_ => _.Length).Returns(ms.Length);
-            var arr = new IFormFile[] { fileMock.Object, fileMock.Object};
+            var arr = new IFormFile[] { fileMock.Object, fileMock.Object };
             return arr;
         }
     }

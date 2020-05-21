@@ -3,64 +3,88 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using EPlast.BussinessLayer.DTO;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 
 namespace EPlast.BussinessLayer
 {
     public class DecisionService : IDecisionService
     {
-        private const string DecesionsDocumentFolder = @"\documents\";
         private readonly IHostingEnvironment _appEnvironment;
         private readonly IDirectoryManager _directoryManager;
         private readonly IFileManager _fileManager;
         private readonly IFileStreamManager _fileStreamManager;
-        private readonly ILogger _logger;
+        private readonly IDecisionVmInitializer _decisionVMCreator;
+
+        //private readonly ILogger _logger;
         private readonly IRepositoryWrapper _repoWrapper;
 
+        private readonly IMapper _mapper;
+        private const string DecesionsDocumentFolder = @"\documents\";
+
         public DecisionService(IRepositoryWrapper repoWrapper, IHostingEnvironment appEnvironment,
-            IDirectoryManager directoryManager,
-            IFileManager fileManager, IFileStreamManager fileStreamManager, ILogger logger)
+            IDirectoryManager directoryManager, IFileManager fileManager,
+            IFileStreamManager fileStreamManager, IMapper mapper, IDecisionVmInitializer decisionVMCreator)
         {
             _repoWrapper = repoWrapper;
             _appEnvironment = appEnvironment;
             _directoryManager = directoryManager;
             _fileManager = fileManager;
             _fileStreamManager = fileStreamManager;
-            _logger = logger;
+            //_logger = logger;
+            _mapper = mapper;
+            _decisionVMCreator = decisionVMCreator;
         }
 
-        public async Task<DecisionDto> GetDecision(int decisionId)
+        public DecisionDTO GetDecision(int decisionId)
         {
-            DecisionDto decision = null;
+            DecisionDTO decision = null;
             try
             {
-                decision = new DecisionDto
-                {
-                    Decesion = await Task.Run(() =>
-                        _repoWrapper.Decesion.FindByCondition(x => x.ID == decisionId).First())
-                };
+                decision = _mapper.Map<DecisionDTO>(_repoWrapper.Decesion.FindByCondition(x => x.ID == decisionId).First());
             }
             catch (Exception e)
             {
-                _logger.LogError("Exception: {0}", e.Message);
+                //                _logger.LogError("Exception: {0}", e.Message);
             }
 
             return decision;
         }
 
-        public async Task<List<DecisionDto>> GetDecisionList()
+        public DecisionWrapperDTO CreateDecision()
         {
-            List<DecisionDto> decisionList = null;
+            DecisionWrapperDTO decisionWrapperDto = null;
             try
             {
-                decisionList = await GetDecisionListAsync();
+                decisionWrapperDto = new DecisionWrapperDTO
+                {
+                    Decision = new DecisionDTO(),
+                    DecisionTargets = GetDecisionTargetList()
+                };
+            }
+            catch (Exception e)
+            {
+                //                _logger.LogError("Exception: {0}", e.Message);
+            }
+
+            return decisionWrapperDto;
+        }
+
+        public List<DecisionWrapperDTO> GetDecisionList()
+        {
+            List<DecisionWrapperDTO> decisionList = null;
+            try
+            {
+                decisionList = GetDecisionListAsync();
                 foreach (var decesion in decisionList)
                 {
-                    var path = _appEnvironment.WebRootPath + DecesionsDocumentFolder + decesion.Decesion.ID;
-                    if (!decesion.Decesion.HaveFile || !_directoryManager.Exists(path)) continue;
+                    var path = _appEnvironment.WebRootPath + DecesionsDocumentFolder + decesion.Decision.ID;
+                    if (!decesion.Decision.HaveFile || !_directoryManager.Exists(path)) continue;
                     var files = _directoryManager.GetFiles(path);
 
                     if (files.Length == 0) throw new ArgumentException($"File count in '{path}' is 0");
@@ -70,56 +94,69 @@ namespace EPlast.BussinessLayer
             }
             catch (Exception e)
             {
-                _logger.LogError("Exception: {0}", e.Message);
+                //                _logger.LogError("Exception: {0}", e.Message);
             }
 
             return decisionList;
         }
 
-        public async Task<bool> ChangeDecision(DecisionDto decision)
+        public bool ChangeDecision(DecisionDTO decision)
         {
             Decesion decesion = null;
             try
             {
-                decesion = await Task.Run(() =>
-                    _repoWrapper.Decesion.FindByCondition(x => x.ID == decision.Decesion.ID).First());
-                decesion.Name = decision.Decesion.Name;
-                decesion.Description = decision.Decesion.Description;
+                decesion = _repoWrapper.Decesion.FindByCondition(x => x.ID == decision.ID).First();
+                decesion.Name = decision.Name;
+                decesion.Description = decision.Description;
                 _repoWrapper.Decesion.Update(decesion);
                 _repoWrapper.Save();
             }
             catch (Exception e)
             {
-                _logger.LogError("Exception: {0}", e.Message);
+                //                _logger.LogError("Exception: {0}", e.Message);
             }
 
             return decesion != null;
         }
 
-        public Task<bool> SaveDecision(DecisionDto decision)
+        public Task<bool> SaveDecision(DecisionWrapperDTO decision)
         {
             try
             {
-                _repoWrapper.Decesion.Attach(decision.Decesion);
-                _repoWrapper.Decesion.Create(decision.Decesion);
+                _repoWrapper.Decesion.Attach(_mapper.Map<DecisionDTO, Decesion>(decision.Decision));
+                _repoWrapper.Decesion.Create(_mapper.Map<DecisionDTO, Decesion>(decision.Decision));
                 _repoWrapper.Save();
             }
             catch (Exception e)
             {
-                _logger.LogError("Exception: {0}", e.Message);
+                //                _logger.LogError("Exception: {0}", e.Message);
             }
 
-            return !decision.Decesion.HaveFile ? Task.FromResult(true) : SaveDecisionFile(decision);
+            return !decision.Decision.HaveFile ? Task.FromResult(true) : SaveDecisionFile(decision);
+        }
+
+        public OrganizationDTO GetDecisionOrganization(int decisionId)
+        {
+            OrganizationDTO organization = null;
+            try
+            {
+                organization = _mapper.Map<OrganizationDTO>(_repoWrapper.Organization.FindByCondition(x => x.ID == decisionId).Select(x => x.OrganizationName).First());
+            }
+            catch (Exception e)
+            {
+                //                _logger.LogError("Exception: {0}", e.Message);
+            }
+
+            return organization;
         }
 
         public async Task<byte[]> DownloadDecisionFile(int decisionId)
         {
-            if (decisionId <= 0)
-                return null;
+            if (decisionId <= 0) return null;
             MemoryStream memory = null;
             try
             {
-                var path = Path.Combine(_appEnvironment.WebRootPath + DecesionsDocumentFolder, decisionId.ToString());
+                var path = GetDecisionFilePath(decisionId);
 
                 if (!_directoryManager.Exists(path) || _directoryManager.GetFiles(path).Length == 0)
                     throw new ArgumentException($"directory '{path}' is not exist");
@@ -132,37 +169,50 @@ namespace EPlast.BussinessLayer
                 {
                     await _fileStreamManager.CopyToAsync(stream.GetStream(), memory);
 
-                    if (memory.Length == 0)
-                        throw new ArgumentException("memory length is 0");
+                    if (memory.Length == 0) throw new ArgumentException("memory length is 0");
                 }
 
                 memory.Position = 0;
             }
             catch (Exception e)
             {
-                _logger.LogError("Exception: {0}", e.Message);
+                //                _logger.LogError("Exception: {0}", e.Message);
             }
 
             return memory?.ToArray();
         }
 
-        private Task<List<DecisionDto>> GetDecisionListAsync()
+        public List<OrganizationDTO> GetOrganizationList() =>
+            _mapper.Map<List<OrganizationDTO>>(_repoWrapper.Organization.FindAll().ToList());
+
+        public List<DecisionTargetDTO> GetDecisionTargetList() =>
+            _mapper.Map<List<DecisionTargetDTO>>(_repoWrapper.DecesionTarget.FindAll().ToList());
+
+        public IEnumerable<SelectListItem> GetDecisionStatusTypes()
         {
-            return Task.Run(() => new List<DecisionDto>(
-                _repoWrapper.Decesion
-                    .Include(x => x.DecesionTarget, x => x.Organization)
-                    .Select(decesion => new DecisionDto
-                    {
-                        Decesion = decesion
-                    })
-                    .ToList()));
+            return _decisionVMCreator.GetDecesionStatusTypes();
         }
 
-        public string GetContentType(string path)
+        private List<DecisionWrapperDTO> GetDecisionListAsync()
+        {
+            return _mapper
+                .Map<List<Decesion>, List<DecisionDTO>>(_repoWrapper.Decesion
+                    .Include(x => x.DecesionTarget, x => x.Organization)
+                    .ToList())
+                .Select(decision => new DecisionWrapperDTO { Decision = decision })
+                .ToList();
+        }
+
+        public string GetContentType(int decisionId, string filename)
         {
             var types = GetMimeTypes();
-            var ext = Path.GetExtension(path)?.ToLowerInvariant();
-            return types[ext ?? throw new InvalidOperationException()];
+            var ext = Path.GetExtension(Path.Combine(GetDecisionFilePath(decisionId), filename)).ToLowerInvariant();
+            return types[ext];
+        }
+
+        private string GetDecisionFilePath(int decisionId)
+        {
+            return Path.Combine(_appEnvironment.WebRootPath + DecesionsDocumentFolder, decisionId.ToString());
         }
 
         private static Dictionary<string, string> GetMimeTypes()
@@ -184,11 +234,11 @@ namespace EPlast.BussinessLayer
             };
         }
 
-        private async Task<bool> SaveDecisionFile(DecisionDto decision)
+        private async Task<bool> SaveDecisionFile(DecisionWrapperDTO decision)
         {
             try
             {
-                var path = _appEnvironment.WebRootPath + DecesionsDocumentFolder + decision.Decesion.ID;
+                var path = _appEnvironment.WebRootPath + DecesionsDocumentFolder + decision.Decision.ID;
 
                 _directoryManager.CreateDirectory(path);
 
@@ -209,7 +259,7 @@ namespace EPlast.BussinessLayer
             }
             catch (Exception e)
             {
-                _logger.LogError("Exception: {0}", e.Message);
+                //                _logger.LogError("Exception: {0}", e.Message);
             }
 
             return true;
