@@ -238,7 +238,25 @@ namespace EPlast.Controllers
                 return RedirectToAction("HandleError", "Error");
             }
         }
-
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public JsonResult DeleteDecision(int id)
+        {
+            try
+            {
+                var decision = _repoWrapper.Decesion.FindByCondition(d => d.ID == id).First();
+                _repoWrapper.Decesion.Delete(decision);
+                _repoWrapper.Save();
+                return Json(new{
+                    success = true,
+                    text = "Зміни пройшли успішно!"
+                });
+            }
+            catch
+            {
+                return Json(new {success = false});
+            }
+        }
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Download(string id, string filename)
         {

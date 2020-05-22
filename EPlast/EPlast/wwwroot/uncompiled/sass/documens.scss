@@ -104,6 +104,13 @@
             }
         }
     }
+
+    #DeleteDecisionForm {
+        .delete-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+    }
 }
 
 .data-table-wrapper {
