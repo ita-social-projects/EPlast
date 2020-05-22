@@ -3,7 +3,7 @@ using System.Security.Claims;
 using EPlast.BussinessLayer.DTO.Events;
 using Microsoft.AspNetCore.Http;
 
-namespace EPlast.BussinessLayer.Interfaces
+namespace EPlast.BussinessLayer.Interfaces.Events
 {
     public interface IActionManager
     {

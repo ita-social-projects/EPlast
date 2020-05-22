@@ -11,6 +11,7 @@ using System.Security.Principal;
 using AutoMapper;
 using EPlast.BussinessLayer.DTO.Events;
 using EPlast.BussinessLayer.Interfaces;
+using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.Controllers;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
