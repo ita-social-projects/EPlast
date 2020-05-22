@@ -10,7 +10,7 @@ namespace EPlast.BussinessLayer.Services.Interfaces
 {
     public interface IUserService
     {
-        UserDTO GetUserProfile(string userId);
+        UserDTO GetUser(string userId);
         void Update(UserDTO user, IFormFile file, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId);
         Task<TimeSpan> CheckOrAddPlastunRole(string userId, DateTime registeredOn);
         IEnumerable<ConfirmedUserDTO> GetConfirmedUsers(UserDTO user);

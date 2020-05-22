@@ -66,6 +66,5 @@ namespace EPlast.BussinessLayer.Services
             var result =await _userManager.GetRolesAsync(_mapper.Map<UserDTO, User>(user));
             return result;
         }
-        
     }
 }
