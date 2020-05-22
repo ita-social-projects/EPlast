@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿/*using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -305,7 +305,7 @@ namespace EPlast.XUnitTest
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("Register", viewResult.ViewName);
             Assert.NotNull(viewResult);
-        }
+        }*/
 
         /*[Fact]
         public async Task TestRegisterPostReturnsAcceptingEmailView()//переписати
@@ -355,7 +355,7 @@ namespace EPlast.XUnitTest
         }*/
 
         //ConfirmedEmail
-        [Fact]
+        /*[Fact]
         public async Task TestConfirmEmailGetReturnsConfirmedEmailView()
         {
             //Arrange
@@ -609,7 +609,7 @@ namespace EPlast.XUnitTest
             Assert.Equal("Error", viewResult.ControllerName);
             Assert.Equal(500, result.RouteValues["code"]);
             Assert.NotNull(viewResult);
-        }
+        }*/
 
         /*[Fact]
         public async Task TestResetPasswordGetReturnsResetPasswordNotAllowedView()
@@ -632,7 +632,7 @@ namespace EPlast.XUnitTest
             Assert.NotNull(viewResult);
         }*/
 
-        [Fact]
+        /*[Fact]
         public async Task TestResetPasswordPostModelIsNotValid()
         {
             //Arrange
@@ -1084,15 +1084,15 @@ namespace EPlast.XUnitTest
             };
         }
 
-        //    private User GetTestUserWithNotEmailConfirmed()
-        //    {
-        //        return new User()
-        //        {
-        //            EmailConfirmed = false
-        //        };
-        //    }
+private User GetTestUserWithNotEmailConfirmed()
+{
+    return new User()
+    {
+        EmailConfirmed = false
+    };
+}
 
-        private User GetTestUserWithNullFields()
+private User GetTestUserWithNullFields()
         {
             return null;
         }
@@ -1164,4 +1164,4 @@ namespace EPlast.XUnitTest
             return new string("fakeProvider");
         }
     }
-}
+}*/

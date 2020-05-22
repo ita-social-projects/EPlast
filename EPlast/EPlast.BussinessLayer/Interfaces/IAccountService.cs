@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using EPlast.BussinessLayer.DTO.Account;
 using EPlast.DataAccess.Entities;
+using EPlast.BussinessLayer.DTO;
 
 namespace EPlast.BussinessLayer.Interfaces
 {
@@ -15,7 +16,7 @@ namespace EPlast.BussinessLayer.Interfaces
         Task<IdentityResult> CreateUserAsync(RegisterDto registerDto);
         Task<IdentityResult> ConfirmEmailAsync(User user, string code);
         Task<IdentityResult> ChangePasswordAsync(User user, ChangePasswordDto changePasswordDto);
-        void RefreshSignInAsync(User user);
+        void RefreshSignInAsync(UserDTO userDto);
         AuthenticationProperties GetAuthProperties(string provider, string returnUrl);
         Task<ExternalLoginInfo> GetInfoAsync();
         Task<SignInResult> GetSignInResultAsync(ExternalLoginInfo externalLoginInfo);
