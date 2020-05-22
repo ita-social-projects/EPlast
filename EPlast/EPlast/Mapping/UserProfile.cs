@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO;
 using EPlast.DataAccess.Entities;
-using EPlast.ViewModels;
+using EPlast.ViewModels.UserInformation.UserProfile;
 
 namespace EPlast.Mapping
 {
@@ -15,6 +11,8 @@ namespace EPlast.Mapping
         {
             CreateMap<User, UserDTO>();
             CreateMap<UserDTO, User>();
+            CreateMap<UserViewModel, UserDTO>();
+            CreateMap<UserDTO, UserViewModel>();
         }
     }
 }
