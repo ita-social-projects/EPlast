@@ -26,11 +26,9 @@ namespace EPlast.BussinessLayer.Services.Events
         private readonly IEventTypeManager _eventTypeManager;
         private readonly IEventStatusManager _eventStatusManager;
         private readonly IParticipantStatusManager _participantStatusManager;
+        private readonly IParticipantManager _participantManager;
 
-
-
-
-        public ActionManager(UserManager<User> userManager, IRepositoryWrapper repoWrapper, IHostingEnvironment env, IMapper mapper, IEventCategoryManager eventCategoryManager, IEventTypeManager eventTypeManager, IEventStatusManager eventStatusManager, IParticipantStatusManager participantStatusManager)
+        public ActionManager(UserManager<User> userManager, IRepositoryWrapper repoWrapper, IHostingEnvironment env, IMapper mapper, IEventCategoryManager eventCategoryManager, IEventTypeManager eventTypeManager, IEventStatusManager eventStatusManager, IParticipantStatusManager participantStatusManager, IParticipantManager participantManager)
         {
             _userManager = userManager;
             _repoWrapper = repoWrapper;
@@ -40,6 +38,7 @@ namespace EPlast.BussinessLayer.Services.Events
             _eventTypeManager = eventTypeManager;
             _eventStatusManager = eventStatusManager;
             _participantStatusManager = participantStatusManager;
+            _participantManager = participantManager;
         }
 
         public List<EventCategoryDTO> GetActionCategories()
@@ -138,16 +137,10 @@ namespace EPlast.BussinessLayer.Services.Events
         {
             try
             {
-                ParticipantStatus participantStatus = _repoWrapper.ParticipantStatus.FindByCondition(ps => ps.ParticipantStatusName == "Розглядається").First();
-                int finishedEvent = _repoWrapper.EventStatus.FindByCondition(st => st.EventStatusName == "Завершений(-на)").First().ID;
                 Event targetEvent = _repoWrapper.Event.FindByCondition(e => e.ID == id).First();
-                if (targetEvent.EventStatusID == finishedEvent)
-                {
-                    return StatusCodes.Status409Conflict;
-                }
-                _repoWrapper.Participant.Create(new Participant() { ParticipantStatusId = participantStatus.ID, EventId = id, UserId = _userManager.GetUserId(user) });
-                _repoWrapper.Save();
-                return StatusCodes.Status200OK;
+                var userId = _userManager.GetUserId(user);
+                int result = _participantManager.SubscribeOnEvent(targetEvent, userId);
+                return result;
             }
             catch
             {
@@ -159,17 +152,10 @@ namespace EPlast.BussinessLayer.Services.Events
         {
             try
             {
-                int rejectedStatus = _repoWrapper.ParticipantStatus.FindByCondition(p => p.ParticipantStatusName == "Відмовлено").First().ID;
-                int finishedEvent = _repoWrapper.EventStatus.FindByCondition(st => st.EventStatusName == "Завершений(-на)").First().ID;
                 Event targetEvent = _repoWrapper.Event.FindByCondition(e => e.ID == id).First();
-                Participant participantToDelete = _repoWrapper.Participant.FindByCondition(p => p.EventId == id && p.UserId == _userManager.GetUserId(user)).First();
-                if (participantToDelete.ParticipantStatusId == rejectedStatus || targetEvent.EventStatusID == finishedEvent)
-                {
-                    return StatusCodes.Status409Conflict;
-                }
-                _repoWrapper.Participant.Delete(participantToDelete);
-                _repoWrapper.Save();
-                return StatusCodes.Status200OK;
+                var userId = _userManager.GetUserId(user);
+                int result = _participantManager.UnSubscribeOnEvent(targetEvent, userId);
+                return result;
             }
             catch
             {
@@ -179,56 +165,20 @@ namespace EPlast.BussinessLayer.Services.Events
 
         public int ApproveParticipant(int id)
         {
-            try
-            {
-                Participant participant = _repoWrapper.Participant.FindByCondition(p => p.ID == id)
-                    .Include(p => p.ParticipantStatus).First();
-                ParticipantStatus participantStatus = _repoWrapper.ParticipantStatus.FindByCondition(ps => ps.ParticipantStatusName == "Учасник").First();
-                participant.ParticipantStatus = participantStatus;
-                _repoWrapper.Participant.Update(participant);
-                _repoWrapper.Save();
-                return StatusCodes.Status200OK;
-            }
-            catch
-            {
-                return StatusCodes.Status500InternalServerError;
-            }
+            int result = _participantManager.ChangeStatusToApproved(id);
+            return result;
         }
 
         public int UnderReviewParticipant(int id)
         {
-            try
-            {
-                Participant participant = _repoWrapper.Participant.FindByCondition(p => p.ID == id)
-                    .Include(p => p.ParticipantStatus).First();
-                ParticipantStatus participantStatus = _repoWrapper.ParticipantStatus.FindByCondition(ps => ps.ParticipantStatusName == "Розглядається").First();
-                participant.ParticipantStatus = participantStatus;
-                _repoWrapper.Participant.Update(participant);
-                _repoWrapper.Save();
-                return StatusCodes.Status200OK;
-            }
-            catch
-            {
-                return StatusCodes.Status500InternalServerError;
-            }
+            int result = _participantManager.ChangeStatusToUnderReview(id);
+            return result;
         }
 
         public int RejectParticipant(int id)
         {
-            try
-            {
-                Participant participant = _repoWrapper.Participant.FindByCondition(p => p.ID == id)
-                    .Include(p => p.ParticipantStatus).First();
-                ParticipantStatus participantStatus = _repoWrapper.ParticipantStatus.FindByCondition(ps => ps.ParticipantStatusName == "Відмовлено").First();
-                participant.ParticipantStatus = participantStatus;
-                _repoWrapper.Participant.Update(participant);
-                _repoWrapper.Save();
-                return StatusCodes.Status200OK;
-            }
-            catch
-            {
-                return StatusCodes.Status500InternalServerError;
-            }
+            int result = _participantManager.ChangeStatusToRejected(id);
+            return result;
         }
 
         public int FillEventGallery(int id, IList<IFormFile> files)
@@ -307,12 +257,4 @@ namespace EPlast.BussinessLayer.Services.Events
         }
 
     }
-
-    public enum Status
-    {
-        Success = 200,
-        Outdated = 409,
-        Fail = 500
-    }
-
 }
