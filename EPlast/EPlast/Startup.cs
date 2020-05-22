@@ -79,7 +79,7 @@ namespace EPlast
             services.AddScoped<IEventTypeManager, EventTypeManager>();
             services.AddScoped<IEventStatusManager, EventStatusManager>();
             services.AddScoped<IParticipantStatusManager, ParticipantStatusManager>();
-
+            services.AddScoped<IParticipantManager, ParticipantManager>();
 
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
             services.Configure<IdentityOptions>(options =>
