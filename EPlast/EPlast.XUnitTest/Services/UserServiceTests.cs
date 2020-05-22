@@ -54,7 +54,7 @@ namespace EPlast.XUnitTest.Services
             var service = new UserService( _repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object);
             _mapper.Setup(x => x.Map<User, UserDTO>(It.IsAny<User>())).Returns(new UserDTO());
             // Act
-            var result = service.GetUserProfile("1");
+            var result = service.GetUser("1");
             // Assert
             Assert.NotNull(result);
             var viewResult = Assert.IsType<UserDTO>(result);

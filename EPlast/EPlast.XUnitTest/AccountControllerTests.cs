@@ -77,7 +77,7 @@ namespace EPlast.XUnitTest
         [Fact]
         public void UserProfileTest()
         {
-            _userService.Setup(x => x.GetUserProfile(It.IsAny<string>())).Returns(new UserDTO
+            _userService.Setup(x => x.GetUser(It.IsAny<string>())).Returns(new UserDTO
             {
                 FirstName = "Vova",
                 LastName = "Vermii",
@@ -126,7 +126,7 @@ namespace EPlast.XUnitTest
         [Fact]
         public void ApproversTest()
         {
-            _userService.Setup(x => x.GetUserProfile(It.IsAny<string>())).Returns(new UserDTO());
+            _userService.Setup(x => x.GetUser(It.IsAny<string>())).Returns(new UserDTO());
             _userService.Setup(x => x.GetConfirmedUsers(It.IsAny<UserDTO>())).Returns(new List<ConfirmedUserDTO>());
             _userService.Setup(x => x.GetCityAdminConfirmedUser(It.IsAny<UserDTO>())).Returns(new ConfirmedUserDTO());
             _userService.Setup(x => x.GetClubAdminConfirmedUser(It.IsAny<UserDTO>())).Returns(new ConfirmedUserDTO());
@@ -214,7 +214,7 @@ namespace EPlast.XUnitTest
         public void EditGetTest()
         {
             var userDTO = new UserDTO { UserProfile=new UserProfileDTO { EducationId = 1, WorkId = 1 } };
-            _userService.Setup(x => x.GetUserProfile(It.IsAny<string>())).Returns(userDTO);
+            _userService.Setup(x => x.GetUser(It.IsAny<string>())).Returns(userDTO);
             _genderService.Setup(x => x.GetAll()).Returns(new List<GenderDTO>());
             _educationService.Setup(x => x.GetAllGroupByPlace()).Returns(new List<EducationDTO>());
             _educationService.Setup(x => x.GetAllGroupBySpeciality()).Returns(new List<EducationDTO>());
@@ -291,133 +291,6 @@ namespace EPlast.XUnitTest
             Assert.Equal("HandleError", viewResult.ActionName);
             Assert.Equal("Error", viewResult.ControllerName);
             Assert.NotNull(result);
-        }
-        [Fact]
-        public void DeletePositionTrueRemoveRoleTrueTest()
-        {
-            // Arrange
-            var cityAdministrations = new List<CityAdministration>
-            {
-                new CityAdministration
-                {
-                    ID = 1,
-                    User = new User(),
-                    AdminType = new AdminType(),
-                },
-            };
-            _repoWrapper.Setup(r => r.CityAdministration.FindByCondition(It.IsAny<Expression<Func<CityAdministration, bool>>>()))
-                .Returns(cityAdministrations.AsQueryable());
-            _userAccessManager.Setup(uam => uam.HasAccess(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(true);
-            var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
-                _userAccessManager.Object, _userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object);
-
-            // Act
-            var result = controller.DeletePosition(cityAdministrations[0].ID);
-
-            // Assert
-            Assert.IsType<OkObjectResult>(result.Result);
-        }
-
-        [Fact]
-        public void DeletePositionTrueRemoveRoleFalseTest()
-        {
-            // Arrange
-            var cityAdministrations = new List<CityAdministration>
-            {
-                new CityAdministration
-                {
-                    ID = 1,
-                    User = new User(),
-                    AdminType = new AdminType(),
-                    EndDate = DateTime.Now,
-                },
-            };
-            _repoWrapper.Setup(r => r.CityAdministration.FindByCondition(It.IsAny<Expression<Func<CityAdministration, bool>>>()))
-                .Returns(cityAdministrations.AsQueryable());
-            _userAccessManager.Setup(uam => uam.HasAccess(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(true);
-            var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
-                _userAccessManager.Object, _userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object);
-
-            // Act
-            var result = controller.DeletePosition(cityAdministrations[0].ID);
-
-            // Assert
-            Assert.IsType<OkObjectResult>(result.Result);
-            _userManager.Verify(u => u.RemoveFromRoleAsync(cityAdministrations[0].User, cityAdministrations[0].AdminType.AdminTypeName), Times.Never);
-        }
-
-        [Fact]
-        public void DeletePositionFalseTest()
-        {
-            // Arrange
-            _repoWrapper.Setup(r => r.CityAdministration.FindByCondition(It.IsAny<Expression<Func<CityAdministration, bool>>>()))
-                .Returns(new List<CityAdministration>().AsQueryable());
-            var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
-                _userAccessManager.Object, _userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object);
-
-            // Act
-            var result = controller.DeletePosition(0);
-
-            // Assert
-            Assert.IsType<NotFoundObjectResult>(result.Result);
-            _repoWrapper.Verify(r => r.CityAdministration.Delete(It.IsAny<CityAdministration>()), Times.Never);
-            _repoWrapper.Verify(r => r.Save(), Times.Never);
-            _userManager.Verify(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
-        }
-
-        [Fact]
-        public void EndPositionTrueTest()
-        {
-            // Arrange
-            var cityAdministrations = new List<CityAdministration>
-            {
-                new CityAdministration
-                {
-                    ID = 1,
-                    User = new User(),
-                    AdminType = new AdminType(),
-                    StartDate = DateTime.Now
-                },
-            };
-            _repoWrapper.Setup(r => r.CityAdministration.FindByCondition(It.IsAny<Expression<Func<CityAdministration, bool>>>()))
-                .Returns(cityAdministrations.AsQueryable());
-            _userAccessManager.Setup(uam => uam.HasAccess(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(true);
-            var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
-                _userAccessManager.Object, _userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object);
-
-            // Act
-            var result = controller.EndPosition(cityAdministrations[0].ID);
-
-            // Assert
-            Assert.IsType<OkObjectResult>(result.Result);
-            Assert.NotNull(cityAdministrations[0].EndDate);
-        }
-
-        [Fact]
-        public void EndPositionFalseTest()
-        {
-            // Arrange
-            _repoWrapper.Setup(r => r.CityAdministration.FindByCondition(It.IsAny<Expression<Func<CityAdministration, bool>>>()))
-                .Returns(new List<CityAdministration>().AsQueryable());
-            var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
-                _userAccessManager.Object, _userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object);
-
-            // Act
-            var result = controller.EndPosition(0);
-
-            // Assert
-            Assert.IsType<NotFoundObjectResult>(result.Result);
-            _repoWrapper.Verify(r => r.CityAdministration.Update(It.IsAny<CityAdministration>()), Times.Never);
-            _repoWrapper.Verify(r => r.Save(), Times.Never);
-            _userManager.Verify(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
         }
     }
 }

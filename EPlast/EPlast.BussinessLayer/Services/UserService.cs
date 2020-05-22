@@ -30,7 +30,7 @@ namespace EPlast.BussinessLayer.Services
             _mapper = mapper;
             _env = env;
         }
-        public UserDTO GetUserProfile(string userId)
+        public UserDTO GetUser(string userId)
         {
             var user = _repoWrapper.User.
                 FindByCondition(q => q.Id == userId).

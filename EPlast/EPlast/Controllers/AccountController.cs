@@ -592,7 +592,7 @@ namespace EPlast.Controllers
                     userId = _userManagerService.GetUserId(User);
                 }
 
-                var user = _userService.GetUserProfile(userId);
+                var user = _userService.GetUser(userId);
                 var time = _userService.CheckOrAddPlastunRole(_mapper.Map<UserDTO, UserViewModel>(user).Id, user.RegistredOn);
                 var isUserPlastun = await _userManagerService.IsInRole(user, "Пластун");
 
@@ -623,7 +623,7 @@ namespace EPlast.Controllers
                     return RedirectToAction("HandleError", "Error", new { code = 500 });
                 }
 
-                var user = _userService.GetUserProfile(userId);
+                var user = _userService.GetUser(userId);
                 var _confUsers = _userService.GetConfirmedUsers(user);
                 var canApprove = _userService.CanApprove(_confUsers, userId, User);
                 var time = await _userService.CheckOrAddPlastunRole(user.Id, user.RegistredOn);
@@ -656,53 +656,7 @@ namespace EPlast.Controllers
             {
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
-        }
-
-        [HttpGet]
-        public IActionResult Positions(string userId)
-        {
-            try
-            {
-                var _currentUserId = _userManager.GetUserId(User);
-                if (string.IsNullOrEmpty(userId))
-                {
-                    userId = _currentUserId;
-                }
-                _logger.Log(LogLevel.Information, $"UserProfile Id is {userId}");
-                _logger.Log(LogLevel.Information, $"Authenticate userId is {_currentUserId}");
-
-                var user = _repoWrapper.User.
-                    FindByCondition(q => q.Id == userId).
-                    First();
-
-                var userPositions = _repoWrapper.CityAdministration
-                    .FindByCondition(ca => ca.UserId == userId)
-                        .Include(ca => ca.AdminType)
-                        .Include(ca => ca.City);
-
-                TimeSpan _timeToJoinPlast = _userService.CheckOrAddPlastunRole(user.Id,user.RegistredOn).Result;
-
-                if (user != null)
-                {
-                    var model = new PositionUserViewModel
-                    {
-                        User = user,
-                        UserPositions = userPositions,
-                        HasAccessToManageUserPositions = _userAccessManager.HasAccess(_userManager.GetUserId(User), userId),
-                        TimeToJoinPlast = _timeToJoinPlast,
-                    };
-
-                    return View(model);
-                }
-                _logger.Log(LogLevel.Error, $"Can`t find this user:{userId}, or smth else");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
-            }
-            catch
-            {
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
-            }
-        }
-       
+        }       
 
         public IActionResult ApproveUser(string userId, bool _isClubAdmin = false, bool _isCityAdmin = false)
         {
@@ -733,7 +687,7 @@ namespace EPlast.Controllers
 
             try
             {
-                var user = _userService.GetUserProfile(userId);
+                var user = _userService.GetUser(userId);
 
                 var genders = (from item in _genderService.GetAll() select new SelectListItem { Text = item.Name, Value = item.ID.ToString() });
                                                                                             
@@ -780,61 +734,16 @@ namespace EPlast.Controllers
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
-
-        [Authorize(Roles = "Admin, Голова Округу, Голова Станиці")]
-        public async Task<IActionResult> DeletePosition(int id)
+        public async Task<IActionResult> Positions(string userId)
         {
-            try
+            var user = _userService.GetUser(userId);
+            var result = new PositionUserViewModel
             {
-                CityAdministration cityAdministration = _repoWrapper.CityAdministration
-                    .FindByCondition(ca => ca.ID == id)
-                        .Include(ca => ca.AdminType)
-                        .Include(ca => ca.User)
-                    .First();
-                var userId = _userManager.GetUserId(User);
-                if (!_userAccessManager.HasAccess(userId, cityAdministration.UserId))
-                {
-                    return RedirectToAction("HandleError", "Error", new { code = 403 });
-                }
-                if (cityAdministration.EndDate == null)
-                {
-                    await _userManager.RemoveFromRoleAsync(cityAdministration.User, cityAdministration.AdminType.AdminTypeName);
-                }
-                _repoWrapper.CityAdministration.Delete(cityAdministration);
-                _repoWrapper.Save();
-                return Ok("Діловодство успішно видалено!");
-            }
-            catch
-            {
-                return NotFound("Не вдалося видалити діловодство!");
-            }
-        }
-
-        [Authorize(Roles = "Admin, Голова Округу, Голова Станиці")]
-        public async Task<IActionResult> EndPosition(int id)
-        {
-            try
-            {
-                CityAdministration cityAdministration = _repoWrapper.CityAdministration
-                    .FindByCondition(ca => ca.ID == id)
-                        .Include(ca => ca.AdminType)
-                        .Include(ca => ca.User)
-                    .First();
-                var userId = _userManager.GetUserId(User);
-                if (!_userAccessManager.HasAccess(userId, cityAdministration.UserId))
-                {
-                    return RedirectToAction("HandleError", "Error", new { code = 403 });
-                }
-                cityAdministration.EndDate = DateTime.Today;
-                _repoWrapper.CityAdministration.Update(cityAdministration);
-                _repoWrapper.Save();
-                await _userManager.RemoveFromRoleAsync(cityAdministration.User, cityAdministration.AdminType.AdminTypeName);
-                return Ok("Каденцію діловодства успішно завершено!");
-            }
-            catch
-            {
-                return NotFound("Не вдалося завершити каденцію діловодства!");
-            }
+                User = _mapper.Map<UserDTO, UserViewModel>(user),
+                TimeToJoinPlast = await _userService.CheckOrAddPlastunRole(userId, user.RegistredOn),
+                IsUserPlastun =await  _userManagerService.IsInRole(user, "Пластун")
+            };
+            return View(result);
         }
     }
 

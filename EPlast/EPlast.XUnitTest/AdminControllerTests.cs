@@ -3,18 +3,13 @@ using EPlast.BussinessLayer.DTO;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.Controllers;
 using EPlast.DataAccess.Entities;
-using EPlast.DataAccess.Repositories;
 using EPlast.ViewModels;
-using EPlast.ViewModels.UserInformation.UserProfile;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -22,17 +17,17 @@ namespace EPlast.XUnitTest
 {
     public class AdminControllerTests
     {
-        private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IUserStore<User>> _userStoreMock;
         private Mock<UserManager<User>> _userManager;
         private Mock<ILogger<AdminController>> _logger;
         private Mock<RoleManager<IdentityRole>> _roleManager;
         private  Mock<IUserManagerService> _userManagerService;
         private  Mock<IAdminService> _adminService;
+        private Mock<ICityService> _cityService;
+        private Mock<ICItyAdministrationService> _cityAdministrationService;
         private  Mock<IMapper> _mapper;
         public AdminControllerTests()
         {
-            _repoWrapper = new Mock<IRepositoryWrapper>();
             _userStoreMock = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(_userStoreMock.Object, null, null, null, null, null, null, null, null);
             _roleManager = new Mock<RoleManager<IdentityRole>>(new Mock<IRoleStore<IdentityRole>>().Object,
@@ -44,6 +39,8 @@ namespace EPlast.XUnitTest
             _userManagerService = new Mock<IUserManagerService>();
             _adminService = new Mock<IAdminService>();
             _mapper = new Mock<IMapper>();
+            _cityService = new Mock<ICityService>();
+            _cityAdministrationService = new Mock<ICItyAdministrationService>();
         }
 
         [Fact]
@@ -54,7 +51,8 @@ namespace EPlast.XUnitTest
             _userManagerService.Setup(x => x.GetRoles(It.IsAny<UserDTO>())).ReturnsAsync(new List<string>());
             _adminService.Setup(x => x.GetRolesExceptAdmin()).Returns(new List<IdentityRole>().AsQueryable());
 
-            var controller = new AdminController(_repoWrapper.Object, _logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object);
+            var controller = new AdminController( _logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object,
+                _cityService.Object, _cityAdministrationService.Object);
             // Act
             var result =await controller.Edit(user.Id);
             // Assert
@@ -65,7 +63,8 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task EditGetTestFailure()
         {
-            var controller = new AdminController(_repoWrapper.Object, _logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object);
+            var controller = new AdminController(_logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object,
+                _cityService.Object, _cityAdministrationService.Object);
             // Act
             var result = await controller.Edit("1");
             // Assert
@@ -79,7 +78,8 @@ namespace EPlast.XUnitTest
         {
             var roles = new List<string>();
 
-            var controller = new AdminController(_repoWrapper.Object, _logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object);
+            var controller = new AdminController(_logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object,
+                _cityService.Object, _cityAdministrationService.Object);
             // Act
             var result = await controller.Edit("1",roles);
             // Assert
@@ -91,7 +91,8 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task EditPostTestFailure()
         {
-            var controller = new AdminController(_repoWrapper.Object, _logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object);
+            var controller = new AdminController(_logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object,
+                _cityService.Object, _cityAdministrationService.Object);
             // Act
             var result = await controller.Edit(null, new List<string>());
             // Assert
@@ -103,7 +104,8 @@ namespace EPlast.XUnitTest
         [Fact]
         public void ConfirmDeleteTest()
         {
-            var controller = new AdminController(_repoWrapper.Object, _logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object);
+            var controller = new AdminController(_logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object,
+                _cityService.Object, _cityAdministrationService.Object);
             // Act
             var result = controller.ConfirmDelete("1");
             // Assert
@@ -113,8 +115,9 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task DeleteTest()
         {
-            var user = new List<User> { new User()};
-            var controller = new AdminController(_repoWrapper.Object, _logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object);
+            var user = new List<User> { new User { Id="1"} };
+            var controller = new AdminController(_logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object,
+                _cityService.Object, _cityAdministrationService.Object);
             // Act
             var result = await controller.Delete(user.First().Id);
             // Assert
@@ -125,7 +128,8 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task DeleteTestFailure()
         {
-            var controller = new AdminController(_repoWrapper.Object, _logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object);
+            var controller = new AdminController(_logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object,
+                _cityService.Object, _cityAdministrationService.Object);
             // Act
             var result = await controller.Delete(null);
             // Assert
@@ -137,26 +141,29 @@ namespace EPlast.XUnitTest
         [Fact]
         public void RegionsAdminsTest()
         {
-            _repoWrapper.Setup(x => x.City.FindAll()).Returns(new List<City>().AsQueryable());
-            var controller = new AdminController(_repoWrapper.Object, _logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object);
+            _cityService.Setup(x => x.GetAllDTO()).Returns(new List<CityDTO>());
+            var controller = new AdminController(_logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object,
+                _cityService.Object, _cityAdministrationService.Object);
             // Act
             var result = controller.RegionsAdmins();
             // Assert
             
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.IsAssignableFrom<RegionsAdmins>(viewResult.Model);
+            Assert.IsAssignableFrom<RegionsAdminsViewModel>(viewResult.Model);
         }
 
         [Fact]
         public void GetAdminsTest()
         {
-            _repoWrapper.Setup(x => x.CityAdministration.FindByCondition(It.IsAny<Expression<Func<CityAdministration, bool>>>())).Returns(new List<CityAdministration>().AsQueryable());
-            var controller = new AdminController(_repoWrapper.Object, _logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object);
+            _cityAdministrationService.Setup(x => x.GetByCityId(It.IsAny<int>())).Returns(new List<CityAdministrationDTO>());
+            _mapper.Setup(x => x.Map<IEnumerable<CityAdministrationDTO>, IEnumerable<CityAdministrationViewModel>>(It.IsAny<IEnumerable<CityAdministrationDTO>>()));
+            var controller = new AdminController(_logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object,
+                _cityService.Object, _cityAdministrationService.Object);
             // Act
             var result = controller.GetAdmins(1);
             // Assert
             var viewResult = Assert.IsType<PartialViewResult>(result);
-            Assert.IsAssignableFrom<IQueryable<CityAdministration>>(viewResult.Model);
+            Assert.IsAssignableFrom<CityAdministrationViewModel[]>(viewResult.Model);
         }
 
         [Fact]
@@ -165,7 +172,8 @@ namespace EPlast.XUnitTest
 
             _adminService.Setup(x => x.UsersTable()).ReturnsAsync(new List<UserTableDTO>());
             _mapper.Setup(x => x.Map<IEnumerable<UserTableDTO>, IEnumerable<UserTableViewModel>>(It.IsAny<IEnumerable<UserTableDTO>>()));
-            var controller = new AdminController(_repoWrapper.Object, _logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object);
+            var controller = new AdminController(_logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object,
+                _cityService.Object, _cityAdministrationService.Object);
             // Act
             var result = await controller.UsersTable();
             // Assert

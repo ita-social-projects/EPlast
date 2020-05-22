@@ -1,13 +1,9 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO;
-using EPlast.BussinessLayer.ExtensionMethods;
-using EPlast.BussinessLayer.Services;
 using EPlast.BussinessLayer.Services.Interfaces;
-using EPlast.DataAccess.Repositories;
 using EPlast.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -18,19 +14,26 @@ namespace EPlast.Controllers
     [Route("[controller]/[action]")]
     public class AdminController : Controller
     {
-        private readonly IRepositoryWrapper _repoWrapper;
         private readonly ILogger _logger;
         private readonly IUserManagerService _userManagerService;
         private readonly IAdminService _adminService;
         private readonly IMapper _mapper;
+        private readonly ICityService _cityService;
+        private readonly ICItyAdministrationService _cityAdministrationService;
 
-        public AdminController(IRepositoryWrapper repoWrapper, ILogger<AdminController> logger, IUserManagerService userManagerService, IAdminService adminService, IMapper mapper)
+        public AdminController(ILogger<AdminController> logger,
+            IUserManagerService userManagerService,
+            IAdminService adminService,
+            IMapper mapper,
+            ICityService cityService,
+            ICItyAdministrationService cityAdministrationService)
         {
-            _repoWrapper = repoWrapper;
             _logger = logger;
             _userManagerService = userManagerService;
             _adminService = adminService;
             _mapper = mapper;
+            _cityService = cityService;
+            _cityAdministrationService = cityAdministrationService;
         }
 
         public async Task<IActionResult> UsersTable()
@@ -51,7 +54,7 @@ namespace EPlast.Controllers
         public async Task<IActionResult> Edit(string userId)
         {
 
-            if (userId != null)
+            if (!string.IsNullOrEmpty(userId))
             {
                 var user = await _userManagerService.FindById(userId);
                 if (user == null)
@@ -80,7 +83,7 @@ namespace EPlast.Controllers
         public async Task<IActionResult> Edit(string userId, List<string> roles)
         {
 
-            if (userId != null)
+            if (!string.IsNullOrEmpty(userId))
             {
                 await _adminService.Edit(userId, roles);
                 _logger.LogInformation("Successful role change for {0}", userId);
@@ -104,7 +107,7 @@ namespace EPlast.Controllers
         {
             try
             {
-                if (userId != null)
+                if (!string.IsNullOrEmpty(userId))
                 {
                     await _adminService.DeleteUser(userId);
                     _logger.LogInformation("Successful delete user {0}", userId);
@@ -123,16 +126,18 @@ namespace EPlast.Controllers
         [HttpGet]
         public IActionResult RegionsAdmins()
         {
-            var cities = _repoWrapper.City.FindAll();
-            var model = new RegionsAdmins();
-            model.Cities = cities;
+            var cities = _cityService.GetAllDTO();
+            var model = new RegionsAdminsViewModel
+            {
+                Cities = _mapper.Map<IEnumerable<CityDTO>, IEnumerable<CityViewModel2>>(cities)
+            };
             return View(model);
         }
 
         [HttpGet]
         public IActionResult GetAdmins(int cityId)
         {
-            var res = _repoWrapper.CityAdministration.FindByCondition(x => x.CityId == cityId).Include(i => i.User).Include(i => i.AdminType);
+            var res = _mapper.Map<IEnumerable<CityAdministrationDTO>, IEnumerable<CityAdministrationViewModel>>(_cityAdministrationService.GetByCityId(cityId));
             return PartialView(res);
         }
     }
