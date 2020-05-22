@@ -130,6 +130,38 @@ $(document).ready(function () {
             return false;
         return true;
     }
+    $("#DeleteDecisionForm-submit").click((e) => {
+  
+        $("#DeleteDecisionForm-submit").prop('disabled', true);
+        let decisionID = $("#Delete-Decision-ID").val();
+        $.ajax(
+            {
+                url: "/Documentation/DeleteDecision",
+                type: "POST",
+                data: { 'id':decisionID},
+                success(response) {
+                    $("#DeleteDecisionForm-submit").prop('disabled', false);
+                    if (response.success) {
+                        $("#DeleteDecisionModal").modal("hide");
+                        $("#ModalSuccess .modal-body:first p:first strong:first").html(response.text);
+                        $("#ModalSuccess").modal("show");
+                        let table = $("#dtReadDecesion").DataTable();
+                        table.rows($(`tbody tr td:contains(${decisionID})`).parent()).remove().draw();
+                    }
+                    else {
+                        $("#EditDecesionModal").modal("hide");
+                        $("#ModalError.modal-body:first p:first strong:first").html("Не вдалося видалити звіт!");
+                    }
+                },
+                error() {
+                    $("#DeleteDecisionForm-submit").prop('disabled', false);
+                    $("#DeleteDecisionModal").modal("hide");
+                    $("#ModalError.modal-body:first p:first strong:first").html("Не можливо редагувати звіт!");
+                }
+            }
+            )
+
+    })
     $("#EditDecesionForm-submit").click((e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -194,11 +226,22 @@ $(document).ready(function () {
                 case "pdf":
                     window.open(`/Documentation/CreatePDFAsync?objId=${content}`, "_blank");
                     break
+                case "delete":
+                    $.get(`/Documentation/GetDecesion?id=${content}`, function (json) {
+                        if (!json.success) {
+                            $("#ModalError.modal-body:first p:first strong:first").html("ID рішення немає в базі!");
+                            return;
+                        }
+                        $("#Delete-Decision-ID").val(json.decesion.id);
+                    });
+                    $("#DeleteDecisionModal").modal("show");
+                    break;
             }
         },
         items: {
             "edit": { name: "Редагувати", icon: "far fa-edit" },
-            "pdf": { name: "Конвертувати до PDF", icon: "far fa-file-pdf" }
+            "pdf": { name: "Конвертувати до PDF", icon: "far fa-file-pdf" },
+            "delete": { name: "Видалити", icon: "far fa-trash-alt"}
         }
     });
 });
