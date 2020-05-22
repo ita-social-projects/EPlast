@@ -3,7 +3,6 @@ using EPlast.BussinessLayer.Interfaces;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using EPlast.DataAccess.Repositories.Contracts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -51,6 +50,7 @@ namespace EPlast
                     .AddEntityFrameworkStores<EPlastDBContext>()
                     .AddDefaultTokenProviders();
 
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("Admin",
@@ -70,6 +70,15 @@ namespace EPlast
             services.AddScoped<IDecisionVMIitializer, DecisionVMIitializer>();
             services.AddScoped<IPDFService, PDFService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<INationalityService, NationalityService>();
+            services.AddScoped<IReligionService, ReligionService>();
+            services.AddScoped<IEducationService, EducationService>();
+            services.AddScoped<IWorkService, WorkService>();
+            services.AddScoped<IGenderService, GenderService>();
+            services.AddScoped<IDegreeService, DegreeService>();
+            services.AddScoped<IConfirmedUsersService, ConfirmedUsersService>();
+            services.AddScoped<IUserManagerService, UserManagerService>();
+            services.AddScoped<IAdminService, AdminService>();
 
             services.AddScoped<IDirectoryManager, DirectoryManager>();
             services.AddScoped<IFileManager, FileManager>();

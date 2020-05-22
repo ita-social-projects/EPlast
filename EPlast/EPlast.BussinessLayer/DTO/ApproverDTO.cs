@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EPlast.BussinessLayer.DTO
+﻿namespace EPlast.BussinessLayer.DTO
 {
     public class ApproverDTO
     {
