@@ -24,7 +24,9 @@ using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 using AutoMapper;
 using EPlast.BussinessLayer.DTO.Events;
+using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.BussinessLayer.Services;
+using EPlast.BussinessLayer.Services.Events;
 using EPlast.ViewModels.Events;
 
 namespace EPlast

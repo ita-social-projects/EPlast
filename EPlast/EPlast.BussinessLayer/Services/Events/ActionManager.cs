@@ -1,20 +1,20 @@
-﻿using System;
-using System.Drawing;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Claims;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO.Events;
-using EPlast.BussinessLayer.Interfaces;
+using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Security.Claims;
 
-namespace EPlast.BussinessLayer.Services
+namespace EPlast.BussinessLayer.Services.Events
 {
     public class ActionManager : IActionManager
     {

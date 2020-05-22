@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using AutoMapper;
 using EPlast.BussinessLayer.DTO.Events;
 using EPlast.BussinessLayer.Interfaces;
+using EPlast.BussinessLayer.Interfaces.Events;
 
 
 namespace EPlast.Controllers
