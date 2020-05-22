@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EPlast.Models.Mapping
+namespace EPlast.Mapping
 {
-    public class MappingContact : Profile
+    public class ContactProfile : Profile
     {
-        public MappingContact()
+        public ContactProfile()
         {
             CreateMap<ContactsViewModel, ContactDTO>();
             CreateMap<ContactDTO, ContactsViewModel>();
