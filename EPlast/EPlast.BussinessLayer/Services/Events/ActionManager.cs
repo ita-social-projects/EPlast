@@ -3,14 +3,11 @@ using EPlast.BussinessLayer.DTO.Events;
 using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Security.Claims;
 
@@ -20,25 +17,25 @@ namespace EPlast.BussinessLayer.Services.Events
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
-        private readonly IHostingEnvironment _env;
         private readonly IMapper _mapper;
         private readonly IEventCategoryManager _eventCategoryManager;
         private readonly IEventTypeManager _eventTypeManager;
         private readonly IEventStatusManager _eventStatusManager;
         private readonly IParticipantStatusManager _participantStatusManager;
         private readonly IParticipantManager _participantManager;
+        private readonly IEventGalleryManager _eventGalleryManager;
 
-        public ActionManager(UserManager<User> userManager, IRepositoryWrapper repoWrapper, IHostingEnvironment env, IMapper mapper, IEventCategoryManager eventCategoryManager, IEventTypeManager eventTypeManager, IEventStatusManager eventStatusManager, IParticipantStatusManager participantStatusManager, IParticipantManager participantManager)
+        public ActionManager(UserManager<User> userManager, IRepositoryWrapper repoWrapper, IMapper mapper, IEventCategoryManager eventCategoryManager, IEventTypeManager eventTypeManager, IEventStatusManager eventStatusManager, IParticipantStatusManager participantStatusManager, IParticipantManager participantManager, IEventGalleryManager eventGalleryManager)
         {
             _userManager = userManager;
             _repoWrapper = repoWrapper;
-            _env = env;
             _mapper = mapper;
             _eventCategoryManager = eventCategoryManager;
             _eventTypeManager = eventTypeManager;
             _eventStatusManager = eventStatusManager;
             _participantStatusManager = participantStatusManager;
             _participantManager = participantManager;
+            _eventGalleryManager = eventGalleryManager;
         }
 
         public List<EventCategoryDTO> GetActionCategories()
@@ -183,50 +180,14 @@ namespace EPlast.BussinessLayer.Services.Events
 
         public int FillEventGallery(int id, IList<IFormFile> files)
         {
-            try
-            {
-                foreach (IFormFile file in files)
-                {
-                    if (file != null && file.Length > 0)
-                    {
-                        var img = Image.FromStream(file.OpenReadStream());
-                        var uploads = Path.Combine(_env.WebRootPath, "images\\EventsGallery");
-                        var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-                        var filePath = Path.Combine(uploads, fileName);
-                        img.Save(filePath);
-                        var gallery = new Gallary() { GalaryFileName = fileName };
-                        _repoWrapper.Gallary.Create(gallery);
-                        _repoWrapper.EventGallary.Create(new EventGallary { EventID = id, Gallary = gallery });
-                    }
-                }
-                _repoWrapper.Save();
-                return StatusCodes.Status200OK;
-            }
-            catch
-            {
-                return StatusCodes.Status500InternalServerError;
-            }
+            int result = _eventGalleryManager.AddPictures(id, files);
+            return result;
         }
-
 
         public int DeletePicture(int id)
         {
-            try
-            {
-                Gallary objectToDelete = _repoWrapper.Gallary.FindByCondition(g => g.ID == id).First();
-                _repoWrapper.Gallary.Delete(objectToDelete);
-                var picturePath = Path.Combine(_env.WebRootPath, "images\\EventsGallery", objectToDelete.GalaryFileName);
-                if (File.Exists(picturePath))
-                {
-                    File.Delete(picturePath);
-                }
-                _repoWrapper.Save();
-                return StatusCodes.Status200OK;
-            }
-            catch
-            {
-                return StatusCodes.Status500InternalServerError;
-            }
+            int result = _eventGalleryManager.DeletePicture(id);
+            return result;
         }
 
 
@@ -255,6 +216,5 @@ namespace EPlast.BussinessLayer.Services.Events
                 _repoWrapper.Save();
             }
         }
-
     }
 }

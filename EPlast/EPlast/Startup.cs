@@ -80,6 +80,8 @@ namespace EPlast
             services.AddScoped<IEventStatusManager, EventStatusManager>();
             services.AddScoped<IParticipantStatusManager, ParticipantStatusManager>();
             services.AddScoped<IParticipantManager, ParticipantManager>();
+            services.AddScoped<IEventGalleryManager, EventGalleryManager>();
+
 
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
             services.Configure<IdentityOptions>(options =>
@@ -93,7 +95,7 @@ namespace EPlast
 
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
-                
+
             });
 
             services.AddAuthentication()

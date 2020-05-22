@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using EPlast.BussinessLayer.Interfaces.Events;
+﻿using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Http;
+using System.Linq;
 
 namespace EPlast.BussinessLayer.Services.Events
 {
-    public class ParticipantManager:IParticipantManager
+    public class ParticipantManager : IParticipantManager
     {
         private readonly IRepositoryWrapper _repoWrapper;
-
         private readonly IEventStatusManager _eventStatusManager;
         private readonly IParticipantStatusManager _participantStatusManager;
 
