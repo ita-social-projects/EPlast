@@ -22,40 +22,44 @@ namespace EPlast.BussinessLayer.Services.Events
         private readonly UserManager<User> _userManager;
         private readonly IHostingEnvironment _env;
         private readonly IMapper _mapper;
+        private readonly IEventCategoryManager _eventCategoryManager;
+        private readonly IEventTypeManager _eventTypeManager;
+        private readonly IEventStatusManager _eventStatusManager;
+        private readonly IParticipantStatusManager _participantStatusManager;
 
 
-        public ActionManager(UserManager<User> userManager, IRepositoryWrapper repoWrapper, IHostingEnvironment env, IMapper mapper)
+
+
+        public ActionManager(UserManager<User> userManager, IRepositoryWrapper repoWrapper, IHostingEnvironment env, IMapper mapper, IEventCategoryManager eventCategoryManager, IEventTypeManager eventTypeManager, IEventStatusManager eventStatusManager, IParticipantStatusManager participantStatusManager)
         {
             _userManager = userManager;
             _repoWrapper = repoWrapper;
             _env = env;
             _mapper = mapper;
+            _eventCategoryManager = eventCategoryManager;
+            _eventTypeManager = eventTypeManager;
+            _eventStatusManager = eventStatusManager;
+            _participantStatusManager = participantStatusManager;
         }
 
         public List<EventCategoryDTO> GetActionCategories()
         {
-            List<EventCategoryDTO> dto = _repoWrapper.EventCategory.FindAll()
-                .Select(eventCategory => new EventCategoryDTO()
-                {
-                    EventCategoryId = eventCategory.ID,
-                    EventCategoryName = eventCategory.EventCategoryName
-                })
-                .ToList();
+            var dto = _eventCategoryManager.GetDTO();
             return dto;
         }
 
         public List<GeneralEventDTO> GetEvents(int id, ClaimsPrincipal user)
         {
-            int actionID = _repoWrapper.EventType.FindByCondition(et => et.EventTypeName == "Акція").First().ID;
-            int approvedStatus = _repoWrapper.ParticipantStatus.FindByCondition(p => p.ParticipantStatusName == "Учасник").First().ID;
-            int undeterminedStatus = _repoWrapper.ParticipantStatus.FindByCondition(p => p.ParticipantStatusName == "Розглядається").First().ID;
-            int rejectedStatus = _repoWrapper.ParticipantStatus.FindByCondition(p => p.ParticipantStatusName == "Відмовлено").First().ID;
-            int approvedEvent = _repoWrapper.EventStatus.FindByCondition(st => st.EventStatusName == "Затверджений(-на)").First().ID;
-            int finishedEvent = _repoWrapper.EventStatus.FindByCondition(st => st.EventStatusName == "Завершений(-на)").First().ID;
-            int notApprovedEvent = _repoWrapper.EventStatus.FindByCondition(st => st.EventStatusName == "Не затверджені").First().ID;
-            CheckEventsStatuses(id, actionID, finishedEvent);
+            int actionId = _eventTypeManager.GetTypeId("Акція");
+            int approvedStatus = _participantStatusManager.GetStatusId("Учасник");
+            int undeterminedStatus = _participantStatusManager.GetStatusId("Розглядається");
+            int rejectedStatus = _participantStatusManager.GetStatusId("Відмовлено");
+            int approvedEvent = _eventStatusManager.GetStatusId("Затверджений(-на)");
+            int finishedEvent = _eventStatusManager.GetStatusId("Завершений(-на)");
+            int notApprovedEvent = _eventStatusManager.GetStatusId("Не затверджені");
+            CheckEventsStatuses(id, actionId, finishedEvent);
             List<GeneralEventDTO> dto = _repoWrapper.Event
-             .FindByCondition(e => e.EventCategoryID == id && e.EventTypeID == actionID)
+             .FindByCondition(e => e.EventCategoryID == id && e.EventTypeID == actionId)
              .Include(e => e.EventAdmins)
              .Include(e => e.Participants)
              .Select(ev => new GeneralEventDTO
@@ -76,10 +80,10 @@ namespace EPlast.BussinessLayer.Services.Events
 
         public EventDTO GetEventInfo(int id, ClaimsPrincipal user)
         {
-            int approvedStatus = _repoWrapper.ParticipantStatus.FindByCondition(p => p.ParticipantStatusName == "Учасник").First().ID;
-            int undeterminedStatus = _repoWrapper.ParticipantStatus.FindByCondition(p => p.ParticipantStatusName == "Розглядається").First().ID;
-            int rejectedStatus = _repoWrapper.ParticipantStatus.FindByCondition(p => p.ParticipantStatusName == "Відмовлено").First().ID;
-            int finishedEvent = _repoWrapper.EventStatus.FindByCondition(st => st.EventStatusName == "Завершений(-на)").First().ID;
+            int approvedStatus = _participantStatusManager.GetStatusId("Учасник");
+            int undeterminedStatus = _participantStatusManager.GetStatusId("Розглядається");
+            int rejectedStatus = _participantStatusManager.GetStatusId("Відмовлено");
+            int finishedEvent = _eventStatusManager.GetStatusId("Завершений(-на)");
             bool isUserGlobalEventAdmin = user?.IsInRole("Адміністратор подій") ?? false;
             CheckEventStatus(id, finishedEvent);
             EventDTO dto = _repoWrapper.Event.FindByCondition(e => e.ID == id)
@@ -276,10 +280,10 @@ namespace EPlast.BussinessLayer.Services.Events
         }
 
 
-        private void CheckEventsStatuses(int ID, int actionID, int finishedEvent)
+        private void CheckEventsStatuses(int id, int actionId, int finishedEvent)
         {
             var eventsToCheck = _repoWrapper.Event
-                .FindByCondition(e => e.EventCategoryID == ID && e.EventTypeID == actionID);
+                .FindByCondition(e => e.EventCategoryID == id && e.EventTypeID == actionId);
             foreach (var eventToCheck in eventsToCheck)
             {
                 if (eventToCheck.EventDateEnd.Date <= DateTime.Now.Date && eventToCheck.EventStatusID != finishedEvent)
@@ -291,9 +295,9 @@ namespace EPlast.BussinessLayer.Services.Events
             _repoWrapper.Save();
         }
 
-        private void CheckEventStatus(int ID, int finishedEvent)
+        private void CheckEventStatus(int id, int finishedEvent)
         {
-            var eventToCheck = _repoWrapper.Event.FindByCondition(e => e.ID == ID).First();
+            var eventToCheck = _repoWrapper.Event.FindByCondition(e => e.ID == id).First();
             if (eventToCheck.EventDateEnd.Date <= DateTime.Now.Date && eventToCheck.EventStatusID != finishedEvent)
             {
                 eventToCheck.EventStatusID = finishedEvent;
