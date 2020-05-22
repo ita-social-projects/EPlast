@@ -1,33 +1,29 @@
-﻿using EPlast.BussinessLayer;
+﻿using AutoMapper;
+using EPlast.BussinessLayer;
+using EPlast.BussinessLayer.AccessManagers;
+using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using EPlast.BussinessLayer.Interfaces;
+using EPlast.BussinessLayer.Interfaces.Events;
+using EPlast.BussinessLayer.Services.Events;
+using EPlast.BussinessLayer.Settings;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using EPlast.DataAccess.Repositories.Contracts;
+using EPlast.Models.ViewModelInitializations;
+using EPlast.Models.ViewModelInitializations.Interfaces;
+using EPlast.Wrapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Threading.Tasks;
-using System.Linq;
-using EPlast.Models.ViewModelInitializations.Interfaces;
-using EPlast.Models.ViewModelInitializations;
-using EPlast.BussinessLayer.Settings;
-using EPlast.BussinessLayer.AccessManagers;
-using EPlast.BussinessLayer.AccessManagers.Interfaces;
-using EPlast.Wrapper;
-using Microsoft.AspNetCore.Localization;
 using System.Globalization;
-using AutoMapper;
-using EPlast.BussinessLayer.DTO.Events;
-using EPlast.BussinessLayer.Interfaces.Events;
-using EPlast.BussinessLayer.Services;
-using EPlast.BussinessLayer.Services.Events;
-using EPlast.ViewModels.Events;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast
 {
@@ -70,7 +66,6 @@ namespace EPlast
             services.AddScoped<IViewAnnualReportsVMInitializer, ViewAnnualReportsVMInitializer>();
             services.AddScoped<IDecisionVMIitializer, DecisionVMIitializer>();
             services.AddScoped<IPDFService, PDFService>();
-
             services.AddScoped<IDirectoryManager, DirectoryManager>();
             services.AddScoped<IFileManager, FileManager>();
             services.AddScoped<IFileStreamManager, FileStreamManager>();
@@ -80,6 +75,11 @@ namespace EPlast
             services.AddScoped<IUserAccessManagerSettings, UserAccessManagerSettings>();
             services.AddScoped<IUserAccessManager, UserAccessManager>();
             services.AddScoped<IActionManager, ActionManager>();
+            services.AddScoped<IEventCategoryManager, EventCategoryManager>();
+            services.AddScoped<IEventTypeManager, EventTypeManager>();
+            services.AddScoped<IEventStatusManager, EventStatusManager>();
+            services.AddScoped<IParticipantStatusManager, ParticipantStatusManager>();
+
 
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
             services.Configure<IdentityOptions>(options =>
