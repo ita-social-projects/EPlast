@@ -44,6 +44,7 @@ namespace EPlast.Controllers
         private readonly IUserManagerService _userManagerService;
         private readonly IConfirmedUsersService _confirmedUserService;
         private readonly IMapper _mapper;
+        private readonly ILoggerService<AccountController> _loggerService;
 
         public AccountController(UserManager<User> userManager,
             SignInManager<User> signInManager,
@@ -61,7 +62,8 @@ namespace EPlast.Controllers
             IDegreeService degreeService,
             IConfirmedUsersService confirmedUserService,
             IUserManagerService userManagerService,
-            IMapper mapper)
+            IMapper mapper,
+            ILoggerService<AccountController> loggerService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -80,6 +82,7 @@ namespace EPlast.Controllers
             _confirmedUserService = confirmedUserService;
             _mapper = mapper;
             _userManagerService = userManagerService;
+            _loggerService = loggerService;
         }
 
         [HttpGet]
@@ -607,7 +610,7 @@ namespace EPlast.Controllers
             }
             catch
             {
-                _logger.Log(LogLevel.Error, "Smth went wrong");
+               _loggerService.LogError("Smth went wrong");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
@@ -619,7 +622,7 @@ namespace EPlast.Controllers
             {
                 if (string.IsNullOrEmpty(userId))
                 {
-                    _logger.Log(LogLevel.Error, "User id is null");
+                    _loggerService.LogError("User id is null");
                     return RedirectToAction("HandleError", "Error", new { code = 500 });
                 }
 
@@ -649,11 +652,12 @@ namespace EPlast.Controllers
 
                     return View(model);
                 }
-                _logger.Log(LogLevel.Error, $"Can`t find this user:{userId}, or smth else");
+                _loggerService.LogError( $"Can`t find this user:{userId}, or smth else");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
             catch
             {
+                _loggerService.LogError("Smth went wrong");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }       
@@ -665,6 +669,7 @@ namespace EPlast.Controllers
                 _confirmedUserService.Create(User, userId, _isClubAdmin, _isCityAdmin);
                 return RedirectToAction("Approvers", "Account", new { userId = userId });
             }
+            _loggerService.LogError("User id is null");
             return RedirectToAction("HandleError", "Error", new { code = 500 });
         }
 
@@ -672,6 +677,7 @@ namespace EPlast.Controllers
         public IActionResult ApproverDelete(int confirmedId, string userId)
         {
             _confirmedUserService.Delete(confirmedId);
+            _loggerService.LogInformation("Approve succesfuly deleted");
             return RedirectToAction("UserProfile", "Account", new { userId = userId });
         }
 
@@ -681,7 +687,7 @@ namespace EPlast.Controllers
         {
             if(userId == null)
             {
-                _logger.Log(LogLevel.Error, "User id is null");
+                _loggerService.LogError("User id is null");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
 
@@ -713,7 +719,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError("Exception: {0}", e.Message);
+                _loggerService.LogError($"Exception: { e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
@@ -725,25 +731,33 @@ namespace EPlast.Controllers
             try
             {
                 _userService.Update(_mapper.Map<UserViewModel,UserDTO>(model.User), file, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID, model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
-                _logger.LogInformation("User {0} {1} was edited profile and saved in the database", model.User.FirstName, model.User.LastName);
+                _loggerService.LogInformation($"User {model.User.Email} was edited profile and saved in the database");
                 return RedirectToAction("UserProfile");
             }
             catch (Exception e)
             {
-                _logger.LogError("Exception: {0}", e.Message);
+                _loggerService.LogError($"Exception: { e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
         public async Task<IActionResult> Positions(string userId)
         {
-            var user = _userService.GetUser(userId);
-            var result = new PositionUserViewModel
+            try
             {
-                User = _mapper.Map<UserDTO, UserViewModel>(user),
-                TimeToJoinPlast = await _userService.CheckOrAddPlastunRole(userId, user.RegistredOn),
-                IsUserPlastun =await  _userManagerService.IsInRole(user, "Пластун")
-            };
-            return View(result);
+                var user = _userService.GetUser(userId);
+                var result = new PositionUserViewModel
+                {
+                    User = _mapper.Map<UserDTO, UserViewModel>(user),
+                    TimeToJoinPlast = await _userService.CheckOrAddPlastunRole(userId, user.RegistredOn),
+                    IsUserPlastun = await _userManagerService.IsInRole(user, "Пластун")
+                };
+                return View(result);
+            }
+            catch (Exception e)
+            {
+                _loggerService.LogError($"Exception: { e.Message}");
+                return RedirectToAction("HandleError", "Error");
+            }
         }
     }
 
