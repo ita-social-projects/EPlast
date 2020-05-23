@@ -77,6 +77,7 @@ namespace EPlast
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<ICItyAdministrationService, CityAdministrationService>();
             services.AddScoped<ICityService, CityService>();
+            services.AddScoped(typeof(ILoggerService<>),typeof(LoggerService<>) );
 
             services.AddScoped<IDirectoryManager, DirectoryManager>();
             services.AddScoped<IFileManager, FileManager>();
