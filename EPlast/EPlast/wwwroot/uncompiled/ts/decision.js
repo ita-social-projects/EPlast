@@ -177,35 +177,7 @@ $(() => {
             return false;
         return true;
     }
-    $("#DeleteDecisionForm-submit").click((e) => {
-        $("#DeleteDecisionForm-submit").prop('disabled', true);
-        let decisionID = $("#Delete-Decision-ID").val();
-        $.ajax({
-            url: "/Documentation/DeleteDecision",
-            type: "POST",
-            data: { 'id': decisionID },
-            success(response) {
-                $("#DeleteDecisionForm-submit").prop('disabled', false);
-                if (response.success) {
-                    $("#DeleteDecisionModal").modal("hide");
-                    $("#ModalSuccess .modal-body:first p:first strong:first").html(response.text);
-                    $("#ModalSuccess").modal("show");
-                    let table = $("#dtReadDecesion").DataTable();
-                    table.rows($(`tbody tr td:contains(${decisionID})`).parent()).remove().draw();
-                }
-                else {
-                    $("#EditDecesionModal").modal("hide");
-                    $("#ModalError.modal-body:first p:first strong:first").html("Не вдалося видалити звіт!");
-                }
-            },
-            error() {
-                $("#DeleteDecisionForm-submit").prop('disabled', false);
-                $("#DeleteDecisionModal").modal("hide");
-                $("#ModalError.modal-body:first p:first strong:first").html("Не можливо редагувати звіт!");
-            }
-        });
-    });
-    $("#EditDecesionForm-submit").click((e) => {
+    $("#EditDecisionForm-submit").click((e) => {
         e.preventDefault();
         e.stopPropagation();
         if (!checkEditFormData())
@@ -247,6 +219,34 @@ $(() => {
             }
         });
     });
+    $("#DeleteDecisionForm-submit").click((e) => {
+        $("#DeleteDecisionForm-submit").prop('disabled', true);
+        let decisionID = $("#Delete-Decision-ID").val();
+        $.ajax({
+            url: "/Documentation/DeleteDecision",
+            type: "POST",
+            data: { 'id': decisionID },
+            success(response) {
+                $("#DeleteDecisionForm-submit").prop('disabled', false);
+                if (response.success) {
+                    $("#DeleteDecisionModal").modal("hide");
+                    $("#ModalSuccess .modal-body:first p:first strong:first").html(response.text);
+                    $("#ModalSuccess").modal("show");
+                    let table = $("#dtReadDecision").DataTable();
+                    table.rows($(`tbody tr td:contains(${decisionID})`).parent()).remove().draw();
+                }
+                else {
+                    $("#EditDecisionModal").modal("hide");
+                    $("#ModalError.modal-body:first p:first strong:first").html("Не вдалося видалити звіт!");
+                }
+            },
+            error() {
+                $("#DeleteDecisionForm-submit").prop('disabled', false);
+                $("#DeleteDecisionModal").modal("hide");
+                $("#ModalError.modal-body:first p:first strong:first").html("Не можливо редагувати звіт!");
+            }
+        });
+    });
     $.contextMenu({
         selector: ".decision-menu",
         callback: function (key) {
@@ -268,12 +268,12 @@ $(() => {
                     window.open(`/Documentation/CreatePDFAsync?objId=${content}`, "_blank");
                     break;
                 case "delete":
-                    $.get(`/Documentation/GetDecesion?id=${content}`, function (json) {
+                    $.get(`/Documentation/GetDecision?id=${content}`, function (json) {
                         if (!json.success) {
                             $("#ModalError.modal-body:first p:first strong:first").html("ID рішення немає в базі!");
                             return;
                         }
-                        $("#Delete-Decision-ID").val(json.decesion.id);
+                        $("#Delete-Decision-ID").val(json.decision.id);
                     });
                     $("#DeleteDecisionModal").modal("show");
                     break;
