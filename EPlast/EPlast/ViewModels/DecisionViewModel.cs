@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using EPlast.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
-using EPlast.Models;
 
 namespace EPlast.ViewModels
 {

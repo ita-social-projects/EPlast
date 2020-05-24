@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO;
 using EPlast.DataAccess.Entities;
+using System.Collections.Generic;
 
 namespace EPlast.BussinessLayer.Mapping
 {
