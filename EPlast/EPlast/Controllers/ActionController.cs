@@ -37,11 +37,11 @@ namespace EPlast.Controllers
         }
 
         [Authorize]
-        public IActionResult Events(int ID)
+        public IActionResult Events(int id)
         {
             try
             {
-                var dto = _actionManager.GetEvents(ID, User);
+                var dto = _actionManager.GetEvents(id, User);
                 var model = _mapper.Map<List<GeneralEventDTO>, List<GeneralEventViewModel>>(dto);
                 return View(model);
             }
@@ -53,11 +53,11 @@ namespace EPlast.Controllers
 
 
         [Authorize]
-        public IActionResult EventInfo(int ID)
+        public IActionResult EventInfo(int id)
         {
             try
             {
-                var dto = _actionManager.GetEventInfo(ID, User);
+                var dto = _actionManager.GetEventInfo(id, User);
                 var model = _mapper.Map<EventDTO, EventViewModel>(dto);
                 return View(model);
             }
@@ -69,11 +69,11 @@ namespace EPlast.Controllers
 
         [HttpPost]
         [Authorize]
-        public IActionResult DeleteEvent(int ID)
+        public IActionResult DeleteEvent(int id)
         {
             try
             {
-                var code = _actionManager.DeleteEvent(ID);
+                var code = _actionManager.DeleteEvent(id);
                 return StatusCode(code);
             }
             catch
@@ -84,11 +84,11 @@ namespace EPlast.Controllers
 
         [HttpPost]
         [Authorize]
-        public IActionResult DeletePicture(int ID)
+        public IActionResult DeletePicture(int id)
         {
             try
             {
-                var code = _actionManager.DeletePicture(ID);
+                var code = _actionManager.DeletePicture(id);
                 return StatusCode(code);
             }
             catch
@@ -100,11 +100,11 @@ namespace EPlast.Controllers
 
         [HttpPost]
         [Authorize]
-        public IActionResult SubscribeOnEvent(int ID)
+        public IActionResult SubscribeOnEvent(int id)
         {
             try
             {
-                var code = _actionManager.SubscribeOnEvent(ID, User);
+                var code = _actionManager.SubscribeOnEvent(id, User);
                 return StatusCode(code);
             }
             catch
@@ -115,11 +115,11 @@ namespace EPlast.Controllers
 
         [HttpPost]
         [Authorize]
-        public IActionResult UnSubscribeOnEvent(int ID)
+        public IActionResult UnSubscribeOnEvent(int id)
         {
             try
             {
-                var code = _actionManager.UnSubscribeOnEvent(ID, User);
+                var code = _actionManager.UnSubscribeOnEvent(id, User);
                 return StatusCode(code);
             }
             catch
@@ -130,11 +130,11 @@ namespace EPlast.Controllers
 
 
         [Authorize]
-        public IActionResult ApproveParticipant(int ID)
+        public IActionResult ApproveParticipant(int id)
         {
             try
             {
-                var code = _actionManager.ApproveParticipant(ID);
+                var code = _actionManager.ApproveParticipant(id);
                 return StatusCode(code);
             }
             catch
@@ -144,11 +144,11 @@ namespace EPlast.Controllers
         }
 
         [Authorize]
-        public IActionResult UndetermineParticipant(int ID)
+        public IActionResult UndetermineParticipant(int id)
         {
             try
             {
-                var code = _actionManager.UnderReviewParticipant(ID);
+                var code = _actionManager.UnderReviewParticipant(id);
                 return StatusCode(code);
             }
             catch
@@ -158,11 +158,11 @@ namespace EPlast.Controllers
         }
 
         [Authorize]
-        public IActionResult RejectParticipant(int ID)
+        public IActionResult RejectParticipant(int id)
         {
             try
             {
-                var code = _actionManager.RejectParticipant(ID);
+                var code = _actionManager.RejectParticipant(id);
                 return StatusCode(code);
             }
             catch
@@ -172,11 +172,11 @@ namespace EPlast.Controllers
         }
 
         [HttpPost]
-        public IActionResult FillEventGallery(int ID, IList<IFormFile> files)
+        public IActionResult FillEventGallery(int id, IList<IFormFile> files)
         {
             try
             {
-                var code = _actionManager.FillEventGallery(ID, files);
+                var code = _actionManager.FillEventGallery(id, files);
                 return StatusCode(code);
             }
             catch
