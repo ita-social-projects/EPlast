@@ -15,6 +15,11 @@ using EPlast.ViewModels;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.BussinessLayer.DTO;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Repositories;
+using EPlast.ViewModels.UserInformation.UserProfile;
+using Microsoft.EntityFrameworkCore;
+using EPlast.ViewModels.UserInformation;
+using EPlast.BussinessLayer.Services;
 
 namespace EPlast.Controllers
 {
@@ -23,17 +28,19 @@ namespace EPlast.Controllers
         private readonly IAccountService _accountService;
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
-        public AccountController(IAccountService accountService, IUserService userService, IMapper mapper)
+        private UserManager<User> _userManager;
+        private SignInManager<User> _signInManager;
+        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly UserManagerService _userManagerService;
+        public AccountController(IAccountService accountService, IUserService userService, IMapper mapper,
+        SignInManager<User> signInManager, UserManager<User> userManager, IRepositoryWrapper repoWrapper,
+        UserManagerService userManagerService)
         {
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _repoWrapper = repoWrapper;
             _accountService = accountService;
             _userService = userService;
-            _nationalityService = nationalityService;
-            _religionService = religionService;
-            _degreeService = degreeService;
-            _workService = workService;
-            _educationService = educationService;
-            _genderService = genderService;
-            _confirmedUserService = confirmedUserService;
             _mapper = mapper;
             _userManagerService = userManagerService;
         }
@@ -464,30 +471,30 @@ namespace EPlast.Controllers
         {
             try
             {
-                var currentUserId = _accountService.GetIdForUser(User);
                 if (string.IsNullOrEmpty(userId))
                 {
-                    userId = currentUserId;
+                    // _logger.Log(LogLevel.Error, "User id is null");
+                    // return RedirectToAction("HandleError", "Error", new { code = 500 });
+                    userId = _userManagerService.GetUserId(User);
                 }
-                //_logger.Log(LogLevel.Information, $"UserProfile Id is {userId}");
-                //_logger.Log(LogLevel.Information, $"Authenticate userId is {_currentUserId}");
 
-                var user = _userService.GetUserProfile(userId);
-                var time = _userService.CheckOrAddPlastunRole(_mapper.Map<UserDTO, UserViewModel>(user).Id, user.RegistredOn);
-                var isUserPlastun = await _userManagerService.IsInRole(user, "Пластун");
+                //var user = _userService.GetUser(userId);
+                var user = await _userManager.FindByIdAsync(userId);
+                var time = _userService.CheckOrAddPlastunRole(_mapper.Map<UserDTO, UserViewModel>(_mapper.Map<User, UserDTO>(user)).Id, user.RegistredOn);
+                var isUserPlastun = await _userManagerService.IsInRole(_mapper.Map<User, UserDTO>(user), "Пластун");
 
                 var model = new PersonalDataViewModel
                 {
-                    User = _mapper.Map<UserDTO, UserViewModel>(user),
+                    User = _mapper.Map<UserDTO, UserViewModel>(_mapper.Map<User, UserDTO>(user)),
                     TimeToJoinPlast = time.Result,
                     IsUserPlastun = isUserPlastun
                 };
-                
+
                 return View(model);
             }
             catch
             {
-                _logger.Log(LogLevel.Error, "Smth went wrong");
+                //_logger.Log(LogLevel.Error, "Smth went wrong");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
