@@ -3,7 +3,6 @@ using EPlast.BussinessLayer.Interfaces;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using EPlast.DataAccess.Repositories.Contracts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -19,9 +18,10 @@ using EPlast.Models.ViewModelInitializations;
 using EPlast.BussinessLayer.Settings;
 using EPlast.BussinessLayer.AccessManagers;
 using EPlast.BussinessLayer.AccessManagers.Interfaces;
-using EPlast.Wrapper;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
+using System.Reflection;
+using AutoMapper;
 
 namespace EPlast
 {
@@ -37,6 +37,10 @@ namespace EPlast
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()
+                .Where(x =>
+                    x.FullName.Equals("EPlast.BussinessLayer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null") ||
+                    x.FullName.Equals("EPlast, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null")));
             services.AddOptions();
             services.AddDbContextPool<EPlastDBContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("EPlastDBConnection")));
@@ -58,11 +62,13 @@ namespace EPlast
             services.AddScoped<IEmailConfirmation, EmailConfirmation>();
             services.AddScoped<IAnnualReportVMInitializer, AnnualReportVMInitializer>();
             services.AddScoped<IViewAnnualReportsVMInitializer, ViewAnnualReportsVMInitializer>();
-            services.AddScoped<IDecisionVMIitializer, DecisionVMIitializer>();
-            services.AddScoped<IPDFService, PDFService>();
+            services.AddScoped<IDecisionVmInitializer, DecisionVmInitializer>();
 
+            services.AddScoped<IPDFService, PDFService>();
+            services.AddScoped<IDecisionService, DecisionService>();
             services.AddScoped<IDirectoryManager, DirectoryManager>();
             services.AddScoped<IFileManager, FileManager>();
+
             services.AddScoped<IFileStreamManager, FileStreamManager>();
             services.AddScoped<ICreateEventVMInitializer, CreateEventVMInitializer>();
             services.AddScoped<ICityAccessManagerSettings, CityAccessManagerSettings>();
@@ -81,9 +87,8 @@ namespace EPlast
 
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
-                
             });
-
+            services.AddLogging();
             services.AddAuthentication()
                 .AddGoogle(options =>
                 {

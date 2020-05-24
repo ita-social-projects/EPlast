@@ -384,6 +384,10 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<string>("UserID")
                         .IsRequired();
 
+                    b.Property<bool>("isCityAdmin");
+
+                    b.Property<bool>("isClubAdmin");
+
                     b.HasKey("ID");
 
                     b.HasIndex("ApproverID")
@@ -871,7 +875,7 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<string>("Address")
                         .HasMaxLength(50);
 
-                    b.Property<DateTime?>("DateTime");
+                    b.Property<DateTime?>("Birthday");
 
                     b.Property<int?>("DegreeId");
 

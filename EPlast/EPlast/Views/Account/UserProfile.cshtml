@@ -1,130 +1,103 @@
-﻿@using Microsoft.AspNetCore.Identity;
+﻿@{
+    Layout = "~/Views/Account/_ProfileLayout.cshtml";
+    ViewBag.Title = "Профіль";
+    ViewBag.ActiveNav = "UserProfile"; 
+}
+@using Microsoft.AspNetCore.Identity;
 @model EPlast.ViewModels.UserViewModel
 @inject UserManager<EPlast.DataAccess.Entities.User> _userManager
 
-<div class="container bg-light m-5 pt-2 pb-5 pr-5 pl-5 user-profile">
-    <ul class="nav nav-tabs">
-        <li class="nav-item">
-            <a class="nav-link active" data-toggle="tab" href="#userProfile">Персональні дані</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#">Дійсне членство</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#positions">Діловодства</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" asp-action="EventUser" asp-controller="EventUser">Події</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#">З'їзди</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#">Бланки</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#approvers">Поручення</a>
-        </li>
-        @if (_userManager.GetUserId(User) == Model.User.Id || User.IsInRole("Admin"))
-        {
-            <li class="nav-item">
-                <a id="Edit" class="nav-link" data-toggle="tab" href="#editProfile">Редагувати профіль</a>
-            </li>
-
-        }
-    </ul>
-    <div class="tab-content">
-        <div id="userProfile" class="container tab-pane active UserProfileWrapper">
-            <div class="row mt-4 d-flex">
-                <div class="col-md-4">
-                    <div class="portlet light profile-sidebar-portlet bordered">
-                        <div class="profile-userpic">
-                            <img src="/images/Users/@Model.User.ImagePath" class="img-thumbnail" alt="">
-                        </div>
-                        <div class="profile-usertitle">
-                            <br />
-                            @if (!_userManager.IsInRoleAsync(Model.User, "Пластун").Result)
-                            {
-                                double perc = 100 - @Model.timeToJoinPlast.Days * 100 / 365;
-                                int count = @Model.timeToJoinPlast.Days;
-                                <p>@count дні і @Model.User.FirstName @Model.User.LastName Пластун:)</p>
-                                <div class="progress">
-                                    <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: @perc%" aria-valuenow="@Model.timeToJoinPlast.Days" aria-valuemin="365" aria-valuemax="0">
-                                        @perc%
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    </div>
+<div id="userProfile" class="container tab-pane active UserProfileWrapper">
+    <div class="row mt-4 d-flex">
+        <div class="col-md-4">
+            <div class="portlet light profile-sidebar-portlet bordered">
+                <div class="profile-userpic">
+                    <img src="/images/Users/@Model.User.ImagePath" class="img-thumbnail" alt="">
                 </div>
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h4>Мій профіль</h4>
-                                <hr>
+                <div class="profile-usertitle">
+                    <br />
+                    @if (!_userManager.IsInRoleAsync(Model.User, "Пластун").Result)
+                    {
+                        double perc = 100 - @Model.timeToJoinPlast.Days * 100 / 365;
+                        int count = @Model.timeToJoinPlast.Days;
+                        <p>@count дні і @Model.User.FirstName @Model.User.LastName Пластун:)</p>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: @perc%" aria-valuenow="@Model.timeToJoinPlast.Days" aria-valuemin="365" aria-valuemax="0">
+                                @perc%
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group row">
-                                    <label for="username" class="col-6 col-form-label font-weight-bold">Прізвище</label>
-                                    <p class="col-6 col-form-label">@Model.User.LastName</p>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="name" class="col-6 col-form-label font-weight-bold">Ім'я</label>
-                                    <p class="col-6 col-form-label">@Model.User.FirstName</p>
-                                </div>
-                                @if (@Model.User.FatherName != null)
-                                {
-                                    <div class="form-group row">
-                                        <label for="name" class="col-6 col-form-label font-weight-bold">По-батькові</label>
-                                        <p class="col-6 col-form-label">@Model.User.FatherName</p>
-                                    </div>
-                                }
-                                <div class="form-group row">
-                                    @if (@Model.User.Email != "facebookdefaultmail@gmail.com")
-                                    {
-                                        <label for="email" class="col-6 col-form-label font-weight-bold">Email</label>
-                                        <p class="col-6 col-form-label">@Model.User.Email</p>
-                                    }
-                                </div>
-                                @if (@Model.User.UserProfile.Address != null)
-                                {
-                                    <div class="form-group row">
-                                        <label class="col-6 col-form-label font-weight-bold">Домашня адреса</label>
-                                        <p class="col-6 col-form-label">@Model.User.UserProfile.Address</p>
-                                    </div>
-                                }
-                                @if (@Model.User.PhoneNumber != null)
-                                {
-                                    <div class="form-group row">
-                                        <label for="phone" class="col-6 col-form-label font-weight-bold">Номер телефону</label>
-                                        <p class="col-6 col-form-label">@Model.User.PhoneNumber</p>
-                                    </div>
-                                }
-                                @if (@Model.User.UserProfile.Nationality != null)
-                                {
-                                    <div class="form-group row">
-                                        <label for="text" class="col-6 col-form-label font-weight-bold">Національність</label>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+           
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <h4>Особистий профіль</h4>
+                        <hr>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group row">
+                            <label for="username" class="col-6 col-form-label font-weight-bold">Прізвище</label>
+                            <p class="col-6 col-form-label">@Model.User.LastName</p>
+                        </div>
+                        <div class="form-group row">
+                            <label for="name" class="col-6 col-form-label font-weight-bold">Ім'я</label>
+                            <p class="col-6 col-form-label">@Model.User.FirstName</p>
+                        </div>
+                        @if (@Model.User.FatherName != null)
+                        {
+                            <div class="form-group row">
+                                <label for="name" class="col-6 col-form-label font-weight-bold">По-батькові</label>
+                                <p class="col-6 col-form-label">@Model.User.FatherName</p>
+                            </div>
+                        }
+                        <div class="form-group row">
+                            @if (@Model.User.Email != "facebookdefaultmail@gmail.com")
+                            {
+                                <label for="email" class="col-6 col-form-label font-weight-bold">Email</label>
+                                <p class="col-6 col-form-label">@Model.User.Email</p>
+                            }
+                        </div>
+                        @if (@Model.User.UserProfile.Address != null)
+                        {
+                            <div class="form-group row">
+                                <label class="col-6 col-form-label font-weight-bold">Домашня адреса</label>
+                                <p class="col-6 col-form-label">@Model.User.UserProfile.Address</p>
+                            </div>
+                        }
+                        @if (@Model.User.PhoneNumber != null)
+                        {
+                            <div class="form-group row">
+                                <label for="phone" class="col-6 col-form-label font-weight-bold">Номер телефону</label>
+                                <p class="col-6 col-form-label">@Model.User.PhoneNumber</p>
+                            </div>
+                        }
+                        @if (@Model.User.UserProfile.Nationality != null)
+                        {
+                            <div class="form-group row">
+                                <label for="text" class="col-6 col-form-label font-weight-bold">Національність</label>
 
-                                        <p class="col-6 col-form-label">@Model.User.UserProfile.Nationality.Name</p>
+                                <p class="col-6 col-form-label">@Model.User.UserProfile.Nationality.Name</p>
 
-                                    </div>
-                                }
-                                @if (@Model.User.UserProfile.Religion != null)
-                                {
-                                    <div class="form-group row">
-                                        <label for="email" class="col-6 col-form-label font-weight-bold">Віровизнання</label>
-                                        <p class="col-6 col-form-label">@Model.User.UserProfile.Religion.Name</p>
-                                    </div>
-                                }
+                            </div>
+                        }
+                        @if (@Model.User.UserProfile.Religion != null)
+                        {
+                            <div class="form-group row">
+                                <label for="email" class="col-6 col-form-label font-weight-bold">Віровизнання</label>
+                                <p class="col-6 col-form-label">@Model.User.UserProfile.Religion.Name</p>
+                            </div>
+                        }
 
-                                @if (@Model.User.UserProfile.DateTime != null)
+                                @if (@Model.User.UserProfile.Birthday != null)
                                 {
                                     <div class="form-group row">
                                         <label class="col-6 col-form-label font-weight-bold">Дата народження:</label>
-                                        <p class="col-6 col-form-label">@Model.User.UserProfile.DateTime.Value.ToString("dd-MM-yyyy")</p>
+                                        <p class="col-6 col-form-label">@Model.User.UserProfile.Birthday.Value.ToString("dd-MM-yyyy")</p>
                                     </div>
                                 }
                                 @if (@Model.User.UserProfile.Gender != null)
@@ -132,252 +105,63 @@
                                     <div class="form-group row">
                                         <label for="email" class="col-6 col-form-label font-weight-bold">Стать</label>
 
-                                        <p class="col-6 col-form-label">@Model.User.UserProfile.Gender.Name</p>
+                                <p class="col-6 col-form-label">@Model.User.UserProfile.Gender.Name</p>
 
-                                    </div>
-                                }
-                                @if (@Model.User.UserProfile.Education != null)
-                                {
-                                    @if (Model.User.UserProfile.Education.PlaceOfStudy != null)
-                                    {
-                                        <div class="form-group row">
-                                            <label for="email" class="col-6 col-form-label font-weight-bold">Місце навчання</label>
-                                            <p class="col-6 col-form-label">@Model.User.UserProfile.Education.PlaceOfStudy</p>
-                                        </div>
-                                    }
-
-                                    @if (Model.User.UserProfile.Education.Speciality != null)
-                                    {
-                                        <div class="form-group row">
-                                            <label for="email" class="col-6 col-form-label font-weight-bold">Спеціальність</label>
-                                            <p class="col-6 col-form-label">@Model.User.UserProfile.Education.Speciality</p>
-                                        </div>
-                                    }
-                                }
-
-                                @if (@Model.User.UserProfile.Degree != null)
-                                {
-                                    <div class="form-group row">
-                                        <label for="email" class="col-6 col-form-label font-weight-bold">Ступінь</label>
-                                        <p class="col-6 col-form-label">@Model.User.UserProfile.Degree.Name</p>
-                                    </div>
-                                }
-
-                                @if (@Model.User.UserProfile.Work != null)
-                                {
-                                    @if (Model.User.UserProfile.Work.PlaceOfwork != null)
-                                    {
-                                        <div class="form-group row">
-                                            <label for="email" class="col-6 col-form-label font-weight-bold">Місце роботи</label>
-                                            <p class="col-6 col-form-label">@Model.User.UserProfile.Work.PlaceOfwork</p>
-                                        </div>
-                                    }
-
-                                    @if (Model.User.UserProfile.Work.Position != null)
-                                    {
-                                        <div class="form-group row">
-                                            <label for="email" class="col-6 col-form-label font-weight-bold">Посада</label>
-                                            <p class="col-6 col-form-label">@Model.User.UserProfile.Work.Position</p>
-                                        </div>
-                                    }
-                                }
-                                <div class="form-group row">
-                                    <a asp-controller="Club" asp-action="ChooseAClub"><p style="color: #3c5438;font-weight: bolder; padding-left: 15px;">Додати/ змінити курінь</p></a>
-                                </div>
                             </div>
-                            </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div id="editProfile" class="container tab-pane fade">
-            <partial name="Edit" model="Model.EditView" />
-        </div>
-        <div id="positions" class="container tab-pane fade positionsWrapper">
-            <div class="row mt-4 d-flex">
-                <div class="col-md-4">
-                    <div class="portlet light profile-sidebar-portlet bordered">
-                        <div class="profile-userpic">
-                            <img src="/images/Users/@Model.User.ImagePath" class="img-thumbnail" alt="">
-                        </div>
-                        <div class="profile-usertitle">
-                            <br />
-                            @if (!_userManager.IsInRoleAsync(Model.User, "Пластун").Result)
+                        }
+                        @if (@Model.User.UserProfile.Education != null)
+                        {
+                            @if (Model.User.UserProfile.Education.PlaceOfStudy != null)
                             {
-                                double perc = 100 - @Model.timeToJoinPlast.Days * 100 / 366;
-                                int count = @Model.timeToJoinPlast.Days;
-                                <p>@count дні і @Model.User.FirstName @Model.User.LastName Пластун:)</p>
-                                <div class="progress">
-                                    <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: @perc%" aria-valuenow="@Model.timeToJoinPlast.Days" aria-valuemin="366" aria-valuemax="0">
-                                        @perc%
-                                    </div>
+                                <div class="form-group row">
+                                    <label for="email" class="col-6 col-form-label font-weight-bold">Місце навчання</label>
+                                    <p class="col-6 col-form-label">@Model.User.UserProfile.Education.PlaceOfStudy</p>
                                 </div>
                             }
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-8">
-                    <div class="form-group">
-                        <h3>Поточні діловодства:</h3>
-                        @if (Model.HasAccessToManageUserPositions)
-                        {
-                            <div class="d-flex">
-                                <button id="endPosition" class="btn btn-sm btn-success btn-management" disabled>Завершити каденцію</button>
-                                <button id="deleteCurrentPosition" class="btn btn-sm btn-success btn-management" disabled>Видалити діловодство</button>
-                            </div>
-                        }
-                        <table id="CurrentPositionsTable" class="table table-hover">
-                            <tbody>
-                                @foreach (var position in Model.UserPositions.Where(ca => ca.EndDate == null))
-                                {
-                                    <tr>
-                                        <td hidden>@position.ID</td>
-                                        <td>@position.AdminType.AdminTypeName</td>
-                                        <td>@position.City.Name</td>
-                                        <td>@position.StartDate.ToShortDateString()</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="form-group">
-                        <h3>Колишні діловодства:</h3>
-                        @if (Model.HasAccessToManageUserPositions)
-                        {
-                            <div class="d-flex">
-                                <button id="deletePosition" class="btn btn-sm btn-success btn-management" disabled>Видалити діловодство</button>
-                            </div>
-                        }
-                        <table id="PositionsTable" class="table table-hover">
-                            <tbody>
-                                @foreach (var position in Model.UserPositions.Where(ca => ca.EndDate != null))
-                                {
-                                    <tr>
-                                        <td hidden>@position.ID</td>
-                                        <td>@position.AdminType.AdminTypeName</td>
-                                        <td>@position.City.Name</td>
-                                        <td>@position.StartDate.ToShortDateString() - @position.EndDate.Value.ToShortDateString()</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div id="approvers" class="container tab-pane fade approversWrapper">
-            <div class="row mt-4 d-flex">
-                <div class="col-md-4">
-                    <div class="portlet light profile-sidebar-portlet bordered">
-                        <div class="profile-userpic">
-                            <img src="/images/Users/@Model.User.ImagePath" class="img-thumbnail" alt="">
-                        </div>
-                    </div>
-                    <div class="profile-usertitle">
-                        <br />
-                        @if (!_userManager.IsInRoleAsync(Model.User, "Пластун").Result)
-                        {
-                            double perc = 100 - @Model.timeToJoinPlast.Days * 100 / 366;
-                            int count = @Model.timeToJoinPlast.Days;
-                            <p>@count дні і @Model.User.FirstName @Model.User.LastName Пластун:)</p>
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: @perc%" aria-valuenow="@Model.timeToJoinPlast.Days" aria-valuemin="366" aria-valuemax="0">
-                                    @perc%
+
+                            @if (Model.User.UserProfile.Education.Speciality != null)
+                            {
+                                <div class="form-group row">
+                                    <label for="email" class="col-6 col-form-label font-weight-bold">Спеціальність</label>
+                                    <p class="col-6 col-form-label">@Model.User.UserProfile.Education.Speciality</p>
                                 </div>
+                            }
+                        }
+
+                        @if (@Model.User.UserProfile.Degree != null)
+                        {
+                            <div class="form-group row">
+                                <label for="email" class="col-6 col-form-label font-weight-bold">Ступінь</label>
+                                <p class="col-6 col-form-label">@Model.User.UserProfile.Degree.Name</p>
                             </div>
                         }
-                    </div>
-                </div>
 
-                <div class="col-md-8">
-                    <div >
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h4>@Model.User.FirstName @Model.User.LastName</h4>
-                                <hr>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="text-center">
-                                    <h3 >
-                                        Поручення дійсних членів
-                                    </h3>
-                                    <div >
-                                        <div id="insideCard">
-                                            <div class="row">
-                                                <div class="card-group">
-                                                    @if (Model.User.ConfirmedUsers.Count() != 0)
-                                                    {
-                                                        @foreach (var item in Model.User.ConfirmedUsers.ToList())
-                                                        {
-                                                            <div class="col">
-                                                                <div class="card h-100">
-                                                                    <a asp-action="UserProfile" asp-controller="Account" asp-route-userId="@item.Approver.User.Id" class="btn">
-                                                                        <div class="approversImg">
-                                                                            <img class="card-img-top" src="/images/Users/@item.Approver.User.ImagePath" alt="Generic placeholder image" />
-                                                                        </div>
-
-                                                                        <div class="card-body">
-                                                                            <div class="card-text">
-                                                                                <h5>@item.Approver.User.FirstName @item.Approver.User.LastName</h5>
-                                                                                <p>@item.ConfirmDate.ToString("dd-MM-yyyy")</p>
-                                                                            </div>
-                                                                        </div>
-
-                                                                        
-                                                                    </a>
-                                                                        @if (item.Approver.UserID == _userManager.GetUserId(User))
-                                                                        {
-                                                                            <div class="card-footer">
-                                                                                <a class="btn btn-danger" asp-action="ApproverDelete" asp-controller="Account" asp-route-userId="@Model.User.Id">Скасувати</a>
-                                                                            </div>
-                                                                        }
-                                                                </div>
-                                                            </div>
-                                                        }
-
-
-                                                    }
-                                                    @if (Model.canApprove && User.IsInRole("Пластун"))
-                                                    {
-                                                        <div class="col">
-                                                            <div class="">
-                                                                <a asp-action="ApproveUser" asp-route-userId="@Model.User.Id" class="btn">
-                                                                    <div class="approversImg">
-                                                                        <img class="card-img-top" src="/images/add_user.png" alt="Generic placeholder image" />
-                                                                    </div>
-                                                                    
-                                                                    <div class="card-body">
-                                                                        <div class="card-text">
-                                                                            <h5>Поручитись</h5>
-                                                                        </div>
-                                                                    </div>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    }
-                                                </div>
-                                                
-                                            </div>
-                                            
-                                        </div>
-                                    </div>
+                        @if (@Model.User.UserProfile.Work != null)
+                        {
+                            @if (Model.User.UserProfile.Work.PlaceOfwork != null)
+                            {
+                                <div class="form-group row">
+                                    <label for="email" class="col-6 col-form-label font-weight-bold">Місце роботи</label>
+                                    <p class="col-6 col-form-label">@Model.User.UserProfile.Work.PlaceOfwork</p>
                                 </div>
+                            }
 
-
-                            </div>
+                            @if (Model.User.UserProfile.Work.Position != null)
+                            {
+                                <div class="form-group row">
+                                    <label for="email" class="col-6 col-form-label font-weight-bold">Посада</label>
+                                    <p class="col-6 col-form-label">@Model.User.UserProfile.Work.Position</p>
+                                </div>
+                            }
+                        }
+                        <div class="form-group row">
+                            <a asp-controller="Club" asp-action="ChooseAClub"><p style="color: #3c5438;font-weight: bolder; padding-left: 15px;">Додати/ змінити курінь</p></a>
                         </div>
                     </div>
                 </div>
-            </div>
-
         </div>
     </div>
-    <partial name="_SuccessModal" model='""' />
-    <partial name="_ErrorModal" model='""' />
 </div>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
