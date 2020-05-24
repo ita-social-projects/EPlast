@@ -25,7 +25,10 @@ namespace EPlast.BussinessLayer.Services.Events
         private readonly IParticipantManager _participantManager;
         private readonly IEventGalleryManager _eventGalleryManager;
 
-        public ActionManager(UserManager<User> userManager, IRepositoryWrapper repoWrapper, IMapper mapper, IEventCategoryManager eventCategoryManager, IEventTypeManager eventTypeManager, IEventStatusManager eventStatusManager, IParticipantStatusManager participantStatusManager, IParticipantManager participantManager, IEventGalleryManager eventGalleryManager)
+        public ActionManager(UserManager<User> userManager, IRepositoryWrapper repoWrapper, IMapper mapper,
+            IEventCategoryManager eventCategoryManager, IEventTypeManager eventTypeManager,
+            IEventStatusManager eventStatusManager, IParticipantStatusManager participantStatusManager,
+            IParticipantManager participantManager, IEventGalleryManager eventGalleryManager)
         {
             _userManager = userManager;
             _repoWrapper = repoWrapper;

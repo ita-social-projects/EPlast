@@ -292,7 +292,7 @@ namespace EPlast.XUnitTest
             //Arrange
             _actionManager.Setup(am => am.GetEventInfo(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
                 .Returns(new EventDTO());
-            _mapper.Setup(m => m.Map<EventDTO, EventViewModel>(It.IsAny<EventDTO>())).Returns(GetEventVM());
+            _mapper.Setup(m => m.Map<EventDTO, EventViewModel>(It.IsAny<EventDTO>())).Returns(GetEventViewModel());
             int eventID = 3;
             //Act  
             var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
@@ -410,7 +410,7 @@ namespace EPlast.XUnitTest
             Assert.Equal(StatusCodes.Status500InternalServerError, codeResult?.StatusCode);
         }
 
-        public EventViewModel GetEventVM()
+        public EventViewModel GetEventViewModel()
         {
             var model = new EventViewModel()
             {
@@ -438,7 +438,6 @@ namespace EPlast.XUnitTest
             return model;
         }
 
-
         public static IList<IFormFile> FakeFiles()
         {
             var fileMock = new Mock<IFormFile>();
@@ -451,7 +450,7 @@ namespace EPlast.XUnitTest
             fileMock.Setup(_ => _.OpenReadStream()).Returns(ms);
             fileMock.Setup(_ => _.FileName).Returns(fileName);
             fileMock.Setup(_ => _.Length).Returns(ms.Length);
-            var arr = new IFormFile[] { fileMock.Object, fileMock.Object };
+            var arr = new[] { fileMock.Object, fileMock.Object };
             return arr;
         }
     }
