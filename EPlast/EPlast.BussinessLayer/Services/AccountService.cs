@@ -81,23 +81,22 @@ namespace EPlast.BussinessLayer.Services
             return result;
         }
 
-        public async Task<IdentityResult> ConfirmEmailAsync(User user, string code)
+        public async Task<IdentityResult> ConfirmEmailAsync(UserDTO userDto, string code)
         {
-            var result = await _userManager.ConfirmEmailAsync(user, code);
+            var result = await _userManager.ConfirmEmailAsync(_mapper.Map<UserDTO, User>(userDto), code);
             return result;
         }
 
-        public async Task<IdentityResult> ChangePasswordAsync(UserDTO user, ChangePasswordDto changePasswordDto)
+        public async Task<IdentityResult> ChangePasswordAsync(UserDTO userDto, ChangePasswordDto changePasswordDto)
         {
-            var result = await _userManager.ChangePasswordAsync(user, changePasswordDto.CurrentPassword,
+            var result = await _userManager.ChangePasswordAsync(_mapper.Map<UserDTO, User>(userDto), changePasswordDto.CurrentPassword,
                 changePasswordDto.NewPassword);
             return result;
         }
 
         public async void RefreshSignInAsync(UserDTO userDto)
         {
-            var user = _mapper.Map<User, UserDTO>(userDto);
-            await _signInManager.RefreshSignInAsync(user);
+            await _signInManager.RefreshSignInAsync(_mapper.Map<UserDTO, User>(userDto));
         }
 
         public AuthenticationProperties GetAuthProperties(string provider, string returnUrl)
@@ -121,8 +120,7 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task<bool> IsEmailConfirmedAsync(UserDTO userDto)
         {
-            var user = _mapper.Map<User, UserDTO>(userDto);
-            bool result = await _userManager.IsEmailConfirmedAsync(_mapper.Map<User, UserDTO>(user));
+            bool result = await _userManager.IsEmailConfirmedAsync(_mapper.Map<UserDTO, User>(userDto));
             return result;
         }
 
@@ -134,29 +132,29 @@ namespace EPlast.BussinessLayer.Services
             return code;
         }
 
-        public async Task<string> GenerateConfToken(UserDTO user)
+        public async Task<string> GenerateConfToken(UserDTO userDto)
         {
-            string code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            string code = await _userManager.GenerateEmailConfirmationTokenAsync(_mapper.Map<UserDTO, User>(userDto));
             return code;
         }
 
-        public async Task<string> GenerateResetTokenAsync(UserDTO user)
+        public async Task<string> GenerateResetTokenAsync(UserDTO userDto)
         {
-            string code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            string code = await _userManager.GeneratePasswordResetTokenAsync(_mapper.Map<UserDTO, User>(userDto));
             return code;
         }
 
-        public async Task<IdentityResult> ResetPasswordAsync(UserDTO user, ResetPasswordDto resetPasswordDto)
+        public async Task<IdentityResult> ResetPasswordAsync(UserDTO userDto, ResetPasswordDto resetPasswordDto)
         {
-            var result = await _userManager.ResetPasswordAsync(user, HttpUtility.UrlDecode(resetPasswordDto.Code), resetPasswordDto.Password);
+            var result = await _userManager.ResetPasswordAsync(_mapper.Map<UserDTO, User>(userDto), HttpUtility.UrlDecode(resetPasswordDto.Code), resetPasswordDto.Password);
             return result;
         }
 
-        public async void CheckingForLocking(UserDTO user)
+        public async void CheckingForLocking(UserDTO userDto)
         {
-            if (await _userManager.IsLockedOutAsync(user))
+            if (await _userManager.IsLockedOutAsync(_mapper.Map<UserDTO, User>(userDto)))
             {
-                await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow);
+                await _userManager.SetLockoutEndDateAsync(_mapper.Map<UserDTO, User>(userDto), DateTimeOffset.UtcNow);
             }
         }
 
@@ -168,14 +166,14 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task<UserDTO> FindByEmailAsync(string email)
         {
-            var result = await _userManager.FindByEmailAsync(email);
-            return result;
+            var user = await _userManager.FindByEmailAsync(email);
+            return _mapper.Map<User, UserDTO>(user);
         }
 
         public async Task<UserDTO> FindByIdAsync(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
-            return user;
+            return _mapper.Map<User, UserDTO>(user);
         }
 
         public string GetIdForUser(ClaimsPrincipal claimsPrincipal)
@@ -202,14 +200,14 @@ namespace EPlast.BussinessLayer.Services
         public async Task<UserDTO> GetUserAsync(ClaimsPrincipal claimsPrincipal)
         {
             var user = await _userManager.GetUserAsync(claimsPrincipal);
-            return user;
+            return _mapper.Map<User, UserDTO>(user);
         }
 
-        public async void SendEmailRegistr(string confirmationLink, UserDTO user)
+        public async void SendEmailRegistr(string confirmationLink, UserDTO userDto)
         {
-            user.EmailSendedOnRegister = DateTime.Now;
-            await _userManager.UpdateAsync(user); 
-            await _emailConfirmation.SendEmailAsync(user.Email, "Підтвердження реєстрації ",
+            _mapper.Map<UserDTO, User>(userDto).EmailSendedOnRegister = DateTime.Now;
+            await _userManager.UpdateAsync(_mapper.Map<UserDTO, User>(userDto)); 
+            await _emailConfirmation.SendEmailAsync(_mapper.Map<UserDTO, User>(userDto).Email, "Підтвердження реєстрації ",
                 $"Підтвердіть реєстрацію, перейшовши за :  <a href='{confirmationLink}'>посиланням</a> ", "Адміністрація сайту EPlast");
         }
 

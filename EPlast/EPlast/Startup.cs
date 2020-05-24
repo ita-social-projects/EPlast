@@ -79,7 +79,7 @@ namespace EPlast
             services.AddScoped<IConfirmedUsersService, ConfirmedUsersService>();
             services.AddScoped<IUserManagerService, UserManagerService>();
             services.AddScoped<IAdminService, AdminService>();
-
+            services.AddScoped<IUserManagerService, UserManagerService>();
             services.AddScoped<IDirectoryManager, DirectoryManager>();
             services.AddScoped<IFileManager, FileManager>();
             services.AddScoped<IFileStreamManager, FileStreamManager>();
