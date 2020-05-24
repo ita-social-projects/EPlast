@@ -9,23 +9,22 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Logging;
 
 namespace EPlast.BussinessLayer
 {
     public class DecisionService : IDecisionService
     {
+        private const string DecesionsDocumentFolder = @"\documents\";
         private readonly IHostingEnvironment _appEnvironment;
+        private readonly IDecisionVmInitializer _decisionVMCreator;
         private readonly IDirectoryManager _directoryManager;
         private readonly IFileManager _fileManager;
         private readonly IFileStreamManager _fileStreamManager;
-        private readonly IDecisionVmInitializer _decisionVMCreator;
+
+        private readonly IMapper _mapper;
 
         //private readonly ILogger _logger;
         private readonly IRepositoryWrapper _repoWrapper;
-
-        private readonly IMapper _mapper;
-        private const string DecesionsDocumentFolder = @"\documents\";
 
         public DecisionService(IRepositoryWrapper repoWrapper, IHostingEnvironment appEnvironment,
             IDirectoryManager directoryManager, IFileManager fileManager,
@@ -46,7 +45,8 @@ namespace EPlast.BussinessLayer
             DecisionDTO decision = null;
             try
             {
-                decision = _mapper.Map<DecisionDTO>(_repoWrapper.Decesion.FindByCondition(x => x.ID == decisionId).First());
+                decision = _mapper.Map<DecisionDTO>(_repoWrapper.Decesion.FindByCondition(x => x.ID == decisionId)
+                    .First());
             }
             catch (Exception e)
             {
@@ -140,7 +140,8 @@ namespace EPlast.BussinessLayer
             OrganizationDTO organization = null;
             try
             {
-                organization = _mapper.Map<OrganizationDTO>(_repoWrapper.Organization.FindByCondition(x => x.ID == decisionId).Select(x => x.OrganizationName).First());
+                organization = _mapper.Map<OrganizationDTO>(_repoWrapper.Organization
+                    .FindByCondition(x => x.ID == decisionId).Select(x => x.OrganizationName).First());
             }
             catch (Exception e)
             {
@@ -182,11 +183,22 @@ namespace EPlast.BussinessLayer
             return memory?.ToArray();
         }
 
-        public List<OrganizationDTO> GetOrganizationList() =>
-            _mapper.Map<List<OrganizationDTO>>(_repoWrapper.Organization.FindAll().ToList());
+        public string GetContentType(int decisionId, string filename)
+        {
+            var types = GetMimeTypes();
+            var ext = Path.GetExtension(Path.Combine(GetDecisionFilePath(decisionId), filename)).ToLowerInvariant();
+            return types[ext];
+        }
 
-        public List<DecisionTargetDTO> GetDecisionTargetList() =>
-            _mapper.Map<List<DecisionTargetDTO>>(_repoWrapper.DecesionTarget.FindAll().ToList());
+        public List<OrganizationDTO> GetOrganizationList()
+        {
+            return _mapper.Map<List<OrganizationDTO>>(_repoWrapper.Organization.FindAll().ToList());
+        }
+
+        public List<DecisionTargetDTO> GetDecisionTargetList()
+        {
+            return _mapper.Map<List<DecisionTargetDTO>>(_repoWrapper.DecesionTarget.FindAll().ToList());
+        }
 
         public IEnumerable<SelectListItem> GetDecisionStatusTypes()
         {
@@ -196,18 +208,11 @@ namespace EPlast.BussinessLayer
         private List<DecisionWrapperDTO> GetDecisionListAsync()
         {
             return _mapper
-                .Map<List<Decesion>, List<DecisionDTO>>(_repoWrapper.Decesion
+                .Map<List<DecisionDTO>>(_repoWrapper.Decesion
                     .Include(x => x.DecesionTarget, x => x.Organization)
                     .ToList())
                 .Select(decision => new DecisionWrapperDTO { Decision = decision })
                 .ToList();
-        }
-
-        public string GetContentType(int decisionId, string filename)
-        {
-            var types = GetMimeTypes();
-            var ext = Path.GetExtension(Path.Combine(GetDecisionFilePath(decisionId), filename)).ToLowerInvariant();
-            return types[ext];
         }
 
         private string GetDecisionFilePath(int decisionId)
