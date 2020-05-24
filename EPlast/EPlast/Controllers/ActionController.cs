@@ -1,12 +1,11 @@
-﻿using EPlast.ViewModels.Events;
+﻿using AutoMapper;
+using EPlast.BussinessLayer.DTO.Events;
+using EPlast.BussinessLayer.Interfaces.Events;
+using EPlast.ViewModels.Events;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using AutoMapper;
-using EPlast.BussinessLayer.DTO.Events;
-using EPlast.BussinessLayer.Interfaces;
-using EPlast.BussinessLayer.Interfaces.Events;
 
 
 namespace EPlast.Controllers
@@ -72,62 +71,118 @@ namespace EPlast.Controllers
         [Authorize]
         public IActionResult DeleteEvent(int ID)
         {
-            var code = _actionManager.DeleteEvent(ID);
-            return StatusCode(code);
+            try
+            {
+                var code = _actionManager.DeleteEvent(ID);
+                return StatusCode(code);
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [HttpPost]
         [Authorize]
         public IActionResult DeletePicture(int ID)
         {
-            var code = _actionManager.DeletePicture(ID);
-            return StatusCode(code);
+            try
+            {
+                var code = _actionManager.DeletePicture(ID);
+                return StatusCode(code);
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+
         }
 
         [HttpPost]
         [Authorize]
         public IActionResult SubscribeOnEvent(int ID)
         {
-            var code = _actionManager.SubscribeOnEvent(ID, User);
-            return StatusCode(code);
+            try
+            {
+                var code = _actionManager.SubscribeOnEvent(ID, User);
+                return StatusCode(code);
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [HttpPost]
         [Authorize]
         public IActionResult UnSubscribeOnEvent(int ID)
         {
-            var code = _actionManager.UnSubscribeOnEvent(ID, User);
-            return StatusCode(code);
+            try
+            {
+                var code = _actionManager.UnSubscribeOnEvent(ID, User);
+                return StatusCode(code);
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
 
         [Authorize]
         public IActionResult ApproveParticipant(int ID)
         {
-            var code = _actionManager.ApproveParticipant(ID);
-            return StatusCode(code);
-
+            try
+            {
+                var code = _actionManager.ApproveParticipant(ID);
+                return StatusCode(code);
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [Authorize]
         public IActionResult UndetermineParticipant(int ID)
         {
-            var code = _actionManager.UnderReviewParticipant(ID);
-            return StatusCode(code);
+            try
+            {
+                var code = _actionManager.UnderReviewParticipant(ID);
+                return StatusCode(code);
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [Authorize]
         public IActionResult RejectParticipant(int ID)
         {
-            var code = _actionManager.RejectParticipant(ID);
-            return StatusCode(code);
+            try
+            {
+                var code = _actionManager.RejectParticipant(ID);
+                return StatusCode(code);
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [HttpPost]
         public IActionResult FillEventGallery(int ID, IList<IFormFile> files)
         {
-            var code = _actionManager.FillEventGallery(ID, files);
-            return StatusCode(code);
+            try
+            {
+                var code = _actionManager.FillEventGallery(ID, files);
+                return StatusCode(code);
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
     }
 }
