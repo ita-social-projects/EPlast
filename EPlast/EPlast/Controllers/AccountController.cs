@@ -31,18 +31,61 @@ namespace EPlast.Controllers
         private UserManager<User> _userManager;
         private SignInManager<User> _signInManager;
         private readonly IRepositoryWrapper _repoWrapper;
-        private readonly UserManagerService _userManagerService;
-        public AccountController(IAccountService accountService, IUserService userService, IMapper mapper,
-        SignInManager<User> signInManager, UserManager<User> userManager, IRepositoryWrapper repoWrapper,
-        UserManagerService userManagerService)
+        private readonly ILogger _logger;
+        private readonly IEmailConfirmation _emailConfirmation;
+        private readonly IHostingEnvironment _env;
+        private readonly IUserAccessManager _userAccessManager;
+        private readonly IUserService _userService;
+        private readonly INationalityService _nationalityService;
+        private readonly IEducationService _educationService;
+        private readonly IReligionService _religionService;
+        private readonly IWorkService _workService;
+        private readonly IGenderService _genderService;
+        private readonly IDegreeService _degreeService;
+        private readonly IUserManagerService _userManagerService;
+        private readonly IConfirmedUsersService _confirmedUserService;
+        private readonly IMapper _mapper;
+        private readonly ILoggerService<AccountController> _loggerService;
+
+        public AccountController(UserManager<User> userManager,
+            SignInManager<User> signInManager,
+            IRepositoryWrapper repoWrapper,
+            ILogger<AccountController> logger,
+            IEmailConfirmation emailConfirmation,
+            IHostingEnvironment env,
+            IUserAccessManager userAccessManager,
+            IUserService userService,
+            INationalityService nationalityService,
+            IEducationService educationService,
+            IReligionService religionService,
+            IWorkService workService,
+            IGenderService genderService,
+            IDegreeService degreeService,
+            IConfirmedUsersService confirmedUserService,
+            IUserManagerService userManagerService,
+            IMapper mapper,
+            ILoggerService<AccountController> loggerService,
+            IAccountService accountService)
         {
+            _accountService = accountService;
             _userManager = userManager;
             _signInManager = signInManager;
             _repoWrapper = repoWrapper;
-            _accountService = accountService;
+            _logger = logger;
+            _emailConfirmation = emailConfirmation;
+            _env = env;
+            _userAccessManager = userAccessManager;
             _userService = userService;
+            _nationalityService = nationalityService;
+            _religionService = religionService;
+            _degreeService = degreeService;
+            _workService = workService;
+            _educationService = educationService;
+            _genderService = genderService;
+            _confirmedUserService = confirmedUserService;
             _mapper = mapper;
             _userManagerService = userManagerService;
+            _loggerService = loggerService;
         }
 
         [HttpGet]
@@ -478,10 +521,9 @@ namespace EPlast.Controllers
                     userId = _userManagerService.GetUserId(User);
                 }
 
-                //var user = _userService.GetUser(userId);
-                var user = await _userManager.FindByIdAsync(userId);
-                var time = _userService.CheckOrAddPlastunRole(_mapper.Map<UserDTO, UserViewModel>(_mapper.Map<User, UserDTO>(user)).Id, user.RegistredOn);
-                var isUserPlastun = await _userManagerService.IsInRole(_mapper.Map<User, UserDTO>(user), "Пластун");
+                var user = _userService.GetUser(userId);
+                var time = _userService.CheckOrAddPlastunRole(_mapper.Map<UserDTO, UserViewModel>(user).Id, user.RegistredOn);
+                var isUserPlastun = await _userManagerService.IsInRole(user, "Пластун");
 
                 var model = new PersonalDataViewModel
                 {
@@ -494,7 +536,7 @@ namespace EPlast.Controllers
             }
             catch
             {
-                //_logger.Log(LogLevel.Error, "Smth went wrong");
+               _loggerService.LogError("Smth went wrong");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
@@ -506,11 +548,11 @@ namespace EPlast.Controllers
             {
                 if (string.IsNullOrEmpty(userId))
                 {
-                    _logger.Log(LogLevel.Error, "User id is null");
+                    _loggerService.LogError("User id is null");
                     return RedirectToAction("HandleError", "Error", new { code = 500 });
                 }
 
-                var user = _userService.GetUserProfile(userId);
+                var user = _userService.GetUser(userId);
                 var _confUsers = _userService.GetConfirmedUsers(user);
                 var canApprove = _userService.CanApprove(_confUsers, userId, User);
                 var time = await _userService.CheckOrAddPlastunRole(user.Id, user.RegistredOn);
@@ -536,60 +578,15 @@ namespace EPlast.Controllers
 
                     return View(model);
                 }
-                _logger.Log(LogLevel.Error, $"Can`t find this user:{userId}, or smth else");
+                _loggerService.LogError( $"Can`t find this user:{userId}, or smth else");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
             catch
             {
+                _loggerService.LogError("Smth went wrong");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
-        }
-
-        [HttpGet]
-        public IActionResult Positions(string userId)
-        {
-            try
-            {
-                var _currentUserId = _userManager.GetUserId(User);
-                if (string.IsNullOrEmpty(userId))
-                {
-                    userId = _currentUserId;
-                }
-                _logger.Log(LogLevel.Information, $"UserProfile Id is {userId}");
-                _logger.Log(LogLevel.Information, $"Authenticate userId is {_currentUserId}");
-
-                var user = _repoWrapper.User.
-                    FindByCondition(q => q.Id == userId).
-                    First();
-
-                var userPositions = _repoWrapper.CityAdministration
-                    .FindByCondition(ca => ca.UserId == userId)
-                        .Include(ca => ca.AdminType)
-                        .Include(ca => ca.City);
-
-                TimeSpan _timeToJoinPlast = _userService.CheckOrAddPlastunRole(user.Id,user.RegistredOn).Result;
-
-                if (user != null)
-                {
-                    var model = new PositionUserViewModel
-                    {
-                        User = user,
-                        UserPositions = userPositions,
-                        HasAccessToManageUserPositions = _userAccessManager.HasAccess(_userManager.GetUserId(User), userId),
-                        TimeToJoinPlast = _timeToJoinPlast,
-                    };
-
-                    return View(model);
-                }
-                _logger.Log(LogLevel.Error, $"Can`t find this user:{userId}, or smth else");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
-            }
-            catch
-            {
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
-            }
-        }
-       
+        }       
 
         public IActionResult ApproveUser(string userId, bool _isClubAdmin = false, bool _isCityAdmin = false)
         {
@@ -598,6 +595,7 @@ namespace EPlast.Controllers
                 _confirmedUserService.Create(User, userId, _isClubAdmin, _isCityAdmin);
                 return RedirectToAction("Approvers", "Account", new { userId = userId });
             }
+            _loggerService.LogError("User id is null");
             return RedirectToAction("HandleError", "Error", new { code = 500 });
         }
 
@@ -605,6 +603,7 @@ namespace EPlast.Controllers
         public IActionResult ApproverDelete(int confirmedId, string userId)
         {
             _confirmedUserService.Delete(confirmedId);
+            _loggerService.LogInformation("Approve succesfuly deleted");
             return RedirectToAction("UserProfile", "Account", new { userId = userId });
         }
 
@@ -614,13 +613,13 @@ namespace EPlast.Controllers
         {
             if(userId == null)
             {
-                _logger.Log(LogLevel.Error, "User id is null");
+                _loggerService.LogError("User id is null");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
 
             try
             {
-                var user = _userService.GetUserProfile(userId);
+                var user = _userService.GetUser(userId);
 
                 var genders = (from item in _genderService.GetAll() select new SelectListItem { Text = item.Name, Value = item.ID.ToString() });
                                                                                             
@@ -646,7 +645,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError("Exception: {0}", e.Message);
+                _loggerService.LogError($"Exception: { e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
@@ -658,69 +657,32 @@ namespace EPlast.Controllers
             try
             {
                 _userService.Update(_mapper.Map<UserViewModel,UserDTO>(model.User), file, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID, model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
-                _logger.LogInformation("User {0} {1} was edited profile and saved in the database", model.User.FirstName, model.User.LastName);
+                _loggerService.LogInformation($"User {model.User.Email} was edited profile and saved in the database");
                 return RedirectToAction("UserProfile");
             }
             catch (Exception e)
             {
-                _logger.LogError("Exception: {0}", e.Message);
+                _loggerService.LogError($"Exception: { e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
-
-        [Authorize(Roles = "Admin, Голова Округу, Голова Станиці")]
-        public async Task<IActionResult> DeletePosition(int id)
+        public async Task<IActionResult> Positions(string userId)
         {
             try
             {
-                CityAdministration cityAdministration = _repoWrapper.CityAdministration
-                    .FindByCondition(ca => ca.ID == id)
-                        .Include(ca => ca.AdminType)
-                        .Include(ca => ca.User)
-                    .First();
-                var userId = _userManager.GetUserId(User);
-                if (!_userAccessManager.HasAccess(userId, cityAdministration.UserId))
+                var user = _userService.GetUser(userId);
+                var result = new PositionUserViewModel
                 {
-                    return RedirectToAction("HandleError", "Error", new { code = 403 });
-                }
-                if (cityAdministration.EndDate == null)
-                {
-                    await _userManager.RemoveFromRoleAsync(cityAdministration.User, cityAdministration.AdminType.AdminTypeName);
-                }
-                _repoWrapper.CityAdministration.Delete(cityAdministration);
-                _repoWrapper.Save();
-                return Ok("Діловодство успішно видалено!");
+                    User = _mapper.Map<UserDTO, UserViewModel>(user),
+                    TimeToJoinPlast = await _userService.CheckOrAddPlastunRole(userId, user.RegistredOn),
+                    IsUserPlastun = await _userManagerService.IsInRole(user, "Пластун")
+                };
+                return View(result);
             }
-            catch
+            catch (Exception e)
             {
-                return NotFound("Не вдалося видалити діловодство!");
-            }
-        }
-
-        [Authorize(Roles = "Admin, Голова Округу, Голова Станиці")]
-        public async Task<IActionResult> EndPosition(int id)
-        {
-            try
-            {
-                CityAdministration cityAdministration = _repoWrapper.CityAdministration
-                    .FindByCondition(ca => ca.ID == id)
-                        .Include(ca => ca.AdminType)
-                        .Include(ca => ca.User)
-                    .First();
-                var userId = _userManager.GetUserId(User);
-                if (!_userAccessManager.HasAccess(userId, cityAdministration.UserId))
-                {
-                    return RedirectToAction("HandleError", "Error", new { code = 403 });
-                }
-                cityAdministration.EndDate = DateTime.Today;
-                _repoWrapper.CityAdministration.Update(cityAdministration);
-                _repoWrapper.Save();
-                await _userManager.RemoveFromRoleAsync(cityAdministration.User, cityAdministration.AdminType.AdminTypeName);
-                return Ok("Каденцію діловодства успішно завершено!");
-            }
-            catch
-            {
-                return NotFound("Не вдалося завершити каденцію діловодства!");
+                _loggerService.LogError($"Exception: { e.Message}");
+                return RedirectToAction("HandleError", "Error");
             }
         }*/
     }
