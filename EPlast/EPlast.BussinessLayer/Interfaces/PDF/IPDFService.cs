@@ -1,10 +1,10 @@
-﻿using EPlast.DataAccess.Entities;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.BussinessLayer
 {
     public interface IPDFService
     {
-        Task<byte[]> DecesionCreatePDFAsync(Decesion pdfData);
+        Task<byte[]> DecisionCreatePDFAsync(int DecisionId);
     }
 }

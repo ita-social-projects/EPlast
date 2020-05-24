@@ -2,9 +2,6 @@
 @inject SignInManager<EPlast.DataAccess.Entities.User> SignInManager
 @inject UserManager<EPlast.DataAccess.Entities.User> UserManager
 
-
-
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -61,7 +58,7 @@
                                     </a>
                                     <div id="layout-gear" class="dropdown-menu" aria-labelledby="navbarDropdown">
                                         <a class="dropdown-item" asp-controller="Account" asp-action="ChangePassword" style="color:#3c5438;">Змінити пароль</a>
-                                        <a class="dropdown-item" style="color:#3c5438;" asp-controller="Account" asp-action="Edit" asp-route-id="@UserManager.GetUserId(User)">Редагувати профіль</a>
+                                        <a class="dropdown-item" style="color:#3c5438;" asp-controller="Account" asp-action="Edit" asp-route-userId="@UserManager.GetUserId(User)">Редагувати профіль</a>
                                     </div>
                                 </li>
                             </ul>
@@ -76,7 +73,6 @@
                                         <a class="menu-search-close" href="#" style="left:25vw; right:0;">
                                             <i class="fa fa-close" aria-hidden="true" style="color:aliceblue; padding-top:5px;"></i>
                                         </a>
-
                                     </form>
                                 </div>
                                 <div class="search-sub-menu" style="margin-top:10px;">
@@ -90,7 +86,6 @@
                                     </ul>
                                 </div>
                             </div>
-
                         </div>
                         <div class="profile">
                             <a asp-action="UserProfile" asp-controller="Account" asp-route-userId="@UserManager.GetUserAsync(User).Result.Id">
@@ -115,7 +110,7 @@
                         <div class="back-pic-inner">
                             @*This "if need,because we would like to drop database.But user saved in your browser by cookie
                                 This "If" will be deleted in the future*@
-                            @if(@UserManager.GetUserAsync(User).Result != null)
+                            @if (@UserManager.GetUserAsync(User).Result != null)
                             {
                                 <img src="/images/Users/@UserManager.GetUserAsync(User).Result.ImagePath" class="plast-avatar rounded-circle" alt="Cinque Terre">
                             }
@@ -130,7 +125,7 @@
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="sidebar-li text-center">
-                                <a href="/Documentation/ReadDecesion">
+                                <a href="/Documentation/ReadDecision">
                                     <div class="sidebar-logo decision-icon" onclick='onMenuHover(1)'></div>
                                 </a>
                                 <a style="font-size:10px;">Рішення</a>
@@ -253,7 +248,6 @@
                 </div>
             </div>
             <div class="col opacityPart">
-
             </div>
         </div>
     }
