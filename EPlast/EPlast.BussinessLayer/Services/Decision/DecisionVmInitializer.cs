@@ -1,9 +1,9 @@
-﻿using EPlast.DataAccess.Entities;
+﻿using EPlast.BussinessLayer.ExtensionMethods;
+using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using EPlast.BussinessLayer.ExtensionMethods;
 
 namespace EPlast.BussinessLayer
 {
