@@ -196,20 +196,17 @@ namespace EPlast.Controllers
         [HttpPost]
         public JsonResult DeleteDecision(int id)
         {
-            try
+            if (_decisionService.DeleteDecision(id))
             {
-                var decision = _repoWrapper.Decesion.FindByCondition(d => d.ID == id).First();
-                _repoWrapper.Decesion.Delete(decision);
-                _repoWrapper.Save();
-                return Json(new{
+                return Json(new
+                {
                     success = true,
                     text = "Зміни пройшли успішно!"
                 });
+
             }
-            catch
-            {
-                return Json(new {success = false});
-            }
+            return Json(new {success = false});
+           
         }
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Download(int id, string filename)

@@ -215,6 +215,21 @@ namespace EPlast.BussinessLayer
             return Path.Combine(_appEnvironment.WebRootPath + DecesionsDocumentFolder, decisionId.ToString());
         }
 
+        public bool DeleteDecision(int id)
+        {
+            try
+            {
+                var decision = _repoWrapper.Decesion.FindByCondition(d => d.ID == id).First();
+                _repoWrapper.Decesion.Delete(decision);
+                _repoWrapper.Save();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+          
+        }
         private static Dictionary<string, string> GetMimeTypes()
         {
             return new Dictionary<string, string>
