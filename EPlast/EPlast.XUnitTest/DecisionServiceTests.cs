@@ -11,11 +11,14 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using EPlast.BussinessLayer.Services.Interfaces;
+using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace EPlast.XUnitTest
 {
-    public class DecisionServiceTest
+    public class DecisionServiceTests
     {
         private DecisionService _decisionService;
 
@@ -28,7 +31,7 @@ namespace EPlast.XUnitTest
             var fileStreamManager = new Mock<IFileStreamManager>();
             var mapper = new Mock<IMapper>();
             var decisionVmCreator = new Mock<IDecisionVmInitializer>();
-
+            var logger = new Mock<ILoggerService<DecisionService>>();
             directoryManager.Setup(dir => dir.Exists(It.IsAny<string>())).Returns(true);
             directoryManager.Setup(dir => dir.GetFiles(It.IsAny<string>())).Returns(new[] { "yes", "stonks", "files" });
 
@@ -44,7 +47,10 @@ namespace EPlast.XUnitTest
 
             repository.Setup(rep => rep.DecesionTarget.FindAll()).Returns(GetTestDecisionTargetsQueryable);
             repository.Setup(rep => rep.Decesion.FindByCondition(It.IsAny<Expression<Func<Decesion, bool>>>()))
-                .Returns(GetTestDecesionQueryable);
+                .Returns(
+                    (Expression<Func<Decesion, bool>> condition) =>
+                        GetTestDecesionQueryable().Where(condition)
+                );
             repository.Setup(rep => rep.Decesion.Include(x => x.DecesionTarget, x => x.Organization))
                 .Returns(GetTestDecesionQueryable());
             repository.Setup(rep => rep.Decesion.Attach(new Decesion()));
@@ -58,7 +64,7 @@ namespace EPlast.XUnitTest
                 .Returns(() => GetTestDecisionsDtoListElement(decisionId));
             mapper.Setup(m => m.Map<List<DecisionDTO>>(It.IsAny<List<Decesion>>())).Returns(GetTestDecisionsDtoList);
             return new DecisionService(repository.Object, hostingEnvironment.Object, directoryManager.Object,
-                fileManager.Object, fileStreamManager.Object, mapper.Object, decisionVmCreator.Object);
+                fileManager.Object, fileStreamManager.Object, mapper.Object, decisionVmCreator.Object, logger.Object);
         }
 
         [Fact]
@@ -78,7 +84,7 @@ namespace EPlast.XUnitTest
 
             var decision = _decisionService.CreateDecision();
 
-            Assert.Equal(GetTestDecisionTargetsDtoList().Count, decision.DecisionTargets.Count);
+            Assert.Equal(GetTestDecisionTargetsDtoList().Count, decision.DecisionTargets.Count());
         }
 
         [Theory]
@@ -146,7 +152,7 @@ namespace EPlast.XUnitTest
         [Theory]
         [InlineData(-1, false)]
         [InlineData(0, false)]
-        [InlineData(1 , true)]
+        [InlineData(1, true)]
         [InlineData(40, false)]
         public void DeleteDecisionTest(int decisionId, bool expected)
         {
@@ -155,7 +161,8 @@ namespace EPlast.XUnitTest
             var actual = _decisionService.DeleteDecision(decisionId);
 
             Assert.Equal(expected, actual);
-        } 
+        }
+
         [Theory]
         [InlineData(2)]
         [InlineData(4)]
@@ -169,7 +176,7 @@ namespace EPlast.XUnitTest
             {
                 Decision = GetTestDecisionsDtoListElement(decisionId),
             };
-            var actualReturn = await _decisionService.SaveDecision(decision);
+            var actualReturn = await _decisionService.SaveDecisionAsync(decision);
 
             Assert.True(actualReturn);
         }
@@ -181,7 +188,7 @@ namespace EPlast.XUnitTest
         {
             _decisionService = CreateDecisionService();
 
-            var result = await _decisionService.DownloadDecisionFile(decisionId);
+            var result = await _decisionService.DownloadDecisionFileAsync(decisionId);
 
             Assert.Equal(exceptedBytesCount.Length, result.Length);
         }

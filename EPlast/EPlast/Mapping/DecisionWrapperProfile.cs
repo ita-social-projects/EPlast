@@ -11,11 +11,7 @@ namespace EPlast.Mapping
             CreateMap<DecisionWrapper, DecisionWrapperDTO>()
                 .ForMember(d => d.Decision, o => o.MapFrom(s => s.Decision))
                 .ForMember(d => d.DecisionTargets, o => o.MapFrom(s => s.DecisionTargets))
-                .MaxDepth(7);
-            CreateMap<DecisionWrapperDTO, DecisionWrapper>()
-                .ForMember(d => d.Decision, o => o.MapFrom(s => s.Decision))
-                .ForMember(d => d.DecisionTargets, o => o.MapFrom(s => s.DecisionTargets))
-                .MaxDepth(7);
+                .ReverseMap();
         }
     }
 }

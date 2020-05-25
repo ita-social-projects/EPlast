@@ -8,8 +8,7 @@ namespace EPlast.BussinessLayer.Mapping
     {
         public DecisionStatusTypeProfile()
         {
-            CreateMap<Organization, OrganizationDTO>();
-            CreateMap<OrganizationDTO, Organization>();
+            CreateMap<Organization, OrganizationDTO>().ReverseMap();
         }
     }
 }

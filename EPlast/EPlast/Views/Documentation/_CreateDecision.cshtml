@@ -15,7 +15,7 @@
                 <br>
             </label>
             @Html.TextBoxFor(x => x.DecisionWrapper.Decision.Name, new { @placeholder = "Назва рішення", @id = "Decision-Name", @class = "form-control" })
-            <span asp-validation-for="@Model.DecisionWrapper.Decision.Name" style="color:#db0b3c;" />
+            <span asp-validation-for="@Model.DecisionWrapper.Decision.Name" />
         </div>
         <div class="form-group">
             <label>
@@ -39,7 +39,7 @@
                 }
             </datalist>
             @Html.HiddenFor(x => x.DecisionWrapper.Decision.DecisionTarget.ID, new { @id = "autocomplete_input_id_0", @Value = "0" })
-            <span asp-validation-for="@Model.DecisionWrapper.Decision.Date" style="color:#db0b3c;" />
+            <span asp-validation-for="@Model.DecisionWrapper.Decision.Date" />
         </div>
         <div class="form-group">
             <label>
@@ -49,7 +49,7 @@
             <br>
             @Html.TextBoxFor(x => x.DecisionWrapper.Decision.Date,
             new { type = "datetime", @placeholder = "Дата рішення", @id = "datepicker", @class = "form-control" })
-            <span asp-validation-for="@Model.DecisionWrapper.Decision.Date" style="color:#db0b3c;" />
+            <span asp-validation-for="@Model.DecisionWrapper.Decision.Date" />
         </div>
 
         <div class="form-group">
@@ -58,7 +58,7 @@
                 <br>
             </label>
             @Html.TextAreaFor(x => x.DecisionWrapper.Decision.Description, new { @id = "Decision-Description", @placeholder = "Опис", @rows = "14", @class = "form-control" })
-            <span asp-validation-for="@Model.DecisionWrapper.Decision.Description" style="color:#db0b3c;" />
+            <span asp-validation-for="@Model.DecisionWrapper.Decision.Description" />
         </div>
         <div class="form-group">
             <label>

@@ -8,8 +8,7 @@ namespace EPlast.Mapping
     {
         public DecisionTargetProfile()
         {
-            CreateMap<DecisionTarget, DecisionTargetDTO>();
-            CreateMap<DecisionTargetDTO, DecisionTarget>();
+            CreateMap<DecisionTarget, DecisionTargetDTO>().ReverseMap();
         }
     }
 }
