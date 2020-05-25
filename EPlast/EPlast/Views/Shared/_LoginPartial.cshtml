@@ -8,7 +8,7 @@
     {
         <div class="d-flex">
             <div style="margin-top:3px;margin-left:5px">
-                <a class="d-none d-sm-block navbar-link navbar-nav nav-link text-light" href="/Account/UserProfile">Привіт @UserManager.GetUserAsync(User).Result.FirstName</a>
+                <a class="d-none d-sm-block navbar-link navbar-nav nav-link text-light" asp-action="UserProfile" asp-controller="Account" asp-route-userId="@UserManager.GetUserId(User)">Привіт @UserManager.GetUserAsync(User).Result.FirstName</a>
             </div>
             <div class="align-self-center">
                 <button type="submit" class="btn navbar-btn navbar-link text-light">Вийти</button>
