@@ -195,17 +195,12 @@ namespace EPlast.Controllers
         [HttpPost]
         public JsonResult DeleteDecision(int id)
         {
-            if (_decisionService.DeleteDecision(id))
+            return _decisionService.DeleteDecision(id) ? Json(new
             {
-                return Json(new
-                {
-                    success = true,
-                    text = "Зміни пройшли успішно!"
-                });
-
-            }
-            return Json(new {success = false});
-           
+                success = true,
+                text = "Зміни пройшли успішно!"
+            }) :
+               Json(new { success = false });
         }
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Download(int id, string filename)
