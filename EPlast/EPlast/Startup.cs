@@ -25,7 +25,21 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Globalization;
 using System.Linq;
+using EPlast.Models.ViewModelInitializations.Interfaces;
+using EPlast.Models.ViewModelInitializations;
+using EPlast.BussinessLayer.Settings;
+using EPlast.BussinessLayer.AccessManagers;
+using EPlast.BussinessLayer.AccessManagers.Interfaces;
+using EPlast.Wrapper;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
+using AutoMapper;
+using EPlast.Models.Mapping;
+using EPlast.BussinessLayer.Services;
+using Ical.Net.DataTypes;
+using EPlast.BussinessLayer.Services.Interfaces;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace EPlast
 {
@@ -63,6 +77,8 @@ namespace EPlast
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddScoped<IAccountService, AccountService>();
+
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
             services.AddScoped<IEmailConfirmation, EmailConfirmation>();
             services.AddScoped<IAnnualReportVMInitializer, AnnualReportVMInitializer>();
@@ -100,6 +116,7 @@ namespace EPlast
             services.AddScoped<IEventGalleryManager, EventGalleryManager>();
 
 
+            services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
             services.Configure<IdentityOptions>(options =>
             {
