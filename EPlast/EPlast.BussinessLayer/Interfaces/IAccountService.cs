@@ -14,8 +14,8 @@ namespace EPlast.BussinessLayer.Interfaces
         Task<SignInResult> SignInAsync(LoginDto loginDto);
         void SignOutAsync();
         Task<IdentityResult> CreateUserAsync(RegisterDto registerDto);
-        Task<IdentityResult> ConfirmEmailAsync(UserDTO userDto, string code);
-        Task<IdentityResult> ChangePasswordAsync(UserDTO userDto, ChangePasswordDto changePasswordDto);
+        Task<IdentityResult> ConfirmEmailAsync(string userId, string code);
+        Task<IdentityResult> ChangePasswordAsync(string userId, ChangePasswordDto changePasswordDto);
         void RefreshSignInAsync(UserDTO userDto);
         AuthenticationProperties GetAuthProperties(string provider, string returnUrl);
         Task<ExternalLoginInfo> GetInfoAsync();
@@ -24,8 +24,8 @@ namespace EPlast.BussinessLayer.Interfaces
         Task<string> AddRoleAndTokenAsync(RegisterDto registerDto);
         Task<string> GenerateConfToken(UserDTO userDto);
         Task<string> GenerateResetTokenAsync(UserDTO userDto);
-        Task<IdentityResult> ResetPasswordAsync(UserDTO userDto, ResetPasswordDto resetPasswordDto);
-        void CheckingForLocking(UserDTO userDto);
+        Task<IdentityResult> ResetPasswordAsync(string userId, ResetPasswordDto resetPasswordDto);
+        Task CheckingForLocking(UserDTO userDto);
         Task<IEnumerable<AuthenticationScheme>> GetAuthSchemesAsync();
         Task<UserDTO> FindByEmailAsync(string email);
         Task<UserDTO> FindByIdAsync(string id);
@@ -33,9 +33,9 @@ namespace EPlast.BussinessLayer.Interfaces
         int GetTimeAfterRegistr(UserDTO userDto);
         int GetTimeAfterReset(UserDTO userDto);
         Task<UserDTO> GetUserAsync(ClaimsPrincipal claimsPrincipal);
-        void SendEmailRegistr(string confirmationLink, UserDTO userDto);
-        void SendEmailRegistr(string confirmationLink, RegisterDto registerDto);
-        void SendEmailReseting(string confirmationLink, ForgotPasswordDto forgotPasswordDto);
+        Task SendEmailRegistr(string confirmationLink, UserDTO userDto);
+        Task SendEmailRegistr(string confirmationLink, RegisterDto registerDto);
+        Task SendEmailReseting(string confirmationLink, ForgotPasswordDto forgotPasswordDto);
         Task GoogleAuthentication(string email, ExternalLoginInfo externalLoginInfo);
         Task FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo);
     }

@@ -81,15 +81,17 @@ namespace EPlast.BussinessLayer.Services
             return result;
         }
 
-        public async Task<IdentityResult> ConfirmEmailAsync(UserDTO userDto, string code)
+        public async Task<IdentityResult> ConfirmEmailAsync(string userId, string code) 
         {
-            var result = await _userManager.ConfirmEmailAsync(_mapper.Map<UserDTO, User>(userDto), code);
+            var user = await _userManager.FindByIdAsync(userId);
+            var result = await _userManager.ConfirmEmailAsync(user, code);
             return result;
         }
 
-        public async Task<IdentityResult> ChangePasswordAsync(UserDTO userDto, ChangePasswordDto changePasswordDto)
+        public async Task<IdentityResult> ChangePasswordAsync(string userId, ChangePasswordDto changePasswordDto)
         {
-            var result = await _userManager.ChangePasswordAsync(_mapper.Map<UserDTO, User>(userDto), changePasswordDto.CurrentPassword,
+            var user = await _userManager.FindByIdAsync(userId);
+            var result = await _userManager.ChangePasswordAsync(user, changePasswordDto.CurrentPassword,
                 changePasswordDto.NewPassword);
             return result;
         }
@@ -140,17 +142,19 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task<string> GenerateResetTokenAsync(UserDTO userDto)
         {
-            string code = await _userManager.GeneratePasswordResetTokenAsync(_mapper.Map<UserDTO, User>(userDto));
+            var user = _mapper.Map<UserDTO, User>(userDto);
+            string code = await _userManager.GeneratePasswordResetTokenAsync(user);
             return code;
         }
 
-        public async Task<IdentityResult> ResetPasswordAsync(UserDTO userDto, ResetPasswordDto resetPasswordDto)
+        public async Task<IdentityResult> ResetPasswordAsync(string userId, ResetPasswordDto resetPasswordDto)
         {
-            var result = await _userManager.ResetPasswordAsync(_mapper.Map<UserDTO, User>(userDto), HttpUtility.UrlDecode(resetPasswordDto.Code), resetPasswordDto.Password);
+            var user = await _userManager.FindByIdAsync(userId);
+            var result = await _userManager.ResetPasswordAsync(user, HttpUtility.UrlDecode(resetPasswordDto.Code), resetPasswordDto.Password);
             return result;
         }
 
-        public async void CheckingForLocking(UserDTO userDto)
+        public async Task CheckingForLocking(UserDTO userDto)
         {
             if (await _userManager.IsLockedOutAsync(_mapper.Map<UserDTO, User>(userDto)))
             {
@@ -182,9 +186,10 @@ namespace EPlast.BussinessLayer.Services
             return currentUserId;
         }
 
-        public int GetTimeAfterRegistr(UserDTO user)
+        public int GetTimeAfterRegistr(UserDTO userDto)
         {
             IDateTimeHelper dateTimeConfirming = new DateTimeHelper();
+            var user = _mapper.Map<UserDTO, User>(userDto);
             int totalTime = (int)dateTimeConfirming.GetCurrentTime().Subtract(user.EmailSendedOnRegister).TotalMinutes;
             return totalTime;
         }
@@ -203,26 +208,27 @@ namespace EPlast.BussinessLayer.Services
             return _mapper.Map<User, UserDTO>(user);
         }
 
-        public async void SendEmailRegistr(string confirmationLink, UserDTO userDto)
+        public async Task SendEmailRegistr(string confirmationLink, UserDTO userDto)
         {
-            _mapper.Map<UserDTO, User>(userDto).EmailSendedOnRegister = DateTime.Now;
-            await _userManager.UpdateAsync(_mapper.Map<UserDTO, User>(userDto)); 
-            await _emailConfirmation.SendEmailAsync(_mapper.Map<UserDTO, User>(userDto).Email, "Підтвердження реєстрації ",
+            var user = _mapper.Map<UserDTO, User>(userDto);
+            user.EmailSendedOnRegister = DateTime.Now;
+            await _userManager.UpdateAsync(user); 
+            await _emailConfirmation.SendEmailAsync(user.Email, "Підтвердження реєстрації ",
                 $"Підтвердіть реєстрацію, перейшовши за :  <a href='{confirmationLink}'>посиланням</a> ", "Адміністрація сайту EPlast");
         }
 
-        public async void SendEmailRegistr(string confirmationLink, RegisterDto registerDto)
+        public async Task SendEmailRegistr(string confirmationLink, RegisterDto registerDto)
         {
-            var user = _userManager.FindByEmailAsync(registerDto.Email).Result;
+            var user = await _userManager.FindByEmailAsync(registerDto.Email);
             user.EmailSendedOnRegister = DateTime.Now;
             await _userManager.UpdateAsync(user);  
             await _emailConfirmation.SendEmailAsync(user.Email, "Підтвердження реєстрації ",
                 $"Підтвердіть реєстрацію, перейшовши за :  <a href='{confirmationLink}'>посиланням</a> ", "Адміністрація сайту EPlast");
         }
 
-        public async void SendEmailReseting(string confirmationLink, ForgotPasswordDto forgotPasswordDto)
+        public async Task SendEmailReseting(string confirmationLink, ForgotPasswordDto forgotPasswordDto) 
         {
-            var user = _userManager.FindByEmailAsync(forgotPasswordDto.Email).Result;
+            var user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email);
             user.EmailSendedOnForgotPassword = DateTime.Now;
             await _userManager.UpdateAsync(user); 
             await _emailConfirmation.SendEmailAsync(forgotPasswordDto.Email, "Скидування пароля",

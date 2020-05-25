@@ -20,6 +20,7 @@ using EPlast.ViewModels.UserInformation.UserProfile;
 using Microsoft.EntityFrameworkCore;
 using EPlast.ViewModels.UserInformation;
 using EPlast.BussinessLayer.Services;
+using Microsoft.Extensions.Logging;
 
 namespace EPlast.Controllers
 {
@@ -31,11 +32,6 @@ namespace EPlast.Controllers
         private UserManager<User> _userManager;
         private SignInManager<User> _signInManager;
         private readonly IRepositoryWrapper _repoWrapper;
-        private readonly ILogger _logger;
-        private readonly IEmailConfirmation _emailConfirmation;
-        private readonly IHostingEnvironment _env;
-        private readonly IUserAccessManager _userAccessManager;
-        private readonly IUserService _userService;
         private readonly INationalityService _nationalityService;
         private readonly IEducationService _educationService;
         private readonly IReligionService _religionService;
@@ -44,16 +40,13 @@ namespace EPlast.Controllers
         private readonly IDegreeService _degreeService;
         private readonly IUserManagerService _userManagerService;
         private readonly IConfirmedUsersService _confirmedUserService;
-        private readonly IMapper _mapper;
         private readonly ILoggerService<AccountController> _loggerService;
+        private readonly UserManager<User> _usermanager;
 
         public AccountController(UserManager<User> userManager,
             SignInManager<User> signInManager,
             IRepositoryWrapper repoWrapper,
-            ILogger<AccountController> logger,
             IEmailConfirmation emailConfirmation,
-            IHostingEnvironment env,
-            IUserAccessManager userAccessManager,
             IUserService userService,
             INationalityService nationalityService,
             IEducationService educationService,
@@ -65,16 +58,13 @@ namespace EPlast.Controllers
             IUserManagerService userManagerService,
             IMapper mapper,
             ILoggerService<AccountController> loggerService,
-            IAccountService accountService)
+            IAccountService accountService,
+            UserManager<User> usermanager)
         {
             _accountService = accountService;
             _userManager = userManager;
             _signInManager = signInManager;
             _repoWrapper = repoWrapper;
-            _logger = logger;
-            _emailConfirmation = emailConfirmation;
-            _env = env;
-            _userAccessManager = userAccessManager;
             _userService = userService;
             _nationalityService = nationalityService;
             _religionService = religionService;
@@ -86,6 +76,7 @@ namespace EPlast.Controllers
             _mapper = mapper;
             _userManagerService = userManagerService;
             _loggerService = loggerService;
+            _usermanager = usermanager;
         }
 
         [HttpGet]
@@ -119,7 +110,7 @@ namespace EPlast.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    var user = await _accountService.FindByEmailAsync(_mapper.Map<LoginDto>(loginVM).Email);
+                    var user = await _accountService.FindByEmailAsync(loginVM.Email);
                     if(user == null)
                     {
                         ModelState.AddModelError("", "Ви не зареєстровані в системі, або не підтвердили свою електронну пошту");
@@ -193,14 +184,14 @@ namespace EPlast.Controllers
                     }
                     else
                     {
-                        string code = await _accountService.AddRoleAndTokenAsync(_mapper.Map<RegisterDto>(registerVM));
-                        var user = await _accountService.FindByEmailAsync(_mapper.Map<RegisterDto>(registerVM).Email);
+                        string code = await _accountService.AddRoleAndTokenAsync(_mapper.Map<RegisterViewModel, RegisterDto>(registerVM));
+                        var userDto = await _accountService.FindByEmailAsync(registerVM.Email);
                         string confirmationLink = Url.Action(
                             nameof(ConfirmingEmail),
                             "Account",
-                            new { code = code, userId = user.Id },
+                            new { code = code, userId = userDto.Id },
                               protocol: HttpContext.Request.Scheme);
-                        _accountService.SendEmailRegistr(confirmationLink, _mapper.Map<RegisterDto>(registerVM));
+                        await _accountService.SendEmailRegistr(confirmationLink, userDto);
                         return View("AcceptingEmail");
                     }
                 }
@@ -222,19 +213,19 @@ namespace EPlast.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ResendEmailForRegistering(string userId)
         {
-            var user = await _accountService.FindByIdAsync(userId);
-            if (user == null)
+            var userDto = await _accountService.FindByIdAsync(userId);
+            if (userDto == null)
             {
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
-            var code = await _accountService.GenerateConfToken(user);
+            string code = await _accountService.GenerateConfToken(userDto);  //чекати
             var confirmationLink = Url.Action(
                 nameof(ConfirmingEmail),
                 "Account",
-                new { code = code, userId = user.Id },
+                new { code = code, userId = userDto.Id },
                 protocol: HttpContext.Request.Scheme);
 
-            _accountService.SendEmailRegistr(confirmationLink, user);
+            await _accountService.SendEmailRegistr(confirmationLink, userDto);
             return View("ResendEmailConfirmation");
         }
         
@@ -242,12 +233,12 @@ namespace EPlast.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmingEmail(string userId, string code)
         {
-            var user = await _accountService.FindByIdAsync(userId);
-            if (user == null)
+            var userDto = await _accountService.FindByIdAsync(userId);
+            if (userDto == null)
             {
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
-            int totalTime = _accountService.GetTimeAfterRegistr(user);
+            int totalTime = _accountService.GetTimeAfterRegistr(userDto);
             if (totalTime < 180)
             {
                 if (string.IsNullOrWhiteSpace(userId) && string.IsNullOrWhiteSpace(code))
@@ -255,7 +246,7 @@ namespace EPlast.Controllers
                     return RedirectToAction("HandleError", "Error", new { code = 500 });
                 }
 
-                var result = await _accountService.ConfirmEmailAsync(user, code);
+                var result = await _accountService.ConfirmEmailAsync(userDto.Id, code);
 
                 if (result.Succeeded)
                 {
@@ -268,7 +259,7 @@ namespace EPlast.Controllers
             }
             else
             {
-                return View("ConfirmEmailNotAllowed", user);
+                return View("ConfirmEmailNotAllowed", userDto);
             }
         }
 
@@ -299,25 +290,25 @@ namespace EPlast.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel forgotpasswordVM)//тут віддебажити
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel forgotpasswordVM)  //одна бажка з конфірмом
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var user = await _accountService.FindByEmailAsync(forgotpasswordVM.Email);
-                    if (user == null || !(await _accountService.IsEmailConfirmedAsync(user)))
+                    var userDto = await _accountService.FindByEmailAsync(forgotpasswordVM.Email);
+                    if (userDto == null || !(await _accountService.IsEmailConfirmedAsync(userDto)))
                     {
                         ModelState.AddModelError("", "Користувача із заданою електронною поштою немає в системі або він не підтвердив свою реєстрацію");
                         return View("ForgotPassword");
                     }
-                    string code = await _accountService.GenerateResetTokenAsync(user);  // тут хз
-                    var confirmationLink = Url.Action(
+                    string code = await _accountService.GenerateResetTokenAsync(userDto);
+                    string confirmationLink = Url.Action(
                         nameof(ResetPassword),
                         "Account",
-                        new { userId = user.Id, code = HttpUtility.UrlEncode(code) },
+                        new { userId = userDto.Id, code = HttpUtility.UrlEncode(code) },
                         protocol: HttpContext.Request.Scheme);
-                    _accountService.SendEmailReseting(confirmationLink, _mapper.Map<ForgotPasswordDto>(forgotpasswordVM));
+                    await _accountService.SendEmailReseting(confirmationLink, _mapper.Map<ForgotPasswordDto>(forgotpasswordVM));
                     return View("ForgotPasswordConfirmation");
                 }
                 return View("ForgotPassword");
@@ -333,12 +324,12 @@ namespace EPlast.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(string userId, string code = null)
         {
-            var user = await _accountService.FindByIdAsync(userId);
-            if (user == null)
+            var userDto = await _accountService.FindByIdAsync(userId);
+            if (userDto == null)
             {
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
-            int totalTime = _accountService.GetTimeAfterReset(user);
+            int totalTime = _accountService.GetTimeAfterReset(userDto);
             if (totalTime < 180)
             {
                 if (string.IsNullOrWhiteSpace(code))
@@ -352,7 +343,7 @@ namespace EPlast.Controllers
             }
             else
             {
-                return View("ResetPasswordNotAllowed", user);
+                return View("ResetPasswordNotAllowed", userDto);
             }
         }
 
@@ -367,16 +358,16 @@ namespace EPlast.Controllers
                 {
                     return View("ResetPassword");
                 }
-                var user = await _accountService.FindByEmailAsync(resetpasswordVM.Email);
-                if (user == null)
+                var userDto = await _accountService.FindByEmailAsync(resetpasswordVM.Email);
+                if (userDto == null)
                 {
                     ModelState.AddModelError("", "Користувача із заданою електронною поштою немає в системі або він не підтвердив свою реєстрацію");
                     return View("ResetPassword");
                 }
-                var result = await _accountService.ResetPasswordAsync(user, _mapper.Map<ResetPasswordDto>(resetpasswordVM));
+                var result = await _accountService.ResetPasswordAsync(userDto.Id, _mapper.Map<ResetPasswordDto>(resetpasswordVM));
                 if (result.Succeeded)
                 {
-                    _accountService.CheckingForLocking(user);
+                    await _accountService.CheckingForLocking(userDto);
                     return View("ResetPasswordConfirmation");
                 }
                 else
@@ -396,8 +387,8 @@ namespace EPlast.Controllers
         [Authorize]
         public async Task<IActionResult> ChangePassword()
         {
-            var user = await _accountService.GetUserAsync(User);
-            var result = user.SocialNetworking;
+            var userDto = await _accountService.GetUserAsync(User);
+            var result = userDto.SocialNetworking;
             if (result != true)
             {
                 return View("ChangePassword");
@@ -416,18 +407,18 @@ namespace EPlast.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var user = await _accountService.GetUserAsync(User);
-                    if (user == null)
+                    var userDto = await _accountService.GetUserAsync(User);
+                    if (userDto == null)
                     {
                         return RedirectToAction("Login");
                     }
-                    var result = await _accountService.ChangePasswordAsync(user, _mapper.Map<ChangePasswordDto>(changepasswordModel));
+                    var result = await _accountService.ChangePasswordAsync(userDto.Id, _mapper.Map<ChangePasswordDto>(changepasswordModel));
                     if (!result.Succeeded)
                     {
                         ModelState.AddModelError("", "Проблема зі зміною пароля, можливо неправильно введений старий пароль");
                         return View("ChangePassword");
                     }
-                    _accountService.RefreshSignInAsync(user);
+                    _accountService.RefreshSignInAsync(userDto);
                     return View("ChangePasswordConfirmation");
                 }
                 else
@@ -527,7 +518,7 @@ namespace EPlast.Controllers
 
                 var model = new PersonalDataViewModel
                 {
-                    User = _mapper.Map<UserDTO, UserViewModel>(_mapper.Map<User, UserDTO>(user)),
+                    User = _mapper.Map<UserDTO, UserViewModel>(user),
                     TimeToJoinPlast = time.Result,
                     IsUserPlastun = isUserPlastun
                 };

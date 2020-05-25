@@ -44,7 +44,7 @@ namespace EPlast
         {
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddOptions();
-            services.AddDbContextPool<EPlastDBContext>(options =>
+            services.AddDbContext<EPlastDBContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("EPlastDBConnection")));
             services.AddIdentity<User, IdentityRole>()
                     .AddEntityFrameworkStores<EPlastDBContext>()
