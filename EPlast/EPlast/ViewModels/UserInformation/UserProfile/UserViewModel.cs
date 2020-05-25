@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.ViewModels.UserInformation.UserProfile
 {
-    public class UserViewModel:IdentityUser
+    public class UserViewModel : IdentityUser
     {
         [Display(Name = "Ім'я")]
         [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26})*$",
@@ -35,17 +35,17 @@ namespace EPlast.ViewModels.UserInformation.UserProfile
         public string ImagePath { get; set; }
         public bool SocialNetworking { get; set; }
         public UserProfileViewModel UserProfile { get; set; }
-        public ICollection<ConfirmedUserViewModel> ConfirmedUsers { get; set; }
-        public ICollection<ApproverViewModel> Approvers { get; set; }
-        public ICollection<EventAdmin> Events { get; set; }
-        public ICollection<Participant> Participants { get; set; }
-        public ICollection<CityMembers> CityMembers { get; set; }
-        public ICollection<CityAdministration> CityAdministrations { get; set; }
-        public ICollection<UnconfirmedCityMember> UnconfirmedCityMembers { get; set; }
-        public ICollection<ClubMembers> ClubMembers { get; set; }
-        public ICollection<RegionAdministration> RegionAdministrations { get; set; }
-        public ICollection<AnnualReport> AnnualReports { get; set; }
-        public ICollection<UserPlastDegree> UserPlastDegrees { get; set; }
-       
+        public IEnumerable<ConfirmedUserViewModel> ConfirmedUsers { get; set; }
+        public IEnumerable<ApproverViewModel> Approvers { get; set; }
+        public IEnumerable<EventAdmin> Events { get; set; }
+        public IEnumerable<Participant> Participants { get; set; }
+        public IEnumerable<CityMembers> CityMembers { get; set; }
+        public IEnumerable<CityAdministration> CityAdministrations { get; set; }
+        public IEnumerable<UnconfirmedCityMember> UnconfirmedCityMembers { get; set; }
+        public IEnumerable<ClubMembers> ClubMembers { get; set; }
+        public IEnumerable<RegionAdministration> RegionAdministrations { get; set; }
+        public IEnumerable<AnnualReport> AnnualReports { get; set; }
+        public IEnumerable<UserPlastDegree> UserPlastDegrees { get; set; }
+
     }
 }

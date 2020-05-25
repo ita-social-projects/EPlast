@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace EPlast.BussinessLayer.Services
 {
-    public class WorkService:IWorkService
+    public class WorkService : IWorkService
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;

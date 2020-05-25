@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace EPlast.BussinessLayer.Services
 {
-    public class EducationService:IEducationService
+    public class EducationService : IEducationService
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
@@ -22,7 +22,7 @@ namespace EPlast.BussinessLayer.Services
         public IEnumerable<EducationDTO> GetAllGroupByPlace()
         {
             var result = _repoWrapper.Education.FindAll().GroupBy(x => x.PlaceOfStudy).Select(x => x.FirstOrDefault()).ToList();
-            return _mapper.Map<IEnumerable<Education>,IEnumerable<EducationDTO>>(result);
+            return _mapper.Map<IEnumerable<Education>, IEnumerable<EducationDTO>>(result);
         }
 
         public IEnumerable<EducationDTO> GetAllGroupBySpeciality()

@@ -9,6 +9,6 @@ namespace EPlast.ViewModels.UserInformation.UserProfile
         [Display(Name = "Стать")]
         [StringLength(10, MinimumLength = 2, ErrorMessage = "Стать повинна складати від 2 до 10 символів")]
         public string Name { get; set; }
-        public ICollection<UserProfileViewModel> UserProfiles { get; set; }
+        public IEnumerable<UserProfileViewModel> UserProfiles { get; set; }
     }
 }
