@@ -7,8 +7,8 @@
 @using Microsoft.AspNetCore.Identity;
 @model EPlast.ViewModels.Events.EventUserViewModel;
 @inject IRepositoryWrapper  _repository;
-@inject UserManager<EPlast.DataAccess.Entities.User>
-    _userManager;
+@inject UserManager<EPlast.DataAccess.Entities.User> _userManager;
+
     @await Html.PartialAsync("_EventInfoModals")
     <div class="container">
         <div class=" eventUserPage d-md-flex d-xl-flex justify-content-md-center justify-content-xl-center align-items-xl-top container">
