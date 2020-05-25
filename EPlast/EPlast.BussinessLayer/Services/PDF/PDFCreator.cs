@@ -8,7 +8,7 @@ namespace EPlast.BussinessLayer
     internal class PDFCreator : IPDFCreator
     {
         private readonly IPDFDocument document;
-        private readonly PdfDocumentRenderer renderer;
+        private PdfDocumentRenderer renderer;
 
         public PDFCreator(IPDFDocument document)
         {
