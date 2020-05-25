@@ -92,7 +92,8 @@ $(() => {
             return;
         const input = document.getElementById("CreateDecisionFormFile");
         const files = input.files;
-        if (files[0] !== undefined && files[0].size >= 10485760) {
+        const fileMaxSize = 10485760;
+        if (files[0] !== undefined && files[0].size >= fileMaxSize) {
             alert("файл за великий (більше 10 Мб)");
             return;
         }

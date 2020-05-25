@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BussinessLayer.Services;
+using EPlast.BussinessLayer.Services.Interfaces;
 
 namespace EPlast.BussinessLayer
 {
@@ -20,22 +22,20 @@ namespace EPlast.BussinessLayer
         private readonly IDirectoryManager _directoryManager;
         private readonly IFileManager _fileManager;
         private readonly IFileStreamManager _fileStreamManager;
-
         private readonly IMapper _mapper;
-
-        //private readonly ILogger _logger;
+        private readonly ILoggerService<DecisionService> _logger;
         private readonly IRepositoryWrapper _repoWrapper;
 
         public DecisionService(IRepositoryWrapper repoWrapper, IHostingEnvironment appEnvironment,
             IDirectoryManager directoryManager, IFileManager fileManager,
-            IFileStreamManager fileStreamManager, IMapper mapper, IDecisionVmInitializer decisionVMCreator)
+            IFileStreamManager fileStreamManager, IMapper mapper, IDecisionVmInitializer decisionVMCreator, ILoggerService<DecisionService> logger)
         {
             _repoWrapper = repoWrapper;
             _appEnvironment = appEnvironment;
             _directoryManager = directoryManager;
             _fileManager = fileManager;
             _fileStreamManager = fileStreamManager;
-            //_logger = logger;
+            _logger = logger;
             _mapper = mapper;
             _decisionVMCreator = decisionVMCreator;
         }
@@ -50,7 +50,7 @@ namespace EPlast.BussinessLayer
             }
             catch (Exception e)
             {
-                //                _logger.LogError("Exception: {0}", e.Message);
+                _logger.LogError($"Exception: {e.Message}");
             }
 
             return decision;
@@ -69,7 +69,7 @@ namespace EPlast.BussinessLayer
             }
             catch (Exception e)
             {
-                //                _logger.LogError("Exception: {0}", e.Message);
+                _logger.LogError($"Exception: {e.Message}");
             }
 
             return decisionWrapperDto;
@@ -94,7 +94,7 @@ namespace EPlast.BussinessLayer
             }
             catch (Exception e)
             {
-                //                _logger.LogError("Exception: {0}", e.Message);
+                _logger.LogError($"Exception: {e.Message}");
             }
 
             return decisionList;
@@ -113,13 +113,13 @@ namespace EPlast.BussinessLayer
             }
             catch (Exception e)
             {
-                //                _logger.LogError("Exception: {0}", e.Message);
+                _logger.LogError($"Exception: {e.Message}");
             }
 
             return decesion != null;
         }
 
-        public Task<bool> SaveDecision(DecisionWrapperDTO decision)
+        public Task<bool> SaveDecisionAsync(DecisionWrapperDTO decision)
         {
             try
             {
@@ -129,7 +129,7 @@ namespace EPlast.BussinessLayer
             }
             catch (Exception e)
             {
-                //                _logger.LogError("Exception: {0}", e.Message);
+                _logger.LogError($"Exception: {e.Message}");
             }
 
             return !decision.Decision.HaveFile ? Task.FromResult(true) : SaveDecisionFile(decision);
@@ -145,13 +145,13 @@ namespace EPlast.BussinessLayer
             }
             catch (Exception e)
             {
-                //                _logger.LogError("Exception: {0}", e.Message);
+                _logger.LogError($"Exception: {e.Message}");
             }
 
             return organization;
         }
 
-        public async Task<byte[]> DownloadDecisionFile(int decisionId)
+        public async Task<byte[]> DownloadDecisionFileAsync(int decisionId)
         {
             if (decisionId <= 0) return null;
             MemoryStream memory = null;
@@ -177,7 +177,7 @@ namespace EPlast.BussinessLayer
             }
             catch (Exception e)
             {
-                //                _logger.LogError("Exception: {0}", e.Message);
+                _logger.LogError($"Exception: {e.Message}");
             }
 
             return memory?.ToArray();
@@ -205,6 +205,26 @@ namespace EPlast.BussinessLayer
             return _decisionVMCreator.GetDecesionStatusTypes();
         }
 
+        public bool DeleteDecision(int decisionId)
+        {
+            bool success = false;
+            try
+            {
+                var decision = _repoWrapper.Decesion.FindByCondition(d => d.ID == decisionId).First();
+                success = decision == null
+                    ? throw new ArgumentNullException($"Decision with {decisionId} id not found")
+                    : true;
+                _repoWrapper.Decesion.Delete(decision);
+                _repoWrapper.Save();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception: {e.Message}");
+            }
+
+            return success;
+        }
+
         private List<DecisionWrapperDTO> GetDecisionListAsync()
         {
             return _mapper
@@ -220,26 +240,6 @@ namespace EPlast.BussinessLayer
             return Path.Combine(_appEnvironment.WebRootPath + DecesionsDocumentFolder, decisionId.ToString());
         }
 
-        public bool DeleteDecision(int decisionId)
-        {
-            try
-            {
-                
-                var decision = _repoWrapper.Decesion.FindByCondition(d => d.ID == decisionId).First();
-                if (decision.ID != decisionId)
-                {
-                    throw new ArgumentNullException("Decision with this id not found.", nameof(decisionId));
-                }
-                _repoWrapper.Decesion.Delete(decision);
-                _repoWrapper.Save();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-          
-        }
         private static Dictionary<string, string> GetMimeTypes()
         {
             return new Dictionary<string, string>
@@ -284,7 +284,7 @@ namespace EPlast.BussinessLayer
             }
             catch (Exception e)
             {
-                //                _logger.LogError("Exception: {0}", e.Message);
+                _logger.LogError($"Exception: {e.Message}");
             }
 
             return true;

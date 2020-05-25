@@ -150,7 +150,7 @@ namespace EPlast.Controllers
                 }
 
                 decesionViewModel.DecisionWrapper.Decision.HaveFile = decesionViewModel.DecisionWrapper.File != null;
-                success = await _decisionService.SaveDecision(
+                success = await _decisionService.SaveDecisionAsync(
                     _mapper.Map<DecisionWrapperDTO>(decesionViewModel.DecisionWrapper));
                 return Json(new
                 {
@@ -191,6 +191,7 @@ namespace EPlast.Controllers
 
             return View(Tuple.Create(CreateDecision(), decisions));
         }
+
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public JsonResult DeleteDecision(int id)
@@ -202,6 +203,7 @@ namespace EPlast.Controllers
             }) :
                Json(new { success = false });
         }
+
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Download(int id, string filename)
         {
@@ -209,7 +211,7 @@ namespace EPlast.Controllers
             try
             {
                 if (id <= 0) throw new ArgumentException("Decision id cannot be null lest than zero");
-                fileBytes = await _decisionService.DownloadDecisionFile(id);
+                fileBytes = await _decisionService.DownloadDecisionFileAsync(id);
             }
             catch (Exception)
             {

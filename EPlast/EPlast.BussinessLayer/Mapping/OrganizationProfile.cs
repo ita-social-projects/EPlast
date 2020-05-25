@@ -9,8 +9,7 @@ namespace EPlast.BussinessLayer.Mapping
     {
         public OrganizationProfile()
         {
-            CreateMap<Organization, OrganizationDTO>();
-            CreateMap<List<OrganizationDTO>, List<Organization>>();
+            CreateMap<Organization, OrganizationDTO>().ReverseMap();
         }
     }
 }

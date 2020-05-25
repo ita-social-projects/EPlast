@@ -10,11 +10,12 @@ namespace EPlast.BussinessLayer
         DecisionDTO GetDecision(int decisionId);
 
         bool ChangeDecision(DecisionDTO decision);
+
         bool DeleteDecision(int id);
 
-        Task<bool> SaveDecision(DecisionWrapperDTO decision);
+        Task<bool> SaveDecisionAsync(DecisionWrapperDTO decision);
 
-        Task<byte[]> DownloadDecisionFile(int decisionId);
+        Task<byte[]> DownloadDecisionFileAsync(int decisionId);
 
         DecisionWrapperDTO CreateDecision();
 

@@ -98,7 +98,8 @@ $(() => {
             return;
         const input = document.getElementById("CreateDecisionFormFile") as HTMLInputElement;
         const files = input.files;
-        if (files[0] !== undefined && files[0].size >= 10485760) {
+        const fileMaxSize = 10485760;
+        if (files[0] !== undefined && files[0].size >= fileMaxSize) {
             alert("файл за великий (б≥льше 10 ћб)");
             return;
         }
@@ -227,7 +228,6 @@ $(() => {
         });
     });
     $("#DeleteDecisionForm-submit").click((e) => {
-
         $("#DeleteDecisionForm-submit").prop('disabled', true);
         let decisionID = $("#Delete-Decision-ID").val();
         $.ajax(
@@ -256,7 +256,6 @@ $(() => {
                 }
             }
         )
-
     })
     $.contextMenu({
         selector: ".decision-menu",
