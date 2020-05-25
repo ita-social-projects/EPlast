@@ -10,6 +10,7 @@ namespace EPlast.BussinessLayer
         DecisionDTO GetDecision(int decisionId);
 
         bool ChangeDecision(DecisionDTO decision);
+        bool DeleteDecision(int id);
 
         Task<bool> SaveDecision(DecisionWrapperDTO decision);
 
