@@ -191,7 +191,17 @@ namespace EPlast.Controllers
 
             return View(Tuple.Create(CreateDecision(), decisions));
         }
-
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public JsonResult DeleteDecision(int id)
+        {
+            return _decisionService.DeleteDecision(id) ? Json(new
+            {
+                success = true,
+                text = "Зміни пройшли успішно!"
+            }) :
+               Json(new { success = false });
+        }
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Download(int id, string filename)
         {
