@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.DataAccess.Entities;
@@ -14,10 +7,17 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services
 {
-    public class UserService:IUserService
+    public class UserService : IUserService
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
@@ -80,7 +80,7 @@ namespace EPlast.BussinessLayer.Services
                     && !(currentUserId == userId);
             return canApprove;
         }
-        public async Task<TimeSpan> CheckOrAddPlastunRole(string userId,DateTime registeredOn)
+        public async Task<TimeSpan> CheckOrAddPlastunRole(string userId, DateTime registeredOn)
         {
             try
             {
@@ -98,9 +98,9 @@ namespace EPlast.BussinessLayer.Services
                 return TimeSpan.Zero;
             }
         }
-        public void Update(UserDTO user,IFormFile file, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
+        public void Update(UserDTO user, IFormFile file, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
-            
+
             UploadPhoto(ref user, file);
             user.UserProfile.Nationality = CheckFieldForNull(user.UserProfile.NationalityId, user.UserProfile.Nationality.Name, user.UserProfile.Nationality);
             user.UserProfile.Religion = CheckFieldForNull(user.UserProfile.ReligionId, user.UserProfile.Religion.Name, user.UserProfile.Religion);
@@ -115,20 +115,20 @@ namespace EPlast.BussinessLayer.Services
             _repoWrapper.Save();
         }
 
-        private int? CheckEducationFields(string firstName,string secondName,int? firstId, int? secondId)
+        private int? CheckEducationFields(string firstName, string secondName, int? firstId, int? secondId)
         {
 
             var spec = _repoWrapper.Education.FindByCondition(x => x.ID == secondId).FirstOrDefault();
             var placeStudy = _repoWrapper.Education.FindByCondition(x => x.ID == firstId).FirstOrDefault();
             if (secondId == firstId)
             {
-               return secondId;
+                return secondId;
             }
             else
             {
                 if (spec != null && spec.PlaceOfStudy == firstName)
                 {
-                  return spec.ID;
+                    return spec.ID;
                 }
                 else if (placeStudy != null && placeStudy.Speciality == secondName)
                 {
@@ -166,16 +166,16 @@ namespace EPlast.BussinessLayer.Services
             }
         }
 
-        private T CheckFieldForNull<T>(int? id,string name,T model)
+        private T CheckFieldForNull<T>(int? id, string name, T model)
         {
             if (!(id == null) || string.IsNullOrEmpty(name))
             {
-               return default(T);
+                return default(T);
             }
             return model;
         }
 
-        private T CheckFieldForNull<T>(int? id, string firstField,string secondField, T model)
+        private T CheckFieldForNull<T>(int? id, string firstField, string secondField, T model)
         {
             if (!(id == null) || (string.IsNullOrEmpty(firstField) && string.IsNullOrEmpty(secondField)))
             {
@@ -184,7 +184,7 @@ namespace EPlast.BussinessLayer.Services
             return model;
         }
 
-        private void UploadPhoto(ref UserDTO user,IFormFile file)
+        private void UploadPhoto(ref UserDTO user, IFormFile file)
         {
             var userId = user.Id;
             var oldImageName = _repoWrapper.User.FindByCondition(i => i.Id == userId).FirstOrDefault().ImagePath;

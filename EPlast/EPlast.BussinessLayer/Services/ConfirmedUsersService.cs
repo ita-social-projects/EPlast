@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace EPlast.BussinessLayer.Services
 {
-    public class ConfirmedUsersService: IConfirmedUsersService
+    public class ConfirmedUsersService : IConfirmedUsersService
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;

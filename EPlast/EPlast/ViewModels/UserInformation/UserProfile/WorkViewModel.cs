@@ -16,6 +16,6 @@ namespace EPlast.ViewModels.UserInformation.UserProfile
             ErrorMessage = "Посада має містити тільки літери")]
         [StringLength(30, MinimumLength = 3, ErrorMessage = "Посада повинна складати від 3 до 30 символів")]
         public string Position { get; set; }
-        public ICollection<UserProfileViewModel> UserProfiles { get; set; }
+        public IEnumerable<UserProfileViewModel> UserProfiles { get; set; }
     }
 }

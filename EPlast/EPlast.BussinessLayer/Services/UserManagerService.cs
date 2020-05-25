@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services
 {
-    public class UserManagerService:IUserManagerService
+    public class UserManagerService : IUserManagerService
     {
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
@@ -20,14 +20,14 @@ namespace EPlast.BussinessLayer.Services
             _mapper = mapper;
         }
 
-        public async Task<bool> IsInRole(UserDTO user,params string[] roles)
+        public async Task<bool> IsInRole(UserDTO user, params string[] roles)
         {
 
             var user_first = _mapper.Map<UserDTO, User>(user);
-           
-            foreach(var i in roles)
+
+            foreach (var i in roles)
             {
-                if(await _userManager.IsInRoleAsync(user_first,i))
+                if (await _userManager.IsInRoleAsync(user_first, i))
                 {
                     return false;
                 }
@@ -38,7 +38,7 @@ namespace EPlast.BussinessLayer.Services
         public async Task<bool> IsInRole(ClaimsPrincipal user, params string[] roles)
         {
 
-            var user_first =await _userManager.GetUserAsync(user);
+            var user_first = await _userManager.GetUserAsync(user);
 
             foreach (var i in roles)
             {
@@ -58,12 +58,12 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task<UserDTO> FindById(string userId)
         {
-            var result=_mapper.Map<User,UserDTO>( await _userManager.FindByIdAsync(userId));
+            var result = _mapper.Map<User, UserDTO>(await _userManager.FindByIdAsync(userId));
             return result;
         }
         public async Task<IEnumerable<string>> GetRoles(UserDTO user)
         {
-            var result =await _userManager.GetRolesAsync(_mapper.Map<UserDTO, User>(user));
+            var result = await _userManager.GetRolesAsync(_mapper.Map<UserDTO, User>(user));
             return result;
         }
     }

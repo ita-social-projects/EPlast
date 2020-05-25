@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services
 {
-    public class AdminService:IAdminService
+    public class AdminService : IAdminService
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
@@ -80,7 +80,7 @@ namespace EPlast.BussinessLayer.Services
 
                 userTable.Add(new UserTableDTO
                 {
-                    User = _mapper.Map<User,UserDTO>(user),
+                    User = _mapper.Map<User, UserDTO>(user),
                     ClubName = clubMembers.Where(x => x.UserId.Equals(user.Id) && x.IsApproved == true)
                                           .Select(x => x.Club.ClubName).LastOrDefault() ?? string.Empty,
                     CityName = cityName,
@@ -97,6 +97,6 @@ namespace EPlast.BussinessLayer.Services
             }
             return userTable;
         }
-            
+
     }
 }

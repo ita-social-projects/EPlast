@@ -11,6 +11,6 @@ namespace EPlast.ViewModels.UserInformation.UserProfile
             ErrorMessage = "Віровизнання має містити тільки літери")]
         [StringLength(25, MinimumLength = 3, ErrorMessage = "Віровизнання повинне складати від 3 до 25 символів")]
         public string Name { get; set; }
-        public ICollection<UserProfileViewModel> UserProfiles { get; set; }
+        public IEnumerable<UserProfileViewModel> UserProfiles { get; set; }
     }
 }
