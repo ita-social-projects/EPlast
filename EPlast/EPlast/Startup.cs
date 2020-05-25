@@ -13,7 +13,6 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Models.ViewModelInitializations;
 using EPlast.Models.ViewModelInitializations.Interfaces;
-using EPlast.Wrapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -25,15 +24,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 using System.Linq;
-using EPlast.Models.ViewModelInitializations.Interfaces;
-using EPlast.Models.ViewModelInitializations;
-using EPlast.BussinessLayer.Settings;
-using EPlast.BussinessLayer.AccessManagers;
-using EPlast.BussinessLayer.AccessManagers.Interfaces;
-using Microsoft.AspNetCore.Localization;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast
 {
@@ -92,11 +83,6 @@ namespace EPlast
             services.AddScoped<ICItyAdministrationService, CityAdministrationService>();
             services.AddScoped<ICityService, CityService>();
             services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
-
-            services.AddScoped<IDirectoryManager, DirectoryManager>();
-            services.AddScoped<IFileManager, FileManager>();
-
-            services.AddScoped<IFileStreamManager, FileStreamManager>();
             services.AddScoped<ICreateEventVMInitializer, CreateEventVMInitializer>();
             services.AddScoped<ICityAccessManagerSettings, CityAccessManagerSettings>();
             services.AddScoped<ICityAccessManager, CityAccessManager>();
