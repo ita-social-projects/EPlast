@@ -23,7 +23,17 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
+using EPlast.Models.ViewModelInitializations.Interfaces;
+using EPlast.Models.ViewModelInitializations;
+using EPlast.BussinessLayer.Settings;
+using EPlast.BussinessLayer.AccessManagers;
+using EPlast.BussinessLayer.AccessManagers.Interfaces;
+using EPlast.Wrapper;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
+using AutoMapper;
+using EPlast.BussinessLayer.Services;
+using EPlast.BussinessLayer.Services.Interfaces;
 
 namespace EPlast
 {
@@ -50,6 +60,7 @@ namespace EPlast
                     .AddEntityFrameworkStores<EPlastDBContext>()
                     .AddDefaultTokenProviders();
 
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("Admin",
@@ -66,6 +77,20 @@ namespace EPlast
             services.AddScoped<IViewAnnualReportsVMInitializer, ViewAnnualReportsVMInitializer>();
             services.AddScoped<IDecisionVMIitializer, DecisionVMIitializer>();
             services.AddScoped<IPDFService, PDFService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<INationalityService, NationalityService>();
+            services.AddScoped<IReligionService, ReligionService>();
+            services.AddScoped<IEducationService, EducationService>();
+            services.AddScoped<IWorkService, WorkService>();
+            services.AddScoped<IGenderService, GenderService>();
+            services.AddScoped<IDegreeService, DegreeService>();
+            services.AddScoped<IConfirmedUsersService, ConfirmedUsersService>();
+            services.AddScoped<IUserManagerService, UserManagerService>();
+            services.AddScoped<IAdminService, AdminService>();
+            services.AddScoped<ICItyAdministrationService, CityAdministrationService>();
+            services.AddScoped<ICityService, CityService>();
+            services.AddScoped(typeof(ILoggerService<>),typeof(LoggerService<>) );
+
             services.AddScoped<IDirectoryManager, DirectoryManager>();
             services.AddScoped<IFileManager, FileManager>();
             services.AddScoped<IFileStreamManager, FileStreamManager>();
@@ -120,7 +145,8 @@ namespace EPlast
                 options.LoginPath = "/Account/Login";
                 options.LogoutPath = "/Account/Logout";
             });
-
+           
+           
             services.AddMvc();
         }
 
@@ -151,7 +177,7 @@ namespace EPlast
                 LastName = "Admin",
                 EmailConfirmed = true,
                 ImagePath = "default.png",
-                UserProfile = new UserProfile(),
+                UserProfile = new DataAccess.Entities.UserProfile(),
                 RegistredOn = DateTime.Now
             };
             if (await userManager.FindByEmailAsync(admin["Email"]) == null)
