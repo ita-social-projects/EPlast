@@ -4,7 +4,9 @@ using EPlast.BussinessLayer.AccessManagers;
 using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using EPlast.BussinessLayer.Interfaces;
 using EPlast.BussinessLayer.Interfaces.Events;
+using EPlast.BussinessLayer.Services;
 using EPlast.BussinessLayer.Services.Events;
+using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.BussinessLayer.Settings;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
@@ -23,17 +25,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Globalization;
 using System.Linq;
-using EPlast.Models.ViewModelInitializations.Interfaces;
-using EPlast.Models.ViewModelInitializations;
-using EPlast.BussinessLayer.Settings;
-using EPlast.BussinessLayer.AccessManagers;
-using EPlast.BussinessLayer.AccessManagers.Interfaces;
-using EPlast.Wrapper;
-using Microsoft.AspNetCore.Localization;
-using System.Globalization;
-using AutoMapper;
-using EPlast.BussinessLayer.Services;
-using EPlast.BussinessLayer.Services.Interfaces;
+using System.Threading.Tasks;
 
 namespace EPlast
 {
