@@ -64,7 +64,6 @@
     <Folder Include="wwwroot\compiled\js\" />
     <Folder Include="wwwroot\compiled\css\" />
     <Folder Include="wwwroot\documents\" />
-    <Folder Include="wwwroot\images\EventsGallery\" />
     <Folder Include="wwwroot\images\Users\" />
     <Folder Include="wwwroot\uncompiled\less\" />
     <Folder Include="wwwroot\lib\*" />

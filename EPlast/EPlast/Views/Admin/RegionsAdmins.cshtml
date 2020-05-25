@@ -1,5 +1,5 @@
-﻿@using EPlast.DataAccess.Entities
-@model EPlast.ViewModels.RegionsAdmins
+﻿@using EPlast.ViewModels
+@model EPlast.ViewModels.RegionsAdminsViewModel
 
 <div class="container regionsAdmins">
     <div class="data-table-wrapper shadow">
@@ -8,9 +8,9 @@
         </div>
         <form class="form-inline m-5 d-flex justify-content-center md-form form">
             <i class="fas fa-search" aria-hidden="true"></i>
-            @Html.TextBoxFor(x => x.City, new { @type = "text", @placeholder = "Виберіть станицю...", @list = "CityType-value", @id = "regionsAndAdmins", @class = "form-control form-control ml-3 w-75", @Value = "" })
+            @Html.TextBoxFor(x => x.CityName, new { @type = "text", @placeholder = "Виберіть станицю...", @list = "CityType-value", @id = "regionsAndAdmins", @class = "form-control form-control ml-3 w-75", @Value = "" })
             <datalist id="CityType-value">
-                @foreach (City item in Model.Cities)
+                @foreach (CityViewModel2 item in Model.Cities)
                 {
                     <option data-value="@item.ID" value="@item.Name"></option>
                 }

@@ -40,7 +40,7 @@
             $.ajax({
                 type: "POST",
                 url: "/Action/DeleteEvent",
-                data: { ID: value },
+                data: { id: value },
                 success: function () {
                     $("#myModal").modal('hide');
                     $("#deleteResultSuccess").modal('show');
@@ -59,7 +59,7 @@
             $.ajax({
                 type: "POST",
                 url: "/Action/SubscribeOnEvent",
-                data: { ID: value },
+                data: { id: value },
                 success: function () {
                     $("#modalSubscribe").modal('hide');
                     $(activeEvent).parents("div.events-operations").children("div.events-part").hide();
@@ -68,7 +68,7 @@
                     $("#modalSubscribeSuccess").modal('show');
                 },
                 error: function (response: JQueryXHR) {
-                    if (response.status != 409) {
+                    if (response.status !== 409) {
                         $("#modalSubscribe").modal('hide');
                         $("#FAIL").modal('show');
                     }
@@ -86,7 +86,7 @@
             $.ajax({
                 type: "POST",
                 url: "/Action/UnSubscribeOnEvent",
-                data: { ID: value },
+                data: { id: value },
                 success: function () {
                     $("#modalUnSubscribe").modal('hide');
                     $(activeEvent).parents("div.events-operations").children("div.events-unsubscribe").hide();
@@ -96,7 +96,7 @@
                     $("#modalUnSubscribeSuccess").modal('show');
                 },
                 error: function (response: JQueryXHR) {
-                    if (response.status != 409) {
+                    if (response.status !== 409) {
                         $("#modalUnSubscribe").modal('hide');
                         $("#FAIL").modal('show');
                     }

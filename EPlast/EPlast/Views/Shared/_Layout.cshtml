@@ -78,7 +78,7 @@
                                 <div class="search-sub-menu" style="margin-top:10px;">
                                     <h3>Швидкий доступ</h3>
                                     <ul>
-                                        <li style="color:#3c5438;"><a class="dropdown-item" asp-action="UserProfile" asp-controller="Account">Профіль</a></li>
+                                        <li style="color:#3c5438;"><a class="dropdown-item" asp-action="UserProfile" asp-controller="Account" asp-route-userId="@UserManager.GetUserId(User)">Профіль</a></li>
                                         <li style="color:#3c5438;"><a class="dropdown-item" href="#">Акції</a></li>
                                         <li style="color:#3c5438;"><a class="dropdown-item" asp-action="Index" asp-controller="City">Станиці</a></li>
                                         <li style="color:#3c5438;"><a class="dropdown-item" href="#">Округи</a></li>
@@ -202,7 +202,7 @@
                 <div class="sideMenuContent">
                     <a>Профіль</a>
                     <div class="sideMenuHiddenContent">
-                        <a href="/Account/UserProfile">Персональні дані</a>
+                        <a asp-action="UserProfile" asp-controller="Account" asp-route-userId="@UserManager.GetUserId(User)">Персональні дані</a>
                         <a>Дійсне членство</a>
                         <a href="/Account/UserProfile">Діловодства</a>
                         <a href="/EventUser/Eventuser">Мої Події</a>
