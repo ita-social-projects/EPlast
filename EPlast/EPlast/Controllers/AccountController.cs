@@ -1,27 +1,26 @@
-﻿using EPlast.BussinessLayer.Interfaces;
+﻿using AutoMapper;
+using EPlast.BussinessLayer.AccessManagers.Interfaces;
+using EPlast.BussinessLayer.DTO;
+using EPlast.BussinessLayer.Interfaces;
+using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using EPlast.ViewModels;
+using EPlast.ViewModels.UserInformation;
+using EPlast.ViewModels.UserInformation.UserProfile;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
-using AutoMapper;
-using EPlast.BussinessLayer.DTO;
-using EPlast.BussinessLayer.Services.Interfaces;
-using EPlast.ViewModels.UserInformation;
-using EPlast.ViewModels.UserInformation.UserProfile;
-using System.Collections.Generic;
 
 namespace EPlast.Controllers
 {
@@ -605,12 +604,12 @@ namespace EPlast.Controllers
                     TimeToJoinPlast = time.Result,
                     IsUserPlastun = isUserPlastun
                 };
-                
+
                 return View(model);
             }
             catch
             {
-               _loggerService.LogError("Smth went wrong");
+                _loggerService.LogError("Smth went wrong");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
@@ -647,12 +646,12 @@ namespace EPlast.Controllers
                         IsUserHeadOfClub = await _userManagerService.IsInRole(user, "Голова Куреня"),
                         IsUserHeadOfRegion = await _userManagerService.IsInRole(user, "Голова Округу"),
                         IsUserPlastun = await _userManagerService.IsInRole(user, "Пластун"),
-                        CurrentUserId= _userManagerService.GetUserId(User)
+                        CurrentUserId = _userManagerService.GetUserId(User)
                     };
 
                     return View(model);
                 }
-                _loggerService.LogError( $"Can`t find this user:{userId}, or smth else");
+                _loggerService.LogError($"Can`t find this user:{userId}, or smth else");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
             catch
@@ -660,7 +659,7 @@ namespace EPlast.Controllers
                 _loggerService.LogError("Smth went wrong");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
-        }       
+        }
 
         public IActionResult ApproveUser(string userId, bool _isClubAdmin = false, bool _isCityAdmin = false)
         {
@@ -685,7 +684,7 @@ namespace EPlast.Controllers
         [HttpGet]
         public IActionResult Edit(string userId)
         {
-            if(userId == null)
+            if (userId == null)
             {
                 _loggerService.LogError("User id is null");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
@@ -696,13 +695,13 @@ namespace EPlast.Controllers
                 var user = _userService.GetUser(userId);
 
                 var genders = (from item in _genderService.GetAll() select new SelectListItem { Text = item.Name, Value = item.ID.ToString() });
-                                                                                            
+
                 var placeOfStudyUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(_educationService.GetAllGroupByPlace());
                 var specialityUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(_educationService.GetAllGroupBySpeciality());
-                var placeOfWorkUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(_workService.GetAllGroupByPlace()); 
+                var placeOfWorkUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(_workService.GetAllGroupByPlace());
                 var positionUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(_workService.GetAllGroupByPosition());
 
-                var educView = new EducationUserViewModel {PlaceOfStudyID=user.UserProfile.EducationId, SpecialityID = user.UserProfile.EducationId, PlaceOfStudyList = placeOfStudyUnique, SpecialityList = specialityUnique };
+                var educView = new EducationUserViewModel { PlaceOfStudyID = user.UserProfile.EducationId, SpecialityID = user.UserProfile.EducationId, PlaceOfStudyList = placeOfStudyUnique, SpecialityList = specialityUnique };
                 var workView = new WorkUserViewModel { PlaceOfWorkID = user.UserProfile.WorkId, PositionID = user.UserProfile.WorkId, PlaceOfWorkList = placeOfWorkUnique, PositionList = positionUnique };
                 var model = new EditUserViewModel()
                 {
@@ -712,7 +711,7 @@ namespace EPlast.Controllers
                     EducationView = educView,
                     WorkView = workView,
                     Degrees = _mapper.Map<IEnumerable<DegreeDTO>, IEnumerable<DegreeViewModel>>(_degreeService.GetAll()),
-                    Genders= genders
+                    Genders = genders
                 };
 
                 return View(model);
@@ -730,7 +729,7 @@ namespace EPlast.Controllers
         {
             try
             {
-                _userService.Update(_mapper.Map<UserViewModel,UserDTO>(model.User), file, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID, model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
+                _userService.Update(_mapper.Map<UserViewModel, UserDTO>(model.User), file, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID, model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
                 _loggerService.LogInformation($"User {model.User.Email} was edited profile and saved in the database");
                 return RedirectToAction("UserProfile");
             }

@@ -1,6 +1,6 @@
-﻿using System;
+﻿using EPlast.ViewModels.UserInformation.UserProfile;
+using System;
 using System.Collections.Generic;
-using EPlast.ViewModels.UserInformation.UserProfile;
 
 namespace EPlast.ViewModels.UserInformation
 {

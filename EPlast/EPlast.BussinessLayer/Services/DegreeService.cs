@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace EPlast.BussinessLayer.Services
 {
-    public class DegreeService:IDegreeService
+    public class DegreeService : IDegreeService
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;

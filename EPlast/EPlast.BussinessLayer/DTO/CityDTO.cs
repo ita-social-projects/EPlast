@@ -17,11 +17,11 @@ namespace EPlast.BussinessLayer.DTO
         public string PostIndex { get; set; }
         public Region Region { get; set; }
         public string Logo { get; set; }
-        public ICollection<CityDocuments> CityDocuments { get; set; }
-        public ICollection<CityMembers> CityMembers { get; set; }
-        public ICollection<UnconfirmedCityMember> UnconfirmedCityMember { get; set; }
-        public ICollection<CityAdministration> CityAdministration { get; set; }
-        public ICollection<AnnualReport> AnnualReports { get; set; }
-        public ICollection<CityLegalStatus> CityLegalStatuses { get; set; }
+        public IEnumerable<CityDocuments> CityDocuments { get; set; }
+        public IEnumerable<CityMembers> CityMembers { get; set; }
+        public IEnumerable<UnconfirmedCityMember> UnconfirmedCityMember { get; set; }
+        public IEnumerable<CityAdministration> CityAdministration { get; set; }
+        public IEnumerable<AnnualReport> AnnualReports { get; set; }
+        public IEnumerable<CityLegalStatus> CityLegalStatuses { get; set; }
     }
 }

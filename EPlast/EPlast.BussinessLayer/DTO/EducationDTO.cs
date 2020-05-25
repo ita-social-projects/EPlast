@@ -7,6 +7,6 @@ namespace EPlast.BussinessLayer.DTO
         public int ID { get; set; }
         public string PlaceOfStudy { get; set; }
         public string Speciality { get; set; }
-        public ICollection<UserProfileDTO> UsersProfiles { get; set; }
+        public IEnumerable<UserProfileDTO> UsersProfiles { get; set; }
     }
 }
