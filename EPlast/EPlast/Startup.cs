@@ -22,8 +22,11 @@ using EPlast.Wrapper;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 using AutoMapper;
+using EPlast.Models.Mapping;
 using EPlast.BussinessLayer.Services;
+using Ical.Net.DataTypes;
 using EPlast.BussinessLayer.Services.Interfaces;
+using System.Reflection;
 
 namespace EPlast
 {
@@ -40,9 +43,8 @@ namespace EPlast
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
             services.AddOptions();
-            services.AddDbContextPool<EPlastDBContext>(options =>
+            services.AddDbContext<EPlastDBContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("EPlastDBConnection")));
             services.AddIdentity<User, IdentityRole>()
                     .AddEntityFrameworkStores<EPlastDBContext>()
@@ -59,6 +61,8 @@ namespace EPlast
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddScoped<IAccountService, AccountService>();
+
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
             services.AddScoped<IEmailConfirmation, EmailConfirmation>();
             services.AddScoped<IAnnualReportVMInitializer, AnnualReportVMInitializer>();
@@ -87,6 +91,7 @@ namespace EPlast
             services.AddScoped<ICityAccessManager, CityAccessManager>();
             services.AddScoped<IUserAccessManagerSettings, UserAccessManagerSettings>();
             services.AddScoped<IUserAccessManager, UserAccessManager>();
+            services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
             services.Configure<IdentityOptions>(options =>
             {
@@ -124,8 +129,7 @@ namespace EPlast
                 options.LoginPath = "/Account/Login";
                 options.LogoutPath = "/Account/Logout";
             });
-           
-           
+            
             services.AddMvc();
         }
 
