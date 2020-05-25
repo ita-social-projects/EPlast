@@ -25,21 +25,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Globalization;
 using System.Linq;
-using EPlast.Models.ViewModelInitializations.Interfaces;
-using EPlast.Models.ViewModelInitializations;
-using EPlast.BussinessLayer.Settings;
-using EPlast.BussinessLayer.AccessManagers;
-using EPlast.BussinessLayer.AccessManagers.Interfaces;
-using EPlast.Wrapper;
-using Microsoft.AspNetCore.Localization;
-using System.Globalization;
-using AutoMapper;
-using EPlast.Models.Mapping;
-using EPlast.BussinessLayer.Services;
-using Ical.Net.DataTypes;
-using EPlast.BussinessLayer.Services.Interfaces;
 using System.Threading.Tasks;
-using System.Reflection;
 
 namespace EPlast
 {
@@ -114,8 +100,6 @@ namespace EPlast
             services.AddScoped<IParticipantStatusManager, ParticipantStatusManager>();
             services.AddScoped<IParticipantManager, ParticipantManager>();
             services.AddScoped<IEventGalleryManager, EventGalleryManager>();
-
-
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
             services.Configure<IdentityOptions>(options =>
