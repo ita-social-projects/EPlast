@@ -1,16 +1,13 @@
-﻿
-using EPlast.DataAccess.Entities;
+﻿using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Models.ViewModelInitializations.Interfaces;
 using EPlast.ViewModels.Events;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using EPlast.Models.ViewModelInitializations.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.Controllers
 {
@@ -39,11 +36,11 @@ namespace EPlast.Controllers
                 }
 
                 var user = _repoWrapper.User.
-                  FindByCondition(q => q.Id == userId).
-                  First();
+                   FindByCondition(q => q.Id == userId).
+                   First();
 
                 EventUserViewModel model = new EventUserViewModel();
-               
+
                 model.User = user;
                 model.EventAdmins = _repoWrapper.EventAdmin.FindByCondition(i => i.UserID == _userManager.GetUserId(User)).
                                 Include(i => i.Event).Include(i => i.User).ToList();
@@ -72,13 +69,13 @@ namespace EPlast.Controllers
                         model.PlanedEventCount += 1;
                     }
                     else if (participant.UserId == _userManager.GetUserId(User) &&
-                        participant.Event.EventDateEnd < DateTime.Now && 
+                        participant.Event.EventDateEnd < DateTime.Now &&
                         participant == _repoWrapper.Participant.
-                        FindByCondition(i=>i.ParticipantStatus.ParticipantStatusName == "Учасник"))
-                         {
-                             model.VisitedEventsCount += 1;
-                             model.VisitedEvents.Add(participant.Event);
-                         }
+                        FindByCondition(i => i.ParticipantStatus.ParticipantStatusName == "Учасник"))
+                    {
+                        model.VisitedEventsCount += 1;
+                        model.VisitedEvents.Add(participant.Event);
+                    }
                 }
                 return View(model);
             }
@@ -203,7 +200,7 @@ namespace EPlast.Controllers
             var @event = _repoWrapper.Event.
                 FindByCondition(q => q.ID == id).
                 Include(i => i.EventType).
-                Include(g=>g.EventStatus).
+                Include(g => g.EventStatus).
                 Include(g => g.EventGallarys).
                 Include(g => g.EventCategory).
                 Include(g => g.EventAdmins).
