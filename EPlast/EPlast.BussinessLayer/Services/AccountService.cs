@@ -23,9 +23,7 @@ namespace EPlast.BussinessLayer.Services
         private UserManager<User> _userManager;
         private SignInManager<User> _signInManager;
         private readonly IRepositoryWrapper _repoWrapper;
-        private readonly ILogger _logger;
         private readonly IEmailConfirmation _emailConfirmation;
-        private readonly IHostingEnvironment _env;
         private readonly IUserAccessManager _userAccessManager;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly IMapper _mapper;
@@ -33,9 +31,7 @@ namespace EPlast.BussinessLayer.Services
         public AccountService(UserManager<User> userManager,
             SignInManager<User> signInManager,
             IRepositoryWrapper repoWrapper,
-            ILogger<AccountService> logger,
             IEmailConfirmation emailConfirmation,
-            IHostingEnvironment env,
             IUserAccessManager userAccessManager,
             IDateTimeHelper dateTimeHelper,
             IMapper mapper)
@@ -43,9 +39,7 @@ namespace EPlast.BussinessLayer.Services
             _userManager = userManager;
             _signInManager = signInManager;
             _repoWrapper = repoWrapper;
-            _logger = logger;
             _emailConfirmation = emailConfirmation;
-            _env = env;
             _userAccessManager = userAccessManager;
             _dateTimeHelper = dateTimeHelper;
             _mapper = mapper;
@@ -210,7 +204,7 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task SendEmailRegistr(string confirmationLink, UserDTO userDto)
         {
-            var user = _mapper.Map<UserDTO, User>(userDto);
+            var user = await _userManager.FindByIdAsync(userDto.Id);
             user.EmailSendedOnRegister = DateTime.Now;
             await _userManager.UpdateAsync(user); 
             await _emailConfirmation.SendEmailAsync(user.Email, "Підтвердження реєстрації ",

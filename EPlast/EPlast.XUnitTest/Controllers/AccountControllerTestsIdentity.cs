@@ -1,4 +1,4 @@
-﻿/*using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -16,7 +16,7 @@ using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.Controllers;
 using EPlast.DataAccess.Entities;
 using EPlast.ViewModels;
-
+using EPlast.BussinessLayer.DTO;
 
 namespace EPlast.XUnitTest
 {
@@ -28,7 +28,8 @@ namespace EPlast.XUnitTest
             Mock<IUserService> mockUserService = new Mock<IUserService>();
             Mock<IMapper> mockMapper = new Mock<IMapper>();
 
-            AccountController accountController = new AccountController(mockAccountService.Object, mockUserService.Object, mockMapper.Object);
+            AccountController accountController = new AccountController(null, mockUserService.Object, null, null,
+                null, null, null, null, null, null, mockMapper.Object, null, mockAccountService.Object);
             return (mockAccountService, mockUserService, mockMapper, accountController);
         }
 
@@ -87,7 +88,7 @@ namespace EPlast.XUnitTest
 
             mockAccountService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync((User)null);
+                .ReturnsAsync((UserDTO)null);
 
             //Act
             var result = await accountController.Login(GetTestLoginViewModel(), GetTestReturnUrl());
@@ -114,10 +115,10 @@ namespace EPlast.XUnitTest
 
             mockAccountService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetTestUserWithAllFields());
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
 
             mockAccountService
-                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<User>()))
+                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
                 .ReturnsAsync(false);
 
             //Act
@@ -145,10 +146,10 @@ namespace EPlast.XUnitTest
 
             mockAccountService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetTestUserWithAllFields());
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
 
             mockAccountService
-                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<User>()))
+                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
                 .ReturnsAsync(true);
 
             mockAccountService
@@ -178,10 +179,10 @@ namespace EPlast.XUnitTest
 
             mockAccountService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetTestUserWithAllFields());
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
 
             mockAccountService
-                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<User>()))
+                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
                 .ReturnsAsync(true);
 
             mockAccountService
@@ -211,10 +212,10 @@ namespace EPlast.XUnitTest
 
             mockAccountService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetTestUserWithAllFields());
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
 
             mockAccountService
-                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<User>()))
+                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
                 .ReturnsAsync(true);
 
             mockAccountService
@@ -270,7 +271,7 @@ namespace EPlast.XUnitTest
             var (mockAccountService, mockUserService, mockMapper, accountController) = CreateAccountController();
             mockAccountService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetTestUserWithAllFields());
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
 
             //Act
             var result = await accountController.Register(GetTestRegisterViewModel());
@@ -288,7 +289,7 @@ namespace EPlast.XUnitTest
             var (mockAccountService, mockUserService, mockMapper, accountController) = CreateAccountController();
             mockAccountService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync((User)null);
+                .ReturnsAsync((UserDTO)null);
 
             mockMapper
                 .Setup(s => s.Map<RegisterDto>(It.IsAny<RegisterViewModel>()))
@@ -305,7 +306,7 @@ namespace EPlast.XUnitTest
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("Register", viewResult.ViewName);
             Assert.NotNull(viewResult);
-        }*/
+        }
 
         /*[Fact]
         public async Task TestRegisterPostReturnsAcceptingEmailView()//переписати
@@ -314,7 +315,7 @@ namespace EPlast.XUnitTest
             var (mockAccountService, mockUserService, mockMapper, accountController) = CreateAccountController();
             mockAccountService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>())) 
-                .ReturnsAsync((User)null);
+                .ReturnsAsync((UserDTO)null);
 
             mockMapper
                 .Setup(s => s.Map<RegisterDto>(It.IsAny<RegisterViewModel>()))
@@ -355,7 +356,7 @@ namespace EPlast.XUnitTest
         }*/
 
         //ConfirmedEmail
-        /*[Fact]
+        [Fact]
         public async Task TestConfirmEmailGetReturnsConfirmedEmailView()
         {
             //Arrange
@@ -379,7 +380,7 @@ namespace EPlast.XUnitTest
 
             mockAccountService
                 .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync((User)null);
+                .ReturnsAsync((UserDTO)null);
 
             //Act
             var result = await accountController.ResendEmailForRegistering(GetTestIdForConfirmingEmail()) as RedirectToActionResult;
@@ -400,10 +401,10 @@ namespace EPlast.XUnitTest
 
             mockAccountService
                 .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetTestUserWithAllFields());
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
 
             mockAccountService
-                .Setup(s => s.GenerateConfToken(It.IsAny<User>()))
+                .Setup(s => s.GenerateConfToken(It.IsAny<UserDTO>()))
                 .ReturnsAsync(GetTestCodeForResetPasswordAndConfirmEmail());
 
             var mockUrlHelper = new Mock<IUrlHelper>(MockBehavior.Strict);
@@ -420,7 +421,7 @@ namespace EPlast.XUnitTest
             accountController.ControllerContext.HttpContext = new DefaultHttpContext();
 
             mockAccountService
-                .Setup(s => s.SendEmailRegistr(It.IsAny<string>(), It.IsAny<User>()))
+                .Setup(s => s.SendEmailRegistr(It.IsAny<string>(), It.IsAny<UserDTO>()))
                 .Verifiable();
 
             //Act
@@ -441,7 +442,7 @@ namespace EPlast.XUnitTest
 
             mockAccountService
                 .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync((User)null);
+                .ReturnsAsync((UserDTO)null);
 
             //Act
             var result = await accountController.ConfirmingEmail(GetTestIdConfirmingEmail(), GetBadFakeCodeConfirmingEmail()) as RedirectToActionResult;
@@ -527,11 +528,11 @@ namespace EPlast.XUnitTest
             var (mockAccountService, mockUserService, mockMapper, accountController) = CreateAccountController();
             mockAccountService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync((User)null);
+                .ReturnsAsync((UserDTO)null);
 
             mockAccountService
-                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<User>()))
-                .ReturnsAsync(GetTestUserWithAllFields().EmailConfirmed);
+                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields().EmailConfirmed);
 
             //Act
             var result = await accountController.ForgotPassword(GetTestForgotViewModel());
@@ -549,14 +550,14 @@ namespace EPlast.XUnitTest
             var (mockAccountService, mockUserService, mockMapper, accountController) = CreateAccountController();
             mockAccountService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetTestUserWithAllFields());
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
 
             mockAccountService
-                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<User>()))
+                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
                 .ReturnsAsync(GetTestUserWithEmailConfirmed().EmailConfirmed);
 
             mockAccountService
-                .Setup(i => i.GenerateResetTokenAsync(It.IsAny<User>()))
+                .Setup(i => i.GenerateResetTokenAsync(It.IsAny<UserDTO>()))
                 .ReturnsAsync(GetTestCodeForResetPasswordAndConfirmEmail());
 
             var mockUrlHelper = new Mock<IUrlHelper>(MockBehavior.Strict);
@@ -598,7 +599,7 @@ namespace EPlast.XUnitTest
 
             mockAccountService
                 .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync((User)null);
+                .ReturnsAsync((UserDTO)null);
 
             //Act
             var result = await accountController.ResetPassword(GetTestIdConfirmingEmail()) as RedirectToActionResult;
@@ -609,7 +610,7 @@ namespace EPlast.XUnitTest
             Assert.Equal("Error", viewResult.ControllerName);
             Assert.Equal(500, result.RouteValues["code"]);
             Assert.NotNull(viewResult);
-        }*/
+        }
 
         /*[Fact]
         public async Task TestResetPasswordGetReturnsResetPasswordNotAllowedView()
@@ -619,7 +620,7 @@ namespace EPlast.XUnitTest
 
             mockAccountService
                 .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetTestUserWithAllFields());
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
 
             //Act
             var result = await accountController.ResetPassword(GetTestCodeForResetPasswordAndConfirmEmail(), GetTestCodeForResetPasswordAndConfirmEmail());
@@ -632,7 +633,7 @@ namespace EPlast.XUnitTest
             Assert.NotNull(viewResult);
         }*/
 
-        /*[Fact]
+        [Fact]
         public async Task TestResetPasswordPostModelIsNotValid()
         {
             //Arrange
@@ -655,7 +656,7 @@ namespace EPlast.XUnitTest
             var (mockAccountService, mockUserService, mockMapper, accountController) = CreateAccountController();
             mockAccountService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync((User)null);
+                .ReturnsAsync((UserDTO)null);
 
             //Act
             var result = await accountController.ResetPassword(GetTestResetViewModel());
@@ -673,18 +674,18 @@ namespace EPlast.XUnitTest
             var (mockAccountService, mockUserService, mockMapper, accountController) = CreateAccountController();
             mockAccountService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetTestUserWithAllFields());
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
 
             mockMapper
                .Setup(s => s.Map<ResetPasswordDto>(It.IsAny<ResetPasswordViewModel>()))
                .Returns(GetTestResetPssswordDto());
 
             mockAccountService
-                .Setup(s => s.ResetPasswordAsync(It.IsAny<User>(), It.IsAny<ResetPasswordDto>()))
+                .Setup(s => s.ResetPasswordAsync(It.IsAny<string>(), It.IsAny<ResetPasswordDto>()))
                 .Returns(Task.FromResult(IdentityResult.Success));
 
             mockAccountService
-                .Setup(s => s.CheckingForLocking(It.IsAny<User>()))
+                .Setup(s => s.CheckingForLocking(It.IsAny<UserDTO>()))
                 .Verifiable();
 
             //Act
@@ -705,14 +706,14 @@ namespace EPlast.XUnitTest
             var (mockAccountService, mockUserService, mockMapper, accountController) = CreateAccountController();
             mockAccountService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetTestUserWithAllFields());
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
 
             mockMapper
                .Setup(s => s.Map<ResetPasswordDto>(It.IsAny<ResetPasswordViewModel>()))
                .Returns(GetTestResetPssswordDto());
 
             mockAccountService
-                .Setup(s => s.ResetPasswordAsync(It.IsAny<User>(), It.IsAny<ResetPasswordDto>()))
+                .Setup(s => s.ResetPasswordAsync(It.IsAny<string>(), It.IsAny<ResetPasswordDto>()))
                 .Returns(Task.FromResult(IdentityResult.Failed(null)));
 
             //Act
@@ -725,14 +726,14 @@ namespace EPlast.XUnitTest
         }
 
         //ChangePassword
-        [Fact]
+        /*[Fact]
         public async Task TestChangePasswordGetReturnsChangePasswordView()
         {
             //Arrange
             var (mockAccountService, mockUserService, mockMapper, accountController) = CreateAccountController();
             mockAccountService
                 .Setup(s => s.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-                .ReturnsAsync(GetTestUserWithEmailConfirmed());
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
 
             //Act
             var result = await accountController.ChangePassword();
@@ -741,7 +742,7 @@ namespace EPlast.XUnitTest
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("ChangePassword", viewResult.ViewName);
             Assert.NotNull(viewResult);
-        }
+        }*/
 
         [Fact]
         public async Task TestChangePasswordGetReturnsChangePasswordNotAllowedView()
@@ -750,7 +751,7 @@ namespace EPlast.XUnitTest
             var (mockAccountService, mockUserService, mockMapper, accountController) = CreateAccountController();
             mockAccountService
                 .Setup(s => s.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-                .ReturnsAsync(GetTestUserWithAllFields());
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
 
             //Act
             var result = await accountController.ChangePassword();
@@ -777,14 +778,14 @@ namespace EPlast.XUnitTest
             Assert.NotNull(viewResult);
         }
 
-        [Fact]
+        /*[Fact]
         public async Task TestChangePasswordPostReturnsLoginRedirect()
         {
             //Arrange
             var (mockAccountService, mockUserService, mockMapper, accountController) = CreateAccountController();
             mockAccountService
                 .Setup(s => s.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-                .Returns(Task.FromResult(GetTestUserWithNullFields()));
+                .Returns(Task.FromResult(GetTestUserDtoWithAllFields()));
 
             //Act
             var result = await accountController.ChangePassword(GetTestChangeViewModel()) as RedirectToActionResult;
@@ -792,7 +793,7 @@ namespace EPlast.XUnitTest
             //Assert
             Assert.Equal("Login", result.ActionName);
             Assert.NotNull(result);
-        }
+        }*/
 
         [Fact]
         public async Task TestChangePasswordPostReturnsChangePasswordView()
@@ -801,14 +802,14 @@ namespace EPlast.XUnitTest
             var (mockAccountService, mockUserService, mockMapper, accountController) = CreateAccountController();
             mockAccountService
                 .Setup(s => s.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-                .Returns(Task.FromResult(GetTestUserWithAllFields()));
+                .Returns(Task.FromResult(GetTestUserDtoWithAllFields()));
 
             mockMapper
                .Setup(s => s.Map<ChangePasswordDto>(It.IsAny<ChangePasswordViewModel>()))
                .Returns(GetTestChangePssswordDto());
 
             mockAccountService
-                .Setup(s => s.ChangePasswordAsync(It.IsAny<User>(), It.IsAny<ChangePasswordDto>()))
+                .Setup(s => s.ChangePasswordAsync(It.IsAny<string>(), It.IsAny<ChangePasswordDto>()))
                 .Returns(Task.FromResult(IdentityResult.Failed(null)));
 
             //Act
@@ -827,18 +828,18 @@ namespace EPlast.XUnitTest
             var (mockAccountService, mockUserService, mockMapper, accountController) = CreateAccountController();
             mockAccountService
                 .Setup(s => s.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-                .Returns(Task.FromResult(GetTestUserWithAllFields()));
+                .Returns(Task.FromResult(GetTestUserDtoWithAllFields()));
 
             mockMapper
                .Setup(s => s.Map<ChangePasswordDto>(It.IsAny<ChangePasswordViewModel>()))
                .Returns(GetTestChangePssswordDto());
 
             mockAccountService
-                .Setup(s => s.ChangePasswordAsync(It.IsAny<User>(), It.IsAny<ChangePasswordDto>()))
+                .Setup(s => s.ChangePasswordAsync(It.IsAny<string>(), It.IsAny<ChangePasswordDto>()))
                 .Returns(Task.FromResult(IdentityResult.Success));
 
             mockAccountService
-                .Setup(s => s.RefreshSignInAsync(It.IsAny<User>()))
+                .Setup(s => s.RefreshSignInAsync(It.IsAny<UserDTO>()))
                 .Verifiable();
 
             //Act
@@ -1139,6 +1140,17 @@ private User GetTestUserWithNullFields()
             return userId;
         }
 
+        private UserDTO GetTestUserDtoWithAllFields()
+        {
+            return new UserDTO()
+            {
+                UserName = "andriishainoha@gmail.com",
+                FirstName = "Andrii",
+                LastName = "Shainoha",
+                EmailConfirmed = true,
+                SocialNetworking = true
+            };
+        }
         private string GetTestCodeForResetPasswordAndConfirmEmail()
         {
             return new string("500");
@@ -1164,4 +1176,4 @@ private User GetTestUserWithNullFields()
             return new string("fakeProvider");
         }
     }
-}*/
+}
