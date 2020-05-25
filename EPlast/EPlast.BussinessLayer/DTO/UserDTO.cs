@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.BussinessLayer.DTO
 {
-    public class UserDTO:IdentityUser
+    public class UserDTO : IdentityUser
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
