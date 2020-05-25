@@ -29,8 +29,6 @@ namespace EPlast.Controllers
         private readonly IAccountService _accountService;
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
-        private UserManager<User> _userManager;
-        private SignInManager<User> _signInManager;
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly INationalityService _nationalityService;
         private readonly IEducationService _educationService;
@@ -41,12 +39,8 @@ namespace EPlast.Controllers
         private readonly IUserManagerService _userManagerService;
         private readonly IConfirmedUsersService _confirmedUserService;
         private readonly ILoggerService<AccountController> _loggerService;
-        private readonly UserManager<User> _usermanager;
 
-        public AccountController(UserManager<User> userManager,
-            SignInManager<User> signInManager,
-            IRepositoryWrapper repoWrapper,
-            IEmailConfirmation emailConfirmation,
+        public AccountController(IRepositoryWrapper repoWrapper,
             IUserService userService,
             INationalityService nationalityService,
             IEducationService educationService,
@@ -58,12 +52,9 @@ namespace EPlast.Controllers
             IUserManagerService userManagerService,
             IMapper mapper,
             ILoggerService<AccountController> loggerService,
-            IAccountService accountService,
-            UserManager<User> usermanager)
+            IAccountService accountService)
         {
             _accountService = accountService;
-            _userManager = userManager;
-            _signInManager = signInManager;
             _repoWrapper = repoWrapper;
             _userService = userService;
             _nationalityService = nationalityService;
@@ -76,7 +67,6 @@ namespace EPlast.Controllers
             _mapper = mapper;
             _userManagerService = userManagerService;
             _loggerService = loggerService;
-            _usermanager = usermanager;
         }
 
         [HttpGet]
@@ -176,7 +166,7 @@ namespace EPlast.Controllers
                 }
                 else
                 {
-                    var result = await _accountService.CreateUserAsync(_mapper.Map<RegisterDto>(registerVM));
+                    var result = await _accountService.CreateUserAsync(_mapper.Map<RegisterViewModel, RegisterDto>(registerVM));
                     if (!result.Succeeded)
                     {
                         ModelState.AddModelError("", "Пароль має містити цифри та літери, мінімальна довжина повинна складати 8");
@@ -290,7 +280,7 @@ namespace EPlast.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel forgotpasswordVM)  //одна бажка з конфірмом
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel forgotpasswordVM)  
         {
             try
             {

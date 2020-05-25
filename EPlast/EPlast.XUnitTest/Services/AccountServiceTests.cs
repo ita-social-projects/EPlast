@@ -1,8 +1,10 @@
-﻿/*using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
+using EPlast.BussinessLayer.DTO;
 using EPlast.BussinessLayer.DTO.Account;
 using EPlast.BussinessLayer.Interfaces;
 using EPlast.BussinessLayer.Services;
@@ -71,10 +73,10 @@ namespace EPlast.XUnitTest.Services
             Mock<IRepositoryWrapper> mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
             Mock<ILogger<AccountController>> mockLogger = new Mock<ILogger<AccountController>>();
             Mock<IEmailConfirmation> mockEmailConfirmation = new Mock<IEmailConfirmation>();
-            Mock<IHostingEnvironment> mockHosting = new Mock<IHostingEnvironment>();
+            Mock<IMapper> mockMapper = new Mock<IMapper>();
 
             AccountService accountService = new AccountService(mockUserManager.Object, mockSignInManager.Object,
-               mockRepositoryWrapper.Object, null, mockEmailConfirmation.Object, mockHosting.Object, null, null);
+               mockRepositoryWrapper.Object, mockEmailConfirmation.Object, null, null, mockMapper.Object);
 
             return (mockSignInManager, mockUserManager, mockEmailConfirmation, accountService);
         }
@@ -122,11 +124,15 @@ namespace EPlast.XUnitTest.Services
             //Arrange
            var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountService) = CreateAccountService();
             mockUserManager
+                .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserWithAllFields());
+
+            mockUserManager
               .Setup(s => s.ConfirmEmailAsync(It.IsAny<User>(), It.IsAny<string>()))
               .Returns(Task.FromResult(IdentityResult.Success));
 
             //Act
-            var result = await accountService.ConfirmEmailAsync(GetTestUserWithAllFields(), GetTestCode());
+            var result = await accountService.ConfirmEmailAsync(GetTestCode(), GetTestCode());
 
             //Assert
             var identityResult = Assert.IsType<IdentityResult>(result);
@@ -139,11 +145,15 @@ namespace EPlast.XUnitTest.Services
             //Arrange
             var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountService) = CreateAccountService();
             mockUserManager
+                .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserWithAllFields());
+
+            mockUserManager
               .Setup(s => s.ChangePasswordAsync(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()))
               .Returns(Task.FromResult(IdentityResult.Success));
 
             //Act
-            var result = await accountService.ChangePasswordAsync(GetTestUserWithAllFields(), GetTestChangePasswordDto());
+            var result = await accountService.ChangePasswordAsync(GetTestCode(), GetTestChangePasswordDto());
 
             //Assert
             var identityResult = Assert.IsType<IdentityResult>(result);
@@ -211,7 +221,7 @@ namespace EPlast.XUnitTest.Services
               .ReturnsAsync(true);
 
             //Act
-            bool result = await accountService.IsEmailConfirmedAsync(GetTestUserWithAllFields());
+            bool result = await accountService.IsEmailConfirmedAsync(GetTestUserDtoWithAllFields());
 
             //Assert
             var authResult = Assert.IsType<bool>(result);
@@ -229,7 +239,7 @@ namespace EPlast.XUnitTest.Services
               .ReturnsAsync(false);
 
             //Act
-            bool result = await accountService.IsEmailConfirmedAsync(GetTestUserWithAllFields());
+            bool result = await accountService.IsEmailConfirmedAsync(GetTestUserDtoWithAllFields());
 
             //Assert
             var authResult = Assert.IsType<bool>(result);
@@ -268,7 +278,7 @@ namespace EPlast.XUnitTest.Services
                 .ReturnsAsync(GetTestCode());
 
             //Act
-            string token = await accountService.GenerateConfToken(GetTestUserWithAllFields());
+            string token = await accountService.GenerateConfToken(GetTestUserDtoWithAllFields());
 
             //Assert
             var result = Assert.IsType<string>(token);
@@ -285,7 +295,7 @@ namespace EPlast.XUnitTest.Services
                 .ReturnsAsync(GetTestCode());
 
             //Act
-            string token = await accountService.GenerateResetTokenAsync(GetTestUserWithAllFields());
+            string token = await accountService.GenerateResetTokenAsync(GetTestUserDtoWithAllFields());
 
             //Assert
             var result = Assert.IsType<string>(token);
@@ -302,27 +312,10 @@ namespace EPlast.XUnitTest.Services
                 .ReturnsAsync(IdentityResult.Success);
 
             //Act
-            var identityResult = await accountService.ResetPasswordAsync(GetTestUserWithAllFields(), GetTestResetPasswordDto());
+            var identityResult = await accountService.ResetPasswordAsync(GetTestCode(), GetTestResetPasswordDto());
 
             //Assert
             var result = Assert.IsType<IdentityResult>(identityResult);
-            Assert.NotNull(result);
-        }
-
-        [Fact]
-        public async Task FindByEmailReturnsUser()
-        {
-            //Arrange
-            var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountService) = CreateAccountService();
-            mockUserManager
-                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetTestUserWithAllFields());
-
-            //Act
-            var findResult = await accountService.FindByEmailAsync(GetTestEmail());
-
-            //Assert
-            var result = Assert.IsType<User>(findResult);
             Assert.NotNull(result);
         }
 
@@ -382,6 +375,18 @@ namespace EPlast.XUnitTest.Services
         private User GetTestUserWithAllFields()
         {
             return new User()
+            {
+                UserName = "andriishainoha@gmail.com",
+                FirstName = "Andrii",
+                LastName = "Shainoha",
+                EmailConfirmed = true,
+                SocialNetworking = true
+            };
+        }
+
+        private UserDTO GetTestUserDtoWithAllFields()
+        {
+            return new UserDTO()
             {
                 UserName = "andriishainoha@gmail.com",
                 FirstName = "Andrii",
@@ -470,4 +475,4 @@ namespace EPlast.XUnitTest.Services
            return new string("500");
         }
     }
-}*/
+}
