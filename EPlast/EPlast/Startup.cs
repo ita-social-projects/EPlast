@@ -1,11 +1,23 @@
-﻿using EPlast.BussinessLayer;
+﻿using AutoMapper;
+using EPlast.BussinessLayer;
+using EPlast.BussinessLayer.AccessManagers;
+using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using EPlast.BussinessLayer.Interfaces;
+using EPlast.BussinessLayer.Interfaces.Events;
+using EPlast.BussinessLayer.Services;
+using EPlast.BussinessLayer.Services.Events;
+using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.BussinessLayer.Settings;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Models.ViewModelInitializations;
+using EPlast.Models.ViewModelInitializations.Interfaces;
+using EPlast.Wrapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -20,8 +32,8 @@ using EPlast.BussinessLayer.AccessManagers;
 using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
-using System.Reflection;
-using AutoMapper;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast
 {
@@ -58,6 +70,8 @@ namespace EPlast
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddScoped<IAccountService, AccountService>();
+
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
             services.AddScoped<IEmailConfirmation, EmailConfirmation>();
             services.AddScoped<IAnnualReportVMInitializer, AnnualReportVMInitializer>();
@@ -65,7 +79,20 @@ namespace EPlast
             services.AddScoped<IDecisionVmInitializer, DecisionVmInitializer>();
 
             services.AddScoped<IPDFService, PDFService>();
-            services.AddScoped<IDecisionService, DecisionService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<INationalityService, NationalityService>();
+            services.AddScoped<IReligionService, ReligionService>();
+            services.AddScoped<IEducationService, EducationService>();
+            services.AddScoped<IWorkService, WorkService>();
+            services.AddScoped<IGenderService, GenderService>();
+            services.AddScoped<IDegreeService, DegreeService>();
+            services.AddScoped<IConfirmedUsersService, ConfirmedUsersService>();
+            services.AddScoped<IUserManagerService, UserManagerService>();
+            services.AddScoped<IAdminService, AdminService>();
+            services.AddScoped<ICItyAdministrationService, CityAdministrationService>();
+            services.AddScoped<ICityService, CityService>();
+            services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
+
             services.AddScoped<IDirectoryManager, DirectoryManager>();
             services.AddScoped<IFileManager, FileManager>();
 
@@ -75,6 +102,14 @@ namespace EPlast
             services.AddScoped<ICityAccessManager, CityAccessManager>();
             services.AddScoped<IUserAccessManagerSettings, UserAccessManagerSettings>();
             services.AddScoped<IUserAccessManager, UserAccessManager>();
+            services.AddScoped<IActionManager, ActionManager>();
+            services.AddScoped<IEventCategoryManager, EventCategoryManager>();
+            services.AddScoped<IEventTypeManager, EventTypeManager>();
+            services.AddScoped<IEventStatusManager, EventStatusManager>();
+            services.AddScoped<IParticipantStatusManager, ParticipantStatusManager>();
+            services.AddScoped<IParticipantManager, ParticipantManager>();
+            services.AddScoped<IEventGalleryManager, EventGalleryManager>();
+            services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
             services.Configure<IdentityOptions>(options =>
             {
@@ -142,7 +177,7 @@ namespace EPlast
                 LastName = "Admin",
                 EmailConfirmed = true,
                 ImagePath = "default.png",
-                UserProfile = new UserProfile(),
+                UserProfile = new DataAccess.Entities.UserProfile(),
                 RegistredOn = DateTime.Now
             };
             if (await userManager.FindByEmailAsync(admin["Email"]) == null)
