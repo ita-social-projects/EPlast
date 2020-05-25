@@ -1,21 +1,22 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO;
+using EPlast.BussinessLayer.DTO.Account;
 using EPlast.BussinessLayer.Interfaces;
 using EPlast.BussinessLayer.Services.Interfaces;
-using EPlast.DataAccess.Repositories;
 using EPlast.ViewModels;
 using EPlast.ViewModels.UserInformation;
 using EPlast.ViewModels.UserInformation.UserProfile;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
-using EPlast.BussinessLayer.DTO.Account;
-using Microsoft.AspNetCore.Authentication;
 
 namespace EPlast.Controllers
 {
@@ -24,7 +25,6 @@ namespace EPlast.Controllers
         private readonly IAccountService _accountService;
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
-        private readonly IRepositoryWrapper _repoWrapper;
         private readonly INationalityService _nationalityService;
         private readonly IEducationService _educationService;
         private readonly IReligionService _religionService;
@@ -35,8 +35,7 @@ namespace EPlast.Controllers
         private readonly IConfirmedUsersService _confirmedUserService;
         private readonly ILoggerService<AccountController> _loggerService;
 
-        public AccountController(IRepositoryWrapper repoWrapper,
-            IUserService userService,
+        public AccountController(IUserService userService,
             INationalityService nationalityService,
             IEducationService educationService,
             IReligionService religionService,
@@ -50,7 +49,6 @@ namespace EPlast.Controllers
             IAccountService accountService)
         {
             _accountService = accountService;
-            _repoWrapper = repoWrapper;
             _userService = userService;
             _nationalityService = nationalityService;
             _religionService = religionService;
@@ -79,7 +77,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                //_logger.LogError("Exception: {0}", e.Message); 
+                _loggerService.LogError($"Exception: {e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
@@ -89,14 +87,14 @@ namespace EPlast.Controllers
         public async Task<IActionResult> Login(LoginViewModel loginVM, string returnUrl)
         {
             try
-            { 
+            {
                 loginVM.ReturnUrl = returnUrl;
                 loginVM.ExternalLogins = (await _accountService.GetAuthSchemesAsync()).ToList();
 
                 if (ModelState.IsValid)
                 {
                     var user = await _accountService.FindByEmailAsync(loginVM.Email);
-                    if(user == null)
+                    if (user == null)
                     {
                         ModelState.AddModelError("", "Ви не зареєстровані в системі, або не підтвердили свою електронну пошту");
                         return View(loginVM);
@@ -128,7 +126,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                //_logger.LogError("Exception: {0}", e.Message);
+                _loggerService.LogError($"Exception: {e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
@@ -183,11 +181,11 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                //_logger.LogError("Exception: {0}", e.Message);
+                _loggerService.LogError($"Exception: {e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
-        
+
         [HttpGet]
         public IActionResult ConfirmedEmail()
         {
@@ -213,8 +211,8 @@ namespace EPlast.Controllers
             await _accountService.SendEmailRegistr(confirmationLink, userDto);
             return View("ResendEmailConfirmation");
         }
-        
-        [HttpGet]              
+
+        [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmingEmail(string userId, string code)
         {
@@ -248,7 +246,7 @@ namespace EPlast.Controllers
             }
         }
 
-        
+
         [HttpGet]
         [AllowAnonymous]
         public IActionResult AccountLocked()
@@ -275,7 +273,7 @@ namespace EPlast.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel forgotpasswordVM)  
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel forgotpasswordVM)
         {
             try
             {
@@ -300,12 +298,12 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                //_logger.LogError("Exception: {0}", e.Message);
+                _loggerService.LogError($"Exception: {e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
 
-        [HttpGet]        
+        [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(string userId, string code = null)
         {
@@ -363,7 +361,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                //_logger.LogError("Exception: {0}", e.Message);
+                _loggerService.LogError($"Exception: {e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
@@ -413,7 +411,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                //_logger.LogError("Exception: {0}", e.Message);
+                _loggerService.LogError($"Exception: {e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
@@ -422,7 +420,7 @@ namespace EPlast.Controllers
         [HttpPost]
         public IActionResult ExternalLogin(string provider, string returnUrl)
         {
-            string redirectUrl = Url.Action("ExternalLoginCallBack", 
+            string redirectUrl = Url.Action("ExternalLoginCallBack",
                 "Account",
                 new { ReturnUrl = returnUrl });
             AuthenticationProperties properties = _accountService.GetAuthProperties(provider, redirectUrl);
@@ -446,7 +444,7 @@ namespace EPlast.Controllers
                     ModelState.AddModelError(string.Empty, $"Error from external provider : {remoteError}");
                     return View("Login", loginViewModel);
                 }
-                var info = await _accountService.GetInfoAsync(); 
+                var info = await _accountService.GetInfoAsync();
                 if (info == null)
                 {
                     ModelState.AddModelError(string.Empty, "Error loading external login information");
@@ -479,7 +477,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                //_logger.LogError("Exception: {0}", e.Message);
+                _loggerService.LogError($"Exception: {e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
@@ -517,8 +515,8 @@ namespace EPlast.Controllers
             }
         }
 
-        /*[HttpGet]
-        public IActionResult Approvers(string userId)
+        [HttpGet]
+        public async Task<IActionResult> Approvers(string userId)
         {
             try
             {
@@ -660,6 +658,6 @@ namespace EPlast.Controllers
                 _loggerService.LogError($"Exception: { e.Message}");
                 return RedirectToAction("HandleError", "Error");
             }
-        }*/
+        }
     }
 }
