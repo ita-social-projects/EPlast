@@ -3,7 +3,6 @@ using EPlast.BussinessLayer.Interfaces;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using EPlast.DataAccess.Repositories.Contracts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -22,6 +21,9 @@ using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using EPlast.Wrapper;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
+using AutoMapper;
+using EPlast.BussinessLayer.Services;
+using EPlast.BussinessLayer.Services.Interfaces;
 
 namespace EPlast
 {
@@ -37,12 +39,15 @@ namespace EPlast
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
             services.AddOptions();
             services.AddDbContextPool<EPlastDBContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("EPlastDBConnection")));
             services.AddIdentity<User, IdentityRole>()
                     .AddEntityFrameworkStores<EPlastDBContext>()
                     .AddDefaultTokenProviders();
+
 
             services.AddAuthorization(options =>
             {
@@ -60,6 +65,19 @@ namespace EPlast
             services.AddScoped<IViewAnnualReportsVMInitializer, ViewAnnualReportsVMInitializer>();
             services.AddScoped<IDecisionVMIitializer, DecisionVMIitializer>();
             services.AddScoped<IPDFService, PDFService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<INationalityService, NationalityService>();
+            services.AddScoped<IReligionService, ReligionService>();
+            services.AddScoped<IEducationService, EducationService>();
+            services.AddScoped<IWorkService, WorkService>();
+            services.AddScoped<IGenderService, GenderService>();
+            services.AddScoped<IDegreeService, DegreeService>();
+            services.AddScoped<IConfirmedUsersService, ConfirmedUsersService>();
+            services.AddScoped<IUserManagerService, UserManagerService>();
+            services.AddScoped<IAdminService, AdminService>();
+            services.AddScoped<ICItyAdministrationService, CityAdministrationService>();
+            services.AddScoped<ICityService, CityService>();
+            services.AddScoped(typeof(ILoggerService<>),typeof(LoggerService<>) );
 
             services.AddScoped<IDirectoryManager, DirectoryManager>();
             services.AddScoped<IFileManager, FileManager>();
@@ -106,7 +124,8 @@ namespace EPlast
                 options.LoginPath = "/Account/Login";
                 options.LogoutPath = "/Account/Logout";
             });
-
+           
+           
             services.AddMvc();
         }
 
@@ -137,7 +156,7 @@ namespace EPlast
                 LastName = "Admin",
                 EmailConfirmed = true,
                 ImagePath = "default.png",
-                UserProfile = new UserProfile(),
+                UserProfile = new DataAccess.Entities.UserProfile(),
                 RegistredOn = DateTime.Now
             };
             if (await userManager.FindByEmailAsync(admin["Email"]) == null)

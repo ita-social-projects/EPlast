@@ -19,6 +19,12 @@ using System.Security.Principal;
 using System.Text;
 using Xunit;
 using EPlast.BussinessLayer.AccessManagers.Interfaces;
+using EPlast.BussinessLayer.Services.Interfaces;
+using AutoMapper;
+using EPlast.BussinessLayer.DTO;
+using System.Threading.Tasks;
+using EPlast.ViewModels.UserInformation;
+using EPlast.ViewModels.UserInformation.UserProfile;
 
 namespace EPlast.XUnitTest
 {
@@ -34,6 +40,17 @@ namespace EPlast.XUnitTest
         private Mock<IEmailConfirmation> _emailConfirm;
         private Mock<IHostingEnvironment> _hostEnv;
         private Mock<IUserAccessManager> _userAccessManager;
+        private Mock<IUserService> _userService;
+        private Mock<INationalityService> _nationalityService;
+        private Mock<IEducationService> _educationService;
+        private Mock<IReligionService> _religionService;
+        private Mock<IWorkService> _workService;
+        private Mock<IGenderService> _genderService;
+        private Mock<IDegreeService> _degreeService;
+        private Mock<IUserManagerService> _userManagerService;
+        private Mock<IConfirmedUsersService> _confirmedUserService;
+        private Mock<IMapper> _mapper;
+        private Mock<ILoggerService<AccountController>> _loggerService;
 
         public AccountControllerTests()
         {
@@ -47,124 +64,224 @@ namespace EPlast.XUnitTest
             _emailConfirm = new Mock<IEmailConfirmation>();
             _hostEnv = new Mock<IHostingEnvironment>();
             _userAccessManager = new Mock<IUserAccessManager>();
-        }
+            _userService=new Mock<IUserService>();
+            _nationalityService=new Mock<INationalityService>() ;
+            _educationService=new Mock<IEducationService> ();
+            _religionService=new Mock<IReligionService> ();
+            _workService=new Mock<IWorkService> ();
+            _genderService=new  Mock<IGenderService>() ;
+            _degreeService=new Mock<IDegreeService> ();
+            _userManagerService=new Mock<IUserManagerService>() ;
+            _confirmedUserService=new Mock<IConfirmedUsersService> ();
+            _mapper=new Mock<IMapper> ();
+            _loggerService = new Mock<ILoggerService<AccountController>>();
+    }
         [Fact]
         public void UserProfileTest()
         {
-            _repoWrapper.Setup(r => r.User.FindByCondition(It.IsAny<Expression<Func<User, bool>>>())).Returns(new List<User>{new User
+            _userService.Setup(x => x.GetUser(It.IsAny<string>())).Returns(new UserDTO
             {
                 FirstName = "Vova",
                 LastName = "Vermii",
-                UserProfile = new UserProfile
+                UserProfile = new UserProfileDTO
                 {
-                    Nationality = new Nationality { Name = "Українець" },
-                    Religion = new Religion { Name = "Християнство" },
-                    Education = new Education() { PlaceOfStudy = "ЛНУ", Speciality = "КН"  },
-                    Degree = new Degree { Name = "Бакалавр" },
-                    Work = new Work { PlaceOfwork = "SoftServe", Position = "ProjectManager" },
-                    Gender = new Gender { Name = "Чоловік" }
+                    Nationality = new NationalityDTO { Name = "Українець" },
+                    Religion = new ReligionDTO { Name = "Християнство" },
+                    Education = new EducationDTO() { PlaceOfStudy = "ЛНУ", Speciality = "КН" },
+                    Degree = new DegreeDTO { Name = "Бакалавр" },
+                    Work = new WorkDTO { PlaceOfwork = "SoftServe", Position = "ProjectManager" },
+                    Gender = new GenderDTO { Name = "Чоловік" }
                 }
-            } }.AsQueryable());
+            });
+            _userService.Setup(x => x.CheckOrAddPlastunRole(It.IsAny<string>(),DateTime.Now)).ReturnsAsync(TimeSpan.Zero);
 
-            _repoWrapper.Setup(r => r.CityAdministration.FindByCondition(It.IsAny<Expression<Func<CityAdministration, bool>>>())).Returns(new List<CityAdministration>{new CityAdministration
-            {
-                AdminType=new AdminType{ AdminTypeName="Admin"},
-                City=new City{ Name="City", HouseNumber="1", Street="Street"}
-            } }.AsQueryable());
-
-            _repoWrapper.Setup(r => r.Gender.FindAll()).Returns(new List<Gender>().AsQueryable());
-            _repoWrapper.Setup(r => r.Nationality.FindAll()).Returns(new List<Nationality>().AsQueryable());
-            _repoWrapper.Setup(r => r.Education.FindAll()).Returns(new List<Education>().AsQueryable());
-            _repoWrapper.Setup(r => r.Work.FindAll()).Returns(new List<Work>().AsQueryable());
-            _repoWrapper.Setup(r => r.Degree.FindAll()).Returns(new List<Degree>().AsQueryable());
-            _repoWrapper.Setup(r => r.Religion.FindAll()).Returns(new List<Religion>().AsQueryable());
-
-            _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns("1");
-
+            _userManagerService.Setup(x => x.IsInRole(It.IsAny<UserDTO>(), It.IsAny<string>())).ReturnsAsync(true);
+            UserViewModel a = new UserViewModel { Id="1"};
+            _mapper.Setup(x => x.Map<UserDTO, UserViewModel>(It.IsAny<UserDTO>())).Returns(a);
             var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
-                _userAccessManager.Object);
+                _userAccessManager.Object,_userService.Object, _nationalityService.Object,_educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object,_loggerService.Object);
             // Act
             var result = controller.UserProfile("1");
             // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            var model = Assert.IsAssignableFrom<UserViewModel>(viewResult.Model);
+            var viewResult = Assert.IsType<ViewResult>(result.Result);
+            var model = Assert.IsAssignableFrom<PersonalDataViewModel>(viewResult.Model);
+            Assert.NotNull(result);
         }
 
         [Fact]
         public void UserProfileTestFailure()
         {
             var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
-                _userAccessManager.Object);
+                _userAccessManager.Object, _userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object);
             // Act
-            var result = controller.UserProfile("1");
+            var result = controller.UserProfile("");
             // Assert
-            Assert.IsType<RedirectToActionResult>(result);
+            var viewResult=Assert.IsType<RedirectToActionResult>(result.Result);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+            Assert.NotNull(result);
+
+        }
+
+        [Fact]
+        public void ApproversTest()
+        {
+            _userService.Setup(x => x.GetUser(It.IsAny<string>())).Returns(new UserDTO());
+            _userService.Setup(x => x.GetConfirmedUsers(It.IsAny<UserDTO>())).Returns(new List<ConfirmedUserDTO>());
+            _userService.Setup(x => x.GetCityAdminConfirmedUser(It.IsAny<UserDTO>())).Returns(new ConfirmedUserDTO());
+            _userService.Setup(x => x.GetClubAdminConfirmedUser(It.IsAny<UserDTO>())).Returns(new ConfirmedUserDTO());
+            _userService.Setup(x => x.CheckOrAddPlastunRole(It.IsAny<string>(), DateTime.Now)).ReturnsAsync(TimeSpan.Zero);
+            _userService.Setup(x => x.CanApprove(new List<ConfirmedUserDTO>(),It.IsAny<string>(),ClaimsPrincipal.Current)).Returns(true);
+            _mapper.Setup(x => x.Map<UserDTO, UserViewModel>(It.IsAny<UserDTO>())).Returns(new UserViewModel());
+            _mapper.Setup(x => x.Map<IEnumerable<ConfirmedUserDTO>, IEnumerable<ConfirmedUserViewModel>>(new List<ConfirmedUserDTO>())).Returns(new List<ConfirmedUserViewModel>());
+            _mapper.Setup(x => x.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(It.IsAny<ConfirmedUserDTO>())).Returns(new ConfirmedUserViewModel());
+            _userManagerService.Setup(x => x.IsInRole(It.IsAny<UserDTO>(), It.IsAny<string>())).ReturnsAsync(true);
+            _userManagerService.Setup(x => x.GetUserId(ClaimsPrincipal.Current)).Returns(It.IsAny<string>());
+            var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
+                _userAccessManager.Object, _userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object);
+            // Acts
+            var result = controller.Approvers("q");
+            // Assert
+            var viewResult=Assert.IsType<ViewResult>(result.Result);
+            var model = Assert.IsAssignableFrom<UserApproversViewModel>(viewResult.Model);
+            Assert.NotNull(result);
+
+        }
+
+        [Fact]
+        public void ApproversTestFailure()
+        {
+            var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
+                _userAccessManager.Object, _userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object);
+            // Acts
+            var result = controller.Approvers("");
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result.Result);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+            Assert.NotNull(result);
+
         }
         [Fact]
-        public void EditTest()
+        public void ApproveUserTest()
         {
-            // Arrange
-            var expected = new User
-            {
-                FirstName = "Vova",
-                LastName = "Vermii",
-                UserProfile = new UserProfile
-                {
-                    Nationality = new Nationality { Name = "Українець" },
-                    Religion = new Religion { Name = "Християнство" },
-                    Education = new Education() { PlaceOfStudy = "ЛНУ", Speciality = "КН" },
-                    Degree = new Degree { Name = "Бакалавр" },
-                    Work = new Work { PlaceOfwork = "SoftServe", Position = "ProjectManager" },
-                    Gender = new Gender { Name = "Чоловік" }
-                }
-            };
-
-            _repoWrapper.Setup(r => r.User.FindByCondition(It.IsAny<Expression<Func<User, bool>>>())).Returns(new List<User>{new User
-            {
-                FirstName = "Vova",
-                LastName = "Vermii",
-                UserProfile = new UserProfile
-                {
-                    Nationality = new Nationality { Name = "Українець" },
-                    Religion = new Religion { Name = "Християнство" },
-                    Education = new Education() { PlaceOfStudy = "ЛНУ", Speciality = "КН" },
-                    Degree = new Degree { Name = "Бакалавр" },
-                    Work = new Work { PlaceOfwork = "SoftServe", Position = "ProjectManager" },
-                    Gender = new Gender { Name = "Чоловік" }
-                }
-            } }.AsQueryable() );
-
-            _repoWrapper.Setup(r => r.Gender.FindAll()).Returns(new List<Gender>().AsQueryable());
-            _repoWrapper.Setup(r => r.Nationality.FindAll()).Returns(new List<Nationality>().AsQueryable());
-            _repoWrapper.Setup(r => r.Education.FindAll()).Returns(new List<Education>().AsQueryable());
-            _repoWrapper.Setup(r => r.Work.FindAll()).Returns(new List<Work>().AsQueryable());
-            _repoWrapper.Setup(r => r.Degree.FindAll()).Returns(new List<Degree>().AsQueryable());
-            _repoWrapper.Setup(r => r.Religion.FindAll()).Returns(new List<Religion>().AsQueryable());
-            _repoWrapper.Setup(r => r.UserProfile.FindAll()).Returns(new List<UserProfile>().AsQueryable());
-
-            _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(expected.Id);
-            _userManager.Setup(x => x.CreateSecurityTokenAsync(expected));
-            
             var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
-                _userAccessManager.Object);
+                _userAccessManager.Object, _userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object);
+            // Acts
+            var result = controller.ApproveUser("1", false, false);
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Approvers", viewResult.ActionName);
+            Assert.Equal("Account", viewResult.ControllerName);
+            Assert.NotNull(result);
+
+        }
+        [Fact]
+        public void ApproveUserTestFailure()
+        {
+            var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
+                _userAccessManager.Object, _userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object);
+            // Acts
+            var result = controller.ApproveUser(null,false,false);
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+            Assert.NotNull(result);
+
+        }
+        [Fact]
+        public void ApproverDeleteTest()
+        {
+            var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
+                _userAccessManager.Object, _userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object);
+            // Acts
+            var result = controller.ApproverDelete(1,"");
+            // Assert
+            var viewResult= Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("UserProfile", viewResult.ActionName);
+            Assert.Equal("Account", viewResult.ControllerName);
+            Assert.NotNull(result);
+
+        }
+
+        [Fact]
+        public void EditGetTest()
+        {
+            var userDTO = new UserDTO { UserProfile=new UserProfileDTO { EducationId = 1, WorkId = 1 } };
+            _userService.Setup(x => x.GetUser(It.IsAny<string>())).Returns(userDTO);
+            _genderService.Setup(x => x.GetAll()).Returns(new List<GenderDTO>());
+            _educationService.Setup(x => x.GetAllGroupByPlace()).Returns(new List<EducationDTO>());
+            _educationService.Setup(x => x.GetAllGroupBySpeciality()).Returns(new List<EducationDTO>());
+            _nationalityService.Setup(x => x.GetAll()).Returns(new List<NationalityDTO>());
+            _degreeService.Setup(x => x.GetAll()).Returns(new List<DegreeDTO>());
+            _workService.Setup(x => x.GetAllGroupByPlace()).Returns(new List<WorkDTO>());
+            _workService.Setup(x => x.GetAllGroupByPosition()).Returns(new List<WorkDTO>());
+            _religionService.Setup(x => x.GetAll()).Returns(new List<ReligionDTO>());
+            _mapper.Setup(x => x.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(new List<EducationDTO>())).Returns(new List<EducationViewModel>());
+            _mapper.Setup(x => x.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(new List<WorkDTO>())).Returns(new List<WorkViewModel>());
+            _mapper.Setup(x => x.Map<UserDTO, UserViewModel>(It.IsAny<UserDTO>())).Returns(new UserViewModel());
+            _mapper.Setup(x => x.Map<IEnumerable<NationalityDTO>, IEnumerable<NationalityViewModel>>(new List<NationalityDTO>())).Returns(new List<NationalityViewModel>());
+            _mapper.Setup(x => x.Map<IEnumerable<ReligionDTO>, IEnumerable<ReligionViewModel>>(new List<ReligionDTO>())).Returns(new List<ReligionViewModel>());
+            _mapper.Setup(x => x.Map<IEnumerable<DegreeDTO>, IEnumerable<DegreeViewModel>>(new List<DegreeDTO>())).Returns(new List<DegreeViewModel>());
+
+            var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
+                _userAccessManager.Object, _userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object);
+            // Act
+            var result = controller.Edit("");
+
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var model = Assert.IsAssignableFrom<EditUserViewModel>(viewResult.Model);
+            Assert.NotNull(result);
+        }
+        [Fact]
+        public void EditGetTestFailure()
+        {
+            var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
+                _userAccessManager.Object, _userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object);
+            // Act
+            var result = controller.Edit(null);
+
+            // Assert
+            var viewResult=Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+            Assert.NotNull(result);
+        }
+        [Fact]
+        public void EditPostTest()
+        {
+            _mapper.Setup(x => x.Map<UserViewModel, UserDTO>(It.IsAny<UserViewModel>())).Returns(new UserDTO());
             var mockFile = new Mock<IFormFile>();
-            var user = new EditUserViewModel { User = expected,EducationView=new EducationViewModel(),WorkView=new WorkViewModel()};
-
+            var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
+                _userAccessManager.Object, _userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object);
             // Act
-            var resultPost =controller.Edit(user,mockFile.Object);
+            var result = controller.Edit(new EditUserViewModel { User=new UserViewModel(),EducationView=new EducationUserViewModel(),WorkView=new WorkUserViewModel()}, mockFile.Object);
 
             // Assert
-            _repoWrapper.Verify(r => r.User.Update(It.IsAny<User>()), Times.Once());
-            _repoWrapper.Verify(r => r.UserProfile.Update(It.IsAny<UserProfile>()), Times.Once());
-            _repoWrapper.Verify(r => r.Save(), Times.Once());
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("UserProfile", viewResult.ActionName);
+            Assert.NotNull(result);
         }
 
         [Fact]
-        public void EditTestFailure()
+        public void EditPostTestFailure()
         {
             // Arrange
             var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
-                _userAccessManager.Object);
+                _userAccessManager.Object, _userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object);
             var mockFile = new Mock<IFormFile>();
             var user = new EditUserViewModel();
 
@@ -172,129 +289,10 @@ namespace EPlast.XUnitTest
             var result = controller.Edit(user, mockFile.Object);
 
             // Assert
-            Assert.IsType<RedirectToActionResult>(result);
-        }
-        [Fact]
-        public void DeletePositionTrueRemoveRoleTrueTest()
-        {
-            // Arrange
-            var cityAdministrations = new List<CityAdministration>
-            {
-                new CityAdministration
-                {
-                    ID = 1,
-                    User = new User(),
-                    AdminType = new AdminType(),
-                },
-            };
-            _repoWrapper.Setup(r => r.CityAdministration.FindByCondition(It.IsAny<Expression<Func<CityAdministration, bool>>>()))
-                .Returns(cityAdministrations.AsQueryable());
-            _userAccessManager.Setup(uam => uam.HasAccess(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(true);
-            var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
-                _userAccessManager.Object);
-
-            // Act
-            var result = controller.DeletePosition(cityAdministrations[0].ID);
-
-            // Assert
-            Assert.IsType<OkObjectResult>(result.Result);
-        }
-
-        [Fact]
-        public void DeletePositionTrueRemoveRoleFalseTest()
-        {
-            // Arrange
-            var cityAdministrations = new List<CityAdministration>
-            {
-                new CityAdministration
-                {
-                    ID = 1,
-                    User = new User(),
-                    AdminType = new AdminType(),
-                    EndDate = DateTime.Now,
-                },
-            };
-            _repoWrapper.Setup(r => r.CityAdministration.FindByCondition(It.IsAny<Expression<Func<CityAdministration, bool>>>()))
-                .Returns(cityAdministrations.AsQueryable());
-            _userAccessManager.Setup(uam => uam.HasAccess(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(true);
-            var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
-                _userAccessManager.Object);
-
-            // Act
-            var result = controller.DeletePosition(cityAdministrations[0].ID);
-
-            // Assert
-            Assert.IsType<OkObjectResult>(result.Result);
-            _userManager.Verify(u => u.RemoveFromRoleAsync(cityAdministrations[0].User, cityAdministrations[0].AdminType.AdminTypeName), Times.Never);
-        }
-
-        [Fact]
-        public void DeletePositionFalseTest()
-        {
-            // Arrange
-            _repoWrapper.Setup(r => r.CityAdministration.FindByCondition(It.IsAny<Expression<Func<CityAdministration, bool>>>()))
-                .Returns(new List<CityAdministration>().AsQueryable());
-            var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
-                _userAccessManager.Object);
-
-            // Act
-            var result = controller.DeletePosition(0);
-
-            // Assert
-            Assert.IsType<NotFoundObjectResult>(result.Result);
-            _repoWrapper.Verify(r => r.CityAdministration.Delete(It.IsAny<CityAdministration>()), Times.Never);
-            _repoWrapper.Verify(r => r.Save(), Times.Never);
-            _userManager.Verify(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
-        }
-
-        [Fact]
-        public void EndPositionTrueTest()
-        {
-            // Arrange
-            var cityAdministrations = new List<CityAdministration>
-            {
-                new CityAdministration
-                {
-                    ID = 1,
-                    User = new User(),
-                    AdminType = new AdminType(),
-                    StartDate = DateTime.Now
-                },
-            };
-            _repoWrapper.Setup(r => r.CityAdministration.FindByCondition(It.IsAny<Expression<Func<CityAdministration, bool>>>()))
-                .Returns(cityAdministrations.AsQueryable());
-            _userAccessManager.Setup(uam => uam.HasAccess(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(true);
-            var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
-                _userAccessManager.Object);
-
-            // Act
-            var result = controller.EndPosition(cityAdministrations[0].ID);
-
-            // Assert
-            Assert.IsType<OkObjectResult>(result.Result);
-            Assert.NotNull(cityAdministrations[0].EndDate);
-        }
-
-        [Fact]
-        public void EndPositionFalseTest()
-        {
-            // Arrange
-            _repoWrapper.Setup(r => r.CityAdministration.FindByCondition(It.IsAny<Expression<Func<CityAdministration, bool>>>()))
-                .Returns(new List<CityAdministration>().AsQueryable());
-            var controller = new AccountController(_userManager.Object, _signInManager.Object, _repoWrapper.Object, _logger.Object, _emailConfirm.Object, _hostEnv.Object,
-                _userAccessManager.Object);
-
-            // Act
-            var result = controller.EndPosition(0);
-
-            // Assert
-            Assert.IsType<NotFoundObjectResult>(result.Result);
-            _repoWrapper.Verify(r => r.CityAdministration.Update(It.IsAny<CityAdministration>()), Times.Never);
-            _repoWrapper.Verify(r => r.Save(), Times.Never);
-            _userManager.Verify(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+            Assert.NotNull(result);
         }
     }
 }
