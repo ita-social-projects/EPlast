@@ -28,7 +28,7 @@ namespace EPlast.XUnitTest
             Mock<IUserService> mockUserService = new Mock<IUserService>();
             Mock<IMapper> mockMapper = new Mock<IMapper>();
 
-            AccountController accountController = new AccountController(null, mockUserService.Object, null, null,
+            AccountController accountController = new AccountController(mockUserService.Object, null, null,
                 null, null, null, null, null, null, mockMapper.Object, null, mockAccountService.Object);
             return (mockAccountService, mockUserService, mockMapper, accountController);
         }
@@ -99,7 +99,7 @@ namespace EPlast.XUnitTest
             Assert.Equal(GetTestLoginViewModel().ReturnUrl, model.ReturnUrl);
             Assert.NotNull(viewResult);
         }
-        
+
         [Fact]
         public async Task TestLoginPostEmailConfReturnsViewWithModel()
         {
@@ -1085,15 +1085,15 @@ namespace EPlast.XUnitTest
             };
         }
 
-private User GetTestUserWithNotEmailConfirmed()
-{
-    return new User()
-    {
-        EmailConfirmed = false
-    };
-}
+        private User GetTestUserWithNotEmailConfirmed()
+        {
+            return new User()
+            {
+                EmailConfirmed = false
+            };
+        }
 
-private User GetTestUserWithNullFields()
+        private User GetTestUserWithNullFields()
         {
             return null;
         }
