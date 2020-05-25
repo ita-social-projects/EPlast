@@ -25,6 +25,7 @@ namespace EPlast.Mapping
                 ForMember(x => x.Gender, q => q.MapFrom(a => a.Gender)).
                 ForMember(x => x.Nationality, q => q.MapFrom(a => a.Nationality)).
                 ForMember(x => x.User, q => q.MapFrom(a => a.User));
+            
             CreateMap<UserProfileViewModel, UserProfileDTO>().
                 ForMember(x => x.Education, q => q.MapFrom(a => a.Education)).
                 ForMember(x => x.Degree, q => q.MapFrom(a => a.Degree)).
