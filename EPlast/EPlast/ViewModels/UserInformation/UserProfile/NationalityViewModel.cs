@@ -12,6 +12,6 @@ namespace EPlast.ViewModels.UserInformation.UserProfile
             ErrorMessage = "Національність має містити тільки літери")]
         [StringLength(25, MinimumLength = 3, ErrorMessage = "Національність повинна складати від 3 до 25 символів")]
         public string Name { get; set; }
-        public ICollection<UserProfileViewModel> UserProfiles { get; set; }
+        public IEnumerable<UserProfileViewModel> UserProfiles { get; set; }
     }
 }

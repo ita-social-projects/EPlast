@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace EPlast.BussinessLayer.Services
 {
-    public class CityAdministrationService:ICItyAdministrationService
+    public class CityAdministrationService : ICItyAdministrationService
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace EPlast.BussinessLayer.Services
 {
-    public  class LoggerService<T> : ILoggerService<T>
+    public class LoggerService<T> : ILoggerService<T>
     {
         protected readonly ILogger<T> _logger;
         public LoggerService(ILogger<T> logger)
