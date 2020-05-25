@@ -144,6 +144,19 @@ namespace EPlast.XUnitTest
         }
 
         [Theory]
+        [InlineData(-1, false)]
+        [InlineData(0, false)]
+        [InlineData(1 , true)]
+        [InlineData(40, false)]
+        public void DeleteDecisionTest(int decisionId, bool expected)
+        {
+            _decisionService = CreateDecisionService();
+
+            var actual = _decisionService.DeleteDecision(decisionId);
+
+            Assert.Equal(expected, actual);
+        } 
+        [Theory]
         [InlineData(2)]
         [InlineData(4)]
         [InlineData(1)]
