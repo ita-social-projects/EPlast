@@ -3,6 +3,7 @@ using EPlast.BussinessLayer.DTO;
 using EPlast.BussinessLayer.DTO.Account;
 using EPlast.BussinessLayer.Interfaces;
 using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.Resources;
 using EPlast.ViewModels;
 using EPlast.ViewModels.UserInformation;
 using EPlast.ViewModels.UserInformation.UserProfile;
