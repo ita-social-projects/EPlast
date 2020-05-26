@@ -12,15 +12,13 @@ namespace EPlast.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IEmailConfirmation _emailConfirmation;
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IHomeService _homeService;
         private readonly IMapper _mapper;
 
-        public HomeController(IHomeService homeService, IEmailConfirmation emailConfirmation, IRepositoryWrapper repoWrapper, IMapper mapper)
+        public HomeController(IHomeService homeService, IRepositoryWrapper repoWrapper, IMapper mapper)
         {
             _homeService = homeService;
-            _emailConfirmation = emailConfirmation;
             _repoWrapper = repoWrapper;
             _mapper = mapper;
         }
@@ -91,7 +89,7 @@ namespace EPlast.Controllers
 
             var contact = _mapper.Map<ContactDTO>(contactsViewModel);
 
-            await _homeService.ConfirmEmail(_emailConfirmation, contact);
+            await _homeService.SendEmailAdmin(contact);
 
             return RedirectToAction("FeedBackSended", "Home");
         }

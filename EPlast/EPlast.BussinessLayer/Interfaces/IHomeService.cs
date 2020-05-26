@@ -5,6 +5,6 @@ namespace EPlast.BussinessLayer.Interfaces
 {
     public interface IHomeService
     {
-        Task ConfirmEmail(IEmailConfirmation emailConfirmation, ContactDTO contactDTO);
+        Task SendEmailAdmin(ContactDTO contactDTO);
     }
 }
