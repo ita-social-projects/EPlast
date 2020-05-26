@@ -25,6 +25,8 @@ using System;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Globalization;
+using EPlast.BussinessLayer.Interfaces.EventUser;
+using EPlast.BussinessLayer.Services.EventUser;
 
 namespace EPlast
 {
@@ -95,6 +97,7 @@ namespace EPlast
             services.AddScoped<IParticipantStatusManager, ParticipantStatusManager>();
             services.AddScoped<IParticipantManager, ParticipantManager>();
             services.AddScoped<IEventGalleryManager, EventGalleryManager>();
+            services.AddScoped<IEventUserManager, EventUserManager>();
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
             services.Configure<IdentityOptions>(options =>
