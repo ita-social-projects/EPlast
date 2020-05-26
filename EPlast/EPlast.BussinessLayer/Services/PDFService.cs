@@ -7,11 +7,12 @@ namespace EPlast.BussinessLayer
     public class PDFService : IPDFService
     {
         private readonly IRepositoryWrapper _repoWrapper;
+
         public async Task<byte[]> BlankCreatePDFAsync(BlankModel pdfData)
         {
             IPDFSettings pdfSettings = new PDFSettings()
             {
-                Title = string.Format("Бланк"),
+                Title = "Бланк",
                 ImagePath = "wwwroot/images/pdf/Header-Eplast-Blank.png"
             };
             IPDFCreator creator = new PDFCreator(new BlankDocument(pdfData, pdfSettings));
@@ -31,7 +32,7 @@ namespace EPlast.BussinessLayer
                 return null;//Fix here
             IPDFSettings pdfSettings = new PDFSettings
             {
-                Title = string.Format("Рішення {0}", pdfData.Organization.OrganizationName),
+                Title = $"Рішення {decision.Organization.OrganizationName}",
                 ImagePath = "wwwroot/images/pdf/Header-Eplast.png"
             };
             IPDFCreator creator = new PDFCreator(new DecisionDocument(decision, pdfSettings));
