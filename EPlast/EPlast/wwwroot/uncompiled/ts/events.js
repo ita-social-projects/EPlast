@@ -33,7 +33,7 @@ $(document).ready(function () {
             $.ajax({
                 type: "POST",
                 url: "/Action/DeleteEvent",
-                data: { ID: value },
+                data: { id: value },
                 success: function () {
                     $("#myModal").modal('hide');
                     $("#deleteResultSuccess").modal('show');
@@ -51,7 +51,7 @@ $(document).ready(function () {
             $.ajax({
                 type: "POST",
                 url: "/Action/SubscribeOnEvent",
-                data: { ID: value },
+                data: { id: value },
                 success: function () {
                     $("#modalSubscribe").modal('hide');
                     $(activeEvent).parents("div.events-operations").children("div.events-part").hide();
@@ -60,7 +60,7 @@ $(document).ready(function () {
                     $("#modalSubscribeSuccess").modal('show');
                 },
                 error: function (response) {
-                    if (response.status != 409) {
+                    if (response.status !== 409) {
                         $("#modalSubscribe").modal('hide');
                         $("#FAIL").modal('show');
                     }
@@ -77,7 +77,7 @@ $(document).ready(function () {
             $.ajax({
                 type: "POST",
                 url: "/Action/UnSubscribeOnEvent",
-                data: { ID: value },
+                data: { id: value },
                 success: function () {
                     $("#modalUnSubscribe").modal('hide');
                     $(activeEvent).parents("div.events-operations").children("div.events-unsubscribe").hide();
@@ -87,7 +87,7 @@ $(document).ready(function () {
                     $("#modalUnSubscribeSuccess").modal('show');
                 },
                 error: function (response) {
-                    if (response.status != 409) {
+                    if (response.status !== 409) {
                         $("#modalUnSubscribe").modal('hide');
                         $("#FAIL").modal('show');
                     }
