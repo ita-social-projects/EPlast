@@ -11,10 +11,10 @@
         $(this).attr('src', "https://images.pexels.com/photos/459225/pexels-photo-459225.jpeg");
     });
 
-    let participantID: string | number | string[];
-    let eventID: string | number | string[];
+    let participantId: string | number | string[];
+    let eventId: string | number | string[];
     let activeElement: HTMLElement;
-    const ParticipantStatus = {
+    const participantStatus = {
         Approved: 'Учасник',
         Undetermined: 'Розглядається',
         Rejected: 'Відмовлено'
@@ -25,19 +25,19 @@
     });
 
     $('#deleteIcon').click(function () {
-        eventID = $('#eventId').val();
+        eventId = $('#eventId').val();
         activeElement = this;
         $("#myModal").modal('show');
     });
 
     $('#subscribeIcon').click(function () {
-        eventID = $('#eventId').val();
+        eventId = $('#eventId').val();
         activeElement = this;
         $("#modalSubscribe").modal('show');
     });
 
     $('#unsubscribeIcon').click(function () {
-        eventID = $('#eventId').val();
+        eventId = $('#eventId').val();
         activeElement = this;
         $("#modalUnSubscribe").modal('show');
     });
@@ -48,7 +48,7 @@
             $.ajax({
                 type: "POST",
                 url: "/Action/DeleteEvent",
-                data: { ID: eventID },
+                data: { id: eventId },
                 success: function () {
                     $("#myModal").modal('hide');
                     window.location.replace("/Action/GetAction");
@@ -66,7 +66,7 @@
             $.ajax({
                 type: "POST",
                 url: "/Action/UnSubscribeOnEvent",
-                data: { ID: eventID },
+                data: { id: eventId },
                 success: function () {
                     $("#modalUnSubscribe").modal('hide');
                     $('#participantBlock').hide();
@@ -77,7 +77,7 @@
                     $("#modalUnSubscribeSuccess").modal('show');
                 },
                 error: function (response: JQueryXHR) {
-                    if (response.status != 409) {
+                    if (response.status !== 409) {
                         $("#modalUnSubscribe").modal('hide');
                         $("#FAIL").modal('show');
                     }
@@ -95,7 +95,7 @@
             $.ajax({
                 type: "POST",
                 url: "/Action/SubscribeOnEvent",
-                data: { ID: eventID },
+                data: { id: eventId },
                 success: function () {
                     $("#modalSubscribe").modal('hide');
                     $('#participantBlock').hide();
@@ -106,7 +106,7 @@
                     $("#modalSubscribeSuccess").modal('show');
                 },
                 error: function (response: JQueryXHR) {
-                    if (response.status != 409) {
+                    if (response.status !== 409) {
                         $("#modalSubscribe").modal('hide');
                         $("#FAIL").modal('show');
                     }
@@ -120,54 +120,54 @@
     });
 
     $(".approved").click(function () {
-        participantID = $(this).parents("tr").children("td.event-invisible").children("input[type=hidden]").val();
+        participantId = $(this).parents("tr").children("td.event-invisible").children("input[type=hidden]").val();
         activeElement = this;
         $.ajax({
             type: "GET",
             url: "/Action/ApproveParticipant",
-            data: { ID: participantID },
+            data: { id: participantId },
             cache: false,
             success: function () {
-                $(activeElement).parents("tr").children("td:nth-child(3)").html(ParticipantStatus.Approved);
+                $(activeElement).parents("tr").children("td:nth-child(3)").html(participantStatus.Approved);
             },
             error: function () {
-                $("#resultOfStatusChanging").html(`Не вдалося змінити статус даного користувача на <b>'${ParticipantStatus.Approved}'</b>.`);
+                $("#resultOfStatusChanging").html(`Не вдалося змінити статус даного користувача на <b>'${participantStatus.Approved}'</b>.`);
                 $("#statusModal").modal('show');
             },
         });
     });
 
     $(".undetermined").click(function () {
-        participantID = $(this).parents("tr").children("td.event-invisible").children("input[type=hidden]").val();
+        participantId = $(this).parents("tr").children("td.event-invisible").children("input[type=hidden]").val();
         activeElement = this;
         $.ajax({
             type: "GET",
             url: "/Action/UndetermineParticipant",
-            data: { ID: participantID },
+            data: { id: participantId },
             cache: false,
             success: function () {
-                $(activeElement).parents("tr").children("td:nth-child(3)").html(ParticipantStatus.Undetermined);
+                $(activeElement).parents("tr").children("td:nth-child(3)").html(participantStatus.Undetermined);
             },
             error: function () {
-                $("#resultOfStatusChanging").html(`Не вдалося змінити статус даного користувача на <b>'${ParticipantStatus.Undetermined}'</b>.`);
+                $("#resultOfStatusChanging").html(`Не вдалося змінити статус даного користувача на <b>'${participantStatus.Undetermined}'</b>.`);
                 $("#statusModal").modal('show');
             },
         });
     });
 
     $(".rejected").click(function () {
-        participantID = $(this).parents("tr").children("td.event-invisible").children("input[type=hidden]").val();
+        participantId = $(this).parents("tr").children("td.event-invisible").children("input[type=hidden]").val();
         activeElement = this;
         $.ajax({
             type: "GET",
             url: "/Action/RejectParticipant",
-            data: { ID: participantID },
+            data: { id: participantId },
             cache: false,
             success: function () {
-                $(activeElement).parents("tr").children("td:nth-child(3)").html(ParticipantStatus.Rejected);
+                $(activeElement).parents("tr").children("td:nth-child(3)").html(participantStatus.Rejected);
             },
             error: function () {
-                $("#resultOfStatusChanging").html(`Не вдалося змінити статус даного користувача на <b>'${ParticipantStatus.Rejected}'</b>.`);
+                $("#resultOfStatusChanging").html(`Не вдалося змінити статус даного користувача на <b>'${participantStatus.Rejected}'</b>.`);
                 $("#statusModal").modal('show');
             },
         });
@@ -197,15 +197,15 @@
     $("a.picture-remove").click(function(){
         let pictureToDelete = $(this).parents("div.picture-deleting").children('input[type="hidden"]').val();
         let elementToDelete = $(this).parents("div.picture-deleting").get(0);
-        DeletePicture(pictureToDelete,elementToDelete);
+        deletePicture(pictureToDelete,elementToDelete);
     });
 
-    function DeletePicture(pictureToDelete: string | number | string[], elementToDelete: HTMLElement) {
+    function deletePicture(pictureToDelete: string | number | string[], elementToDelete: HTMLElement) {
         $(elementToDelete).hide();
         $.ajax({
             type: "POST",
             url: "/Action/DeletePicture",
-            data: { ID: pictureToDelete },
+            data: { id: pictureToDelete },
             success: () => {
                 $(elementToDelete).remove();
             },

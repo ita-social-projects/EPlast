@@ -1,15 +1,5 @@
-﻿.Create-decesion-form {
+﻿.Create-decision-form {
     padding: 10px 0px 0px 0;
-
-    form {
-        max-width: 480px;
-        width: 90%;
-        margin: 0 auto;
-        background-color: #ffffff;
-        padding: 40px;
-        border-radius: 4px;
-        color: #505e6c;
-    }
 
     h2 {
         margin-top: 5px;
@@ -24,6 +14,14 @@
     }
 
     form {
+        max-width: 480px;
+        width: 90%;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 40px;
+        border-radius: 4px;
+        color: #505e6c;
+
         .form-group:last-of-type {
             text-align: center;
         }
@@ -79,6 +77,10 @@
         }
 
         .form-group {
+            span {
+                color: #db0b3c;
+            }
+
             .upload-btn-wrapper {
                 position: relative;
                 overflow: hidden;
@@ -104,6 +106,13 @@
             }
         }
     }
+
+    #DeleteDecisionForm {
+        .delete-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+    }
 }
 
 .data-table-wrapper {
@@ -119,8 +128,8 @@
         visibility: hidden;
     }
 
-    #dtReadDecesion_wrapper {
-        #dtReadDecesion_filter {
+    #dtReadDecision_wrapper {
+        #dtReadDecision_filter {
             label {
                 button[data-toggle="modal"] {
                     margin: 0 0 3px 2rem;
@@ -149,7 +158,7 @@
 }
 
 @media (max-width: 767px) {
-    .Create-decesion-form {
+    .Create-decision-form {
         padding: 20px 0;
 
         form {
@@ -169,13 +178,13 @@
 
         .dataTables_filter {
             label {
-                #createDecesionButton {
+                #createDecisionButton {
                     min-width: 85px !important;
                 }
             }
         }
 
-        #dtReadDecesion_wrapper {
+        #dtReadDecision_wrapper {
             table.dataTable thead {
                 .sorting, .sorting_desc, .sorting_asc, .sorting_asc_disabled, .sorting_desc_disabled {
                     &:after, &:before {
