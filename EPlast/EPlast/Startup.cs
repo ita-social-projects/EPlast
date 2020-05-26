@@ -19,10 +19,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -52,7 +56,7 @@ namespace EPlast
                     .AddEntityFrameworkStores<EPlastDBContext>()
                     .AddDefaultTokenProviders();
 
-
+            services.AddLocalization();  //обходимо через асемблі
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("Admin",
@@ -63,8 +67,12 @@ namespace EPlast
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddScoped<IAccountService, AccountService>();
+                /*.AddViewLocalization(
+                   LanguageViewLocationExpanderFormat.Suffix,
+                       opts => { opts.ResourcesPath = "./EPlast.DataAccess/"; })
+                .AddDataAnnotationsLocalization();*/
 
+            services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
             services.AddScoped<IEmailConfirmation, EmailConfirmation>();
             services.AddScoped<IAnnualReportVMInitializer, AnnualReportVMInitializer>();
@@ -84,7 +92,6 @@ namespace EPlast
             services.AddScoped<ICItyAdministrationService, CityAdministrationService>();
             services.AddScoped<ICityService, CityService>();
             services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
-
             services.AddScoped<IDirectoryManager, DirectoryManager>();
             services.AddScoped<IFileManager, FileManager>();
             services.AddScoped<IFileStreamManager, FileStreamManager>();
@@ -102,6 +109,10 @@ namespace EPlast
             services.AddScoped<IEventGalleryManager, EventGalleryManager>();
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
+            /*services.AddControllersWithViews()
+                .AddDataAnnotationsLocalization()
+                .AddViewLocalization();*/
+
             services.Configure<IdentityOptions>(options =>
             {
                 options.SignIn.RequireConfirmedEmail = true;
@@ -139,6 +150,23 @@ namespace EPlast
                 options.LogoutPath = "/Account/Logout";
             });
 
+            services.Configure<RequestLocalizationOptions>(
+             opts =>
+             {
+                 var supportedCultures = new List<CultureInfo>
+                  {
+                     new CultureInfo("uk-UA"),
+                     new CultureInfo("en-US"),
+                     new CultureInfo("en"),
+                     new CultureInfo("uk")
+                  };
+
+                 opts.DefaultRequestCulture = new RequestCulture("uk-UA");
+                 // Formatting numbers, dates, etc.
+                 opts.SupportedCultures = supportedCultures;
+                 // UI strings that we have localized.
+                 opts.SupportedUICultures = supportedCultures;
+             });
 
             services.AddMvc();
         }
@@ -200,7 +228,10 @@ namespace EPlast
             app.UseStatusCodePagesWithReExecute("/Error/HandleError", "?code={0}");
             var supportedCultures = new[]
 {
-                new CultureInfo("uk-UA")
+                new CultureInfo("uk-UA"),
+                new CultureInfo("en-US"),
+                new CultureInfo("en"),
+                new CultureInfo("uk")
             };
 
             app.UseRequestLocalization(new RequestLocalizationOptions
@@ -215,6 +246,8 @@ namespace EPlast
             app.UseDefaultFiles();
             app.UseCookiePolicy();
             app.UseAuthentication();
+
+            //app.UseRequestLocalization();
 
             app.UseMvc(routes =>
             {

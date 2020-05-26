@@ -29,7 +29,7 @@ namespace EPlast.XUnitTest
             Mock<IMapper> mockMapper = new Mock<IMapper>();
 
             AccountController accountController = new AccountController(mockUserService.Object, null, null,
-                null, null, null, null, null, null, mockMapper.Object, null, mockAccountService.Object);
+                null, null, null, null, null, null, mockMapper.Object, null, mockAccountService.Object, null);
             return (mockAccountService, mockUserService, mockMapper, accountController);
         }
 
