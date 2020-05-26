@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,6 +35,7 @@ namespace EPlast.Controllers
         private readonly IUserManagerService _userManagerService;
         private readonly IConfirmedUsersService _confirmedUserService;
         private readonly ILoggerService<AccountController> _loggerService;
+        private readonly IStringLocalizer<LoginErrors> _localizer;
 
         public AccountController(IUserService userService,
             INationalityService nationalityService,
@@ -46,7 +48,8 @@ namespace EPlast.Controllers
             IUserManagerService userManagerService,
             IMapper mapper,
             ILoggerService<AccountController> loggerService,
-            IAccountService accountService)
+            IAccountService accountService,
+            IStringLocalizer<LoginErrors> localizer)
         {
             _accountService = accountService;
             _userService = userService;
@@ -60,6 +63,7 @@ namespace EPlast.Controllers
             _mapper = mapper;
             _userManagerService = userManagerService;
             _loggerService = loggerService;
+            _localizer = localizer;
         }
 
         [HttpGet]
@@ -94,9 +98,11 @@ namespace EPlast.Controllers
                 if (ModelState.IsValid)
                 {
                     var user = await _accountService.FindByEmailAsync(loginVM.Email);
+                    var t = _localizer["LoginError1"];
+                    var u = _localizer["LoginError1"].Value;
                     if (user == null)
                     {
-                        ModelState.AddModelError("", "Ви не зареєстровані в системі, або не підтвердили свою електронну пошту");
+                        ModelState.AddModelError("", _localizer["LoginError1"]);
                         return View(loginVM);
                     }
                     else
