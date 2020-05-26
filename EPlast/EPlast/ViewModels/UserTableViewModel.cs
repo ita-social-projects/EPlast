@@ -1,14 +1,10 @@
-﻿using EPlast.DataAccess.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using EPlast.ViewModels.UserInformation.UserProfile;
 
 namespace EPlast.ViewModels
 {
     public class UserTableViewModel
     {
-        public User User { get; set; }
+        public UserViewModel User { get; set; }
         public string RegionName { get; set; }
         public string CityName { get; set; }
         public string ClubName { get; set; }
