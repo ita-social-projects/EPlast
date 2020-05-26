@@ -1,10 +1,12 @@
-﻿using EPlast.DataAccess.Entities;
+﻿using EPlast.DataAccess.Repositories;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer
 {
     public class PDFService : IPDFService
     {
+        private readonly IRepositoryWrapper _repoWrapper;
         public async Task<byte[]> BlankCreatePDFAsync(BlankModel pdfData)
         {
             IPDFSettings pdfSettings = new PDFSettings()
@@ -16,14 +18,23 @@ namespace EPlast.BussinessLayer
             return await Task.Run(() => creator.GetPDFBytes());
         }
 
-        public async Task<byte[]> DecesionCreatePDFAsync(Decesion pdfData)
+        public PDFService(IRepositoryWrapper repoWrapper)
         {
-            IPDFSettings pdfSettings = new PDFSettings()
+            _repoWrapper = repoWrapper;
+        }
+
+        public async Task<byte[]> DecisionCreatePDFAsync(int DecisionId)
+        {
+            var decision = _repoWrapper.Decesion.Include(x => x.DecesionTarget, x => x.Organization)
+                .FirstOrDefault(x => x.ID == DecisionId);
+            if (decision == null)
+                return null;//Fix here
+            IPDFSettings pdfSettings = new PDFSettings
             {
                 Title = string.Format("Рішення {0}", pdfData.Organization.OrganizationName),
                 ImagePath = "wwwroot/images/pdf/Header-Eplast.png"
             };
-            IPDFCreator creator = new PDFCreator(new DecisionDocument(pdfData, pdfSettings));
+            IPDFCreator creator = new PDFCreator(new DecisionDocument(decision, pdfSettings));
             return await Task.Run(() => creator.GetPDFBytes());
         }
     }
