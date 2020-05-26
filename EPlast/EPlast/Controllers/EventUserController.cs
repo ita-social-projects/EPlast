@@ -8,6 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
+using EPlast.BussinessLayer.DTO.EventUser;
+using EPlast.BussinessLayer.Interfaces.EventUser;
+using EPlast.ViewModels.EventUser;
 
 namespace EPlast.Controllers
 {
@@ -16,67 +20,27 @@ namespace EPlast.Controllers
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
         private readonly ICreateEventVMInitializer _createEventVMInitializer;
+        private readonly IEventUserManager _eventUserManager;
+        private readonly IMapper _mapper;
 
-        public EventUserController(IRepositoryWrapper repoWrapper, UserManager<User> userManager, ICreateEventVMInitializer createEventVMInitializer)
+
+
+        public EventUserController(IRepositoryWrapper repoWrapper, UserManager<User> userManager, ICreateEventVMInitializer createEventVMInitializer, IEventUserManager eventUserManager, IMapper mapper)
 
         {
             _userManager = userManager;
             _repoWrapper = repoWrapper;
             _createEventVMInitializer = createEventVMInitializer;
+            _eventUserManager = eventUserManager;
+            _mapper = mapper;
         }
 
         public IActionResult EventUser(string userId)
         {
             try
             {
-                var _currentUserId = _userManager.GetUserId(User);
-                if (string.IsNullOrEmpty(userId))
-                {
-                    userId = _currentUserId;
-                }
-
-                var user = _repoWrapper.User.
-                   FindByCondition(q => q.Id == userId).
-                   First();
-
-                EventUserViewModel model = new EventUserViewModel();
-
-                model.User = user;
-                model.EventAdmins = _repoWrapper.EventAdmin.FindByCondition(i => i.UserID == _userManager.GetUserId(User)).
-                                Include(i => i.Event).Include(i => i.User).ToList();
-                model.Participants = _repoWrapper.Participant.FindByCondition(i => i.UserId == _userManager.GetUserId(User)).
-                    Include(i => i.Event).ToList();
-                model.CreatedEventCount = 0;
-                model.CreatedEvents = new List<Event>();
-                foreach (var eventAdmin in model.EventAdmins)
-                {
-                    if (eventAdmin.UserID == _userManager.GetUserId(User))
-                    {
-                        model.CreatedEvents.Add(eventAdmin.Event);
-                        model.CreatedEventCount += 1;
-                    }
-                }
-                model.PlanedEventCount = 0;
-                model.PlanedEvents = new List<Event>();
-                model.VisitedEventsCount = 0;
-                model.VisitedEvents = new List<Event>();
-                foreach (var participant in model.Participants)
-                {
-                    if (participant.UserId == _userManager.GetUserId(User) &&
-                        participant.Event.EventDateEnd >= DateTime.Now)
-                    {
-                        model.PlanedEvents.Add(participant.Event);
-                        model.PlanedEventCount += 1;
-                    }
-                    else if (participant.UserId == _userManager.GetUserId(User) &&
-                        participant.Event.EventDateEnd < DateTime.Now &&
-                        participant == _repoWrapper.Participant.
-                        FindByCondition(i => i.ParticipantStatus.ParticipantStatusName == "Учасник"))
-                    {
-                        model.VisitedEventsCount += 1;
-                        model.VisitedEvents.Add(participant.Event);
-                    }
-                }
+                var dto = _eventUserManager.EventUser(userId, User);
+                var model = _mapper.Map<EventUserDTO, EventUserViewModel>(dto);
                 return View(model);
             }
             catch
@@ -182,47 +146,44 @@ namespace EPlast.Controllers
                 _repoWrapper.Save();
                 return RedirectToAction("EventInfo", "Action", new { id = createVM.Event.ID });
             }
-            else
-            {
-                Event events = _repoWrapper.Event.FindByCondition(i => i.ID == createVM.Event.ID).FirstOrDefault();
-                var model = new EventCreateViewModel()
-                {
-                    Event = events,
-                    Users = _repoWrapper.User.FindAll()
-                };
-                return View(model);
-            }
-        }
-
-        [HttpGet]
-        public IActionResult EventEdit(int id)
-        {
-            var @event = _repoWrapper.Event.
-                FindByCondition(q => q.ID == id).
-                Include(i => i.EventType).
-                Include(g => g.EventStatus).
-                Include(g => g.EventGallarys).
-                Include(g => g.EventCategory).
-                Include(g => g.EventAdmins).
-                Include(g => g.EventAdministrations).
-                FirstOrDefault();
-            var eventCategories = _repoWrapper.EventCategory.FindAll();
+            Event events = _repoWrapper.Event.FindByCondition(i => i.ID == createVM.Event.ID).FirstOrDefault();
             var model = new EventCreateViewModel()
             {
-                Users = _repoWrapper.User.FindAll(),
-                Event = @event,
-                EventTypes = _repoWrapper.EventType.FindAll(),
-                EventCategories = _createEventVMInitializer.GetEventCategories(eventCategories)
+                Event = events,
+                Users = _repoWrapper.User.FindAll()
             };
             return View(model);
         }
 
-        [HttpPost]
-        public IActionResult EventEdit(EventCreateViewModel model)
-        {
-            _repoWrapper.Event.Update(model.Event);
-            _repoWrapper.Save();
-            return RedirectToAction("EventInfo", "Action", new { id = model.Event.ID });
-        }
+        //[HttpGet]
+        //public IActionResult EventEdit(int id)
+        //{
+        //    var @event = _repoWrapper.Event.
+        //        FindByCondition(q => q.ID == id).
+        //        Include(i => i.EventType).
+        //        Include(g => g.EventStatus).
+        //        Include(g => g.EventGallarys).
+        //        Include(g => g.EventCategory).
+        //        Include(g => g.EventAdmins).
+        //        Include(g => g.EventAdministrations).
+        //        FirstOrDefault();
+        //    var eventCategories = _repoWrapper.EventCategory.FindAll();
+        //    var model = new EventCreateViewModel()
+        //    {
+        //        Users = _repoWrapper.User.FindAll(),
+        //        Event = @event,
+        //        EventTypes = _repoWrapper.EventType.FindAll(),
+        //        EventCategories = _createEventVMInitializer.GetEventCategories(eventCategories)
+        //    };
+        //    return View(model);
+        //}
+
+        //[HttpPost]
+        //public IActionResult EventEdit(EventCreateViewModel model)
+        //{
+        //    _repoWrapper.Event.Update(model.Event);
+        //    _repoWrapper.Save();
+        //    return RedirectToAction("EventInfo", "Action", new { id = model.Event.ID });
+        //}
     }
 }
