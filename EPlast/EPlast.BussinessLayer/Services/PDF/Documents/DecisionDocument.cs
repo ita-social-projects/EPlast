@@ -7,7 +7,6 @@ namespace EPlast.BussinessLayer
     public class DecisionDocument : PdfDocument
     {
         private readonly Decesion decesion;
-        private readonly IPDFSettings settings;
 
         public DecisionDocument(Decesion decesion) : this(decesion, new PDFSettings())
         {
@@ -16,7 +15,6 @@ namespace EPlast.BussinessLayer
         public DecisionDocument(Decesion decesion, IPDFSettings settings) : base(settings)
         {
             this.decesion = decesion;
-            this.settings = settings;
         }
 
         public override void SetDocumentBody(Section section)

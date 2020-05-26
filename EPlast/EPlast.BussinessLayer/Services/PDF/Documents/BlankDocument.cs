@@ -7,7 +7,6 @@ namespace EPlast.BussinessLayer
     {
         private const string StatementPhoto = "wwwroot/images/pdf/Statement-photo.png";
         private readonly BlankModel blank;
-        private readonly IPDFSettings settings;
 
         public BlankDocument(BlankModel blank) : this(blank, new PDFSettings())
         {
@@ -16,7 +15,6 @@ namespace EPlast.BussinessLayer
         public BlankDocument(BlankModel blank, IPDFSettings settings) : base(settings)
         {
             this.blank = blank;
-            this.settings = settings;
         }
 
         public override void SetDocumentBody(Section section)
@@ -342,9 +340,9 @@ namespace EPlast.BussinessLayer
                 SpaceAfter = "4mm",
             };
 
-            SetApprover(section, "ступінь, ім’я, прізвище, курінь		дата		підпис");
-            SetApprover(section, "ступінь, ім’я, прізвище, курінь		дата		підпис");
-            SetApprover(section, "ступінь, ім’я, прізвище, курінь		дата		підпис");
+            SetApprove(section, "ступінь, ім’я, прізвище, курінь		дата		підпис");
+            SetApprove(section, "ступінь, ім’я, прізвище, курінь		дата		підпис");
+            SetApprove(section, "ступінь, ім’я, прізвище, курінь		дата		підпис");
 
             paragraph = section.AddParagraph("Поручення станичного або референта УСП/УПС");
             paragraph.Format = new ParagraphFormat
@@ -410,7 +408,7 @@ namespace EPlast.BussinessLayer
                 SpaceBefore = "8mm",
                 SpaceAfter = "4mm",
             };
-            SetApprover(section, "Курінь УСП/УПС, пластовий ступінь, ім’я, прізвище, посада поручника, дата, підпис");
+            SetApprove(section, "Курінь УСП/УПС, пластовий ступінь, ім’я, прізвище, посада поручника, дата, підпис");
 
             paragraph = section.AddParagraph("Дата заприсяження, іменування: 66.66.6666");
             paragraph.Format = new ParagraphFormat
@@ -427,7 +425,7 @@ namespace EPlast.BussinessLayer
             };
         }
 
-        private void SetApprover(Section section, string text)
+        private static void SetApprove(Section section, string text)
         {
             var paragraph = section.AddParagraph($"1. {text}"); // тут апрувери
             paragraph.Format = new ParagraphFormat
