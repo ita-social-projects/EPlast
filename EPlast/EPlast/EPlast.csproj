@@ -18,9 +18,10 @@
     <Content Remove="Views\Account\LoginAndRegister.cshtml" />
     <Content Remove="Views\Account\ResetPasswordNowAllowed.cshtml" />
     <Content Remove="Views\Account\_UserLayout.cshtml" />
+    <Content Remove="Views\Documentation\_DeleteDecision.cshtml" />
     <Content Remove="wwwroot\uncompiled\ts\adminUser.ts" />
     <Content Remove="wwwroot\uncompiled\ts\clubMembers.ts" />
-    <Content Remove="wwwroot\uncompiled\ts\decesion.ts" />
+    <Content Remove="wwwroot\uncompiled\ts\decision.ts" />
     <Content Remove="wwwroot\uncompiled\ts\editClub.ts" />
     <Content Remove="wwwroot\uncompiled\ts\eventGallery.ts" />
     <Content Remove="wwwroot\uncompiled\ts\eventCreate.ts" />
@@ -61,9 +62,8 @@
     <Folder Include="wwwroot\bundles\css" />
     <Folder Include="wwwroot\bundles\js\" />
     <Folder Include="wwwroot\compiled\js\" />
+    <Folder Include="wwwroot\compiled\css\" />
     <Folder Include="wwwroot\documents\" />
-    <Folder Include="wwwroot\documents\" />
-    <Folder Include="wwwroot\images\EventsGallery\" />
     <Folder Include="wwwroot\images\Users\" />
     <Folder Include="wwwroot\uncompiled\less\" />
     <Folder Include="wwwroot\lib\*" />
@@ -79,4 +79,16 @@
       <UserProperties appsettings_1json__JsonSchema="" />
     </VisualStudio>
   </ProjectExtensions>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Documentation\_DeleteDecision.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\Documentation\_DeleteDecision.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\Documentation\_DeleteDecision.cshtml" />
+  </ItemGroup>
 </Project>
