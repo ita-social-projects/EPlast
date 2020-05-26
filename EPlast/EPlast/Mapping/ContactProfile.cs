@@ -8,8 +8,7 @@ namespace EPlast.Mapping
     {
         public ContactProfile()
         {
-            CreateMap<ContactsViewModel, ContactDTO>();
-            CreateMap<ContactDTO, ContactsViewModel>();
+            CreateMap<ContactsViewModel, ContactDTO>().ReverseMap();
         }
     }
 }

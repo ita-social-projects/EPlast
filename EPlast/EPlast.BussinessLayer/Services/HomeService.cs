@@ -6,10 +6,16 @@ namespace EPlast.BussinessLayer
 {
     public class HomeService : IHomeService
     {
+        private readonly IEmailConfirmation _emailConfirmation;
 
-        public Task ConfirmEmail(IEmailConfirmation emailConfirmation, ContactDTO contactDTO)
+        public HomeService(IEmailConfirmation emailConfirmation)
         {
-            return emailConfirmation.SendEmailAsync("eplastdmnstrtr@gmail.com",
+            _emailConfirmation = emailConfirmation;
+        }
+
+        public Task SendEmailAdmin(ContactDTO contactDTO)
+        {
+            return _emailConfirmation.SendEmailAsync("eplastdmnstrtr@gmail.com",
                 "Питання користувачів",
                 $"Контактні дані користувача : Електронна пошта {contactDTO.Email}, " +
                 $"Ім'я {contactDTO.Name}," +
