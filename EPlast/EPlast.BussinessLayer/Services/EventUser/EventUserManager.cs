@@ -6,9 +6,11 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using EPlast.BussinessLayer.DTO.Events;
 
 namespace EPlast.BussinessLayer.Services.EventUser
 {
@@ -20,8 +22,10 @@ namespace EPlast.BussinessLayer.Services.EventUser
         private readonly IParticipantStatusManager _participantStatusManager;
         private readonly IParticipantManager _participantManager;
         private readonly IEventAdminManager _eventAdminManager;
+        private readonly IEventCategoryManager _eventCategoryManager;
 
-        public EventUserManager(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IParticipantStatusManager participantStatusManager, IMapper mapper, IParticipantManager participantManager, IEventAdminManager eventAdminManager)
+
+        public EventUserManager(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IParticipantStatusManager participantStatusManager, IMapper mapper, IParticipantManager participantManager, IEventAdminManager eventAdminManager, IEventCategoryManager eventCategoryManager)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
@@ -29,6 +33,7 @@ namespace EPlast.BussinessLayer.Services.EventUser
             _mapper = mapper;
             _participantManager = participantManager;
             _eventAdminManager = eventAdminManager;
+            _eventCategoryManager = eventCategoryManager;
         }
 
         public EventUserDTO EventUser(string userId, ClaimsPrincipal user)
@@ -65,6 +70,25 @@ namespace EPlast.BussinessLayer.Services.EventUser
                 }
             }
             return model;
+        }
+
+        public EventCreateDTO InitializeEventCreateDTO()
+        {
+            var eventCategories = _eventCategoryManager.GetDTO();
+            var users = _mapper.Map<List<User>, IEnumerable<UserDTO>>(_repoWrapper.User.FindAll().ToList());
+            var eventTypes = _mapper.Map<List<EventType>, IEnumerable<EventTypeDTO>>(_repoWrapper.EventType.FindAll().ToList());
+            var model = new EventCreateDTO()
+            {
+                Users = users,
+                EventTypes = eventTypes,
+                EventCategories = eventCategories
+            };
+            return model;
+        }
+
+        public EventCreateDTO CreateEvent(EventCreateDTO model)
+        {
+            throw new NotImplementedException();
         }
     }
 }

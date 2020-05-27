@@ -1,13 +1,8 @@
-﻿
+﻿using System.Collections.Generic;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-
-namespace EPlast.ViewModels.Events
+namespace EPlast.ViewModels.EventUser
 {
     public class EventCreateViewModel
     {
@@ -16,11 +11,7 @@ namespace EPlast.ViewModels.Events
         public EventAdministration EventAdministration { get; set; }
         public IEnumerable<SelectListItem> EventCategories { get; set; }
         public IEnumerable<EventType> EventTypes { get; set; }
-        public IEnumerable<EventAdmin> EventAdmins { get; set; }
-        public EventStatus EventStatuses { get; set; }
-        public IEnumerable<EventAdministration> EventAdministrations { get; set; }
         public IEnumerable<User> Users { get; set; }
-        public User User { get; set; }
     }
 }
 
