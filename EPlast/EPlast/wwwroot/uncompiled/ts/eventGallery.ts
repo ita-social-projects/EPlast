@@ -5,7 +5,7 @@
         var files = input.files;
         var formData = new FormData();
         formData.append("ID", <string>$('#eventId').val());
-        for (var i = 0; i != files.length; i++) {
+        for (var i = 0; i !== files.length; i++) {
             formData.append("files", files[i]);
         }
         $("#filesBadge").html(files.length.toString());

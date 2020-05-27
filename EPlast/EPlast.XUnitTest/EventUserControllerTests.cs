@@ -48,7 +48,7 @@ namespace EPlast.XUnitTest
             var result = controller.EventCreate();
             //assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal(null, viewResult.ViewName);
+            Assert.Null(viewResult.ViewName);
             Assert.NotNull(viewResult);
         }
         [Fact]
@@ -66,7 +66,7 @@ namespace EPlast.XUnitTest
             var result = controller.EventCreate();
             //assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal(null, viewResult.ViewName);
+            Assert.Null(viewResult.ViewName);
             Assert.NotNull(viewResult);
         }
         [Fact]
@@ -83,7 +83,7 @@ namespace EPlast.XUnitTest
                 Returns(GetParticipantsForTests());
             //action
             var controller = new EventUserController(_repository.Object, _usermanager.Object, _iCreateEventVM.Object);
-            var result = controller.EventUser();
+            var result = controller.EventUser("1");
 
             //assert
             var viewResult = Assert.IsType<ViewResult>(result);
@@ -103,7 +103,7 @@ namespace EPlast.XUnitTest
                 Returns(GetParticipantsForTests());
             //action
             var controller = new EventUserController(_repository.Object, _usermanager.Object, _iCreateEventVM.Object);
-            var result = controller.EventUser();
+            var result = controller.EventUser("1");
 
             //assert
             var viewResult = Assert.IsType<ViewResult>(result);
@@ -123,7 +123,7 @@ namespace EPlast.XUnitTest
                 Returns(GetBadParticipantFields());
             //action
             var controller = new EventUserController(_repository.Object, _usermanager.Object, _iCreateEventVM.Object);
-            var result = controller.EventUser();
+            var result = controller.EventUser("1");
 
             //assert
             var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);

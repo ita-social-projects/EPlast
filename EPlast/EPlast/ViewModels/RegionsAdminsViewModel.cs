@@ -1,14 +1,11 @@
-﻿using EPlast.DataAccess.Entities;
-using System;
+﻿using EPlast.ViewModels.City;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.ViewModels
 {
-    public class RegionsAdmins
+    public class RegionsAdminsViewModel
     {
-        public IEnumerable<City> Cities { get; set; }
-        public string City { get; set; }
+        public IEnumerable<CityViewModel> Cities { get; set; }
+        public string CityName { get; set; }
     }
 }

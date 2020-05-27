@@ -19,10 +19,10 @@ namespace EPlast.Models.ViewModelInitializations
             foreach (var cityMember in cityMembers)
             {
                 users.Add(new SelectListItem
-                    {
-                        Value = cityMember.Id,
-                        Text = $"{cityMember.FirstName} {cityMember.LastName}"
-                    });
+                {
+                    Value = cityMember.Id,
+                    Text = $"{cityMember.FirstName} {cityMember.LastName}"
+                });
             }
             return users;
         }

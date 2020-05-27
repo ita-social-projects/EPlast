@@ -1,8 +1,7 @@
-﻿@using EPlast.ViewModels
-@using Microsoft.AspNetCore.Identity
+﻿@using EPlast.ViewModels.City
 @model CityViewModel
 @{
-    ViewData["Title"] = "City Details";
+    ViewData["Title"] = "Деталі станиці";
 }
 <div class="main-wrapper">
     <div class="container content-wrapper">
@@ -10,7 +9,7 @@
                 <div class="col-md-8">
                     <div class="portlet light profile-sidebar-portlet bordered">
                         <div class="profile-userpic">
-                            <img src="/images/Cities/@Model.City.Logo" class="img-thumbnail" alt="logo">
+                            <img src="/images/Cities/@Model.Logo" class="img-thumbnail" alt="logo">
                         </div>
                     </div>
                 </div>
@@ -18,51 +17,51 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-12">
-                                <h4>Деталі Станиці - "@Model.City.Name"</h4>
+                                <h4>Деталі Станиці - "@Model.Name"</h4>
                                 <hr>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12">
-                                @if (@Model.City.Description != null)
+                                @if (@Model.Description != null)
                                 {
                                     <div class="form-group row">
                                         <label for="username" class="col-6 col-form-label font-weight-bold">Опис</label>
-                                        <p class="col-6 col-form-label">@Model.City.Description</p>
+                                        <p class="col-6 col-form-label">@Model.Description</p>
                                     </div>
                                 }
-                                @if (@Model.City.Email != null)
+                                @if (@Model.Email != null)
                                 {
                                     <div class="form-group row">
                                         <label for="email" class="col-6 col-form-label font-weight-bold">Email</label>
-                                        <p class="col-6 col-form-label">@Model.City.Email</p>
+                                        <p class="col-6 col-form-label">@Model.Email</p>
                                     </div>
                                 }
-                                @if (@Model.City.PhoneNumber != null)
+                                @if (@Model.PhoneNumber != null)
                                 {
                                     <div class="form-group row">
                                         <label for="phone" class="col-6 col-form-label font-weight-bold">Номер телефону</label>
-                                        <p class="col-6 col-form-label">@Model.City.PhoneNumber</p>
+                                        <p class="col-6 col-form-label">@Model.PhoneNumber</p>
                                     </div>
                                 }
-                                @if (@Model.City.CityURL != null)
+                                @if (@Model.CityURL != null)
                                 {
                                     <div class="form-group row">
                                         <label for="text" class="col-6 col-form-label font-weight-bold">Наш web-сайт</label>
 
-                                        <p class="col-6 col-form-label">@Model.City.CityURL</p>
+                                        <p class="col-6 col-form-label">@Model.CityURL</p>
 
                                     </div>
                                 }
                                 <div class="form-group row">
                                     <label for="email" class="col-6 col-form-label font-weight-bold">Наше представництво</label>
-                                    <p class="col-6 col-form-label">@Model.City.Street, @Model.City.HouseNumber</p>
+                                    <p class="col-6 col-form-label">@Model.Street, @Model.HouseNumber</p>
                                 </div>
 
                             </div>
                         </div>
                         <div class="row">
-                            <a asp-controller="City" asp-action="CityProfile" asp-route-cityid="@Model.City.ID" class="btn btn-primary btn-lg colors-for-club-buttons" role="button">Назад</a>
+                            <a asp-controller="City" asp-action="CityProfile" asp-route-cityId="@Model.ID" class="btn btn-primary btn-lg colors-for-club-buttons" role="button">Назад</a>
 
                         </div>
                     </div>
