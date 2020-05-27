@@ -176,9 +176,8 @@ namespace EPlast.Controllers
                 //}
                 if (ModelState.IsValid)
                 {
-
-                    _cityService.Create(_mapper.Map<CityProfileViewModel, CityProfileDTO>(model), file);
-                    return RedirectToAction("CityProfile", "City", new { cityid = model.City.ID });
+                    int cityId=_cityService.Create(_mapper.Map<CityProfileViewModel, CityProfileDTO>(model), file);
+                    return RedirectToAction("CityProfile", "City", new { cityid = cityId });
                 }
                 else
                 {

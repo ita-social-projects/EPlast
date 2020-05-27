@@ -117,12 +117,14 @@ namespace EPlast.BussinessLayer.Services
             _repoWrapper.City.Update(_mapper.Map<CityDTO, DataAccessCity.City>(model.City));
             _repoWrapper.Save();
         }
-        public void Create(CityProfileDTO model, IFormFile file)
+        public int Create(CityProfileDTO model, IFormFile file)
         {
             var city = model.City;
             UploadPhoto(ref city, file);
-            _repoWrapper.City.Create(_mapper.Map<CityDTO, DataAccessCity.City>(model.City));
+            var modelToCreate = _mapper.Map<CityDTO, DataAccessCity.City>(model.City);
+            _repoWrapper.City.Create(modelToCreate);
             _repoWrapper.Save();
+            return modelToCreate.ID;
         }
         private void UploadPhoto(ref CityDTO city, IFormFile file)
         {
