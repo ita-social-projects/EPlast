@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.BussinessLayer.DTO;
-using EPlast.DataAccess.Entities;
+using EPlast.BussinessLayer.DTO.UserProfiles;
 using Microsoft.AspNetCore.Http;
 
-namespace EPlast.BussinessLayer.Services.Interfaces
+namespace EPlast.BussinessLayer.Interfaces.UserProfiles
 {
     public interface IUserService
     {

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO;
-using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.BussinessLayer.DTO.UserProfiles;
+using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
@@ -15,7 +16,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace EPlast.BussinessLayer.Services
+namespace EPlast.BussinessLayer.Services.UserProfiles
 {
     public class UserService : IUserService
     {

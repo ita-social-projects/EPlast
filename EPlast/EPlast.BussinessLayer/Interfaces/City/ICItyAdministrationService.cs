@@ -1,7 +1,7 @@
 ﻿using EPlast.BussinessLayer.DTO.City;
 using System.Collections.Generic;
 
-namespace EPlast.BussinessLayer.Services.Interfaces
+namespace EPlast.BussinessLayer.Interfaces.City
 {
     public interface ICItyAdministrationService
     {
