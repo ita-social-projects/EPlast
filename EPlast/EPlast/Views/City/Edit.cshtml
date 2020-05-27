@@ -1,6 +1,5 @@
-﻿@using EPlast.ViewModels
-@using Microsoft.AspNetCore.Identity
-@model CityViewModel
+﻿@using EPlast.ViewModels.City
+@model CityProfileViewModel
 @{
     ViewData["Title"] = "Редагування Станиці";
 }
@@ -8,7 +7,7 @@
         <div class="container content-wrapper" id="divCityContainer">
             <div class="data-table-wrapper-club club-wrappers-radius data-table-wrapper" id="divFormEditCity">
                 <h1 class="grid-header">Редагування Станиці - "@Model.City.Name"</h1>
-                <form class="container mt-4" id="formCityContainer" asp-action="Edit" asp-controller="City" asp-route-cityid="@Model.City.ID" enctype="multipart/form-data">
+                <form class="container mt-4" id="formCityContainer" asp-action="Edit" asp-controller="City" asp-route-cityId="@Model.City.ID" enctype="multipart/form-data">
                     <div class="row">
                         <div class="col-7">
                             @Html.HiddenFor(model => model.City.ID)
@@ -157,7 +156,7 @@
                                 }
                             </tbody>
                         </table>
-                        <a asp-controller="City" asp-action="CityProfile" asp-route-cityid="@Model.City.ID" class="btn btn-primary btn-lg colors-for-club-buttons" role="button">Назад</a>
+                        <a asp-controller="City" asp-action="CityProfile" asp-route-cityId="@Model.City.ID" class="btn btn-primary btn-lg colors-for-club-buttons" role="button">Назад</a>
                     </div>
         </div>
     </div>

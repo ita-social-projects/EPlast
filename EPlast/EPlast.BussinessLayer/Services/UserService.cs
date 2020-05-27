@@ -195,9 +195,9 @@ namespace EPlast.BussinessLayer.Services
                 if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default.png"))
                 {
                     var oldPath = Path.Combine(uploads, oldImageName);
-                    if (System.IO.File.Exists(oldPath))
+                    if (File.Exists(oldPath))
                     {
-                        System.IO.File.Delete(oldPath);
+                        File.Delete(oldPath);
                     }
                 }
 
