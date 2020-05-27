@@ -47,6 +47,7 @@ namespace EPlast.BussinessLayer.Services
                 .FindByCondition(ar => ar.ID == id)
                 .Include(ar => ar.MembersStatistic)
                 .Include(ar => ar.CityManagement)
+                    .ThenInclude(cm => cm.CityAdminNew)
                 .Include(ar => ar.City)
                 .First();
             return await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId) ? _mapper.Map<AnnualReport, AnnualReportDTO>(annualReport)
@@ -68,7 +69,7 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task CreateAsync(ClaimsPrincipal claimsPrincipal, AnnualReportDTO annualReportDTO)
         {
-            if (await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReportDTO.CityId))
+            if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReportDTO.CityId))
             {
                 throw new AnnualReportException(ErrorMessageNoAccess);
             }
@@ -92,14 +93,15 @@ namespace EPlast.BussinessLayer.Services
         public async Task EditAsync(ClaimsPrincipal claimsPrincipal, AnnualReportDTO annualReportDTO)
         {
             var annualReport = _repositoryWrapper.AnnualReports
-                .FindByCondition(ar => ar.ID == annualReportDTO.ID && ar.CityId == annualReportDTO.CityId && ar.UserId == annualReportDTO.UserId
-                && ar.Date == annualReportDTO.Date && ar.Status == DatabaseEntities.AnnualReportStatus.Unconfirmed)
+                .FindByCondition(ar => ar.ID == annualReportDTO.ID)
                 .FirstOrDefault();
-            if (annualReport == null || annualReportDTO.Status != DTO.AnnualReportStatus.Unconfirmed)
+            if (annualReport == null && (annualReport.CityId != annualReportDTO.CityId || annualReport.UserId != annualReportDTO.UserId ||
+                annualReport.Date != annualReportDTO.Date || annualReport.Status != DatabaseEntities.AnnualReportStatus.Unconfirmed ||
+                annualReportDTO.Status != DTO.AnnualReportStatus.Unconfirmed))
             {
                 throw new AnnualReportException(ErrorMessageEditFailed);
             }
-            if (await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
+            if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
             {
                 throw new AnnualReportException(ErrorMessageNoAccess);
             }
@@ -115,7 +117,7 @@ namespace EPlast.BussinessLayer.Services
                 .Include(ar => ar.CityManagement)
                     .ThenInclude(cm => cm.CityAdminNew)
                 .First();
-            if (await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
+            if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
             {
                 throw new AnnualReportException(ErrorMessageNoAccess);
             }
@@ -132,7 +134,7 @@ namespace EPlast.BussinessLayer.Services
                 .FindByCondition(ar => ar.ID == id && ar.Status == DatabaseEntities.AnnualReportStatus.Confirmed)
                 .Include(ar => ar.CityManagement)
                 .First();
-            if (await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
+            if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
             {
                 throw new AnnualReportException(ErrorMessageNoAccess);
             }
@@ -150,7 +152,7 @@ namespace EPlast.BussinessLayer.Services
             var annualReport = _repositoryWrapper.AnnualReports
                 .FindByCondition(ar => ar.ID == id && ar.Status == DatabaseEntities.AnnualReportStatus.Unconfirmed)
                 .First();
-            if (await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
+            if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
             {
                 throw new AnnualReportException(ErrorMessageNoAccess);
             }

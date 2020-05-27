@@ -10,6 +10,7 @@ namespace EPlast.ViewModels
 {
     public class CreateEditAnnualReportViewModel
     {
+        public AnnualReportOperation Operation { get; set; }
         public string CityName { get; set; }
         public IEnumerable<SelectListItem> CityMembers { get; set; }
         public IEnumerable<SelectListItem> CityLegalStatusTypes { get; set; }
@@ -23,7 +24,10 @@ namespace EPlast.ViewModels
 
         private void InitializeCityMembers(IEnumerable<CityMembersViewModel> cityMembers)
         {
-            CityMembers = new List<SelectListItem>();
+            CityMembers = new List<SelectListItem>()
+            {
+                new SelectListItem { Text = "" }
+            };
             foreach (var cityMember in cityMembers)
             {
                 CityMembers = CityMembers.Append(new SelectListItem
