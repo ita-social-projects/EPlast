@@ -1,230 +1,251 @@
-﻿//using EPlast.BussinessLayer;
-//using EPlast.Controllers;
-//using EPlast.DataAccess.Entities;
-//using EPlast.DataAccess.Repositories;
-//using EPlast.Models.ViewModelInitializations.Interfaces;
-//using EPlast.ViewModels;
-//using Microsoft.AspNetCore.Hosting;
-//using Microsoft.AspNetCore.Identity;
-//using Moq;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Threading.Tasks;
-//using EPlast.Wrapper;
-//using Xunit;
-//using Microsoft.AspNetCore.Http;
-//using System.IO;
-//using System;
-//using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
+using EPlast.BussinessLayer;
+using EPlast.BussinessLayer.DTO;
+using EPlast.Controllers;
+using EPlast.Models;
+using EPlast.ViewModels;
+using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Moq;
+using Xunit;
+using Organization = EPlast.Models.Organization;
 
-//namespace EPlast.XUnitTest
-//{
-//    public class DocumentationControllerTests
-//    {
-//        private static DocumentationController CreateDocumentationController()
-//        {
-//            var repository = new Mock<IRepositoryWrapper>();
-//            var store = new Mock<IUserStore<User>>();
-//            var userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
-//            var decisionVmInitializer = new Mock<IDecisionVMIitializer>();
-//            var pdfService = new Mock<IPDFService>();
-//            var hostingEnvironment = new Mock<IHostingEnvironment>();
-//            var directoryManager = new Mock<IDirectoryManager>();
-//            var fileManager = new Mock<IFileManager>();
-//            var fileStreamManager = new Mock<IFileStreamManager>();
+namespace EPlast.XUnitTest
+{
+    public class DocumentationControllerDecisionTests
+    {
+        private readonly Mock<IMapper> _mapper;
+        private readonly Mock<IDecisionService> _decisionService;
 
-//            directoryManager.Setup(dir => dir.Exists(It.IsAny<string>())).Returns(true);
-//            directoryManager.Setup(dir => dir.GetFiles(It.IsAny<string>())).Returns(new string[] { "yes", "stronk", "files" });
+        public DocumentationControllerDecisionTests()
+        {
+            _mapper = new Mock<IMapper>();
+            _decisionService = new Mock<IDecisionService>();
+        }
 
-//            fileStreamManager.Setup(f => f.GenerateFileStreamManager(It.IsAny<string>(), It.IsAny<FileMode>()))
-//                .Returns<string, FileMode>((path, mode) => new FileStreamManager());
-//            fileStreamManager.Setup(f => f.GetStream()).Returns(new MemoryStream());
-//            fileStreamManager.Setup(f => f.CopyToAsync(It.IsAny<MemoryStream>()))
-//                .Callback<MemoryStream>(mem => mem.SetLength(5));
+        [Theory]
+        [InlineData(2, true)]
+        [InlineData(3, true)]
+        [InlineData(42, false)]
+        [InlineData(21, false)]
+        public void GetDecisionByIdTest(int id, bool expected)
+        {
+            _decisionService.Setup(d => d.GetDecision(It.IsAny<int>()))
+                .Returns(() => CreateDecisionsDtoQueryable().First(x => x.ID == id));
+            _mapper.Setup(d => d.Map<Decision>(It.IsAny<DecisionDTO>()))
+                .Returns(() => CreateDecisionsQueryable().First(x => x.ID == id));
+            DocumentationController documentationController = CreateDocumentationController;
 
-//            fileStreamManager.Setup(f => f.CopyToAsync(It.IsAny<Stream>(), It.IsAny<Stream>()))
-//               .Callback<Stream, Stream>((memFrom, memTo) => memTo.SetLength(5));
+            JsonResult jsonResult = documentationController.GetDecision(id);
+            bool actual = jsonResult.Value.ToString().Contains("True");
 
-//            fileManager.Setup(f => f.Exists(It.IsAny<string>())).Returns(true);
+            Assert.Equal(expected, actual);
+        }
 
-//            repository.Setup(rep => rep.Organization.FindAll()).Returns(GetTestOrganizations());
-//            repository.Setup(rep => rep.DecesionTarget.FindAll()).Returns(GetTestDecesionTargets());
-//            repository.Setup(rep => rep.Decesion.Attach(new Decesion()));
-//            repository.Setup(rep => rep.Decesion.Create(new Decesion()));
-//            repository.Setup(rep => rep.Decesion.FindAll()).Returns(GetTestDecesion());
-//            repository.Setup(rep => rep.Decesion.Include(x => x.DecesionTarget, x => x.Organization)).Returns(GetTestDecesion());
-//            repository.Setup(rep => rep.Save());
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void ChangeDecisionTest(bool expected)
+        {
+            DecisionViewModel decisionViewModel = CreateDecisionViewModel();
+            _mapper.Setup(m => m.Map<DecisionDTO>(It.IsAny<Decision>()))
+                 .Returns(new DecisionDTO());
+            _decisionService.Setup(d => d.ChangeDecision(It.IsAny<DecisionDTO>()))
+                .Returns(() => expected);
+            DocumentationController documentationController = CreateDocumentationController;
 
-//            return new DocumentationController(repository.Object, userManager.Object, null, decisionVmInitializer.Object, pdfService.Object,
-//                hostingEnvironment.Object, null, null, directoryManager.Object, fileManager.Object, fileStreamManager.Object, null);
-//        }
+            JsonResult jsonResult = documentationController.ChangeDecision(decisionViewModel);
+            bool actual = jsonResult.Value.ToString().Contains("True");
 
-//        private static IQueryable<Decesion> GetTestDecesion()
-//        {
-//            var decesion = new List<Decesion>();
-//            for (int i = 0; i < 5; ++i)
-//            {
-//                decesion.Add(CreateFakeDecesion());
-//            }
-//            return decesion.AsQueryable();
-//        }
+            Assert.Equal(expected, actual);
+        }
 
-//        private static IQueryable<Organization> GetTestOrganizations()
-//        {
-//            var organization = new List<Organization>
-//            {
-//                 new Organization{ID=1,OrganizationName="Test1"},
-//                 new Organization{ID=2,OrganizationName="Test2"},
-//                 new Organization{ID=3,OrganizationName="Test3"}
-//            }.AsQueryable();
-//            return organization;
-//        }
+        [Fact]
+        public async Task SaveDecisionWithNullDecisionViewMode()
+        {
 
-//        private static IQueryable<DecesionTarget> GetTestDecesionTargets()
-//        {
-//            var organization = new List<DecesionTarget>
-//            {
-//                 new DecesionTarget{ID = 1, TargetName = "First DecesionTarget"},
-//                 new DecesionTarget{ID = 2, TargetName = "Second DecesionTarget"},
-//                 new DecesionTarget{ID = 3, TargetName = "Third DecesionTarget"}
-//            }.AsQueryable();
-//            return organization;
-//        }
+            DecisionViewModel decisionViewModel = null;
+            DocumentationController documentationController = CreateDocumentationController;
 
-//        [Fact]
-//        public void CreateDecesionTest()
-//        {
-//            var controller = CreateDocumentationController();
+            JsonResult jsonResult = await documentationController.SaveDecision(decisionViewModel);
+            bool actual = jsonResult.Value.ToString().Contains("False");
 
-//            var result = controller.CreateDecesion();
+            Assert.True(actual);
+        }
 
-//            Assert.IsType<DecesionViewModel>(result);
-//        }
+        [Fact]
+        public async Task SaveDecisionWithIncorrectFileTest()
+        {
+            DecisionViewModel decisionViewModel = CreateDecisionViewModel();
+            decisionViewModel.DecisionWrapper.File = new FormFile(null, 1234, 11241234, "fdd", "dfsdf");
+            DocumentationController documentationController = CreateDocumentationController;
 
-//        private static Decesion CreateFakeDecesion(bool haveFile = false)
-//        {
-//            return new Decesion
-//            {
-//                ID = 1,
-//                Name = "Test Decesion",
-//                DecesionStatusType = DecesionStatusType.InReview,
-//                DecesionTarget = new DecesionTarget { ID = 1, TargetName = "Test Decesion target" },
-//                Description = "Test Decesion Description",
-//                Organization = new Organization { ID = 1, OrganizationName = "Test Decesion Organization" },
-//                Date = DateTime.Now,
-//                HaveFile = haveFile
-//            };
-//        }
+            JsonResult jsonResult = await documentationController.SaveDecision(decisionViewModel);
+            bool actual = jsonResult.Value.ToString().Contains("file length > 10485760");
 
-//        private static DecesionViewModel CreateDecesionViewModel(int DecesionTargetID = 1, bool haveFile = false) => new DecesionViewModel
-//        {
-//            Decesion = new Decesion
-//            {
-//                ID = 1,
-//                Name = "Test Decesion",
-//                DecesionStatusType = DecesionStatusType.InReview,
-//                DecesionTarget = new DecesionTarget { ID = DecesionTargetID, TargetName = "Test Decesion target" },
-//                Description = "Test Decesion Description",
-//                Organization = new Organization { ID = 1, OrganizationName = "Test Decesion Organization" },
-//                Date = DateTime.Now,
-//                HaveFile = haveFile
-//            }
-//        };
+            Assert.True(actual);
+        }
 
-//        public static IEnumerable<object[]> TestDecesionViewModelWithoutFile =>
-//        new List<object[]> {
-//            new object[]{CreateDecesionViewModel(), true },
-//            new object[]{CreateDecesionViewModel(DecesionTargetID: 0), true },
-//            new object[]{null, false}
-//        };
+        [Fact]
+        public async Task SaveDecisionCorrectTest()
+        {
+            _mapper.Setup(m => m.Map<DecisionWrapperDTO>(It.IsAny<DecisionWrapper>()))
+                .Returns(new DecisionWrapperDTO());
+            _decisionService.Setup(d => d.SaveDecisionAsync(It.IsAny<DecisionWrapperDTO>()))
+                .Returns(Task.FromResult(true));
+            DecisionViewModel decisionViewModel = CreateDecisionViewModel();
+            DocumentationController documentationController = CreateDocumentationController;
 
-//        [Theory]
-//        [MemberData(nameof(TestDecesionViewModelWithoutFile))]
-//        public async Task SaveDecesionAsyncTestWithoutFileAsync(DecesionViewModel model, bool expected)
-//        {
-//            var controller = CreateDocumentationController();
+            JsonResult jsonResult = await documentationController.SaveDecision(decisionViewModel);
+            bool actual = jsonResult.Value.ToString().Contains("True");
 
-//            var result = await controller.SaveDecesionAsync(model);
-//            bool actual = result.Value.ToString().Contains("True") ? true : false;
+            Assert.True(actual);
+        }
 
-//            Assert.Equal(expected, actual);
-//        }
+        [Fact]
+        public void CreateDecisionCorrectTest()
+        {
+            _mapper.Setup(m => m.Map<List<Organization>>(It.IsAny<List<OrganizationDTO>>()))
+                .Returns(new List<Organization>());
+            _mapper.Setup(m => m.Map<List<DecisionWrapper>>(It.IsAny<List<DecisionWrapperDTO>>()))
+                .Returns(new List<DecisionWrapper>());
+            _mapper.Setup(m => m.Map<List<DecisionTarget>>(It.IsAny<List<DecisionTargetDTO>>()))
+                .Returns(new List<DecisionTarget>());
+            _decisionService.Setup(d => d.GetDecisionStatusTypes()).Returns(new List<SelectListItem>());
+            DocumentationController documentationController = CreateDocumentationController;
 
-//        public static IEnumerable<object[]> TestDecesionViewModelWithFile =>
-//            new List<object[]> {
-//            new object[]{CreateDecesionViewModel(haveFile:true), true },
-//            new object[]{CreateDecesionViewModel(haveFile: true), true },
-//            new object[]{null, false}
-//            };
+            DecisionViewModel decisionViewModel = documentationController.CreateDecision();
 
-//        public static IFormFile FakeFile()
-//        {
-//            var fileMock = new Mock<IFormFile>();
-//            var content = "Hello World from a Fake File";
-//            var fileName = "test.pdf";
-//            var ms = new MemoryStream();
-//            var writer = new StreamWriter(ms);
-//            writer.Write(content);
-//            writer.Flush();
-//            ms.Position = 0;
-//            fileMock.Setup(_ => _.OpenReadStream()).Returns(ms);
-//            fileMock.Setup(_ => _.FileName).Returns(fileName);
-//            fileMock.Setup(_ => _.Length).Returns(ms.Length);
+            Assert.IsType<DecisionViewModel>(decisionViewModel);
 
-//            return fileMock.Object;
-//        }
+        }
+        [Fact]
+        public void CreateDecisionFailTest()
+        {
+            _mapper.Setup(m => m.Map<List<Organization>>(It.IsAny<List<OrganizationDTO>>()))
+                .Returns(() => null);
+            _mapper.Setup(m => m.Map<List<DecisionWrapper>>(It.IsAny<List<DecisionWrapperDTO>>()))
+                .Returns(new List<DecisionWrapper>());
+            _mapper.Setup(m => m.Map<List<DecisionTarget>>(It.IsAny<List<DecisionTargetDTO>>()))
+                .Returns(new List<DecisionTarget>());
+            _decisionService.Setup(d => d.GetDecisionStatusTypes()).Returns(new List<SelectListItem>());
+            DocumentationController documentationController = CreateDocumentationController;
 
-//        [Theory]
-//        [MemberData(nameof(TestDecesionViewModelWithFile))]
-//        public async Task SaveDecesionAsyncTestWithFileAsync(DecesionViewModel model, bool expected)
-//        {
-//            if (model != null)
-//                model.File = FakeFile();
+            DecisionViewModel decisionViewModel = documentationController.CreateDecision();
 
-//            var controller = CreateDocumentationController();
+            Assert.True(decisionViewModel == null);
 
-//            var result = await controller.SaveDecesionAsync(model);
+        }
+        [Fact]
+        public void ReadDecisionFailTest()
+        {
+            _mapper.Setup(m => m.Map<List<DecisionWrapper>>(It.IsAny<List<DecisionWrapperDTO>>()))
+                .Returns(() => null);
+            DocumentationController documentationController = CreateDocumentationController;
 
-//            bool actual = result.Value.ToString().Contains("True") ? true : false;
+            var result = documentationController.ReadDecision();
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
 
-//            Assert.Equal(expected, actual);
-//        }
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+        [Fact]
+        public void ReadDecisionCorrectTest()
+        {
+            _mapper.Setup(m => m.Map<List<DecisionWrapper>>(It.IsAny<List<DecisionWrapperDTO>>()))
+                .Returns(new List<DecisionWrapper>());
+            _mapper.Setup(m => m.Map<List<Organization>>(It.IsAny<List<OrganizationDTO>>()))
+                .Returns(new List<Organization>());
+            _mapper.Setup(m => m.Map<List<DecisionWrapper>>(It.IsAny<List<DecisionWrapperDTO>>()))
+                .Returns(new List<DecisionWrapper>());
+            _mapper.Setup(m => m.Map<List<DecisionTarget>>(It.IsAny<List<DecisionTargetDTO>>()))
+                .Returns(new List<DecisionTarget>());
+            DocumentationController documentationController = CreateDocumentationController;
 
-//        [Theory]
-//        [InlineData("1", "text.txt")]
-//        public async Task DownloadTest(string id, string filename)
-//        {
-//            var controller = CreateDocumentationController();
+            var result = documentationController.ReadDecision();
 
-//            var result = await controller.Download(id, filename);
-//            var viewResult = Assert.IsType<FileStreamResult>(result);
+            Assert.IsType<ViewResult>(result);
 
-//            Assert.Equal(filename, viewResult.FileDownloadName);
-//        }
+        }
 
-//        [Theory]
-//        [InlineData("", "text.txt")]
-//        [InlineData("", "")]
-//        public async Task DownloadWrongDataTest(string id, string filename)
-//        {
-//            var controller = CreateDocumentationController();
+        [Theory]
+        [InlineData(1, true)]
+        [InlineData(2, true)]
+        [InlineData(42, false)]
+        [InlineData(-1, false)]
+        public void DeleteDecisionTest(int id, bool expected)
+        {
+            Decision decision;
+            try
+            {
+                decision = CreateDecisionsQueryable().First(x => x.ID == id);
+            }
+            catch
+            {
+                decision = null;
+            }
+            _decisionService.Setup(d => d.DeleteDecision(It.IsAny<int>()))
+                .Returns(() => decision != null);
+            DocumentationController documentationController = CreateDocumentationController;
 
-//            var result = await controller.Download(id, filename);
-//            var viewResult = Assert.IsType<ContentResult>(result);
+            JsonResult jsonResult = documentationController.DeleteDecision(id);
+            bool actual = jsonResult.Value.ToString().Contains("True");
 
-//            Assert.Equal("filename or id not present", viewResult.Content);
-//        }
+            Assert.Equal(expected, actual);
+        }
 
-//        [Fact]
-//        public void ReadDecesionTest()
-//        {
-//            var controller = CreateDocumentationController();
+        private static IQueryable<DecisionDTO> CreateDecisionsDtoQueryable()
+        {
+            List<DecisionDTO> decisions = new List<DecisionDTO>();
+            for (int i = 0; i < 10; i++)
+            {
+                decisions.Add(new DecisionDTO
+                {
+                    ID = i,
+                    Name = "Name " + i
+                });
+            }
+            return decisions.AsQueryable();
+        }
+        private static IEnumerable<Decision> CreateDecisionsQueryable()
+        {
+            List<Decision> decisions = new List<Decision>();
+            for (int i = 0; i < 10; i++)
+            {
+                decisions.Add(new Decision
+                {
+                    ID = i,
+                    Name = "Name " + i
+                });
+            }
+            return decisions.AsEnumerable();
+        }
 
-//            var result = (ViewResult)controller.ReadDecesion();
+        private static DecisionViewModel CreateDecisionViewModel(int decisionTargetId = 1, bool haveFile = false) => new DecisionViewModel
+        {
+            DecisionWrapper = new DecisionWrapper
+            {
+                Decision = new Decision
+                {
 
-//            var model = result.ViewData.Model;
+                    ID = 1,
+                    Name = "Test Decision",
+                    DecisionStatusType = DecisionStatusType.InReview,
+                    DecisionTarget = new DecisionTarget { ID = decisionTargetId, TargetName = "Test Decision target" },
+                    Description = "Test Decision Description",
+                    Organization = new Organization { ID = 1, OrganizationName = "Test Decision Organization" },
+                    Date = DateTime.Now,
+                    HaveFile = haveFile
+                }
+            }
 
-//            Assert.IsType<Tuple<DecesionViewModel, List<DecesionViewModel>>>(model);
-//        }
-//    }
-//}
+        };
+        private DocumentationController CreateDocumentationController =>
+            new DocumentationController(null, null, null, null, null, null, null, _decisionService.Object, _mapper.Object);
+    }
+}
