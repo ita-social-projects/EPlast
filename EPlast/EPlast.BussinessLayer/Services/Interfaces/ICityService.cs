@@ -17,7 +17,7 @@ namespace EPlast.BussinessLayer.Services.Interfaces
         CityProfileDTO CityDocuments(int cityId);
         CityProfileDTO Edit(int cityId);
         void Edit(CityProfileDTO model, IFormFile file);
-        void Create(CityProfileDTO model, IFormFile file);
+        int Create(CityProfileDTO model, IFormFile file);
 
     }
 }
