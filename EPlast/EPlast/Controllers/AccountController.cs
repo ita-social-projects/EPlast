@@ -10,7 +10,6 @@ using EPlast.ViewModels.UserInformation.UserProfile;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity.UI.V3.Pages.Internal.Account;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
@@ -206,7 +205,7 @@ namespace EPlast.Controllers
             {
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
-            string code = await _accountService.GenerateConfToken(userDto);  //чекати
+            string code = await _accountService.GenerateConfToken(userDto);
             var confirmationLink = Url.Action(
                 nameof(ConfirmingEmail),
                 "Account",
@@ -287,7 +286,7 @@ namespace EPlast.Controllers
                     var userDto = await _accountService.FindByEmailAsync(forgotpasswordVM.Email);
                     if (userDto == null || !(await _accountService.IsEmailConfirmedAsync(userDto)))
                     {
-                        ModelState.AddModelError("", "Користувача із заданою електронною поштою немає в системі або він не підтвердив свою реєстрацію");
+                        ModelState.AddModelError("", _resourceForErrors["Forgot-NotRegisteredUser"]);
                         return View("ForgotPassword");
                     }
                     string code = await _accountService.GenerateResetTokenAsync(userDto);
@@ -349,7 +348,7 @@ namespace EPlast.Controllers
                 var userDto = await _accountService.FindByEmailAsync(resetpasswordVM.Email);
                 if (userDto == null)
                 {
-                    ModelState.AddModelError("", "Користувача із заданою електронною поштою немає в системі або він не підтвердив свою реєстрацію");
+                    ModelState.AddModelError("", _resourceForErrors["Reset-NotRegisteredUser"]);
                     return View("ResetPassword");
                 }
                 var result = await _accountService.ResetPasswordAsync(userDto.Id, _mapper.Map<ResetPasswordDto>(resetpasswordVM));
@@ -360,7 +359,7 @@ namespace EPlast.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Проблеми зі скидуванням пароля або введений новий пароль повинен вміщати 8символів, включаючи літери та цифри");
+                    ModelState.AddModelError("", _resourceForErrors["Reset-PasswordProblems"]);
                     return View("ResetPassword");
                 }
             }
@@ -403,7 +402,7 @@ namespace EPlast.Controllers
                     var result = await _accountService.ChangePasswordAsync(userDto.Id, _mapper.Map<ChangePasswordDto>(changepasswordModel));
                     if (!result.Succeeded)
                     {
-                        ModelState.AddModelError("", "Проблема зі зміною пароля, можливо неправильно введений старий пароль");
+                        ModelState.AddModelError("", _resourceForErrors["Change-PasswordProblems"]);
                         return View("ChangePassword");
                     }
                     _accountService.RefreshSignInAsync(userDto);
@@ -446,13 +445,13 @@ namespace EPlast.Controllers
 
                 if (remoteError != null)
                 {
-                    ModelState.AddModelError(string.Empty, $"Error from external provider : {remoteError}");
+                    ModelState.AddModelError("", _resourceForErrors["Error-ExternalLoginProvider"]);
                     return View("Login", loginViewModel);
                 }
                 var info = await _accountService.GetInfoAsync();
                 if (info == null)
                 {
-                    ModelState.AddModelError(string.Empty, "Error loading external login information");
+                    ModelState.AddModelError(string.Empty, _resourceForErrors["Error-ExternalLoginInfo"]);
                     return View("Login", loginViewModel);
                 }
 

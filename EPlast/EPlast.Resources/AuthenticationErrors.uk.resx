@@ -117,6 +117,18 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Change-PasswordProblems" xml:space="preserve">
+    <value>Проблема зі зміною пароля, можливо неправильно введений старий пароль</value>
+  </data>
+  <data name="Error-ExternalLoginInfo" xml:space="preserve">
+    <value>Error loading external login information</value>
+  </data>
+  <data name="Error-ExternalLoginProvider" xml:space="preserve">
+    <value>Error from external provider</value>
+  </data>
+  <data name="Forgot-NotRegisteredUser" xml:space="preserve">
+    <value>Користувача із заданою електронною поштою немає в системі або він не підтвердив свою реєстрацію</value>
+  </data>
   <data name="Login-InCorrectPassword" xml:space="preserve">
     <value>Ви ввели неправильний пароль, спробуйте ще раз</value>
   </data>
@@ -134,5 +146,11 @@
   </data>
   <data name="Register-RegisteredUser" xml:space="preserve">
     <value>Користувач з введеною електронною поштою вже зареєстрований в системі, можливо він не підтвердив свою реєстрацію</value>
+  </data>
+  <data name="Reset-NotRegisteredUser" xml:space="preserve">
+    <value>Користувача із заданою електронною поштою немає в системі або він не підтвердив свою реєстрацію</value>
+  </data>
+  <data name="Reset-PasswordProblems" xml:space="preserve">
+    <value>Проблеми зі скидуванням пароля або введений новий пароль повинен вміщати 8символів, включаючи літери та цифри</value>
   </data>
 </root>
