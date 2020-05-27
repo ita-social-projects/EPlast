@@ -7,7 +7,7 @@ namespace EPlast.BussinessLayer.Services.Interfaces
 {
     public interface ICityAccessService
     {
-        Task<IEnumerable<CityDTO>> GetCities(ClaimsPrincipal claimsPrincipal);
-        Task<bool> HasAccess(ClaimsPrincipal claimsPrincipal, int cityId);
+        Task<IEnumerable<CityDTO>> GetCitiesAsync(ClaimsPrincipal claimsPrincipal);
+        Task<bool> HasAccessAsync(ClaimsPrincipal claimsPrincipal, int cityId);
     }
 }
