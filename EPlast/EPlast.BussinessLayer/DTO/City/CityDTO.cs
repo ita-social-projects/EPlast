@@ -1,7 +1,7 @@
 ﻿using EPlast.DataAccess.Entities;
 using System.Collections.Generic;
 
-namespace EPlast.BussinessLayer.DTO
+namespace EPlast.BussinessLayer.DTO.City
 {
     public class CityDTO
     {
@@ -17,10 +17,10 @@ namespace EPlast.BussinessLayer.DTO
         public string PostIndex { get; set; }
         public Region Region { get; set; }
         public string Logo { get; set; }
-        public IEnumerable<CityDocuments> CityDocuments { get; set; }
-        public IEnumerable<CityMembers> CityMembers { get; set; }
+        public IEnumerable<CityDocumentsDTO> CityDocuments { get; set; }
+        public IEnumerable<CityMembersDTO> CityMembers { get; set; }
         public IEnumerable<UnconfirmedCityMember> UnconfirmedCityMember { get; set; }
-        public IEnumerable<CityAdministration> CityAdministration { get; set; }
+        public IEnumerable<CityAdministrationDTO> CityAdministration { get; set; }
         public IEnumerable<AnnualReport> AnnualReports { get; set; }
         public IEnumerable<CityLegalStatus> CityLegalStatuses { get; set; }
     }
