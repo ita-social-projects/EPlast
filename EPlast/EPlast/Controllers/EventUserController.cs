@@ -54,6 +54,7 @@ namespace EPlast.Controllers
         {
             try
             {
+                var x = _eventUserManager.InitializeEventCreateDTO();
                 var eventCategories = _repoWrapper.EventCategory.FindAll();
                 var model = new EventCreateViewModel()
                 {
