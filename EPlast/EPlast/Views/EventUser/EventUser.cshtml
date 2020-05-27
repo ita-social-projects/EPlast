@@ -8,7 +8,8 @@
 @model EPlast.ViewModels.Events.EventUserViewModel;
 @inject IRepositoryWrapper  _repository;
 @inject UserManager<EPlast.DataAccess.Entities.User> _userManager;
-@await Html.PartialAsync("_EventInfoModals")
+
+    @await Html.PartialAsync("_EventInfoModals")
     <div class="container">
         <div class=" eventUserPage d-md-flex d-xl-flex justify-content-md-center justify-content-xl-center align-items-xl-top container">
             <div class=" bg-light pt-2 pb-5 pr-2 pl-5 justify-content-md-center justify-content-xl-center container">
@@ -22,9 +23,14 @@
                                     <p>Пластун прихильник</p>
                                     <div class="d-lg-flex spliter" id="infoSplit"></div>
                                     <p> </p>
+
+                                    @if (_userManager.GetUserId(User) == @Model.User.Id)
+                                    {
                                     <a class="btn btn-primary btn-lg" role="button" asp-action="EventCreate" asp-controller="EventUser">
                                         Створити подію
                                     </a>
+                                    }
+
                                 </div>
                             </div>
                         </div>
@@ -34,24 +40,35 @@
                                 <div class="col-sm small">
                                     <div id="permitedEvents" class="border shadow events">
                                         <div class="text-center justify-content-center box">
-                                            @if (Model.VisitedEventsCount != 0)
+                                            @if (Model.VisitedEventsCount != 0 )
                                             {
-                                                <h4 class="visitedMargin">
-                                                    <br>Відвідані події<br>
-                                                </h4>
-                                                <div class="d-lg-flex spliter" id="infoSplitSmall"></div>
-                                                <h3 class=" visitCount">@Model.VisitedEventsCount</h3>
-                                                <p class=" eventInfo">Події</p>
-                                                <a id=" visitedEvent" class="btn btn-primary btn-lg" role="button" data-toggle="modal" href="#visitedModal">Список</a>
+                                            <h4 class="visitedMargin">
+                                                <br>Відвідані події<br>
+                                            </h4>
+                                            <div class="d-lg-flex spliter" id="infoSplitSmall"></div>
+                                            <h3 class=" visitCount">@Model.VisitedEventsCount</h3>
+                                            <p class=" eventInfo">Події</p>
+                                            <a id=" visitedEvent" class="btn btn-primary btn-lg" role="button" data-toggle="modal" href="#visitedModal">Список</a>
                                             }
                                             else
                                             {
-                                                <h4 class="visitedMargin">
-                                                    Тут відображатимуться
-                                                    <br>Відвідані події<br>
-                                                </h4>
-                                                <div class="d-lg-flex spliter" id="infoSplitSmall"></div>
-                                                <h5 class=" visitCount">Ви ще не відвідали <br>жодної події</h5>
+                                            <h4 class="visitedMargin">
+                                                Тут відображатимуться
+                                                <br>Відвідані події<br>
+                                            </h4>
+
+                                            @if (_userManager.GetUserId(User) == @Model.User.Id)
+                                            {
+                                            <div class="d-lg-flex spliter" id="infoSplitSmall"></div>
+                                            <h5 class=" visitCount">Ви ще не відвідали <br>жодної події</h5>
+                                            }
+
+                                            else
+                                            {
+                                            <div class="d-lg-flex spliter" id="infoSplitSmall"></div>
+                                            <h5 class=" visitCount">@Model.User.FirstName @Model.User.LastName ще не відвідав(ла) <br>жодної події</h5>
+                                            }
+
                                             }
                                         </div>
                                     </div>
@@ -61,20 +78,31 @@
                                         <div class="text-center justify-content-center box">
                                             @if (Model.CreatedEventCount != 0)
                                             {
-                                                <h4 class="createdMargin">Створені події</h4>
-                                                <div class="d-lg-flex spliter" id="infoSplitSmall"></div>
-                                                <h3 class=" visitCount">@Model.CreatedEventCount</h3>
-                                                <p class=" eventInfo">Події</p>
-                                                <a id=" createdEvent" class="btn btn-primary btn-lg" role="button" data-toggle="modal" href="#createdModal">Список</a>
+                                            <h4 class="createdMargin">Створені події</h4>
+                                            <div class="d-lg-flex spliter" id="infoSplitSmall"></div>
+                                            <h3 class=" visitCount">@Model.CreatedEventCount</h3>
+                                            <p class=" eventInfo">Події</p>
+                                            <a id=" createdEvent" class="btn btn-primary btn-lg" role="button" data-toggle="modal" href="#createdModal">Список</a>
                                             }
                                             else
                                             {
-                                                <h4 style="margin-top:36.5px" class="notCreatedMargin">
-                                                    Тут відображатимуться
-                                                    <br>Створені події
-                                                </h4>
-                                                <div class="d-lg-flex spliter" id="infoSplitSmall"></div>
-                                                <h5 class=" visitCount">Ви ще не створили <br>жодної події</h5>
+                                            <h4 style="margin-top:36.5px" class="notCreatedMargin">
+                                                Тут відображатимуться
+                                                <br>Створені події
+                                            </h4>
+
+                                            @if (_userManager.GetUserId(User) == @Model.User.Id)
+                                            {
+                                            <div class="d-lg-flex spliter" id="infoSplitSmall"></div>
+                                            <h5 class=" visitCount">Ви ще не створили <br>жодної події</h5>
+                                            }
+
+                                            else
+                                            {
+                                            <div class="d-lg-flex spliter" id="infoSplitSmall"></div>
+                                            <h5 class=" visitCount">@Model.User.FirstName @Model.User.LastName ще не створив(ла) <br>жодної події</h5>
+                                            }
+
                                             }
                                         </div>
                                     </div>
@@ -85,24 +113,39 @@
                                     <div class="text-center box">
                                         @if (Model.PlanedEventCount != 0)
                                         {
-                                            <h4 style="margin-top:-15px" class="planedEvents">
-                                                <br>Заплановані події<br>
-                                                @Model.PlanedEventCount
-                                            </h4>
-                                            <p style="margin-top:-14px" class=" eventInfo">Події</p>
-                                            <div class="d-lg-flex bigSpliter" id="infoSplit"></div>
-                                            <a style="margin-top:15px" id=" planedEvent" class="btn btn-primary btn-lg" role="button"
-                                               data-toggle="modal" href="#planedModal">Список</a>
+                                        <h4 style="margin-top:-15px" class="planedEvents">
+                                            <br>Заплановані події<br>
+                                            @Model.PlanedEventCount
+                                        </h4>
+                                        <p style="margin-top:-14px" class=" eventInfo">Події</p>
+                                        <div class="d-lg-flex bigSpliter" id="infoSplit"></div>
+                                        <a style="margin-top:15px" id=" planedEvent" class="btn btn-primary btn-lg" role="button"
+                                           data-toggle="modal" href="#planedModal">Список</a>
                                         }
                                         else
                                         {
-                                            <h4 style="margin-top:-6px" class="planedEvents">
-                                                <br>Тут відображатимуться заплановані події
-                                                <br>На разі, ви не запланували жодної події
-                                            </h4>
-                                            <div style=" margin-bottom:15px" class="d-lg-flex bigSpliter" id="infoSplit"></div>
-                                            <a class="btn btn-primary btn-lg" role="button"
-                                               asp-action="GetAction" asp-controller="Action">Запланувати подію!</a>
+
+                                        @if (_userManager.GetUserId(User) == @Model.User.Id)
+                                        {
+                                        <h4 style="margin-top:-6px" class="planedEvents">
+                                            <br>Тут відображатимуться заплановані події
+                                            <br>На разі, ви не запланували жодної події
+                                        </h4>
+                                        <div style=" margin-bottom:15px" class="d-lg-flex bigSpliter" id="infoSplit"></div>
+                                        <a class="btn btn-primary btn-lg" role="button"
+                                           asp-action="GetAction" asp-controller="Action">Запланувати подію!</a>
+                                        }
+
+                                        else
+                                        {
+                                        <h4 style="margin-top:-6px" class="planedEvents">
+                                            <br>Тут відображатимуться заплановані події
+                                            <br>На разі, @Model.User.FirstName @Model.User.LastName не запланував(ла) жодної події
+                                        </h4>
+                                        <div style=" margin-bottom:15px" class="d-lg-flex bigSpliter" id="infoSplit"></div>
+                                        }
+
+
                                         }
                                     </div>
                                 </div>
@@ -114,5 +157,6 @@
         </div>
 
     </div>
+
 
 
