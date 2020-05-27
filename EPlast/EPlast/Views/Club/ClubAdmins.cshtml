@@ -44,7 +44,7 @@
                 @foreach (var item in Model.Club.ClubAdministration)
                 {
                     <tr class="raport-click-row">
-                        <td>@item.AdminType.AdminTypeName</td>
+                        <td>@item.AdminType</td>
                         <td>
                             <a asp-action="UserProfile" asp-controller="Account" asp-route-userId="@item.ClubMembers.User.Id" style="color:black">
                                 @item.ClubMembers.User.LastName @item.ClubMembers.User.FirstName @(item.ClubMembers.User.FatherName ?? "")

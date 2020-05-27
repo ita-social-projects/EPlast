@@ -26,7 +26,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BussinessLayer.Services;
+using EPlast.BussinessLayer.Services.Club;
 
 namespace EPlast
 {
@@ -86,6 +86,8 @@ namespace EPlast
             services.AddScoped<ICityService, CityService>();
             services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
             services.AddScoped<IClubService, ClubService>();
+            services.AddScoped<IClubMembersService, ClubMemberService>();
+            services.AddScoped<IClubAdministrationService, ClubAdministrationService>();
 
             services.AddScoped<IDirectoryManager, DirectoryManager>();
             services.AddScoped<IFileManager, FileManager>();

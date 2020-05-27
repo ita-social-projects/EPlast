@@ -9,9 +9,9 @@
             <div class="main-info grid-block club-wrappers-radius">
                 <h1 class="grid-header">
                     @Model.Club.ClubName
-                            @if (Model.ClubAdmin != null && (ViewBag.usermanager.GetUserId(User) == Model.ClubAdmin.Id || User.IsInRole("Admin"))) { 
-                                <a asp-controller="Club" asp-action="EditClub" asp-route-index="@Model.Club.ID" style="color: #3c5438;"><i class="material-icons">settings</i></a>
-                            }
+                           @* if (Model.ClubAdmin != null && (ViewBag.usermanager.GetUserId(User) == Model.ClubAdmin.Id || User.IsInRole("Admin"))) { 
+                                <a asp-controller="Club" asp-action="EditClub" asp-route-index="Model.Club.ID" style="color: #3c5438;"><i class="material-icons">settings</i></a>
+                            }*@
                         </h1>
   
                 <div class="top-info">
@@ -30,7 +30,7 @@
                       @foreach (var item in Model.Club.ClubAdministration.Take(4))
                       {
                           <div class="line-pair">
-                              <p class="line-upper">@item.AdminType.AdminTypeName</p>
+                              <p class="line-upper">@item.AdminType</p>
                               <a asp-action="UserProfile" asp-controller="Account" asp-route-userId="@item.ClubMembers.User.Id" style="color:black">
                                   <p class="line-lower">@item.ClubMembers.User.FirstName.ToString() @item.ClubMembers.User.LastName.ToString()</p>
                               </a>

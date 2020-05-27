@@ -1,11 +1,18 @@
-﻿using EPlast.BussinessLayer.Interfaces;
+﻿using AutoMapper;
+using EPlast.BussinessLayer.DTO;
+using EPlast.BussinessLayer.DTO.City;
+using EPlast.BussinessLayer.DTO.Club;
+using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.DataAccess.DTO;
 using EPlast.DataAccess.Entities;
 using EPlast.ViewModels;
+using EPlast.ViewModels.Club;
+using EPlast.ViewModels.UserInformation.UserProfile;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace EPlast.Controllers
@@ -13,35 +20,43 @@ namespace EPlast.Controllers
     public class ClubController : Controller
     {
         private readonly IClubService clubService;
-        private readonly UserManager<User> _userManager;
+        private readonly IClubMembersService clubMembersService;
+        private readonly IClubAdministrationService clubAdministrationService;
+        private readonly IMapper mapper;
+        private readonly IUserManagerService userManagerService;
 
-        public ClubController(IClubService clubService, UserManager<User> userManager)
+        public ClubController(IMapper mapper, IUserManagerService userManagerService, IClubService clubService, IClubMembersService clubMembersService, IClubAdministrationService clubAdministrationService)
         {
+            this.mapper = mapper;
+            this.userManagerService = userManagerService;
             this.clubService = clubService;
-            _userManager = userManager;
+            this.clubMembersService = clubMembersService;
+
+            this.clubAdministrationService = clubAdministrationService;
         }
 
         public IActionResult Index()
         {
-            var clubs = clubService.GetAllClubs()
-                .Select(club => new ClubViewModel { Club = club })
-                .ToList();
+            ViewBag.usermanager = userManagerService;
 
-            ViewBag.usermanager = _userManager;
-
-            return View(clubs);
+            var clubs = clubService.GetAllDTO();
+            return View(mapper.Map<IEnumerable<ClubDTO>, IEnumerable<CLubViewModel> >(clubs));
         }
 
         public IActionResult Club(int index)
         {
             try
             {
-                var club = clubService.GetByIdWithDetails(index);
-                var members = clubService.GetClubMembers(club, true, 6);
-                var followers = clubService.GetClubMembers(club, false, 6);
-                var clubAdmin = clubService.GetCurrentClubAdmin(club);
+                var clubDTO = clubService.GetByIdWithDetailsDTO(index);
+                var club = mapper.Map<ClubDTO, CLubViewModel>(clubDTO);
+                var members = mapper.Map< IEnumerable<ClubMembersDTO>,
+                    IEnumerable<ClubMembersViewModel>> (clubMembersService.GetClubMembersDTO(clubDTO, true, 6)).ToList();
+                var followers = mapper.Map<IEnumerable<ClubMembersDTO>,
+                    IEnumerable<ClubMembersViewModel>>(clubMembersService.GetClubMembersDTO(clubDTO, false, 6)).ToList();
+                var clubAdmin = mapper.Map < UserDTO, UserViewModel> 
+                    (clubAdministrationService.GetCurrentClubAdmin(clubDTO));
 
-                ViewBag.usermanager = _userManager;
+                ViewBag.usermanager = userManagerService;
 
                 var viewModel = new ClubViewModel
                 {
@@ -62,10 +77,12 @@ namespace EPlast.Controllers
         {
             try
             {
-                var club = clubService.GetByIdWithDetails(index);
-                var clubAdmin = clubService.GetCurrentClubAdmin(club);
+                var clubDTO = clubService.GetByIdWithDetailsDTO(index);
+                var club = mapper.Map<ClubDTO, CLubViewModel>(clubDTO);
+                var clubAdmin = mapper.Map < UserDTO, UserViewModel> 
+                    (clubAdministrationService.GetCurrentClubAdmin(clubDTO));
 
-                ViewBag.usermanager = _userManager;
+                ViewBag.usermanager = userManagerService;
 
                 var viewModel = new ClubViewModel
                 {
@@ -84,11 +101,14 @@ namespace EPlast.Controllers
         {
             try
             {
-                var club = clubService.GetByIdWithDetails(index);
-                var members = clubService.GetClubMembers(club, true);
-                var clubAdmin = clubService.GetCurrentClubAdmin(club);
+                var clubDTO = clubService.GetByIdWithDetailsDTO(index);
+                var club = mapper.Map<ClubDTO, CLubViewModel>(clubDTO);
+                var members = mapper.Map<IEnumerable<ClubMembersDTO>,
+                    IEnumerable<ClubMembersViewModel>>(clubMembersService.GetClubMembersDTO(clubDTO, true)).ToList();
+                var clubAdmin = mapper.Map<UserDTO, UserViewModel>
+                    (clubAdministrationService.GetCurrentClubAdmin(clubDTO));
 
-                ViewBag.usermanager = _userManager;
+                ViewBag.usermanager = userManagerService;
 
                 var viewModel = new ClubViewModel
                 {
@@ -108,11 +128,15 @@ namespace EPlast.Controllers
         {
             try
             {
-                var club = clubService.GetByIdWithDetails(index);
-                var followers = clubService.GetClubMembers(club, false);
-                var clubAdmin = clubService.GetCurrentClubAdmin(club);
+                var clubDTO = clubService.GetByIdWithDetailsDTO(index);
+                var club = mapper.Map<ClubDTO, CLubViewModel>(clubDTO);
+                
+                var followers = mapper.Map<IEnumerable<ClubMembersDTO>,
+                    IEnumerable<ClubMembersViewModel>>(clubMembersService.GetClubMembersDTO(clubDTO, false)).ToList();
+                var clubAdmin = mapper.Map<UserDTO, UserViewModel>
+                    (clubAdministrationService.GetCurrentClubAdmin(clubDTO));
 
-                ViewBag.usermanager = _userManager;
+                ViewBag.usermanager = userManagerService;
 
                 var viewModel = new ClubViewModel {
                     Club = club,
@@ -131,7 +155,8 @@ namespace EPlast.Controllers
         {
             try
             {
-                var club = clubService.GetById(index);
+                var clubDTO = clubService.GetByIdDTO(index);
+                var club = mapper.Map<ClubDTO, CLubViewModel>(clubDTO);
 
                 return View(new ClubViewModel { Club = club });
             }
@@ -146,7 +171,8 @@ namespace EPlast.Controllers
         {
             try
             {
-                var club = clubService.GetById(index);
+                var clubDTO = clubService.GetByIdDTO(index);
+                var club = mapper.Map<ClubDTO, CLubViewModel>(clubDTO);
 
                 return View(new ClubViewModel { Club = club });
             }
@@ -161,7 +187,7 @@ namespace EPlast.Controllers
         {
             try
             {
-                clubService.Update(model.Club, file);
+                clubService.Update(mapper.Map <CLubViewModel, ClubDTO> (model.Club), file);
 
                 return RedirectToAction("Club", new { index = model.Club.ID });
             }
@@ -176,7 +202,7 @@ namespace EPlast.Controllers
         {
             try
             {
-                clubService.ToggleIsApprovedInClubMembers(index, clubIndex);
+                clubMembersService.ToggleIsApprovedInClubMembers(index, clubIndex);
 
                 return RedirectToAction("ClubMembers", new { index = clubIndex });
             }
@@ -190,7 +216,7 @@ namespace EPlast.Controllers
         {
             try
             {
-                clubService.ToggleIsApprovedInClubMembers(index, clubIndex);
+                clubMembersService.ToggleIsApprovedInClubMembers(index, clubIndex);
 
                 return RedirectToAction("ClubFollowers", new { index = clubIndex });
             }
@@ -204,7 +230,7 @@ namespace EPlast.Controllers
         {
             try
             {
-                clubService.ToggleIsApprovedInClubMembers(index, clubIndex);
+                clubMembersService.ToggleIsApprovedInClubMembers(index, clubIndex);
 
                 return RedirectToAction("Club", new { index = clubIndex });
             }
@@ -216,7 +242,7 @@ namespace EPlast.Controllers
         [HttpGet]
         public IActionResult DeleteFromAdmins(int adminId, int clubIndex)
         {
-            bool isSuccessfull = clubService.DeleteClubAdmin(adminId);
+            bool isSuccessfull = clubAdministrationService.DeleteClubAdmin(adminId);
 
             if (isSuccessfull)
             {
@@ -233,7 +259,7 @@ namespace EPlast.Controllers
         {
             try
             {
-                clubService.SetAdminEndDate(adminEndDate);
+                clubAdministrationService.SetAdminEndDate(adminEndDate);
 
                 return 1;
             }
@@ -247,7 +273,7 @@ namespace EPlast.Controllers
         {
             try
             {
-                clubService.AddClubAdmin(createdAdmin);
+                clubAdministrationService.AddClubAdmin(createdAdmin);
 
                 return 1;
             }
@@ -258,19 +284,15 @@ namespace EPlast.Controllers
         }
         public IActionResult ChooseAClub()
         {
-            var clubs = clubService.GetAllClubs()
-                .Select(club => new ClubViewModel { Club = club })
-                .ToList();
-
-            ViewBag.usermanager = _userManager;
-
-            return View(clubs);
+            var clubs = clubService.GetAllDTO();
+            ViewBag.usermanager = userManagerService;
+            return View(mapper.Map<IEnumerable<ClubDTO>, IEnumerable<CLubViewModel>>(clubs));
         }
         public IActionResult AddAsClubFollower(int clubIndex)
         {
-            var userId = _userManager.GetUserId(User);
+            var userId = userManagerService.GetUserId(User);
 
-            clubService.AddFollower(clubIndex, userId);
+            clubMembersService.AddFollower(clubIndex, userId);
 
             return RedirectToAction("UserProfile", "Account", new { userId = userId });
         }
@@ -292,7 +314,7 @@ namespace EPlast.Controllers
             try
             {
                 var club = model.Club;
-                clubService.Create(club, file);
+                clubService.Create(mapper.Map < CLubViewModel, ClubDTO > (club), file);
 
                 return RedirectToAction("Club", new { index = club.ID });
             }
