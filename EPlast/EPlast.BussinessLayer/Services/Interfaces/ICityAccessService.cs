@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using EPlast.BussinessLayer.DTO.City;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using DatabaseEntities = EPlast.DataAccess.Entities;
 
 namespace EPlast.BussinessLayer.Services.Interfaces
 {
     public interface ICityAccessService
     {
-        Task<IEnumerable<DatabaseEntities.City>> GetCities(ClaimsPrincipal claimsPrincipal);
+        Task<IEnumerable<CityDTO>> GetCities(ClaimsPrincipal claimsPrincipal);
         Task<bool> HasAccess(ClaimsPrincipal claimsPrincipal, int cityId);
     }
 }
