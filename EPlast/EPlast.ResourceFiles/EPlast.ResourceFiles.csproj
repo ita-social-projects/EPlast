@@ -5,17 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Update="AuthenticationErrors.uk.Designer.cs">
+    <Compile Update="AuthenticationErrors.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>AuthenticationErrors.uk.resx</DependentUpon>
+      <DependentUpon>AuthenticationErrors.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="AuthenticationErrors.uk.resx">
+    <EmbeddedResource Update="AuthenticationErrors.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>AuthenticationErrors.uk.Designer.cs</LastGenOutput>
+      <LastGenOutput>AuthenticationErrors.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

@@ -10,6 +10,7 @@ using EPlast.ViewModels.UserInformation.UserProfile;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.V3.Pages.Internal.Account;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
@@ -36,7 +37,7 @@ namespace EPlast.Controllers
         private readonly IUserManagerService _userManagerService;
         private readonly IConfirmedUsersService _confirmedUserService;
         private readonly ILoggerService<AccountController> _loggerService;
-        private readonly IStringLocalizer<LoginErrors> _localizer;
+        private readonly IStringLocalizer<AuthenticationErrors> _resourceForErrors;
 
         public AccountController(IUserService userService,
             INationalityService nationalityService,
@@ -50,7 +51,7 @@ namespace EPlast.Controllers
             IMapper mapper,
             ILoggerService<AccountController> loggerService,
             IAccountService accountService,
-            IStringLocalizer<LoginErrors> localizer)
+            IStringLocalizer<AuthenticationErrors> resourceForErrors)
         {
             _accountService = accountService;
             _userService = userService;
@@ -64,7 +65,7 @@ namespace EPlast.Controllers
             _mapper = mapper;
             _userManagerService = userManagerService;
             _loggerService = loggerService;
-            _localizer = localizer;
+            _resourceForErrors = resourceForErrors;
         }
 
         [HttpGet]
@@ -99,18 +100,16 @@ namespace EPlast.Controllers
                 if (ModelState.IsValid)
                 {
                     var user = await _accountService.FindByEmailAsync(loginVM.Email);
-                    var t = _localizer["LoginError1"];
-                    var u = _localizer["LoginError1"].Value;
                     if (user == null)
                     {
-                        ModelState.AddModelError("", _localizer["LoginError1"]);
+                        ModelState.AddModelError("", _resourceForErrors["Login-NotRegistered"]);
                         return View(loginVM);
                     }
                     else
                     {
                         if (!await _accountService.IsEmailConfirmedAsync(user))
                         {
-                            ModelState.AddModelError("", "Ваш акаунт не підтверджений, будь ласка увійдіть та зробіть підтвердження");
+                            ModelState.AddModelError("", _resourceForErrors["Login-NotConfirmed"]);
                             return View(loginVM);
                         }
                     }
@@ -125,7 +124,7 @@ namespace EPlast.Controllers
                     }
                     else
                     {
-                        ModelState.AddModelError("", "Ви ввели неправильний пароль, спробуйте ще раз");
+                        ModelState.AddModelError("", _resourceForErrors["Login-InCorrectPassword"]);
                         return View(loginVM);
                     }
                 }
@@ -153,15 +152,14 @@ namespace EPlast.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    ModelState.AddModelError("", "Дані введені неправильно");
+                    ModelState.AddModelError("", _resourceForErrors["Register-InCorrectData"]);
                     return View("Register");
                 }
 
                 var registeredUser = await _accountService.FindByEmailAsync(registerVM.Email);
                 if (registeredUser != null)
                 {
-                    ModelState.AddModelError("", "Користувач з введеною електронною поштою вже зареєстрований в системі, " +
-                        "можливо він не підтвердив свою реєстрацію");
+                    ModelState.AddModelError("", _resourceForErrors["Register-RegisteredUser"]);
                     return View("Register");
                 }
                 else
@@ -169,7 +167,7 @@ namespace EPlast.Controllers
                     var result = await _accountService.CreateUserAsync(_mapper.Map<RegisterViewModel, RegisterDto>(registerVM));
                     if (!result.Succeeded)
                     {
-                        ModelState.AddModelError("", "Пароль має містити цифри та літери, мінімальна довжина повинна складати 8");
+                        ModelState.AddModelError("", _resourceForErrors["Register-InCorrectPassword"]);
                         return View("Register");
                     }
                     else
