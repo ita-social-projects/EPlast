@@ -67,10 +67,6 @@ namespace EPlast
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-                /*.AddViewLocalization(
-                   LanguageViewLocationExpanderFormat.Suffix,
-                       opts => { opts.ResourcesPath = "./EPlast.DataAccess/"; })
-                .AddDataAnnotationsLocalization();*/
 
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
@@ -109,9 +105,6 @@ namespace EPlast
             services.AddScoped<IEventGalleryManager, EventGalleryManager>();
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
-            /*services.AddControllersWithViews()
-                .AddDataAnnotationsLocalization()
-                .AddViewLocalization();*/
 
             services.Configure<IdentityOptions>(options =>
             {
