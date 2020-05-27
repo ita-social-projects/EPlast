@@ -1,22 +1,22 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using AutoMapper;
+using EPlast.BussinessLayer.DTO.Account;
+using EPlast.BussinessLayer.DTO.UserProfiles;
+using EPlast.BussinessLayer.Interfaces;
+using EPlast.BussinessLayer.Interfaces.UserProfiles;
+using EPlast.Controllers;
+using EPlast.DataAccess.Entities;
+using EPlast.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Moq;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Xunit;
-using AutoMapper;
-using EPlast.BussinessLayer.DTO.Account;
-using EPlast.BussinessLayer.Interfaces;
-using EPlast.BussinessLayer.Services.Interfaces;
-using EPlast.Controllers;
-using EPlast.DataAccess.Entities;
-using EPlast.ViewModels;
-using EPlast.BussinessLayer.DTO;
 
 namespace EPlast.XUnitTest
 {
