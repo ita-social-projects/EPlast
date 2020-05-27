@@ -19,22 +19,19 @@ namespace EPlast.XUnitTest
     {
         private Mock<IHomeService> _homeService;
         private Mock<IRepositoryWrapper> _repoWrapper;
-        private Mock<IEmailConfirmation> _emailConfirmation;
         private Mock<IMapper> _mapper;
 
         public HomeControllerTests()
         {
             _homeService = new Mock<IHomeService>();
             _repoWrapper = new Mock<IRepositoryWrapper>();
-            _emailConfirmation = new Mock<IEmailConfirmation>();
             _mapper = new Mock<IMapper>();
         }
 
         [Fact]
         public void IndexViewResultNotNull()
         {
-            var controller = new HomeController(_homeService.Object, _emailConfirmation.Object,
-                _repoWrapper.Object, _mapper.Object);
+            var controller = new HomeController(_homeService.Object, _repoWrapper.Object, _mapper.Object);
 
             var result = controller.Index();
 
@@ -45,8 +42,7 @@ namespace EPlast.XUnitTest
         [Fact]
         public void AboutPLASTViewResultNotNull()
         {
-            var controller = new HomeController(_homeService.Object, _emailConfirmation.Object,
-                _repoWrapper.Object, _mapper.Object);
+            var controller = new HomeController(_homeService.Object, _repoWrapper.Object, _mapper.Object);
 
             var result = controller.AboutPLAST();
 
@@ -57,9 +53,7 @@ namespace EPlast.XUnitTest
         [Fact]
         public void ContactsViewResultNotNull()
         {
-
-            var controller = new HomeController(_homeService.Object, _emailConfirmation.Object,
-                _repoWrapper.Object, _mapper.Object);
+            var controller = new HomeController(_homeService.Object, _repoWrapper.Object, _mapper.Object);
 
             var result = controller.Contacts();
 
@@ -70,8 +64,7 @@ namespace EPlast.XUnitTest
         [Fact]
         public void FAQViewResultNotNull()
         {
-            var controller = new HomeController(_homeService.Object, _emailConfirmation.Object,
-                _repoWrapper.Object, _mapper.Object);
+            var controller = new HomeController(_homeService.Object, _repoWrapper.Object, _mapper.Object);
 
             var result = controller.FAQ();
 
@@ -80,12 +73,11 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void FeedBackSendedResultNotNull()
+        public void GetInformationViewResultNotNull()
         {
-            var controller = new HomeController(_homeService.Object, _emailConfirmation.Object,
-                _repoWrapper.Object, _mapper.Object);
+            var controller = new HomeController(_homeService.Object, _repoWrapper.Object, _mapper.Object);
 
-            var result = controller.FeedBackSended();
+            var result = controller.GetInformation();
 
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.NotNull(viewResult);
@@ -103,38 +95,28 @@ namespace EPlast.XUnitTest
                     },
                     new User
                     {
-                        FirstName="Іван",
-                        LastName = "Іванків"
-                    },
-                    new User
-                    {
-                        FirstName="Петро",
-                        LastName = "Іванків"
-                    },
-                    new User
-                    {
                         FirstName="Олег",
-                        LastName = "Іванків"
-                    },
-                    new User
-                    {
-                        FirstName="Андрій",
                         LastName = "Іванків"
                     },
                     new User
                     {
                         FirstName="Микола",
                         LastName = "Іванків"
-                    }
+                    },
                 }.AsQueryable());
 
-            var homecontroller = new HomeController(_homeService.Object, _emailConfirmation.Object,
-                _repoWrapper.Object, _mapper.Object);
-            var searchResultNotNull = homecontroller.Search("Іванків") as ViewResult;
-            var searchResultNull = homecontroller.Search(null) as ViewResult;
+            var homecontroller = new HomeController(_homeService.Object, _repoWrapper.Object, _mapper.Object);
 
-            Assert.NotNull(searchResultNotNull);
-            Assert.NotNull(searchResultNotNull.Model);
+            var searchResult = homecontroller.Search("Іванків");
+
+            var viewResult = Assert.IsType<ViewResult>(searchResult);
+            Assert.NotNull(viewResult);
+            Assert.NotNull(viewResult.Model);
+
+            var model = viewResult.Model as SearchSurname;
+            var resultQuery = Assert.IsAssignableFrom<IQueryable<User>>(model.Users);
+
+            Assert.True(resultQuery.All(it => it.LastName == "Іванків"));
         }
 
         [Fact]
@@ -147,45 +129,66 @@ namespace EPlast.XUnitTest
                         Id="aaaa-bbbb-cccc",
                         FirstName="Олег",
                         LastName="Іванків"
-                    }
+                    },
                 }.AsQueryable());
 
-            var homecontroller = new HomeController(_homeService.Object, _emailConfirmation.Object,
-                _repoWrapper.Object, _mapper.Object);
-            var getSearchUserResult = homecontroller.GetSearchUser("aaaa-bbbb-cccc");
+            var homecontroller = new HomeController(_homeService.Object, _repoWrapper.Object, _mapper.Object);
 
-            var viewResult = Assert.IsType<PartialViewResult>(getSearchUserResult);
-            Assert.NotNull(getSearchUserResult);
+            var searchResult = homecontroller.GetSearchUser("aaaa-bbbb-cccc");
+
+            var viewResult = Assert.IsType<PartialViewResult>(searchResult);
+            Assert.NotNull(viewResult);
             Assert.NotNull(viewResult.Model);
-            Assert.IsAssignableFrom<IQueryable<User>>(viewResult.Model);
+
+            var model = Assert.IsAssignableFrom<IQueryable<User>>(viewResult.Model);
+            Assert.True(model.All(it => it.Id == "aaaa-bbbb-cccc"));
+        }
+
+        [Fact]
+        public void FeedBackSendedViewResultNotNull()
+        {
+            var controller = new HomeController(_homeService.Object, _repoWrapper.Object, _mapper.Object);
+
+            var result = controller.FeedBackSended();
+
+            var viewResult = Assert.IsType<ViewResult>(result);
+            Assert.NotNull(viewResult);
         }
 
         [Fact]
         public async Task TestSendContacts()
         {
-            ContactsViewModel test1 = new ContactsViewModel
+            ContactsViewModel validUserInput = new ContactsViewModel
             {
                 Name = "Настя",
                 Email = "nasty@gmail.com",
                 PhoneNumber = "0934353139",
                 FeedBackDescription = "Хотіла б стати вашим волонтером"
             };
-            ContactsViewModel test2 = new ContactsViewModel
+
+            ContactsViewModel invalidUserInput = new ContactsViewModel
             {
                 Name = "",
+                Email = "",
                 PhoneNumber = "",
                 FeedBackDescription = ""
             };
 
-            var homecontroller = new HomeController(_homeService.Object, _emailConfirmation.Object,
-                _repoWrapper.Object, _mapper.Object);
+            var controller = new HomeController(_homeService.Object, _repoWrapper.Object, _mapper.Object);
 
-            var validResult = await homecontroller.SendContacts(test1);
-            var invalidResult = await homecontroller.SendContacts(test2);
+            var validResult = await controller.SendContacts(validUserInput);
 
-            //Assert.Equal("FeedBackSended", valiVviewResult.ViewName);
-            Assert.NotNull(validResult);
-            Assert.NotNull(invalidResult);
+            var viewResultCorrect = Assert.IsType<RedirectToActionResult>(validResult);
+            Assert.NotNull(viewResultCorrect);
+            Assert.Equal("FeedBackSended", viewResultCorrect.ActionName);
+
+            controller.ModelState.AddModelError("NameError", "Required");
+
+            var invalidResult = await controller.SendContacts(invalidUserInput);
+
+            var viewResultWrong = Assert.IsType<ViewResult>(invalidResult);
+            Assert.NotNull(viewResultWrong);
+            Assert.Equal("Contacts", viewResultWrong.ViewName);
         }
     }
 }
