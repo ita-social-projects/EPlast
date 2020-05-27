@@ -7,6 +7,6 @@ namespace EPlast.BussinessLayer
     {
         Task<byte[]> DecisionCreatePDFAsync(int DecisionId);
 
-        Task<byte[]> BlankCreatePDFAsync(int userId);
+        Task<byte[]> BlankCreatePDFAsync(string userId);
     }
 }
