@@ -4,7 +4,7 @@
     <div class="modal-dialog">
         <div class="modal-content text-center justify-content-center">
             <div class="modal-header">
-                <h4 class="modal-title">Відвіданих подій: @Model.VisitedEventsCount</h4>
+                <h4 class="modal-title">Відвіданих подій: @Model.VisitedEvents.Count</h4>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <div style="height:430px; overflow-y:scroll" class="modal-body">
@@ -30,7 +30,7 @@
     <div class="modal-dialog">
         <div class="modal-content text-center justify-content-center">
             <div class="modal-header">
-                <h4 class="modal-title">Запланованих подій: @Model.PlanedEventCount</h4>
+                <h4 class="modal-title">Запланованих подій: @Model.PlanedEvents.Count</h4>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <div style="height:430px; overflow-y:scroll" class="modal-body">
@@ -57,7 +57,7 @@
     <div class="modal-dialog">
         <div class="modal-content text-center justify-content-center">
             <div class="modal-header">
-                <h4 class="modal-title">Створених подій: @Model.CreatedEventCount</h4>
+                <h4 class="modal-title">Створених подій: @Model.CreatedEvents.Count</h4>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <div style="height:430px; overflow-y:scroll" class="modal-body">

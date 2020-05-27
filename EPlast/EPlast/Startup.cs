@@ -4,8 +4,10 @@ using EPlast.BussinessLayer.AccessManagers;
 using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using EPlast.BussinessLayer.Interfaces;
 using EPlast.BussinessLayer.Interfaces.Events;
+using EPlast.BussinessLayer.Interfaces.EventUser;
 using EPlast.BussinessLayer.Services;
 using EPlast.BussinessLayer.Services.Events;
+using EPlast.BussinessLayer.Services.EventUser;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.BussinessLayer.Settings;
 using EPlast.DataAccess;
@@ -22,11 +24,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Threading.Tasks;
-using System.Linq;
 using System.Globalization;
-using EPlast.BussinessLayer.Interfaces.EventUser;
-using EPlast.BussinessLayer.Services.EventUser;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast
 {
@@ -98,6 +98,7 @@ namespace EPlast
             services.AddScoped<IParticipantManager, ParticipantManager>();
             services.AddScoped<IEventGalleryManager, EventGalleryManager>();
             services.AddScoped<IEventUserManager, EventUserManager>();
+            services.AddScoped<IEventAdminManager, EventAdminManager>();
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
             services.Configure<IdentityOptions>(options =>
