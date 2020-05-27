@@ -378,3 +378,4 @@ EPlast/EPlast/wwwroot/images/Cities/*
 
 # don't checkin azurekeyvault.json
 **/azurekeyvault.json
+/EPlast/EPlast/package-lock.json
