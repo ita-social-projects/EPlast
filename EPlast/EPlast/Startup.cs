@@ -53,7 +53,7 @@ namespace EPlast
                     .AddEntityFrameworkStores<EPlastDBContext>()
                     .AddDefaultTokenProviders();
 
-            services.AddLocalization();  //обходимо через асемблі
+            services.AddLocalization();
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("Admin",
@@ -111,7 +111,6 @@ namespace EPlast
                 options.Password.RequireUppercase = false;
                 options.User.RequireUniqueEmail = true;
                 options.Password.RequireNonAlphanumeric = false;
-
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
 
