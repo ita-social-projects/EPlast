@@ -1,15 +1,10 @@
 ﻿using System.Collections.Generic;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using EPlast.Models.Enums;
 
 namespace EPlast.ViewModels
 {
-    public enum AnnualReportOperation
-    {
-        Creating,
-        Editing
-    }
-
     public class AnnualReportViewModel
     {
         public AnnualReportOperation Operation { get; set; }
