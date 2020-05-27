@@ -68,8 +68,11 @@ namespace EPlast
             services.AddScoped<IAnnualReportVMInitializer, AnnualReportVMInitializer>();
             services.AddScoped<IViewAnnualReportsVMInitializer, ViewAnnualReportsVMInitializer>();
             services.AddScoped<IDecisionVmInitializer, DecisionVmInitializer>();
-
             services.AddScoped<IPDFService, PDFService>();
+            services.AddScoped<IDecisionService, DecisionService>();
+            services.AddScoped<IDirectoryManager, DirectoryManager>();
+            services.AddScoped<IFileManager, FileManager>();
+            services.AddScoped<IFileStreamManager, FileStreamManager>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<INationalityService, NationalityService>();
             services.AddScoped<IReligionService, ReligionService>();
