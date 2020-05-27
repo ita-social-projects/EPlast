@@ -11,14 +11,14 @@ function AddClubAdmin() {
     const input = $('#AdminTypeName')[0];
     const AdminTypeName = input.value;
     if (AdminTypeName == null || AdminTypeName.length === 0) {
-        alert('Введіть назву діловодства');
+        alert('������ ����� ����������');
         return;
     }
     const input2 = $('#ClubAdminStartDate')[0];
     const StartDateValue = input2.value;
     const StartDate = StartDateValue + ' 00:00:00';
     if (StartDateValue == null || StartDateValue.length === 0) {
-        alert('Введіть дату початку діловодства');
+        alert('������ ���� ������� ����������');
         return;
     }
     const input3 = $('#ClubAdminEndDate')[0];
@@ -29,7 +29,7 @@ function AddClubAdmin() {
         var StartDateobj = new Date(StartDate);
         var EndDateobj = new Date(EndDate);
         if (StartDateobj >= EndDateobj) {
-            alert('Дата кінця діловодства має бути після дати початку');
+            alert('���� ���� ���������� �� ���� ���� ���� �������');
             return;
         }
     }
@@ -50,7 +50,7 @@ function AddClubAdmin() {
         timeout: 5000
     }).done((result) => {
         if (result === 1) {
-            alert('Нового діловода було успішно додано');
+            alert('������ ������� ���� ������ ������');
         }
     });
 }

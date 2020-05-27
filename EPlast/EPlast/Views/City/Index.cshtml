@@ -1,7 +1,7 @@
-﻿@using EPlast.ViewModels
+﻿@using EPlast.ViewModels.City
 @model List<CityViewModel>
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Станиці";
 }
 <div class="content-wrapper">
     <div class="all-clubs-view">
@@ -27,9 +27,9 @@
                         <button type="submit" class="club-block-submit rounded ">
                             <div class="club-img-wrapper">
                                 <div class="club-img">
-                                    @if (city.City.Logo != null)
+                                    @if (city.Logo != null)
                                     {
-                                        <div class="club-img" style="background-image:url('/images/Cities/@city.City.Logo')"></div>
+                                        <div class="club-img" style="background-image:url('/images/Cities/@city.Logo')"></div>
                                     }
                                     else
                                     {
@@ -37,8 +37,8 @@
                                     }
                                 </div>
                             </div>
-                            <p class="club-name">@city.City.Name</p>
-                            <input value="@city.City.ID" type="hidden" name="cityId" id="cityId" />
+                            <p class="club-name">@city.Name</p>
+                            <input value="@city.ID" type="hidden" name="cityId" id="cityId" />
                         </button>
                     </span>
                 </form>
