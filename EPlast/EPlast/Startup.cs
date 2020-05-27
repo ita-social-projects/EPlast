@@ -5,6 +5,7 @@ using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using EPlast.BussinessLayer.Interfaces;
 using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.BussinessLayer.Services;
+using EPlast.BussinessLayer.Services.City;
 using EPlast.BussinessLayer.Services.Events;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.BussinessLayer.Settings;
@@ -13,7 +14,6 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Models.ViewModelInitializations;
 using EPlast.Models.ViewModelInitializations.Interfaces;
-using EPlast.Wrapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -70,7 +70,8 @@ namespace EPlast
             services.AddScoped<IEmailConfirmation, EmailConfirmation>();
             services.AddScoped<IAnnualReportVMInitializer, AnnualReportVMInitializer>();
             services.AddScoped<IViewAnnualReportsVMInitializer, ViewAnnualReportsVMInitializer>();
-            services.AddScoped<IDecisionVMIitializer, DecisionVMIitializer>();
+            services.AddScoped<IDecisionVmInitializer, DecisionVmInitializer>();
+
             services.AddScoped<IPDFService, PDFService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<INationalityService, NationalityService>();
@@ -113,9 +114,8 @@ namespace EPlast
                 options.Password.RequireNonAlphanumeric = false;
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
-
             });
-
+            services.AddLogging();
             services.AddAuthentication()
                 .AddGoogle(options =>
                 {

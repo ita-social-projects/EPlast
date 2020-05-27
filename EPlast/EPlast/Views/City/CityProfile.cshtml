@@ -1,8 +1,7 @@
-﻿@using EPlast.ViewModels
-@using Microsoft.AspNetCore.Identity
-@model CityViewModel
+﻿@using EPlast.ViewModels.City
+@model CityProfileViewModel
 @{
-    ViewData["Title"] = "City";
+    ViewData["Title"] = "Станиця";
 }
 
     <div class="cityProfileWrapper">
@@ -13,7 +12,7 @@
                         <div class="d-sm-inline-block d-xl-inline-block">
                             <div class="d-flex">
                                 <p class="text-center d-table d-xl-flex align-items-center justify-content-sm-center align-items-sm-center justify-content-xl-center align-items-xl-center">Станиця @Model.City.Name</p>
-                                <p class="text-center d-flex d-sm-flex align-items-center align-items-sm-center justify-content-xl-center"><a asp-action="Edit" asp-controller="City" asp-route-cityid="@Model.City.ID" class="navbar-link" style="color: rgb(0,0,0);"><i class="fa fa-edit d-xl-flex justify-content-xl-center align-items-xl-center" style="font-size: 18px;"></i></a></p>
+                                <p class="text-center d-flex d-sm-flex align-items-center align-items-sm-center justify-content-xl-center"><a asp-action="Edit" asp-controller="City" asp-route-cityId="@Model.City.ID" class="navbar-link" style="color: rgb(0,0,0);"><i class="fa fa-edit d-xl-flex justify-content-xl-center align-items-xl-center" style="font-size: 18px;"></i></a></p>
                             </div>
                             <div class="d-flex d-lg-inline-flex justify-content-center align-items-center justify-content-md-center align-items-md-center">
                                 <div style="margin:5px; margin-left:10px;height: 200px;max-width: 220px;width: 200px;background-image: url('../../images/Cities/@Model.City.Logo');background-repeat: no-repeat;background-size: contain;background-position: center;"></div>
@@ -41,7 +40,7 @@
                                 </div>
                             </div>
                             <div>
-                                <a asp-action="Details" asp-controller="City" asp-route-cityid="@Model.City.ID">
+                                <a asp-action="Details" asp-controller="City" asp-route-cityId="@Model.City.ID">
                                     <button class="btn btn-primary btn-block btn-lg text-center border-dark shadow-sm mx-auto" type="button" style="height: 40px;width: 60%;padding: 0px;background-color: #3c5438;">Деталі</button>
                                 </a>
                             </div>
@@ -76,7 +75,7 @@
                             </div>
                         </div>
                         <div>
-                            <a asp-action="CityMembers" asp-controller="City" asp-route-cityid="@Model.City.ID">
+                            <a asp-action="CityMembers" asp-controller="City" asp-route-cityId="@Model.City.ID">
                                 <button class="btn btn-primary btn-block btn-lg text-center border-dark shadow-sm mx-auto" type="button" style="height: 40px;width: 60%;padding: 0px;background-color: #3c5438;">Більше</button>
                             </a>
                         </div>
@@ -112,7 +111,7 @@
                             </div>
                         </div>
                         <div>
-                            <a asp-action="CityAdmins" asp-controller="City" asp-route-cityid="@Model.City.ID">
+                            <a asp-action="CityAdmins" asp-controller="City" asp-route-cityId="@Model.City.ID">
                                 <button class="btn btn-primary btn-block btn-lg text-center border-dark shadow-sm mx-auto" type="button" style="height: 40px;width: 60%;padding: 0px;background-color: #3c5438;">Деталі</button>
                             </a>
                         </div>
@@ -144,7 +143,7 @@
                             </div>
                         </div>
                         <div>
-                            <a asp-action="CityDocuments" asp-controller="City" asp-route-cityid="@Model.City.ID">
+                            <a asp-action="CityDocuments" asp-controller="City" asp-route-cityId="@Model.City.ID">
                                 <button class="btn btn-primary btn-block btn-lg text-center border-dark shadow-sm mx-auto" type="button" style="height: 40px;width: 60%;padding: 0px;background-color: #3c5438;">Деталі</button>
                             </a>
                         </div>
@@ -176,7 +175,7 @@
                             </div>
                         </div>
                         <div>
-                            <a asp-action="CityFollowers" asp-controller="City" asp-route-cityid="@Model.City.ID">
+                            <a asp-action="CityFollowers" asp-controller="City" asp-route-cityId="@Model.City.ID">
                                 <button class="btn btn-primary btn-block btn-lg text-center border-dark shadow-sm mx-auto" type="button" style=" height: 40px; width: 60%; padding: 0px; background-color: #3c5438;">Більше</button>
                             </a>
                         </div>

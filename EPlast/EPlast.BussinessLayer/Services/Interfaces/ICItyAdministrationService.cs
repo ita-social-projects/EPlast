@@ -1,4 +1,4 @@
-﻿using EPlast.BussinessLayer.DTO;
+﻿using EPlast.BussinessLayer.DTO.City;
 using System.Collections.Generic;
 
 namespace EPlast.BussinessLayer.Services.Interfaces
