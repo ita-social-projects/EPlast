@@ -3,6 +3,7 @@ using EPlast.DataAccess.Repositories;
 using System.Linq;
 using System.Threading.Tasks;
 using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.BussinessLayer
 {
@@ -17,16 +18,25 @@ namespace EPlast.BussinessLayer
             _logger = logger;
         }
 
-        public async Task<byte[]> BlankCreatePDFAsync(int userId)
+        public async Task<byte[]> BlankCreatePDFAsync(string userId)
         {
-            IPDFSettings pdfSettings = new PDFSettings()
+            try
             {
-                Title = "Бланк",
-                ImagePath = "wwwroot/images/pdf/Header-Eplast-Blank.png"
-            };
-            var blank = GetBlankData(userId);
-            IPDFCreator creator = new PDFCreator(new BlankDocument(blank, pdfSettings));
-            return await Task.Run(() => creator.GetPDFBytes());
+                IPDFSettings pdfSettings = new PDFSettings
+                {
+                    Title = "Бланк",
+                    ImagePath = "wwwroot/images/pdf/Header-Eplast-Blank.png"
+                };
+                var blank = GetBlankData(userId);
+                IPDFCreator creator = new PDFCreator(new BlankDocument(blank, pdfSettings));
+                return await Task.Run(() => creator.GetPDFBytes());
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception: {e.Message}");
+            }
+
+            return null;
         }
 
         public async Task<byte[]> DecisionCreatePDFAsync(int DecisionId)
@@ -54,10 +64,14 @@ namespace EPlast.BussinessLayer
             return null;
         }
 
-        private static BlankModel GetBlankData(int userId)
+        private BlankModel GetBlankData(string userId)
         {
+            var user = _repoWrapper.User.FindByCondition(x => x.Id.Equals(userId)).First();
+            var userProfile = _repoWrapper.UserProfile.FindByCondition(x => x.UserID.Equals(userId)).First();
             return new BlankModel
             {
+                User = user,
+                UserProfile = userProfile
             };
         }
     }

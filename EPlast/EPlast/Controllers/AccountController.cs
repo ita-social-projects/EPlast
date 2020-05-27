@@ -17,6 +17,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
+using EPlast.BussinessLayer;
 
 namespace EPlast.Controllers
 {
@@ -34,6 +35,7 @@ namespace EPlast.Controllers
         private readonly IUserManagerService _userManagerService;
         private readonly IConfirmedUsersService _confirmedUserService;
         private readonly ILoggerService<AccountController> _loggerService;
+        private readonly IPDFService _pdfService;
 
         public AccountController(IUserService userService,
             INationalityService nationalityService,
@@ -46,7 +48,8 @@ namespace EPlast.Controllers
             IUserManagerService userManagerService,
             IMapper mapper,
             ILoggerService<AccountController> loggerService,
-            IAccountService accountService)
+            IAccountService accountService,
+            IPDFService pdfService)
         {
             _accountService = accountService;
             _userService = userService;
@@ -60,6 +63,7 @@ namespace EPlast.Controllers
             _mapper = mapper;
             _userManagerService = userManagerService;
             _loggerService = loggerService;
+            _pdfService = pdfService;
         }
 
         [HttpGet]
@@ -245,7 +249,6 @@ namespace EPlast.Controllers
                 return View("ConfirmEmailNotAllowed", userDto);
             }
         }
-
 
         [HttpGet]
         [AllowAnonymous]
@@ -640,6 +643,7 @@ namespace EPlast.Controllers
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
+
         public async Task<IActionResult> Positions(string userId)
         {
             try
@@ -658,6 +662,12 @@ namespace EPlast.Controllers
                 _loggerService.LogError($"Exception: { e.Message}");
                 return RedirectToAction("HandleError", "Error");
             }
+        }
+
+        [Authorize]
+        public async Task<byte[]> GetBlank()
+        {
+            return await _pdfService.BlankCreatePDFAsync(_userManagerService.GetUserId(User));
         }
     }
 }
