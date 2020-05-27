@@ -1,4 +1,6 @@
-﻿using EPlast.BussinessLayer.Services.City.CityAccess.CityAccessGetters;
+﻿using AutoMapper;
+using EPlast.BussinessLayer.DTO.City;
+using EPlast.BussinessLayer.Services.City.CityAccess.CityAccessGetters;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.BussinessLayer.Settings;
 using Microsoft.AspNetCore.Identity;
@@ -13,16 +15,18 @@ namespace EPlast.BussinessLayer.Services.City.CityAccess
     public class CityAccessService : ICityAccessService
     {
         private readonly UserManager<DatabaseEntities.User> _userManager;
+        private readonly IMapper _mapper;
 
         private readonly Dictionary<string, ICItyAccessGetter> _cityAccessGetters;
 
-        public CityAccessService(CityAccessSettings settings, UserManager<DatabaseEntities.User> userManager)
+        public CityAccessService(CityAccessSettings settings, UserManager<DatabaseEntities.User> userManager, IMapper mapper)
         {
             _cityAccessGetters = settings.CitiAccessGetters;
             _userManager = userManager;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<DatabaseEntities.City>> GetCities(ClaimsPrincipal claimsPrincipal)
+        public async Task<IEnumerable<CityDTO>> GetCities(ClaimsPrincipal claimsPrincipal)
         {
             var user = await _userManager.GetUserAsync(claimsPrincipal);
             var roles = await _userManager.GetRolesAsync(user);
@@ -30,10 +34,11 @@ namespace EPlast.BussinessLayer.Services.City.CityAccess
             {
                 if (roles.Contains(key))
                 {
-                    return _cityAccessGetters[key].GetCities(user.Id);
+                    var cities = _cityAccessGetters[key].GetCities(user.Id);
+                    return _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityDTO>>(cities);
                 }
             }
-            return Enumerable.Empty<DatabaseEntities.City>();
+            return Enumerable.Empty<CityDTO>();
         }
 
         public async Task<bool> HasAccess(ClaimsPrincipal claimsPrincipal, int cityId)
