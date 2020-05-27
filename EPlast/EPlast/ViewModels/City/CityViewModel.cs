@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace EPlast.ViewModels
+namespace EPlast.ViewModels.City
 {
-    public class CityViewModel2
+    public class CityViewModel
     {
         public int ID { get; set; }
         [Required, MaxLength(50, ErrorMessage = "Назва станиці не має перевищувати 50 символів")]
@@ -28,10 +28,10 @@ namespace EPlast.ViewModels
         public Region Region { get; set; }
         [StringLength(int.MaxValue, MinimumLength = 3)]
         public string Logo { get; set; }
-        public ICollection<CityDocuments> CityDocuments { get; set; }
-        public ICollection<CityMembers> CityMembers { get; set; }
+        public ICollection<CityDocumentViewModel> CityDocuments { get; set; }
+        public ICollection<CityMembersViewModel> CityMembers { get; set; }
         public ICollection<UnconfirmedCityMember> UnconfirmedCityMember { get; set; }
-        public ICollection<CityAdministration> CityAdministration { get; set; }
+        public ICollection<CityAdministrationViewModel> CityAdministration { get; set; }
         public ICollection<AnnualReport> AnnualReports { get; set; }
         public ICollection<CityLegalStatus> CityLegalStatuses { get; set; }
     }

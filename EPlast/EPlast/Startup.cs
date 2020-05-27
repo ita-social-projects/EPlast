@@ -5,6 +5,7 @@ using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using EPlast.BussinessLayer.Interfaces;
 using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.BussinessLayer.Services;
+using EPlast.BussinessLayer.Services.City;
 using EPlast.BussinessLayer.Services.Events;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.BussinessLayer.Settings;
@@ -22,9 +23,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Threading.Tasks;
-using System.Linq;
 using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast
 {

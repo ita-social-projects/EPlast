@@ -1,8 +1,7 @@
-﻿@using EPlast.ViewModels
-@using Microsoft.AspNetCore.Identity
-@model CityViewModel
+﻿@using EPlast.ViewModels.City
+@model CityProfileViewModel
 @{
-    ViewData["Title"] = "City Details";
+    ViewData["Title"] = "Деталі станиці";
 }
 <div class="main-wrapper">
     <div class="container content-wrapper">
@@ -62,7 +61,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <a asp-controller="City" asp-action="CityProfile" asp-route-cityid="@Model.City.ID" class="btn btn-primary btn-lg colors-for-club-buttons" role="button">Назад</a>
+                            <a asp-controller="City" asp-action="CityProfile" asp-route-cityId="@Model.City.ID" class="btn btn-primary btn-lg colors-for-club-buttons" role="button">Назад</a>
 
                         </div>
                     </div>
