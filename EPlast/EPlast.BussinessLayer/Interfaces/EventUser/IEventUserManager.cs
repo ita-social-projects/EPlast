@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using EPlast.BussinessLayer.DTO.EventUser;
 using System.Security.Claims;
-using System.Text;
-using EPlast.BussinessLayer.DTO.EventUser;
 
 namespace EPlast.BussinessLayer.Interfaces.EventUser
 {

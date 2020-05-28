@@ -24,7 +24,6 @@ namespace EPlast.BussinessLayer.Services.EventUser
         private readonly IEventCategoryManager _eventCategoryManager;
         private readonly IEventStatusManager _eventStatusManager;
 
-
         public EventUserManager(IRepositoryWrapper repoWrapper, UserManager<User> userManager,
             IParticipantStatusManager participantStatusManager, IMapper mapper, IParticipantManager participantManager,
             IEventAdminManager eventAdminManager, IEventCategoryManager eventCategoryManager,
@@ -74,7 +73,6 @@ namespace EPlast.BussinessLayer.Services.EventUser
                     model.VisitedEvents.Add(eventToAdd);
                 }
             }
-
             return model;
         }
 
@@ -125,7 +123,6 @@ namespace EPlast.BussinessLayer.Services.EventUser
             _repoWrapper.EventAdministration.Create(eventAdministration);
             _repoWrapper.Event.Create(eventToCreate);
             _repoWrapper.Save();
-
             return eventToCreate.ID;
         }
 

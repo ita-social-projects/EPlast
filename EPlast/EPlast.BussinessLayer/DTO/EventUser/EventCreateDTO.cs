@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using EPlast.BussinessLayer.DTO.Events;
-using EPlast.DataAccess.Entities;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using EPlast.BussinessLayer.DTO.Events;
+using System.Collections.Generic;
 
 namespace EPlast.BussinessLayer.DTO.EventUser
 {

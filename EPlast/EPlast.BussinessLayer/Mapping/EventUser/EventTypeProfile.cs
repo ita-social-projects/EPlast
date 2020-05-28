@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AutoMapper;
-using EPlast.BussinessLayer.DTO.Events;
+﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO.EventUser;
 using EPlast.DataAccess.Entities;
 

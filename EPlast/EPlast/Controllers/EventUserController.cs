@@ -1,36 +1,19 @@
-﻿using EPlast.DataAccess.Entities;
-using EPlast.DataAccess.Repositories;
-using EPlast.Models.ViewModelInitializations.Interfaces;
-using EPlast.ViewModels.Events;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO.EventUser;
 using EPlast.BussinessLayer.Interfaces.EventUser;
 using EPlast.ViewModels.EventUser;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EPlast.Controllers
 {
     public class EventUserController : Controller
     {
-        private readonly IRepositoryWrapper _repoWrapper;
-        private readonly UserManager<User> _userManager;
-        private readonly ICreateEventVMInitializer _createEventVMInitializer;
         private readonly IEventUserManager _eventUserManager;
         private readonly IMapper _mapper;
 
-
-
-        public EventUserController(IRepositoryWrapper repoWrapper, UserManager<User> userManager, ICreateEventVMInitializer createEventVMInitializer, IEventUserManager eventUserManager, IMapper mapper)
+        public EventUserController(IEventUserManager eventUserManager, IMapper mapper)
 
         {
-            _userManager = userManager;
-            _repoWrapper = repoWrapper;
-            _createEventVMInitializer = createEventVMInitializer;
             _eventUserManager = eventUserManager;
             _mapper = mapper;
         }
