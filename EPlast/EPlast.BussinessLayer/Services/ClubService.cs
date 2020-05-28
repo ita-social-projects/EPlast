@@ -1,19 +1,17 @@
-﻿using EPlast.BussinessLayer.Interfaces;
+﻿using AutoMapper;
+using EPlast.BussinessLayer.DTO;
+using EPlast.BussinessLayer.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Drawing;
 using System.IO;
-using AutoMapper;
-using Microsoft.AspNetCore.Hosting;
-using EPlast.BussinessLayer.DTO;
-using Microsoft.AspNetCore.Identity;
-using System.Threading.Tasks;
-using System;
+using System.Linq;
 
 namespace EPlast.BussinessLayer.Services
 {
@@ -164,7 +162,7 @@ namespace EPlast.BussinessLayer.Services
         public ClubDTO Create(ClubDTO club, IFormFile file)
         {
             var newClub = _mapper.Map<ClubDTO, Club>(club);
-                UpdateOrCreateAnImage(club, file);
+            UpdateOrCreateAnImage(club, file);
             _repoWrapper.Club.Create(newClub);
             _repoWrapper.Save();
             return _mapper.Map<Club, ClubDTO>(newClub);
@@ -205,9 +203,9 @@ namespace EPlast.BussinessLayer.Services
         public void SetAdminEndDate(AdminEndDateDTO adminEndDate)
         {
             ClubAdministration admin = _repoWrapper.GetClubAdministration
-                .FindByCondition(i => i.ID == adminEndDate.adminId)
+                .FindByCondition(i => i.ID == adminEndDate.AdminId)
                 .FirstOrDefault();
-            admin.EndDate = adminEndDate.enddate;
+            admin.EndDate = adminEndDate.EndDate;
             _repoWrapper.GetClubAdministration.Update(admin);
             _repoWrapper.Save();
         }

@@ -2,17 +2,12 @@
 using EPlast.BussinessLayer.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.ViewModels;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using AutoMapper;
-using System.Linq;
 
 namespace EPlast.Controllers
 {
@@ -235,7 +230,7 @@ namespace EPlast.Controllers
 
             _clubService.AddFollower(clubIndex, userId);
 
-            return RedirectToAction("UserProfile", "Account", new { userId = userId });
+            return RedirectToAction("UserProfile", "Account", new { userId });
         }
         
         [HttpGet]

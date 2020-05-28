@@ -1,20 +1,10 @@
-﻿using System;
-using EPlast.DataAccess.Entities;
+﻿using EPlast.DataAccess.Entities;
+using System;
 
 namespace EPlast.BussinessLayer.DTO
 {
     public class ClubAdministrationDTO
     {
-        /*було
-        public int adminId { get; set; }
-
-        public int clubIndex { get; set; }
-
-        public DateTime? enddate { get; set; }
-        public DateTime startdate { get; set; }
-        public string AdminType { get; set; }
-        */
-
         public int ID { get; set; }
         public int AdminTypeId { get; set; }
         public string AdminTypeName { get; set; }
