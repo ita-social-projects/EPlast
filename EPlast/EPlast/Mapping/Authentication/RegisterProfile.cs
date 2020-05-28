@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO.Account;
 using EPlast.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.Models.Mapping
 {
@@ -12,8 +8,7 @@ namespace EPlast.Models.Mapping
     {
         public RegisterProfile()
         {
-            CreateMap<RegisterViewModel, RegisterDto>();
-            CreateMap<RegisterDto, RegisterViewModel>();
+            CreateMap<RegisterViewModel, RegisterDto>().ReverseMap();
         }
     }
 }
