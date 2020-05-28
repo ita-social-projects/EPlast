@@ -143,7 +143,7 @@ namespace EPlast.Controllers
                     decesionViewModel.DecisionWrapper.File.Length > 10485760)
                 {
                     ModelState.AddModelError("", "файл за великий (більше 10 Мб)");
-                    return Json(new { success, text = "file lenght > 10485760" });
+                    return Json(new { success, text = "file length > 10485760" });
                 }
 
                 decesionViewModel.DecisionWrapper.Decision.HaveFile = decesionViewModel.DecisionWrapper.File != null;
