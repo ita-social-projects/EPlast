@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using EPlast.BussinessLayer.DTO.Account;
 using EPlast.BussinessLayer.DTO.UserProfiles;
 using EPlast.BussinessLayer.Interfaces;
 using EPlast.DataAccess.Entities;
-using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using System;
