@@ -1,5 +1,5 @@
 ﻿@using EPlast.ViewModels
-@model List<ClubViewModel>
+@model IEnumerable<ClubViewModel>
 @{
     ViewData["Title"] = "Index";
 }
@@ -26,17 +26,17 @@
                         <span class="club-block club-wrappers-radius">
                             <button type="submit" class="club-block-submit rounded ">
                                 <div class="club-img-wrapper">
-                                    @if (item.Club.Logo != null)
+                                    @if (item.Logo != null)
                                     {
-                                        <div class="club-img" style="background-image:url('/images/Club/@item.Club.Logo')"></div>
+                                        <div class="club-img" style="background-image:url('/images/Club/@item.Logo')"></div>
                                     }
                                     else
                                     {
                                         <div class="club-img" style="background-image:url('/images/Club/default.jpg')"></div>
                                     }
                                 </div>
-                                <p class="club-name">@item.Club.ClubName</p>
-                                <input value="@item.Club.ID" type="hidden" name="index" id="clubId" />
+                                <p class="club-name">@item.ClubName</p>
+                                <input value="@item.ID" type="hidden" name="index" id="clubId" />
                             </button>
                         </span>
                     </form>

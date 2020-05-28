@@ -12,6 +12,5 @@ namespace EPlast.DataAccess.Entities
         public ICollection<CityAdministration> CityAdministration { get; set; }
         public ICollection<ClubAdministration> ClubAdministration { get; set; }
         public ICollection<RegionAdministration> RegionAdministration { get; set; }
-
     }
 }

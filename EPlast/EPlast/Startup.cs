@@ -75,10 +75,14 @@ namespace EPlast
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
             services.AddScoped<IEmailConfirmation, EmailConfirmationService>();
             services.AddScoped<IDecisionVmInitializer, DecisionVmInitializer>();
+
             services.AddScoped<CityAccessSettings, CityAccessSettings>();
             services.AddScoped<ICityAccessService, CityAccessService>();
             services.AddScoped<ICityMembersService, CityMembersService>();
             services.AddScoped<IAnnualReportService, AnnualReportService>();
+            services.AddScoped<IDirectoryManager, DirectoryManager>();
+            services.AddScoped<IFileManager, FileManager>();
+            services.AddScoped<IFileStreamManager, FileStreamManager>();
             services.AddScoped<IPDFService, PDFService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<INationalityService, NationalityService>();
@@ -93,9 +97,7 @@ namespace EPlast
             services.AddScoped<ICItyAdministrationService, CityAdministrationService>();
             services.AddScoped<ICityService, CityService>();
             services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
-            services.AddScoped<IDirectoryManager, DirectoryManager>();
-            services.AddScoped<IFileManager, FileManager>();
-            services.AddScoped<IFileStreamManager, FileStreamManager>();
+            services.AddScoped<IClubService, ClubService>();
             services.AddScoped<ICreateEventVMInitializer, CreateEventVMInitializer>();
             services.AddScoped<IUserAccessManagerSettings, UserAccessManagerSettings>();
             services.AddScoped<IUserAccessManager, UserAccessManager>();
