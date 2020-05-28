@@ -8,7 +8,7 @@ namespace EPlast.Mapping.Events
     {
         public ActionCategoryProfile()
         {
-            CreateMap<EventCategoryDTO, EventCategoryViewModel>();
+            CreateMap<EventCategoryDTO, EventCategoryViewModel>().ReverseMap();
         }
     }
 
