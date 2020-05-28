@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using EPlast.ViewModels.UserInformation.UserProfile;
 
 namespace EPlast.ViewModels.EventUser
 {
