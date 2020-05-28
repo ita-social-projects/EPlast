@@ -18,28 +18,19 @@ namespace EPlast.BussinessLayer.Services
 {
     public class AccountService : IAccountService
     {
-        private UserManager<User> _userManager;
-        private SignInManager<User> _signInManager;
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
         private readonly IEmailConfirmation _emailConfirmation;
-        private readonly IUserAccessManager _userAccessManager;
-        private readonly IDateTimeHelper _dateTimeHelper;
         private readonly IMapper _mapper;
 
         public AccountService(UserManager<User> userManager,
             SignInManager<User> signInManager,
-            IRepositoryWrapper repoWrapper,
             IEmailConfirmation emailConfirmation,
-            IUserAccessManager userAccessManager,
-            IDateTimeHelper dateTimeHelper,
             IMapper mapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _repoWrapper = repoWrapper;
             _emailConfirmation = emailConfirmation;
-            _userAccessManager = userAccessManager;
-            _dateTimeHelper = dateTimeHelper;
             _mapper = mapper;
         }
 
@@ -186,11 +177,11 @@ namespace EPlast.BussinessLayer.Services
             return totalTime;
         }
 
-        public int GetTimeAfterReset(UserDTO user)
+        public int GetTimeAfterReset(UserDTO userDto)
         {
             IDateTimeHelper dateTimeResetingPassword = new DateTimeHelper();
             dateTimeResetingPassword.GetCurrentTime();
-            int totalTime = (int)dateTimeResetingPassword.GetCurrentTime().Subtract(user.EmailSendedOnForgotPassword).TotalMinutes;
+            int totalTime = (int)dateTimeResetingPassword.GetCurrentTime().Subtract(userDto.EmailSendedOnForgotPassword).TotalMinutes;
             return totalTime;
         }
 
