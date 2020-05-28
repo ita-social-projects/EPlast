@@ -1,18 +1,18 @@
-﻿@model EPlast.ViewModels.AnnualReportViewModel
-@using EPlast.ViewModels
+﻿@model EPlast.ViewModels.CreateEditAnnualReportViewModel
+@using EPlast.Models.Enums
 @{
     ViewData["Title"] = "Річний звіт станиці";
 }
 
 <div class="annual-report-form m-5 shadow-lg">
     <form asp-controller="Documentation" method="post">
-        <input asp-for="AnnualReport.ID" type="hidden" />
-        <input asp-for="AnnualReport.UserId" type="hidden" />
         <input asp-for="AnnualReport.CityId" type="hidden" />
-        <input asp-for="AnnualReport.Status" type="hidden" />
-        <input asp-for="AnnualReport.Date" type="hidden" />
         @if (Model?.Operation == AnnualReportOperation.Editing)
         {
+            <input asp-for="AnnualReport.ID" type="hidden" />
+            <input asp-for="AnnualReport.UserId" type="hidden" />
+            <input asp-for="AnnualReport.Status" type="hidden" />
+            <input asp-for="AnnualReport.Date" type="hidden" />
             <input asp-for="AnnualReport.CityManagement.ID" type="hidden" />
             <input asp-for="AnnualReport.CityManagement.AnnualReportId" type="hidden" />
             <input asp-for="AnnualReport.MembersStatistic.Id" type="hidden" />
@@ -230,10 +230,10 @@
             @switch (Model?.Operation)
             {
                 case AnnualReportOperation.Creating:
-                    <button id="CreateAnnualReport" asp-action="CreateAnnualReport" class="btn btn-block text-light btn-lg" type="submit">Створити</button>
+                    <button id="CreateAnnualReport" asp-action="CreateAnnualReportAsync" class="btn btn-block text-light btn-lg" type="submit">Створити</button>
                     break;
                 case AnnualReportOperation.Editing:
-                    <button asp-action="EditAnnualReport" class="btn btn-block text-light btn-lg" type="submit">Редагувати</button>
+                    <button asp-action="EditAnnualReportAsync" class="btn btn-block text-light btn-lg" type="submit">Редагувати</button>
                     break;
             }
         </div>
