@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using EPlast.BussinessLayer.DTO.UserProfiles;
 
 namespace EPlast.BussinessLayer.DTO.EventUser
 {
