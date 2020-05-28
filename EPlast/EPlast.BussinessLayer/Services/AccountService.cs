@@ -1,20 +1,18 @@
-﻿using System;
+﻿using AutoMapper;
+using EPlast.BussinessLayer.AccessManagers.Interfaces;
+using EPlast.BussinessLayer.DTO;
+using EPlast.BussinessLayer.DTO.Account;
+using EPlast.BussinessLayer.Interfaces;
+using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Repositories;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using EPlast.BussinessLayer.AccessManagers.Interfaces;
-using EPlast.BussinessLayer.DTO.Account;
-using EPlast.BussinessLayer.Interfaces;
-using EPlast.DataAccess.Entities;
-using EPlast.DataAccess.Repositories;
-using EPlast.BussinessLayer.DTO;
-using AutoMapper;
 
 namespace EPlast.BussinessLayer.Services
 {
