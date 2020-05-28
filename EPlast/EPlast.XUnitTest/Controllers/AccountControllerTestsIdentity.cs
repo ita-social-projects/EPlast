@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO;
 using EPlast.BussinessLayer.DTO.Account;
+using EPlast.BussinessLayer.DTO.UserProfiles;
 using EPlast.BussinessLayer.Interfaces;
-using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.Controllers;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
