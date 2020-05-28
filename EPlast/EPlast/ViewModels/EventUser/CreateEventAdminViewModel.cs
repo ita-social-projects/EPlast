@@ -1,4 +1,6 @@
-﻿namespace EPlast.ViewModels.EventUser
+﻿using EPlast.ViewModels.UserInformation.UserProfile;
+
+namespace EPlast.ViewModels.EventUser
 {
     public class CreateEventAdminViewModel
     {
