@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer
 {
-    public class EmailConfirmation:IEmailConfirmation
+    public class EmailConfirmationService:IEmailConfirmation
     {
         public IOptions<EmailServiceSettings> Settings { get; }
 
-        public EmailConfirmation(IOptions<EmailServiceSettings> settings)
+        public EmailConfirmationService(IOptions<EmailServiceSettings> settings)
         {
             Settings = settings;
         }
