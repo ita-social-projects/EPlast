@@ -8,6 +8,6 @@
   },
   "compileOnSave": true,
   "include": [
-    "*"
+    "*", "../../../ViewModels/ClubIViewModel.cs", "../../../ViewModels/ClubProfileViewModel.cs"
   ]
 }

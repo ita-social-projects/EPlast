@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EPlast.DataAccess.DTO
+namespace EPlast.BussinessLayer.DTO
 {
     public class AdminEndDateDTO
     {

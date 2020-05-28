@@ -1,5 +1,5 @@
 ﻿@using EPlast.ViewModels
-@model ClubViewModel
+@model ClubProfileViewModel
 @{
     ViewData["Title"] = "ClubMembers";
 }
@@ -15,7 +15,7 @@
             {
                 <div class="club-block-wrapper">
                     <div class="club-block club-wrappers-radius">
-                        @if (Model.ClubAdmin != null && (ViewBag.usermanager.GetUserId(User) == Model.ClubAdmin.Id || User.IsInRole("Admin")))
+                        @if ((Model.ClubAdmin != null && ViewBag.usermanager.GetUserId(User) == Model.ClubAdmin.Id) || User.IsInRole("Admin"))
                         {
                             <div class="setting-button-on-ClubMembers">
                                 <a class="ClubMemberToAdmin" data-adminid="@item.ID" role="button" data-toggle="modal" href="#addClubAdministration" style="color: #3c5438; padding: 5px;"><i class="material-icons">settings</i></a>
@@ -34,7 +34,7 @@
                         <a class="club-name" asp-action="UserProfile" asp-controller="Account" asp-route-userId="@item.User.Id" style="color: black;">
                             @item.User.FirstName @item.User.LastName
                         </a>
-                        @if (Model.ClubAdmin != null && (ViewBag.usermanager.GetUserId(User) == Model.ClubAdmin.Id || User.IsInRole("Admin")))
+                        @if ((Model.ClubAdmin != null && ViewBag.usermanager.GetUserId(User) == Model.ClubAdmin.Id) || User.IsInRole("Admin"))
                         {
                             <a class="btn btn-primary btn-lg colors-for-club-buttons" role="button" asp-controller="Club" asp-action="ChangeIsApprovedStatus" asp-route-index="@item.ID" asp-route-clubindex="@item.Club.ID" style="display: block; color: white;">Видалити з куреня</a>
 

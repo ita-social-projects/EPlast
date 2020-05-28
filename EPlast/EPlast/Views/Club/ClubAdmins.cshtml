@@ -1,5 +1,5 @@
 ﻿@using EPlast.ViewModels
-@model ClubViewModel
+@model ClubProfileViewModel
 @{
     ViewData["Title"] = "ClubAdmins";
 }
@@ -41,7 +41,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model.Club.ClubAdministration)
+                @foreach (var item in Model.ClubAdministration)
                 {
                     <tr class="raport-click-row">
                         <td>@item.AdminType.AdminTypeName</td>
