@@ -246,6 +246,6 @@ namespace EPlast.XUnitTest
 
         };
         private DocumentationController CreateDocumentationController =>
-            new DocumentationController(null, null, null, null, null, null, null, _decisionService.Object, _mapper.Object);
+            new DocumentationController(null, null, _decisionService.Object, _mapper.Object, null, null, null, null );
     }
 }
