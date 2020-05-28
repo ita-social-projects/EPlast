@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EPlast.BussinessLayer.DTO.UserProfiles;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.BussinessLayer.DTO
