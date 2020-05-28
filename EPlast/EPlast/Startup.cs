@@ -8,6 +8,7 @@ using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.BussinessLayer.Services;
 using EPlast.BussinessLayer.Services.City;
+using EPlast.BussinessLayer.Services.City.CityAccess;
 using EPlast.BussinessLayer.Services.Events;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.BussinessLayer.Services.UserProfiles;
@@ -66,13 +67,13 @@ namespace EPlast
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddScoped<IAccountService, AccountService>();
-
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
             services.AddScoped<IEmailConfirmation, EmailConfirmation>();
-            services.AddScoped<IAnnualReportVMInitializer, AnnualReportVMInitializer>();
-            services.AddScoped<IViewAnnualReportsVMInitializer, ViewAnnualReportsVMInitializer>();
             services.AddScoped<IDecisionVmInitializer, DecisionVmInitializer>();
-
+            services.AddScoped<CityAccessSettings, CityAccessSettings>();
+            services.AddScoped<ICityAccessService, CityAccessService>();
+            services.AddScoped<ICityMembersService, CityMembersService>();
+            services.AddScoped<IAnnualReportService, AnnualReportService>();
             services.AddScoped<IPDFService, PDFService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<INationalityService, NationalityService>();
@@ -88,8 +89,6 @@ namespace EPlast
             services.AddScoped<ICityService, CityService>();
             services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
             services.AddScoped<ICreateEventVMInitializer, CreateEventVMInitializer>();
-            services.AddScoped<ICityAccessManagerSettings, CityAccessManagerSettings>();
-            services.AddScoped<ICityAccessManager, CityAccessManager>();
             services.AddScoped<IUserAccessManagerSettings, UserAccessManagerSettings>();
             services.AddScoped<IUserAccessManager, UserAccessManager>();
             services.AddScoped<IActionManager, ActionManager>();
@@ -100,6 +99,10 @@ namespace EPlast
             services.AddScoped<IParticipantManager, ParticipantManager>();
             services.AddScoped<IEventGalleryManager, EventGalleryManager>();
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
+            services.AddScoped<IFileManager, FileManager>();
+            services.AddScoped<IFileStreamManager, FileStreamManager>();
+            services.AddScoped<IDirectoryManager, DirectoryManager>();
+            services.AddScoped<IDecisionService, DecisionService>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
             services.Configure<IdentityOptions>(options =>
             {
