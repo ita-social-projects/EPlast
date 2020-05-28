@@ -6,6 +6,7 @@ using EPlast.BussinessLayer.Interfaces;
 using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.BussinessLayer.Interfaces.EventUser;
 using EPlast.BussinessLayer.Services;
+using EPlast.BussinessLayer.Services.City;
 using EPlast.BussinessLayer.Services.Events;
 using EPlast.BussinessLayer.Services.EventUser;
 using EPlast.BussinessLayer.Services.Interfaces;

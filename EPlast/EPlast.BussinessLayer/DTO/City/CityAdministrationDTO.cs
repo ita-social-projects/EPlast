@@ -1,18 +1,17 @@
 ﻿using EPlast.DataAccess.Entities;
-using EPlast.ViewModels.UserInformation.UserProfile;
 using System;
 
-namespace EPlast.ViewModels
+namespace EPlast.BussinessLayer.DTO.City
 {
-    public class CityAdministrationViewModel
+    public class CityAdministrationDTO
     {
         public int ID { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public int CityId { get; set; }
-        public City City { get; set; }
+        public CityDTO City { get; set; }
         public string UserId { get; set; }
-        public UserViewModel User { get; set; }
+        public UserDTO User { get; set; }
         public int AdminTypeId { get; set; }
         public AdminType AdminType { get; set; }
         public CityManagement CityManagement { get; set; }

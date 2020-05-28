@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO;
+using EPlast.BussinessLayer.DTO.City;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.ViewModels;
+using EPlast.ViewModels.City;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -129,7 +131,7 @@ namespace EPlast.Controllers
             var cities = _cityService.GetAllDTO();
             var model = new RegionsAdminsViewModel
             {
-                Cities = _mapper.Map<IEnumerable<CityDTO>, IEnumerable<CityViewModel2>>(cities)
+                Cities = _mapper.Map<IEnumerable<CityDTO>, IEnumerable<CityViewModel>>(cities)
             };
             return View(model);
         }
