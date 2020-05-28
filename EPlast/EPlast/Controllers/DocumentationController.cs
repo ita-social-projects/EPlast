@@ -1,59 +1,49 @@
-﻿using EPlast.BussinessLayer;
+﻿using AutoMapper;
+using EPlast.BussinessLayer;
+using EPlast.BussinessLayer.DTO;
+using EPlast.BussinessLayer.DTO.City;
+using EPlast.BussinessLayer.Exceptions;
+using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.DataAccess.Entities;
-using EPlast.DataAccess.Repositories;
-using EPlast.Models.ViewModelInitializations.Interfaces;
+using EPlast.Models;
+using EPlast.Models.Enums;
 using EPlast.ViewModels;
+using EPlast.ViewModels.City;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.Wrapper;
-using EPlast.BussinessLayer.AccessManagers.Interfaces;
+using Organization = EPlast.Models.Organization;
 
 namespace EPlast.Controllers
 {
     public class DocumentationController : Controller
     {
-        private readonly IRepositoryWrapper _repoWrapper;
-        private readonly IAnnualReportVMInitializer _annualReportVMCreator;
-        private readonly IDecisionVMIitializer _decisionVMCreator;
-        private readonly IPDFService _PDFService;
-        private readonly UserManager<User> _userManager;
-        private readonly IHostingEnvironment _appEnvironment;
-        private readonly IViewAnnualReportsVMInitializer _viewAnnualReportsVMInitializer;
-        private readonly IDirectoryManager _directoryManager;
-        private readonly IFileManager _fileManager;
-        private readonly IFileStreamManager _fileStreamManager;
-        private readonly ICityAccessManager _cityAccessManager;
+        private readonly IDecisionService _decisionService;
         private readonly ILogger _logger;
+        private readonly IMapper _mapper;
+        private readonly IPDFService _PDFService;
+        private readonly IAnnualReportService _annualReportService;
+        private readonly ICityAccessService _cityAccessService;
+        private readonly ICityMembersService _cityMembersService;
+        private readonly ICityService _cityService;
 
-        private const string DecesionsDocumentFolder = @"\documents\";
-
-        public DocumentationController(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IAnnualReportVMInitializer annualReportVMCreator,
-            IDecisionVMIitializer decisionVMCreator, IPDFService PDFService, IHostingEnvironment appEnvironment, IViewAnnualReportsVMInitializer viewAnnualReportsVMInitializer,
-            ICityAccessManager cityAccessManager, IDirectoryManager directoryManager, IFileManager fileManager, IFileStreamManager fileStreamManager,
-            ILogger<DocumentationController> logger)
+        public DocumentationController(IPDFService PDFService, ILogger<DocumentationController> logger, IDecisionService decisionService, IMapper mapper, 
+            IAnnualReportService annualReportService, ICityAccessService cityAccessService, ICityMembersService cityMembersService, ICityService cityService)
         {
-            _repoWrapper = repoWrapper;
-            _annualReportVMCreator = annualReportVMCreator;
-            _userManager = userManager;
             _PDFService = PDFService;
-            _decisionVMCreator = decisionVMCreator;
-            _appEnvironment = appEnvironment;
-            _viewAnnualReportsVMInitializer = viewAnnualReportsVMInitializer;
-            _directoryManager = directoryManager;
-            _fileManager = fileManager;
-            _fileStreamManager = fileStreamManager;
-            _cityAccessManager = cityAccessManager;
             _logger = logger;
+            _decisionService = decisionService;
+            _mapper = mapper;
+            _annualReportService = annualReportService;
+            _cityAccessService = cityAccessService;
+            _cityMembersService = cityMembersService;
+            _cityService = cityService;
         }
 
         public IActionResult Index()
@@ -62,40 +52,42 @@ namespace EPlast.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public DecesionViewModel CreateDecesion()
+        public DecisionViewModel CreateDecision()
         {
+            DecisionViewModel decesionViewModel = null;
             try
             {
-                DecesionViewModel decesionViewModel = new DecesionViewModel
+                var organizations = _mapper.Map<List<Organization>>(_decisionService.GetOrganizationList());
+                decesionViewModel = new DecisionViewModel
                 {
-                    Decesion = new Decesion(),
-                    OrganizationListItems = (from item in _repoWrapper.Organization.FindAll()
-                                             select new SelectListItem
-                                             {
-                                                 Text = item.OrganizationName,
-                                                 Value = item.ID.ToString()
-                                             }),
-                    DecesionTargets = _repoWrapper.DecesionTarget.FindAll().ToList(),
-                    DecesionStatusTypeListItems = _decisionVMCreator.GetDecesionStatusTypes()
+                    DecisionWrapper = _mapper.Map<DecisionWrapper>(_decisionService.CreateDecision()),
+                    OrganizationListItems = from item in organizations
+                                            select new SelectListItem
+                                            {
+                                                Text = item.OrganizationName,
+                                                Value = item.ID.ToString()
+                                            },
+                    DecisionTargets = _mapper.Map<List<DecisionTarget>>(_decisionService.GetDecisionTargetList()),
+                    DecisionStatusTypeListItems = _decisionService.GetDecisionStatusTypes()
                 };
-
-                return decesionViewModel;
             }
-            catch
+            catch (Exception e)
             {
                 RedirectToAction("HandleError", "Error");
                 return null;
             }
+
+            return decesionViewModel;
         }
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        public JsonResult GetDecesion(int id)
+        public JsonResult GetDecision(int id)
         {
             try
             {
-                var decesion = _repoWrapper.Decesion.FindByCondition(x => x.ID == id).First();
-                return Json(new { success = true, decesion });
+                var decision = _mapper.Map<Decesion>(_decisionService.GetDecision(id));
+                return Json(new { success = true, decision });
             }
             catch
             {
@@ -105,198 +97,123 @@ namespace EPlast.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public JsonResult ChangeDecesion(DecesionViewModel decesionViewModel)
+        public JsonResult ChangeDecision(DecisionViewModel decesionViewModel)
         {
+            var success = false;
             try
             {
-                var decesion = _repoWrapper.Decesion.FindByCondition(x => x.ID == decesionViewModel.Decesion.ID).First();
-                decesion.Name = decesionViewModel.Decesion.Name;
-                decesion.Description = decesionViewModel.Decesion.Description;
-                _repoWrapper.Decesion.Update(decesion);
-                _repoWrapper.Save();
+                success = _decisionService.ChangeDecision(
+                    _mapper.Map<DecisionDTO>(decesionViewModel.DecisionWrapper.Decision));
                 return Json(new
                 {
-                    success = true,
+                    success,
                     text = "Зміни пройшли успішно!",
-                    decesion
+                    decesion = decesionViewModel.DecisionWrapper.Decision
                 });
             }
             catch
             {
-                return Json(new { success = false });
+                return Json(new { success });
             }
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<JsonResult> SaveDecesionAsync(DecesionViewModel decesionViewModel)
+        public async Task<JsonResult> SaveDecision(DecisionViewModel decesionViewModel)
         {
+            var success = false;
             try
             {
                 ModelState.Remove("Decesion.DecesionStatusType");
-                if (!ModelState.IsValid && decesionViewModel.Decesion.DecesionTarget.ID != 0 || decesionViewModel == null)
+                if (!ModelState.IsValid && decesionViewModel.DecisionWrapper.Decision.DecisionTarget.ID != 0 ||
+                    decesionViewModel == null)
                 {
                     ModelState.AddModelError("", "Дані введені неправильно");
-                    return Json(new { success = false, text = ModelState.Values.SelectMany(v => v.Errors), model = decesionViewModel, modelstate = ModelState });
+                    return Json(new
+                    {
+                        success,
+                        text = ModelState.Values.SelectMany(v => v.Errors),
+                        model = decesionViewModel,
+                        modelstate = ModelState
+                    });
                 }
 
-                if (decesionViewModel.File != null && decesionViewModel.File.Length > 10485760)
+                if (decesionViewModel.DecisionWrapper.File != null &&
+                    decesionViewModel.DecisionWrapper.File.Length > 10485760)
                 {
                     ModelState.AddModelError("", "файл за великий (більше 10 Мб)");
-                    return Json(new { success = false, text = "file lenght > 10485760" });
+                    return Json(new { success, text = "file lenght > 10485760" });
                 }
 
-                decesionViewModel.Decesion.HaveFile = decesionViewModel.File != null ? true : false;
-
-                _repoWrapper.Decesion.Attach(decesionViewModel.Decesion);
-                _repoWrapper.Decesion.Create(decesionViewModel.Decesion);
-                _repoWrapper.Save();
-
-                if (decesionViewModel.Decesion.HaveFile)
-                {
-                    try
-                    {
-                        string path = _appEnvironment.WebRootPath + DecesionsDocumentFolder + decesionViewModel.Decesion.ID;
-                        _directoryManager.CreateDirectory(path);
-
-                        if (!_directoryManager.Exists(path))
-                        {
-                            throw new ArgumentException($"directory '{path}' is not exist");
-                        }
-
-                        if (decesionViewModel.File != null)
-                        {
-                            path = Path.Combine(path, decesionViewModel.File.FileName);
-
-                            using (var stream = _fileStreamManager.GenerateFileStreamManager(path, FileMode.Create))
-                            {
-                                await _fileStreamManager.CopyToAsync(decesionViewModel.File, stream.GetStream());
-                                if (!_fileManager.Exists(path))
-                                {
-                                    throw new ArgumentException($"File was not created it '{path}' directory");
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        return Json(new { success = false, text = e.Message });
-                    }
-                }
+                decesionViewModel.DecisionWrapper.Decision.HaveFile = decesionViewModel.DecisionWrapper.File != null;
+                success = await _decisionService.SaveDecisionAsync(
+                    _mapper.Map<DecisionWrapperDTO>(decesionViewModel.DecisionWrapper));
                 return Json(new
                 {
-                    success = true,
+                    success,
                     Text = "Рішення додано!",
-                    decesion = decesionViewModel.Decesion,
-                    decesionOrganization = _repoWrapper.Organization.FindByCondition(x => x.ID == decesionViewModel.Decesion.Organization.ID).Select(x => x.OrganizationName)
+                    decision = decesionViewModel.DecisionWrapper.Decision,
+                    decesionOrganization = _mapper.Map<Organization>(
+                        _decisionService.GetDecisionOrganization(decesionViewModel.DecisionWrapper.Decision.ID))
                 });
             }
             catch (Exception e)
             {
                 return Json(new
                 {
-                    success = false,
+                    success,
                     text = e.Message
                 });
             }
         }
 
         [Authorize(Roles = "Admin")]
-        public IActionResult ReadDecesion()
+        public IActionResult ReadDecision()
         {
+            List<DecisionViewModel> decisions = null;
             try
             {
-                var decisions = new List<DecesionViewModel>(
-                    _repoWrapper.Decesion
-                    .Include(x => x.DecesionTarget, x => x.Organization)
-                    .Take(200)
-                    .Select(decesion => new DecesionViewModel
-                    {
-                        Decesion = decesion
-                    })
-                    .ToList());
-                foreach (var decesion in decisions)
-                {
-                    string path = _appEnvironment.WebRootPath + DecesionsDocumentFolder + decesion.Decesion.ID;
-                    if (!decesion.Decesion.HaveFile || !_directoryManager.Exists(path))
-                    {
-                        continue;
-                    }
-                    var files = _directoryManager.GetFiles(path);
-
-                    if (files.Length == 0)
-                    {
-                        throw new ArgumentException($"File count in '{path}' is 0");
-                    }
-
-                    decesion.Filename = Path.GetFileName(files.First());
-                }
-                return View(Tuple.Create(CreateDecesion(), decisions));
+                decisions = new List<DecisionViewModel>
+                (
+                    _mapper.Map<List<DecisionWrapper>>(_decisionService.GetDecisionList())
+                        .Select(decesion => new DecisionViewModel { DecisionWrapper = decesion })
+                        .ToList()
+                );
             }
             catch
             {
                 return RedirectToAction("HandleError", "Error");
             }
+
+            return View(Tuple.Create(CreateDecision(), decisions));
         }
 
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Download(string id, string filename)
+        [HttpPost]
+        public JsonResult DeleteDecision(int id)
         {
+            return _decisionService.DeleteDecision(id) ? Json(new
+            {
+                success = true,
+                text = "Зміни пройшли успішно!"
+            }) :
+               Json(new { success = false });
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Download(int id, string filename)
+        {
+            byte[] fileBytes;
             try
             {
-                if (string.IsNullOrEmpty(filename) || string.IsNullOrEmpty(id))
-                    return Content("filename or id not present");
-
-                var path = Path.Combine(_appEnvironment.WebRootPath + DecesionsDocumentFolder, id);
-
-                if (!_directoryManager.Exists(path) || _directoryManager.GetFiles(path).Length == 0)
-                {
-                    throw new ArgumentException($"directory '{path}' is not exist");
-                }
-                path = Path.Combine(path, filename);
-                var memory = new MemoryStream();
-                using (var stream = _fileStreamManager.GenerateFileStreamManager(path, FileMode.Open))
-                {
-                    await _fileStreamManager.CopyToAsync(stream.GetStream(), memory);
-
-                    if (memory.Length == 0)
-                    {
-                        throw new ArgumentException("memory length is 0");
-                    }
-                }
-                memory.Position = 0;
-                return File(memory, GetContentType(path), Path.GetFileName(path));
+                if (id <= 0) throw new ArgumentException("Decision id cannot be null lest than zero");
+                fileBytes = await _decisionService.DownloadDecisionFileAsync(id);
             }
-            catch
+            catch (Exception)
             {
                 return RedirectToAction("HandleError", "Error");
             }
-        }
-
-        private static string GetContentType(string path)
-        {
-            var types = GetMimeTypes();
-            var ext = Path.GetExtension(path).ToLowerInvariant();
-            return types[ext];
-        }
-
-        private static Dictionary<string, string> GetMimeTypes()
-        {
-            return new Dictionary<string, string>
-            {
-                {".txt", "text/plain"},
-                {".pdf", "application/pdf"},
-                {".doc", "application/vnd.ms-word"},
-                {".docx", "application/vnd.ms-word"},
-                {".xls", "application/vnd.ms-excel"},
-                {".xlsx", "application/vnd.openxmlformatsofficedocument.spreadsheetml.sheet"},
-                {".png", "image/png"},
-                {".jpg", "image/jpeg"},
-                {".jpeg", "image/jpeg"},
-                {".gif", "image/gif"},
-                {".csv", "text/csv"},
-                {".mp4","video/mp4" }
-            };
+            return File(fileBytes, _decisionService.GetContentType(id, filename), filename);
         }
 
         [Authorize(Roles = "Admin")]
@@ -305,14 +222,9 @@ namespace EPlast.Controllers
         {
             try
             {
-                if (objId <= 0)
-                {
-                    throw new ArgumentException("Cannot crated pdf id is not valid");
-                }
+                if (objId <= 0) throw new ArgumentException("Cannot crated pdf id is not valid");
 
-                byte[] arr = await _PDFService.DecesionCreatePDFAsync(_repoWrapper.Decesion.Include(x => x.DecesionTarget,
-                        x => x.Organization)
-                    .FirstOrDefault(x => x.ID == objId));
+                var arr = await _PDFService.DecisionCreatePDFAsync(objId);
                 return File(arr, "application/pdf");
             }
             catch
@@ -323,280 +235,189 @@ namespace EPlast.Controllers
 
         [Authorize(Roles = "Голова Станиці")]
         [HttpGet]
-        public IActionResult CreateAnnualReport()
+        public async Task<IActionResult> CreateAnnualReportAsync()
         {
             try
             {
-                var userId = _userManager.GetUserId(User);
-                var city = _cityAccessManager.GetCities(userId).First();
-                var annualReportCheck = _repoWrapper.AnnualReports
-                        .FindByCondition(ar => ar.CityId == city.ID && ar.Date.Year == DateTime.Now.Year)
-                        .FirstOrDefault();
-                if (annualReportCheck == null)
+                var citiesDTO = await _cityAccessService.GetCitiesAsync(User);
+                var city = _mapper.Map<CityDTO, CityViewModel>(citiesDTO.First());
+                if (_annualReportService.HasUnconfirmed(city.ID))
                 {
-                    var cityMembers = _repoWrapper.User
-                    .FindByCondition(u => u.CityMembers.Any(cm => cm.City.ID == city.ID && cm.EndDate == null))
-                    .Include(u => u.UserPlastDegrees);
-                    var annualReportViewModel = new AnnualReportViewModel
+                    throw new AnnualReportException("Станиця має непідтверджені звіти!");
+                }
+                if (_annualReportService.HasCreated(city.ID))
+                {
+                    throw new AnnualReportException("Річний звіт для даної станиці вже створений!");
+                }
+                var cityMemebrsDTO = _cityMembersService.GetCurrentByCityId(city.ID);
+                var cityMembers = _mapper.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(cityMemebrsDTO);
+                var createEditAnnualReportViewModel = new CreateEditAnnualReportViewModel(cityMembers)
+                {
+                    Operation = AnnualReportOperation.Creating,
+                    CityName = city.Name,
+                    AnnualReport = new AnnualReportViewModel
                     {
-                        Operation = AnnualReportOperation.Creating,
-                        CityName = city.Name,
-                        CityMembers = _annualReportVMCreator.GetCityMembers(cityMembers),
-                        CityLegalStatusTypes = _annualReportVMCreator.GetCityLegalStatusTypes(),
-                        AnnualReport = _annualReportVMCreator.GetAnnualReport(userId, city.ID, cityMembers)
-                    };
-                    return View("CreateEditAnnualReport", annualReportViewModel);
-                }
-                else
-                {
-                    ViewData["ErrorMessage"] = $"Звіт станиці {city.Name} за {DateTime.Now.Year} рік вже існує!";
-                    return View("CreateEditAnnualReport");
-                }
+                        CityId = city.ID,
+                        MembersStatistic = new MembersStatisticViewModel()
+                    }
+                };
+                return View("CreateEditAnnualReport", createEditAnnualReportViewModel);
+            }
+            catch (AnnualReportException e)
+            {
+                ViewData["ErrorMessage"] = e.Message;
+                return View("CreateEditAnnualReport");
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception: {e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
             }
         }
 
         [Authorize(Roles = "Admin, Голова Округу")]
         [HttpGet]
-        public IActionResult CreateAnnualReportLikeAdmin(int cityId)
+        public async Task<IActionResult> CreateAnnualReportLikeAdminAsync(int cityId)
         {
-            var userId = _userManager.GetUserId(User);
-            if (!_cityAccessManager.HasAccess(userId, cityId))
-                return RedirectToAction("HandleError", "Error", new { code = 403 });
             try
             {
-                var city = _repoWrapper.City
-                    .FindByCondition(c => c.ID == cityId)
-                    .First();
-                var annualReportCheck = _repoWrapper.AnnualReports
-                        .FindByCondition(ar => ar.CityId == city.ID && ar.Date.Year == DateTime.Now.Year)
-                        .FirstOrDefault();
-                if (annualReportCheck == null)
+                if (await _cityAccessService.HasAccessAsync(User, cityId))
                 {
-                    var cityMembers = _repoWrapper.User
-                        .FindByCondition(u => u.CityMembers.Any(cm => cm.City.ID == cityId && cm.EndDate == null))
-                        .Include(u => u.UserPlastDegrees);
-                    var annualReportViewModel = new AnnualReportViewModel
+                    if (_annualReportService.HasUnconfirmed(cityId))
+                    {
+                        throw new AnnualReportException("Станиця має непідтверджені звіти!");
+                    }
+                    if (_annualReportService.HasCreated(cityId))
+                    {
+                        throw new AnnualReportException("Річний звіт для даної станиці вже створений!");
+                    }
+                    var cityDTO = _cityService.GetById(cityId);
+                    var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
+                    var cityMemebrsDTO = _cityMembersService.GetCurrentByCityId(city.ID);
+                    var cityMembers = _mapper.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(cityMemebrsDTO);
+                    var createEditAnnualReportViewModel = new CreateEditAnnualReportViewModel(cityMembers)
                     {
                         Operation = AnnualReportOperation.Creating,
                         CityName = city.Name,
-                        CityMembers = _annualReportVMCreator.GetCityMembers(cityMembers),
-                        CityLegalStatusTypes = _annualReportVMCreator.GetCityLegalStatusTypes(),
-                        AnnualReport = _annualReportVMCreator.GetAnnualReport(userId, city.ID, cityMembers)
+                        AnnualReport = new AnnualReportViewModel
+                        {
+                            CityId = cityId,
+                            MembersStatistic = new MembersStatisticViewModel()
+                        }
                     };
-                    return View("CreateEditAnnualReport", annualReportViewModel);
+                    return View("CreateEditAnnualReport", createEditAnnualReportViewModel);
                 }
                 else
                 {
-                    ViewData["ErrorMessage"] = $"Звіт станиці {city.Name} за {DateTime.Now.Year} рік вже існує!";
-                    return View("CreateEditAnnualReport");
+                    throw new Exception("Немає доступу до міста");
                 }
+            }
+            catch (AnnualReportException e)
+            {
+                ViewData["ErrorMessage"] = e.Message;
+                return View("CreateEditAnnualReport");
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception: {e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
             }
         }
 
         [Authorize(Roles = "Admin, Голова Округу, Голова Станиці")]
         [HttpPost]
-        public IActionResult CreateAnnualReport(AnnualReport annualReport)
+        public async Task<IActionResult> CreateAnnualReportAsync(AnnualReportViewModel annualReport)
         {
-            if (!_cityAccessManager.HasAccess(annualReport.UserId, annualReport.CityId))
-                return RedirectToAction("HandleError", "Error", new { code = 403 });
             try
             {
-                var city = _repoWrapper.City
-                        .FindByCondition(c => c.ID == annualReport.CityId)
-                        .First();
                 if (ModelState.IsValid)
                 {
-                    var annualReportCheck = _repoWrapper.AnnualReports
-                        .FindByCondition(ar => ar.CityId == annualReport.CityId && ar.Date.Year == annualReport.Date.Year)
-                        .FirstOrDefault();
-                    if (annualReportCheck == null)
-                    {
-                        _repoWrapper.AnnualReports.Create(annualReport);
-                        _repoWrapper.Save();
-                        ViewData["Message"] = $"Звіт станиці {city.Name} за {annualReport.Date.Year} рік створено!";
-                    }
-                    else
-                    {
-                        ViewData["ErrorMessage"] = $"Звіт станиці {city.Name} за {annualReport.Date.Year} рік вже існує!";
-                    }
+                    var annualReportDTO = _mapper.Map<AnnualReportViewModel, AnnualReportDTO>(annualReport);
+                    await _annualReportService.CreateAsync(User, annualReportDTO);
+                    ViewData["Message"] = "Річний звіт станиці успішно створено!";
                     return View("CreateEditAnnualReport");
                 }
                 else
                 {
-                    var cityMembers = _repoWrapper.User
-                        .FindByCondition(u => u.CityMembers.Any(cm => cm.City.ID == annualReport.CityId && cm.EndDate == null))
-                        .Include(u => u.UserPlastDegrees);
-                    var annualReportViewModel = new AnnualReportViewModel
+                    var cityDTO = _cityService.GetById(annualReport.CityId);
+                    var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
+                    var cityMemebrsDTO = _cityMembersService.GetCurrentByCityId(city.ID);
+                    var cityMembers = _mapper.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(cityMemebrsDTO);
+                    var createEditAnnualReportViewModel = new CreateEditAnnualReportViewModel(cityMembers)
                     {
                         Operation = AnnualReportOperation.Creating,
                         CityName = city.Name,
-                        CityMembers = _annualReportVMCreator.GetCityMembers(cityMembers),
-                        CityLegalStatusTypes = _annualReportVMCreator.GetCityLegalStatusTypes(),
                         AnnualReport = annualReport
                     };
-                    ViewData["ErrorMessage"] = $"Звіт заповнений некоректно!";
-                    return View("CreateEditAnnualReport", annualReportViewModel);
+                    ViewData["ErrorMessage"] = "Річний звіт заповнений некоректно!";
+                    return View("CreateEditAnnualReport", createEditAnnualReportViewModel);
                 }
+            }
+            catch (AnnualReportException e)
+            {
+                ViewData["ErrorMessage"] = e.Message;
+                return View("CreateEditAnnualReport");
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception: {e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
             }
         }
 
         [Authorize(Roles = "Admin, Голова Округу")]
-        public IActionResult ViewAnnualReports()
+        public async Task<IActionResult> ViewAnnualReportsAsync()
         {
             try
             {
-                var userId = _userManager.GetUserId(User);
-                var cities = _cityAccessManager.GetCities(userId);
-                var annualReports = _repoWrapper.AnnualReports
-                    .FindAll()
-                    .Include(ar => ar.City)
-                        .ThenInclude(c => c.Region)
-                    .Include(ar => ar.User)
-                    .ToList();
-                annualReports.RemoveAll(ar => !cities.Any(c => c.ID == ar.CityId));
-                var viewAnnualReportsViewModel = new ViewAnnualReportsViewModel
+                var citiesDTO = await _cityAccessService.GetCitiesAsync(User);
+                var annualReportsDTO = await _annualReportService.GetAllAsync(User);
+                var cities = _mapper.Map<IEnumerable<CityDTO>, IEnumerable<CityViewModel>>(citiesDTO);
+                var annualReports = _mapper.Map<IEnumerable<AnnualReportDTO>, IEnumerable<AnnualReportViewModel>>(annualReportsDTO);
+                var viewAnnualReportsViewModel = new ViewAnnualReportsViewModel(cities)
                 {
-                    AnnualReports = annualReports,
-                    Cities = _viewAnnualReportsVMInitializer.GetCities(cities)
+                    AnnualReports = annualReports
                 };
                 return View(viewAnnualReportsViewModel);
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception: {e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
             }
         }
 
         [Authorize(Roles = "Admin, Голова Округу")]
-        public IActionResult GetAnnualReport(int id)
+        public async Task<IActionResult> GetAnnualReportAsync(int id)
         {
             try
             {
-                var annualReport = _repoWrapper.AnnualReports
-                    .FindByCondition(ar => ar.ID == id)
-                    .Include(ar => ar.City)
-                    .Include(ar => ar.MembersStatistic)
-                    .Include(ar => ar.CityManagement)
-                        .ThenInclude(cm => cm.CityAdminNew)
-                    .First();
-                var userId = _userManager.GetUserId(User);
-                if (!_cityAccessManager.HasAccess(userId, annualReport.CityId))
-                {
-                    return RedirectToAction("HandleError", "Error", new { code = 403 });
-                }
+                var annualReportDTO = await _annualReportService.GetByIdAsync(User, id);
+                var annualReport = _mapper.Map<AnnualReportDTO, AnnualReportViewModel>(annualReportDTO);
                 return PartialView("_GetAnnualReport", annualReport);
+            }
+            catch (AnnualReportException e)
+            {
+                return NotFound(e.Message);
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception: {e.Message}");
-                return NotFound("Не вдалося завантажити річний звіт!");
+                return NotFound("Не вдалося завантажити річний звіт");
             }
         }
 
         [Authorize(Roles = "Admin, Голова Округу")]
-        public async Task<IActionResult> ConfirmAnnualReport(int id)
+        public async Task<IActionResult> ConfirmAnnualReportAsync(int id)
         {
             try
             {
-                var annualReport = _repoWrapper.AnnualReports
-                    .FindByCondition(ar => ar.ID == id && ar.Status == AnnualReportStatus.Unconfirmed)
-                    .Include(ar => ar.City)
-                    .Include(ar => ar.CityManagement)
-                        .ThenInclude(cm => cm.CityAdminNew)
-                    .First();
-                var userId = _userManager.GetUserId(User);
-                if (!_cityAccessManager.HasAccess(userId, annualReport.CityId))
-                {
-                    return RedirectToAction("HandleError", "Error", new { code = 403 });
-                }
-                var annualReportOld = _repoWrapper.AnnualReports
-                    .FindByCondition(ar => ar.CityId == annualReport.CityId && ar.Status == AnnualReportStatus.Confirmed)
-                    .Include(ar => ar.City)
-                    .Include(ar => ar.CityManagement)
-                        .ThenInclude(cm => cm.CityAdminNew)
-                    .FirstOrDefault();
-
-                // update annualReport status
-                if (annualReportOld != null)
-                {
-                    annualReportOld.Status = AnnualReportStatus.Saved;
-                    _repoWrapper.AnnualReports.Update(annualReportOld);
-                }
-                annualReport.Status = AnnualReportStatus.Confirmed;
-                _repoWrapper.AnnualReports.Update(annualReport);
-
-                // update oldCityAdmin EndDate
-                var adminType = _repoWrapper.AdminType
-                        .FindByCondition(at => at.AdminTypeName == "Голова Станиці")
-                        .First();
-                CityAdministration cityAdminOld = _repoWrapper.CityAdministration
-                        .FindByCondition(ca => ca.CityId == annualReport.CityId && ca.AdminTypeId == adminType.ID)
-                        .Include(ca => ca.User)
-                        .LastOrDefault();
-                annualReport.CityManagement.CityAdminOldId = cityAdminOld?.ID;
-                if (cityAdminOld != null && annualReport.CityManagement.CityAdminNew != null
-                    && annualReport.CityManagement.UserId != cityAdminOld.UserId && cityAdminOld.EndDate == null)
-                {
-                    cityAdminOld.EndDate = DateTime.Now;
-                    _repoWrapper.CityAdministration.Update(cityAdminOld);
-                    await _userManager.RemoveFromRoleAsync(cityAdminOld.User, adminType.AdminTypeName);
-                }
-
-                // create newCityAdmin
-                if ((cityAdminOld == null || cityAdminOld?.EndDate != null) && annualReport.CityManagement.CityAdminNew != null)
-                {
-                    CityAdministration cityAdminNew = new CityAdministration
-                    {
-                        UserId = annualReport.CityManagement.UserId,
-                        CityId = annualReport.CityId,
-                        AdminTypeId = adminType.ID,
-                        StartDate = DateTime.Now
-                    };
-                    _repoWrapper.CityAdministration.Create(cityAdminNew);
-                    await _userManager.AddToRoleAsync(annualReport.CityManagement.CityAdminNew, adminType.AdminTypeName);
-                }
-
-                // update oldCityLegalStatus EndDate
-                CityLegalStatus cityLegalStatusOld = _repoWrapper.CityLegalStatuses
-                    .FindByCondition(cls => cls.CityId == annualReport.CityId)
-                    .LastOrDefault();
-                annualReport.CityManagement.CityLegalStatusOldId = cityLegalStatusOld?.Id;
-                if (cityLegalStatusOld != null && annualReport.CityManagement.CityLegalStatusNew != cityLegalStatusOld?.LegalStatusType
-                    && cityLegalStatusOld?.DateFinish == null)
-                {
-                    cityLegalStatusOld.DateFinish = DateTime.Now;
-                    _repoWrapper.CityLegalStatuses.Update(cityLegalStatusOld);
-                }
-
-                // create newCityLegalStatus
-                if (cityLegalStatusOld == null || cityLegalStatusOld.DateFinish != null)
-                {
-                    CityLegalStatus cityLegalStatusNew = new CityLegalStatus
-                    {
-                        CityId = annualReport.CityId,
-                        LegalStatusType = annualReport.CityManagement.CityLegalStatusNew,
-                        DateStart = DateTime.Now
-                    };
-                    _repoWrapper.CityLegalStatuses.Create(cityLegalStatusNew);
-                }
-                _repoWrapper.Save();
-                return Ok($"Звіт станиці {annualReport.City.Name} за {annualReport.Date.Year} рік підтверджено!");
+                await _annualReportService.ConfirmAsync(User, id);
+                return Ok("Річний звіт станиці успішно підтверджено!");
+            }
+            catch (AnnualReportException e)
+            {
+                return NotFound(e.Message);
             }
             catch (Exception e)
             {
@@ -606,65 +427,16 @@ namespace EPlast.Controllers
         }
 
         [Authorize(Roles = "Admin, Голова Округу")]
-        public async Task<IActionResult> CancelAnnualReport(int id)
+        public async Task<IActionResult> CancelAnnualReportAsync(int id)
         {
             try
             {
-                var annualReport = _repoWrapper.AnnualReports
-                    .FindByCondition(ar => ar.ID == id && ar.Status == AnnualReportStatus.Confirmed)
-                    .Include(ar => ar.City)
-                    .Include(ar => ar.CityManagement)
-                        .ThenInclude(cm => cm.CityLegalStatusOld)
-                    .First();
-                var userId = _userManager.GetUserId(User);
-                if (!_cityAccessManager.HasAccess(userId, annualReport.CityId))
-                {
-                    return RedirectToAction("HandleError", "Error", new { code = 403 });
-                }
-
-                // cityAdmin revert
-                var adminType = _repoWrapper.AdminType
-                        .FindByCondition(at => at.AdminTypeName == "Голова Станиці")
-                        .First();
-                var cityAdminOld = _repoWrapper.CityAdministration
-                    .FindByCondition(ca => ca.ID == annualReport.CityManagement.CityAdminOldId)
-                    .Include(ca => ca.User)
-                    .FirstOrDefault();
-                if (cityAdminOld != null)
-                {
-                    cityAdminOld.EndDate = null;
-                    _repoWrapper.CityAdministration.Update(cityAdminOld);
-                    await _userManager.AddToRoleAsync(cityAdminOld.User, adminType.AdminTypeName);
-                }
-                var cityAdministrations = _repoWrapper.CityAdministration
-                    .FindByCondition(ca => ca.ID > annualReport.CityManagement.CityAdminOldId && ca.CityId == annualReport.CityId && ca.AdminTypeId == adminType.ID)
-                    .Include(ca => ca.User);
-                foreach (var cityAdministration in cityAdministrations)
-                {
-                    _repoWrapper.CityAdministration.Delete(cityAdministration);
-                    await _userManager.RemoveFromRoleAsync(cityAdministration.User, adminType.AdminTypeName);
-                }
-
-                // cityLegalStatus revert
-                if (annualReport.CityManagement.CityLegalStatusOld != null)
-                {
-                    annualReport.CityManagement.CityLegalStatusOld.DateFinish = null;
-                }
-                var cityLegalStatuses = _repoWrapper.CityLegalStatuses
-                    .FindByCondition(cls => cls.Id > annualReport.CityManagement.CityLegalStatusOldId);
-                foreach (var cityLegalStatus in cityLegalStatuses)
-                {
-                    _repoWrapper.CityLegalStatuses.Delete(cityLegalStatus);
-                }
-
-                // save changes
-                annualReport.Status = AnnualReportStatus.Unconfirmed;
-                annualReport.CityManagement.CityAdminOld = null;
-                annualReport.CityManagement.CityLegalStatusOld = null;
-                _repoWrapper.AnnualReports.Update(annualReport);
-                _repoWrapper.Save();
-
-                return Ok($"Звіт станиці {annualReport.City.Name} за {annualReport.Date.Year} рік скасовано!");
+                await _annualReportService.CancelAsync(User, id);
+                return Ok("Річний звіт станиці успішно скасовано!");
+            }
+            catch (AnnualReportException e)
+            {
+                return NotFound(e.Message);
             }
             catch (Exception e)
             {
@@ -674,22 +446,16 @@ namespace EPlast.Controllers
         }
 
         [Authorize(Roles = "Admin, Голова Округу")]
-        public IActionResult DeleteAnnualReport(int id)
+        public async Task<IActionResult> DeleteAnnualReportAsync(int id)
         {
             try
             {
-                var annualReport = _repoWrapper.AnnualReports
-                    .FindByCondition(ar => ar.ID == id && ar.Status == AnnualReportStatus.Unconfirmed)
-                    .Include(ar => ar.City)
-                    .First();
-                var userId = _userManager.GetUserId(User);
-                if (!_cityAccessManager.HasAccess(userId, annualReport.CityId))
-                {
-                    return RedirectToAction("HandleError", "Error", new { code = 403 });
-                }
-                _repoWrapper.AnnualReports.Delete(annualReport);
-                _repoWrapper.Save();
-                return Ok($"Звіт станиці {annualReport.City.Name} за {annualReport.Date.Year} рік видалено!");
+                await _annualReportService.DeleteAsync(User, id);
+                return Ok("Річний звіт станиці успішно видалено!");
+            }
+            catch (AnnualReportException e)
+            {
+                return NotFound(e.Message);
             }
             catch (Exception e)
             {
@@ -700,84 +466,74 @@ namespace EPlast.Controllers
 
         [Authorize(Roles = "Admin, Голова Округу")]
         [HttpGet]
-        public IActionResult EditAnnualReport(int id)
+        public async Task<IActionResult> EditAnnualReportAsync(int id)
         {
             try
             {
-                var annualReport = _repoWrapper.AnnualReports
-                    .FindByCondition(ar => ar.ID == id && ar.Status == AnnualReportStatus.Unconfirmed)
-                    .Include(ar => ar.City)
-                    .Include(ar => ar.CityManagement)
-                    .Include(ar => ar.MembersStatistic)
-                    .First();
-                var userId = _userManager.GetUserId(User);
-                if (!_cityAccessManager.HasAccess(userId, annualReport.CityId))
-                {
-                    return RedirectToAction("HandleError", "Error", new { code = 403 });
-                }
-                var cityMembers = _repoWrapper.User
-                    .FindByCondition(u => u.CityMembers.Any(cm => cm.City.ID == annualReport.CityId && cm.EndDate == null))
-                    .Include(u => u.UserPlastDegrees);
-                var annualReportVM = new AnnualReportViewModel
+                var annualReportDTO = await _annualReportService.GetByIdAsync(User, id);
+                var annualReport = _mapper.Map<AnnualReportDTO, AnnualReportViewModel>(annualReportDTO);
+                var cityDTO = _cityService.GetById(annualReport.CityId);
+                var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
+                var cityMemebrsDTO = _cityMembersService.GetCurrentByCityId(city.ID);
+                var cityMembers = _mapper.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(cityMemebrsDTO);
+                var createEditAnnualReportViewModel = new CreateEditAnnualReportViewModel(cityMembers)
                 {
                     Operation = AnnualReportOperation.Editing,
-                    CityName = annualReport.City.Name,
-                    CityMembers = _annualReportVMCreator.GetCityMembers(cityMembers),
-                    CityLegalStatusTypes = _annualReportVMCreator.GetCityLegalStatusTypes(),
-                    AnnualReport = annualReport,
+                    CityName = city.Name,
+                    AnnualReport = annualReport
                 };
-                return View("CreateEditAnnualReport", annualReportVM);
+                return View("CreateEditAnnualReport", createEditAnnualReportViewModel);
+            }
+            catch (AnnualReportException e)
+            {
+                ViewData["ErrorMessage"] = e.Message;
+                return View("CreateEditAnnualReport");
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception: {e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
             }
         }
 
         [Authorize(Roles = "Admin, Голова Округу")]
         [HttpPost]
-        public IActionResult EditAnnualReport(AnnualReport annualReport)
+        public async Task<IActionResult> EditAnnualReportAsync(AnnualReportViewModel annualReport)
         {
             try
             {
-                var annualReportCheck = _repoWrapper.AnnualReports
-                    .FindByCondition(ar => ar.ID == annualReport.ID && ar.CityId == annualReport.CityId && ar.UserId == annualReport.UserId
-                    && ar.Status == AnnualReportStatus.Unconfirmed)
-                    .Include(ar => ar.City)
-                    .First();
-                var userId = _userManager.GetUserId(User);
-                if (!_cityAccessManager.HasAccess(userId, annualReport.CityId))
-                {
-                    return RedirectToAction("HandleError", "Error", new { code = 403 });
-                }
                 if (ModelState.IsValid)
                 {
-                    _repoWrapper.AnnualReports.Update(annualReport);
-                    _repoWrapper.Save();
-                    ViewData["Message"] = $"Звіт станиці {annualReportCheck.City.Name} за {annualReportCheck.Date.Year} рік відредаговано!";
+                    var annualReportDTO = _mapper.Map<AnnualReportViewModel, AnnualReportDTO>(annualReport);
+                    await _annualReportService.EditAsync(User, annualReportDTO);
+                    ViewData["Message"] = "Річний звіт станиці успішно відредаговано!";
                     return View("CreateEditAnnualReport");
                 }
                 else
                 {
-                    var cityMembers = _repoWrapper.User
-                        .FindByCondition(u => u.CityMembers.Any(cm => cm.City.ID == annualReport.CityId && cm.EndDate == null))
-                        .Include(u => u.UserPlastDegrees);
-                    var annualReportViewModel = new AnnualReportViewModel
+                    var cityDTO = _cityService.GetById(annualReport.CityId);
+                    var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
+                    var cityMemebrsDTO = _cityMembersService.GetCurrentByCityId(city.ID);
+                    var cityMembers = _mapper.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(cityMemebrsDTO);
+                    var createEditAnnualReportViewModel = new CreateEditAnnualReportViewModel(cityMembers)
                     {
                         Operation = AnnualReportOperation.Editing,
-                        CityName = annualReportCheck.City.Name,
-                        CityMembers = _annualReportVMCreator.GetCityMembers(cityMembers),
-                        CityLegalStatusTypes = _annualReportVMCreator.GetCityLegalStatusTypes(),
+                        CityName = city.Name,
                         AnnualReport = annualReport
                     };
-                    return View("CreateEditAnnualReport", annualReportViewModel);
+                    ViewData["ErrorMessage"] = "Річний звіт заповнений некоректно!";
+                    return View("CreateEditAnnualReport", createEditAnnualReportViewModel);
                 }
+            }
+            catch (AnnualReportException e)
+            {
+                ViewData["ErrorMessage"] = e.Message;
+                return View("CreateEditAnnualReport");
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception: {e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
             }
         }
     }

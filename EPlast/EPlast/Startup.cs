@@ -4,8 +4,12 @@ using EPlast.BussinessLayer.AccessManagers;
 using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using EPlast.BussinessLayer.Interfaces;
 using EPlast.BussinessLayer.Interfaces.Events;
+using EPlast.BussinessLayer.Interfaces.EventUser;
 using EPlast.BussinessLayer.Services;
+using EPlast.BussinessLayer.Services.City;
+using EPlast.BussinessLayer.Services.City.CityAccess;
 using EPlast.BussinessLayer.Services.Events;
+using EPlast.BussinessLayer.Services.EventUser;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.BussinessLayer.Settings;
 using EPlast.DataAccess;
@@ -13,7 +17,6 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Models.ViewModelInitializations;
 using EPlast.Models.ViewModelInitializations.Interfaces;
-using EPlast.Wrapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -52,7 +55,6 @@ namespace EPlast
                     .AddEntityFrameworkStores<EPlastDBContext>()
                     .AddDefaultTokenProviders();
 
-
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("Admin",
@@ -68,9 +70,11 @@ namespace EPlast
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
             services.AddScoped<IEmailConfirmation, EmailConfirmation>();
-            services.AddScoped<IAnnualReportVMInitializer, AnnualReportVMInitializer>();
-            services.AddScoped<IViewAnnualReportsVMInitializer, ViewAnnualReportsVMInitializer>();
-            services.AddScoped<IDecisionVMIitializer, DecisionVMIitializer>();
+            services.AddScoped<IDecisionVmInitializer, DecisionVmInitializer>();
+            services.AddScoped<CityAccessSettings, CityAccessSettings>();
+            services.AddScoped<ICityAccessService, CityAccessService>();
+            services.AddScoped<ICityMembersService, CityMembersService>();
+            services.AddScoped<IAnnualReportService, AnnualReportService>();
             services.AddScoped<IPDFService, PDFService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<INationalityService, NationalityService>();
@@ -85,13 +89,7 @@ namespace EPlast
             services.AddScoped<ICItyAdministrationService, CityAdministrationService>();
             services.AddScoped<ICityService, CityService>();
             services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
-
-            services.AddScoped<IDirectoryManager, DirectoryManager>();
-            services.AddScoped<IFileManager, FileManager>();
-            services.AddScoped<IFileStreamManager, FileStreamManager>();
             services.AddScoped<ICreateEventVMInitializer, CreateEventVMInitializer>();
-            services.AddScoped<ICityAccessManagerSettings, CityAccessManagerSettings>();
-            services.AddScoped<ICityAccessManager, CityAccessManager>();
             services.AddScoped<IUserAccessManagerSettings, UserAccessManagerSettings>();
             services.AddScoped<IUserAccessManager, UserAccessManager>();
             services.AddScoped<IActionManager, ActionManager>();
@@ -101,7 +99,13 @@ namespace EPlast
             services.AddScoped<IParticipantStatusManager, ParticipantStatusManager>();
             services.AddScoped<IParticipantManager, ParticipantManager>();
             services.AddScoped<IEventGalleryManager, EventGalleryManager>();
+            services.AddScoped<IEventUserManager, EventUserManager>();
+            services.AddScoped<IEventAdminManager, EventAdminManager>();
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
+            services.AddScoped<IFileManager, FileManager>();
+            services.AddScoped<IFileStreamManager, FileStreamManager>();
+            services.AddScoped<IDirectoryManager, DirectoryManager>();
+            services.AddScoped<IDecisionService, DecisionService>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
             services.Configure<IdentityOptions>(options =>
             {
@@ -114,9 +118,8 @@ namespace EPlast
 
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
-
             });
-
+            services.AddLogging();
             services.AddAuthentication()
                 .AddGoogle(options =>
                 {
@@ -139,7 +142,6 @@ namespace EPlast
                 options.LoginPath = "/Account/Login";
                 options.LogoutPath = "/Account/Logout";
             });
-
 
             services.AddMvc();
         }

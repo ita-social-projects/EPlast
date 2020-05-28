@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Set Administration Page";
 }
-@model EPlast.ViewModels.Events.EventCreateViewModel;
+@model EPlast.ViewModels.EventUser.EventCreateViewModel;
 <div class="eventCreate">
     <div class="d-xl-flex justify-content-xl-center border shadow card">
         <div class="col ">
@@ -36,7 +36,7 @@
                              })
                         <datalist id="Users-value">
                             <option selected="selected" disabled="disabled" value=""></option>
-                            @foreach (User item in Model.Users)
+                            @foreach (var item in Model.Users)
                             {
                                 <option data-value="@item.Id" value="@item.FirstName @item.LastName">@item.UserName</option>
                             }
@@ -60,7 +60,7 @@
                               })
                         <datalist id="Users-value">
                             <option selected="selected" disabled="disabled" value=""></option>
-                            @foreach (User item in Model.Users)
+                            @foreach (var item in Model.Users)
                             {
                                 <option data-value="@item.Id" value="@item.FirstName @item.LastName">@item.UserName</option>
                             }
