@@ -6,11 +6,10 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using EPlast.BussinessLayer.DTO.Events;
+using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.BussinessLayer.Services.EventUser
 {
@@ -23,9 +22,13 @@ namespace EPlast.BussinessLayer.Services.EventUser
         private readonly IParticipantManager _participantManager;
         private readonly IEventAdminManager _eventAdminManager;
         private readonly IEventCategoryManager _eventCategoryManager;
+        private readonly IEventStatusManager _eventStatusManager;
 
 
-        public EventUserManager(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IParticipantStatusManager participantStatusManager, IMapper mapper, IParticipantManager participantManager, IEventAdminManager eventAdminManager, IEventCategoryManager eventCategoryManager)
+        public EventUserManager(IRepositoryWrapper repoWrapper, UserManager<User> userManager,
+            IParticipantStatusManager participantStatusManager, IMapper mapper, IParticipantManager participantManager,
+            IEventAdminManager eventAdminManager, IEventCategoryManager eventCategoryManager,
+            IEventStatusManager eventStatusManager)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
@@ -34,6 +37,7 @@ namespace EPlast.BussinessLayer.Services.EventUser
             _participantManager = participantManager;
             _eventAdminManager = eventAdminManager;
             _eventCategoryManager = eventCategoryManager;
+            _eventStatusManager = eventStatusManager;
         }
 
         public EventUserDTO EventUser(string userId, ClaimsPrincipal user)
@@ -54,6 +58,7 @@ namespace EPlast.BussinessLayer.Services.EventUser
                 var eventToAdd = _mapper.Map<Event, EventGeneralInfoDTO>(eventAdmin.Event);
                 model.CreatedEvents.Add(eventToAdd);
             }
+
             model.PlanedEvents = new List<EventGeneralInfoDTO>();
             model.VisitedEvents = new List<EventGeneralInfoDTO>();
             foreach (var participant in participants)
@@ -69,6 +74,7 @@ namespace EPlast.BussinessLayer.Services.EventUser
                     model.VisitedEvents.Add(eventToAdd);
                 }
             }
+
             return model;
         }
 
@@ -86,9 +92,59 @@ namespace EPlast.BussinessLayer.Services.EventUser
             return model;
         }
 
-        public EventCreateDTO CreateEvent(EventCreateDTO model)
+        public EventCreateDTO InitializeEventCreateDTO(int eventId)
         {
-            throw new NotImplementedException();
+            var createdEvent = _repoWrapper.Event.FindByCondition(e => e.ID == eventId)
+                .Include(e => e.EventAdmins)
+                .First();
+            var userId = createdEvent.EventAdmins.First().UserID;
+            var setAdministrationModel = new EventCreateDTO()
+            {
+                Event = _mapper.Map<Event, EventDTO>(createdEvent),
+                Users = _mapper.Map<List<User>, IEnumerable<UserDTO>>(_repoWrapper.User.FindByCondition(i => i.Id != userId).ToList())
+            };
+            return setAdministrationModel;
+        }
+
+        public int CreateEvent(EventCreateDTO model)
+        {
+            model.Event.EventStatusID = _eventStatusManager.GetStatusId("Не затверджені");
+            var eventToCreate = _mapper.Map<EventDTO, Event>(model.Event);
+            EventAdmin eventAdmin = new EventAdmin()
+            {
+                Event = eventToCreate,
+                UserID = model.EventAdmin.UserID
+            };
+            EventAdministration eventAdministration = new EventAdministration()
+            {
+                Event = eventToCreate,
+                AdministrationType = "Бунчужний/на",
+                UserID = model.EventAdministration.UserID
+            };
+            _repoWrapper.EventAdmin.Create(eventAdmin);
+            _repoWrapper.EventAdministration.Create(eventAdministration);
+            _repoWrapper.Event.Create(eventToCreate);
+            _repoWrapper.Save();
+
+            return eventToCreate.ID;
+        }
+
+        public void SetAdministration(EventCreateDTO model)
+        {
+            EventAdmin eventAdmin = new EventAdmin()
+            {
+                EventID = model.Event.ID,
+                UserID = model.EventAdmin.UserID
+            };
+            EventAdministration eventAdministration = new EventAdministration()
+            {
+                EventID = model.Event.ID,
+                AdministrationType = "Писар",
+                UserID = model.EventAdministration.UserID
+            };
+            _repoWrapper.EventAdmin.Create(eventAdmin);
+            _repoWrapper.EventAdministration.Create(eventAdministration);
+            _repoWrapper.Save();
         }
     }
 }

@@ -15,7 +15,7 @@
             </div>
             <form method="post" asp-action="EventEdit" asp-controller="EventUser">
                 <div class="row border shadow text-center justify-content-xl-center align-items-xl-center">
-                    @foreach (EventType item in Model.EventTypes)
+                    @foreach (var item in Model.EventTypes)
                     {
                         <div class="col justify-content-xl-center align-items-xl-center" id="block">
                             <button class="btn typebutton" id="@item.ID" type="button">@item.EventTypeName</button>
@@ -29,7 +29,7 @@
                         <label class="col-form-label" id="type">Катергорія</label>
                     </div>
                     <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
-                        <select id="select" asp-for="Event.EventCategoryID" asp-items="Model.EventCategories" 
+                        <select id="select" asp-for="Event.EventCategoryID" asp-items='new SelectList(Model.EventCategories, "EventCategoryId", "EventCategoryName")' 
                                 class=" border TextIinput infoInput form-control"></select>
                     </div>
                 </div>

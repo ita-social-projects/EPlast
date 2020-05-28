@@ -12,7 +12,7 @@
             </div>
             <form method="post" asp-action="EventCreate" asp-controller="EventUser">
                 <div class="row border shadow text-center justify-content-xl-center align-items-xl-center">
-                    @foreach (EventType item in Model.EventTypes)
+                    @foreach (var item in Model.EventTypes)
                     {
                         <div class="col justify-content-xl-center align-items-xl-center" id="block">
                             <label class="btn typebutton active">
@@ -27,7 +27,7 @@
                         <label class="col-form-label" id="type">Категорія</label>
                     </div>
                     <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
-                        <select id="select" asp-for="Event.EventCategoryID" asp-items="Model.EventCategories" class=" border TextIinput infoInput form-control"></select>
+                        <select id="select" asp-for="Event.EventCategoryID" asp-items='new SelectList(Model.EventCategories, "EventCategoryId", "EventCategoryName")' class=" border TextIinput infoInput form-control"></select>
                     </div>
                 </div>
                 <span asp-validation-for="Event.EventCategoryID" class="text-danger "></span>
@@ -55,7 +55,7 @@
                              })
                         <datalist id="Users-value">
                             <option selected="selected" disabled="disabled"></option>
-                            @foreach (User item in Model.Users)
+                            @foreach (var item in Model.Users)
                             {
                                 <option data-value="@item.Id" value="@item.FirstName @item.LastName">@item.UserName</option>
                             }
@@ -79,7 +79,7 @@
                               })
                         <datalist id="Users-value">
                             <option selected="selected" disabled="disabled" value=""></option>
-                            @foreach (User item in Model.Users)
+                            @foreach (var item in Model.Users)
                             {
                                 <option data-value="@item.Id" value="@item.FirstName @item.LastName">@item.UserName</option>
                             }

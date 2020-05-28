@@ -8,7 +8,7 @@ namespace EPlast.Mapping.EventUser
     {
         public UserProfile()
         {
-            CreateMap<UserDTO, UserViewModel>();
+            CreateMap<UserDTO, UserViewModel>().ReverseMap();
         }
     }
 }
