@@ -1,4 +1,4 @@
-![ASP.NET Core CI](https://github.com/IrynaZavushchak/EPlast/workflows/ASP.NET%20Core%20CI/badge.svg)
+![ASP.NET Core CI](https://github.com/IrynaZavushchak/EPlast/workflows/ASP.NET%20Core%20CI/badge.svg) TEST
 
 # EPlast
 <img src="https://github.com/IrynaZavushchak/EPlast/blob/master/EPlast/EPlast/wwwroot/images/homepage/ePlastLogotype.png"  width="150" height="150" />
