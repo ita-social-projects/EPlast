@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using DataAccessCity = EPlast.DataAccess.Entities;
 
-namespace EPlast.BussinessLayer.Services.Interfaces
+namespace EPlast.BussinessLayer.Interfaces.City
 {
     public interface ICityService
     {

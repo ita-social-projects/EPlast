@@ -1,4 +1,6 @@
-﻿namespace EPlast.BussinessLayer.DTO
+﻿using EPlast.BussinessLayer.DTO.UserProfiles;
+
+namespace EPlast.BussinessLayer.DTO
 {
     public class ApproverDTO
     {

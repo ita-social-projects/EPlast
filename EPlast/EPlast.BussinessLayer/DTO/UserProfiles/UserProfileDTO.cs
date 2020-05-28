@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EPlast.BussinessLayer.DTO
+namespace EPlast.BussinessLayer.DTO.UserProfiles
 {
     public class UserProfileDTO
     {
