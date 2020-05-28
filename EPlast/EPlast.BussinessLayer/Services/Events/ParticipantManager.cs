@@ -1,8 +1,10 @@
-﻿using EPlast.BussinessLayer.Interfaces.Events;
+﻿using System.Collections.Generic;
+using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.BussinessLayer.Services.Events
 {
@@ -109,6 +111,13 @@ namespace EPlast.BussinessLayer.Services.Events
             {
                 return StatusCodes.Status500InternalServerError;
             }
+        }
+
+        public IEnumerable<Participant> GetParticipantsByUserId(string userId)
+        {
+            var participants = _repoWrapper.Participant.FindByCondition(p => p.UserId == userId)
+                .Include(i => i.Event).ToList();
+            return participants;
         }
     }
 }
