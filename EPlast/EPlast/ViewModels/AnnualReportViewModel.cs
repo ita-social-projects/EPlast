@@ -1,21 +1,91 @@
-﻿using System.Collections.Generic;
-using EPlast.DataAccess.Entities;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using EPlast.Models.Enums;
+using EPlast.ViewModels.City;
+using EPlast.ViewModels.UserInformation.UserProfile;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.ViewModels
 {
-    public enum AnnualReportOperation
-    {
-        Creating,
-        Editing
-    }
-
     public class AnnualReportViewModel
     {
-        public AnnualReportOperation Operation { get; set; }
-        public string CityName { get; set; }
-        public IEnumerable<SelectListItem> CityMembers { get; set; }
-        public IEnumerable<SelectListItem> CityLegalStatusTypes { get; set; }
-        public AnnualReport AnnualReport { get; set; }
+        public int ID { get; set; }
+
+        public DateTime Date { get; set; }
+
+        public AnnualReportStatus Status { get; set; }
+
+        [Required(ErrorMessage = "Заповніть поле")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        public int NumberOfSeatsInCity { get; set; }
+
+        [Required(ErrorMessage = "Заповніть поле")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        public int NumberOfSeatsPtashat { get; set; }
+
+        [Required(ErrorMessage = "Заповніть поле")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        public int NumberOfIndependentRiy { get; set; }
+
+        [Required(ErrorMessage = "Заповніть поле")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        public int NumberOfClubs { get; set; }
+
+        [Required(ErrorMessage = "Заповніть поле")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        public int NumberOfIndependentGroups { get; set; }
+
+        [Required(ErrorMessage = "Заповніть поле")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        public int NumberOfTeachers { get; set; }
+
+        [Required(ErrorMessage = "Заповніть поле")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        public int NumberOfAdministrators { get; set; }
+
+        [Required(ErrorMessage = "Заповніть поле")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        public int NumberOfTeacherAdministrators { get; set; }
+
+        [Required(ErrorMessage = "Заповніть поле")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        public int NumberOfBeneficiaries { get; set; }
+
+        [Required(ErrorMessage = "Заповніть поле")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        public int NumberOfPlastpryiatMembers { get; set; }
+
+        [Required(ErrorMessage = "Заповніть поле")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        public int NumberOfHonoraryMembers { get; set; }
+
+        [Required(ErrorMessage = "Заповніть поле")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        public int PublicFunds { get; set; }
+
+        [Required(ErrorMessage = "Заповніть поле")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        public int ContributionFunds { get; set; }
+
+        [Required(ErrorMessage = "Заповніть поле")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        public int PlastSalary { get; set; }
+
+        [Required(ErrorMessage = "Заповніть поле")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        public int SponsorshipFunds { get; set; }
+
+        public string ListProperty { get; set; }
+
+        public string ImprovementNeeds { get; set; }
+
+        public MembersStatisticViewModel MembersStatistic { get; set; }
+
+        public CityManagementViewModel CityManagement { get; set; }
+
+        public string UserId { get; set; }
+        public UserViewModel User { get; set; }
+
+        public int CityId { get; set; }
+        public CityViewModel City { get; set; }
     }
 }
