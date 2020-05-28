@@ -16,7 +16,7 @@
             <a class="nav-link @(ViewBag.ActiveNav == "Positions" ? "active" : "")" href="/Account/Positions?userId=@Model.User.Id">Діловодства</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link @(ViewBag.ActiveNav == "EventUser" ? "active" : "")" href="/EventUser/EventUser">Події</a>
+            <a class="nav-link @(ViewBag.ActiveNav == "EventUser" ? "active" : "")" href="/EventUser/EventUser?userId=@Model.User.Id">Події</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#">З'їзди</a>

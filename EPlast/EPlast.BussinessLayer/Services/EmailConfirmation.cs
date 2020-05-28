@@ -3,7 +3,6 @@ using EPlast.BussinessLayer.Settings;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer

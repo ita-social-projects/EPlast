@@ -9,10 +9,7 @@ namespace EPlast.Controllers
         public IActionResult HandleError(int code)
         {
             ViewBag.Code = code;
-            if (code == 404)
-            {
-                return View("PageNotFound");
-            }
+
             return View("Error");
         }
     }
