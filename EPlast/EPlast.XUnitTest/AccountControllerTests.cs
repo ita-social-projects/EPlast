@@ -97,7 +97,7 @@ namespace EPlast.XUnitTest
             UserViewModel a = new UserViewModel { Id = "1" };
             _mapper.Setup(x => x.Map<UserDTO, UserViewModel>(It.IsAny<UserDTO>())).Returns(a);
             var controller = new AccountController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object);
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object, null);
             // Act
             var result = controller.UserProfile("1");
             // Assert
@@ -110,7 +110,7 @@ namespace EPlast.XUnitTest
         public void UserProfileTestFailure()
         {
             var controller = new AccountController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object);
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object, null);
             // Act
             var result = controller.UserProfile("");
             // Assert
@@ -136,7 +136,7 @@ namespace EPlast.XUnitTest
             _userManagerService.Setup(x => x.IsInRole(It.IsAny<UserDTO>(), It.IsAny<string>())).ReturnsAsync(true);
             _userManagerService.Setup(x => x.GetUserId(ClaimsPrincipal.Current)).Returns(It.IsAny<string>());
             var controller = new AccountController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object);
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object, null);
             // Acts
             var result = controller.Approvers("q");
             // Assert
@@ -150,7 +150,7 @@ namespace EPlast.XUnitTest
         public void ApproversTestFailure()
         {
             var controller = new AccountController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object);
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object, null);
             // Acts
             var result = controller.Approvers("");
             // Assert
@@ -164,7 +164,7 @@ namespace EPlast.XUnitTest
         public void ApproveUserTest()
         {
             var controller = new AccountController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object);
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object, null);
             // Acts
             var result = controller.ApproveUser("1", false, false);
             // Assert
@@ -178,7 +178,7 @@ namespace EPlast.XUnitTest
         public void ApproveUserTestFailure()
         {
             var controller = new AccountController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object);
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object, null);
             // Acts
             var result = controller.ApproveUser(null, false, false);
             // Assert
@@ -192,7 +192,7 @@ namespace EPlast.XUnitTest
         public void ApproverDeleteTest()
         {
             var controller = new AccountController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object);
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object, null);
             // Acts
             var result = controller.ApproverDelete(1, "");
             // Assert
@@ -224,7 +224,7 @@ namespace EPlast.XUnitTest
             _mapper.Setup(x => x.Map<IEnumerable<DegreeDTO>, IEnumerable<DegreeViewModel>>(new List<DegreeDTO>())).Returns(new List<DegreeViewModel>());
 
             var controller = new AccountController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object);
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object, null);
             // Act
             var result = controller.Edit("");
 
@@ -237,7 +237,7 @@ namespace EPlast.XUnitTest
         public void EditGetTestFailure()
         {
             var controller = new AccountController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object);
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object, null);
             // Act
             var result = controller.Edit(null);
 
@@ -253,7 +253,7 @@ namespace EPlast.XUnitTest
             _mapper.Setup(x => x.Map<UserViewModel, UserDTO>(It.IsAny<UserViewModel>())).Returns(new UserDTO());
             var mockFile = new Mock<IFormFile>();
             var controller = new AccountController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object);
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object, null);
             // Act
             var result = controller.Edit(new EditUserViewModel { User = new UserViewModel(), EducationView = new EducationUserViewModel(), WorkView = new WorkUserViewModel() }, mockFile.Object);
 
@@ -268,7 +268,7 @@ namespace EPlast.XUnitTest
         {
             // Arrange
             var controller = new AccountController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object);
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object, null);
             var mockFile = new Mock<IFormFile>();
             var user = new EditUserViewModel();
 
