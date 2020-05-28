@@ -1,8 +1,6 @@
-﻿using EPlast.DataAccess.Entities;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using EPlast.BussinessLayer.DTO;
 using Microsoft.AspNetCore.Http;
-using EPlast.BussinessLayer.DTO;
+using System.Collections.Generic;
 
 namespace EPlast.BussinessLayer.Interfaces
 {
@@ -10,12 +8,8 @@ namespace EPlast.BussinessLayer.Interfaces
     {
         IEnumerable<ClubDTO> GetAllClubs();
         ClubProfileDTO GetClubProfile(int clubId);
-        ClubDTO GetByIdWithDetails(int id);
         ClubDTO GetById(int id);
-        List<ClubMembersDTO> GetClubMembers(ClubDTO club, bool isApproved, int amount);
-        List<ClubMembersDTO> GetClubMembers(ClubDTO club, bool isApproved);
         ClubProfileDTO GetClubMembersOrFollowers(int clubId, bool isApproved);
-        UserDTO GetCurrentClubAdmin(ClubDTO club);
         ClubProfileDTO GetCurrentClubAdminByID(int clubID);
         void Update(ClubDTO club, IFormFile file);
         ClubDTO Create(ClubDTO club, IFormFile file);

@@ -33,6 +33,7 @@ namespace EPlast.XUnitTest
             usermanager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             hostingEnvironment = new Mock<IHostingEnvironment>();
         }
+        /*
         [Fact]
         public void ClubPageTest()
         {
@@ -224,5 +225,6 @@ namespace EPlast.XUnitTest
                          }
            }.AsQueryable());
         }
+        */
     }
 }

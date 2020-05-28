@@ -1,8 +1,5 @@
-﻿using System;
+﻿using EPlast.ViewModels.UserInformation.UserProfile;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using EPlast.ViewModels.UserInformation.UserProfile;
 using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.ViewModels

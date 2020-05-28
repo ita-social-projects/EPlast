@@ -1,7 +1,6 @@
-﻿using System;
+﻿using EPlast.DataAccess.Entities;
+using System;
 using System.ComponentModel.DataAnnotations;
-using EPlast.DataAccess.Entities;
-
 
 namespace EPlast.ViewModels
 {

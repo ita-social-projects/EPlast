@@ -5,7 +5,7 @@ using EPlast.ViewModels;
 
 namespace EPlast.Mapping
 {
-    public class ClubAdministrationProfile:Profile
+    public class ClubAdministrationProfile : Profile
     {
         public ClubAdministrationProfile()
         {
