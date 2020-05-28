@@ -80,7 +80,7 @@ namespace EPlast.XUnitTest.Services
             Mock<IMapper> mockMapper = new Mock<IMapper>();
 
             AccountService accountService = new AccountService(mockUserManager.Object, mockSignInManager.Object,
-               mockRepositoryWrapper.Object, mockEmailConfirmation.Object, null, null, mockMapper.Object);
+               mockEmailConfirmation.Object, mockMapper.Object);
 
             return (mockSignInManager, mockUserManager, mockEmailConfirmation, accountService);
         }
