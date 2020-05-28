@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EPlast.BussinessLayer.DTO.Events
+﻿namespace EPlast.BussinessLayer.DTO.EventUser
 {
     public class EventTypeDTO
     {

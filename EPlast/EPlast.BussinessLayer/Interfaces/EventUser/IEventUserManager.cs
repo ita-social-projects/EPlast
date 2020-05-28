@@ -10,6 +10,8 @@ namespace EPlast.BussinessLayer.Interfaces.EventUser
     {
         EventUserDTO EventUser(string userId, ClaimsPrincipal user);
         EventCreateDTO InitializeEventCreateDTO();
-        EventCreateDTO CreateEvent(EventCreateDTO model);
+        EventCreateDTO InitializeEventCreateDTO(int eventId);
+        int CreateEvent(EventCreateDTO model);
+        void SetAdministration(EventCreateDTO model);
     }
 }

@@ -36,7 +36,7 @@
                              })
                         <datalist id="Users-value">
                             <option selected="selected" disabled="disabled" value=""></option>
-                            @foreach (User item in Model.Users)
+                            @foreach (var item in Model.Users)
                             {
                                 <option data-value="@item.Id" value="@item.FirstName @item.LastName">@item.UserName</option>
                             }
@@ -60,7 +60,7 @@
                               })
                         <datalist id="Users-value">
                             <option selected="selected" disabled="disabled" value=""></option>
-                            @foreach (User item in Model.Users)
+                            @foreach (var item in Model.Users)
                             {
                                 <option data-value="@item.Id" value="@item.FirstName @item.LastName">@item.UserName</option>
                             }

@@ -54,14 +54,9 @@ namespace EPlast.Controllers
         {
             try
             {
-                var x = _eventUserManager.InitializeEventCreateDTO();
-                var eventCategories = _repoWrapper.EventCategory.FindAll();
-                var model = new EventCreateViewModel()
-                {
-                    Users = _repoWrapper.User.FindAll(),
-                    EventTypes = _repoWrapper.EventType.FindAll(),
-                    EventCategories = _createEventVMInitializer.GetEventCategories(eventCategories)
-                };
+
+                var dto = _eventUserManager.InitializeEventCreateDTO();
+                var model = _mapper.Map<EventCreateDTO, EventCreateViewModel>(dto);
                 return View(model);
             }
             catch
@@ -74,85 +69,41 @@ namespace EPlast.Controllers
         {
             try
             {
-                EventStatus status = _repoWrapper.EventStatus.
-                    FindByCondition(i => i.EventStatusName == "Не затверджені").
-                    FirstOrDefault();
-                createVM.Event.EventStatusID = status.ID;
-                EventAdmin eventAdmin = new EventAdmin()
-                {
-                    Event = createVM.Event,
-                    UserID = createVM.EventAdmin.UserID
-                };
-                EventAdministration eventAdministration = new EventAdministration()
-                {
-                    Event = createVM.Event,
-                    AdministrationType = "Бунчужний/на",
-                    UserID = createVM.EventAdministration.UserID
-                };
                 if (ModelState.IsValid)
                 {
-                    _repoWrapper.EventAdmin.Create(eventAdmin);
-                    _repoWrapper.EventAdministration.Create(eventAdministration);
-                    _repoWrapper.Event.Create(createVM.Event);
-                    _repoWrapper.Save();
-                    return RedirectToAction("SetAdministration", new { idUser = createVM.EventAdmin.UserID, id = createVM.Event.ID });
+                    var createDto = _mapper.Map<EventCreateViewModel, EventCreateDTO>(createVM);
+                    var eventId = _eventUserManager.CreateEvent(createDto);
+                    return RedirectToAction("SetAdministration", new { id = eventId });
                 }
-                else
-                {
-                    var eventCategories = _repoWrapper.EventCategory.FindAll();
-                    var model = new EventCreateViewModel()
-                    {
-                        Users = _repoWrapper.User.FindAll(),
-                        EventTypes = _repoWrapper.EventType.FindAll(),
-                        EventCategories = _createEventVMInitializer.GetEventCategories(eventCategories)
-                    };
-                    return View(model);
-                }
+                var dto = _eventUserManager.InitializeEventCreateDTO();
+                var model = _mapper.Map<EventCreateDTO, EventCreateViewModel>(dto);
+                return View(model);
             }
             catch
             {
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
+
         [HttpGet]
-        public IActionResult SetAdministration(string idUser, int id)
+        public IActionResult SetAdministration(int id)
         {
-            var model = new EventCreateViewModel()
-            {
-                Event = _repoWrapper.Event.
-                FindByCondition(i => i.ID == id).
-                FirstOrDefault(),
-                Users = _repoWrapper.User.FindByCondition(i => i.Id != idUser)
-            };
+            var dto = _eventUserManager.InitializeEventCreateDTO(id);
+            var model = _mapper.Map<EventCreateDTO, EventCreateViewModel>(dto);
             return View(model);
         }
+
         [HttpPost]
         public IActionResult SetAdministration(EventCreateViewModel createVM)
         {
-            EventAdmin eventAdmin = new EventAdmin()
-            {
-                EventID = createVM.Event.ID,
-                UserID = createVM.EventAdmin.UserID
-            };
-            EventAdministration eventAdministration = new EventAdministration()
-            {
-                EventID = createVM.Event.ID,
-                AdministrationType = "Писар",
-                UserID = createVM.EventAdministration.UserID
-            };
             if (ModelState.IsValid)
             {
-                _repoWrapper.EventAdmin.Create(eventAdmin);
-                _repoWrapper.EventAdministration.Create(eventAdministration);
-                _repoWrapper.Save();
+                var dto1 = _mapper.Map<EventCreateViewModel, EventCreateDTO>(createVM);
+                _eventUserManager.SetAdministration(dto1);
                 return RedirectToAction("EventInfo", "Action", new { id = createVM.Event.ID });
             }
-            Event events = _repoWrapper.Event.FindByCondition(i => i.ID == createVM.Event.ID).FirstOrDefault();
-            var model = new EventCreateViewModel()
-            {
-                Event = events,
-                Users = _repoWrapper.User.FindAll()
-            };
+            var dto2 = _eventUserManager.InitializeEventCreateDTO(createVM.Event.ID);
+            var model = _mapper.Map<EventCreateDTO, EventCreateViewModel>(dto2);
             return View(model);
         }
 
