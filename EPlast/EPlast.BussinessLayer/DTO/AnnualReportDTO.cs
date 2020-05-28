@@ -1,4 +1,5 @@
 ﻿using EPlast.BussinessLayer.DTO.City;
+using EPlast.BussinessLayer.DTO.UserProfiles;
 using System;
 
 namespace EPlast.BussinessLayer.DTO
