@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using EPlast.BussinessLayer.DTO.UserProfiles;
 
 namespace EPlast.BussinessLayer.DTO.EventUser
 {

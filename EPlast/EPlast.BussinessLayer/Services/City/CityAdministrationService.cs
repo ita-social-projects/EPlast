@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO.City;
-using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.BussinessLayer.Interfaces.City;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
