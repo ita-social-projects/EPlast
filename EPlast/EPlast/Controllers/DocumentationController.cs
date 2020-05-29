@@ -241,11 +241,11 @@ namespace EPlast.Controllers
             {
                 var citiesDTO = await _cityAccessService.GetCitiesAsync(User);
                 var city = _mapper.Map<CityDTO, CityViewModel>(citiesDTO.First());
-                if (_annualReportService.HasUnconfirmed(city.ID))
+                if (await _annualReportService.HasUnconfirmedAsync(city.ID))
                 {
                     throw new AnnualReportException("Станиця має непідтверджені звіти!");
                 }
-                if (_annualReportService.HasCreated(city.ID))
+                if (await _annualReportService.HasCreatedAsync(city.ID))
                 {
                     throw new AnnualReportException("Річний звіт для даної станиці вже створений!");
                 }
@@ -283,11 +283,11 @@ namespace EPlast.Controllers
             {
                 if (await _cityAccessService.HasAccessAsync(User, cityId))
                 {
-                    if (_annualReportService.HasUnconfirmed(cityId))
+                    if (await _annualReportService.HasUnconfirmedAsync(cityId))
                     {
                         throw new AnnualReportException("Станиця має непідтверджені звіти!");
                     }
-                    if (_annualReportService.HasCreated(cityId))
+                    if (await _annualReportService.HasCreatedAsync(cityId))
                     {
                         throw new AnnualReportException("Річний звіт для даної станиці вже створений!");
                     }
