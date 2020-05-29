@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EPlast.BussinessLayer.Settings
+﻿namespace EPlast.BussinessLayer.Settings
 {
     public class EmailServiceSettings
     {
