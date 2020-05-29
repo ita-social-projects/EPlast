@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO;
-using EPlast.BussinessLayer.Services;
+using EPlast.BussinessLayer.DTO.UserProfiles;
+using EPlast.BussinessLayer.Services.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
