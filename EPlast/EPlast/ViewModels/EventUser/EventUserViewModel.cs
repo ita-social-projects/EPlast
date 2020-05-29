@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using EPlast.ViewModels.UserInformation.UserProfile;
 
 namespace EPlast.ViewModels.EventUser
 {

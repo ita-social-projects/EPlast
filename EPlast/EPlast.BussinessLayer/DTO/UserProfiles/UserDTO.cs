@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
 
-namespace EPlast.BussinessLayer.DTO
+namespace EPlast.BussinessLayer.DTO.UserProfiles
 {
     public class UserDTO : IdentityUser
     {
