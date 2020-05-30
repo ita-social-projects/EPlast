@@ -73,7 +73,7 @@ namespace EPlast
 
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
-            services.AddScoped<IEmailConfirmation, EmailConfirmation>();
+            services.AddScoped<IEmailConfirmation, EmailConfirmationService>();
             services.AddScoped<IDecisionVmInitializer, DecisionVmInitializer>();
             services.AddScoped<CityAccessSettings, CityAccessSettings>();
             services.AddScoped<ICityAccessService, CityAccessService>();
