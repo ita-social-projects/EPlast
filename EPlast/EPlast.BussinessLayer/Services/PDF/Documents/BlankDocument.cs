@@ -8,43 +8,36 @@ namespace EPlast.BussinessLayer
         private const string StatementPhoto = "wwwroot/images/pdf/Statement-photo.png";
         private readonly BlankModel blank;
 
-        public BlankDocument(BlankModel blank) : this(blank, new PDFSettings())
-        {
-        }
-
         public BlankDocument(BlankModel blank, IPDFSettings settings) : base(settings)
         {
             this.blank = blank;
         }
 
-        public override void SetDocumentBody(Section section)
+        private Paragraph SetParagraph(Section section, string paragraphText, int fontSize = 11,
+            string spaceBefore = "", string spaceAfter = "", string leftIndent = "", string rightIndent = "")
         {
-            // Set horizontal line
-            var height = 0.1;
-            var hrFillColor = Colors.DarkSlateGray;
-            var hrBorderColor = Colors.DarkSlateGray;
-
-            var paragraph = section.AddParagraph();
-            var newBorder = new Border { Style = BorderStyle.Single, Color = hrBorderColor, Width = height };
-
+            var paragraph = section.AddParagraph(paragraphText);
             paragraph.Format = new ParagraphFormat
             {
-                Font = new Font("Courier New", Unit.FromMillimeter(height)),
-                Shading = new Shading { Visible = true, Color = hrFillColor },
-                Borders = new Borders
+                Font = new Font
                 {
-                    Color = Colors.Gray,
-                    Bottom = newBorder,
-                    Left = newBorder.Clone(),
-                    Right = newBorder.Clone(),
-                    Top = newBorder.Clone()
+                    Name = "Calibri",
+                    Size = fontSize
                 },
-                SpaceBefore = "-7.2mm",
-                LeftIndent = "2mm",
-                RightIndent = "-1cm"
+                Alignment = ParagraphAlignment.Right,
+                LeftIndent = leftIndent,
+                RightIndent = rightIndent,
+                SpaceBefore = spaceBefore,
+                SpaceAfter = spaceAfter
             };
+            return paragraph;
+        }
 
-            paragraph = section.AddParagraph("Крайовому булавному УСП/УПС");
+        public override void SetDocumentBody(Section section)
+        {
+            SetHorizontalLine(section);
+
+            var paragraph = section.AddParagraph("Крайовому булавному УСП/УПС");
             paragraph.Format = new ParagraphFormat
             {
                 Font = new Font
@@ -68,10 +61,7 @@ namespace EPlast.BussinessLayer
                 RightIndent = "-1cm",
                 SpaceBefore = "1mm"
             };
-            var image = section.AddImage(StatementPhoto);
-            image.Width = "2.03cm";
-            image.Height = "0.62cm";
-            image.Left = ShapePosition.Center;
+            SetImage(section);
             paragraph = section.AddParagraph(
                 "Прошу прийняти мене в дійсні члени Пласту – Національної Скаутської Організації України, " +
                 "до Уладу Старших Пластунів / Уладу Пластунів Сеньйорів.Даю слово честі, що буду дотримуватися Трьох Головних Обов’язків пластуна та положень Статуту Пласту - НСОУ");
@@ -423,6 +413,41 @@ namespace EPlast.BussinessLayer
                 LeftIndent = "-1cm",
                 SpaceBefore = "5mm"
             };
+        }
+
+        private static void SetHorizontalLine(Section section)
+        {
+            const double height = 0.1;
+            var hrFillColor = Colors.DarkSlateGray;
+            var hrBorderColor = Colors.DarkSlateGray;
+
+            var paragraph = section.AddParagraph();
+            var newBorder = new Border { Style = BorderStyle.Single, Color = hrBorderColor, Width = height };
+
+            paragraph.Format = new ParagraphFormat
+            {
+                Font = new Font("Courier New", Unit.FromMillimeter(height)),
+                Shading = new Shading { Visible = true, Color = hrFillColor },
+                Borders = new Borders
+                {
+                    Color = Colors.Gray,
+                    Bottom = newBorder,
+                    Left = newBorder.Clone(),
+                    Right = newBorder.Clone(),
+                    Top = newBorder.Clone()
+                },
+                SpaceBefore = "-7.2mm",
+                LeftIndent = "2mm",
+                RightIndent = "-1cm"
+            };
+        }
+
+        private static void SetImage(Section section)
+        {
+            var image = section.AddImage(StatementPhoto);
+            image.Width = "2.03cm";
+            image.Height = "0.62cm";
+            image.Left = ShapePosition.Center;
         }
 
         private static void SetApprove(Section section, string text)
