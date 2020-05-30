@@ -1,4 +1,5 @@
-﻿using EPlast.DataAccess.Entities;
+﻿using System.Collections.Generic;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.BussinessLayer.Interfaces.Events
 {
@@ -9,5 +10,6 @@ namespace EPlast.BussinessLayer.Interfaces.Events
         int ChangeStatusToApproved(int id);
         int ChangeStatusToUnderReview(int id);
         int ChangeStatusToRejected(int id);
+        IEnumerable<Participant> GetParticipantsByUserId(string userId);
     }
 }
