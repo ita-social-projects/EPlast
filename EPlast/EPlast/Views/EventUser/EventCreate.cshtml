@@ -1,5 +1,5 @@
 ﻿@using EPlast.DataAccess.Entities
-@model EPlast.ViewModels.Events.EventCreateViewModel;
+@model EPlast.ViewModels.EventUser.EventCreateViewModel;
 <div class="eventCreate">
     <div class="d-xl-flex justify-content-xl-center border shadow card">
         <div class="col ">
@@ -12,13 +12,14 @@
             </div>
             <form method="post" asp-action="EventCreate" asp-controller="EventUser">
                 <div class="row border shadow text-center justify-content-xl-center align-items-xl-center">
-                    @foreach (EventType item in Model.EventTypes)
+                    @foreach (var item in Model.EventTypes)
                     {
                         <div class="col justify-content-xl-center align-items-xl-center" id="block">
-                            <button class="btn typebutton" id="@item.ID" type="button">@item.EventTypeName</button>
+                            <label class="btn typebutton active">
+                                <input type="radio" asp-for="Event.EventTypeID" value="@item.ID" />@item.EventTypeName
+                            </label>
                         </div>
                     }
-                    <input type="hidden" id="name" asp-for="Event.EventTypeID" />
                 </div>
                 <span asp-validation-for="Event.EventTypeID" class="text-danger"></span>
                 <div class="row border shadow text-center justify-content-xl-center align-items-xl-center">
@@ -26,7 +27,7 @@
                         <label class="col-form-label" id="type">Категорія</label>
                     </div>
                     <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
-                        <select id="select" asp-for="Event.EventCategoryID" asp-items="Model.EventCategories" class=" border TextIinput infoInput form-control"></select>
+                        <select id="select" asp-for="Event.EventCategoryID" asp-items='new SelectList(Model.EventCategories, "EventCategoryId", "EventCategoryName")' class=" border TextIinput infoInput form-control"></select>
                     </div>
                 </div>
                 <span asp-validation-for="Event.EventCategoryID" class="text-danger "></span>
@@ -54,7 +55,7 @@
                              })
                         <datalist id="Users-value">
                             <option selected="selected" disabled="disabled"></option>
-                            @foreach (User item in Model.Users)
+                            @foreach (var item in Model.Users)
                             {
                                 <option data-value="@item.Id" value="@item.FirstName @item.LastName">@item.UserName</option>
                             }
@@ -78,7 +79,7 @@
                               })
                         <datalist id="Users-value">
                             <option selected="selected" disabled="disabled" value=""></option>
-                            @foreach (User item in Model.Users)
+                            @foreach (var item in Model.Users)
                             {
                                 <option data-value="@item.Id" value="@item.FirstName @item.LastName">@item.UserName</option>
                             }
@@ -160,7 +161,7 @@
                         <div class="row">
                             <div class="col">
                                 <div class="d-xl-flex justify-content-xl-center align-items-xl-center" style="height: 76px;">
-                                    <textarea class="border TextIinput bigInput" asp-for="Event.Questions" 
+                                    <textarea class="border TextIinput bigInput" asp-for="Event.Questions"
                                               placeholder="Вкажіть питання.. " cols="30" rows="7"></textarea>
                                 </div>
                             </div>
@@ -185,7 +186,7 @@
                         <div class="row">
                             <div class="col">
                                 <div class="d-xl-flex justify-content-xl-center align-items-xl-center" style="height: 76px;">
-                                    <textarea class="border TextIinput bigInput" asp-for="Event.Description" 
+                                    <textarea class="border TextIinput bigInput" asp-for="Event.Description"
                                               placeholder="Вкажіть зміни/додатки.. " cols="30" rows="7"></textarea>
                                 </div>
                             </div>
