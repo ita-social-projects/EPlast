@@ -28,7 +28,7 @@
         <div class="col ">
             <div class="portlet light profile-sidebar-portlet bordered">
                 <div class="profile-userpic">
-                    <img src="/images/Club/@Model.Logo" class="img-thumbnail" alt="">
+                    <img src="/images/Club/@(Model.Logo ?? "default.jpg")" class="img-thumbnail" alt="">
                 </div>
             </div>
             <div class="row rowEditPage">
@@ -38,7 +38,7 @@
                         <input type="file" class="custom-file-input" id="upload-file-clubAdmins" accept=".jpg,.jpeg,.png" name="file" onchange="document.getElementById('img').src = window.URL.createObjectURL(this.files[0])">
                     </div>
                     <div class="accept">
-                        <button value="Save" id="Upload-photo-clubAdmin" class="btn " style="background-color:#3c5438; color:white;">Підтвердити</button>
+                        <button value="Save" id="Upload-photo-clubAdmin" class="btn" style="background-color:#3c5438; color:white;">Підтвердити</button>
                     </div>
                 </div>
             </div>

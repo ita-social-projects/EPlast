@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using EPlast.BussinessLayer.DTO.UserProfiles;
+using System.Collections.Generic;
 
-namespace EPlast.BussinessLayer.DTO
+namespace EPlast.BussinessLayer.DTO.Club
 {
     public class ClubProfileDTO
     {
