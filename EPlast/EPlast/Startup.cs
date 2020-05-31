@@ -4,12 +4,14 @@ using EPlast.BussinessLayer.AccessManagers;
 using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using EPlast.BussinessLayer.Interfaces;
 using EPlast.BussinessLayer.Interfaces.City;
+using EPlast.BussinessLayer.Interfaces.Club;
 using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.BussinessLayer.Interfaces.EventUser;
 using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.BussinessLayer.Services;
 using EPlast.BussinessLayer.Services.City;
 using EPlast.BussinessLayer.Services.City.CityAccess;
+using EPlast.BussinessLayer.Services.Club;
 using EPlast.BussinessLayer.Services.Events;
 using EPlast.BussinessLayer.Services.EventUser;
 using EPlast.BussinessLayer.Services.Interfaces;
@@ -75,7 +77,6 @@ namespace EPlast
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
             services.AddScoped<IEmailConfirmation, EmailConfirmationService>();
             services.AddScoped<IDecisionVmInitializer, DecisionVmInitializer>();
-
             services.AddScoped<CityAccessSettings, CityAccessSettings>();
             services.AddScoped<ICityAccessService, CityAccessService>();
             services.AddScoped<ICityMembersService, CityMembersService>();
@@ -98,6 +99,8 @@ namespace EPlast
             services.AddScoped<ICityService, CityService>();
             services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
             services.AddScoped<IClubService, ClubService>();
+            services.AddScoped<IClubAdministrationService, ClubAdministrationService>();
+            services.AddScoped<IClubMembersService, ClubMembersService>();
             services.AddScoped<ICreateEventVMInitializer, CreateEventVMInitializer>();
             services.AddScoped<IUserAccessManagerSettings, UserAccessManagerSettings>();
             services.AddScoped<IUserAccessManager, UserAccessManager>();

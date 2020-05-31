@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using EPlast.BussinessLayer.DTO.City;
 
 namespace EPlast.BussinessLayer.DTO
 {

@@ -1,6 +1,6 @@
 ﻿@using EPlast.ViewModels
 @model ClubViewModel
-<form class="container bg-light m-5 pt-2 pb-5 pr-5 pl-5 club-wrappers-radius" style="background-color:white" asp-action="EditConfirmed" enctype="multipart/form-data">
+<form class="container bg-light m-5 pt-2 pb-5 pr-5 pl-5 club-wrappers-radius" style="background-color:white" asp-controller="Club" asp-action="CreateClub" enctype="multipart/form-data">
     <div class="row">
         <div class="col-7">
             <h1>Створити курінь</h1>
@@ -28,7 +28,7 @@
         <div class="col ">
             <div class="portlet light profile-sidebar-portlet bordered">
                 <div class="profile-userpic">
-                    <img src="/images/Club/default.png" class="img-thumbnail" alt="">
+                    <img src="/images/Club/default.jpg" class="img-thumbnail" alt="">
                 </div>
             </div>
             <div class="row rowEditPage">

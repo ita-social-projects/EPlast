@@ -1,4 +1,5 @@
 ﻿using System;
+using EPlast.BussinessLayer.DTO.UserProfiles;
 
 namespace EPlast.BussinessLayer.DTO
 {

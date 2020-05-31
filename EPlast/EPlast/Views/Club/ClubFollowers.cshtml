@@ -3,40 +3,39 @@
 @{
     ViewData["Title"] = "ClubFollowers";
 }
-    <div class="content-wrapper">
-        <div class="all-clubs-view">
-            <h1 class="all-clubs-title">Прихильники куреня</h1>
-            <div class="club-list">
-                @foreach (var item in Model.Followers)
-                {
-                    <div class="club-block-wrapper">
-                        <div class="club-block  club-wrappers-radius">
-                            <a class="club-img-wrapper blocking" asp-action="UserProfile" asp-controller="Account" asp-route-userId="@item.User.Id">
-                                @if(item.User.ImagePath != null)
-                                {
-                                    <div class="club-img" style="background-image:url('/images/Users/@item.User.ImagePath')"></div>
-                                }
-                                else
-                                {
-                                    <div class="club-img" style="background-image:url('/images/Users/default.png')"></div>
-                                }
-                            </a>
-                            <a class="club-name" style="color: black;" asp-action="UserProfile" asp-controller="Account" asp-route-userId="@item.User.Id">
-                                @item.User.FirstName @item.User.LastName
-                            </a>
-                            @if ((Model.ClubAdmin != null && ViewBag.usermanager.GetUserId(User) == Model.ClubAdmin.Id) || User.IsInRole("Admin"))
+<div class="content-wrapper">
+    <div class="all-clubs-view">
+        <h1 class="all-clubs-title">Прихильники куреня</h1>
+        <div class="club-list">
+            @foreach (var item in Model.Followers)
+            {
+                <div class="club-block-wrapper">
+                    <div class="club-block  club-wrappers-radius">
+                        <a class="club-img-wrapper blocking" asp-action="UserProfile" asp-controller="Account" asp-route-userId="@item.User.Id">
+                            @if (item.User.ImagePath != null)
                             {
-                                <a  class="btn btn-primary btn-lg colors-for-club-buttons" role="button" asp-controller="Club" asp-action="ChangeIsApprovedStatusFollowers" asp-route-index="@item.ID" asp-route-clubIndex="@item.Club.ID" style="display: block; color: white;">Додати в курінь</a>
+                                <div class="club-img" style="background-image:url('/images/Users/@item.User.ImagePath')"></div>
                             }
-                        </div>
+                            else
+                            {
+                                <div class="club-img" style="background-image:url('/images/Users/default.png')"></div>
+                            }
+                        </a>
+                        <a class="club-name" style="color: black;" asp-action="UserProfile" asp-controller="Account" asp-route-userId="@item.User.Id">
+                            @item.User.FirstName @item.User.LastName
+                        </a>
+                        @if ((Model.ClubAdmin != null && ViewBag.usermanager.GetUserId(User) == Model.ClubAdmin.Id) || User.IsInRole("Admin"))
+                        {
+                            <a class="btn btn-primary btn-lg colors-for-club-buttons" role="button" asp-controller="Club" asp-action="ChangeIsApprovedStatusFollowers" asp-route-index="@item.ID" asp-route-clubIndex="@item.Club.ID" style="display: block; color: white;">Додати в курінь</a>
+                        }
                     </div>
-                }
-                @if (Model.Followers.Count == 0)
-                {
-                    <p>В цьому курені поки немає прихильників!</p>
-                }
-            </div>
-            <a asp-controller="Club" asp-action="Club" asp-route-index="@Model.Club.ID"  class="btn btn-primary btn-lg colors-for-club-buttons" role="button">Назад</a>
+                </div>
+            }
+            @if (Model.Followers.Count == 0)
+            {
+                <p>В цьому курені поки немає прихильників!</p>
+            }
         </div>
+        <a asp-controller="Club" asp-action="Club" asp-route-index="@Model.Club.ID" class="btn btn-primary btn-lg colors-for-club-buttons" role="button">Назад</a>
     </div>
-   
+</div>
