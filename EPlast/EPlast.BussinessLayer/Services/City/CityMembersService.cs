@@ -5,6 +5,7 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services.City
 {
@@ -19,11 +20,12 @@ namespace EPlast.BussinessLayer.Services.City
             _mapper = mapper;
         }
 
-        public IEnumerable<CityMembersDTO> GetCurrentByCityId(int cityId)
+        public async Task<IEnumerable<CityMembersDTO>> GetCurrentByCityIdAsync(int cityId)
         {
-            var cityMembers = _repositoryWrapper.CityMembers
+            var cityMembers = await _repositoryWrapper.CityMembers
                 .FindByCondition(cm => cm.CityId == cityId && cm.EndDate == null)
-                .Include(cm => cm.User);
+                .Include(cm => cm.User)
+                .ToListAsync();
             return _mapper.Map<IEnumerable<CityMembers>, IEnumerable<CityMembersDTO>>(cityMembers);
         }
     }
