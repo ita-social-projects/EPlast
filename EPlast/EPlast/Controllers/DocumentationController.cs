@@ -250,7 +250,7 @@ namespace EPlast.Controllers
                 {
                     throw new AnnualReportException("Річний звіт для даної станиці вже створений!");
                 }
-                var cityMemebrsDTO = _cityMembersService.GetCurrentByCityId(city.ID);
+                var cityMemebrsDTO = await _cityMembersService.GetCurrentByCityIdAsync(city.ID);
                 var cityMembers = _mapper.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(cityMemebrsDTO);
                 var createEditAnnualReportViewModel = new CreateEditAnnualReportViewModel(cityMembers)
                 {
@@ -294,7 +294,7 @@ namespace EPlast.Controllers
                     }
                     var cityDTO = _cityService.GetById(cityId);
                     var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
-                    var cityMemebrsDTO = _cityMembersService.GetCurrentByCityId(city.ID);
+                    var cityMemebrsDTO = await _cityMembersService.GetCurrentByCityIdAsync(city.ID);
                     var cityMembers = _mapper.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(cityMemebrsDTO);
                     var createEditAnnualReportViewModel = new CreateEditAnnualReportViewModel(cityMembers)
                     {
@@ -342,7 +342,7 @@ namespace EPlast.Controllers
                 {
                     var cityDTO = _cityService.GetById(annualReport.CityId);
                     var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
-                    var cityMemebrsDTO = _cityMembersService.GetCurrentByCityId(city.ID);
+                    var cityMemebrsDTO = await _cityMembersService.GetCurrentByCityIdAsync(city.ID);
                     var cityMembers = _mapper.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(cityMemebrsDTO);
                     var createEditAnnualReportViewModel = new CreateEditAnnualReportViewModel(cityMembers)
                     {
@@ -475,7 +475,7 @@ namespace EPlast.Controllers
                 var annualReport = _mapper.Map<AnnualReportDTO, AnnualReportViewModel>(annualReportDTO);
                 var cityDTO = _cityService.GetById(annualReport.CityId);
                 var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
-                var cityMemebrsDTO = _cityMembersService.GetCurrentByCityId(city.ID);
+                var cityMemebrsDTO = await _cityMembersService.GetCurrentByCityIdAsync(city.ID);
                 var cityMembers = _mapper.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(cityMemebrsDTO);
                 var createEditAnnualReportViewModel = new CreateEditAnnualReportViewModel(cityMembers)
                 {
@@ -514,7 +514,7 @@ namespace EPlast.Controllers
                 {
                     var cityDTO = _cityService.GetById(annualReport.CityId);
                     var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
-                    var cityMemebrsDTO = _cityMembersService.GetCurrentByCityId(city.ID);
+                    var cityMemebrsDTO = await _cityMembersService.GetCurrentByCityIdAsync(city.ID);
                     var cityMembers = _mapper.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(cityMemebrsDTO);
                     var createEditAnnualReportViewModel = new CreateEditAnnualReportViewModel(cityMembers)
                     {
