@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EPlast.BussinessLayer.DTO;
 using EPlast.BussinessLayer.Interfaces;
 using EPlast.Controllers;
 using EPlast.DataAccess.Entities;
@@ -156,39 +157,64 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task TestSendContacts()
+        public async Task TestSendContactsFeedBackSended()
         {
-            ContactsViewModel validUserInput = new ContactsViewModel
+            var controller = new HomeController(_homeService.Object, _repoWrapper.Object, _mapper.Object);
+            _mapper
+                .Setup(s => s.Map<ContactDTO>(It.IsAny<ContactsViewModel>()))
+                .Returns(GetTestContactDtoWithAllFields());
+
+            var validResult = await controller.SendContacts(GetTestValidContactViewModel());
+            
+            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(validResult);
+            Assert.NotNull(redirectToActionResult);
+            Assert.Equal("FeedBackSended", redirectToActionResult.ActionName);
+        }
+
+        [Fact]
+        public async Task TestSendContactsReturnContacts()
+        {
+            var controller = new HomeController(_homeService.Object, _repoWrapper.Object, _mapper.Object);
+            controller.ModelState.AddModelError("NameError", "Required");
+
+            var invalidResult = await controller.SendContacts(GetTestInvalidContactViewModel());
+
+            var viewResultWrong = Assert.IsType<ViewResult>(invalidResult);
+            Assert.NotNull(viewResultWrong);
+            Assert.Equal("Contacts", viewResultWrong.ViewName);
+        }
+
+        private ContactsViewModel GetTestValidContactViewModel()
+        {
+            return new ContactsViewModel
             {
                 Name = "Настя",
                 Email = "nasty@gmail.com",
                 PhoneNumber = "0934353139",
                 FeedBackDescription = "Хотіла б стати вашим волонтером"
             };
+        }
 
-            ContactsViewModel invalidUserInput = new ContactsViewModel
+        private ContactsViewModel GetTestInvalidContactViewModel()
+        {
+            return new ContactsViewModel
             {
                 Name = "",
                 Email = "",
                 PhoneNumber = "",
                 FeedBackDescription = ""
             };
+        }
 
-            var controller = new HomeController(_homeService.Object, _repoWrapper.Object, _mapper.Object);
-
-            var validResult = await controller.SendContacts(validUserInput);
-
-            var viewResultCorrect = Assert.IsType<RedirectToActionResult>(validResult);
-            Assert.NotNull(viewResultCorrect);
-            Assert.Equal("FeedBackSended", viewResultCorrect.ActionName);
-
-            controller.ModelState.AddModelError("NameError", "Required");
-
-            var invalidResult = await controller.SendContacts(invalidUserInput);
-
-            var viewResultWrong = Assert.IsType<ViewResult>(invalidResult);
-            Assert.NotNull(viewResultWrong);
-            Assert.Equal("Contacts", viewResultWrong.ViewName);
+        private ContactDTO GetTestContactDtoWithAllFields()
+        {
+            return new ContactDTO()
+            {
+                Email = "olehvynnyk@gmail.com",
+                FeedBackDescription = "Hey bro, nice site!",
+                Name = "Oleg",
+                PhoneNumber = "+380984784002"
+            };
         }
     }
 }
