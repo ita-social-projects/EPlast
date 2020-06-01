@@ -19,7 +19,7 @@ namespace EPlast.XUnitTest
 
         private readonly Mock<ICityService> _cityService;
         private readonly Mock<IMapper> _mapper;
-        private readonly Mock<ILoggerService<CityController>> _logger;
+        private readonly Mock<ILoggerService<CityController>> _logger; 
         private CityController CreateCityController => new CityController(_logger.Object, _cityService.Object, _mapper.Object);
         public CityControllerTests()
         {
@@ -43,6 +43,7 @@ namespace EPlast.XUnitTest
             Assert.NotNull(result);
             Assert.IsType<ViewResult>(result);
         }
+
         [Fact]
         public void CityProfileTests()
         {
@@ -58,6 +59,7 @@ namespace EPlast.XUnitTest
             Assert.NotNull(result);
             Assert.IsType<ViewResult>(result);
         }
+
         [Fact]
         public void EditWithValidModelStateTest()
         {
@@ -74,6 +76,7 @@ namespace EPlast.XUnitTest
             Assert.NotNull(result);
             Assert.IsType<RedirectToActionResult>(result);
         }
+
         [Fact]
         public void EditWithInvalidModelStateTest()
         {
@@ -90,6 +93,7 @@ namespace EPlast.XUnitTest
             Assert.NotNull(result);
             Assert.IsType<ViewResult>(result);
         }
+
         //[Fact]
         //public void EditWithExceptionTest()
         //{
@@ -110,6 +114,7 @@ namespace EPlast.XUnitTest
         //    Assert.Equal("HandleError", viewResult.ActionName);
         //    Assert.Equal("Error", viewResult.ControllerName);
         //}
+
         [Fact]
         public void EditGetCorrectTest()
         {
@@ -137,6 +142,7 @@ namespace EPlast.XUnitTest
 
             Assert.IsType<ViewResult>(result);
         }
+
         [Fact]
         public void CityFollowersCorrectTest()
         {
@@ -150,6 +156,7 @@ namespace EPlast.XUnitTest
 
             Assert.IsType<ViewResult>(result);
         }
+
         [Fact]
         public void CityMembersCorrectTest()
         {
@@ -163,6 +170,7 @@ namespace EPlast.XUnitTest
 
             Assert.IsType<ViewResult>(result);
         }
+
         [Fact]
         public void CityDocumentsCorrectTest()
         {
@@ -176,6 +184,7 @@ namespace EPlast.XUnitTest
 
             Assert.IsType<ViewResult>(result);
         }
+
         [Fact]
         public void DetailsDocumentsCorrectTest()
         {
@@ -189,6 +198,7 @@ namespace EPlast.XUnitTest
 
             Assert.IsType<ViewResult>(result);
         }
+
         [Fact]
         public void CreateWithValidModelStateTest()
         {
@@ -207,6 +217,7 @@ namespace EPlast.XUnitTest
             Assert.Equal("CityProfile", viewResult.ActionName);
             Assert.Equal("City", viewResult.ControllerName);
         }
+
         [Fact]
         public void CreateWithInvalidModelStateTest()
         {
@@ -224,6 +235,7 @@ namespace EPlast.XUnitTest
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.NotNull(viewResult);
         }
+
         [Fact]
         public void CreateGetCorrectTest()
         {
@@ -234,6 +246,7 @@ namespace EPlast.XUnitTest
             Assert.IsType<ViewResult>(result);
 
         }
+
         //[Fact]
         //public void CreateWithExceptionTest()
         //{
@@ -253,22 +266,6 @@ namespace EPlast.XUnitTest
         //    Assert.Equal("Error", viewResult.ControllerName);
         //}
 
-        private IQueryable<CityProfileDTO> createFakeCityProfilesDto(int count)
-        {
-            List<CityProfileDTO> cityProfilesDto = new List<CityProfileDTO>();
-            for (int i = 0; i < count; i++)
-            {
-                cityProfilesDto.Add(new CityProfileDTO
-                {
-                    City = new CityDTO
-                    {
-                        ID = i,
-                        Name = "Name " + i
-                    }
-                });
-            }
-            return cityProfilesDto.AsQueryable();
-        }
         private IQueryable<CityProfileViewModel> createFakeCityProfileViewModels(int count)
         {
             List<CityProfileViewModel> cityProfilesDto = new List<CityProfileViewModel>();
