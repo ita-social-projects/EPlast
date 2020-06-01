@@ -19,7 +19,7 @@ namespace EPlast.BussinessLayer
 
             SetParagraph(section, "Крайовому булавному УСП/УПС", 10, rightIndent: "-1cm", spaceBefore: "2mm")
                 .Format.Alignment = ParagraphAlignment.Right;
-            SetParagraph(section, "Від ТУТ ПІП", 10, rightIndent: "-1cm", spaceBefore: "1mm").Format.Alignment
+            SetParagraph(section, $"Від {blank.User.LastName} {blank.User.FirstName} {blank.User.FatherName}", 10, rightIndent: "-1cm", spaceBefore: "1mm").Format.Alignment
                 = ParagraphAlignment.Right; // Тут ПІП
 
             SetImage(section);
@@ -40,7 +40,7 @@ namespace EPlast.BussinessLayer
                     leftIndent: "-1cm")
                 .Format.FirstLineIndent = "1.25cm";
 
-            SetParagraph(section, "реєстрації в системі + осередокa", 12, "2mm",
+            SetParagraph(section, $"{blank.User.RegistredOn} {blank.ClubMembers.Club.ClubName}", 12, "2mm",
                 rightIndent: "9cm"); // Дата реги та осередок
 
             SetParagraph(section, "ПІБ", 12, "-0.5cm", leftIndent: "10cm"); // Тут ПІБ
@@ -51,47 +51,53 @@ namespace EPlast.BussinessLayer
             SetParagraph(section, "ПІБ:", rightIndent: "14cm", spaceBefore: "4mm", bold: true,
                 paragraphAlignment: ParagraphAlignment.Right);
 
-            SetParagraph(section, "Qwert QWErt Qwerty", leftIndent: "2.2cm", spaceBefore: "-4.8mm",
+            SetParagraph(section, $"{blank.User.LastName} {blank.User.FirstName} {blank.User.FatherName}", leftIndent: "2.2cm", spaceBefore: "-4.8mm",
                 bold: true); // тут ПІБ
 
             SetParagraph(section, "Дата народження:", leftIndent: "-2cm", rightIndent: "14cm", spaceBefore: "5mm",
                 bold: true, paragraphAlignment: ParagraphAlignment.Center);
 
-            SetParagraph(section, "21.01.1999", leftIndent: "2.2cm", spaceBefore: "-5mm",
+            SetParagraph(section, $"{blank.UserProfile.Birthday}", leftIndent: "2.2cm", spaceBefore: "-5mm",
                 bold: true); // тут Дата народження
 
             SetParagraph(section, "E-mail:", rightIndent: "5cm", spaceBefore: "-4.9mm", bold: true,
                 paragraphAlignment: ParagraphAlignment.Right);
 
-            SetParagraph(section, "some@mail.com", leftIndent: "11.2cm", spaceBefore: "-4.9mm",
+            SetParagraph(section, $"{blank.User.Email}", leftIndent: "11.2cm", spaceBefore: "-4.9mm",
                 bold: true); // тут Email
 
             SetParagraph(section, "Телефон:", leftIndent: "-2cm", rightIndent: "14cm", spaceBefore: "4.6mm", bold: true,
                 paragraphAlignment: ParagraphAlignment.Right);
 
-            SetParagraph(section, "+380666666", leftIndent: "2.2cm", spaceBefore: "-4.8mm", bold: true);
+            SetParagraph(section, $"{blank.User.PhoneNumber}", leftIndent: "2.2cm", spaceBefore: "-4.8mm", bold: true);
 
             SetParagraph(section, "Адреса:", leftIndent: "-2cm", rightIndent: "14cm", spaceBefore: "4mm", bold: true,
                 paragraphAlignment: ParagraphAlignment.Right);
 
-            SetParagraph(section, "м. Львів РНР", leftIndent: "2.2cm", spaceBefore: "-4.8mm",
+            SetParagraph(section, $"{blank.UserProfile.Address}", leftIndent: "2.2cm", spaceBefore: "-4.8mm",
                 bold: true); // тут адреса проживання
 
             SetParagraph(section, "Праця/навчання:", leftIndent: "-2cm", rightIndent: "14cm", spaceBefore: "4.8mm",
                 bold: true, paragraphAlignment: ParagraphAlignment.Right);
 
-            SetParagraph(section, "тут багато тексту малоб бути, але я не знаю що писати", leftIndent: "2.2cm",
+            SetParagraph(section, $"{blank.UserProfile.Education} {blank.UserProfile.Work}", leftIndent: "2.2cm",
                 spaceBefore: "-4.8cm", bold: true); // тут праця\навчання
 
             SetParagraph(section, "Вишколи:", leftIndent: "-2cm", rightIndent: "14cm", spaceBefore: "4.8mm", bold: true,
                 paragraphAlignment: ParagraphAlignment.Right);
 
-            SetParagraph(section, "Всі вишколи користувача", leftIndent: "2.2cm", spaceBefore: "-4.8mm",
+            SetParagraph(section, $"{blank.User.Events}", leftIndent: "2.2cm", spaceBefore: "-4.8mm",
                 bold: true); // тут вишколи
 
             SetParagraph(section, "Поручення дійсних членів Пласту:", 14, "8mm",
                 "4mm", paragraphAlignment: ParagraphAlignment.Center);
 
+            foreach (var Approver in blank.User.Approvers)
+            {
+                SetApprove(section, $"${Approver.User.UserPlastDegrees}, {Approver.User.FirstName}, {Approver.User.LastName}, {Approver.User.ClubMembers}		" +
+                                    $"{Approver.ConfirmedUser.ConfirmDate}		" +
+                                    $"{Approver.User.LastName} {Approver.User.FirstName} {Approver.User.FatherName}");
+            }
             SetApprove(section, "ступінь, ім’я, прізвище, курінь		дата		підпис");
 
             SetApprove(section, "ступінь, ім’я, прізвище, курінь		дата		підпис");

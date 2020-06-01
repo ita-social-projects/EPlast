@@ -68,10 +68,13 @@ namespace EPlast.BussinessLayer
         {
             var user = _repoWrapper.User.FindByCondition(x => x.Id.Equals(userId)).First();
             var userProfile = _repoWrapper.UserProfile.FindByCondition(x => x.UserID.Equals(userId)).First();
+            var clubMember = _repoWrapper.ClubMembers
+                .FindByCondition(x => x.UserId.Equals(userId) && x.IsApproved == false).First();
             return new BlankModel
             {
                 User = user,
-                UserProfile = userProfile
+                UserProfile = userProfile,
+                ClubMembers = clubMember
             };
         }
     }
