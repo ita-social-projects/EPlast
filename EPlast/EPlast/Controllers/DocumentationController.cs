@@ -404,7 +404,7 @@ namespace EPlast.Controllers
             catch (Exception e)
             {
                 _logger.LogError($"Exception: {e.Message}");
-                return NotFound("Не вдалося завантажити річний звіт");
+                return NotFound("Не вдалося завантажити річний звіт!");
             }
         }
 
