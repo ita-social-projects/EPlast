@@ -1,4 +1,5 @@
 ﻿using EPlast.DataAccess.Repositories.Contracts;
+using System.Threading.Tasks;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -577,6 +578,11 @@ namespace EPlast.DataAccess.Repositories
         public void Save()
         {
             _dbContext.SaveChanges();
+        }
+
+        public async Task SaveAsync()
+        {
+            await _dbContext.SaveChangesAsync();
         }
     }
 }
