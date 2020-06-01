@@ -9,5 +9,6 @@ namespace EPlast.BussinessLayer
     {
         public User User { get; set; }
         public UserProfile UserProfile { get; set; }
+        public ClubMembers ClubMembers { get; set; }
     }
 }
