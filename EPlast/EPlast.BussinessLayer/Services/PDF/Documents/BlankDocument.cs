@@ -13,406 +13,115 @@ namespace EPlast.BussinessLayer
             this.blank = blank;
         }
 
-        private Paragraph SetParagraph(Section section, string paragraphText, int fontSize = 11,
-            string spaceBefore = "", string spaceAfter = "", string leftIndent = "", string rightIndent = "")
-        {
-            var paragraph = section.AddParagraph(paragraphText);
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = fontSize
-                },
-                Alignment = ParagraphAlignment.Right,
-                LeftIndent = leftIndent,
-                RightIndent = rightIndent,
-                SpaceBefore = spaceBefore,
-                SpaceAfter = spaceAfter
-            };
-            return paragraph;
-        }
-
         public override void SetDocumentBody(Section section)
         {
             SetHorizontalLine(section);
 
-            var paragraph = section.AddParagraph("Крайовому булавному УСП/УПС");
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 10
-                },
-                Alignment = ParagraphAlignment.Right,
-                RightIndent = "-1cm",
-                SpaceBefore = "2mm"
-            };
-            paragraph = section.AddParagraph("від	тут ПІП"); // Тут ПІП
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 10
-                },
-                Alignment = ParagraphAlignment.Right,
-                RightIndent = "-1cm",
-                SpaceBefore = "1mm"
-            };
+            SetParagraph(section, "Крайовому булавному УСП/УПС", 10, rightIndent: "-1cm", spaceBefore: "2mm")
+                .Format.Alignment = ParagraphAlignment.Right;
+            SetParagraph(section, "Від ТУТ ПІП", 10, rightIndent: "-1cm", spaceBefore: "1mm").Format.Alignment
+                = ParagraphAlignment.Right; // Тут ПІП
+
             SetImage(section);
-            paragraph = section.AddParagraph(
-                "Прошу прийняти мене в дійсні члени Пласту – Національної Скаутської Організації України, " +
-                "до Уладу Старших Пластунів / Уладу Пластунів Сеньйорів.Даю слово честі, що буду дотримуватися Трьох Головних Обов’язків пластуна та положень Статуту Пласту - НСОУ");
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 10
-                },
-                RightIndent = "-1cm",
-                LeftIndent = "-1cm",
-                SpaceBefore = "1mm",
-                FirstLineIndent = "1.25cm"
-            };
-            paragraph = section.AddParagraph(
-                "Відповідно до Закону України «Про захист персональних даних» надаю згоду проводу Пласту на " +
-                "обробку та використання моїх персональних даних (прізвище, ім'я, по-батькові, паспортні дані, ідентифікаційний номер, дані " +
-                "про освіту, дата народження, місце проживання, громадянство, стать, склад сім'ї, номери телефонів, електронні адреси, фотографії, " +
-                "інші персональні дані) з метою забезпечення реалізації відносин в сфері громадської діяльності. Також посвідчую, що повідомлення про " +
-                "включення даних про мене до бази персональних даних членів Пласту отримав/ла, із правами, які я маю відповідно до змісту ст. 8 Закону " +
-                "України «Про захист персональних даних» ознайомлений/на.");
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 10
-                },
-                RightIndent = "-1cm",
-                LeftIndent = "-1cm",
-                FirstLineIndent = "1.25cm"
-            };
-            paragraph = section.AddParagraph("дата реєстрації в системі +осередокa"); // Дата реги та осередок
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 12
-                },
-                SpaceBefore = "2mm",
-                RightIndent = "9cm"
-            };
-            paragraph = section.AddParagraph("ПІБ"); // Тут ПІБ
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 12
-                },
-                SpaceBefore = "-.5cm",
-                LeftIndent = "10cm"
-            };
-            paragraph = section.AddParagraph("Анкета заявника");
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 14
-                },
-                Alignment = ParagraphAlignment.Center,
-                SpaceBefore = "1.3cm"
-            };
 
-            paragraph = section.AddParagraph("ПІБ:");
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 11,
-                    Bold = true
-                },
-                Alignment = ParagraphAlignment.Right,
-                RightIndent = "14cm",
-                SpaceBefore = "4mm"
-            };
-            paragraph = section.AddParagraph("Qwert QWErt Qwerty"); // тут ПІБ
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 11,
-                    Bold = true
-                },
-                Alignment = ParagraphAlignment.Left,
-                LeftIndent = "2.2cm",
-                SpaceBefore = "-4.8mm"
-            };
-            paragraph = section.AddParagraph("Дата народження:");
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 11,
-                    Bold = true
-                },
-                Alignment = ParagraphAlignment.Right,
-                RightIndent = "14cm",
-                LeftIndent = "-2cm",
-                SpaceBefore = "5mm"
-            };
-            paragraph = section.AddParagraph("21.01.1999"); // тут Дата народження
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 11,
-                    Bold = true
-                },
-                Alignment = ParagraphAlignment.Left,
-                LeftIndent = "2.2cm",
-                SpaceBefore = "-5mm"
-            };
-            paragraph = section.AddParagraph("E-mail:");
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 11,
-                    Bold = true
-                },
-                Alignment = ParagraphAlignment.Right,
-                RightIndent = "5cm",
-                SpaceBefore = "-4.9mm"
-            };
-            paragraph = section.AddParagraph("some@mail.com"); // тут Email
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 11,
-                    Bold = true
-                },
-                Alignment = ParagraphAlignment.Left,
-                LeftIndent = "11.2cm",
-                SpaceBefore = "-4.9mm"
-            };
-            paragraph = section.AddParagraph("Телефон:");
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 11,
-                    Bold = true
-                },
-                Alignment = ParagraphAlignment.Right,
-                RightIndent = "14cm",
-                LeftIndent = "-2cm",
-                SpaceBefore = "4.6mm"
-            };
-            paragraph = section.AddParagraph("+380666666"); // тут телефон
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 11,
-                    Bold = true
-                },
-                Alignment = ParagraphAlignment.Left,
-                LeftIndent = "2.2cm",
-                SpaceBefore = "-4.8mm"
-            };
-            paragraph = section.AddParagraph("Адреса:");
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 11,
-                    Bold = true
-                },
-                Alignment = ParagraphAlignment.Right,
-                RightIndent = "14cm",
-                LeftIndent = "-2cm",
-                SpaceBefore = "4mm"
-            };
-            paragraph = section.AddParagraph("м. Львів РНР"); // тут адреса проживання
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 11,
-                    Bold = true
-                },
-                Alignment = ParagraphAlignment.Left,
-                LeftIndent = "2.2cm",
-                SpaceBefore = "-4.8mm"
-            };
-            paragraph = section.AddParagraph("Праця/навчання:");
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 11,
-                    Bold = true
-                },
-                Alignment = ParagraphAlignment.Right,
-                RightIndent = "14cm",
-                LeftIndent = "-2cm",
-                SpaceBefore = "4.8mm"
-            };
-            paragraph = section.AddParagraph(
-                "тут багато тексту малоб бути, але я не знаю що писати"); // тут праця\навчання
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 11,
-                    Bold = true
-                },
-                Alignment = ParagraphAlignment.Left,
-                LeftIndent = "2.2cm",
-                SpaceBefore = "-4.8mm"
-            };
-            paragraph = section.AddParagraph("Вишколи:");
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 11,
-                    Bold = true
-                },
-                Alignment = ParagraphAlignment.Right,
-                RightIndent = "14cm",
-                LeftIndent = "-2cm",
-                SpaceBefore = "4.8mm"
-            };
-            paragraph = section.AddParagraph("Всі вишколи користувача"); // тут вишколи
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 11,
-                    Bold = true
-                },
-                Alignment = ParagraphAlignment.Left,
-                LeftIndent = "2.2cm",
-                SpaceBefore = "-4.8mm"
-            };
-            paragraph = section.AddParagraph("Поручення дійсних членів Пласту:");
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 14
-                },
-                Alignment = ParagraphAlignment.Center,
-                SpaceBefore = "8mm",
-                SpaceAfter = "4mm",
-            };
+            SetParagraph(section,
+                    "Прошу прийняти мене в дійсні члени Пласту – Національної Скаутської Організації України, " +
+                    "до Уладу Старших Пластунів / Уладу Пластунів Сеньйорів.Даю слово честі, що буду дотримуватися Трьох Головних Обов’язків пластуна та положень Статуту Пласту - НСОУ",
+                    10, rightIndent: "-1cm", leftIndent: "-1cm", spaceBefore: "1mm")
+                .Format.FirstLineIndent = "1.25cm";
+
+            SetParagraph(section,
+                    "Відповідно до Закону України «Про захист персональних даних» надаю згоду проводу Пласту на " +
+                    "обробку та використання моїх персональних даних (прізвище, ім'я, по-батькові, паспортні дані, ідентифікаційний номер, дані " +
+                    "про освіту, дата народження, місце проживання, громадянство, стать, склад сім'ї, номери телефонів, електронні адреси, фотографії, " +
+                    "інші персональні дані) з метою забезпечення реалізації відносин в сфері громадської діяльності. Також посвідчую, що повідомлення про " +
+                    "включення даних про мене до бази персональних даних членів Пласту отримав/ла, із правами, які я маю відповідно до змісту ст. 8 Закону " +
+                    "України «Про захист персональних даних» ознайомлений/на.", 10, rightIndent: "-1cm",
+                    leftIndent: "-1cm")
+                .Format.FirstLineIndent = "1.25cm";
+
+            SetParagraph(section, "реєстрації в системі + осередокa", 12, "2mm",
+                rightIndent: "9cm"); // Дата реги та осередок
+
+            SetParagraph(section, "ПІБ", 12, "-0.5cm", leftIndent: "10cm"); // Тут ПІБ
+
+            SetParagraph(section, "Анкета заявника", 14, "1.3cm",
+                paragraphAlignment: ParagraphAlignment.Center);
+
+            SetParagraph(section, "ПІБ:", rightIndent: "14cm", spaceBefore: "4mm", bold: true,
+                paragraphAlignment: ParagraphAlignment.Right);
+
+            SetParagraph(section, "Qwert QWErt Qwerty", leftIndent: "2.2cm", spaceBefore: "-4.8mm",
+                bold: true); // тут ПІБ
+
+            SetParagraph(section, "Дата народження:", leftIndent: "-2cm", rightIndent: "14cm", spaceBefore: "5mm",
+                bold: true, paragraphAlignment: ParagraphAlignment.Center);
+
+            SetParagraph(section, "21.01.1999", leftIndent: "2.2cm", spaceBefore: "-5mm",
+                bold: true); // тут Дата народження
+
+            SetParagraph(section, "E-mail:", rightIndent: "5cm", spaceBefore: "-4.9mm", bold: true,
+                paragraphAlignment: ParagraphAlignment.Right);
+
+            SetParagraph(section, "some@mail.com", leftIndent: "11.2cm", spaceBefore: "-4.9mm",
+                bold: true); // тут Email
+
+            SetParagraph(section, "Телефон:", leftIndent: "-2cm", rightIndent: "14cm", spaceBefore: "4.6mm", bold: true,
+                paragraphAlignment: ParagraphAlignment.Right);
+
+            SetParagraph(section, "+380666666", leftIndent: "2.2cm", spaceBefore: "-4.8mm", bold: true);
+
+            SetParagraph(section, "Адреса:", leftIndent: "-2cm", rightIndent: "14cm", spaceBefore: "4mm", bold: true,
+                paragraphAlignment: ParagraphAlignment.Right);
+
+            SetParagraph(section, "м. Львів РНР", leftIndent: "2.2cm", spaceBefore: "-4.8mm",
+                bold: true); // тут адреса проживання
+
+            SetParagraph(section, "Праця/навчання:", leftIndent: "-2cm", rightIndent: "14cm", spaceBefore: "4.8mm",
+                bold: true, paragraphAlignment: ParagraphAlignment.Right);
+
+            SetParagraph(section, "тут багато тексту малоб бути, але я не знаю що писати", leftIndent: "2.2cm",
+                spaceBefore: "-4.8cm", bold: true); // тут праця\навчання
+
+            SetParagraph(section, "Вишколи:", leftIndent: "-2cm", rightIndent: "14cm", spaceBefore: "4.8mm", bold: true,
+                paragraphAlignment: ParagraphAlignment.Right);
+
+            SetParagraph(section, "Всі вишколи користувача", leftIndent: "2.2cm", spaceBefore: "-4.8mm",
+                bold: true); // тут вишколи
+
+            SetParagraph(section, "Поручення дійсних членів Пласту:", 14, "8mm",
+                "4mm", paragraphAlignment: ParagraphAlignment.Center);
 
             SetApprove(section, "ступінь, ім’я, прізвище, курінь		дата		підпис");
-            SetApprove(section, "ступінь, ім’я, прізвище, курінь		дата		підпис");
+
             SetApprove(section, "ступінь, ім’я, прізвище, курінь		дата		підпис");
 
-            paragraph = section.AddParagraph("Поручення станичного або референта УСП/УПС");
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 14
-                },
-                Alignment = ParagraphAlignment.Center,
-                SpaceBefore = "8mm",
-                SpaceAfter = "4mm",
-            };
+            SetApprove(section, "ступінь, ім’я, прізвище, курінь		дата		підпис");
 
-            paragraph = section.AddParagraph("Я, @Ступінь, ім’я, по - батькові, курінь посада станиці@ " +
-                "поручаюся за кандидата в дійсні члени Пласту.Підверджую, що за час випробувального терміну " +
-                "кандидатом було виказано гідну пластову поставу, відповідність пластовим цінностям та " +
-                "проявлено відповідальність у взятих на себе пластових обов'язках @[ ] виховника; " +
-                "[ ] інструктора; [ ] адміністратора; [ ] суспільника@. Рекомендую надати " +
-                "кандидатустатус дійсного члена та право на складання пластової присяги.");
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 10
-                },
-                RightIndent = "-1cm",
-                LeftIndent = "-1cm",
-                FirstLineIndent = "1.25cm"
-            };
-            paragraph = section.AddParagraph("дата поручення"); // Дата реги та осередок
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 12
-                },
-                SpaceBefore = "2mm",
-                RightIndent = "9cm"
-            };
-            paragraph = section.AddParagraph("ПІБ"); // Тут ПІБ
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 12
-                },
-                SpaceBefore = "-.5cm",
-                LeftIndent = "10cm"
-            };
-            paragraph = section.AddParagraph("Поручення куреня УСП/УПС");
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 14
-                },
-                Alignment = ParagraphAlignment.Center,
-                SpaceBefore = "8mm",
-                SpaceAfter = "4mm",
-            };
+            SetParagraph(section, "Поручення станичного або референта УСП/УПС", 14, "8mm",
+                "4mm", paragraphAlignment: ParagraphAlignment.Center);
+
+            SetParagraph(section,
+                    "Я, @Ступінь, ім’я, по - батькові, курінь посада станиці@ " +
+                    "поручаюся за кандидата в дійсні члени Пласту.Підверджую, що за час випробувального терміну " +
+                    "кандидатом було виказано гідну пластову поставу, відповідність пластовим цінностям та " +
+                    "проявлено відповідальність у взятих на себе пластових обов'язках @[ ] виховника; " +
+                    "[ ] інструктора; [ ] адміністратора; [ ] суспільника@. Рекомендую надати " +
+                    "кандидатустатус дійсного члена та право на складання пластової присяги.", 10,
+                    leftIndent: "-1cm", rightIndent: "-1cm")
+                .Format.FirstLineIndent = "1.25cm";
+
+            SetParagraph(section, "дата поручення", 12, "2mm", rightIndent: "9cm");
+
+            SetParagraph(section, "ПІБ", 12, "-0.5cm", leftIndent: "10cm"); //Тут ПІБ
+
+            SetParagraph(section, "Поручення куреня УСП/УПС", 14, "8mm", "4mm",
+                paragraphAlignment: ParagraphAlignment.Center);
+
             SetApprove(section, "Курінь УСП/УПС, пластовий ступінь, ім’я, прізвище, посада поручника, дата, підпис");
 
-            paragraph = section.AddParagraph("Дата заприсяження, іменування: 66.66.6666");
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Name = "Calibri",
-                    Size = 11,
-                    Bold = true
-                },
-                RightIndent = "-1cm",
-                LeftIndent = "-1cm",
-                SpaceBefore = "5mm"
-            };
+            SetParagraph(section, "Дата заприсяження, іменування: 66.66.6666", rightIndent: "-1cm", leftIndent: "-1cm",
+                spaceBefore: "5mm", bold: true);
         }
 
         private static void SetHorizontalLine(Section section)
@@ -442,6 +151,28 @@ namespace EPlast.BussinessLayer
             };
         }
 
+        private static Paragraph SetParagraph(Section section, string paragraphText, int fontSize = 11,
+            string spaceBefore = "", string spaceAfter = "", string leftIndent = "",
+            string rightIndent = "", bool bold = false, ParagraphAlignment paragraphAlignment = ParagraphAlignment.Left)
+        {
+            var paragraph = section.AddParagraph(paragraphText);
+            paragraph.Format = new ParagraphFormat
+            {
+                Font = new Font
+                {
+                    Name = "Calibri",
+                    Size = fontSize,
+                    Bold = bold
+                },
+                Alignment = paragraphAlignment,
+                LeftIndent = leftIndent,
+                RightIndent = rightIndent,
+                SpaceBefore = spaceBefore,
+                SpaceAfter = spaceAfter
+            };
+            return paragraph;
+        }
+
         private static void SetImage(Section section)
         {
             var image = section.AddImage(StatementPhoto);
@@ -458,9 +189,9 @@ namespace EPlast.BussinessLayer
                 Font = new Font
                 {
                     Name = "Calibri",
-                    Size = 11,
+                    Size = 11
                 },
-                Alignment = ParagraphAlignment.Left,
+                Alignment = ParagraphAlignment.Left
             };
         }
     }
