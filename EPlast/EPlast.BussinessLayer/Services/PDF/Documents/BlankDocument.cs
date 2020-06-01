@@ -111,11 +111,11 @@ namespace EPlast.BussinessLayer
                     leftIndent: "-1cm", rightIndent: "-1cm")
                 .Format.FirstLineIndent = "1.25cm";
 
-            SetParagraph(section, "дата поручення", 12, "2mm", rightIndent: "9cm");
+            SetParagraph(section, "дата поручення", 12, spaceBefore: "2mm", rightIndent: "9cm");
 
-            SetParagraph(section, "ПІБ", 12, "-0.5cm", leftIndent: "10cm"); //Тут ПІБ
+            SetParagraph(section, "ПІБ", 12, spaceBefore: "-0.5cm", leftIndent: "10cm"); //Тут ПІБ
 
-            SetParagraph(section, "Поручення куреня УСП/УПС", 14, "8mm", "4mm",
+            SetParagraph(section, "Поручення куреня УСП/УПС", fontSize: 14, spaceBefore: "8mm", spaceAfter: "4mm",
                 paragraphAlignment: ParagraphAlignment.Center);
 
             SetApprove(section, "Курінь УСП/УПС, пластовий ступінь, ім’я, прізвище, посада поручника, дата, підпис");
