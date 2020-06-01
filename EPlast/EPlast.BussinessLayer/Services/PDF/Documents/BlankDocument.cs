@@ -40,7 +40,7 @@ namespace EPlast.BussinessLayer
                     leftIndent: "-1cm")
                 .Format.FirstLineIndent = "1.25cm";
 
-            SetParagraph(section, $"{blank.User.RegistredOn} {blank.ClubMembers.Club.ClubName}", 12, "2mm",
+            SetParagraph(section, $"{blank.User.RegistredOn} {blank.CityMembers.City.Name}", 12, "2mm",
                 rightIndent: "9cm"); // Дата реги та осередок
 
             SetParagraph(section, "ПІБ", 12, "-0.5cm", leftIndent: "10cm"); // Тут ПІБ
@@ -92,17 +92,12 @@ namespace EPlast.BussinessLayer
             SetParagraph(section, "Поручення дійсних членів Пласту:", 14, "8mm",
                 "4mm", paragraphAlignment: ParagraphAlignment.Center);
 
-            foreach (var Approver in blank.User.Approvers)
+            foreach (var approver in blank.User.Approvers)
             {
-                SetApprove(section, $"${Approver.User.UserPlastDegrees}, {Approver.User.FirstName}, {Approver.User.LastName}, {Approver.User.ClubMembers}		" +
-                                    $"{Approver.ConfirmedUser.ConfirmDate}		" +
-                                    $"{Approver.User.LastName} {Approver.User.FirstName} {Approver.User.FatherName}");
+                SetApprove(section, $"${approver.User.UserPlastDegrees}, {approver.User.FirstName}, {approver.User.LastName}, {approver.User.ClubMembers}\t" +
+                                    $"{approver.ConfirmedUser.ConfirmDate}\t" +
+                                    $"{approver.User.LastName} {approver.User.FirstName} {approver.User.FatherName}");
             }
-            SetApprove(section, "ступінь, ім’я, прізвище, курінь		дата		підпис");
-
-            SetApprove(section, "ступінь, ім’я, прізвище, курінь		дата		підпис");
-
-            SetApprove(section, "ступінь, ім’я, прізвище, курінь		дата		підпис");
 
             SetParagraph(section, "Поручення станичного або референта УСП/УПС", 14, "8mm",
                 "4mm", paragraphAlignment: ParagraphAlignment.Center);

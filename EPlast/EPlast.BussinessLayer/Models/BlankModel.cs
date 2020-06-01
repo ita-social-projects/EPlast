@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using EPlast.DataAccess.Entities;
+﻿using EPlast.DataAccess.Entities;
 
 namespace EPlast.BussinessLayer
 {
@@ -9,6 +6,6 @@ namespace EPlast.BussinessLayer
     {
         public User User { get; set; }
         public UserProfile UserProfile { get; set; }
-        public ClubMembers ClubMembers { get; set; }
+        public CityMembers CityMembers { get; set; }
     }
 }
