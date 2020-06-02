@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO;
 using EPlast.BussinessLayer.DTO.UserProfiles;
+using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.BussinessLayer.Services.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -24,6 +25,8 @@ namespace EPlast.XUnitTest.Services
         private Mock<UserManager<User>> _userManager;
         private Mock<IHostingEnvironment> _hostEnv;
         private Mock<IMapper> _mapper;
+        private Mock<IWorkService> _workService;
+        private Mock<IEducationService> _educationService;
 
         public UserServiceTests()
         {
@@ -32,6 +35,8 @@ namespace EPlast.XUnitTest.Services
             _userManager = new Mock<UserManager<User>>(_userStoreMock.Object, null, null, null, null, null, null, null, null);
             _hostEnv = new Mock<IHostingEnvironment>();
             _mapper = new Mock<IMapper>();
+            _workService = new Mock<IWorkService>();
+            _educationService = new Mock<IEducationService>();
         }
 
         [Fact]
@@ -52,7 +57,7 @@ namespace EPlast.XUnitTest.Services
                 }
             } }.AsQueryable());
 
-            var service = new UserService( _repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object);
+            var service = new UserService( _repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object,_workService.Object,_educationService.Object);
             _mapper.Setup(x => x.Map<User, UserDTO>(It.IsAny<User>())).Returns(new UserDTO());
             // Act
             var result = service.GetUser("1");
@@ -65,7 +70,7 @@ namespace EPlast.XUnitTest.Services
         {
             UserDTO user = new UserDTO { ConfirmedUsers = new List<ConfirmedUserDTO>() };
 
-            var service = new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object);
+            var service = new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object, _workService.Object, _educationService.Object);
             // Act
             var result = service.GetConfirmedUsers(user);
             // Assert
@@ -77,7 +82,7 @@ namespace EPlast.XUnitTest.Services
         {
             UserDTO user = new UserDTO { ConfirmedUsers = new List<ConfirmedUserDTO>() };
 
-            var service = new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object);
+            var service = new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object, _workService.Object, _educationService.Object);
             // Act
             var result = service.GetConfirmedUsers(user);
             // Assert
@@ -89,7 +94,7 @@ namespace EPlast.XUnitTest.Services
         {
             UserDTO user = new UserDTO { ConfirmedUsers = new List<ConfirmedUserDTO>() };
 
-            var service = new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object);
+            var service = new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object, _workService.Object, _educationService.Object);
             // Act
             var result = service.GetConfirmedUsers(user);
             // Assert
@@ -107,7 +112,7 @@ namespace EPlast.XUnitTest.Services
             var confUsers = new List<ConfirmedUserDTO> { conUser, conUser };
             _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns("1");
 
-            var service = new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object);
+            var service = new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object, _workService.Object, _educationService.Object);
             // Act
             var result = service.CanApprove(confUsers,"2", It.IsAny<ClaimsPrincipal>());
             // Assert
@@ -122,7 +127,7 @@ namespace EPlast.XUnitTest.Services
             var confUsers = new List<ConfirmedUserDTO> { conUser, conUser, conUser, conUser };
             _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns("1");
 
-            var service = new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object);
+            var service = new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object, _workService.Object, _educationService.Object);
             // Act
             var result = service.CanApprove(confUsers, "1", It.IsAny<ClaimsPrincipal>());
             // Assert
@@ -134,7 +139,7 @@ namespace EPlast.XUnitTest.Services
         {
             _userManager.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
 
-            var service = new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object);
+            var service = new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object, _workService.Object, _educationService.Object);
             // Act
             var result = service.CheckOrAddPlastunRole("1", DateTime.Now);
             // Assert
@@ -192,7 +197,7 @@ namespace EPlast.XUnitTest.Services
             _mapper.Setup(x => x.Map<UserDTO, User>(It.IsAny<UserDTO>())).Returns(user);
             var mockFile = new Mock<IFormFile>();
 
-            var service = new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object);
+            var service = new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object, _workService.Object, _educationService.Object);
             // Act
             service.Update(userDTO, mockFile.Object,1,1,1,1);
             // Assert
