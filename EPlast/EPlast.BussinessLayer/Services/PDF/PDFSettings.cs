@@ -1,8 +1,8 @@
 ﻿namespace EPlast.BussinessLayer
 {
-    public class PDFSettings : IPdfSettings
+    public class PdfSettings : IPdfSettings
     {
-        public PDFSettings()
+        public PdfSettings()
         {
             Title = "Рішення";
             Subject = "Auto generated pdf file";

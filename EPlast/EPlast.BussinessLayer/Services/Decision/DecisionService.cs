@@ -1,15 +1,15 @@
-﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO;
-using EPlast.DataAccess.Entities;
-using EPlast.DataAccess.Repositories;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using EPlast.BussinessLayer.DTO;
 using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Repositories;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EPlast.BussinessLayer
 {
@@ -27,7 +27,8 @@ namespace EPlast.BussinessLayer
 
         public DecisionService(IRepositoryWrapper repoWrapper, IHostingEnvironment appEnvironment,
             IDirectoryManager directoryManager, IFileManager fileManager,
-            IFileStreamManager fileStreamManager, IMapper mapper, IDecisionVmInitializer decisionVMCreator, ILoggerService<DecisionService> logger)
+            IFileStreamManager fileStreamManager, IMapper mapper, IDecisionVmInitializer decisionVMCreator,
+            ILoggerService<DecisionService> logger)
         {
             _repoWrapper = repoWrapper;
             _appEnvironment = appEnvironment;
@@ -211,7 +212,7 @@ namespace EPlast.BussinessLayer
 
         public bool DeleteDecision(int decisionId)
         {
-            bool success = false;
+            var success = false;
             try
             {
                 var decision = _repoWrapper.Decesion.FindByCondition(d => d.ID == decisionId).First();

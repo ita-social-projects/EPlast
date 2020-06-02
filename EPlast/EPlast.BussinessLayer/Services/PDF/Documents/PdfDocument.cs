@@ -9,7 +9,7 @@ namespace EPlast.BussinessLayer
         protected readonly Document Document;
         private readonly IPdfSettings settings;
 
-        protected PdfDocument() : this(new PDFSettings())
+        protected PdfDocument() : this(new PdfSettings())
         {
         }
 

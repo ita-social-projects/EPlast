@@ -3,16 +3,15 @@ using EPlast.DataAccess.Repositories;
 using System.Linq;
 using System.Threading.Tasks;
 using EPlast.BussinessLayer.Services.Interfaces;
-using EPlast.DataAccess.Entities;
 
 namespace EPlast.BussinessLayer
 {
-    public class PDFService : IPdfService
+    public class PdfService : IPdfService
     {
         private readonly IRepositoryWrapper _repoWrapper;
-        private readonly ILoggerService<PDFService> _logger;
+        private readonly ILoggerService<PdfService> _logger;
 
-        public PDFService(IRepositoryWrapper repoWrapper, ILoggerService<PDFService> logger)
+        public PdfService(IRepositoryWrapper repoWrapper, ILoggerService<PdfService> logger)
         {
             _repoWrapper = repoWrapper;
             _logger = logger;
@@ -22,13 +21,13 @@ namespace EPlast.BussinessLayer
         {
             try
             {
-                IPdfSettings pdfSettings = new PDFSettings
+                IPdfSettings pdfSettings = new PdfSettings
                 {
                     Title = "Бланк",
                     ImagePath = "wwwroot/images/pdf/Header-Eplast-Blank.png"
                 };
                 var blank = GetBlankData(userId);
-                IPdfCreator creator = new PDFCreator(new BlankDocument(blank, pdfSettings));
+                IPdfCreator creator = new PdfCreator(new BlankDocument(blank, pdfSettings));
                 return await Task.Run(() => creator.GetPDFBytes());
             }
             catch (Exception e)
@@ -47,12 +46,12 @@ namespace EPlast.BussinessLayer
                     .FirstOrDefault(x => x.ID == DecisionId);
                 if (decision != null)
                 {
-                    IPdfSettings pdfSettings = new PDFSettings
+                    IPdfSettings pdfSettings = new PdfSettings
                     {
                         Title = $"Рішення {decision.Organization.OrganizationName}",
                         ImagePath = "wwwroot/images/pdf/Header-Eplast.png"
                     };
-                    IPdfCreator creator = new PDFCreator(new DecisionDocument(decision, pdfSettings));
+                    IPdfCreator creator = new PdfCreator(new DecisionDocument(decision, pdfSettings));
                     return await Task.Run(() => creator.GetPDFBytes());
                 }
             }
