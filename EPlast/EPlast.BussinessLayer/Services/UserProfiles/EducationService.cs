@@ -30,5 +30,9 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
             var result = _repoWrapper.Education.FindAll().GroupBy(x => x.Speciality).Select(x => x.FirstOrDefault()).ToList();
             return _mapper.Map<IEnumerable<Education>, IEnumerable<EducationDTO>>(result);
         }
+        public EducationDTO GetById(int? educationId)
+        {
+            return _mapper.Map<Education, EducationDTO>(_repoWrapper.Education.FindByCondition(x => x.ID == educationId).FirstOrDefault());
+        }
     }
 }
