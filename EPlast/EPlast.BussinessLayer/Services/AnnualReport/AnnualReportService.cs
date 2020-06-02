@@ -95,9 +95,8 @@ namespace EPlast.BussinessLayer.Services
             var annualReport = await _repositoryWrapper.AnnualReports
                 .FindByCondition(ar => ar.ID == annualReportDTO.ID)
                 .FirstOrDefaultAsync();
-            if (annualReport == null && (annualReport.CityId != annualReportDTO.CityId || annualReport.UserId != annualReportDTO.UserId ||
-                annualReport.Date != annualReportDTO.Date || annualReport.Status != DatabaseEntities.AnnualReportStatus.Unconfirmed ||
-                annualReportDTO.Status != DTO.AnnualReportStatus.Unconfirmed))
+            if (annualReport?.CityId != annualReportDTO.CityId || annualReport?.UserId != annualReportDTO.UserId || annualReport?.Date != annualReportDTO.Date
+                || annualReport?.Status != DatabaseEntities.AnnualReportStatus.Unconfirmed || annualReportDTO.Status != DTO.AnnualReportStatus.Unconfirmed)
             {
                 throw new AnnualReportException(ErrorMessageEditFailed);
             }
