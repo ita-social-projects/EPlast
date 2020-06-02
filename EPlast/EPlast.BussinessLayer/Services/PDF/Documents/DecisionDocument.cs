@@ -8,7 +8,7 @@ namespace EPlast.BussinessLayer
     {
         private readonly Decesion decesion;
 
-        public DecisionDocument(Decesion decesion) : this(decesion, new PDFSettings())
+        public DecisionDocument(Decesion decesion) : this(decesion, new PdfSettings())
         {
         }
 

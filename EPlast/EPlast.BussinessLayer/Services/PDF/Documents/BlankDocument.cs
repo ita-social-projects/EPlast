@@ -19,11 +19,11 @@ namespace EPlast.BussinessLayer
         {
             SetHorizontalLine(section);
 
-            SetParagraph(section, "Крайовому булавному УСП/УПС", paragraphFont: SetParagraphFont(fontSize: 10),
+            SetParagraph(section, "Крайовому булавному УСП/УПС", SetParagraphFont(10),
                     rightIndent: "-1cm", spaceBefore: "2mm")
                 .Format.Alignment = ParagraphAlignment.Right;
             SetParagraph(section, $"Від {blank.User.LastName} {blank.User.FirstName} {blank.User.FatherName}",
-                    SetParagraphFont(fontSize: 10), rightIndent: "-1cm", spaceBefore: "1mm")
+                    SetParagraphFont(10), rightIndent: "-1cm", spaceBefore: "1mm")
                 .Format.Alignment = ParagraphAlignment.Right; // Тут ПІП
 
             SetImage(section);
@@ -31,7 +31,7 @@ namespace EPlast.BussinessLayer
             SetParagraph(section,
                     "Прошу прийняти мене в дійсні члени Пласту – Національної Скаутської Організації України, " +
                     "до Уладу Старших Пластунів / Уладу Пластунів Сеньйорів.Даю слово честі, що буду дотримуватися Трьох Головних Обов’язків пластуна та положень Статуту Пласту - НСОУ",
-                    paragraphFont: SetParagraphFont(fontSize: 10), rightIndent: "-1cm", leftIndent: "-1cm",
+                    SetParagraphFont(10), rightIndent: "-1cm", leftIndent: "-1cm",
                     spaceBefore: "1mm")
                 .Format.FirstLineIndent = "1.25cm";
 
@@ -41,75 +41,73 @@ namespace EPlast.BussinessLayer
                     "про освіту, дата народження, місце проживання, громадянство, стать, склад сім'ї, номери телефонів, електронні адреси, фотографії, " +
                     "інші персональні дані) з метою забезпечення реалізації відносин в сфері громадської діяльності. Також посвідчую, що повідомлення про " +
                     "включення даних про мене до бази персональних даних членів Пласту отримав/ла, із правами, які я маю відповідно до змісту ст. 8 Закону " +
-                    "України «Про захист персональних даних» ознайомлений/на.", SetParagraphFont(fontSize: 10),
+                    "України «Про захист персональних даних» ознайомлений/на.", SetParagraphFont(10),
                     rightIndent: "-1cm", leftIndent: "-1cm")
                 .Format.FirstLineIndent = "1.25cm";
 
             SetParagraph(section, $"{blank.User.RegistredOn} {blank.CityMembers.City.Name}",
-                SetParagraphFont(fontSize: 12), "2mm", rightIndent: "9cm"); // Дата реги та осередок
+                SetParagraphFont(12), "2mm", rightIndent: "9cm"); // Дата реги та осередок
 
-            SetParagraph(section, "ПІБ", paragraphFont: SetParagraphFont(fontSize: 12), "-0.5cm",
+            SetParagraph(section, "ПІБ", SetParagraphFont(12), "-0.5cm",
                 leftIndent: "10cm"); // Тут ПІБ
 
-            SetParagraph(section, "Анкета заявника", SetParagraphFont(fontSize: 14), "1.3cm",
+            SetParagraph(section, "Анкета заявника", SetParagraphFont(14), "1.3cm",
                 paragraphAlignment: ParagraphAlignment.Center);
 
-            SetParagraph(section, "ПІБ:", paragraphFont: SetParagraphFont(bold: true), rightIndent: "14cm",
+            SetParagraph(section, "ПІБ:", SetParagraphFont(bold: true), rightIndent: "14cm",
                 spaceBefore: "4mm", paragraphAlignment: ParagraphAlignment.Right);
 
             SetParagraph(section, $"{blank.User.LastName} {blank.User.FirstName} {blank.User.FatherName}",
-                paragraphFont: SetParagraphFont(bold: true), leftIndent: "2.2cm", spaceBefore: "-4.8mm"); // тут ПІБ
+                SetParagraphFont(bold: true), leftIndent: "2.2cm", spaceBefore: "-4.8mm"); // тут ПІБ
 
-            SetParagraph(section, "Дата народження:", paragraphFont: SetParagraphFont(bold: true), leftIndent: "-2cm",
+            SetParagraph(section, "Дата народження:", SetParagraphFont(bold: true), leftIndent: "-2cm",
                 rightIndent: "14cm", spaceBefore: "5mm", paragraphAlignment: ParagraphAlignment.Center);
 
-            SetParagraph(section, $"{blank.UserProfile.Birthday}", paragraphFont: SetParagraphFont(bold: true),
+            SetParagraph(section, $"{blank.UserProfile.Birthday}", SetParagraphFont(bold: true),
                 leftIndent: "2.2cm", spaceBefore: "-5mm"); // тут Дата народження
 
-            SetParagraph(section, "E-mail:", paragraphFont: SetParagraphFont(bold: true), rightIndent: "5cm",
+            SetParagraph(section, "E-mail:", SetParagraphFont(bold: true), rightIndent: "5cm",
                 spaceBefore: "-4.9mm", paragraphAlignment: ParagraphAlignment.Right);
 
-            SetParagraph(section, $"{blank.User.Email}", paragraphFont: SetParagraphFont(bold: true),
+            SetParagraph(section, $"{blank.User.Email}", SetParagraphFont(bold: true),
                 leftIndent: "11.2cm", spaceBefore: "-4.9mm"); // тут Email
 
-            SetParagraph(section, "Телефон:", paragraphFont: SetParagraphFont(bold: true), leftIndent: "-2cm",
+            SetParagraph(section, "Телефон:", SetParagraphFont(bold: true), leftIndent: "-2cm",
                 rightIndent: "14cm", spaceBefore: "4.6mm", paragraphAlignment: ParagraphAlignment.Right);
 
-            SetParagraph(section, $"{blank.User.PhoneNumber}", paragraphFont: SetParagraphFont(bold: true),
+            SetParagraph(section, $"{blank.User.PhoneNumber}", SetParagraphFont(bold: true),
                 leftIndent: "2.2cm", spaceBefore: "-4.8mm");
 
-            SetParagraph(section, "Адреса:", paragraphFont: SetParagraphFont(bold: true), leftIndent: "-2cm",
+            SetParagraph(section, "Адреса:", SetParagraphFont(bold: true), leftIndent: "-2cm",
                 rightIndent: "14cm", spaceBefore: "4mm", paragraphAlignment: ParagraphAlignment.Right);
 
-            SetParagraph(section, $"{blank.UserProfile.Address}", paragraphFont: SetParagraphFont(bold: true),
+            SetParagraph(section, $"{blank.UserProfile.Address}", SetParagraphFont(bold: true),
                 leftIndent: "2.2cm", spaceBefore: "-4.8mm"); // тут адреса проживання
 
-            SetParagraph(section, "Праця/навчання:", paragraphFont: SetParagraphFont(bold: true), leftIndent: "-2cm",
+            SetParagraph(section, "Праця/навчання:", SetParagraphFont(bold: true), leftIndent: "-2cm",
                 rightIndent: "14cm", spaceBefore: "4.8mm", paragraphAlignment: ParagraphAlignment.Right);
 
             SetParagraph(section, $"{blank.UserProfile.Education} {blank.UserProfile.Work}",
-                paragraphFont: SetParagraphFont(bold: true), leftIndent: "2.2cm",
+                SetParagraphFont(bold: true), leftIndent: "2.2cm",
                 spaceBefore: "-4.8cm"); // тут праця\навчання
 
-            SetParagraph(section, "Вишколи:", paragraphFont: SetParagraphFont(bold: true), leftIndent: "-2cm",
+            SetParagraph(section, "Вишколи:", SetParagraphFont(bold: true), leftIndent: "-2cm",
                 rightIndent: "14cm", spaceBefore: "4.8mm", paragraphAlignment: ParagraphAlignment.Right);
 
-            SetParagraph(section, $"{blank.User.Events}", paragraphFont: SetParagraphFont(bold: true),
+            SetParagraph(section, $"{blank.User.Events}", SetParagraphFont(bold: true),
                 leftIndent: "2.2cm", spaceBefore: "-4.8mm"); // тут вишколи
 
-            SetParagraph(section, "Поручення дійсних членів Пласту:", paragraphFont: SetParagraphFont(fontSize: 14),
+            SetParagraph(section, "Поручення дійсних членів Пласту:", SetParagraphFont(14),
                 "8mm", "4mm", paragraphAlignment: ParagraphAlignment.Center);
 
             foreach (var approver in blank.User.Approvers)
-            {
                 SetApprove(section,
                     $"${approver.User.UserPlastDegrees}, {approver.User.FirstName}, {approver.User.LastName}, {approver.User.ClubMembers}\t" +
                     $"{approver.ConfirmedUser.ConfirmDate}\t" +
                     $"{approver.User.LastName} {approver.User.FirstName} {approver.User.FatherName}");
-            }
 
             SetParagraph(section, "Поручення станичного або референта УСП/УПС",
-                paragraphFont: SetParagraphFont(fontSize: 14), "8mm", "4mm",
+                SetParagraphFont(14), "8mm", "4mm",
                 paragraphAlignment: ParagraphAlignment.Center);
 
             SetParagraph(section,
@@ -119,24 +117,19 @@ namespace EPlast.BussinessLayer
                     "проявлено відповідальність у взятих на себе пластових обов'язках @[ ] виховника; " + // ????
                     "[ ] інструктора; [ ] адміністратора; [ ] суспільника@. Рекомендую надати " +
                     "кандидатустатус дійсного члена та право на складання пластової присяги.",
-                    paragraphFont: SetParagraphFont(fontSize: 10), leftIndent: "-1cm", rightIndent: "-1cm")
+                    SetParagraphFont(10), leftIndent: "-1cm", rightIndent: "-1cm")
                 .Format.FirstLineIndent = "1.25cm";
 
             SetParagraph(section,
                 $"{blank.User.Approvers.First(x => x.UserID.Equals(blank.CityAdmin.Id)).ConfirmedUser.ConfirmDate}",
-                paragraphFont: SetParagraphFont(fontSize: 12), spaceBefore: "2mm", rightIndent: "9cm");
+                SetParagraphFont(12), "2mm", rightIndent: "9cm");
 
             SetParagraph(section,
                 $"{blank.CityAdmin.LastName} {blank.CityAdmin.FirstName} {blank.CityAdmin.FatherName}",
-                paragraphFont: SetParagraphFont(fontSize: 12), spaceBefore: "-0.5cm", leftIndent: "10cm"); //Тут ПІБ
-
-            // Не ралазовано в системі.
-            //SetParagraph(section, "Поручення куреня УСП/УПС", fontSize: 14, spaceBefore: "8mm", spaceAfter: "4mm",
-            //    paragraphAlignment: ParagraphAlignment.Center);
-            //SetApprove(section, $"{blank.ClubMembers.Club.ClubName} УСП/УПС, пластовий ступінь, ім’я, прізвище, посада поручника, дата, підпис");
+                SetParagraphFont(12), "-0.5cm", leftIndent: "10cm"); //Тут ПІБ
 
             SetParagraph(section, $"Дата заприсяження, іменування: {DateTime.Now:dd/MM/yyyy}",
-                paragraphFont: SetParagraphFont(bold: true), rightIndent: "-1cm", leftIndent: "-1cm",
+                SetParagraphFont(bold: true), rightIndent: "-1cm", leftIndent: "-1cm",
                 spaceBefore: "5mm");
         }
 
@@ -184,13 +177,15 @@ namespace EPlast.BussinessLayer
             return paragraph;
         }
 
-        private static Font SetParagraphFont(int fontSize = 11, bool bold = false) =>
-            new Font
+        private static Font SetParagraphFont(int fontSize = 11, bool bold = false)
+        {
+            return new Font
             {
                 Name = "Calibri",
                 Size = fontSize,
                 Bold = bold
             };
+        }
 
         private static void SetImage(Section section)
         {
