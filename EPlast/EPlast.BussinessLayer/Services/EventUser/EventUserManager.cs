@@ -1,18 +1,17 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO.EventUser;
+using EPlast.BussinessLayer.DTO.UserProfiles;
 using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.BussinessLayer.Interfaces.EventUser;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using EPlast.BussinessLayer.DTO;
-using EPlast.BussinessLayer.DTO.UserProfiles;
-using EPlast.DataAccess.Entities.Event;
-using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.BussinessLayer.Services.EventUser
 {
