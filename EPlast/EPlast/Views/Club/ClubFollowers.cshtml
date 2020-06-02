@@ -24,9 +24,10 @@
                         <a class="club-name" style="color: black;" asp-action="UserProfile" asp-controller="Account" asp-route-userId="@item.User.Id">
                             @item.User.FirstName @item.User.LastName
                         </a>
-                        @if ((Model.ClubAdmin != null && ViewBag.usermanager.GetUserId(User) == Model.ClubAdmin.Id) || User.IsInRole("Admin"))
+                        @if (Model.IsCurrentUserAdmin || Model.IsCurrentUserClubAdmin)
                         {
-                            <a class="btn btn-primary btn-lg colors-for-club-buttons" role="button" asp-controller="Club" asp-action="ChangeIsApprovedStatusFollowers" asp-route-index="@item.ID" asp-route-clubIndex="@item.Club.ID" style="display: block; color: white;">Додати в курінь</a>
+                            <a class="btn btn-primary btn-lg colors-for-club-buttons" role="button" asp-controller="Club" asp-action="ChangeIsApprovedStatusFollowers" 
+                               asp-route-index="@item.ID" asp-route-clubIndex="@item.Club.ID" style="display: block; color: white;">Додати в курінь</a>
                         }
                     </div>
                 </div>

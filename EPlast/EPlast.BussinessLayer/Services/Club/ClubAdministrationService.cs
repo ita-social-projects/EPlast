@@ -69,18 +69,18 @@ namespace EPlast.BussinessLayer.Services.Club
             var adminType = _repoWrapper.AdminType
                 .FindByCondition(i => i.AdminTypeName == createdAdmin.AdminTypeName)
                 .FirstOrDefault();
-            int AdminTypeId;
+            int adminTypeId;
 
             if (adminType == null)
             {
                 var newAdminType = new AdminType() { AdminTypeName = createdAdmin.AdminTypeName };
                 _repoWrapper.AdminType.Create(newAdminType);
                 _repoWrapper.Save();
-                AdminTypeId = newAdminType.ID;
+                adminTypeId = newAdminType.ID;
             }
             else
             {
-                AdminTypeId = adminType.ID;
+                adminTypeId = adminType.ID;
             }
 
             ClubAdministration newClubAdmin = new ClubAdministration()
@@ -89,7 +89,7 @@ namespace EPlast.BussinessLayer.Services.Club
                 StartDate = createdAdmin.StartDate,
                 EndDate = createdAdmin.EndDate,
                 ClubId = createdAdmin.ClubId,
-                AdminTypeId = AdminTypeId
+                AdminTypeId = adminTypeId
             };
 
             _repoWrapper.GetClubAdministration.Create(newClubAdmin);

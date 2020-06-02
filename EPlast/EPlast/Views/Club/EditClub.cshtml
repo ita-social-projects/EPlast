@@ -9,8 +9,10 @@
             <div class="form-group">
                 <label class="control-label">Назва куреня:</label>
                 <input asp-for="ClubName" id="clubName-clubAdmins" class="form-control">
-                <span asp-validation-for="ClubName" id="clubName-clubAdmins-mistake" class="text-danger" style="display: none;">Назва куреня не має бути порожньою.</span>
-                <span asp-validation-for="ClubName" id="clubName-clubAdmins-mistake2" class="text-danger" style="display: none;">Назва куреня не має перевищувати 50 символів.</span>
+                <span asp-validation-for="ClubName" id="clubName-clubAdmins-mistake" class="text-danger" 
+                      style="display: none;">Назва куреня не має бути порожньою.</span>
+                <span asp-validation-for="ClubName" id="clubName-clubAdmins-mistake2" class="text-danger" 
+                      style="display: none;">Назва куреня не має перевищувати 50 символів.</span>
             </div>
 
             <div class="form-group">
@@ -21,7 +23,8 @@
             <div class="form-group">
                 <label class="control-label">Опис куреню:</label>
                 <textarea asp-for="Description" id="clubDescription-clubAdmins" class="form-control" style="min-height: 200px;"> </textarea>
-                <span asp-validation-for="Description" id="clubDescription-clubAdmins-mistake" class="text-danger" style="display: none;">Опис куреню не має перевищувати 1024 символи.</span>
+                <span asp-validation-for="Description" id="clubDescription-clubAdmins-mistake" class="text-danger" 
+                      style="display: none;">Опис куреню не має перевищувати 1024 символи.</span>
             </div>
             <button type="submit" value="Save" id="save-editedClub" class="btn " style="background-color:#3c5438; color:white;">Підтвердити</button>
         </div>
@@ -35,7 +38,8 @@
                 <div id="photo-wrapper" class="photo-wrapper">
                     <div class="Upload-photo">
                         <button id="upload-btn" class="upload-btn">Вибрати...</button>
-                        <input type="file" class="custom-file-input" id="upload-file-clubAdmins" accept=".jpg,.jpeg,.png" name="file" onchange="document.getElementById('img').src = window.URL.createObjectURL(this.files[0])">
+                        <input type="file" class="custom-file-input" id="upload-file-clubAdmins" accept=".jpg,.jpeg,.png" name="file" 
+                               onchange="document.getElementById('img').src = window.URL.createObjectURL(this.files[0])">
                     </div>
                     <div class="accept">
                         <button value="Save" id="Upload-photo-clubAdmin" class="btn" style="background-color:#3c5438; color:white;">Підтвердити</button>
