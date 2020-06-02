@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -28,6 +29,11 @@ namespace EPlast.DataAccess.Repositories
         public void Create(T entity)
         {
             this.EPlastDBContext.Set<T>().Add(entity);
+        }
+
+        public async Task CreateAsync(T entity)
+        {
+            await this.EPlastDBContext.Set<T>().AddAsync(entity);
         }
 
         public void Update(T entity)

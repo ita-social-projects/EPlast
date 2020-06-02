@@ -1,4 +1,5 @@
 ﻿using EPlast.DataAccess.Repositories.Contracts;
+using System.Threading.Tasks;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -49,5 +50,6 @@ namespace EPlast.DataAccess.Repositories
         IEventAdministrationRepository EventAdministration { get; }
 
         void Save();
+        Task SaveAsync();
     }
 }
