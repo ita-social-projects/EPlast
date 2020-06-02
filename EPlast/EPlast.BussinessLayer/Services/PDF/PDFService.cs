@@ -70,11 +70,20 @@ namespace EPlast.BussinessLayer
             var userProfile = _repoWrapper.UserProfile.FindByCondition(x => x.UserID.Equals(userId)).First();
             var cityMembers = _repoWrapper.CityMembers
                 .FindByCondition(x => x.UserId.Equals(userId)).First();
+            var clubMembers = _repoWrapper.ClubMembers
+                .FindByCondition(x => x.UserId.Equals(userId)).First();
+            var cityAdmin = _repoWrapper.User.FindByCondition(x =>
+                x.Id.Equals(_repoWrapper.CityAdministration.FindByCondition(y => y.CityId == cityMembers.CityId)
+                    .Select(y => y.UserId)
+                    .First()))
+                .First();
             return new BlankModel
             {
                 User = user,
                 UserProfile = userProfile,
-                CityMembers = cityMembers
+                CityMembers = cityMembers,
+                ClubMembers = clubMembers,
+                CityAdmin = cityAdmin
             };
         }
     }
