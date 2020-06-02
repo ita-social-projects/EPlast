@@ -87,24 +87,8 @@ namespace EPlast.XUnitTest
         [Fact]
         public void SearchResultNotNull()
         {
-            _repoWrapper.Setup(p => p.User.FindByCondition(It.IsAny<Expression<Func<User, bool>>>())).Returns(
-                new List<User> {
-                    new User
-                    {
-                        FirstName="Денис",
-                        LastName = "Іванків"
-                    },
-                    new User
-                    {
-                        FirstName="Олег",
-                        LastName = "Іванків"
-                    },
-                    new User
-                    {
-                        FirstName="Микола",
-                        LastName = "Іванків"
-                    },
-                }.AsQueryable());
+            _repoWrapper.Setup(p => p.User.FindByCondition(It.IsAny<Expression<Func<User, bool>>>()))
+                .Returns(GetTestQueryableUsersFullNames());
 
             var homecontroller = new HomeController(_homeService.Object, _repoWrapper.Object, _mapper.Object);
 
@@ -123,15 +107,8 @@ namespace EPlast.XUnitTest
         [Fact]
         public void GetSerchUserTest()
         {
-            _repoWrapper.Setup(u => u.User.FindByCondition(It.IsAny<Expression<Func<User, bool>>>())).Returns(
-                new List<User> {
-                    new User
-                    {
-                        Id="aaaa-bbbb-cccc",
-                        FirstName="Олег",
-                        LastName="Іванків"
-                    },
-                }.AsQueryable());
+            _repoWrapper.Setup(u => u.User.FindByCondition(It.IsAny<Expression<Func<User, bool>>>()))
+                .Returns(GetTestQueryableUsersWithId());
 
             var homecontroller = new HomeController(_homeService.Object, _repoWrapper.Object, _mapper.Object);
 
@@ -165,7 +142,7 @@ namespace EPlast.XUnitTest
                 .Returns(GetTestContactDtoWithAllFields());
 
             var validResult = await controller.SendContacts(GetTestValidContactViewModel());
-            
+
             var redirectToActionResult = Assert.IsType<RedirectToActionResult>(validResult);
             Assert.NotNull(redirectToActionResult);
             Assert.Equal("FeedBackSended", redirectToActionResult.ActionName);
@@ -210,11 +187,44 @@ namespace EPlast.XUnitTest
         {
             return new ContactDTO()
             {
-                Email = "olehvynnyk@gmail.com",
-                FeedBackDescription = "Hey bro, nice site!",
-                Name = "Oleg",
-                PhoneNumber = "+380984784002"
+                Name = "Настя",
+                Email = "nasty@gmail.com",
+                PhoneNumber = "0934353139",
+                FeedBackDescription = "Хотіла б стати вашим волонтером"
             };
+        }
+
+        private IQueryable<User> GetTestQueryableUsersFullNames()
+        {
+            return new List<User> {
+                    new User
+                    {
+                        FirstName="Денис",
+                        LastName = "Іванків"
+                    },
+                    new User
+                    {
+                        FirstName="Олег",
+                        LastName = "Іванків"
+                    },
+                    new User
+                    {
+                        FirstName="Микола",
+                        LastName = "Іванків"
+                    },
+            }.AsQueryable();
+        }
+
+        private IQueryable<User> GetTestQueryableUsersWithId()
+        {
+            return new List<User> {
+                    new User
+                    {
+                        Id="aaaa-bbbb-cccc",
+                        FirstName="Олег",
+                        LastName="Іванків"
+                    },
+            }.AsQueryable();
         }
     }
 }
