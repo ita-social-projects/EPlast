@@ -49,8 +49,8 @@ namespace EPlast.BussinessLayer.Services.EventUser
                 userId = currentUserId;
             }
 
-            var _user = _repoWrapper.User.FindByCondition(q => q.Id == userId).First();
-            EventUserDTO model = new EventUserDTO { User = _mapper.Map<User, UserDTO>(_user) };
+            var targetUser = _repoWrapper.User.FindByCondition(q => q.Id == userId).First();
+            EventUserDTO model = new EventUserDTO { User = _mapper.Map<User, UserDTO>(targetUser) };
             var eventAdmins = _eventAdminManager.GetEventAdminsByUserId(userId);
             var participants = _participantManager.GetParticipantsByUserId(userId);
             model.CreatedEvents = new List<EventGeneralInfoDTO>();
