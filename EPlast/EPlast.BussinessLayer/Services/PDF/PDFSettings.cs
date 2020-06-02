@@ -1,6 +1,6 @@
 ﻿namespace EPlast.BussinessLayer
 {
-    public class PDFSettings : IPDFSettings
+    public class PDFSettings : IPdfSettings
     {
         public PDFSettings()
         {

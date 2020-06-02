@@ -5,12 +5,12 @@ using System.Text;
 
 namespace EPlast.BussinessLayer
 {
-    internal class PDFCreator : IPDFCreator
+    internal class PDFCreator : IPdfCreator
     {
-        private readonly IPDFDocument document;
+        private readonly IPdfDocument document;
         private PdfDocumentRenderer renderer;
 
-        public PDFCreator(IPDFDocument document)
+        public PDFCreator(IPdfDocument document)
         {
             this.document = document ?? throw new ArgumentNullException(nameof(document));
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);

@@ -12,7 +12,7 @@ namespace EPlast.BussinessLayer
         {
         }
 
-        public DecisionDocument(Decesion decesion, IPDFSettings settings) : base(settings)
+        public DecisionDocument(Decesion decesion, IPdfSettings settings) : base(settings)
         {
             this.decesion = decesion;
         }
