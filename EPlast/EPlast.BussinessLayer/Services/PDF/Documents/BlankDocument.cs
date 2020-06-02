@@ -10,7 +10,7 @@ namespace EPlast.BussinessLayer
         private const string StatementPhoto = "wwwroot/images/pdf/Statement-photo.png";
         private readonly BlankModel blank;
 
-        public BlankDocument(BlankModel blank, IPDFSettings settings) : base(settings)
+        public BlankDocument(BlankModel blank, IPdfSettings settings) : base(settings)
         {
             this.blank = blank;
         }

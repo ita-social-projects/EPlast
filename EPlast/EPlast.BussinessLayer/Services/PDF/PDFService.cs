@@ -7,7 +7,7 @@ using EPlast.DataAccess.Entities;
 
 namespace EPlast.BussinessLayer
 {
-    public class PDFService : IPDFService
+    public class PDFService : IPdfService
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly ILoggerService<PDFService> _logger;
@@ -22,13 +22,13 @@ namespace EPlast.BussinessLayer
         {
             try
             {
-                IPDFSettings pdfSettings = new PDFSettings
+                IPdfSettings pdfSettings = new PDFSettings
                 {
                     Title = "Бланк",
                     ImagePath = "wwwroot/images/pdf/Header-Eplast-Blank.png"
                 };
                 var blank = GetBlankData(userId);
-                IPDFCreator creator = new PDFCreator(new BlankDocument(blank, pdfSettings));
+                IPdfCreator creator = new PDFCreator(new BlankDocument(blank, pdfSettings));
                 return await Task.Run(() => creator.GetPDFBytes());
             }
             catch (Exception e)
@@ -47,12 +47,12 @@ namespace EPlast.BussinessLayer
                     .FirstOrDefault(x => x.ID == DecisionId);
                 if (decision != null)
                 {
-                    IPDFSettings pdfSettings = new PDFSettings
+                    IPdfSettings pdfSettings = new PDFSettings
                     {
                         Title = $"Рішення {decision.Organization.OrganizationName}",
                         ImagePath = "wwwroot/images/pdf/Header-Eplast.png"
                     };
-                    IPDFCreator creator = new PDFCreator(new DecisionDocument(decision, pdfSettings));
+                    IPdfCreator creator = new PDFCreator(new DecisionDocument(decision, pdfSettings));
                     return await Task.Run(() => creator.GetPDFBytes());
                 }
             }

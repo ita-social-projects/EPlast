@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BussinessLayer.Services;
 using EPlast.BussinessLayer.Services.Interfaces;
 
 namespace EPlast.BussinessLayer
@@ -159,8 +158,7 @@ namespace EPlast.BussinessLayer
             {
                 var path = GetDecisionFilePath(decisionId);
 
-                if (!_directoryManager.Exists(path) || _directoryManager.GetFiles(path).Length == 0)
-                    throw new ArgumentException($"directory '{path}' is not exist");
+                DownloadDecisionFilePathCheck(path);
 
                 var filename = _directoryManager.GetFiles(path).First();
                 path = Path.Combine(path, filename);
@@ -181,6 +179,12 @@ namespace EPlast.BussinessLayer
             }
 
             return memory?.ToArray();
+        }
+
+        private void DownloadDecisionFilePathCheck(string path)
+        {
+            if (!_directoryManager.Exists(path) || _directoryManager.GetFiles(path).Length == 0)
+                throw new ArgumentException($"directory '{path}' is not exist");
         }
 
         public string GetContentType(int decisionId, string filename)
@@ -267,8 +271,7 @@ namespace EPlast.BussinessLayer
 
                 _directoryManager.CreateDirectory(path);
 
-                if (!_directoryManager.Exists(path))
-                    throw new ArgumentException($"directory '{path}' is not exist");
+                SaveDecisionFilePathCreateCheck(path);
 
                 if (decision.File != null)
                 {
@@ -288,6 +291,12 @@ namespace EPlast.BussinessLayer
             }
 
             return true;
+        }
+
+        private void SaveDecisionFilePathCreateCheck(string path)
+        {
+            if (!_directoryManager.Exists(path))
+                throw new ArgumentException($"directory '{path}' is not exist");
         }
     }
 }
