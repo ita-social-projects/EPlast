@@ -11,6 +11,7 @@ using System.Linq;
 using System.Security.Claims;
 using EPlast.BussinessLayer.DTO;
 using EPlast.BussinessLayer.DTO.UserProfiles;
+using EPlast.DataAccess.Entities.Event;
 using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.BussinessLayer.Services.EventUser

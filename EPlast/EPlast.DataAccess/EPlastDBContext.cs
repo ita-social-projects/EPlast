@@ -1,5 +1,6 @@
 ﻿using System;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.Event;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

@@ -4,6 +4,7 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
+using EPlast.DataAccess.Entities.Event;
 using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.BussinessLayer.Services.Events

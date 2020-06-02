@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using EPlast.DataAccess.Entities.Event;
 using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.DataAccess.Entities
