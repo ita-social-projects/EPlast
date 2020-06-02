@@ -1,13 +1,14 @@
-﻿using EPlast.BussinessLayer.DTO;
+﻿using AutoMapper;
+using EPlast.BussinessLayer.DTO;
+using EPlast.BussinessLayer.DTO.Club;
+using EPlast.BussinessLayer.Interfaces.Club;
+using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.ViewModels;
+using EPlast.ViewModels.Club;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using AutoMapper;
-using EPlast.BussinessLayer.DTO.Club;
-using EPlast.BussinessLayer.Interfaces.Club;
-using EPlast.BussinessLayer.Services.Interfaces;
 
 namespace EPlast.Controllers
 {
@@ -29,7 +30,11 @@ namespace EPlast.Controllers
             _logger = logger;
             _userManagerService = userManagerService;
         }
-
+        private void CheckCurrentUserRoles(ref ClubProfileViewModel viewModel)
+        {
+            viewModel.IsCurrentUserClubAdmin = _userManagerService.GetUserId(User) == viewModel.ClubAdmin?.Id;
+            viewModel.IsCurrentUserAdmin = User.IsInRole("Admin");
+        }
         public IActionResult Index()
         {
             var clubs = _clubService.GetAllClubs();
@@ -43,7 +48,8 @@ namespace EPlast.Controllers
             try
             {
                 var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(_clubService.GetClubProfile(index));
-                ViewBag.usermanager = _userManagerService;
+                CheckCurrentUserRoles(ref viewModel);
+
                 return View(viewModel);
             }
             catch (Exception e)
@@ -57,7 +63,8 @@ namespace EPlast.Controllers
             try
             {
                 var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(_clubAdministrationService.GetCurrentClubAdministrationByID(index));
-                ViewBag.usermanager = _userManagerService;
+                CheckCurrentUserRoles(ref viewModel);
+
                 return View(viewModel);
             }
             catch (Exception e)
@@ -71,7 +78,8 @@ namespace EPlast.Controllers
             try
             {
                 var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(_clubService.GetClubMembersOrFollowers(index, true));
-                ViewBag.usermanager = _userManagerService;
+                CheckCurrentUserRoles(ref viewModel);
+
                 return View(viewModel);
             }
             catch (Exception e)
@@ -85,7 +93,8 @@ namespace EPlast.Controllers
             try
             {
                 var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(_clubService.GetClubMembersOrFollowers(index, false));
-                ViewBag.usermanager = _userManagerService;
+                CheckCurrentUserRoles(ref viewModel);
+
                 return View(viewModel);
             }
             catch (Exception e)
@@ -230,18 +239,20 @@ namespace EPlast.Controllers
             }
         }
 
-        public IActionResult ChooseAClub()
+        public IActionResult ChooseAClub(string userId)
         {
             var clubs = _mapper.Map<IEnumerable<ClubDTO>, IEnumerable<ClubViewModel>>(_clubService.GetAllClubs());
-
-            ViewBag.usermanager = _userManagerService;
-
-            return View(clubs);
+            var model = new ClubChooseAClubViewModel
+            {
+                Clubs = clubs,
+                UserId = userId
+            };
+            return View(model);
         }
 
-        public IActionResult AddAsClubFollower(int clubIndex)
+        public IActionResult AddAsClubFollower(int clubIndex, string userId)
         {
-            var userId = _userManagerService.GetUserId(User);
+            userId = User.IsInRole("Admin") ? userId : _userManagerService.GetUserId(User);
 
             _clubMembersService.AddFollower(clubIndex, userId);
 

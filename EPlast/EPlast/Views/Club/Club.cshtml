@@ -8,7 +8,7 @@
         <div class="main-info grid-block club-wrappers-radius">
             <h1 class="grid-header">
                 @Model.Club.ClubName
-                @if ((Model.ClubAdmin != null && ViewBag.usermanager.GetUserId(User) == Model.ClubAdmin.Id) || User.IsInRole("Admin"))
+                @if (Model.IsCurrentUserAdmin||Model.IsCurrentUserClubAdmin)
                 {
                     <a asp-controller="Club" asp-action="EditClub" asp-route-index="@Model.Club.ID" style="color: #3c5438;"><i class="material-icons">settings</i></a>
                 }
@@ -113,7 +113,7 @@
                                             <img src="~/images/Users/default.png" alt="" class="member-img rounded-circle">
                                         }
                                     </a>
-                                    @if (Model.ClubAdmin != null && ViewBag.usermanager.GetUserId(User) == Model.ClubAdmin.Id || User.IsInRole("Admin"))
+                                    @if (Model.IsCurrentUserAdmin || Model.IsCurrentUserClubAdmin)
                                     {
                                         <a class="plus" asp-controller="Club" asp-action="ChangeIsApprovedStatusClub" asp-route-index="@item.ID" asp-route-clubIndex="@item.Club.ID" style="display: block;">
                                             +
