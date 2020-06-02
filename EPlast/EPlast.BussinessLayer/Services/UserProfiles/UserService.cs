@@ -24,12 +24,16 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
         private readonly IHostingEnvironment _env;
-        public UserService(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IMapper mapper, IHostingEnvironment env)
+        private readonly IWorkService _workService;
+        private readonly IEducationService _educationService;
+        public UserService(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IMapper mapper, IHostingEnvironment env, IWorkService workService, IEducationService educationService)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
             _mapper = mapper;
             _env = env;
+            _workService = workService;
+            _educationService = educationService;
         }
         public UserDTO GetUser(string userId)
         {
@@ -119,8 +123,8 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
         private int? CheckEducationFields(string firstName, string secondName, int? firstId, int? secondId)
         {
 
-            var spec = _repoWrapper.Education.FindByCondition(x => x.ID == secondId).FirstOrDefault();
-            var placeStudy = _repoWrapper.Education.FindByCondition(x => x.ID == firstId).FirstOrDefault();
+            var spec = _educationService?.GetById(secondId);
+            var placeStudy = _educationService?.GetById(firstId);
             if (secondId == firstId)
             {
                 return secondId;
@@ -144,8 +148,8 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
 
         private int? CheckWorkFields(string firstName, string secondName, int? firstId, int? secondId)
         {
-            var placefWork = _repoWrapper.Work.FindByCondition(x => x.ID == firstId).FirstOrDefault();
-            var position = _repoWrapper.Work.FindByCondition(x => x.ID == secondId).FirstOrDefault();
+            var placefWork =  _workService?.GetById(firstId);
+            var position = _workService?.GetById(secondId);
             if (secondId == firstId)
             {
                 return secondId;
