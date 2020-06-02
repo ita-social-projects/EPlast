@@ -1,4 +1,6 @@
-﻿using EPlast.BussinessLayer.Interfaces;
+﻿using AutoMapper;
+using EPlast.BussinessLayer.DTO;
+using EPlast.BussinessLayer.Interfaces;
 using EPlast.DataAccess.Repositories;
 using EPlast.Models;
 using EPlast.ViewModels;
@@ -10,14 +12,15 @@ namespace EPlast.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IEmailConfirmation _emailConfirmation;
         private readonly IRepositoryWrapper _repoWrapper;
+        private readonly IHomeService _homeService;
+        private readonly IMapper _mapper;
 
-        public HomeController(IEmailConfirmation emailConfirmation, IRepositoryWrapper repoWrapper)
+        public HomeController(IHomeService homeService, IRepositoryWrapper repoWrapper, IMapper mapper)
         {
-            _emailConfirmation = emailConfirmation;
+            _homeService = homeService;
             _repoWrapper = repoWrapper;
-
+            _mapper = mapper;
         }
 
         public IActionResult Index()
@@ -52,10 +55,10 @@ namespace EPlast.Controllers
             return View("Views/Account/Login.cshtml");
         }
 
-        
+
         public IActionResult Search(string search)
         {
-            var surnames = _repoWrapper.User.FindByCondition(q=>q.LastName.StartsWith(search));
+            var surnames = _repoWrapper.User.FindByCondition(q => q.LastName.StartsWith(search));
             var names = _repoWrapper.User.FindByCondition(q => q.FirstName.StartsWith(search));
             var model = new SearchSurname();
             model.Users = surnames;
@@ -68,7 +71,6 @@ namespace EPlast.Controllers
             var res = _repoWrapper.User.FindByCondition(x => x.Id == userId);
             return PartialView(res);
         }
-
 
         [HttpGet]
         public IActionResult FeedBackSended()
@@ -84,16 +86,12 @@ namespace EPlast.Controllers
                 ModelState.AddModelError("", "Дані введені неправильно");
                 return View("Contacts");
             }
-            else
-            {
-                await _emailConfirmation.SendEmailAsync("eplastdmnstrtr@gmail.com",
-                "Питання користувачів",
-                 $"Контактні дані користувача : Електронна пошта {contactsViewModel.Email}, Ім'я {contactsViewModel.Name}, Телефон {contactsViewModel.PhoneNumber}" +
-                 $"  Опис питання : {contactsViewModel.FeedBackDescription}",
-                 contactsViewModel.Email);
-            }
+
+            var contact = _mapper.Map<ContactDTO>(contactsViewModel);
+
+            await _homeService.SendEmailAdmin(contact);
+
             return RedirectToAction("FeedBackSended", "Home");
         }
-
     }
 }
