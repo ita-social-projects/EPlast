@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO.Account;
 using EPlast.BussinessLayer.DTO.UserProfiles;
 using EPlast.BussinessLayer.Interfaces;
@@ -84,6 +79,7 @@ namespace EPlast.XUnitTest.Services
 
             return (mockSignInManager, mockUserManager, mockEmailConfirmation, accountService);
         }
+
         [Fact]
         public async Task TestSignInAsync()
         {
@@ -165,7 +161,7 @@ namespace EPlast.XUnitTest.Services
         }
 
         [Fact]
-        public async Task TestGetAuthProperties()
+        public void TestGetAuthProperties()
         {
             //Arrange
             var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountService) = CreateAccountService();
@@ -229,8 +225,7 @@ namespace EPlast.XUnitTest.Services
 
             //Assert
             var authResult = Assert.IsType<bool>(result);
-            Assert.Equal(true, result);
-            Assert.NotNull(authResult);
+            Assert.True(result);
         }
 
         [Fact]
@@ -247,8 +242,7 @@ namespace EPlast.XUnitTest.Services
 
             //Assert
             var authResult = Assert.IsType<bool>(result);
-            Assert.Equal(false, result);
-            Assert.NotNull(authResult);
+            Assert.False(result);
         }
 
         [Fact]
@@ -340,7 +334,7 @@ namespace EPlast.XUnitTest.Services
         }
 
         [Fact]
-        public async Task GoogleAuthentication()
+        public void GoogleAuthentication()
         {
             //Arrange
             var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountService) = CreateAccountService();
@@ -356,7 +350,7 @@ namespace EPlast.XUnitTest.Services
         }
 
         [Fact]
-        public async Task GoogleAuthenticationUserNull()
+        public void GoogleAuthenticationUserNull()
         {
             //Arrange
             var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountService) = CreateAccountService();
@@ -366,7 +360,7 @@ namespace EPlast.XUnitTest.Services
 
             //Act
             var result = accountService.GoogleAuthentication(GetTestEmail(), GetExternalLoginInfoFake());
-
+            
             //Assert
             Assert.NotNull(result);
         }
