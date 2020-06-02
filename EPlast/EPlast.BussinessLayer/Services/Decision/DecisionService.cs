@@ -205,15 +205,15 @@ namespace EPlast.BussinessLayer
             return _decisionVMCreator.GetDecesionStatusTypes();
         }
 
-        public bool DeleteDecision(int decisionId)
+        public bool DeleteDecision(int id)
         {
             bool success = false;
             try
             {
-                var decision = _repoWrapper.Decesion.FindByCondition(d => d.ID == decisionId).First();
-                success = decision == null
-                    ? throw new ArgumentNullException($"Decision with {decisionId} id not found")
-                    : true;
+                var decision = _repoWrapper.Decesion.FindByCondition(d => d.ID == id).First();
+                if (decision == null)
+                    throw new ArgumentNullException($"Decision with {id} id not found");
+                success = true;
                 _repoWrapper.Decesion.Delete(decision);
                 _repoWrapper.Save();
             }
