@@ -30,5 +30,9 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
             var result = _repoWrapper.Work.FindAll().GroupBy(x => x.Position).Select(x => x.FirstOrDefault()).ToList();
             return _mapper.Map<IEnumerable<Work>, IEnumerable<WorkDTO>>(result);
         }
+        public WorkDTO GetById(int? workId)
+        {
+            return _mapper.Map<Work, WorkDTO>(_repoWrapper.Work.FindByCondition(x => x.ID == workId)?.FirstOrDefault());
+        }
     }
 }
