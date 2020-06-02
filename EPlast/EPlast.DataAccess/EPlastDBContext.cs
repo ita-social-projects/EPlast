@@ -35,6 +35,7 @@ namespace EPlast.DataAccess
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Event>()
                 .HasKey(x => x.ID);
 
@@ -43,10 +44,12 @@ namespace EPlast.DataAccess
 
             modelBuilder.Entity<EventGallary>()
                 .HasKey(x => new { x.EventID, x.GallaryID });
+
             modelBuilder.Entity<EventGallary>()
                 .HasOne(x => x.Event)
                 .WithMany(m => m.EventGallarys)
                 .HasForeignKey(x => x.EventID);
+            
             modelBuilder.Entity<EventGallary>()
                 .HasOne(x => x.Gallary)
                 .WithMany(e => e.Events)
@@ -57,10 +60,12 @@ namespace EPlast.DataAccess
 
             modelBuilder.Entity<EventAdmin>()
                 .HasKey(x => new { x.EventID, x.UserID });
+            
             modelBuilder.Entity<EventAdmin>()
                 .HasOne(x => x.Event)
                 .WithMany(m => m.EventAdmins)
                 .HasForeignKey(x => x.EventID);
+            
             modelBuilder.Entity<EventAdmin>()
                 .HasOne(x => x.User)
                 .WithMany(e => e.Events)
