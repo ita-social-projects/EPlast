@@ -18,7 +18,7 @@
     <Content Remove="Views\Account\LoginAndRegister.cshtml" />
     <Content Remove="Views\Account\ResetPasswordNowAllowed.cshtml" />
     <Content Remove="Views\Account\_UserLayout.cshtml" />
-    <Content Remove="Views\Documentation\_DeleteDecision.cshtml" />
+    <Content Remove="Views\Decision\_DeleteDecision.cshtml" />
     <Content Remove="wwwroot\uncompiled\ts\adminUser.ts" />
     <Content Remove="wwwroot\uncompiled\ts\clubMembers.ts" />
     <Content Remove="wwwroot\uncompiled\ts\decision.ts" />
@@ -83,14 +83,14 @@
   </ProjectExtensions>
 
   <ItemGroup>
-    <UpToDateCheckInput Remove="Views\Documentation\_DeleteDecision.cshtml" />
+    <UpToDateCheckInput Remove="Views\Decision\_DeleteDecision.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
-    <_ContentIncludedByDefault Remove="Views\Documentation\_DeleteDecision.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Decision\_DeleteDecision.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Views\Documentation\_DeleteDecision.cshtml" />
+    <None Include="Views\Decision\_DeleteDecision.cshtml" />
   </ItemGroup>
 </Project>
