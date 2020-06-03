@@ -7,7 +7,10 @@ using EPlast.BussinessLayer.Services.EventUser;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.ViewModels.EventUser;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -53,9 +56,12 @@ namespace EPlast.XUnitTest.Services.Events
             string expectedID = "abc-1";
             string eventUserId = "abc";
 
-            _eventAdminManager.Setup(x => x.GetEventAdminsByUserId(It.IsAny<string>()));
             _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()))
                 .Returns(expectedID);
+            _eventAdminManager.Setup(x => x.GetEventAdminsByUserId(It.IsAny<string>()));
+            _participantManager.Setup(x => x.GetParticipantsByUserId(eventUserId));
+            _repoWrapper.Setup(x => x.User.FindByCondition(q => q.Id == eventUserId));
+
             _mapper.Setup(m => m.Map<User, UserDTO>(It.IsAny<User>())).Returns(new UserDTO());
             _repoWrapper.Setup(x => x.User.FindByCondition(It.IsAny<Expression<Func<User, bool>>>()))
                 .Returns(GetUsers());
@@ -97,11 +103,14 @@ namespace EPlast.XUnitTest.Services.Events
             //Assert
             _mapper.Setup(m => m.Map<Event, EventDTO>(It.IsAny<Event>())).Returns(new EventDTO());
             _mapper.Setup(m => m.Map<List<User>, IEnumerable<UserDTO>>(It.IsAny<List<User>>())).Returns(new List<UserDTO>());
+            _mapper.Setup(m => m.Map<List<Event>, IEnumerable<EventAdminDTO>>(It.IsAny<List<Event>>())).
+                Returns(new List<EventAdminDTO>());
 
             _repoWrapper.Setup(r => r.Event.FindByCondition(It.IsAny<Expression<Func<Event, bool>>>()))
                 .Returns(GetEvents());
             _repoWrapper.Setup(r => r.EventAdmin.FindByCondition(It.IsAny<Expression<Func<EventAdmin, bool>>>()))
-                .Returns(GetEventAdmin());
+                .Returns(GetEventAdmins());
+
             _repoWrapper.Setup(r => r.User.FindByCondition(It.IsAny<Expression<Func<User, bool>>>())).Returns(GetUsers());
 
             int eventId = 1;
@@ -122,7 +131,7 @@ namespace EPlast.XUnitTest.Services.Events
         {
             int statusId = 1;
             _eventStatusManager.Setup(s => s.GetStatusId(It.IsAny<string>())).Returns(statusId);
-                
+
             _mapper.Setup(m => m.Map<EventCreationDTO, Event>(It.IsAny<EventCreationDTO>()))
                 .Returns(new Event());
             _repoWrapper.Setup(r => r.EventAdmin.Create(It.IsAny<EventAdmin>()));
@@ -133,11 +142,10 @@ namespace EPlast.XUnitTest.Services.Events
             var eventUserManager = new EventUserManager(_repoWrapper.Object, _userManager.Object, _participantStatusManager.Object,
               _mapper.Object, _participantManager.Object, _eventAdminManager.Object, _eventCategoryManager.Object,
               _eventStatusManager.Object);
-            var methodResult = eventUserManager.CreateEvent(new EventCreateDTO());
+            var methodResult = eventUserManager.CreateEvent(GetEventCreateDTO());
 
             //Assert
-            Assert.Equal(1, methodResult);
-            Assert.IsType<EventCreateDTO>(methodResult);
+            Assert.IsType<int>(methodResult);
 
         }
 
@@ -167,9 +175,11 @@ namespace EPlast.XUnitTest.Services.Events
 
             //Act
             var eventUserManager = new EventUserManager(_repoWrapper.Object, _userManager.Object, _participantStatusManager.Object,
-             _mapper.Object, _participantManager.Object, _eventAdminManager.Object, _eventCategoryManager.Object,
-             _eventStatusManager.Object);
-            eventUserManager.SetAdministration(new EventCreateDTO());
+               _mapper.Object, _participantManager.Object, _eventAdminManager.Object, _eventCategoryManager.Object,
+               _eventStatusManager.Object);
+            eventUserManager.SetAdministration(GetEventCreateDTO());
+            //Assert
+
         }
 
         public EventCreateDTO GetEventCreateDTO()
@@ -302,30 +312,38 @@ namespace EPlast.XUnitTest.Services.Events
                 EventTypeID = 1,
                 FormOfHolding = "абв",
                 ForWhom = "дітей",
-                NumberOfPartisipants = 1
-                }
+                NumberOfPartisipants = 1,
 
+                    EventAdmins = new  List<EventAdmin>
+                   {
+                       new EventAdmin
+                       {
+                       Event = new Event{},
+                       EventID = 1,
+                       User = new User{},
+                       UserID = "1",
+                       }
+
+                   }
+                }
             }.AsQueryable();
             return events;
         }
 
-        public IQueryable<EventAdmin> GetEventAdmin()
+        public IQueryable<EventAdmin> GetEventAdmins()
         {
-            var admins = new List<EventAdmin>
+            var events = new List<EventAdmin>
             {
-                new EventAdmin
-                {
-                    EventID = 1,
-                    UserID = "1",
-                }
+               new EventAdmin
+               {
+                       Event = new Event{},
+                       EventID = 1,
+                       User = new User{},
+                       UserID = "1",
+               }
+
             }.AsQueryable();
-            return admins;
+            return events;
         }
-
-
-
-
-
-
     }
 }

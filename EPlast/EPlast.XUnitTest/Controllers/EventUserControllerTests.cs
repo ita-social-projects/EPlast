@@ -1,23 +1,14 @@
 ﻿using AutoMapper;
-using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
-using EPlast.BussinessLayer.DTO.Events;
 using EPlast.BussinessLayer.DTO.EventUser;
-using EPlast.BussinessLayer.DTO.UserProfiles;
 using EPlast.BussinessLayer.Interfaces.EventUser;
 using EPlast.Controllers;
-using EPlast.DataAccess.Entities;
-using EPlast.Models.ViewModelInitializations;
 using EPlast.ViewModels.Events;
 using EPlast.ViewModels.EventUser;
-using EPlast.ViewModels.UserInformation;
 using EPlast.ViewModels.UserInformation.UserProfile;
 using Microsoft.AspNetCore.Mvc;
-using MimeKit.Cryptography;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Security.Claims;
 using Xunit;
 
