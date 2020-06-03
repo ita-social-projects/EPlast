@@ -5,6 +5,7 @@ using EPlast.DataAccess.Repositories;
 using Moq;
 using System.Collections.Generic;
 using System.Linq;
+using EPlast.DataAccess.Entities.Event;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.Events

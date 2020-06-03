@@ -1,17 +1,17 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO.EventUser;
+using EPlast.BussinessLayer.DTO.UserProfiles;
 using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.BussinessLayer.Interfaces.EventUser;
-using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using EPlast.BussinessLayer.DTO;
-using EPlast.BussinessLayer.DTO.UserProfiles;
-using Microsoft.EntityFrameworkCore;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.BussinessLayer.Services.EventUser
 {
@@ -49,8 +49,8 @@ namespace EPlast.BussinessLayer.Services.EventUser
                 userId = currentUserId;
             }
 
-            var _user = _repoWrapper.User.FindByCondition(q => q.Id == userId).First();
-            EventUserDTO model = new EventUserDTO { User = _mapper.Map<User, UserDTO>(_user) };
+            var targetUser = _repoWrapper.User.FindByCondition(q => q.Id == userId).First();
+            EventUserDTO model = new EventUserDTO { User = _mapper.Map<User, UserDTO>(targetUser) };
             var eventAdmins = _eventAdminManager.GetEventAdminsByUserId(userId);
             var participants = _participantManager.GetParticipantsByUserId(userId);
             model.CreatedEvents = new List<EventGeneralInfoDTO>();

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace EPlast.DataAccess.Entities
+namespace EPlast.DataAccess.Entities.Event
 {
     public class EventAdmin
     {
         public int EventID { get; set; }
-        public Event Event { get; set; }
+        public Entities.Event.Event Event { get; set; }
         [Required(ErrorMessage = "Вам потрібно обрати Коменданта!")]
         public string UserID { get; set; }
         public User User { get; set; }

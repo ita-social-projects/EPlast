@@ -1,4 +1,4 @@
-﻿using EPlast.DataAccess.Entities;
+﻿using EPlast.DataAccess.Entities.Event;
 using System.Collections.Generic;
 
 namespace EPlast.BussinessLayer.Interfaces.Events

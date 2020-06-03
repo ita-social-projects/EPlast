@@ -11,7 +11,7 @@ namespace EPlast.DataAccess.Entities
         [Required]
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public int? ClubId { get; set; } 
+        public int? ClubId { get; set; }
         public Club Club { get; set; }
         public ClubMembers ClubMembers { get; set; }
         public int ClubMembersID { get; set; }
