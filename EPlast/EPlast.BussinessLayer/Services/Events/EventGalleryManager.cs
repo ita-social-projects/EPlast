@@ -1,5 +1,5 @@
 ﻿using EPlast.BussinessLayer.Interfaces.Events;
-using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
