@@ -233,11 +233,11 @@
                     <div class="sideMenuHiddenContent">
                         @if (User.IsInRole("Голова Станиці"))
                         {
-                            <a href="/Documentation/CreateAnnualReportAsync">Подати річний звіт станиці</a>
+                            <a href="/AnnualReport/CreateAsync">Подати річний звіт станиці</a>
                         }
                         @if (User.IsInRole("Голова Округу") || User.IsInRole("Admin"))
                         {
-                            <a href="/Documentation/ViewAnnualReportsAsync">Річні звіти</a>
+                            <a href="/AnnualReport/GetAllAsync">Річні звіти</a>
                         }
                         <a href="/Admin/RegionsAdmins">Осередки та адміни</a>
                         <a>Геостатистика</a>
