@@ -82,10 +82,11 @@ namespace EPlast
             services.AddScoped<ICityAccessService, CityAccessService>();
             services.AddScoped<ICityMembersService, CityMembersService>();
             services.AddScoped<IAnnualReportService, AnnualReportService>();
+            services.AddScoped<IPdfService, PdfService>();
+            services.AddScoped<IDecisionService, DecisionService>();
             services.AddScoped<IDirectoryManager, DirectoryManager>();
             services.AddScoped<IFileManager, FileManager>();
             services.AddScoped<IFileStreamManager, FileStreamManager>();
-            services.AddScoped<IPDFService, PDFService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<INationalityService, NationalityService>();
             services.AddScoped<IReligionService, ReligionService>();
@@ -115,10 +116,6 @@ namespace EPlast
             services.AddScoped<IEventUserManager, EventUserManager>();
             services.AddScoped<IEventAdminManager, EventAdminManager>();
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
-            services.AddScoped<IFileManager, FileManager>();
-            services.AddScoped<IFileStreamManager, FileStreamManager>();
-            services.AddScoped<IDirectoryManager, DirectoryManager>();
-            services.AddScoped<IDecisionService, DecisionService>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
 
             services.Configure<IdentityOptions>(options =>
