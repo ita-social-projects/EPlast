@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BussinessLayer.Services.Interfaces;
 using Xunit;
 using Organization = EPlast.Models.Organization;
 
@@ -21,11 +22,14 @@ namespace EPlast.XUnitTest
     {
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<IDecisionService> _decisionService;
+        private readonly Mock<ILoggerService<DecisionController>> _loggerService;
 
         public DecisionControllerTests()
+
         {
             _mapper = new Mock<IMapper>();
             _decisionService = new Mock<IDecisionService>();
+            _loggerService = new Mock<ILoggerService<DecisionController>>();
         }
 
         [Theory]
@@ -150,10 +154,11 @@ namespace EPlast.XUnitTest
             DecisionController documentationController = CreateDocumentationController;
 
             var result = documentationController.ReadDecision();
-            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            var viewResult = Assert.IsType<ViewResult>(result);
 
-            Assert.Equal("HandleError", viewResult.ActionName);
-            Assert.Equal("Error", viewResult.ControllerName);
+            Assert.IsType<ViewResult>(result);
+            Assert.Null(((Tuple<DecisionViewModel, List<DecisionViewModel>>)viewResult.Model).Item1);
+            Assert.Null(((Tuple<DecisionViewModel, List<DecisionViewModel>>)viewResult.Model).Item2);
         }
 
         [Fact]
@@ -247,6 +252,6 @@ namespace EPlast.XUnitTest
         };
 
         private DecisionController CreateDocumentationController =>
-            new DecisionController(null, _decisionService.Object, _mapper.Object, null);
+            new DecisionController(null, _decisionService.Object, _mapper.Object, _loggerService.Object);
     }
 }
