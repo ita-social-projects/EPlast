@@ -25,24 +25,24 @@ using Xunit;
 
 namespace EPlast.XUnitTest
 {
-    public class DocumentationControllerAnnualReportTests
+    public class AnnualReportControllerTests
     {
-        private readonly Mock<ILogger<DocumentationController>> _logger = new Mock<ILogger<DocumentationController>>();
+        private readonly Mock<ILogger<AnnualReportController>> _logger = new Mock<ILogger<AnnualReportController>>();
         private readonly Mock<IMapper> _mapper = new Mock<IMapper>();
         private readonly Mock<IAnnualReportService> _annualReportService = new Mock<IAnnualReportService>();
         private readonly Mock<ICityAccessService> _cityAccessService = new Mock<ICityAccessService>();
         private readonly Mock<ICityMembersService> _cityMembersService = new Mock<ICityMembersService>();
         private readonly Mock<ICityService> _cityService = new Mock<ICityService>();
-        private readonly DocumentationController controller;
+        private readonly AnnualReportController controller;
 
-        public DocumentationControllerAnnualReportTests()
+        public AnnualReportControllerTests()
         {
-            controller = new DocumentationController(null, _logger.Object, null, _mapper.Object, _annualReportService.Object, _cityAccessService.Object,
+            controller = new AnnualReportController(_logger.Object, _mapper.Object, _annualReportService.Object, _cityAccessService.Object,
                 _cityMembersService.Object, _cityService.Object);
         }
 
         [Fact]
-        public async Task CreateAnnualReportAsyncCorrect()
+        public async Task CreateAsyncCorrect()
         {
             // Arrange
             IEnumerable<CityDTO> cities = new List<CityDTO>
@@ -95,18 +95,18 @@ namespace EPlast.XUnitTest
                 .Returns(cityMembers);
 
             // Act
-            var result = await controller.CreateAnnualReportAsync();
+            var result = await controller.CreateAsync();
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAnnualReport", viewResult.ViewName);
+            Assert.Equal("CreateEditAsync", viewResult.ViewName);
             Assert.Null(viewResult.ViewData["ErrorMessage"]);
             var actualViewModel = Assert.IsType<CreateEditAnnualReportViewModel>(viewResult.Model);
             Assert.Equal(JsonConvert.SerializeObject(expectedViewModel), JsonConvert.SerializeObject(actualViewModel));
         }
 
         [Fact]
-        public async Task CreateAnnualReportAsyncHasUnconfirmed()
+        public async Task CreateAsyncHasUnconfirmed()
         {
             // Arrange
             IEnumerable<CityDTO> cities = new List<CityDTO>
@@ -122,18 +122,18 @@ namespace EPlast.XUnitTest
                 .Returns(Task.FromResult(true));
 
             // Act
-            var result = await controller.CreateAnnualReportAsync();
+            var result = await controller.CreateAsync();
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAnnualReport", viewResult.ViewName);
+            Assert.Equal("CreateEditAsync", viewResult.ViewName);
             Assert.Equal("Станиця має непідтверджені звіти!", viewResult.ViewData["ErrorMessage"]);
             _annualReportService.Verify(a => a.HasUnconfirmedAsync(It.IsAny<int>()));
             _annualReportService.Verify(a => a.HasCreatedAsync(It.IsAny<int>()), Times.Never);
         }
 
         [Fact]
-        public async Task CreateAnnualReportAsyncHasCreated()
+        public async Task CreateAsyncHasCreated()
         {
             // Arrange
             IEnumerable<CityDTO> cities = new List<CityDTO>
@@ -151,25 +151,25 @@ namespace EPlast.XUnitTest
                 .Returns(Task.FromResult(true));
 
             // Act
-            var result = await controller.CreateAnnualReportAsync();
+            var result = await controller.CreateAsync();
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAnnualReport", viewResult.ViewName);
+            Assert.Equal("CreateEditAsync", viewResult.ViewName);
             Assert.Equal("Річний звіт для даної станиці вже створений!", viewResult.ViewData["ErrorMessage"]);
             _annualReportService.Verify(a => a.HasCreatedAsync(It.IsAny<int>()));
             _cityMembersService.Verify(c => c.GetCurrentByCityIdAsync(It.IsAny<int>()), Times.Never);
         }
 
         [Fact]
-        public async Task CreateAnnualReportAsyncError()
+        public async Task CreateAsyncError()
         {
             // Arrange
             _cityAccessService.Setup(cas => cas.GetCitiesAsync(It.IsAny<ClaimsPrincipal>()))
                .Returns(Task.FromResult(Enumerable.Empty<CityDTO>()));
 
             // Act
-            var result = await controller.CreateAnnualReportAsync();
+            var result = await controller.CreateAsync();
 
             // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
@@ -180,7 +180,7 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task CreateAnnualReportLikeAdminAsyncCorrect()
+        public async Task CreateLikeAdminAsyncCorrect()
         {
             // Arrange
             var cityDTO = new CityDTO { ID = 1, Name = "Львів" };
@@ -232,18 +232,18 @@ namespace EPlast.XUnitTest
                 .Returns(cityMembers);
 
             // Act
-            var result = await controller.CreateAnnualReportLikeAdminAsync(city.ID);
+            var result = await controller.CreateAsync(city.ID);
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAnnualReport", viewResult.ViewName);
+            Assert.Equal("CreateEditAsync", viewResult.ViewName);
             Assert.Null(viewResult.ViewData["ErrorMessage"]);
             var actualViewModel = Assert.IsType<CreateEditAnnualReportViewModel>(viewResult.Model);
             Assert.Equal(JsonConvert.SerializeObject(expectedViewModel), JsonConvert.SerializeObject(actualViewModel));
         }
 
         [Fact]
-        public async Task CreateAnnualReportLikeAdminAsyncHasUnconfirmed()
+        public async Task CreateLikeAdminAsyncHasUnconfirmed()
         {
             // Arrange
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
@@ -252,18 +252,18 @@ namespace EPlast.XUnitTest
                 .Returns(Task.FromResult(true));
 
             // Act
-            var result = await controller.CreateAnnualReportLikeAdminAsync(It.IsAny<int>());
+            var result = await controller.CreateAsync(It.IsAny<int>());
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAnnualReport", viewResult.ViewName);
+            Assert.Equal("CreateEditAsync", viewResult.ViewName);
             Assert.Equal("Станиця має непідтверджені звіти!", viewResult.ViewData["ErrorMessage"]);
             _annualReportService.Verify(a => a.HasUnconfirmedAsync(It.IsAny<int>()));
             _annualReportService.Verify(a => a.HasCreatedAsync(It.IsAny<int>()), Times.Never);
         }
 
         [Fact]
-        public async Task CreateAnnualReportLikeAdminAsyncHasCreated()
+        public async Task CreateLikeAdminAsyncHasCreated()
         {
             // Arrange
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
@@ -274,18 +274,18 @@ namespace EPlast.XUnitTest
                 .Returns(Task.FromResult(true));
 
             // Act
-            var result = await controller.CreateAnnualReportLikeAdminAsync(It.IsAny<int>());
+            var result = await controller.CreateAsync(It.IsAny<int>());
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAnnualReport", viewResult.ViewName);
+            Assert.Equal("CreateEditAsync", viewResult.ViewName);
             Assert.Equal("Річний звіт для даної станиці вже створений!", viewResult.ViewData["ErrorMessage"]);
             _annualReportService.Verify(a => a.HasCreatedAsync(It.IsAny<int>()));
             _cityMembersService.Verify(c => c.GetCurrentByCityIdAsync(It.IsAny<int>()), Times.Never);
         }
 
         [Fact]
-        public async Task CreateAnnualReportLikeAdminAsyncError()
+        public async Task CreateLikeAdminAsyncError()
         {
             // Arrange
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
@@ -300,7 +300,7 @@ namespace EPlast.XUnitTest
                 .Returns(default(CityViewModel));
 
             // Act
-            var result = await controller.CreateAnnualReportLikeAdminAsync(It.IsAny<int>());
+            var result = await controller.CreateAsync(It.IsAny<int>());
 
             // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
@@ -312,14 +312,14 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task CreateAnnualReportLikeAdminAsyncErrorNoAccess()
+        public async Task CreateLikeAdminAsyncErrorNoAccess()
         {
             // Arrange
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .Returns(Task.FromResult(false));
 
             // Act
-            var result = await controller.CreateAnnualReportLikeAdminAsync(It.IsAny<int>());
+            var result = await controller.CreateAsync(It.IsAny<int>());
 
             // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
@@ -331,24 +331,24 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task CreateAnnualReportAsyncPostCorrect()
+        public async Task CreateAsyncPostCorrect()
         {
             // Arrange
             _mapper.Setup(m => m.Map<AnnualReportViewModel, AnnualReportDTO>(It.IsAny<AnnualReportViewModel>()))
                 .Returns(default(AnnualReportDTO));
 
             // Act
-            var result = await controller.CreateAnnualReportAsync(It.IsAny<AnnualReportViewModel>());
+            var result = await controller.CreateAsync(It.IsAny<AnnualReportViewModel>());
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAnnualReport", viewResult.ViewName);
+            Assert.Equal("CreateEditAsync", viewResult.ViewName);
             Assert.Equal("Річний звіт станиці успішно створено!", viewResult.ViewData["Message"]);
             Assert.Null(viewResult.Model);
         }
 
         [Fact]
-        public async Task CreateAnnualReportAsyncPostInvalid()
+        public async Task CreateAsyncPostInvalid()
         {
             // Arrange
             var cityDTO = new CityDTO { ID = 1, Name = "Львів" };
@@ -395,18 +395,18 @@ namespace EPlast.XUnitTest
                 .Returns(cityMembers);
 
             // Act
-            var result = await controller.CreateAnnualReportAsync(expectedViewModel.AnnualReport);
+            var result = await controller.CreateAsync(expectedViewModel.AnnualReport);
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAnnualReport", viewResult.ViewName);
+            Assert.Equal("CreateEditAsync", viewResult.ViewName);
             Assert.Equal("Річний звіт заповнений некоректно!", viewResult.ViewData["ErrorMessage"]);
             var actualViewModel = Assert.IsType<CreateEditAnnualReportViewModel>(viewResult.Model);
             Assert.Equal(JsonConvert.SerializeObject(expectedViewModel), JsonConvert.SerializeObject(actualViewModel));
         }
 
         [Fact]
-        public async Task CreateAnnualReportAsyncPostAnnualReportError()
+        public async Task CreateAsyncPostAnnualReportError()
         {
             // Arrange
             _mapper.Setup(m => m.Map<AnnualReportViewModel, AnnualReportDTO>(It.IsAny<AnnualReportViewModel>()))
@@ -415,18 +415,18 @@ namespace EPlast.XUnitTest
                 .Throws(new AnnualReportException(string.Empty));
 
             // Act
-            var result = await controller.CreateAnnualReportAsync(It.IsAny<AnnualReportViewModel>());
+            var result = await controller.CreateAsync(It.IsAny<AnnualReportViewModel>());
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAnnualReport", viewResult.ViewName);
+            Assert.Equal("CreateEditAsync", viewResult.ViewName);
             Assert.Null(viewResult.Model);
             Assert.Equal(string.Empty, viewResult.ViewData["ErrorMessage"]);
 
         }
 
         [Fact]
-        public async Task CreateAnnualReportAsyncPostError()
+        public async Task CreateAsyncPostError()
         {
             // Arrange
             controller.ModelState.AddModelError(string.Empty, string.Empty);
@@ -436,7 +436,7 @@ namespace EPlast.XUnitTest
                 .Returns(default(CityViewModel));
 
             // Act
-            var result = await controller.CreateAnnualReportAsync(new AnnualReportViewModel());
+            var result = await controller.CreateAsync(new AnnualReportViewModel());
 
             // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
@@ -446,7 +446,7 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task ViewAnnualReportsAsyncCorrect()
+        public async Task GetAllAsyncCorrect()
         {
             // Arrange
             var cities = new List<CityViewModel>
@@ -471,7 +471,7 @@ namespace EPlast.XUnitTest
                 .Returns(annualReports);
 
             // Act
-            var result = await controller.ViewAnnualReportsAsync();
+            var result = await controller.GetAllAsync();
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
@@ -480,14 +480,14 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task ViewAnnualReportsAsyncError()
+        public async Task GetAllAsyncError()
         {
             // Arrange
             _cityAccessService.Setup(c => c.GetCitiesAsync(It.IsAny<ClaimsPrincipal>()))
                 .Throws(default);
 
             // Act
-            var result = await controller.ViewAnnualReportsAsync();
+            var result = await controller.GetAllAsync();
 
             // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
@@ -497,7 +497,7 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task GetAnnualReportAsyncCorrect()
+        public async Task GetAsyncCorrect()
         {
             // Arrange
             var annualReportViewModel = new AnnualReportViewModel { ID = 1, CityId = 1, UserId = "1", Date = DateTime.Now };
@@ -505,24 +505,24 @@ namespace EPlast.XUnitTest
                 .Returns(annualReportViewModel);
 
             // Act
-            var result = await controller.GetAnnualReportAsync(It.IsAny<int>());
+            var result = await controller.GetAsync(It.IsAny<int>());
 
             // Assert
             var viewResult = Assert.IsType<PartialViewResult>(result);
-            Assert.Equal("_GetAnnualReport", viewResult.ViewName);
+            Assert.Equal("_Get", viewResult.ViewName);
             var actualViewModel = Assert.IsType<AnnualReportViewModel>(viewResult.Model);
             Assert.Equal(JsonConvert.SerializeObject(annualReportViewModel), JsonConvert.SerializeObject(actualViewModel));
         }
 
         [Fact]
-        public async Task GetAnnualReportAsyncNotFound()
+        public async Task GetAsyncNotFound()
         {
             // Arrange
             _mapper.Setup(m => m.Map<AnnualReportDTO, AnnualReportViewModel>(It.IsAny<AnnualReportDTO>()))
                 .Throws(default(AnnualReportException));
 
             // Act
-            var result = await controller.GetAnnualReportAsync(It.IsAny<int>());
+            var result = await controller.GetAsync(It.IsAny<int>());
 
             // Assert
             var objectResult = Assert.IsType<NotFoundObjectResult>(result);
@@ -530,14 +530,14 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task GetAnnualReportAsyncError()
+        public async Task GetAsyncError()
         {
             // Arrange
             _mapper.Setup(m => m.Map<AnnualReportDTO, AnnualReportViewModel>(It.IsAny<AnnualReportDTO>()))
                 .Throws(default);
 
             // Act
-            var result = await controller.GetAnnualReportAsync(It.IsAny<int>());
+            var result = await controller.GetAsync(It.IsAny<int>());
 
             // Assert
             var objectResult = Assert.IsType<NotFoundObjectResult>(result);
@@ -546,10 +546,10 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task ConfirmAnnualReportAsyncCorrect()
+        public async Task ConfirmAsyncCorrect()
         {
             // Act
-            var result = await controller.ConfirmAnnualReportAsync(It.IsAny<int>());
+            var result = await controller.ConfirmAsync(It.IsAny<int>());
 
             // Assert
             var objectResult = Assert.IsType<OkObjectResult>(result);
@@ -557,14 +557,14 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task ConfirmAnnualReportAsyncAnnualReportError()
+        public async Task ConfirmAsyncAnnualReportError()
         {
             // Arrange
             _annualReportService.Setup(a => a.ConfirmAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .Throws(default(AnnualReportException));
 
             // Act
-            var result = await controller.ConfirmAnnualReportAsync(It.IsAny<int>());
+            var result = await controller.ConfirmAsync(It.IsAny<int>());
 
             // Assert
             var objectResult = Assert.IsType<NotFoundObjectResult>(result);
@@ -572,14 +572,14 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task ConfirmAnnualReportAsyncError()
+        public async Task ConfirmAsyncError()
         {
             // Arrange
             _annualReportService.Setup(a => a.ConfirmAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .Throws(default);
 
             // Act
-            var result = await controller.ConfirmAnnualReportAsync(It.IsAny<int>());
+            var result = await controller.ConfirmAsync(It.IsAny<int>());
 
             // Assert
             var objectResult = Assert.IsType<NotFoundObjectResult>(result);
@@ -588,10 +588,10 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task CancelAnnualReportAsyncCorrect()
+        public async Task CancelAsyncCorrect()
         {
             // Act
-            var result = await controller.CancelAnnualReportAsync(It.IsAny<int>());
+            var result = await controller.CancelAsync(It.IsAny<int>());
 
             // Assert
             var objectResult = Assert.IsType<OkObjectResult>(result);
@@ -599,14 +599,14 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task CancelAnnualReportAsyncAnnualReportError()
+        public async Task CancelAsyncAnnualReportError()
         {
             // Arrange
             _annualReportService.Setup(a => a.CancelAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .Throws(default(AnnualReportException));
 
             // Act
-            var result = await controller.CancelAnnualReportAsync(It.IsAny<int>());
+            var result = await controller.CancelAsync(It.IsAny<int>());
 
             // Assert
             var objectResult = Assert.IsType<NotFoundObjectResult>(result);
@@ -614,14 +614,14 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task CancelAnnualReportAsyncError()
+        public async Task CancelAsyncError()
         {
             // Arrange
             _annualReportService.Setup(a => a.CancelAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .Throws(default);
 
             // Act
-            var result = await controller.CancelAnnualReportAsync(It.IsAny<int>());
+            var result = await controller.CancelAsync(It.IsAny<int>());
 
             // Assert
             var objectResult = Assert.IsType<NotFoundObjectResult>(result);
@@ -630,10 +630,10 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task DeleteAnnualReportAsyncCorrect()
+        public async Task DeleteAsyncCorrect()
         {
             // Act
-            var result = await controller.DeleteAnnualReportAsync(It.IsAny<int>());
+            var result = await controller.DeleteAsync(It.IsAny<int>());
 
             // Assert
             var objectResult = Assert.IsType<OkObjectResult>(result);
@@ -641,14 +641,14 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task DeleteAnnualReportAsyncAnnualReportError()
+        public async Task DeleteAsyncAnnualReportError()
         {
             // Arrange
             _annualReportService.Setup(a => a.DeleteAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .Throws(default(AnnualReportException));
 
             // Act
-            var result = await controller.DeleteAnnualReportAsync(It.IsAny<int>());
+            var result = await controller.DeleteAsync(It.IsAny<int>());
 
             // Assert
             var objectResult = Assert.IsType<NotFoundObjectResult>(result);
@@ -656,14 +656,14 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task DeleteAnnualReportAsyncError()
+        public async Task DeleteAsyncError()
         {
             // Arrange
             _annualReportService.Setup(a => a.DeleteAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .Throws(default);
 
             // Act
-            var result = await controller.DeleteAnnualReportAsync(It.IsAny<int>());
+            var result = await controller.DeleteAsync(It.IsAny<int>());
 
             // Assert
             var objectResult = Assert.IsType<NotFoundObjectResult>(result);
@@ -672,7 +672,7 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task EditAnnualReportAssyncCorrect()
+        public async Task EditAssyncCorrect()
         {
             // Arrange
             var city = new CityViewModel
@@ -718,43 +718,43 @@ namespace EPlast.XUnitTest
                 .Returns(cityMembers);
 
             // Act
-            var result = await controller.EditAnnualReportAsync(It.IsAny<int>());
+            var result = await controller.EditAsync(It.IsAny<int>());
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAnnualReport", viewResult.ViewName);
+            Assert.Equal("CreateEditAsync", viewResult.ViewName);
             Assert.Null(viewResult.ViewData["ErrorMessage"]);
             var actualViewModel = Assert.IsType<CreateEditAnnualReportViewModel>(viewResult.Model);
             Assert.Equal(JsonConvert.SerializeObject(expectedViewModel), JsonConvert.SerializeObject(actualViewModel));
         }
 
         [Fact]
-        public async Task EditAnnualReportAsyncAnnualReportError()
+        public async Task EditAsyncAnnualReportError()
         {
             // Arrange
             _annualReportService.Setup(a => a.GetByIdAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .Throws(new AnnualReportException("Станиця має непідтверджені звіти!"));
 
             // Act
-            var result = await controller.EditAnnualReportAsync(It.IsAny<int>());
+            var result = await controller.EditAsync(It.IsAny<int>());
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAnnualReport", viewResult.ViewName);
+            Assert.Equal("CreateEditAsync", viewResult.ViewName);
             Assert.Equal("Станиця має непідтверджені звіти!", viewResult.ViewData["ErrorMessage"]);
             _annualReportService.Verify(a => a.GetByIdAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()));
             _mapper.Verify(m => m.Map<AnnualReportDTO, AnnualReportViewModel>(It.IsAny<AnnualReportDTO>()), Times.Never);
         }
 
         [Fact]
-        public async Task EditAnnualReportAsyncError()
+        public async Task EditAsyncError()
         {
             // Arrange
             _annualReportService.Setup(a => a.GetByIdAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .Throws(default);
 
             // Act
-            var result = await controller.EditAnnualReportAsync(It.IsAny<int>());
+            var result = await controller.EditAsync(It.IsAny<int>());
 
             // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
@@ -766,20 +766,20 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task EditAnnualReportAsyncPostCorrect()
+        public async Task EditAsyncPostCorrect()
         {
             // Act
-            var result = await controller.EditAnnualReportAsync(It.IsAny<AnnualReportViewModel>());
+            var result = await controller.EditAsync(It.IsAny<AnnualReportViewModel>());
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAnnualReport", viewResult.ViewName);
+            Assert.Equal("CreateEditAsync", viewResult.ViewName);
             Assert.Equal("Річний звіт станиці успішно відредаговано!", viewResult.ViewData["Message"]);
             Assert.Null(viewResult.Model);
         }
 
         [Fact]
-        public async Task EditAnnualReportAsyncPostInvalid()
+        public async Task EditAsyncPostInvalid()
         {
             // Arrange
             var city = new CityViewModel
@@ -829,42 +829,42 @@ namespace EPlast.XUnitTest
             controller.ModelState.AddModelError(string.Empty, string.Empty);
 
             // Act
-            var result = await controller.EditAnnualReportAsync(annualReport);
+            var result = await controller.EditAsync(annualReport);
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAnnualReport", viewResult.ViewName);
+            Assert.Equal("CreateEditAsync", viewResult.ViewName);
             Assert.Equal("Річний звіт заповнений некоректно!", viewResult.ViewData["ErrorMessage"]);
             var actualViewModel = Assert.IsType<CreateEditAnnualReportViewModel>(viewResult.Model);
             Assert.Equal(JsonConvert.SerializeObject(expectedViewModel), JsonConvert.SerializeObject(actualViewModel));
         }
 
         [Fact]
-        public async Task EditAnnualReportAsyncPostAnnualReportError()
+        public async Task EditAsyncPostAnnualReportError()
         {
             // Arrange
             _annualReportService.Setup(a => a.EditAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AnnualReportDTO>()))
                 .Throws(new AnnualReportException(string.Empty));
 
             // Act
-            var result = await controller.EditAnnualReportAsync(It.IsAny<AnnualReportViewModel>());
+            var result = await controller.EditAsync(It.IsAny<AnnualReportViewModel>());
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAnnualReport", viewResult.ViewName);
+            Assert.Equal("CreateEditAsync", viewResult.ViewName);
             Assert.Null(viewResult.Model);
             Assert.Equal(string.Empty, viewResult.ViewData["ErrorMessage"]);
         }
 
         [Fact]
-        public async Task EditAnnualReportAsyncPostError()
+        public async Task EditAsyncPostError()
         {
             // Arrange
             _annualReportService.Setup(a => a.EditAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AnnualReportDTO>()))
                 .Throws(default);
 
             // Act
-            var result = await controller.EditAnnualReportAsync(It.IsAny<AnnualReportViewModel>());
+            var result = await controller.EditAsync(It.IsAny<AnnualReportViewModel>());
 
             // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
