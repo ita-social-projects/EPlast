@@ -34,7 +34,7 @@ namespace EPlast.Controllers
         [Authorize(Roles = "Admin")]
         public DecisionViewModel CreateDecision()
         {
-            DecisionViewModel decesionViewModel;
+            DecisionViewModel decesionViewModel = null;
             try
             {
                 var organizations = _mapper.Map<List<Organization>>(_decisionService.GetOrganizationList());
@@ -53,8 +53,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                RedirectToAction("HandleError", "Error");
-                return null;
+                _loggerService.LogError($"{e.Message}");
             }
 
             return decesionViewModel;
@@ -64,15 +63,18 @@ namespace EPlast.Controllers
         [HttpGet]
         public JsonResult GetDecision(int id)
         {
+            bool success = true;
+            Decision decision = null;
             try
             {
-                var decision = _mapper.Map<Decision>(_decisionService.GetDecision(id));
-                return Json(new { success = true, decision });
+                decision = _mapper.Map<Decision>(_decisionService.GetDecision(id));
             }
-            catch
+            catch (Exception e)
             {
-                return Json(new { success = false });
+                _loggerService.LogError($"{e.Message}");
+                success = false;
             }
+            return Json(new { success, decision });
         }
 
         [Authorize(Roles = "Admin")]
@@ -84,17 +86,17 @@ namespace EPlast.Controllers
             {
                 success = _decisionService.ChangeDecision(
                     _mapper.Map<DecisionDTO>(decision));
-                return Json(new
-                {
-                    success,
-                    text = "Зміни пройшли успішно!",
-                    decision
-                });
             }
-            catch
+            catch (Exception e)
             {
-                return Json(new { success });
+                _loggerService.LogError($"{e.Message}");
             }
+            return Json(new
+            {
+                success,
+                text = "Зміни пройшли успішно!",
+                decision
+            });
         }
 
         [Authorize(Roles = "Admin")]
@@ -139,6 +141,8 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
+                _loggerService.LogError($"{e.Message}");
+
                 return Json(new
                 {
                     success = false,
@@ -150,7 +154,7 @@ namespace EPlast.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult ReadDecision()
         {
-            List<DecisionViewModel> decisions;
+            List<DecisionViewModel> decisions = null;
             try
             {
                 decisions = new List<DecisionViewModel>
@@ -160,9 +164,9 @@ namespace EPlast.Controllers
                         .ToList()
                 );
             }
-            catch
+            catch (Exception e)
             {
-                return RedirectToAction("HandleError", "Error");
+                _loggerService.LogError($"{e.Message}");
             }
 
             return View(Tuple.Create(CreateDecision(), decisions));
@@ -189,8 +193,10 @@ namespace EPlast.Controllers
                 if (id <= 0) throw new ArgumentException("Decision id cannot be null lest than zero");
                 fileBytes = await _decisionService.DownloadDecisionFileAsync(id);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                _loggerService.LogError($"{e.Message}");
+
                 return RedirectToAction("HandleError", "Error");
             }
             return File(fileBytes, _decisionService.GetContentType(id, filename), filename);
@@ -207,8 +213,9 @@ namespace EPlast.Controllers
                 var arr = await _PDFService.DecisionCreatePDFAsync(objId);
                 return File(arr, "application/pdf");
             }
-            catch
+            catch (Exception e)
             {
+                _loggerService.LogError($"{e.Message}");
                 return RedirectToAction("HandleError", "Error");
             }
         }
