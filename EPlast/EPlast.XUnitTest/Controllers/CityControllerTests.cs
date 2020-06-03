@@ -55,7 +55,7 @@ namespace EPlast.XUnitTest
                 .Returns(new CityProfileViewModel());
             CityController cityController = CreateCityController;
 
-            var result = cityController.CityProfile(1);
+            var result = cityController.CityProfile(FakeId);
 
             Assert.NotNull(result);
             Assert.IsType<ViewResult>(result);
@@ -69,7 +69,7 @@ namespace EPlast.XUnitTest
                 .Returns(() => null);
             CityController cityController = CreateCityController;
 
-            var result = cityController.CityProfile(1);
+            var result = cityController.CityProfile(FakeId);
 
             Assert.NotNull(result);
             Assert.IsType<RedirectToActionResult>(result);
@@ -83,7 +83,7 @@ namespace EPlast.XUnitTest
                 .Throws(new ArgumentException("some message"));
             CityController cityController = CreateCityController;
 
-            var result = cityController.CityProfile(1);
+            var result = cityController.CityProfile(FakeId);
 
             Assert.NotNull(result); 
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
@@ -101,7 +101,7 @@ namespace EPlast.XUnitTest
                 .Returns(new CityProfileDTO());
             CityController cityController = CreateCityController;
 
-            var result = cityController.CityMembers(1);
+            var result = cityController.CityMembers(FakeId);
 
             Assert.IsType<ViewResult>(result);
         }
@@ -115,7 +115,7 @@ namespace EPlast.XUnitTest
                 .Returns(() => null);
             CityController cityController = CreateCityController;
 
-            var result = cityController.CityMembers(1);
+            var result = cityController.CityMembers(FakeId);
 
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.NotNull(viewResult);
@@ -130,7 +130,7 @@ namespace EPlast.XUnitTest
                 .Throws(new ArgumentException("some message"));
             CityController cityController = CreateCityController;
 
-            var result = cityController.CityMembers(1);
+            var result = cityController.CityMembers(FakeId);
 
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.NotNull(viewResult);
@@ -147,7 +147,7 @@ namespace EPlast.XUnitTest
                 .Returns(new CityProfileDTO());
             CityController cityController = CreateCityController;
 
-            var result = cityController.CityFollowers(1);
+            var result = cityController.CityFollowers(FakeId);
 
             Assert.IsType<ViewResult>(result);
         }
@@ -159,7 +159,7 @@ namespace EPlast.XUnitTest
                 .Returns(() => null);
             CityController cityController = CreateCityController;
 
-            var result = cityController.CityFollowers(1);
+            var result = cityController.CityFollowers(FakeId);
 
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.NotNull(viewResult);
@@ -174,7 +174,7 @@ namespace EPlast.XUnitTest
                 .Throws(new ArgumentException("some message"));
             CityController cityController = CreateCityController;
 
-            var result = cityController.CityFollowers(1);
+            var result = cityController.CityFollowers(FakeId);
 
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.NotNull(viewResult);
@@ -191,7 +191,7 @@ namespace EPlast.XUnitTest
                 .Returns(new CityProfileDTO());
             CityController cityController = CreateCityController;
 
-            var result = cityController.CityAdmins(1);
+            var result = cityController.CityAdmins(FakeId);
 
             Assert.IsType<ViewResult>(result);
         }
@@ -203,7 +203,7 @@ namespace EPlast.XUnitTest
                 .Returns(() => null);
             CityController cityController = CreateCityController;
 
-            var result = cityController.CityAdmins(1);
+            var result = cityController.CityAdmins(FakeId);
 
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.NotNull(viewResult);
@@ -218,7 +218,7 @@ namespace EPlast.XUnitTest
                 .Throws(new ArgumentException("some message"));
             CityController cityController = CreateCityController;
 
-            var result = cityController.CityAdmins(1);
+            var result = cityController.CityAdmins(FakeId);
 
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.NotNull(viewResult);
@@ -235,7 +235,7 @@ namespace EPlast.XUnitTest
                 .Returns(new CityProfileDTO());
             CityController cityController = CreateCityController;
 
-            var result = cityController.Edit(1);
+            var result = cityController.Edit(FakeId);
 
             Assert.IsType<ViewResult>(result);
         }
@@ -247,7 +247,7 @@ namespace EPlast.XUnitTest
                 .Returns(()=> null);
             CityController cityController = CreateCityController;
 
-            var result = cityController.Edit(1);
+            var result = cityController.Edit(FakeId);
 
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.NotNull(viewResult);
@@ -344,7 +344,7 @@ namespace EPlast.XUnitTest
                 .Returns(new CityProfileViewModel());
             CityController cityController = CreateCityController;
 
-            var result = cityController.CityDocuments(3);
+            var result = cityController.CityDocuments(FakeId);
 
             Assert.IsType<ViewResult>(result);
         }
@@ -356,7 +356,7 @@ namespace EPlast.XUnitTest
                 .Returns(() => null);
             CityController cityController = CreateCityController;
 
-            var result = cityController.CityDocuments(3);
+            var result = cityController.CityDocuments(FakeId);
 
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.NotNull(viewResult);
@@ -371,7 +371,7 @@ namespace EPlast.XUnitTest
                 .Throws(new ArgumentException("some message"));
             CityController cityController = CreateCityController;
 
-            var result = cityController.CityDocuments(3);
+            var result = cityController.CityDocuments(FakeId);
 
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.NotNull(viewResult);
@@ -477,6 +477,7 @@ namespace EPlast.XUnitTest
             Assert.Equal("Error", viewResult.ControllerName);
         }
 
+        private int FakeId => 1;
         private IQueryable<CityProfileViewModel> createFakeCityProfileViewModels(int count)
         {
             List<CityProfileViewModel> cityProfilesDto = new List<CityProfileViewModel>();
