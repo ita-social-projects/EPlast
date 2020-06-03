@@ -29,10 +29,10 @@ namespace EPlast.BussinessLayer.Services
             {
                 if (await _userManager.IsInRoleAsync(user_first, i))
                 {
-                    return false;
+                    return true;
                 }
             }
-            return true;
+            return false;
         }
 
         public async Task<bool> IsInRole(ClaimsPrincipal user, params string[] roles)
@@ -44,10 +44,10 @@ namespace EPlast.BussinessLayer.Services
             {
                 if (await _userManager.IsInRoleAsync(user_first, i))
                 {
-                    return false;
+                    return true;
                 }
             }
-            return true;
+            return false;
         }
 
         public string GetUserId(ClaimsPrincipal user)
