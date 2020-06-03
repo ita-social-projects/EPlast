@@ -234,7 +234,6 @@ namespace EPlast.XUnitTest
                 .Setup(s => s.SignInAsync(It.IsAny<LoginDto>()))
                 .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Failed);
 
-
             mockStringLocalizer
                 .Setup(s => s["Login-InCorrectPassword"])
                 .Returns(GetTestError());
@@ -251,7 +250,7 @@ namespace EPlast.XUnitTest
 
         //Register
         [Fact]
-        public async Task TestRegisterGetReturnsRegisterView()
+        public void TestRegisterGetReturnsRegisterView()
         {
             //Arrange
             var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
@@ -387,7 +386,7 @@ namespace EPlast.XUnitTest
 
         //ConfirmedEmail
         [Fact]
-        public async Task TestConfirmEmailGetReturnsConfirmedEmailView()
+        public void TestConfirmEmailGetReturnsConfirmedEmailView()
         {
             //Arrange
             var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
@@ -487,7 +486,7 @@ namespace EPlast.XUnitTest
 
         //AccountLocked
         [Fact]
-        public async Task TestAccountLockedGetReturnsAccountLockedView()
+        public void TestAccountLockedGetReturnsAccountLockedView()
         {
             //Arrange
             var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
@@ -503,7 +502,7 @@ namespace EPlast.XUnitTest
 
         //Logout
         [Fact]
-        public async Task TestLogoutReturnsView()
+        public void TestLogoutReturnsView()
         {
             //Arrange
             var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
@@ -650,7 +649,6 @@ namespace EPlast.XUnitTest
         public async Task TestResetPasswordGetReturnsResetPasswordNotAllowedView()
         {
             //Arrange
-
             var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
 
             mockAccountService
@@ -903,7 +901,7 @@ namespace EPlast.XUnitTest
 
         //ExternalLogin
         [Fact]
-        public async Task TestExternalLoginReturnsChallengeResult()
+        public void TestExternalLoginReturnsChallengeResult()
         {
             //Arrange
             var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
