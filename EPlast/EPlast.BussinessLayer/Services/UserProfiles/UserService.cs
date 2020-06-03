@@ -24,12 +24,16 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
         private readonly IHostingEnvironment _env;
-        public UserService(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IMapper mapper, IHostingEnvironment env)
+        private readonly IWorkService _workService;
+        private readonly IEducationService _educationService;
+        public UserService(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IMapper mapper, IHostingEnvironment env, IWorkService workService, IEducationService educationService)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
             _mapper = mapper;
             _env = env;
+            _workService = workService;
+            _educationService = educationService;
         }
         public UserDTO GetUser(string userId)
         {
@@ -119,8 +123,8 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
         private int? CheckEducationFields(string firstName, string secondName, int? firstId, int? secondId)
         {
 
-            var spec = _repoWrapper.Education.FindByCondition(x => x.ID == secondId).FirstOrDefault();
-            var placeStudy = _repoWrapper.Education.FindByCondition(x => x.ID == firstId).FirstOrDefault();
+            var spec = _educationService?.GetById(secondId);
+            var placeStudy = _educationService?.GetById(firstId);
             if (secondId == firstId)
             {
                 return secondId;
@@ -144,8 +148,8 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
 
         private int? CheckWorkFields(string firstName, string secondName, int? firstId, int? secondId)
         {
-            var placefWork = _repoWrapper.Work.FindByCondition(x => x.ID == firstId).FirstOrDefault();
-            var position = _repoWrapper.Work.FindByCondition(x => x.ID == secondId).FirstOrDefault();
+            var placefWork = _workService?.GetById(firstId);
+            var position = _workService?.GetById(secondId);
             if (secondId == firstId)
             {
                 return secondId;
@@ -169,7 +173,7 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
 
         private T CheckFieldForNull<T>(int? id, string name, T model)
         {
-            if (!(id == null) || string.IsNullOrEmpty(name))
+            if (id != null || string.IsNullOrEmpty(name))
             {
                 return default(T);
             }
@@ -178,7 +182,7 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
 
         private T CheckFieldForNull<T>(int? id, string firstField, string secondField, T model)
         {
-            if (!(id == null) || (string.IsNullOrEmpty(firstField) && string.IsNullOrEmpty(secondField)))
+            if (id != null || (string.IsNullOrEmpty(firstField) && string.IsNullOrEmpty(secondField)))
             {
                 return default(T);
             }
@@ -191,21 +195,24 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
             var oldImageName = _repoWrapper.User.FindByCondition(i => i.Id == userId).FirstOrDefault().ImagePath;
             if (file != null && file.Length > 0)
             {
-                var img = Image.FromStream(file.OpenReadStream());
-                var uploads = Path.Combine(_env.WebRootPath, "images\\Users");
-                if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default.png"))
-                {
-                    var oldPath = Path.Combine(uploads, oldImageName);
-                    if (File.Exists(oldPath))
-                    {
-                        File.Delete(oldPath);
-                    }
-                }
 
-                var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-                var filePath = Path.Combine(uploads, fileName);
-                img.Save(filePath);
-                user.ImagePath = fileName;
+                using (var img = Image.FromStream(file.OpenReadStream()))
+                {
+                    var uploads = Path.Combine(_env.WebRootPath, "images\\Users");
+                    if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default.png"))
+                    {
+                        var oldPath = Path.Combine(uploads, oldImageName);
+                        if (File.Exists(oldPath))
+                        {
+                            File.Delete(oldPath);
+                        }
+                    }
+
+                    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                    var filePath = Path.Combine(uploads, fileName);
+                    img.Save(filePath);
+                    user.ImagePath = fileName;
+                }
             }
             else
             {

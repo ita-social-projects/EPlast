@@ -11,14 +11,14 @@ function AddClubAdmin() {
     const input = $('#AdminTypeName')[0];
     const AdminTypeName = input.value;
     if (AdminTypeName == null || AdminTypeName.length === 0) {
-        alert('������ ����� ����������');
+        alert('Введіть назву діловодства');
         return;
     }
     const input2 = $('#ClubAdminStartDate')[0];
     const StartDateValue = input2.value;
     const StartDate = StartDateValue + ' 00:00:00';
     if (StartDateValue == null || StartDateValue.length === 0) {
-        alert('������ ���� ������� ����������');
+        alert('Введіть дату початку діловодства');
         return;
     }
     const input3 = $('#ClubAdminEndDate')[0];
@@ -29,28 +29,29 @@ function AddClubAdmin() {
         var StartDateobj = new Date(StartDate);
         var EndDateobj = new Date(EndDate);
         if (StartDateobj >= EndDateobj) {
-            alert('���� ���� ���������� �� ���� ���� ���� �������');
+            alert('Дата кінця діловодства має бути після дати початку');
             return;
         }
     }
     const adminsData = {
-        adminId: ClubMemberId,
-        clubIndex: CurrentClub,
-        enddate: EndDate,
-        startdate: StartDate,
-        AdminType: AdminTypeName
+        ClubMembersID: ClubMemberId,
+        ClubId: CurrentClub,
+        EndDate: EndDate,
+        StartDate: StartDate,
+        adminTypeName: AdminTypeName
     };
     console.log(adminsData);
     console.log(JSON.stringify(adminsData));
     $.ajax({
         url: '/Club/AddToClubAdministration',
         type: 'POST',
-        data: JSON.stringify(adminsData),
         contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        data: JSON.stringify(adminsData),
         timeout: 5000
     }).done((result) => {
         if (result === 1) {
-            alert('������ ������� ���� ������ ������');
+            alert('Нового діловода було успішно додано');
         }
     });
 }
