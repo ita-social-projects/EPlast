@@ -5,21 +5,16 @@ using EPlast.BussinessLayer.DTO.UserProfiles;
 using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.BussinessLayer.Services.EventUser;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
-using EPlast.ViewModels.EventUser;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
 using Xunit;
-using Xunit.Sdk;
 
 namespace EPlast.XUnitTest.Services.Events
 {
