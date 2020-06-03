@@ -1,15 +1,15 @@
 ﻿namespace EPlast.BussinessLayer
 {
-    public class PDFSettings : IPDFSettings
+    public class PdfSettings : IPdfSettings
     {
-        public PDFSettings()
+        public PdfSettings()
         {
             Title = "Рішення";
             Subject = "Auto generated pdf file";
             Author = "EPlast system";
             FontName = "Times New Roman";
             StyleName = "Normal";
-            ImagePath = "wwwroot/images/pdf/Header-Eplast.png";
+            ImagePath = "";
         }
 
         public string Title { get; set; }

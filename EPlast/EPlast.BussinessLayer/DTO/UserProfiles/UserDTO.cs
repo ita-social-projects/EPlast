@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.Event;
 using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.BussinessLayer.DTO.UserProfiles

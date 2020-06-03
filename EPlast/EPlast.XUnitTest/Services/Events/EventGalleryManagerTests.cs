@@ -11,6 +11,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using EPlast.DataAccess.Entities.Event;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.Events
