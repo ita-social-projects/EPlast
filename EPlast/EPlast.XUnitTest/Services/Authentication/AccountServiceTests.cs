@@ -365,6 +365,65 @@ namespace EPlast.XUnitTest.Services
             Assert.NotNull(result);
         }
 
+        [Fact]
+        public void GetIdForUserTest()
+        {
+            //Arrange
+            var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountService) = CreateAccountService();
+            mockUserManager
+                .Setup(s => s.GetUserId(It.IsAny<ClaimsPrincipal>()))
+                .Returns(GetTestIdForUser());
+
+            //Act
+            var result = accountService.GetIdForUser(ClaimsPrincipal.Current);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.Equal("aaaa-bbbb-cccc", result);
+        }
+
+        [Fact]
+        public void GetIdForUserTestReturnNull()
+        {
+            //Arrange
+            var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountService) = CreateAccountService();
+            mockUserManager
+                .Setup(s => s.GetUserId(It.IsAny<ClaimsPrincipal>()))
+                .Returns((string)null);
+
+            //Act
+            var result = accountService.GetIdForUser(ClaimsPrincipal.Current);
+
+            //Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void GetTimeAfterRegistrTest()
+        {
+            //Arrange
+            var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountService) = CreateAccountService();
+
+            //Act
+
+
+            //Assert
+
+        }
+
+        [Fact]
+        public void GetTimeAfterResetTest()
+        {
+            //Arrange
+            var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountService) = CreateAccountService();
+
+            //Act
+
+
+            //Assert
+
+        }
+
         private string GetTestCode()
         {
             return new string("500");
@@ -471,6 +530,11 @@ namespace EPlast.XUnitTest.Services
         private string GetTestCodeForResetPasswordAndConfirmEmail()
         {
            return new string("500");
+        }
+
+        private string GetTestIdForUser()
+        {
+            return "aaaa-bbbb-cccc";
         }
     }
 }
