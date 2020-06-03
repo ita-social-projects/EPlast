@@ -20,7 +20,7 @@ namespace EPlast.WebApi.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly IAccountService _accountService;
+        /*private readonly IAccountService _accountService;
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
         private readonly INationalityService _nationalityService;
@@ -83,7 +83,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("/signin")]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel loginVM, string returnUrl)
         {
@@ -138,16 +138,16 @@ namespace EPlast.WebApi.Controllers
         public IActionResult Register()
         {
             return Ok("Register");
-        }
+        }*/
 
-        [HttpGet]
+        [HttpGet("lala")]       //api/account/lala
         [AllowAnonymous]
         public ActionResult<IEnumerable<string>> TestValues()
         {
             return new string[] { "value1", "value2" };
         }
 
-        [HttpPost]
+        /*[HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel registerVM)
         {
@@ -183,7 +183,7 @@ namespace EPlast.WebApi.Controllers
                             new { code = code, userId = userDto.Id },
                               protocol: HttpContext.Request.Scheme);
                         await _accountService.SendEmailRegistr(confirmationLink, userDto);*/
-                        return Ok("AcceptingEmail");
+                        /*return Ok("AcceptingEmail");
                     }
                 }
             }
@@ -192,7 +192,7 @@ namespace EPlast.WebApi.Controllers
                 _loggerService.LogError($"Exception: {e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
-        }
+        }*/
 
     }
 }

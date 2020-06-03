@@ -17,6 +17,13 @@ namespace EPlast.WebApi.Controllers
             return new string[] { "value1", "value2" };
         }
 
+        /*[HttpGet]
+        public ActionResult<IEnumerable<string>> Cook()
+        {
+            return new string[] { "value1", "value2" };
+        }*/
+
+
         // GET api/values/5
         [HttpGet("{id}")]
         public ActionResult<string> Get(int id)
