@@ -1,10 +1,9 @@
 ﻿using EPlast.BussinessLayer.Interfaces.Events;
-using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using EPlast.DataAccess.Entities.Event;
 
 namespace EPlast.BussinessLayer.Services.Events
 {
