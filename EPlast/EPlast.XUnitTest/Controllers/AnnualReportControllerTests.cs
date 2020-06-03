@@ -85,10 +85,6 @@ namespace EPlast.XUnitTest
                 .Returns(Task.FromResult(cities));
             _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
                 .Returns(city);
-            _annualReportService.Setup(a => a.HasUnconfirmedAsync(It.IsAny<int>()))
-                .Returns(Task.FromResult(false));
-            _annualReportService.Setup(a => a.HasCreatedAsync(It.IsAny<int>()))
-                .Returns(Task.FromResult(false));
             _cityMembersService.Setup(c => c.GetCurrentByCityIdAsync(It.IsAny<int>()))
                 .Returns(Task.FromResult(cityMembersDTOs));
             _mapper.Setup(m => m.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(It.IsAny<IEnumerable<CityMembersDTO>>()))
@@ -106,7 +102,7 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task CreateAsyncHasUnconfirmed()
+        public async Task CreateAsyncHasCreatedOrUnconfirmed()
         {
             // Arrange
             IEnumerable<CityDTO> cities = new List<CityDTO>
@@ -118,8 +114,8 @@ namespace EPlast.XUnitTest
                .Returns(Task.FromResult(cities));
             _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
                 .Returns(city);
-            _annualReportService.Setup(a => a.HasUnconfirmedAsync(It.IsAny<int>()))
-                .Returns(Task.FromResult(true));
+            _annualReportService.Setup(a => a.CheckCreatedAndUnconfirmed(It.IsAny<int>()))
+                .Throws(new AnnualReportException("Станиця має непідтверджені звіти!"));
 
             // Act
             var result = await controller.CreateAsync();
@@ -128,37 +124,6 @@ namespace EPlast.XUnitTest
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("CreateEditAsync", viewResult.ViewName);
             Assert.Equal("Станиця має непідтверджені звіти!", viewResult.ViewData["ErrorMessage"]);
-            _annualReportService.Verify(a => a.HasUnconfirmedAsync(It.IsAny<int>()));
-            _annualReportService.Verify(a => a.HasCreatedAsync(It.IsAny<int>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task CreateAsyncHasCreated()
-        {
-            // Arrange
-            IEnumerable<CityDTO> cities = new List<CityDTO>
-            {
-                new CityDTO { ID = 1, Name = "Львів" }
-            };
-            var city = new CityViewModel { ID = cities.First().ID, Name = cities.First().Name };
-            _cityAccessService.Setup(cas => cas.GetCitiesAsync(It.IsAny<ClaimsPrincipal>()))
-               .Returns(Task.FromResult(cities));
-            _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
-                .Returns(city);
-            _annualReportService.Setup(a => a.HasUnconfirmedAsync(It.IsAny<int>()))
-                .Returns(Task.FromResult(false));
-            _annualReportService.Setup(a => a.HasCreatedAsync(It.IsAny<int>()))
-                .Returns(Task.FromResult(true));
-
-            // Act
-            var result = await controller.CreateAsync();
-
-            // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAsync", viewResult.ViewName);
-            Assert.Equal("Річний звіт для даної станиці вже створений!", viewResult.ViewData["ErrorMessage"]);
-            _annualReportService.Verify(a => a.HasCreatedAsync(It.IsAny<int>()));
-            _cityMembersService.Verify(c => c.GetCurrentByCityIdAsync(It.IsAny<int>()), Times.Never);
         }
 
         [Fact]
@@ -218,10 +183,6 @@ namespace EPlast.XUnitTest
             };
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .Returns(Task.FromResult(true));
-            _annualReportService.Setup(a => a.HasUnconfirmedAsync(It.IsAny<int>()))
-                .Returns(Task.FromResult(false));
-            _annualReportService.Setup(a => a.HasCreatedAsync(It.IsAny<int>()))
-                .Returns(Task.FromResult(false));
             _cityService.Setup(c => c.GetById(It.IsAny<int>()))
                 .Returns(cityDTO);
             _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
@@ -243,13 +204,13 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task CreateLikeAdminAsyncHasUnconfirmed()
+        public async Task CreateLikeAdminAsyncHasCreatedOrUnconfirmed()
         {
             // Arrange
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .Returns(Task.FromResult(true));
-            _annualReportService.Setup(a => a.HasUnconfirmedAsync(It.IsAny<int>()))
-                .Returns(Task.FromResult(true));
+            _annualReportService.Setup(a => a.CheckCreatedAndUnconfirmed(It.IsAny<int>()))
+                .Throws(new AnnualReportException("Станиця має непідтверджені звіти!"));
 
             // Act
             var result = await controller.CreateAsync(It.IsAny<int>());
@@ -258,30 +219,6 @@ namespace EPlast.XUnitTest
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("CreateEditAsync", viewResult.ViewName);
             Assert.Equal("Станиця має непідтверджені звіти!", viewResult.ViewData["ErrorMessage"]);
-            _annualReportService.Verify(a => a.HasUnconfirmedAsync(It.IsAny<int>()));
-            _annualReportService.Verify(a => a.HasCreatedAsync(It.IsAny<int>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task CreateLikeAdminAsyncHasCreated()
-        {
-            // Arrange
-            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .Returns(Task.FromResult(true));
-            _annualReportService.Setup(a => a.HasUnconfirmedAsync(It.IsAny<int>()))
-                .Returns(Task.FromResult(false));
-            _annualReportService.Setup(a => a.HasCreatedAsync(It.IsAny<int>()))
-                .Returns(Task.FromResult(true));
-
-            // Act
-            var result = await controller.CreateAsync(It.IsAny<int>());
-
-            // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAsync", viewResult.ViewName);
-            Assert.Equal("Річний звіт для даної станиці вже створений!", viewResult.ViewData["ErrorMessage"]);
-            _annualReportService.Verify(a => a.HasCreatedAsync(It.IsAny<int>()));
-            _cityMembersService.Verify(c => c.GetCurrentByCityIdAsync(It.IsAny<int>()), Times.Never);
         }
 
         [Fact]
@@ -290,10 +227,6 @@ namespace EPlast.XUnitTest
             // Arrange
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .Returns(Task.FromResult(true));
-            _annualReportService.Setup(a => a.HasUnconfirmedAsync(It.IsAny<int>()))
-                .Returns(Task.FromResult(false));
-            _annualReportService.Setup(a => a.HasCreatedAsync(It.IsAny<int>()))
-                .Returns(Task.FromResult(false));
             _cityService.Setup(c => c.GetById(It.IsAny<int>()))
                 .Returns(default(CityDTO));
             _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
@@ -327,7 +260,6 @@ namespace EPlast.XUnitTest
             Assert.Equal("Error", viewResult.ControllerName);
             Assert.Equal(StatusCodes.Status500InternalServerError, viewResult.RouteValues["code"]);
             _cityAccessService.Verify(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()));
-            _annualReportService.Verify(a => a.HasUnconfirmedAsync(It.IsAny<int>()), Times.Never);
         }
 
         [Fact]

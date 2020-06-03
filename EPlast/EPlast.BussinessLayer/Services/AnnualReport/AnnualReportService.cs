@@ -73,14 +73,7 @@ namespace EPlast.BussinessLayer.Services
             {
                 throw new AnnualReportException(ErrorMessageNoAccess);
             }
-            if (await this.HasCreatedAsync(annualReportDTO.CityId))
-            {
-                throw new AnnualReportException(ErrorMessageHasCreated);
-            }
-            if (await this.HasUnconfirmedAsync(annualReportDTO.CityId))
-            {
-                throw new AnnualReportException(ErrorMessageHasUnconfirmed);
-            }
+            await this.CheckCreatedAndUnconfirmed(annualReportDTO.CityId);
             var annualReport = _mapper.Map<AnnualReportDTO, AnnualReport>(annualReportDTO);
             var user = await _userManager.GetUserAsync(claimsPrincipal);
             annualReport.UserId = user.Id;
@@ -174,6 +167,18 @@ namespace EPlast.BussinessLayer.Services
                 .FindByCondition(ar => ar.CityId == cityId && ar.Date.Year == DateTime.Now.Year)
                 .FirstOrDefaultAsync();
             return annualReport != null;
+        }
+
+        public async Task CheckCreatedAndUnconfirmed(int cityId)
+        {
+            if (await this.HasCreatedAsync(cityId))
+            {
+                throw new AnnualReportException(ErrorMessageHasCreated);
+            }
+            if (await this.HasUnconfirmedAsync(cityId))
+            {
+                throw new AnnualReportException(ErrorMessageHasUnconfirmed);
+            }
         }
 
         private async Task SaveLastConfirmedAsync(int cityId)
