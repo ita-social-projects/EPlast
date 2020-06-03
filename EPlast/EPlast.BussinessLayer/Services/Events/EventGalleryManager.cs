@@ -31,14 +31,16 @@ namespace EPlast.BussinessLayer.Services.Events
                 {
                     if (file != null && file.Length > 0)
                     {
-                        var img = Image.FromStream(file.OpenReadStream());
-                        var uploads = Path.Combine(_env.WebRootPath, "images\\EventsGallery");
-                        var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-                        var filePath = Path.Combine(uploads, fileName);
-                        img.Save(filePath);
-                        var gallery = new Gallary() { GalaryFileName = fileName };
-                        _repoWrapper.Gallary.Create(gallery);
-                        _repoWrapper.EventGallary.Create(new EventGallary { EventID = id, Gallary = gallery });
+                        using (var img = Image.FromStream(file.OpenReadStream()))
+                        {
+                            var uploads = Path.Combine(_env.WebRootPath, "images\\EventsGallery");
+                            var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                            var filePath = Path.Combine(uploads, fileName);
+                            img.Save(filePath);
+                            var gallery = new Gallary() { GalaryFileName = fileName };
+                            _repoWrapper.Gallary.Create(gallery);
+                            _repoWrapper.EventGallary.Create(new EventGallary { EventID = id, Gallary = gallery });
+                        }
                     }
                 }
                 _repoWrapper.Save();
