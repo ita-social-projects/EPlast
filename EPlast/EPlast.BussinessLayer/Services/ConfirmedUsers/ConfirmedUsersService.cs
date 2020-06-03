@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using EPlast.BussinessLayer.Services.Interfaces;
+﻿using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -13,19 +12,17 @@ namespace EPlast.BussinessLayer.Services
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
-        private readonly IMapper _mapper;
 
-        public ConfirmedUsersService(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IMapper mapper)
+        public ConfirmedUsersService(IRepositoryWrapper repoWrapper, UserManager<User> userManager)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
-            _mapper = mapper;
         }
 
-        public void Create(ClaimsPrincipal user, string userId, bool _isClubAdmin = false, bool _isCityAdmin = false)
+        public void Create(ClaimsPrincipal user, string userId, bool isClubAdmin = false, bool isCityAdmin = false)
         {
             var id = _userManager.GetUserId(user);
-            var conUser = new ConfirmedUser { UserID = userId, ConfirmDate = DateTime.Now, isClubAdmin = _isClubAdmin, isCityAdmin = _isCityAdmin };
+            var conUser = new ConfirmedUser { UserID = userId, ConfirmDate = DateTime.Now, isClubAdmin = isClubAdmin, isCityAdmin = isCityAdmin };
             var appUser = new Approver { UserID = id, ConfirmedUser = conUser };
             conUser.Approver = appUser;
 
