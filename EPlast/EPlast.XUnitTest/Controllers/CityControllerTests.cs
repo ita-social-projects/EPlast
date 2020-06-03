@@ -1,15 +1,15 @@
-﻿using EPlast.Controllers;
+﻿using AutoMapper;
+using EPlast.BussinessLayer.DTO.City;
+using EPlast.BussinessLayer.Interfaces.City;
+using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.Controllers;
+using EPlast.ViewModels.City;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System.Collections.Generic;
 using System.Linq;
-using AutoMapper;
-using EPlast.BussinessLayer.DTO.City;
-using EPlast.BussinessLayer.Interfaces.City;
-using EPlast.BussinessLayer.Services.Interfaces;
-using EPlast.ViewModels.City;
-using Microsoft.AspNetCore.Http.Internal;
 using Xunit;
 
 namespace EPlast.XUnitTest
