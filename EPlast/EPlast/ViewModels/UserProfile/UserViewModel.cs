@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using EPlast.DataAccess.Entities.Event;
 
 namespace EPlast.ViewModels.UserInformation.UserProfile
 {

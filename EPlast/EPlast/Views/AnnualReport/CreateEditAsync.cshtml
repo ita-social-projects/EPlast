@@ -5,7 +5,7 @@
 }
 
 <div class="annual-report-form m-5 shadow-lg">
-    <form asp-controller="Documentation" method="post">
+    <form asp-controller="AnnualReport" method="post">
         <input asp-for="AnnualReport.CityId" type="hidden" />
         @if (Model?.Operation == AnnualReportOperation.Editing)
         {
@@ -230,10 +230,10 @@
             @switch (Model?.Operation)
             {
                 case AnnualReportOperation.Creating:
-                    <button id="CreateAnnualReport" asp-action="CreateAnnualReportAsync" class="btn btn-block text-light btn-lg" type="submit">Створити</button>
+                    <button id="CreateAnnualReport" asp-action="CreateAsync" class="btn btn-block text-light btn-lg" type="submit">Створити</button>
                     break;
                 case AnnualReportOperation.Editing:
-                    <button asp-action="EditAnnualReportAsync" class="btn btn-block text-light btn-lg" type="submit">Редагувати</button>
+                    <button asp-action="EditAsync" class="btn btn-block text-light btn-lg" type="submit">Редагувати</button>
                     break;
             }
         </div>

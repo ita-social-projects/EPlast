@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -11,6 +12,7 @@ namespace EPlast.DataAccess.Repositories
         IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression);
 
         void Create(T entity);
+        Task CreateAsync(T entity);
 
         void Update(T entity);
 

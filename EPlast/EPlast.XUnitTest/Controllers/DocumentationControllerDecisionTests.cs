@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BussinessLayer;
 using EPlast.BussinessLayer.DTO;
 using EPlast.Controllers;
@@ -12,6 +8,10 @@ using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 using Organization = EPlast.Models.Organization;
 
@@ -246,6 +246,6 @@ namespace EPlast.XUnitTest
 
         };
         private DocumentationController CreateDocumentationController =>
-            new DocumentationController(null, null, _decisionService.Object, _mapper.Object, null, null, null, null );
+            new DocumentationController(null, _decisionService.Object, _mapper.Object);
     }
 }

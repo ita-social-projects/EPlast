@@ -376,6 +376,9 @@ EPlast/EPlast/wwwroot/images/Users/*
 # Ignore CityLogotypes
 EPlast/EPlast/wwwroot/images/Cities/*
 
+# Ignore ClubLogotypes
+EPlast/EPlast/wwwroot/images/Club/*
+
 # don't checkin azurekeyvault.json
 **/azurekeyvault.json
 /EPlast/EPlast/package-lock.json
