@@ -1,6 +1,5 @@
-﻿using AutoMapper;
-using EPlast.BussinessLayer.Services.Events;
-using EPlast.DataAccess.Entities;
+﻿using EPlast.BussinessLayer.Services.Events;
+using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Moq;
 using System.Collections.Generic;
