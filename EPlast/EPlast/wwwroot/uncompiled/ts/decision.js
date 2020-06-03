@@ -106,16 +106,16 @@ $(() => {
         const decisionDate = $("#datepicker").datepicker().val().toString();
         const decisionDescription = $("#Decision-Description").val().toString();
         const decisionDecisionStatusType = $("#Decision-DecisionStatusType option:selected").text();
-        formData.append("file", files[0]);
-        formData.append("Decision.Name", decisionName);
-        formData.append("Decision.Organization.ID", decisionOrganizationId);
-        formData.append("Decision.DecisionTarget.TargetName", decisionTargetName);
-        formData.append("Decision.DecisionTarget.ID", decisionTargetId);
-        formData.append("Decision.Date", decisionDate);
-        formData.append("Decision.Description", decisionDescription);
-        formData.append("Decision.DecisionStatusType", decisionDecisionStatusType);
+        formData.append("DecisionWrapper.File", files[0]);
+        formData.append("DecisionWrapper.Decision.Name", decisionName);
+        formData.append("DecisionWrapper.Decision.Organization.ID", decisionOrganizationId);
+        formData.append("DecisionWrapper.Decision.DecisionTarget.TargetName", decisionTargetName);
+        formData.append("DecisionWrapper.Decision.DecisionTarget.ID", decisionTargetId);
+        formData.append("DecisionWrapper.Decision.Date", decisionDate);
+        formData.append("DecisionWrapper.Decision.Description", decisionDescription);
+        formData.append("DecisionWrapper.Decision.DecisionStatusType", decisionDecisionStatusType);
         $.ajax({
-            url: "/Documentation/SaveDecision",
+            url: "/Decision/SaveDecision",
             type: "POST",
             processData: false,
             contentType: false,
@@ -129,10 +129,11 @@ $(() => {
                     $("#ModalSuccess").modal("show");
                     let file = "";
                     if (response.decision.haveFile) {
-                        file = `<a href="/Documentation/Download/${response.decision.id}?filename=${files[0].name}">додаток.${files[0].name.split('.')[1]}</a>`;
+                        file = `<a href="/Decision/Download/${response.decision.id}?filename=${files[0].name}">додаток.${files[0].name.split('.')[1]}</a>`;
                     }
+                    const table = $("#dtReadDecision").DataTable();
                     $("#dtReadDecision").DataTable().row.add([
-                        response.decision.id,
+                        table.data().rows().count() + 1,
                         response.decision.name,
                         response.decisionOrganization,
                         decisionDecisionStatusType,
@@ -192,7 +193,7 @@ $(() => {
         formData.append("Decision.Name", decisionName);
         formData.append("Decision.Description", decisionDescription);
         $.ajax({
-            url: "/Documentation/ChangeDecision",
+            url: "/Decision/ChangeDecision",
             type: "POST",
             processData: false,
             contentType: false,
@@ -224,7 +225,7 @@ $(() => {
         $("#DeleteDecisionForm-submit").prop('disabled', true);
         let decisionID = $("#Delete-Decision-ID").val();
         $.ajax({
-            url: "/Documentation/DeleteDecision",
+            url: "/Decision/DeleteDecision",
             type: "POST",
             data: { 'id': decisionID },
             success(response) {
@@ -254,22 +255,22 @@ $(() => {
             const content = $(this).children().first().text();
             switch (key) {
                 case "edit":
-                    $.get(`/Documentation/GetDecision?id=${content}`, function (json) {
+                    $.get(`/Decision/GetDecision?id=${content}`, function (json) {
                         if (!json.success) {
                             $("#ModalError.modal-body:first p:first strong:first").html("ID рішення немає в базі!");
                             return;
                         }
                         $("#Edit-Decision-ID").val(json.decision.id);
                         $("#Edit-Decision-Name").val(json.decision.name);
-                        $("#Edit-Decision-Description").text(json.decision.description);
+                        $("#Edit-Decision-Description").val(json.decision.description);
                     });
                     $("#EditDecisionModal").modal("show");
                     break;
                 case "pdf":
-                    window.open(`/Documentation/CreatePDFAsync?objId=${content}`, "_blank");
+                    window.open(`/Decision/CreatePDFAsync?objId=${content}`, "_blank");
                     break;
                 case "delete":
-                    $.get(`/Documentation/GetDecision?id=${content}`, function (json) {
+                    $.get(`/Decision/GetDecision?id=${content}`, function (json) {
                         if (!json.success) {
                             $("#ModalError.modal-body:first p:first strong:first").html("ID рішення немає в базі!");
                             return;
