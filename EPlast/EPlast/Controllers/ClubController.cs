@@ -1,70 +1,60 @@
-﻿using EPlast.DataAccess.DTO;
-using EPlast.DataAccess.Entities;
+﻿using AutoMapper;
+using EPlast.BussinessLayer.DTO;
+using EPlast.BussinessLayer.DTO.Club;
+using EPlast.BussinessLayer.Interfaces.Club;
+using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.ViewModels;
-using Microsoft.AspNetCore.Hosting;
+using EPlast.ViewModels.Club;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
 
 namespace EPlast.Controllers
 {
     public class ClubController : Controller
     {
-        private readonly DataAccess.Repositories.IRepositoryWrapper _repoWrapper;
-        private readonly IHostingEnvironment _env;
-        private UserManager<User> _userManager;
-        public ClubController(DataAccess.Repositories.IRepositoryWrapper repoWrapper, UserManager<User> userManager, IHostingEnvironment env)
-        {
-            _userManager = userManager;
-            _repoWrapper = repoWrapper;
-            _env = env;
-        }
+        private readonly IClubService _clubService;
+        private readonly IClubAdministrationService _clubAdministrationService;
+        private readonly IClubMembersService _clubMembersService;
+        private readonly IMapper _mapper;
+        private readonly ILoggerService<ClubController> _logger;
+        private readonly IUserManagerService _userManagerService;
 
+        public ClubController(IClubService clubService, IClubAdministrationService clubAdministrationService, IClubMembersService clubMembersService, IMapper mapper, ILoggerService<ClubController> logger, IUserManagerService userManagerService)
+        {
+            _clubService = clubService;
+            _clubAdministrationService = clubAdministrationService;
+            _clubMembersService = clubMembersService;
+            _mapper = mapper;
+            _logger = logger;
+            _userManagerService = userManagerService;
+        }
+        private void CheckCurrentUserRoles(ref ClubProfileViewModel viewModel)
+        {
+            viewModel.IsCurrentUserClubAdmin = _userManagerService.GetUserId(User) == viewModel.ClubAdmin?.Id;
+            viewModel.IsCurrentUserAdmin = User.IsInRole("Admin");
+        }
         public IActionResult Index()
         {
-            List<ClubViewModel> clubs = new List<ClubViewModel>(
-                _repoWrapper.Club
-                .FindAll()
-                .Select(club => new ClubViewModel { Club = club })
-                .ToList());
-            ViewBag.usermanager = _userManager;
+            var clubs = _clubService.GetAllClubs();
+            var viewModels = _mapper.Map<IEnumerable<ClubDTO>, IEnumerable<ClubViewModel>>(clubs);
 
-            return View(clubs);
+            return View(viewModels);
         }
 
         public IActionResult Club(int index)
         {
             try
             {
-                var club = _repoWrapper.Club
-                   .FindByCondition(q => q.ID == index)
-                   .Include(c => c.ClubAdministration)
-                   .ThenInclude(t => t.AdminType)
-                   .Include(n => n.ClubAdministration)
-                   .ThenInclude(t => t.ClubMembers)
-                   .ThenInclude(us => us.User)
-                   .Include(m => m.ClubMembers)
-                   .ThenInclude(u => u.User)
-                   .FirstOrDefault();
+                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(_clubService.GetClubProfile(index));
+                CheckCurrentUserRoles(ref viewModel);
 
-                var members = club.ClubMembers.Where(m => m.IsApproved).Take(6).ToList();
-                var followers = club.ClubMembers.Where(m => !m.IsApproved).Take(6).ToList();
-
-                var clubAdmin = club.ClubAdministration
-                    .Where(a => a.EndDate == null && a.AdminType.AdminTypeName == "Курінний")
-                    .Select(a => a.ClubMembers.User)
-                    .FirstOrDefault();
-                ViewBag.usermanager = _userManager;
-                return View(new ClubViewModel { Club = club, ClubAdmin = clubAdmin, Members = members, Followers = followers });
+                return View(viewModel);
             }
             catch (Exception e)
             {
+                _logger.LogError($"Exception :{e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
@@ -72,24 +62,14 @@ namespace EPlast.Controllers
         {
             try
             {
-                var club = _repoWrapper.Club
-                    .FindByCondition(q => q.ID == index)
-                    .Include(c => c.ClubAdministration)
-                    .ThenInclude(t => t.AdminType)
-                    .Include(n => n.ClubAdministration)
-                    .ThenInclude(t => t.ClubMembers)
-                    .ThenInclude(us => us.User)
-                    .FirstOrDefault();
+                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(_clubAdministrationService.GetCurrentClubAdministrationByID(index));
+                CheckCurrentUserRoles(ref viewModel);
 
-                var clubAdmin = club.ClubAdministration
-                    .Where(a => a.EndDate == null && a.AdminType.AdminTypeName == "Курінний")
-                    .Select(a => a.ClubMembers.User)
-                    .FirstOrDefault();
-                ViewBag.usermanager = _userManager;
-                return View(new ClubViewModel { Club = club, ClubAdmin = clubAdmin });
+                return View(viewModel);
             }
             catch (Exception e)
             {
+                _logger.LogError($"Exception :{e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
@@ -97,28 +77,14 @@ namespace EPlast.Controllers
         {
             try
             {
-                var club = _repoWrapper.Club
-                    .FindByCondition(q => q.ID == index)
-                    .Include(c => c.ClubAdministration)
-                    .ThenInclude(t => t.AdminType)
-                    .Include(n => n.ClubAdministration)
-                    .ThenInclude(t => t.ClubMembers)
-                    .ThenInclude(us => us.User)
-                    .Include(m => m.ClubMembers)
-                    .ThenInclude(u => u.User)
-                    .FirstOrDefault();
+                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(_clubService.GetClubMembersOrFollowers(index, true));
+                CheckCurrentUserRoles(ref viewModel);
 
-                var members = club.ClubMembers.Where(m => m.IsApproved).ToList();
-
-                var clubAdmin = club.ClubAdministration
-                   .Where(a => a.EndDate == null && a.AdminType.AdminTypeName == "Курінний")
-                   .Select(a => a.ClubMembers.User)
-                   .FirstOrDefault();
-                ViewBag.usermanager = _userManager;
-                return View(new ClubViewModel { Club = club, ClubAdmin = clubAdmin, Members = members });
+                return View(viewModel);
             }
             catch (Exception e)
             {
+                _logger.LogError($"Exception :{e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
@@ -126,43 +92,29 @@ namespace EPlast.Controllers
         {
             try
             {
-                var club = _repoWrapper.Club
-                    .FindByCondition(q => q.ID == index)
-                    .Include(c => c.ClubAdministration)
-                    .ThenInclude(t => t.AdminType)
-                    .Include(n => n.ClubAdministration)
-                    .ThenInclude(t => t.ClubMembers)
-                    .ThenInclude(us => us.User)
-                    .Include(m => m.ClubMembers)
-                    .ThenInclude(u => u.User)
-                    .FirstOrDefault();
+                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(_clubService.GetClubMembersOrFollowers(index, false));
+                CheckCurrentUserRoles(ref viewModel);
 
-                var followers = club.ClubMembers.Where(m => !m.IsApproved).ToList();
-
-                var clubAdmin = club.ClubAdministration
-                   .Where(a => a.EndDate == null && a.AdminType.AdminTypeName == "Курінний")
-                   .Select(a => a.ClubMembers.User)
-                   .FirstOrDefault();
-                ViewBag.usermanager = _userManager;
-                return View(new ClubViewModel { Club = club, ClubAdmin = clubAdmin, Followers = followers });
+                return View(viewModel);
             }
             catch (Exception e)
             {
+                _logger.LogError($"Exception :{e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
+
         public IActionResult ClubDescription(int index)
         {
             try
             {
-                var club = _repoWrapper.Club
-                    .FindByCondition(q => q.ID == index)
-                    .FirstOrDefault();
+                var viewModel = _mapper.Map<ClubDTO, ClubViewModel>(_clubService.GetClubInfoById(index));
 
-                return View(new ClubViewModel { Club = club });
+                return View(viewModel);
             }
             catch (Exception e)
             {
+                _logger.LogError($"Exception :{e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
@@ -172,14 +124,13 @@ namespace EPlast.Controllers
         {
             try
             {
-                var club = _repoWrapper.Club
-                    .FindByCondition(q => q.ID == index)
-                    .FirstOrDefault();
+                var viewModel = _mapper.Map<ClubDTO, ClubViewModel>(_clubService.GetClubInfoById(index));
 
-                return View(new ClubViewModel { Club = club });
+                return View(viewModel);
             }
             catch (Exception e)
             {
+                _logger.LogError($"Exception :{e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
@@ -189,37 +140,13 @@ namespace EPlast.Controllers
         {
             try
             {
-                var oldImageName = _repoWrapper.Club.FindByCondition(i => i.ID == model.Club.ID).FirstOrDefault().Logo;
-                if (file != null && file.Length > 0)
-                {
-                    var img = Image.FromStream(file.OpenReadStream());
-                    var uploads = Path.Combine(_env.WebRootPath, "images\\Club");
-                    if (!string.IsNullOrEmpty(oldImageName))
-                    {
-                        var oldPath = Path.Combine(uploads, oldImageName);
-                        if (System.IO.File.Exists(oldPath))
-                        {
-                            System.IO.File.Delete(oldPath);
-                        }
+                _clubService.Update(_mapper.Map<ClubViewModel, ClubDTO>(model), file);
 
-                    }
-
-                    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-                    var filePath = Path.Combine(uploads, fileName);
-                    img.Save(filePath);
-                    model.Club.Logo = fileName;
-                }
-                else
-                {
-                    model.Club.Logo = oldImageName;
-                }
-                _repoWrapper.Club.Update(model.Club);
-                _repoWrapper.Save();
-                return RedirectToAction("Club", new { index = model.Club.ID });
+                return RedirectToAction("Club", new { index = model.ID });
             }
             catch (Exception e)
             {
-
+                _logger.LogError($"Exception :{e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
@@ -228,24 +155,13 @@ namespace EPlast.Controllers
         {
             try
             {
-                var club = _repoWrapper.Club
-                    .FindByCondition(q => q.ID == clubIndex)
-                    .Include(m => m.ClubMembers)
-                    .ThenInclude(u => u.User)
-                    .FirstOrDefault();
-
-                var person = _repoWrapper.ClubMembers
-                    .FindByCondition(u => u.ID == index)
-                    .FirstOrDefault();
-                if (person != null)
-                    person.IsApproved = !person.IsApproved;
-                _repoWrapper.ClubMembers.Update(person);
-                _repoWrapper.Save();
+                _clubMembersService.ToggleIsApprovedInClubMembers(index, clubIndex);
 
                 return RedirectToAction("ClubMembers", new { index = clubIndex });
             }
             catch (Exception e)
             {
+                _logger.LogError($"Exception :{e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
@@ -254,25 +170,13 @@ namespace EPlast.Controllers
         {
             try
             {
-                var club = _repoWrapper.Club
-                    .FindByCondition(q => q.ID == clubIndex)
-                    .Include(m => m.ClubMembers)
-                    .ThenInclude(u => u.User)
-                    .FirstOrDefault();
-
-                var person = _repoWrapper.ClubMembers
-                    .FindByCondition(u => u.ID == index)
-                    .FirstOrDefault();
-                if (person != null)
-                    person.IsApproved = !person.IsApproved;
-
-                _repoWrapper.ClubMembers.Update(person);
-                _repoWrapper.Save();
+                _clubMembersService.ToggleIsApprovedInClubMembers(index, clubIndex);
 
                 return RedirectToAction("ClubFollowers", new { index = clubIndex });
             }
             catch (Exception e)
             {
+                _logger.LogError($"Exception :{e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
@@ -281,35 +185,23 @@ namespace EPlast.Controllers
         {
             try
             {
-                var club = _repoWrapper.Club
-                    .FindByCondition(q => q.ID == clubIndex)
-                    .Include(m => m.ClubMembers)
-                    .ThenInclude(u => u.User)
-                    .FirstOrDefault();
-
-                var person = _repoWrapper.ClubMembers
-                    .FindByCondition(u => u.ID == index)
-                    .FirstOrDefault();
-                if (person != null)
-                    person.IsApproved = !person.IsApproved;
-                _repoWrapper.ClubMembers.Update(person);
-                _repoWrapper.Save();
+                _clubMembersService.ToggleIsApprovedInClubMembers(index, clubIndex);
 
                 return RedirectToAction("Club", new { index = clubIndex });
             }
             catch (Exception e)
             {
+                _logger.LogError($"Exception :{e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
         [HttpGet]
         public IActionResult DeleteFromAdmins(int adminId, int clubIndex)
         {
-            ClubAdministration admin = _repoWrapper.GetClubAdministration.FindByCondition(i => i.ID == adminId).FirstOrDefault();
-            if (admin != null)
+            bool isSuccessfull = _clubAdministrationService.DeleteClubAdmin(adminId);
+
+            if (isSuccessfull)
             {
-                _repoWrapper.GetClubAdministration.Delete(admin);
-                _repoWrapper.Save();
                 return RedirectToAction("ClubAdmins", new { index = clubIndex });
             }
             else
@@ -323,95 +215,50 @@ namespace EPlast.Controllers
         {
             try
             {
-                ClubAdministration admin = _repoWrapper.GetClubAdministration.FindByCondition(i => i.ID == adminEndDate.adminId).FirstOrDefault();
-
-                admin.EndDate = adminEndDate.enddate;
-
-                _repoWrapper.GetClubAdministration.Update(admin);
-                _repoWrapper.Save();
+                _clubAdministrationService.SetAdminEndDate(adminEndDate);
 
                 return 1;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return 0;
             }
         }
         [HttpPost]
-        public int AddToClubAdministration([FromBody] ClubAdministrationDTO createdAdmin)
+        public IActionResult AddToClubAdministration([FromBody] ClubAdministrationDTO createdAdmin)
         {
             try
             {
-                var adminType = _repoWrapper.AdminType
-                    .FindByCondition(i => i.AdminTypeName == createdAdmin.AdminType).FirstOrDefault();
-                int AdminTypeId;
-                if(adminType == null)
-                {
-                    var newAdminType = new AdminType() { AdminTypeName = createdAdmin.AdminType };
-                    
-                    _repoWrapper.AdminType.Create(newAdminType);
-                    _repoWrapper.Save();
+                _clubAdministrationService.AddClubAdmin(createdAdmin);
 
-                    adminType = _repoWrapper.AdminType
-                    .FindByCondition(i => i.AdminTypeName == createdAdmin.AdminType).FirstOrDefault();
-                    AdminTypeId = adminType.ID;
-                }
-                else
-                {
-                    AdminTypeId = adminType.ID;
-                }
-                ClubAdministration newClubAdmin = new ClubAdministration()
-                {
-                    ClubMembersID = createdAdmin.adminId,
-                    StartDate = createdAdmin.startdate,
-                    EndDate = createdAdmin.enddate,
-                    ClubId = createdAdmin.clubIndex,
-                    AdminTypeId = AdminTypeId
-                };
-
-                _repoWrapper.GetClubAdministration.Create(newClubAdmin);
-                _repoWrapper.Save();
-
-                return 1;
+                return Json(true);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                return 0;
+                return Json(false);
             }
         }
-        public IActionResult ChooseAClub()
+
+        public IActionResult ChooseAClub(string userId)
         {
-            List<ClubViewModel> clubs = new List<ClubViewModel>(
-                _repoWrapper.Club
-                .FindAll()
-                .Select(club => new ClubViewModel { Club = club })
-                .ToList());
-            ViewBag.usermanager = _userManager;
-
-            return View(clubs);
-        }
-        public IActionResult AddAsClubFollower(int clubIndex)
-        {
-            ClubMembers oldMember = 
-                _repoWrapper.ClubMembers.FindByCondition(i => i.UserId == _userManager.GetUserId(User)).FirstOrDefault();
-
-            if(oldMember != null)
+            var clubs = _mapper.Map<IEnumerable<ClubDTO>, IEnumerable<ClubViewModel>>(_clubService.GetAllClubs());
+            var model = new ClubChooseAClubViewModel
             {
-                _repoWrapper.ClubMembers.Delete(oldMember);
-                _repoWrapper.Save();
-            }
-
-            ClubMembers newMember = new ClubMembers()
-            {
-                ClubId = clubIndex,
-                IsApproved = false,
-                UserId = _userManager.GetUserId(User)
+                Clubs = clubs,
+                UserId = userId
             };
-            _repoWrapper.ClubMembers.Create(newMember);
-            _repoWrapper.Save();
-
-            return RedirectToAction("UserProfile", "Account", new { userId = _userManager.GetUserId(User) });
+            return View(model);
         }
+
+        public IActionResult AddAsClubFollower(int clubIndex, string userId)
+        {
+            userId = User.IsInRole("Admin") ? userId : _userManagerService.GetUserId(User);
+
+            _clubMembersService.AddFollower(clubIndex, userId);
+
+            return RedirectToAction("UserProfile", "Account", new { userId });
+        }
+
         [HttpGet]
         public IActionResult CreateClub()
         {
@@ -421,35 +268,23 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
+                _logger.LogError($"Exception :{e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
+
         [HttpPost]
         public IActionResult CreateClub(ClubViewModel model, IFormFile file)
         {
             try
             {
-                if (file != null && file.Length > 0)
-                {
-                    var img = Image.FromStream(file.OpenReadStream());
-                    var uploads = Path.Combine(_env.WebRootPath, "images\\Club");
+                var club = _clubService.Create(_mapper.Map<ClubViewModel, ClubDTO>(model), file);
 
-                    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-                    var filePath = Path.Combine(uploads, fileName);
-                    img.Save(filePath);
-                    model.Club.Logo = fileName;
-                }
-                else
-                {
-                    model.Club.Logo = null;
-                }
-                _repoWrapper.Club.Create(model.Club);
-                _repoWrapper.Save();
-                return RedirectToAction("Club", new { index = model.Club.ID });
+                return RedirectToAction("Club", new { index = club.ID });
             }
             catch (Exception e)
             {
-
+                _logger.LogError($"Exception :{e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
