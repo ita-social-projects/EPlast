@@ -54,19 +54,7 @@ namespace EPlast.Controllers
                 {
                     throw new AnnualReportException("Річний звіт для даної станиці вже створений!");
                 }
-                var cityMemebrsDTO = await _cityMembersService.GetCurrentByCityIdAsync(city.ID);
-                var cityMembers = _mapper.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(cityMemebrsDTO);
-                var createEditAnnualReportViewModel = new CreateEditAnnualReportViewModel(cityMembers)
-                {
-                    Operation = AnnualReportOperation.Creating,
-                    CityName = city.Name,
-                    AnnualReport = new AnnualReportViewModel
-                    {
-                        CityId = city.ID,
-                        MembersStatistic = new MembersStatisticViewModel()
-                    }
-                };
-                return View("CreateEditAsync", createEditAnnualReportViewModel);
+                return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Creating));
             }
             catch (AnnualReportException e)
             {
@@ -98,23 +86,12 @@ namespace EPlast.Controllers
                     }
                     var cityDTO = _cityService.GetById(cityId);
                     var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
-                    var cityMemebrsDTO = await _cityMembersService.GetCurrentByCityIdAsync(city.ID);
-                    var cityMembers = _mapper.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(cityMemebrsDTO);
-                    var createEditAnnualReportViewModel = new CreateEditAnnualReportViewModel(cityMembers)
-                    {
-                        Operation = AnnualReportOperation.Creating,
-                        CityName = city.Name,
-                        AnnualReport = new AnnualReportViewModel
-                        {
-                            CityId = cityId,
-                            MembersStatistic = new MembersStatisticViewModel()
-                        }
-                    };
-                    return View("CreateEditAsync", createEditAnnualReportViewModel);
+                    return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Creating));
                 }
                 else
                 {
-                    throw new Exception("Немає доступу до міста");
+                    _logger.LogError($"Exception: {User} does not have access to the city (cityId - {cityId})");
+                    return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
                 }
             }
             catch (AnnualReportException e)
@@ -146,16 +123,8 @@ namespace EPlast.Controllers
                 {
                     var cityDTO = _cityService.GetById(annualReport.CityId);
                     var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
-                    var cityMemebrsDTO = await _cityMembersService.GetCurrentByCityIdAsync(city.ID);
-                    var cityMembers = _mapper.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(cityMemebrsDTO);
-                    var createEditAnnualReportViewModel = new CreateEditAnnualReportViewModel(cityMembers)
-                    {
-                        Operation = AnnualReportOperation.Creating,
-                        CityName = city.Name,
-                        AnnualReport = annualReport
-                    };
                     ViewData["ErrorMessage"] = "Річний звіт заповнений некоректно!";
-                    return View("CreateEditAsync", createEditAnnualReportViewModel);
+                    return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Creating, annualReport));
                 }
             }
             catch (AnnualReportException e)
@@ -279,15 +248,7 @@ namespace EPlast.Controllers
                 var annualReport = _mapper.Map<AnnualReportDTO, AnnualReportViewModel>(annualReportDTO);
                 var cityDTO = _cityService.GetById(annualReport.CityId);
                 var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
-                var cityMemebrsDTO = await _cityMembersService.GetCurrentByCityIdAsync(city.ID);
-                var cityMembers = _mapper.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(cityMemebrsDTO);
-                var createEditAnnualReportViewModel = new CreateEditAnnualReportViewModel(cityMembers)
-                {
-                    Operation = AnnualReportOperation.Editing,
-                    CityName = city.Name,
-                    AnnualReport = annualReport
-                };
-                return View("CreateEditAsync", createEditAnnualReportViewModel);
+                return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Editing, annualReport));
             }
             catch (AnnualReportException e)
             {
@@ -318,16 +279,8 @@ namespace EPlast.Controllers
                 {
                     var cityDTO = _cityService.GetById(annualReport.CityId);
                     var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
-                    var cityMemebrsDTO = await _cityMembersService.GetCurrentByCityIdAsync(city.ID);
-                    var cityMembers = _mapper.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(cityMemebrsDTO);
-                    var createEditAnnualReportViewModel = new CreateEditAnnualReportViewModel(cityMembers)
-                    {
-                        Operation = AnnualReportOperation.Editing,
-                        CityName = city.Name,
-                        AnnualReport = annualReport
-                    };
                     ViewData["ErrorMessage"] = "Річний звіт заповнений некоректно!";
-                    return View("CreateEditAsync", createEditAnnualReportViewModel);
+                    return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Editing, annualReport));
                 }
             }
             catch (AnnualReportException e)
@@ -340,6 +293,29 @@ namespace EPlast.Controllers
                 _logger.LogError($"Exception: {e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
             }
+        }
+
+        private async Task<CreateEditAnnualReportViewModel> GetCreateEditViewModel(CityViewModel city, AnnualReportOperation operation)
+        {
+            var cityMemebrsDTO = await _cityMembersService.GetCurrentByCityIdAsync(city.ID);
+            var cityMembers = _mapper.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(cityMemebrsDTO);
+            return new CreateEditAnnualReportViewModel(cityMembers)
+            {
+                Operation = operation,
+                CityName = city.Name,
+                AnnualReport = new AnnualReportViewModel
+                {
+                    CityId = city.ID,
+                    MembersStatistic = new MembersStatisticViewModel()
+                }
+            };
+        }
+
+        private async Task<CreateEditAnnualReportViewModel> GetCreateEditViewModel(CityViewModel city, AnnualReportOperation operation, AnnualReportViewModel annualReport)
+        {
+            var createEditAnnualReportViewModel = await GetCreateEditViewModel(city, operation);
+            createEditAnnualReportViewModel.AnnualReport = annualReport;
+            return createEditAnnualReportViewModel;
         }
     }
 }
