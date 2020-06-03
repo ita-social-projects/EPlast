@@ -15,13 +15,13 @@ using Organization = EPlast.Models.Organization;
 
 namespace EPlast.Controllers
 {
-    public class DocumentationController : Controller
+    public class DecisionController : Controller
     {
         private readonly IDecisionService _decisionService;
         private readonly IMapper _mapper;
         private readonly IPdfService _PDFService;
 
-        public DocumentationController(IPdfService PDFService, IDecisionService decisionService, IMapper mapper)
+        public DecisionController(IPdfService PDFService, IDecisionService decisionService, IMapper mapper)
         {
             _PDFService = PDFService;
             _decisionService = decisionService;

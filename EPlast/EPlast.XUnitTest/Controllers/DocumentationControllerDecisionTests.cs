@@ -39,7 +39,7 @@ namespace EPlast.XUnitTest
                 .Returns(() => CreateDecisionsDtoQueryable().First(x => x.ID == id));
             _mapper.Setup(d => d.Map<Decision>(It.IsAny<DecisionDTO>()))
                 .Returns(() => CreateDecisionsQueryable().First(x => x.ID == id));
-            DocumentationController documentationController = CreateDocumentationController;
+            DecisionController documentationController = CreateDocumentationController;
 
             JsonResult jsonResult = documentationController.GetDecision(id);
             bool actual = jsonResult.Value.ToString().Contains("True");
@@ -57,7 +57,7 @@ namespace EPlast.XUnitTest
                  .Returns(new DecisionDTO());
             _decisionService.Setup(d => d.ChangeDecision(It.IsAny<DecisionDTO>()))
                 .Returns(() => expected);
-            DocumentationController documentationController = CreateDocumentationController;
+            DecisionController documentationController = CreateDocumentationController;
 
             JsonResult jsonResult = documentationController.ChangeDecision(decisionViewModel);
             bool actual = jsonResult.Value.ToString().Contains("True");
@@ -70,7 +70,7 @@ namespace EPlast.XUnitTest
         {
 
             DecisionViewModel decisionViewModel = null;
-            DocumentationController documentationController = CreateDocumentationController;
+            DecisionController documentationController = CreateDocumentationController;
 
             JsonResult jsonResult = await documentationController.SaveDecision(decisionViewModel);
             bool actual = jsonResult.Value.ToString().Contains("False");
@@ -83,7 +83,7 @@ namespace EPlast.XUnitTest
         {
             DecisionViewModel decisionViewModel = CreateDecisionViewModel();
             decisionViewModel.DecisionWrapper.File = new FormFile(null, 1234, 11241234, "fdd", "dfsdf");
-            DocumentationController documentationController = CreateDocumentationController;
+            DecisionController documentationController = CreateDocumentationController;
 
             JsonResult jsonResult = await documentationController.SaveDecision(decisionViewModel);
             bool actual = jsonResult.Value.ToString().Contains("file length > 10485760");
@@ -99,7 +99,7 @@ namespace EPlast.XUnitTest
             _decisionService.Setup(d => d.SaveDecisionAsync(It.IsAny<DecisionWrapperDTO>()))
                 .Returns(Task.FromResult(true));
             DecisionViewModel decisionViewModel = CreateDecisionViewModel();
-            DocumentationController documentationController = CreateDocumentationController;
+            DecisionController documentationController = CreateDocumentationController;
 
             JsonResult jsonResult = await documentationController.SaveDecision(decisionViewModel);
             bool actual = jsonResult.Value.ToString().Contains("True");
@@ -117,7 +117,7 @@ namespace EPlast.XUnitTest
             _mapper.Setup(m => m.Map<List<DecisionTarget>>(It.IsAny<List<DecisionTargetDTO>>()))
                 .Returns(new List<DecisionTarget>());
             _decisionService.Setup(d => d.GetDecisionStatusTypes()).Returns(new List<SelectListItem>());
-            DocumentationController documentationController = CreateDocumentationController;
+            DecisionController documentationController = CreateDocumentationController;
 
             DecisionViewModel decisionViewModel = documentationController.CreateDecision();
 
@@ -134,7 +134,7 @@ namespace EPlast.XUnitTest
             _mapper.Setup(m => m.Map<List<DecisionTarget>>(It.IsAny<List<DecisionTargetDTO>>()))
                 .Returns(new List<DecisionTarget>());
             _decisionService.Setup(d => d.GetDecisionStatusTypes()).Returns(new List<SelectListItem>());
-            DocumentationController documentationController = CreateDocumentationController;
+            DecisionController documentationController = CreateDocumentationController;
 
             DecisionViewModel decisionViewModel = documentationController.CreateDecision();
 
@@ -146,7 +146,7 @@ namespace EPlast.XUnitTest
         {
             _mapper.Setup(m => m.Map<List<DecisionWrapper>>(It.IsAny<List<DecisionWrapperDTO>>()))
                 .Returns(() => null);
-            DocumentationController documentationController = CreateDocumentationController;
+            DecisionController documentationController = CreateDocumentationController;
 
             var result = documentationController.ReadDecision();
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
@@ -165,7 +165,7 @@ namespace EPlast.XUnitTest
                 .Returns(new List<DecisionWrapper>());
             _mapper.Setup(m => m.Map<List<DecisionTarget>>(It.IsAny<List<DecisionTargetDTO>>()))
                 .Returns(new List<DecisionTarget>());
-            DocumentationController documentationController = CreateDocumentationController;
+            DecisionController documentationController = CreateDocumentationController;
 
             var result = documentationController.ReadDecision();
 
@@ -191,7 +191,7 @@ namespace EPlast.XUnitTest
             }
             _decisionService.Setup(d => d.DeleteDecision(It.IsAny<int>()))
                 .Returns(() => decision != null);
-            DocumentationController documentationController = CreateDocumentationController;
+            DecisionController documentationController = CreateDocumentationController;
 
             JsonResult jsonResult = documentationController.DeleteDecision(id);
             bool actual = jsonResult.Value.ToString().Contains("True");
@@ -245,7 +245,7 @@ namespace EPlast.XUnitTest
             }
 
         };
-        private DocumentationController CreateDocumentationController =>
-            new DocumentationController(null, _decisionService.Object, _mapper.Object);
+        private DecisionController CreateDocumentationController =>
+            new DecisionController(null, _decisionService.Object, _mapper.Object);
     }
 }
