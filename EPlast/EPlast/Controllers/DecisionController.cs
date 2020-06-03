@@ -190,7 +190,7 @@ namespace EPlast.Controllers
             byte[] fileBytes;
             try
             {
-                if (id <= 0) throw new ArgumentException("Decision id cannot be null lest than zero");
+                DecisionIdVerify(id);
                 fileBytes = await _decisionService.DownloadDecisionFileAsync(id);
             }
             catch (Exception e)
@@ -202,14 +202,18 @@ namespace EPlast.Controllers
             return File(fileBytes, _decisionService.GetContentType(id, filename), filename);
         }
 
+        private static void DecisionIdVerify(int id)
+        {
+            if (id <= 0) throw new ArgumentException("Decision id cannot be null lest than zero");
+        }
+
         [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<ActionResult> CreatePDFAsync(int objId)
         {
             try
             {
-                if (objId <= 0) throw new ArgumentException("Cannot crated pdf id is not valid");
-
+                DecisionIdVerify(objId);
                 var arr = await _PDFService.DecisionCreatePDFAsync(objId);
                 return File(arr, "application/pdf");
             }
