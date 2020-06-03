@@ -1,5 +1,5 @@
 ﻿@using EPlast.ViewModels
-@model ClubViewModel
+@model ClubProfileViewModel
 @{
     ViewData["Title"] = "ClubAdmins";
 }
@@ -11,8 +11,6 @@
     <div class="data-table-wrapper-club club-wrappers-radius data-table-wrapper">
         <h1 class="grid-header">Адміністрація куреня - "@Model.Club.ClubName"</h1>
         <script src="~/lib/jquery-ui-dist/jquery-ui.min.js"></script>
-
-
 
         <table id="dtClubAdmins" class="table table-striped table-bordered table-lg table-responsive-lg" cellspacing="0" width="100%">
             <thead>
@@ -29,7 +27,7 @@
                     <th class="th-sm">
                         Час завершення терміну
                     </th>
-                    @if ((Model.ClubAdmin != null && ViewBag.usermanager.GetUserId(User) == Model.ClubAdmin.Id) || User.IsInRole("Admin"))
+                    @if (Model.IsCurrentUserAdmin || Model.IsCurrentUserClubAdmin)
                     {
                         <th>
                             Вибрати дату завершення каденції
@@ -41,7 +39,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model.Club.ClubAdministration)
+                @foreach (var item in Model.ClubAdministration)
                 {
                     <tr class="raport-click-row">
                         <td>@item.AdminType.AdminTypeName</td>
@@ -62,10 +60,11 @@
                             <td class="ClubAdminEndDate">-</td>
                         }
 
-                        @if ((Model.ClubAdmin != null && ViewBag.usermanager.GetUserId(User) == Model.ClubAdmin.Id) || User.IsInRole("Admin"))
+                        @if (Model.IsCurrentUserAdmin || Model.IsCurrentUserClubAdmin)
                         {
                             <td>
-                                <a class="changeEnddatebutton" data-adminid="@item.ID" style="color: #3c5438; justify-content: center;    display: flex;" role="button" data-toggle="modal" href="#changeEnddate">
+                                <a class="changeEnddatebutton" data-adminid="@item.ID" style="color: #3c5438; justify-content: center;display: flex;"
+                                   role="button" data-toggle="modal" href="#changeEnddate">
                                     <i class="material-icons">alarm</i>
                                 </a>
                             </td>
