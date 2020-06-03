@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
+﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace EPlast.BussinessLayer
 {
@@ -20,6 +20,12 @@ namespace EPlast.BussinessLayer
 
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
             fileStream?.Dispose();
         }
 
@@ -28,14 +34,14 @@ namespace EPlast.BussinessLayer
             return fileStream;
         }
 
-        public async Task CopyToAsync(MemoryStream memory)
-        {
-            await fileStream.CopyToAsync(memory);
-        }
-
         public FileStreamManager GenerateFileStreamManager(string path, FileMode mode)
         {
             return new FileStreamManager(path, mode);
+        }
+
+        public async Task CopyToAsync(MemoryStream memory)
+        {
+            await fileStream.CopyToAsync(memory);
         }
 
         public async Task CopyToAsync(IFormFile from, Stream memoryTo)
