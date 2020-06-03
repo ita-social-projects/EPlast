@@ -33,7 +33,7 @@
                     viewAnnualReport(annualReportId);
                     break;
                 case 'edit':
-                    var strURL = '/Documentation/EditAnnualReportAsync?id=' + annualReportId;
+                    var strURL = '/AnnualReport/EditAsync?id=' + annualReportId;
                     window.open(strURL, '_self');
                     break;
                 case 'confirm':
@@ -99,7 +99,7 @@
 
     function viewAnnualReport(annualReportId: string) {
         $.ajax({
-            url: '/Documentation/GetAnnualReportAsync',
+            url: '/AnnualReport/GetAsync',
             type: 'GET',
             cache: false,
             data: { id: annualReportId },
@@ -123,7 +123,7 @@
         $('#Yes').modal('hide');
         $('#Yes').unbind();
         $.ajax({
-            url: '/Documentation/ConfirmAnnualReportAsync',
+            url: '/AnnualReport/ConfirmAsync',
             type: 'GET',
             cache: false,
             data: { id: annualReportId },
@@ -158,7 +158,7 @@
         $('#Yes').modal('hide');
         $('#Yes').unbind();
         $.ajax({
-            url: '/Documentation/CancelAnnualReportAsync',
+            url: '/AnnualReport/CancelAsync',
             type: 'GET',
             cache: false,
             data: { id: annualReportId },
@@ -184,7 +184,7 @@
         $('#Yes').modal('hide');
         $('#Yes').unbind();
         $.ajax({
-            url: '/Documentation/DeleteAnnualReportAsync',
+            url: '/AnnualReport/DeleteAsync',
             type: 'GET',
             cache: false,
             data: { id: annualReportId },
@@ -208,7 +208,7 @@
         e.preventDefault();
         e.stopPropagation();
         var cityId = $('#CitiesList option').filter(':selected').val();
-        var strURL = '/Documentation/CreateAnnualReportLikeAdminAsync?cityId=' + cityId;
+        var strURL = '/AnnualReport/CreateAsync?cityId=' + cityId;
         window.open(strURL, '_self')
     })
 
