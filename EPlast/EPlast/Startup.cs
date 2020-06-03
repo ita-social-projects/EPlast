@@ -80,7 +80,11 @@ namespace EPlast
             services.AddScoped<ICityAccessService, CityAccessService>();
             services.AddScoped<ICityMembersService, CityMembersService>();
             services.AddScoped<IAnnualReportService, AnnualReportService>();
-            services.AddScoped<IPDFService, PDFService>();
+            services.AddScoped<IPdfService, PdfService>();
+            services.AddScoped<IDecisionService, DecisionService>();
+            services.AddScoped<IDirectoryManager, DirectoryManager>();
+            services.AddScoped<IFileManager, FileManager>();
+            services.AddScoped<IFileStreamManager, FileStreamManager>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<INationalityService, NationalityService>();
             services.AddScoped<IReligionService, ReligionService>();

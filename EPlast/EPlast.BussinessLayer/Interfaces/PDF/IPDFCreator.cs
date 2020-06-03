@@ -1,6 +1,6 @@
 ﻿namespace EPlast.BussinessLayer
 {
-    internal interface IPDFCreator
+    internal interface IPdfCreator
     {
         byte[] GetPDFBytes();
     }

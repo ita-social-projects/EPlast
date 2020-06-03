@@ -2,7 +2,7 @@
 
 namespace EPlast.BussinessLayer
 {
-    internal interface IPDFDocument
+    internal interface IPdfDocument
     {
         Document GetDocument();
     }
