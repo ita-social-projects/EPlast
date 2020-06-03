@@ -140,6 +140,13 @@ namespace EPlast.WebApi.Controllers
             return Ok("Register");
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult<IEnumerable<string>> TestValues()
+        {
+            return new string[] { "value1", "value2" };
+        }
+
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel registerVM)

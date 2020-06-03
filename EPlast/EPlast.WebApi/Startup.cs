@@ -55,6 +55,8 @@ namespace EPlast.WebApi
 
             app.UseHttpsRedirection();
             app.UseMvc();
+            //app.UseCors(builder => builder.AllowAnyOrigin());
+
         }
     }
 }
