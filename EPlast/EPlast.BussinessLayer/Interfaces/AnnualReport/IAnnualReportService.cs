@@ -16,5 +16,6 @@ namespace EPlast.BussinessLayer.Services.Interfaces
         Task DeleteAsync(ClaimsPrincipal claimsPrincipal, int id);
         Task<bool> HasUnconfirmedAsync(int cityId);
         Task<bool> HasCreatedAsync(int cityId);
+        Task CheckCreatedAndUnconfirmed(int cityId);
     }
 }
