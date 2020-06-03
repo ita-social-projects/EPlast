@@ -1,5 +1,4 @@
-﻿using System;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO.City;
 using EPlast.BussinessLayer.Interfaces.City;
 using EPlast.BussinessLayer.Services.Interfaces;
@@ -9,9 +8,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Xunit;
 
 namespace EPlast.XUnitTest
@@ -152,6 +151,7 @@ namespace EPlast.XUnitTest
 
             Assert.IsType<ViewResult>(result);
         }
+
         [Fact]
         public void CityFollowersInvalidIdTest()
         {
@@ -166,6 +166,7 @@ namespace EPlast.XUnitTest
             Assert.Equal("HandleError", viewResult.ActionName);
             Assert.Equal("Error", viewResult.ControllerName);
         }
+
         [Fact]
         public void CityFollowersExceptionTest()
         {
@@ -238,6 +239,7 @@ namespace EPlast.XUnitTest
 
             Assert.IsType<ViewResult>(result);
         }
+
         [Fact]
         public void EditGetInvalidIdTest()
         {
@@ -252,6 +254,7 @@ namespace EPlast.XUnitTest
             Assert.Equal("HandleError", viewResult.ActionName);
             Assert.Equal("Error", viewResult.ControllerName);
         }
+
         [Fact]
         public void EditGetExceptionTest()
         {
@@ -266,6 +269,7 @@ namespace EPlast.XUnitTest
             Assert.Equal("HandleError", viewResult.ActionName);
             Assert.Equal("Error", viewResult.ControllerName);
         }
+
         [Fact]
         public void EditWithValidModelStateTest()
         {
@@ -403,6 +407,7 @@ namespace EPlast.XUnitTest
             Assert.Equal("HandleError", viewResult.ActionName);
             Assert.Equal("Error", viewResult.ControllerName);
         }
+
         [Fact]
         public void DetailsExceptionTest()
         {
@@ -417,6 +422,7 @@ namespace EPlast.XUnitTest
             Assert.Equal("HandleError", viewResult.ActionName);
             Assert.Equal("Error", viewResult.ControllerName);
         }
+
         [Fact]
         public void CreateWithValidModelStateTest()
         {
@@ -453,8 +459,6 @@ namespace EPlast.XUnitTest
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.NotNull(viewResult);
         }
-
-     
 
         [Fact]
         public void CreateWithExceptionTest()
