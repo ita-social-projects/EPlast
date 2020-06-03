@@ -82,17 +82,16 @@ namespace EPlast.BussinessLayer.Services
                 userTable.Add(new UserTableDTO
                 {
                     User = _mapper.Map<User, UserDTO>(user),
-                    ClubName = clubMembers.Where(x => x.UserId.Equals(user.Id) && x.IsApproved == true)
+                    ClubName = clubMembers.Where(x => x.UserId.Equals(user.Id) && x.IsApproved)
                                           .Select(x => x.Club.ClubName).LastOrDefault() ?? string.Empty,
                     CityName = cityName,
-                    RegionName = !cityName.Equals(string.Empty) ? cities.Where(x => x.Name.Equals(cityName))
-                                       .FirstOrDefault()
-                                       .Region
-                                       .RegionName : string.Empty,
-                    UserPlastDegreeName = user.UserPlastDegrees.Count != 0 ? user.UserPlastDegrees.Where(x => x.UserId == user.Id && x.DateFinish == null)
-                                                               .FirstOrDefault()
-                                                               .UserPlastDegreeType
-                                                               .GetDescription() : string.Empty,
+                    RegionName = !string.IsNullOrEmpty(cityName) ? cities
+                        .FirstOrDefault(x => x.Name.Equals(cityName))
+                        ?.Region.RegionName : string.Empty,
+
+                    UserPlastDegreeName = user.UserPlastDegrees.Count != 0 ? user.UserPlastDegrees
+                        .FirstOrDefault(x => x.UserId == user.Id && x.DateFinish == null)
+                        ?.UserPlastDegreeType.GetDescription() : string.Empty,
                     UserRoles = string.Join(", ", roles)
                 });
             }
