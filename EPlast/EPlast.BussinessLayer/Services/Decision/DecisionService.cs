@@ -185,7 +185,7 @@ namespace EPlast.BussinessLayer
         private void DownloadDecisionFilePathCheck(string path)
         {
             if (!_directoryManager.Exists(path) || _directoryManager.GetFiles(path).Length == 0)
-                throw new ArgumentException($"directory '{path}' is not exist");
+                throw new ArgumentException($"directory '{path}' does not exist");
         }
 
         public string GetContentType(int decisionId, string filename)
