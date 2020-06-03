@@ -28,13 +28,13 @@ namespace EPlast.Controllers
         private readonly IDecisionService _decisionService;
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
-        private readonly IPDFService _PDFService;
+        private readonly IPdfService _PDFService;
         private readonly IAnnualReportService _annualReportService;
         private readonly ICityAccessService _cityAccessService;
         private readonly ICityMembersService _cityMembersService;
         private readonly ICityService _cityService;
 
-        public DocumentationController(IPDFService PDFService, ILogger<DocumentationController> logger, IDecisionService decisionService, IMapper mapper, 
+        public DocumentationController(IPdfService PDFService, ILogger<DocumentationController> logger, IDecisionService decisionService, IMapper mapper, 
             IAnnualReportService annualReportService, ICityAccessService cityAccessService, ICityMembersService cityMembersService, ICityService cityService)
         {
             _PDFService = PDFService;
