@@ -93,10 +93,10 @@ namespace EPlast.BussinessLayer.Services
         public async Task EditAsync(ClaimsPrincipal claimsPrincipal, AnnualReportDTO annualReportDTO)
         {
             var annualReport = await _repositoryWrapper.AnnualReports
-                .FindByCondition(ar => ar.ID == annualReportDTO.ID)
+                .FindByCondition(ar => ar.ID == annualReportDTO.ID && ar.CityId == annualReportDTO.CityId && ar.UserId == annualReportDTO.UserId
+                && ar.Date.Date == annualReportDTO.Date.Date && ar.Status == DatabaseEntities.AnnualReportStatus.Unconfirmed)
                 .FirstOrDefaultAsync();
-            if (annualReport?.CityId != annualReportDTO.CityId || annualReport?.UserId != annualReportDTO.UserId || annualReport?.Date != annualReportDTO.Date
-                || annualReport?.Status != DatabaseEntities.AnnualReportStatus.Unconfirmed || annualReportDTO.Status != DTO.AnnualReportStatus.Unconfirmed)
+            if (annualReport == null || annualReportDTO.Status != DTO.AnnualReportStatus.Unconfirmed)
             {
                 throw new AnnualReportException(ErrorMessageEditFailed);
             }
