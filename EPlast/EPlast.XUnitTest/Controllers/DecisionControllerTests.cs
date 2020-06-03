@@ -17,12 +17,12 @@ using Organization = EPlast.Models.Organization;
 
 namespace EPlast.XUnitTest
 {
-    public class DocumentationControllerDecisionTests
+    public class DecisionControllerTests
     {
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<IDecisionService> _decisionService;
 
-        public DocumentationControllerDecisionTests()
+        public DecisionControllerTests()
         {
             _mapper = new Mock<IMapper>();
             _decisionService = new Mock<IDecisionService>();
@@ -68,7 +68,6 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task SaveDecisionWithNullDecisionViewMode()
         {
-
             DecisionViewModel decisionViewModel = null;
             DecisionController documentationController = CreateDocumentationController;
 
@@ -122,8 +121,8 @@ namespace EPlast.XUnitTest
             DecisionViewModel decisionViewModel = documentationController.CreateDecision();
 
             Assert.IsType<DecisionViewModel>(decisionViewModel);
-
         }
+
         [Fact]
         public void CreateDecisionFailTest()
         {
@@ -139,8 +138,8 @@ namespace EPlast.XUnitTest
             DecisionViewModel decisionViewModel = documentationController.CreateDecision();
 
             Assert.True(decisionViewModel == null);
-
         }
+
         [Fact]
         public void ReadDecisionFailTest()
         {
@@ -154,6 +153,7 @@ namespace EPlast.XUnitTest
             Assert.Equal("HandleError", viewResult.ActionName);
             Assert.Equal("Error", viewResult.ControllerName);
         }
+
         [Fact]
         public void ReadDecisionCorrectTest()
         {
@@ -170,7 +170,6 @@ namespace EPlast.XUnitTest
             var result = documentationController.ReadDecision();
 
             Assert.IsType<ViewResult>(result);
-
         }
 
         [Theory]
@@ -212,6 +211,7 @@ namespace EPlast.XUnitTest
             }
             return decisions.AsQueryable();
         }
+
         private static IEnumerable<Decision> CreateDecisionsQueryable()
         {
             List<Decision> decisions = new List<Decision>();
@@ -232,7 +232,6 @@ namespace EPlast.XUnitTest
             {
                 Decision = new Decision
                 {
-
                     ID = 1,
                     Name = "Test Decision",
                     DecisionStatusType = DecisionStatusType.InReview,
@@ -243,8 +242,8 @@ namespace EPlast.XUnitTest
                     HaveFile = haveFile
                 }
             }
-
         };
+
         private DecisionController CreateDocumentationController =>
             new DecisionController(null, _decisionService.Object, _mapper.Object);
     }

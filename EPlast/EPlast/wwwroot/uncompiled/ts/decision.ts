@@ -122,7 +122,7 @@ $(() => {
         formData.append("Decision.DecisionStatusType", decisionDecisionStatusType);
 
         $.ajax({
-            url: "/Documentation/SaveDecision",
+            url: "/Decision/SaveDecision",
             type: "POST",
             processData: false,
             contentType: false,
@@ -136,7 +136,7 @@ $(() => {
                     $("#ModalSuccess").modal("show");
                     let file = "";
                     if (response.decision.haveFile) {
-                        file = `<a href="/Documentation/Download/${response.decision.id}?filename=${files[0].name}">додаток.${files[0].name.split('.')[1]}</a>`;
+                        file = `<a href="/Decision/Download/${response.decision.id}?filename=${files[0].name}">додаток.${files[0].name.split('.')[1]}</a>`;
                     }
                     $("#dtReadDecision").DataTable().row.add(
                         [
@@ -200,7 +200,7 @@ $(() => {
         formData.append("Decision.Description", decisionDescription);
 
         $.ajax({
-            url: "/Documentation/ChangeDecision",
+            url: "/Decision/ChangeDecision",
             type: "POST",
             processData: false,
             contentType: false,
@@ -232,7 +232,7 @@ $(() => {
         let decisionID = $("#Delete-Decision-ID").val();
         $.ajax(
             {
-                url: "/Documentation/DeleteDecision",
+                url: "/Decision/DeleteDecision",
                 type: "POST",
                 data: { 'id': decisionID },
                 success(response) {
@@ -264,7 +264,7 @@ $(() => {
             const content = $(this).children().first().text();
             switch (key) {
                 case "edit":
-                    $.get(`/Documentation/GetDecision?id=${content}`, function (json) {
+                    $.get(`/Decision/GetDecision?id=${content}`, function (json) {
                         if (!json.success) {
                             $("#ModalError.modal-body:first p:first strong:first").html("ID рішення немає в базі!");
                             return;
@@ -276,10 +276,10 @@ $(() => {
                     $("#EditDecisionModal").modal("show");
                     break;
                 case "pdf":
-                    window.open(`/Documentation/CreatePDFAsync?objId=${content}`, "_blank");
+                    window.open(`/Decision/CreatePDFAsync?objId=${content}`, "_blank");
                     break;
                 case "delete":
-                    $.get(`/Documentation/GetDecision?id=${content}`, function (json) {
+                    $.get(`/Decision/GetDecision?id=${content}`, function (json) {
                         if (!json.success) {
                             $("#ModalError.modal-body:first p:first strong:first").html("ID рішення немає в базі!");
                             return;
