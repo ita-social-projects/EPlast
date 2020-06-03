@@ -73,14 +73,7 @@ namespace EPlast.BussinessLayer.Services
             {
                 throw new AnnualReportException(ErrorMessageNoAccess);
             }
-            if (await this.HasCreatedAsync(annualReportDTO.CityId))
-            {
-                throw new AnnualReportException(ErrorMessageHasCreated);
-            }
-            if (await this.HasUnconfirmedAsync(annualReportDTO.CityId))
-            {
-                throw new AnnualReportException(ErrorMessageHasUnconfirmed);
-            }
+            await this.CheckCreatedAndUnconfirmed(annualReportDTO.CityId);
             var annualReport = _mapper.Map<AnnualReportDTO, AnnualReport>(annualReportDTO);
             var user = await _userManager.GetUserAsync(claimsPrincipal);
             annualReport.UserId = user.Id;
@@ -93,11 +86,10 @@ namespace EPlast.BussinessLayer.Services
         public async Task EditAsync(ClaimsPrincipal claimsPrincipal, AnnualReportDTO annualReportDTO)
         {
             var annualReport = await _repositoryWrapper.AnnualReports
-                .FindByCondition(ar => ar.ID == annualReportDTO.ID)
+                .FindByCondition(ar => ar.ID == annualReportDTO.ID && ar.CityId == annualReportDTO.CityId && ar.UserId == annualReportDTO.UserId
+                && ar.Date.Date == annualReportDTO.Date.Date && ar.Status == DatabaseEntities.AnnualReportStatus.Unconfirmed)
                 .FirstOrDefaultAsync();
-            if (annualReport == null && (annualReport.CityId != annualReportDTO.CityId || annualReport.UserId != annualReportDTO.UserId ||
-                annualReport.Date != annualReportDTO.Date || annualReport.Status != DatabaseEntities.AnnualReportStatus.Unconfirmed ||
-                annualReportDTO.Status != DTO.AnnualReportStatus.Unconfirmed))
+            if (annualReport == null || annualReportDTO.Status != DTO.AnnualReportStatus.Unconfirmed)
             {
                 throw new AnnualReportException(ErrorMessageEditFailed);
             }
@@ -175,6 +167,18 @@ namespace EPlast.BussinessLayer.Services
                 .FindByCondition(ar => ar.CityId == cityId && ar.Date.Year == DateTime.Now.Year)
                 .FirstOrDefaultAsync();
             return annualReport != null;
+        }
+
+        public async Task CheckCreatedAndUnconfirmed(int cityId)
+        {
+            if (await this.HasCreatedAsync(cityId))
+            {
+                throw new AnnualReportException(ErrorMessageHasCreated);
+            }
+            if (await this.HasUnconfirmedAsync(cityId))
+            {
+                throw new AnnualReportException(ErrorMessageHasUnconfirmed);
+            }
         }
 
         private async Task SaveLastConfirmedAsync(int cityId)
