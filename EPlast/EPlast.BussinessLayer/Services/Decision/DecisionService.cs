@@ -139,7 +139,7 @@ namespace EPlast.BussinessLayer
 
         public OrganizationDTO GetDecisionOrganization(OrganizationDTO organization)
         {
-            OrganizationDTO organizational = new OrganizationDTO { OrganizationName = string.Empty };
+            OrganizationDTO organizational = null;
             try
             {
                 organizational = _mapper.Map<OrganizationDTO>(string.IsNullOrEmpty(organization.OrganizationName)
