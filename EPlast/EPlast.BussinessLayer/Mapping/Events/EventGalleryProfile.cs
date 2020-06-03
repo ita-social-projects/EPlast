@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO.Events;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.Event;
 
 namespace EPlast.BussinessLayer.Mapping.Events
 {

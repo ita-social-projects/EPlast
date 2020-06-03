@@ -14,7 +14,8 @@ namespace EPlast.BussinessLayer.Services.Interfaces
         Task ConfirmAsync(ClaimsPrincipal claimsPrincipal, int id);
         Task CancelAsync(ClaimsPrincipal claimsPrincipal, int id);
         Task DeleteAsync(ClaimsPrincipal claimsPrincipal, int id);
-        bool HasUnconfirmed(int cityId);
-        bool HasCreated(int cityId);
+        Task<bool> HasUnconfirmedAsync(int cityId);
+        Task<bool> HasCreatedAsync(int cityId);
+        Task CheckCreatedAndUnconfirmed(int cityId);
     }
 }

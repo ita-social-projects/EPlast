@@ -502,13 +502,13 @@ namespace EPlast.Controllers
                 }
 
                 var user = _userService.GetUser(userId);
-                var time = _userService.CheckOrAddPlastunRole(_mapper.Map<UserDTO, UserViewModel>(user).Id, user.RegistredOn);
+                var time = await _userService.CheckOrAddPlastunRole(_mapper.Map<UserDTO, UserViewModel>(user).Id, user.RegistredOn);
                 var isUserPlastun = await _userManagerService.IsInRole(user, "Пластун");
 
                 var model = new PersonalDataViewModel
                 {
                     User = _mapper.Map<UserDTO, UserViewModel>(user),
-                    TimeToJoinPlast = time.Result,
+                    TimeToJoinPlast = time,
                     IsUserPlastun = isUserPlastun
                 };
 

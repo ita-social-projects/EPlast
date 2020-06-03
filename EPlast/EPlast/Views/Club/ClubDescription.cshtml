@@ -1,30 +1,30 @@
 ﻿@using EPlast.ViewModels
 @model ClubViewModel
 @{
-    ViewData["Title"] = "ClubFollowers";
+    ViewData["Title"] = "ClubDescription";
 }
-    <div class="content-wrapper">
-        <div class="club-page-wrapper-description club-page-wrapper">
-            @if(Model.Club.Logo != null)
-            {
-                <div class="main-info-description main-info grid-block" style="background-image: url('/images/Club/@Model.Club.Logo')"></div>
-            }
-            else
-            {
-                <div class="main-info-description main-info grid-block" style="background-image: url('/images/Club/default.jpg')"></div>
-             }
-        
+<div class="content-wrapper">
+    <div class="club-page-wrapper-description club-page-wrapper">
+        @if (Model.Logo != null)
+        {
+            <div class="main-info-description main-info grid-block" style="background-image: url('/images/Club/@Model.Logo')"></div>
+        }
+        else
+        {
+            <div class="main-info-description main-info grid-block" style="background-image: url('/images/Club/default.jpg')"></div>
+        }
+
         <div class="secondary-info-description secondary-info vertical-grid">
             <div class="about-info-description about-info grid-block club-wrappers-radius">
                 <h1 class="grid-header">Про нас</h1>
 
-                <p class="info-description">@Model.Club.Description</p>
-                @if (Model.Club.ClubURL != null)
+                <p class="info-description">@Model.Description</p>
+                @if (Model.ClubURL != null)
                 {
-                    <p class="info-description"><b><a href="@Model.Club.ClubURL">Дізнайтеся більше про наш курінь за посиланням...</a></b></p>
+                    <p class="info-description"><b><a href="@Model.ClubURL">Дізнайтеся більше про наш курінь за посиланням...</a></b></p>
                 }
-                <a asp-controller="Club" asp-action="Club" asp-route-index="@Model.Club.ID" class="btn btn-primary btn-lg colors-for-club-buttons" role="button">Назад</a>
+                <a asp-controller="Club" asp-action="Club" asp-route-index="@Model.ID" class="btn btn-primary btn-lg colors-for-club-buttons" role="button">Назад</a>
             </div>
         </div>
     </div>
-                
+</div>            

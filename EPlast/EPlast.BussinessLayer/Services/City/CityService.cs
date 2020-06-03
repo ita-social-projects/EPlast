@@ -132,21 +132,23 @@ namespace EPlast.BussinessLayer.Services
             var oldImageName = _repoWrapper.City.FindByCondition(i => i.ID == cityId).FirstOrDefault()?.Logo;
             if (file != null && file.Length > 0)
             {
-                var img = Image.FromStream(file.OpenReadStream());
-                var uploads = Path.Combine(_env.WebRootPath, "images\\Cities");
-                if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default.png"))
+                using (var img = Image.FromStream(file.OpenReadStream()))
                 {
-                    var oldPath = Path.Combine(uploads, oldImageName);
-                    if (File.Exists(oldPath))
+                    var uploads = Path.Combine(_env.WebRootPath, "images\\Cities");
+                    if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default.png"))
                     {
-                        File.Delete(oldPath);
+                        var oldPath = Path.Combine(uploads, oldImageName);
+                        if (File.Exists(oldPath))
+                        {
+                            File.Delete(oldPath);
+                        }
                     }
-                }
 
-                var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-                var filePath = Path.Combine(uploads, fileName);
-                img.Save(filePath);
-                city.Logo = fileName;
+                    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                    var filePath = Path.Combine(uploads, fileName);
+                    img.Save(filePath);
+                    city.Logo = fileName;
+                }
             }
             else
             {

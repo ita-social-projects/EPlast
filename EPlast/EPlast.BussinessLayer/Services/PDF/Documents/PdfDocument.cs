@@ -4,39 +4,51 @@ using System;
 
 namespace EPlast.BussinessLayer
 {
-    public abstract class PdfDocument : IPDFDocument
+    public abstract class PdfDocument : IPdfDocument
     {
-        protected readonly Document document;
-        private readonly IPDFSettings settings;
+        protected readonly Document Document;
+        private readonly IPdfSettings settings;
 
-        protected PdfDocument() : this(new PDFSettings())
+        protected PdfDocument() : this(new PdfSettings())
         {
         }
 
-        protected PdfDocument(IPDFSettings settings)
+        protected PdfDocument(IPdfSettings settings)
         {
             this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            document = new Document();
+            Document = new Document();
         }
 
         public virtual Document GetDocument()
         {
             Section section;
-            document.Info.Title = settings.Title;
-            document.Info.Subject = settings.Subject;
-            document.Info.Author = settings.Author;
+            Document.Info.Title = settings.Title;
+            Document.Info.Subject = settings.Subject;
+            Document.Info.Author = settings.Author;
 
-            DefineStyles(document);
+            DefineStyles(Document);
 
-            section = document.AddSection();
-            var image = section.AddImage(settings.ImagePath);
-            image.Width = 600;
-            image.RelativeHorizontal = RelativeHorizontal.Page;
-            image.RelativeVertical = RelativeVertical.Page;
+            section = Document.AddSection();
 
+            if (!settings.ImagePath.Contains("Blank"))
+            {
+                Image image = section.AddImage(settings.ImagePath);
+                image.Width = 600;
+                image.RelativeHorizontal = RelativeHorizontal.Page;
+                image.RelativeVertical = RelativeVertical.Page;
+            }
+            else
+            {
+                Image image = section.AddImage(settings.ImagePath);
+                image.Width = 84;
+                image.Left = 40;
+                image.Top = 20;
+                image.RelativeHorizontal = RelativeHorizontal.Page;
+                image.RelativeVertical = RelativeVertical.Page;
+            }
             SetDocumentBody(section);
 
-            return document;
+            return Document;
         }
 
         public abstract void SetDocumentBody(Section section);
