@@ -178,7 +178,7 @@ namespace EPlast.XUnitTest
             };
             var actualReturn = await _decisionService.SaveDecisionAsync(decision);
 
-            Assert.True(actualReturn);
+            Assert.Equal(decisionId, actualReturn);
         }
 
         [Theory]
