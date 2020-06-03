@@ -13,13 +13,13 @@ namespace EPlast.BussinessLayer
 
         bool DeleteDecision(int id);
 
-        Task<bool> SaveDecisionAsync(DecisionWrapperDTO decision);
+        Task<int> SaveDecisionAsync(DecisionWrapperDTO decision);
 
         Task<byte[]> DownloadDecisionFileAsync(int decisionId);
 
         DecisionWrapperDTO CreateDecision();
 
-        OrganizationDTO GetDecisionOrganization(int decisionId);
+        OrganizationDTO GetDecisionOrganization(OrganizationDTO organization);
 
         List<OrganizationDTO> GetOrganizationList();
 
