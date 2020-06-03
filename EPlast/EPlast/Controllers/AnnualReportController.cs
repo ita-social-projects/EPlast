@@ -46,14 +46,7 @@ namespace EPlast.Controllers
             {
                 var citiesDTO = await _cityAccessService.GetCitiesAsync(User);
                 var city = _mapper.Map<CityDTO, CityViewModel>(citiesDTO.First());
-                if (await _annualReportService.HasUnconfirmedAsync(city.ID))
-                {
-                    throw new AnnualReportException("Станиця має непідтверджені звіти!");
-                }
-                if (await _annualReportService.HasCreatedAsync(city.ID))
-                {
-                    throw new AnnualReportException("Річний звіт для даної станиці вже створений!");
-                }
+                await _annualReportService.CheckCreatedAndUnconfirmed(city.ID);
                 return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Creating));
             }
             catch (AnnualReportException e)
@@ -76,14 +69,7 @@ namespace EPlast.Controllers
             {
                 if (await _cityAccessService.HasAccessAsync(User, cityId))
                 {
-                    if (await _annualReportService.HasUnconfirmedAsync(cityId))
-                    {
-                        throw new AnnualReportException("Станиця має непідтверджені звіти!");
-                    }
-                    if (await _annualReportService.HasCreatedAsync(cityId))
-                    {
-                        throw new AnnualReportException("Річний звіт для даної станиці вже створений!");
-                    }
+                    await _annualReportService.CheckCreatedAndUnconfirmed(cityId);
                     var cityDTO = _cityService.GetById(cityId);
                     var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
                     return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Creating));
