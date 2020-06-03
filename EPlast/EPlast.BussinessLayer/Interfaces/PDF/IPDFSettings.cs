@@ -1,6 +1,6 @@
 ﻿namespace EPlast.BussinessLayer
 {
-    public interface IPDFSettings
+    public interface IPdfSettings
     {
         string Title { get; set; }
         string Subject { get; set; }
