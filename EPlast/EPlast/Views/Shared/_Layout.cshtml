@@ -40,11 +40,11 @@
                             <i id="MenuOpener" class="fas fa-bars fa-2x"></i>
                         </div>
                         <div class="navbar-header d-flex flex-row justify-content-start">
-                            <a href="#">
+                            <a asp-action="Index" asp-controller="Home">
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Plast_National_Scout_Organization.svg/803px-Plast_National_Scout_Organization.svg.png"
                                      class="img-fluid plast-logo" alt="logo">
                             </a>
-                            <a class="d-none d-sm-block navbar-brand page-header-title" href="#">ePlast</a>
+                            <a class="d-none d-sm-block navbar-brand page-header-title" asp-action="Index" asp-controller="Home">ePlast</a>
                         </div>
                     </div>
                     <div class="nav-content d-flex flex-row justify-content-end">
@@ -233,11 +233,11 @@
                     <div class="sideMenuHiddenContent">
                         @if (User.IsInRole("Голова Станиці"))
                         {
-                            <a href="/Documentation/CreateAnnualReportAsync">Подати річний звіт станиці</a>
+                            <a href="/AnnualReport/CreateAsync">Подати річний звіт станиці</a>
                         }
                         @if (User.IsInRole("Голова Округу") || User.IsInRole("Admin"))
                         {
-                            <a href="/Documentation/ViewAnnualReportsAsync">Річні звіти</a>
+                            <a href="/AnnualReport/GetAllAsync">Річні звіти</a>
                         }
                         <a href="/Admin/RegionsAdmins">Осередки та адміни</a>
                         <a>Геостатистика</a>
