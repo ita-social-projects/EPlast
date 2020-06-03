@@ -19,9 +19,9 @@ namespace EPlast.Controllers
     {
         private readonly IDecisionService _decisionService;
         private readonly IMapper _mapper;
-        private readonly IPDFService _PDFService;
+        private readonly IPdfService _PDFService;
 
-        public DocumentationController(IPDFService PDFService, IDecisionService decisionService, IMapper mapper)
+        public DocumentationController(IPdfService PDFService, IDecisionService decisionService, IMapper mapper)
         {
             _PDFService = PDFService;
             _decisionService = decisionService;
