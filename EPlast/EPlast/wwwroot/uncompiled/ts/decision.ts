@@ -112,14 +112,14 @@ $(() => {
         const decisionDate = $("#datepicker").datepicker().val().toString();
         const decisionDescription = $("#Decision-Description").val().toString();
         const decisionDecisionStatusType = $("#Decision-DecisionStatusType option:selected").text();
-        formData.append("file", files[0]);
-        formData.append("Decision.Name", decisionName);
-        formData.append("Decision.Organization.ID", decisionOrganizationId);
-        formData.append("Decision.DecisionTarget.TargetName", decisionTargetName);
-        formData.append("Decision.DecisionTarget.ID", decisionTargetId);
-        formData.append("Decision.Date", decisionDate);
-        formData.append("Decision.Description", decisionDescription);
-        formData.append("Decision.DecisionStatusType", decisionDecisionStatusType);
+        formData.append("DecisionWrapper.File", files[0]);
+        formData.append("DecisionWrapper.Decision.Name", decisionName);
+        formData.append("DecisionWrapper.Decision.Organization.ID", decisionOrganizationId);
+        formData.append("DecisionWrapper.Decision.DecisionTarget.TargetName", decisionTargetName);
+        formData.append("DecisionWrapper.Decision.DecisionTarget.ID", decisionTargetId);
+        formData.append("DecisionWrapper.Decision.Date", decisionDate);
+        formData.append("DecisionWrapper.Decision.Description", decisionDescription);
+        formData.append("DecisionWrapper.Decision.DecisionStatusType", decisionDecisionStatusType);
 
         $.ajax({
             url: "/Decision/SaveDecision",
@@ -138,9 +138,10 @@ $(() => {
                     if (response.decision.haveFile) {
                         file = `<a href="/Decision/Download/${response.decision.id}?filename=${files[0].name}">додаток.${files[0].name.split('.')[1]}</a>`;
                     }
+                    const table = $("#dtReadDecision").DataTable();
                     $("#dtReadDecision").DataTable().row.add(
                         [
-                            response.decision.id,
+                            table.data().rows().count() + 1,
                             response.decision.name,
                             response.decisionOrganization,
                             decisionDecisionStatusType,
@@ -243,8 +244,7 @@ $(() => {
                         $("#ModalSuccess").modal("show");
                         let table = $("#dtReadDecision").DataTable();
                         table.rows($(`tbody tr td:contains(${decisionID})`).parent()).remove().draw();
-                    }
-                    else {
+                    } else {
                         $("#EditDecisionModal").modal("hide");
                         $("#ModalError.modal-body:first p:first strong:first").html("Не вдалося видалити звіт!");
                     }
@@ -254,9 +254,8 @@ $(() => {
                     $("#DeleteDecisionModal").modal("hide");
                     $("#ModalError.modal-body:first p:first strong:first").html("Не можливо редагувати звіт!");
                 }
-            }
-        )
-    })
+            });
+    });
     $.contextMenu({
         selector: ".decision-menu",
 
@@ -271,7 +270,7 @@ $(() => {
                         }
                         $("#Edit-Decision-ID").val(json.decision.id);
                         $("#Edit-Decision-Name").val(json.decision.name);
-                        $("#Edit-Decision-Description").text(json.decision.description);
+                        $("#Edit-Decision-Description").val(json.decision.description);
                     });
                     $("#EditDecisionModal").modal("show");
                     break;

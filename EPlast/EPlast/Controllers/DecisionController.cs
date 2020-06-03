@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer;
 using EPlast.BussinessLayer.DTO;
-using EPlast.DataAccess.Entities;
 using EPlast.Models;
 using EPlast.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -11,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BussinessLayer.Services.Interfaces;
 using Organization = EPlast.Models.Organization;
 
 namespace EPlast.Controllers
@@ -20,23 +20,21 @@ namespace EPlast.Controllers
         private readonly IDecisionService _decisionService;
         private readonly IMapper _mapper;
         private readonly IPdfService _PDFService;
+        private readonly ILoggerService<DecisionController> _loggerService;
 
-        public DecisionController(IPdfService PDFService, IDecisionService decisionService, IMapper mapper)
+        public DecisionController(IPdfService PDFService, IDecisionService decisionService,
+            IMapper mapper, ILoggerService<DecisionController> loggerService)
         {
             _PDFService = PDFService;
             _decisionService = decisionService;
             _mapper = mapper;
-        }
-
-        public IActionResult Index()
-        {
-            return View();
+            _loggerService = loggerService;
         }
 
         [Authorize(Roles = "Admin")]
         public DecisionViewModel CreateDecision()
         {
-            DecisionViewModel decesionViewModel = null;
+            DecisionViewModel decesionViewModel;
             try
             {
                 var organizations = _mapper.Map<List<Organization>>(_decisionService.GetOrganizationList());
@@ -68,7 +66,7 @@ namespace EPlast.Controllers
         {
             try
             {
-                var decision = _mapper.Map<Decesion>(_decisionService.GetDecision(id));
+                var decision = _mapper.Map<Decision>(_decisionService.GetDecision(id));
                 return Json(new { success = true, decision });
             }
             catch
@@ -79,18 +77,18 @@ namespace EPlast.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public JsonResult ChangeDecision(DecisionViewModel decesionViewModel)
+        public JsonResult ChangeDecision(Decision decision)
         {
             var success = false;
             try
             {
                 success = _decisionService.ChangeDecision(
-                    _mapper.Map<DecisionDTO>(decesionViewModel.DecisionWrapper.Decision));
+                    _mapper.Map<DecisionDTO>(decision));
                 return Json(new
                 {
                     success,
                     text = "Зміни пройшли успішно!",
-                    decesion = decesionViewModel.DecisionWrapper.Decision
+                    decision
                 });
             }
             catch
@@ -101,49 +99,49 @@ namespace EPlast.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<JsonResult> SaveDecision(DecisionViewModel decesionViewModel)
+        public async Task<JsonResult> SaveDecision(DecisionWrapper decisionWrapper)
         {
-            var success = false;
             try
             {
-                ModelState.Remove("Decesion.DecesionStatusType");
-                if (!ModelState.IsValid && decesionViewModel.DecisionWrapper.Decision.DecisionTarget.ID != 0 ||
-                    decesionViewModel == null)
+                ModelState.Remove("DecisionWrapper.Decision.DecisionStatusType");
+                if (!ModelState.IsValid && decisionWrapper.Decision.DecisionTarget.ID != 0 ||
+                    decisionWrapper == null)
                 {
                     ModelState.AddModelError("", "Дані введені неправильно");
                     return Json(new
                     {
-                        success,
+                        success = false,
                         text = ModelState.Values.SelectMany(v => v.Errors),
-                        model = decesionViewModel,
+                        model = decisionWrapper,
                         modelstate = ModelState
                     });
                 }
 
-                if (decesionViewModel.DecisionWrapper.File != null &&
-                    decesionViewModel.DecisionWrapper.File.Length > 10485760)
+                if (decisionWrapper.File != null &&
+                    decisionWrapper.File.Length > 10485760)
                 {
                     ModelState.AddModelError("", "файл за великий (більше 10 Мб)");
-                    return Json(new { success, text = "file length > 10485760" });
+                    return Json(new { success = false, text = "file length > 10485760" });
                 }
 
-                decesionViewModel.DecisionWrapper.Decision.HaveFile = decesionViewModel.DecisionWrapper.File != null;
-                success = await _decisionService.SaveDecisionAsync(
-                    _mapper.Map<DecisionWrapperDTO>(decesionViewModel.DecisionWrapper));
+                decisionWrapper.Decision.HaveFile = decisionWrapper.File != null;
+                decisionWrapper.Decision.ID = await _decisionService.SaveDecisionAsync(
+                    _mapper.Map<DecisionWrapperDTO>(decisionWrapper));
                 return Json(new
                 {
-                    success,
+                    success = true,
                     Text = "Рішення додано!",
-                    decision = decesionViewModel.DecisionWrapper.Decision,
-                    decesionOrganization = _mapper.Map<Organization>(
-                        _decisionService.GetDecisionOrganization(decesionViewModel.DecisionWrapper.Decision.ID))
+                    decision = decisionWrapper.Decision,
+                    decisionOrganization = _decisionService
+                        .GetDecisionOrganization(_mapper.Map<OrganizationDTO>(decisionWrapper.Decision.Organization))
+                        .OrganizationName
                 });
             }
             catch (Exception e)
             {
                 return Json(new
                 {
-                    success,
+                    success = false,
                     text = e.Message
                 });
             }
@@ -152,7 +150,7 @@ namespace EPlast.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult ReadDecision()
         {
-            List<DecisionViewModel> decisions = null;
+            List<DecisionViewModel> decisions;
             try
             {
                 decisions = new List<DecisionViewModel>
