@@ -114,7 +114,16 @@ namespace EPlast.XUnitTest.Services.City
             Assert.NotNull(result);
             Assert.IsType<CityProfileDTO>(result);
         }
+        [Fact]
+        public void CityAdminsTest()
+        {
+            CityService cityService = CreateCityService();
 
+            var result = cityService.CityAdmins(GetIdForSearch);
+
+            Assert.NotNull(result);
+            Assert.IsType<CityProfileDTO>(result);
+        }
         [Fact]
         public void CityDocumentsTest()
         {
