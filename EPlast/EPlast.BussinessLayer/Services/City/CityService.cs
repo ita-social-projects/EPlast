@@ -57,8 +57,7 @@ namespace EPlast.BussinessLayer.Services
             var city = GetById(cityId);
 
             var cityHead = city?.CityAdministration
-                    ?.Where(a => a.EndDate == null && a.AdminType.AdminTypeName == "Голова Станиці")
-                    .FirstOrDefault();
+                    ?.FirstOrDefault(a => a.EndDate == null && a.AdminType.AdminTypeName == "Голова Станиці");
 
             var cityAdmins = city?.CityAdministration
                 .Where(a => a.EndDate == null && a.AdminType.AdminTypeName != "Голова Станиці")
@@ -113,20 +112,20 @@ namespace EPlast.BussinessLayer.Services
         public void Edit(CityProfileDTO model, IFormFile file)
         {
             var city = model.City;
-            UploadPhoto(ref city, file);
+            UploadPhoto(city, file);
             _repoWrapper.City.Update(_mapper.Map<CityDTO, DataAccessCity.City>(model.City));
             _repoWrapper.Save();
         }
         public int Create(CityProfileDTO model, IFormFile file)
         {
             var city = model.City;
-            UploadPhoto(ref city, file);
+            UploadPhoto(city, file);
             var modelToCreate = _mapper.Map<CityDTO, DataAccessCity.City>(model.City);
             _repoWrapper.City.Create(modelToCreate);
             _repoWrapper.Save();
             return modelToCreate.ID;
         }
-        private void UploadPhoto(ref CityDTO city, IFormFile file)
+        private void UploadPhoto( CityDTO city, IFormFile file)
         {
             var cityId = city.ID;
             var oldImageName = _repoWrapper.City.FindByCondition(i => i.ID == cityId).FirstOrDefault()?.Logo;
