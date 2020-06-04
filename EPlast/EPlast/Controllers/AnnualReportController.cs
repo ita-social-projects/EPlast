@@ -10,7 +10,6 @@ using EPlast.ViewModels.City;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,17 +19,17 @@ namespace EPlast.Controllers
 {
     public class AnnualReportController : Controller
     {
-        private readonly ILogger _logger;
+        private readonly ILoggerService<AnnualReportController> _loggerService;
         private readonly IMapper _mapper;
         private readonly IAnnualReportService _annualReportService;
         private readonly ICityAccessService _cityAccessService;
         private readonly ICityMembersService _cityMembersService;
         private readonly ICityService _cityService;
 
-        public AnnualReportController(ILogger<AnnualReportController> logger, IMapper mapper, IAnnualReportService annualReportService, ICityAccessService cityAccessService,
+        public AnnualReportController(ILoggerService<AnnualReportController> loggerService, IMapper mapper, IAnnualReportService annualReportService, ICityAccessService cityAccessService,
             ICityMembersService cityMembersService, ICityService cityService)
         {
-            _logger = logger;
+            _loggerService = loggerService;
             _mapper = mapper;
             _annualReportService = annualReportService;
             _cityAccessService = cityAccessService;
@@ -56,7 +55,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Exception: {e.Message}");
+                _loggerService.LogError($"Exception: {e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
             }
         }
@@ -76,7 +75,7 @@ namespace EPlast.Controllers
                 }
                 else
                 {
-                    _logger.LogError($"Exception: {User} does not have access to the city (cityId - {cityId})");
+                    _loggerService.LogError($"Exception: {User} does not have access to the city (cityId - {cityId})");
                     return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
                 }
             }
@@ -87,7 +86,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Exception: {e.Message}");
+                _loggerService.LogError($"Exception: {e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
             }
         }
@@ -120,7 +119,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Exception: {e.Message}");
+                _loggerService.LogError($"Exception: {e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
             }
         }
@@ -142,7 +141,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Exception: {e.Message}");
+                _loggerService.LogError($"Exception: {e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
             }
         }
@@ -162,7 +161,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Exception: {e.Message}");
+                _loggerService.LogError($"Exception: {e.Message}");
                 return NotFound("Не вдалося завантажити річний звіт!");
             }
         }
@@ -181,7 +180,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Exception: {e.Message}");
+                _loggerService.LogError($"Exception: {e.Message}");
                 return NotFound("Не вдалося підтвердити річний звіт!");
             }
         }
@@ -200,7 +199,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Exception: {e.Message}");
+                _loggerService.LogError($"Exception: {e.Message}");
                 return NotFound("Не вдалося скасувати річний звіт!");
             }
         }
@@ -219,7 +218,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Exception: {e.Message}");
+                _loggerService.LogError($"Exception: {e.Message}");
                 return NotFound("Не вдалося видалити річний звіт!");
             }
         }
@@ -243,7 +242,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Exception: {e.Message}");
+                _loggerService.LogError($"Exception: {e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
             }
         }
@@ -276,7 +275,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Exception: {e.Message}");
+                _loggerService.LogError($"Exception: {e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
             }
         }
