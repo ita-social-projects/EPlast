@@ -119,36 +119,42 @@ namespace EPlast.BussinessLayer
             return decesion != null;
         }
 
-        public Task<bool> SaveDecisionAsync(DecisionWrapperDTO decision)
+        public async Task<int> SaveDecisionAsync(DecisionWrapperDTO decision)
         {
             try
             {
-                _repoWrapper.Decesion.Attach(_mapper.Map<DecisionDTO, Decesion>(decision.Decision));
-                _repoWrapper.Decesion.Create(_mapper.Map<DecisionDTO, Decesion>(decision.Decision));
+                var repoDecision = _mapper.Map<Decesion>(decision.Decision);
+                _repoWrapper.Decesion.Attach(repoDecision);
+                _repoWrapper.Decesion.Create(repoDecision);
                 _repoWrapper.Save();
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception: {e.Message}");
             }
-
-            return !decision.Decision.HaveFile ? Task.FromResult(true) : SaveDecisionFile(decision);
+            if (decision.Decision.HaveFile)
+                await SaveDecisionFile(decision);
+            return decision.Decision.ID;
         }
 
-        public OrganizationDTO GetDecisionOrganization(int decisionId)
+        public OrganizationDTO GetDecisionOrganization(OrganizationDTO organization)
         {
-            OrganizationDTO organization = null;
+            OrganizationDTO organizational = null;
             try
             {
-                organization = _mapper.Map<OrganizationDTO>(_repoWrapper.Organization
-                    .FindByCondition(x => x.ID == decisionId).Select(x => x.OrganizationName).First());
+                organizational = _mapper.Map<OrganizationDTO>(string.IsNullOrEmpty(organization.OrganizationName)
+                    ? _repoWrapper.Organization.FindByCondition(x => x.ID == organization.ID)
+                        .First()
+                    : _repoWrapper.Organization
+                        .FindByCondition(x => x.OrganizationName.Equals(organization.OrganizationName))
+                        .First());
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception: {e.Message}");
             }
 
-            return organization;
+            return organizational;
         }
 
         public async Task<byte[]> DownloadDecisionFileAsync(int decisionId)
@@ -264,7 +270,7 @@ namespace EPlast.BussinessLayer
             };
         }
 
-        private async Task<bool> SaveDecisionFile(DecisionWrapperDTO decision)
+        private async Task SaveDecisionFile(DecisionWrapperDTO decision)
         {
             try
             {
@@ -290,8 +296,6 @@ namespace EPlast.BussinessLayer
             {
                 _logger.LogError($"Exception: {e.Message}");
             }
-
-            return true;
         }
 
         private void SaveDecisionFilePathCreateCheck(string path)

@@ -73,6 +73,9 @@ namespace EPlast.XUnitTest.Services
             Mock<ILogger<AccountController>> mockLogger = new Mock<ILogger<AccountController>>();
             Mock<IEmailConfirmation> mockEmailConfirmation = new Mock<IEmailConfirmation>();
             Mock<IMapper> mockMapper = new Mock<IMapper>();
+            mockMapper
+               .Setup(s => s.Map<UserDTO, User>(It.IsAny<UserDTO>()))
+               .Returns(GetTestUserWithEmailsSendedTime());
 
             AccountService accountService = new AccountService(mockUserManager.Object, mockSignInManager.Object,
                mockEmailConfirmation.Object, mockMapper.Object);
@@ -365,6 +368,65 @@ namespace EPlast.XUnitTest.Services
             Assert.NotNull(result);
         }
 
+        [Fact]
+        public void GetIdForUserTest()
+        {
+            //Arrange
+            var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountService) = CreateAccountService();
+            mockUserManager
+                .Setup(s => s.GetUserId(It.IsAny<ClaimsPrincipal>()))
+                .Returns(GetTestIdForUser());
+
+            //Act
+            var result = accountService.GetIdForUser(ClaimsPrincipal.Current);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.Equal("aaaa-bbbb-cccc", result);
+        }
+
+        [Fact]
+        public void GetIdForUserTestReturnNull()
+        {
+            //Arrange
+            var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountService) = CreateAccountService();
+            mockUserManager
+                .Setup(s => s.GetUserId(It.IsAny<ClaimsPrincipal>()))
+                .Returns((string)null);
+
+            //Act
+            var result = accountService.GetIdForUser(ClaimsPrincipal.Current);
+
+            //Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void GetTimeAfterRegistrTest()
+        {
+            //Arrange
+            var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountService) = CreateAccountService();
+
+            //Act
+            var result = accountService.GetTimeAfterRegistr(GetTestUserDtoWithEmailsSendedTime());
+
+            //Assert
+            Assert.Equal(360, result);
+        }
+
+        [Fact]
+        public void GetTimeAfterResetTest()
+        {
+            //Arrange
+            var (mockSignInManager, mockUserManager, mockEmailConfirmation, accountService) = CreateAccountService();
+
+            //Act
+            var result = accountService.GetTimeAfterReset(GetTestUserDtoWithEmailsSendedTime());
+
+            //Assert
+            Assert.Equal(360, result);
+        }
+
         private string GetTestCode()
         {
             return new string("500");
@@ -471,6 +533,44 @@ namespace EPlast.XUnitTest.Services
         private string GetTestCodeForResetPasswordAndConfirmEmail()
         {
            return new string("500");
+        }
+
+        private string GetTestIdForUser()
+        {
+            return "aaaa-bbbb-cccc";
+        }
+
+        private User GetTestUserWithEmailsSendedTime()
+        {
+            IDateTimeHelper dateTimeResetingPassword = new DateTimeHelper();
+            var timeEmailSended = dateTimeResetingPassword
+                    .GetCurrentTime()
+                    .AddMinutes(-GetTestDifferenceInTime());
+
+            return new User()
+            {
+                EmailSendedOnForgotPassword = timeEmailSended,
+                EmailSendedOnRegister = timeEmailSended
+            };
+        }
+
+        private UserDTO GetTestUserDtoWithEmailsSendedTime()
+        {
+            IDateTimeHelper dateTimeResetingPassword = new DateTimeHelper();
+            var timeEmailSended = dateTimeResetingPassword
+                    .GetCurrentTime()
+                    .AddMinutes(-GetTestDifferenceInTime());
+
+            return new UserDTO()
+            {
+                EmailSendedOnForgotPassword = timeEmailSended,
+                EmailSendedOnRegister = timeEmailSended
+            };
+        }
+
+        private int GetTestDifferenceInTime()
+        {
+            return 360;
         }
     }
 }

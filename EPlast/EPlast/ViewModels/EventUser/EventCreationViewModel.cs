@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.ViewModels.EventUser
 {
-    public class EventViewModel
+    public class EventCreationViewModel
     {
         public int ID { get; set; }
         [Required(ErrorMessage = "Поле назви події обовязкове!")]
@@ -23,7 +23,7 @@ namespace EPlast.ViewModels.EventUser
         public DateTime EventDateEnd { get; set; }
         [Required(ErrorMessage = "Вам потрібно обрати локацію!")]
         public string Eventlocation { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Вам потрібно обрати тип події!")]
         public int EventTypeID { get; set; }
         [Required(ErrorMessage = "Вам потрібно обрати категорію події!")]
         public int EventCategoryID { get; set; }

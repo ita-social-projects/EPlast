@@ -34,11 +34,20 @@ namespace EPlast.XUnitTest.Services.City
                 .Returns(CreateFakeCityDto(10));
             _mapper.Setup(m => m.Map<DataAccess.Entities.City, CityDTO>(It.IsAny<DataAccess.Entities.City>()))
                 .Returns(CreateFakeCityDto(10).FirstOrDefault());
+            _mapper.Setup(m => m.Map<CityDTO, DataAccess.Entities.City>(It.IsAny<CityDTO>()))
+                .Returns(() => new DataAccess.Entities.City());
             _repoWrapper.Setup(r => r.City.FindAll())
                 .Returns(CreateFakeCities(10));
             _repoWrapper.Setup(r => r.City.FindByCondition(It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>()))
                 .Returns((Expression<Func<DataAccess.Entities.City, bool>> condition) =>
                     CreateFakeCities(10).Where(condition));
+            _repoWrapper.Setup(r => r.City.Update(It.IsAny<DataAccess.Entities.City>()))
+                .Verifiable();
+            _repoWrapper.Setup(r => r.City.Create(It.IsAny<DataAccess.Entities.City>()))
+                .Verifiable();
+            _repoWrapper.Setup(r => r.Save())
+                .Verifiable();
+
             return new CityService(_repoWrapper.Object, _mapper.Object, _env.Object);
         }
 
@@ -105,7 +114,16 @@ namespace EPlast.XUnitTest.Services.City
             Assert.NotNull(result);
             Assert.IsType<CityProfileDTO>(result);
         }
+        [Fact]
+        public void CityAdminsTest()
+        {
+            CityService cityService = CreateCityService();
 
+            var result = cityService.CityAdmins(GetIdForSearch);
+
+            Assert.NotNull(result);
+            Assert.IsType<CityProfileDTO>(result);
+        }
         [Fact]
         public void CityDocumentsTest()
         {
@@ -129,14 +147,20 @@ namespace EPlast.XUnitTest.Services.City
         }
 
         [Fact]
-        public void EditPostTest()
+        public void CreateTest()
         {
             CityService cityService = CreateCityService();
+            CityProfileDTO cityProfileDto = new CityProfileDTO
+            {
+                City = new CityDTO
+                {
+                    ID = 0
+                }
+            };
 
-            var result = cityService.Edit(GetIdForSearch);
+            var result = cityService.Create(cityProfileDto, null);
 
-            Assert.NotNull(result);
-            Assert.IsType<CityProfileDTO>(result);
+            Assert.Equal(cityProfileDto.City.ID, result);
         }
 
         private static int GetIdForSearch => 1;
