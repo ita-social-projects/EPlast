@@ -37,32 +37,9 @@ namespace EPlast.Controllers
             _cityService = cityService;
         }
 
-        [Authorize(Roles = "Голова Станиці")]
-        [HttpGet]
-        public async Task<IActionResult> CreateAsync()
-        {
-            try
-            {
-                var citiesDTO = await _cityAccessService.GetCitiesAsync(User);
-                var city = _mapper.Map<CityDTO, CityViewModel>(citiesDTO.First());
-                await _annualReportService.CheckCreatedAndUnconfirmed(city.ID);
-                return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Creating));
-            }
-            catch (AnnualReportException e)
-            {
-                ViewData["ErrorMessage"] = e.Message;
-                return View("CreateEditAsync");
-            }
-            catch (Exception e)
-            {
-                _loggerService.LogError($"Exception: {e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
-            }
-        }
-
         [Authorize(Roles = "Admin, Голова Округу")]
         [HttpGet]
-        public async Task<IActionResult> CreateAsync(int cityId)
+        public async Task<IActionResult> CreateAsAdminAsync(int cityId)
         {
             try
             {
@@ -78,6 +55,29 @@ namespace EPlast.Controllers
                     _loggerService.LogError($"Exception: {User} does not have access to the city (cityId - {cityId})");
                     return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
                 }
+            }
+            catch (AnnualReportException e)
+            {
+                ViewData["ErrorMessage"] = e.Message;
+                return View("CreateEditAsync");
+            }
+            catch (Exception e)
+            {
+                _loggerService.LogError($"Exception: {e.Message}");
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
+            }
+        }
+
+        [Authorize(Roles = "Голова Станиці")]
+        [HttpGet]
+        public async Task<IActionResult> CreateAsync()
+        {
+            try
+            {
+                var citiesDTO = await _cityAccessService.GetCitiesAsync(User);
+                var city = _mapper.Map<CityDTO, CityViewModel>(citiesDTO.First());
+                await _annualReportService.CheckCreatedAndUnconfirmed(city.ID);
+                return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Creating));
             }
             catch (AnnualReportException e)
             {

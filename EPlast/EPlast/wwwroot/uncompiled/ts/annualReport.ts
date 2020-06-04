@@ -208,7 +208,7 @@
         e.preventDefault();
         e.stopPropagation();
         var cityId = $('#CitiesList option').filter(':selected').val();
-        var strURL = '/AnnualReport/CreateAsync?cityId=' + cityId;
+        var strURL = '/AnnualReport/CreateAsAdminAsync?cityId=' + cityId;
         window.open(strURL, '_self')
     })
 
