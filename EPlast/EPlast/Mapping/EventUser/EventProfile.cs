@@ -8,7 +8,7 @@ namespace EPlast.Mapping.EventUser
     {
         public EventProfile()
         {
-            CreateMap<EventDTO, EventViewModel>().ReverseMap();
+            CreateMap<EventCreationDTO, EventCreationViewModel>().ReverseMap();
         }
     }
 }
