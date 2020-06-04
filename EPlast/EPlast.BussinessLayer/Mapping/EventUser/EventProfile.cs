@@ -9,7 +9,7 @@ namespace EPlast.BussinessLayer.Mapping.EventUser
     {
         public EventProfile()
         {
-            CreateMap<EventDTO, Event>().ReverseMap();
+            CreateMap<EventCreationDTO, Event>().ReverseMap();
         }
     }
 }
