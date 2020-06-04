@@ -12,7 +12,6 @@ namespace EPlast.Controllers
         private readonly IMapper _mapper;
 
         public EventUserController(IEventUserManager eventUserManager, IMapper mapper)
-
         {
             _eventUserManager = eventUserManager;
             _mapper = mapper;
@@ -37,7 +36,6 @@ namespace EPlast.Controllers
         {
             try
             {
-
                 var dto = _eventUserManager.InitializeEventCreateDTO();
                 var model = _mapper.Map<EventCreateDTO, EventCreateViewModel>(dto);
                 return View(model);
@@ -90,35 +88,44 @@ namespace EPlast.Controllers
             return View(model);
         }
 
-        //[HttpGet]
-        //public IActionResult EventEdit(int id)
-        //{
-        //    var @event = _repoWrapper.Event.
-        //        FindByCondition(q => q.ID == id).
-        //        Include(i => i.EventType).
-        //        Include(g => g.EventStatus).
-        //        Include(g => g.EventGallarys).
-        //        Include(g => g.EventCategory).
-        //        Include(g => g.EventAdmins).
-        //        Include(g => g.EventAdministrations).
-        //        FirstOrDefault();
-        //    var eventCategories = _repoWrapper.EventCategory.FindAll();
-        //    var model = new EventCreateViewModel()
-        //    {
-        //        Users = _repoWrapper.User.FindAll(),
-        //        Event = @event,
-        //        EventTypes = _repoWrapper.EventType.FindAll(),
-        //        EventCategories = _createEventVMInitializer.GetEventCategories(eventCategories)
-        //    };
-        //    return View(model);
-        //}
+        [HttpGet]
+        public IActionResult EventEdit(int eventId)
+        {
+            try
+            {
+                var dto = _eventUserManager.InitializeEventEditDTO(eventId);
+                var model = _mapper.Map<EventCreateDTO, EventCreateViewModel>(dto);
+                return View(model);
+            }
+            catch
+            {
+                return RedirectToAction("HandleError", "Error", new { code = 500 });
+            }
+        }
 
-        //[HttpPost]
-        //public IActionResult EventEdit(EventCreateViewModel model)
-        //{
-        //    _repoWrapper.Event.Update(model.Event);
-        //    _repoWrapper.Save();
-        //    return RedirectToAction("EventInfo", "Action", new { id = model.Event.ID });
-        //}
+        [HttpPost]
+        public IActionResult EventEdit(EventCreateViewModel createVM)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    _eventUserManager.EditEvent(_mapper.Map<EventCreateViewModel, EventCreateDTO>(createVM));
+                    return RedirectToAction("EventUser", new { id = createVM.Event.ID });
+                }
+                else
+                {
+                    var dto = _eventUserManager.InitializeEventEditDTO(createVM.Event.ID);
+                    var model = _mapper.Map<EventCreateDTO, EventCreateViewModel>(dto);
+                    return View(model);
+                }
+            }
+            catch
+            {
+                return RedirectToAction("HandleError", "Error", new { code = 500 });
+            }
+        }
+
+
     }
 }
