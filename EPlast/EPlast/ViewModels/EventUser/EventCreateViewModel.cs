@@ -6,7 +6,7 @@ namespace EPlast.ViewModels.EventUser
 {
     public class EventCreateViewModel
     {
-        public EventViewModel Event { get; set; }
+        public EventCreationViewModel Event { get; set; }
         public CreateEventAdminViewModel EventAdmin { get; set; }
         public EventAdministrationViewModel EventAdministration { get; set; }
         public IEnumerable<EventCategoryViewModel> EventCategories { get; set; }

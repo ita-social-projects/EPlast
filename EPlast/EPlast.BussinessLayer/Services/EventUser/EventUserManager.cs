@@ -3,6 +3,7 @@ using EPlast.BussinessLayer.DTO.EventUser;
 using EPlast.BussinessLayer.DTO.UserProfiles;
 using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.BussinessLayer.Interfaces.EventUser;
+using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -11,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using EPlast.DataAccess.Entities;
 
 namespace EPlast.BussinessLayer.Services.EventUser
 {
@@ -100,7 +100,7 @@ namespace EPlast.BussinessLayer.Services.EventUser
             var userId = createdEvent.EventAdmins.First().UserID;
             var setAdministrationModel = new EventCreateDTO()
             {
-                Event = _mapper.Map<Event, EventDTO>(createdEvent),
+                Event = _mapper.Map<Event, EventCreationDTO>(createdEvent),
                 Users = _mapper.Map<List<User>, IEnumerable<UserDTO>>(_repoWrapper.User.FindByCondition(i => i.Id != userId).ToList())
             };
             return setAdministrationModel;
@@ -109,7 +109,7 @@ namespace EPlast.BussinessLayer.Services.EventUser
         public int CreateEvent(EventCreateDTO model)
         {
             model.Event.EventStatusID = _eventStatusManager.GetStatusId("Не затверджені");
-            var eventToCreate = _mapper.Map<EventDTO, Event>(model.Event);
+            var eventToCreate = _mapper.Map<EventCreationDTO, Event>(model.Event);
             EventAdmin eventAdmin = new EventAdmin()
             {
                 Event = eventToCreate,
@@ -143,6 +143,40 @@ namespace EPlast.BussinessLayer.Services.EventUser
             };
             _repoWrapper.EventAdmin.Create(eventAdmin);
             _repoWrapper.EventAdministration.Create(eventAdministration);
+            _repoWrapper.Save();
+        }
+
+        public EventCreateDTO InitializeEventEditDTO(int eventId)
+        {
+            var editedEvent = _repoWrapper.Event.
+                FindByCondition(e => e.ID == eventId).
+                Include(q => q.EventCategory).
+                Include(q => q.EventAdmins).
+                ThenInclude(q => q.User).
+                Include(q => q.EventAdministrations).
+                ThenInclude(q => q.User).
+                Include(q => q.EventType).
+                Include(q => q.EventStatus).
+                Include(q => q.Participants).
+                First();
+
+            var users = _mapper.Map<List<User>, IEnumerable<UserDTO>>(_repoWrapper.User.FindAll().ToList());
+            var eventTypes = _mapper.Map<List<EventType>, IEnumerable<EventTypeDTO>>(_repoWrapper.EventType.FindAll().ToList());
+            var eventCategories = _eventCategoryManager.GetDTO();
+            var model = new EventCreateDTO()
+            {
+                Event = _mapper.Map<Event, EventCreationDTO>(editedEvent),
+                Users = users,
+                EventTypes = eventTypes,
+                EventCategories = eventCategories,
+            };
+            return model;
+        }
+
+        public void EditEvent(EventCreateDTO model)
+        {
+            var eventEdit = _mapper.Map<EventCreationDTO, Event>(model.Event);
+            _repoWrapper.Event.Update(eventEdit);
             _repoWrapper.Save();
         }
     }
