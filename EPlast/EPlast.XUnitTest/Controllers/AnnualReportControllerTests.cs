@@ -27,7 +27,7 @@ namespace EPlast.XUnitTest
 {
     public class AnnualReportControllerTests
     {
-        private readonly Mock<ILogger<AnnualReportController>> _logger = new Mock<ILogger<AnnualReportController>>();
+        private readonly Mock<ILoggerService<AnnualReportController>> _logger = new Mock<ILoggerService<AnnualReportController>>();
         private readonly Mock<IMapper> _mapper = new Mock<IMapper>();
         private readonly Mock<IAnnualReportService> _annualReportService = new Mock<IAnnualReportService>();
         private readonly Mock<ICityAccessService> _cityAccessService = new Mock<ICityAccessService>();
@@ -145,7 +145,7 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task CreateLikeAdminAsyncCorrect()
+        public async Task CreateAsAdminAsyncCorrect()
         {
             // Arrange
             var cityDTO = new CityDTO { ID = 1, Name = "Львів" };
@@ -193,7 +193,7 @@ namespace EPlast.XUnitTest
                 .Returns(cityMembers);
 
             // Act
-            var result = await controller.CreateAsync(city.ID);
+            var result = await controller.CreateAsAdminAsync(city.ID);
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
@@ -204,7 +204,7 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task CreateLikeAdminAsyncHasCreatedOrUnconfirmed()
+        public async Task CreateAsAdminAsyncHasCreatedOrUnconfirmed()
         {
             // Arrange
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
@@ -213,7 +213,7 @@ namespace EPlast.XUnitTest
                 .Throws(new AnnualReportException("Станиця має непідтверджені звіти!"));
 
             // Act
-            var result = await controller.CreateAsync(It.IsAny<int>());
+            var result = await controller.CreateAsAdminAsync(It.IsAny<int>());
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
@@ -222,7 +222,7 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task CreateLikeAdminAsyncError()
+        public async Task CreateAsAdminAsyncError()
         {
             // Arrange
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
@@ -233,7 +233,7 @@ namespace EPlast.XUnitTest
                 .Returns(default(CityViewModel));
 
             // Act
-            var result = await controller.CreateAsync(It.IsAny<int>());
+            var result = await controller.CreateAsAdminAsync(It.IsAny<int>());
 
             // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
@@ -245,14 +245,14 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task CreateLikeAdminAsyncErrorNoAccess()
+        public async Task CreateAsAdminAsyncErrorNoAccess()
         {
             // Arrange
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .Returns(Task.FromResult(false));
 
             // Act
-            var result = await controller.CreateAsync(It.IsAny<int>());
+            var result = await controller.CreateAsAdminAsync(It.IsAny<int>());
 
             // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
