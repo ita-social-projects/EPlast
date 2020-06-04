@@ -105,7 +105,6 @@ namespace EPlast.XUnitTest.Services.Events
                 .Returns(GetEvents());
             _repoWrapper.Setup(r => r.EventAdmin.FindByCondition(It.IsAny<Expression<Func<EventAdmin, bool>>>()))
                 .Returns(GetEventAdmins());
-
             _repoWrapper.Setup(r => r.User.FindByCondition(It.IsAny<Expression<Func<User, bool>>>())).Returns(GetUsers());
 
             int eventId = 1;
@@ -174,7 +173,26 @@ namespace EPlast.XUnitTest.Services.Events
                _eventStatusManager.Object);
             eventUserManager.SetAdministration(GetEventCreateDTO());
             //Assert
+        }
 
+        [Fact]
+        public void InitializeEventEditDTOTest()
+        {
+            int eventId = 1;
+            _repoWrapper.Setup(r => r.Event.FindByCondition(It.IsAny<Expression<Func<Event, bool>>>()))
+               .Returns(GetEvents());
+            _repoWrapper.Setup(r => r.User.FindAll()).Returns(GetUsers());
+            _repoWrapper.Setup(e => e.EventType.FindAll()).Returns(GetEventTypes());
+            _eventCategoryManager.Setup(x => x.GetDTO());
+
+            var eventUserManager = new EventUserManager(_repoWrapper.Object, _userManager.Object, _participantStatusManager.Object,
+             _mapper.Object, _participantManager.Object, _eventAdminManager.Object, _eventCategoryManager.Object,
+             _eventStatusManager.Object);
+            var methodResult = eventUserManager.InitializeEventEditDTO(eventId);
+
+            //Assert
+            Assert.NotNull(methodResult);
+            Assert.IsType<EventCreateDTO>(methodResult);
         }
 
         public EventCreateDTO GetEventCreateDTO()
