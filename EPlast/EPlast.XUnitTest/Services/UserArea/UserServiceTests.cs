@@ -16,7 +16,7 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using Xunit;
 
-namespace EPlast.XUnitTest.Services
+namespace EPlast.XUnitTest.Services.UserArea
 {
     public class UserServiceTests
     {
