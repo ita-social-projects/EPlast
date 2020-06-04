@@ -171,6 +171,7 @@ namespace EPlast.XUnitTest
         [Fact]
         public void SetAdministrationPostFailureTest()
         {
+            //Arrange
             _mapper.Setup(x => x.Map<EventCreateViewModel, EventCreateDTO>(It.IsAny<EventCreateViewModel>())).Returns(new EventCreateDTO());
             _eventUserManager.Setup(x => x.SetAdministration(new EventCreateDTO()));
             // Act
@@ -180,6 +181,71 @@ namespace EPlast.XUnitTest
             // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(actionResult);
             Assert.Equal("EventInfo", viewResult.ActionName);
+            Assert.NotNull(viewResult);
+        }
+
+        [Fact]
+        public void EventEditGetSuccessTest()
+        {
+            //Arrange
+            int eventId = 1;
+            _mapper.Setup(m => m.Map<EventCreateDTO, EventCreateViewModel>(It.IsAny<EventCreateDTO>())).Returns(GetEventCreateViewModel());
+            _eventUserManager.Setup(x => x.InitializeEventEditDTO(eventId));
+
+            //Act
+            var eventUserController = new EventUserController(_eventUserManager.Object, _mapper.Object);
+            var actionResult = eventUserController.EventEdit(eventId);
+
+            //Assert
+            var viewResult = Assert.IsType<ViewResult>(actionResult);
+            var viewModel = Assert.IsType<EventCreateViewModel>(viewResult.Model);
+            Assert.NotNull(actionResult);
+        }
+
+        [Fact]
+        public void EventEditGetFailureTest()
+        {
+            //Arrange
+            int eventId = 1;
+            _mapper.Setup(m => m.Map<EventCreateDTO, EventCreateViewModel>(It.IsAny<EventCreateDTO>())).Throws(new Exception());
+            _eventUserManager.Setup(x => x.InitializeEventEditDTO(eventId));
+
+            //Act
+            var eventUserController = new EventUserController(_eventUserManager.Object, _mapper.Object);
+            var actionResult = eventUserController.EventEdit(eventId);
+
+            //Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(actionResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.NotNull(actionResult);
+        }
+
+        [Fact]
+        public void EventEditPostSuccessTest()
+        {
+            _mapper.Setup(x => x.Map<EventCreateViewModel, EventCreateDTO>(It.IsAny<EventCreateViewModel>())).Returns(new EventCreateDTO());
+            _eventUserManager.Setup(x => x.EditEvent(new EventCreateDTO()));
+            // Act
+            var eventUserController = new EventUserController(_eventUserManager.Object, _mapper.Object);
+            var actionResult = eventUserController.EventEdit(GetEventCreateViewModel());
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(actionResult);
+            Assert.Equal("EventUser", viewResult.ActionName);
+            Assert.NotNull(viewResult);
+        }
+
+        [Fact]
+        public void EventEditPostFailureTest()
+        {
+            _mapper.Setup(x => x.Map<EventCreateViewModel, EventCreateDTO>(It.IsAny<EventCreateViewModel>())).Returns(new EventCreateDTO());
+            _eventUserManager.Setup(x => x.EditEvent(new EventCreateDTO()));
+            // Act
+            var eventUserController = new EventUserController(_eventUserManager.Object, _mapper.Object);
+            var actionResult = eventUserController.EventEdit(GetEventCreateViewModel());
+            eventUserController.ModelState.AddModelError("NameError", "Required");
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(actionResult);
+            Assert.Equal("EventUser", viewResult.ActionName);
             Assert.NotNull(viewResult);
         }
 

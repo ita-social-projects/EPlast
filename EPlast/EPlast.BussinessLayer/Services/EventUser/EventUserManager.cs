@@ -163,7 +163,6 @@ namespace EPlast.BussinessLayer.Services.EventUser
             var users = _mapper.Map<List<User>, IEnumerable<UserDTO>>(_repoWrapper.User.FindAll().ToList());
             var eventTypes = _mapper.Map<List<EventType>, IEnumerable<EventTypeDTO>>(_repoWrapper.EventType.FindAll().ToList());
             var eventCategories = _eventCategoryManager.GetDTO();
-            var eventAdmins = editedEvent.EventAdmins.First().UserID;
             var model = new EventCreateDTO()
             {
                 Event = _mapper.Map<Event, EventCreationDTO>(editedEvent),
