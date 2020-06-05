@@ -1,0 +1,59 @@
+.contacts {
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 50px;
+}
+
+.contactsList {
+    width: 20%;
+}
+
+.contactsForm {
+    width: 30%;
+}
+
+.contactsForm button {
+    height: 40px;
+    width: 100%;
+    background-color: #3c5438;
+    color: white;
+    border: none;
+}
+
+.contactsForm button:hover,
+.contactsForm button:focus {
+    background-color: wheat;
+    color: rgba(0, 0, 0, 0.65);
+    border: none;
+}
+
+@media (max-width: 576px) {
+    .contacts {
+        display: flex;
+        flex-direction: column;
+        padding: 0 30px;
+    }
+
+    .contactsList,
+    .contactsForm {
+        width: 100%;
+    }
+
+    .contactsList h1 {
+        margin-left: 25px;
+    }
+
+    .contactsForm {
+        margin-top: 40px;
+    }
+}
+
+@media (min-width: 576px)and(max-width: 768px) {
+    .contacts {
+        justify-content: space-around;
+    }
+
+    .contactsList {
+        width: 30%;
+    }
+}

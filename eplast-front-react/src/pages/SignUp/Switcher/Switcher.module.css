@@ -1,0 +1,112 @@
+.loginRegisterSwitcher {
+    position: relative;
+    margin-bottom: 30px;
+    margin-top: 20px;
+}
+
+.loginRectangle {
+    position: relative;
+    border-radius: 5px;
+    background-color: rgba(55, 73, 84, 0.702);
+    width: 100%;
+    height: 56px;
+    overflow: hidden;
+}
+
+.circleWrapper {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 10px;
+    top: -12px;
+    display: flex;
+    justify-content: center;
+}
+
+.loginCircle {
+    border-radius: 100%;
+    background-color: #3c5438;
+    width: 82px;
+    height: 82px;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.orSwitcher {
+    font-size: 33px;
+    color: rgb(255, 255, 255);
+    text-align: left;
+    margin: 0;
+}
+
+.SwitcherText {
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    font-size: 25px !important;
+    color: rgb(164, 168, 171);
+    display: flex;
+    align-items: center;
+}
+
+.loginText {
+    margin-left: 10px;
+    margin-right: auto;
+    color: white;
+    transition: color linear 0.5s;
+    cursor: pointer;
+    margin-top: 20px;
+    text-decoration: none;
+}
+
+.activeRectangle {
+    position: absolute;
+    background-color: #3c5438;
+    width: 50%;
+    height: 100%;
+    transition: all linear 0.5s;
+    z-index: -1;
+}
+
+.registerText {
+    margin-right: 10px;
+    transition: color linear 0.5s;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+#activeLoginText{
+    color: rgb(255, 255, 255);
+}
+
+#activeRegisterText{
+    color: rgb(255, 255, 255);
+}
+
+.loginText:hover{
+    text-decoration: unset;
+}
+
+#registerActive {
+    transform: translate(100%, 0);
+}
+
+#loginActive{
+    transform: translate(0%, 0);
+}
+
+.registerText:hover ~ #loginActive {
+    transform: translate(100%, 0);
+}
+
+.loginText:hover ~ #registerActive {
+    transform: translate(0%, 0);
+}
+
+.registerText:hover, .loginText:hover {
+    color: rgb(255, 255, 255);
+}

@@ -1,0 +1,20 @@
+.footerContainer{
+    background-color: #3c5438;
+    text-align: center;
+}
+.footerContacts{
+    display: flex;
+    justify-content: center;
+}
+.footerContacts a{
+    margin-right: 10px;
+}
+.footerContacts img{
+    width: 45px;
+}
+.footerContacts img:hover{
+    transform: scale(1.3);
+}
+.footerCopyright{
+    margin: 15px 0 0;
+}

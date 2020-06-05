@@ -1,0 +1,12 @@
+.cardStyles{
+    margin: 15px;
+    width: 242px;
+}
+.titleText{
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+}
+.titleText:hover{
+    text-decoration: underline;
+}

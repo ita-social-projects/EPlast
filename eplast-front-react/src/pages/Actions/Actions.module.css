@@ -1,0 +1,13 @@
+.background{
+    background-color: rgb(238, 238, 238);
+}
+.mainTitle{
+    text-align: center;
+    font-size: 65px;
+    color:#3c5438;
+}
+.actionsWrapper{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
