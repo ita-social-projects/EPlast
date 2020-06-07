@@ -10,6 +10,7 @@ using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.Resources;
 using EPlast.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
@@ -18,6 +19,7 @@ namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("CorsPolicy")]
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
@@ -149,17 +151,19 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("signup")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(RegisterViewModel registerVM)
+        public async Task<IActionResult> Register(string text)//[FromBody]RegisterViewModel registerVM
         {
             try
             {
+                string t = text;
+                
                 if (!ModelState.IsValid)
                 {
                     ModelState.AddModelError("", _resourceForErrors["Register-InCorrectData"]);
                     return Ok("Register");
                 }
 
-                var registeredUser = await _accountService.FindByEmailAsync(registerVM.Email);
+                /*var registeredUser = await _accountService.FindByEmailAsync(registerVM.Email);
                 if (registeredUser != null)
                 {
                     ModelState.AddModelError("", _resourceForErrors["Register-RegisteredUser"]);
@@ -183,9 +187,10 @@ namespace EPlast.WebApi.Controllers
                             new { code = code, userId = userDto.Id },
                               protocol: HttpContext.Request.Scheme);
                         await _accountService.SendEmailRegistr(confirmationLink, userDto);*/
-                        return Ok("AcceptingEmail");
-                    }
-                }
+                //return Ok("AcceptingEmail");
+                //}*/
+                //}
+                return Ok("Acce");
             }
             catch (Exception e)
             {

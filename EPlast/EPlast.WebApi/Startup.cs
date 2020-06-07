@@ -68,7 +68,7 @@ namespace EPlast.WebApi
                     .AddDefaultTokenProviders();
 
             services.AddLocalization();
-
+            services.AddCors();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MyApi", Version = "v1" });
@@ -143,12 +143,30 @@ namespace EPlast.WebApi
                  };
 
                 opts.DefaultRequestCulture = new RequestCulture("uk-UA");
-                 // Formatting numbers, dates, etc.
-                 opts.SupportedCultures = supportedCultures;
-                 // UI strings that we have localized.
-                 opts.SupportedUICultures = supportedCultures;
+                // Formatting numbers, dates, etc.
+                opts.SupportedCultures = supportedCultures;
+                // UI strings that we have localized.
+                opts.SupportedUICultures = supportedCultures;
             });
 
+            /*services.AddCors(o => o.AddPolicy("AllowAll",
+            builder =>
+            {
+                builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+            }));*/
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -189,7 +207,14 @@ namespace EPlast.WebApi
 
             app.UseHttpsRedirection();
             app.UseMvc();
-            //app.UseCors(builder => builder.AllowAnyOrigin());
+            /*app.UseCors(builder =>
+                builder
+                .WithOrigins("") тут добавити урл
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()
+            );*/
+            app.UseCors("CorsPolicy");
 
         }
     }
