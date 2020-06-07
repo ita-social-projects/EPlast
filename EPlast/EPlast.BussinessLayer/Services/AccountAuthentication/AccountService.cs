@@ -5,8 +5,10 @@ using EPlast.BussinessLayer.Interfaces;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -266,6 +268,20 @@ namespace EPlast.BussinessLayer.Services
             await _userManager.AddToRoleAsync(user, "Прихильник");
             await _userManager.AddLoginAsync(user, externalLoginInfo);
             await _signInManager.SignInAsync(user, isPersistent: false);
+        }
+
+        private string GenerateJSONWebToken(LoginDto userInfo)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(_config["Jwt:Issuer"],
+              _config["Jwt:Issuer"],
+              null,
+              expires: DateTime.Now.AddMinutes(120),
+              signingCredentials: credentials);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

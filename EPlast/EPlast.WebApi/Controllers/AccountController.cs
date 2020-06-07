@@ -139,31 +139,22 @@ namespace EPlast.WebApi.Controllers
         [AllowAnonymous]
         public IActionResult Register()
         {
-            return Ok("Register");
-        }
-
-        [HttpGet("lala")]       //api/account/lala
-        [AllowAnonymous]
-        public ActionResult<IEnumerable<string>> TestValues()
-        {
-            return new string[] { "value1", "value2" };
+            return Ok("signup");
         }
 
         [HttpPost("signup")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(string text)//[FromBody]RegisterViewModel registerVM
+        public async Task<IActionResult> Register(RegisterViewModel registerVM)
         {
             try
             {
-                string t = text;
-                
                 if (!ModelState.IsValid)
                 {
                     ModelState.AddModelError("", _resourceForErrors["Register-InCorrectData"]);
                     return Ok("Register");
                 }
 
-                /*var registeredUser = await _accountService.FindByEmailAsync(registerVM.Email);
+                var registeredUser = await _accountService.FindByEmailAsync(registerVM.Email);
                 if (registeredUser != null)
                 {
                     ModelState.AddModelError("", _resourceForErrors["Register-RegisteredUser"]);
@@ -179,18 +170,17 @@ namespace EPlast.WebApi.Controllers
                     }
                     else
                     {
-                        /*string code = await _accountService.AddRoleAndTokenAsync(_mapper.Map<RegisterViewModel, RegisterDto>(registerVM));
+                        string code = await _accountService.AddRoleAndTokenAsync(_mapper.Map<RegisterViewModel, RegisterDto>(registerVM));
                         var userDto = await _accountService.FindByEmailAsync(registerVM.Email);
-                        string confirmationLink = Url.Action(
+                        /*string confirmationLink = Url.Action(
                             nameof(),
                             "Account",
                             new { code = code, userId = userDto.Id },
                               protocol: HttpContext.Request.Scheme);
                         await _accountService.SendEmailRegistr(confirmationLink, userDto);*/
-                //return Ok("AcceptingEmail");
-                //}*/
-                //}
-                return Ok("Acce");
+                      return Ok("AcceptingEmail");
+                    }
+                }
             }
             catch (Exception e)
             {
