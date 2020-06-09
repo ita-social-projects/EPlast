@@ -3,8 +3,10 @@ using EPlast.BussinessLayer.DTO.UserProfiles;
 using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services.UserProfiles
 {
@@ -19,20 +21,29 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
             _mapper = mapper;
         }
 
-        public IEnumerable<WorkDTO> GetAllGroupByPlace()
+        public async Task<IEnumerable<WorkDTO>> GetAllGroupByPlaceAsync()
         {
-            var result = _repoWrapper.Work.FindAll().GroupBy(x => x.PlaceOfwork).Select(x => x.FirstOrDefault()).ToList();
+            var result = await _repoWrapper.Work.FindAll().
+                GroupBy(x => x.PlaceOfwork).
+                Select(x => x.FirstOrDefault()).
+                ToListAsync();
             return _mapper.Map<IEnumerable<Work>, IEnumerable<WorkDTO>>(result);
         }
 
-        public IEnumerable<WorkDTO> GetAllGroupByPosition()
+        public async Task<IEnumerable<WorkDTO>> GetAllGroupByPositionAsync()
         {
-            var result = _repoWrapper.Work.FindAll().GroupBy(x => x.Position).Select(x => x.FirstOrDefault()).ToList();
+            var result = await _repoWrapper.Work.FindAll().
+                GroupBy(x => x.Position).
+                Select(x => x.FirstOrDefault()).
+                ToListAsync();
             return _mapper.Map<IEnumerable<Work>, IEnumerable<WorkDTO>>(result);
         }
-        public WorkDTO GetById(int? workId)
+        public async Task<WorkDTO> GetByIdAsync(int? workId)
         {
-            return _mapper.Map<Work, WorkDTO>(_repoWrapper.Work.FindByCondition(x => x.ID == workId)?.FirstOrDefault());
+            return _mapper.Map<Work, WorkDTO>(
+                await _repoWrapper.Work.FindByCondition(x => x.ID == workId).
+                    FirstOrDefaultAsync()
+                );
         }
     }
 }
