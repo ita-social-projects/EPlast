@@ -172,12 +172,12 @@ namespace EPlast.WebApi.Controllers
                     {
                         string code = await _accountService.AddRoleAndTokenAsync(_mapper.Map<RegisterViewModel, RegisterDto>(registerVM));
                         var userDto = await _accountService.FindByEmailAsync(registerVM.Email);
-                        /*string confirmationLink = Url.Action(
-                            nameof(),
+                        string confirmationLink = Url.Action(
+                            nameof(ConfirmingEmail),
                             "Account",
                             new { code = code, userId = userDto.Id },
                               protocol: HttpContext.Request.Scheme);
-                        await _accountService.SendEmailRegistr(confirmationLink, userDto);*/
+                        await _accountService.SendEmailRegistr(confirmationLink, userDto);
                       return Ok("AcceptingEmail");
                     }
                 }
@@ -187,6 +187,47 @@ namespace EPlast.WebApi.Controllers
                 _loggerService.LogError($"Exception: {e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmingEmail(string userId, string code)
+        {
+            var userDto = await _accountService.FindByIdAsync(userId);
+            if (userDto == null)
+            {
+                return RedirectToAction("HandleError", "Error", new { code = 500 });
+            }
+            int totalTime = _accountService.GetTimeAfterRegistr(userDto);
+            if (totalTime < 180)
+            {
+                if (string.IsNullOrWhiteSpace(userId) && string.IsNullOrWhiteSpace(code))
+                {
+                    return RedirectToAction("HandleError", "Error", new { code = 500 });
+                }
+
+                var result = await _accountService.ConfirmEmailAsync(userDto.Id, code);
+
+                if (result.Succeeded)
+                {
+                    return Ok("ConfirmedEmail");
+                }
+                else
+                {
+                    return RedirectToAction("HandleError", "Error", new { code = 500 });
+                }
+            }
+            else
+            {
+                //return Ok("ConfirmEmailNotAllowed", userDto);
+                return Ok("ConfirmedEmailNotAllowed");
+            }
+        }
+
+        [HttpGet]
+        public IActionResult ConfirmedEmail()
+        {
+            return Ok("ConfirmedEmail");
         }
     }
 }

@@ -5,12 +5,14 @@ using EPlast.BussinessLayer.Interfaces;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -22,16 +24,20 @@ namespace EPlast.BussinessLayer.Services
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailConfirmation _emailConfirmation;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _config;
+
 
         public AccountService(UserManager<User> userManager,
             SignInManager<User> signInManager,
             IEmailConfirmation emailConfirmation,
-            IMapper mapper)
+            IMapper mapper,
+            IConfiguration config)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailConfirmation = emailConfirmation;
             _mapper = mapper;
+            _config = config;
         }
 
         public async Task<SignInResult> SignInAsync(LoginDto loginDto)

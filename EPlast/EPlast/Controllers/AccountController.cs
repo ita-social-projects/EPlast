@@ -18,12 +18,14 @@ using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 
 namespace EPlast.Controllers
 {
+    [Controller]
     public class AccountController : Controller
     {
         private readonly IAccountService _accountService;
