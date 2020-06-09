@@ -3,8 +3,9 @@ using EPlast.BussinessLayer.DTO.UserProfiles;
 using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services.UserProfiles
 {
@@ -19,9 +20,10 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
             _mapper = mapper;
         }
 
-        public IEnumerable<ReligionDTO> GetAll()
+        public async Task<IEnumerable<ReligionDTO>> GetAllAsync()
         {
-            var result = _repoWrapper.Religion.FindAll().ToList();
+            var result = await _repoWrapper.Religion.FindAll().
+                ToListAsync();
             return _mapper.Map<IEnumerable<Religion>, IEnumerable<ReligionDTO>>(result);
         }
     }

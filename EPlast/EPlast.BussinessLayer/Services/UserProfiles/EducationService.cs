@@ -3,8 +3,10 @@ using EPlast.BussinessLayer.DTO.UserProfiles;
 using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services.UserProfiles
 {
@@ -19,20 +21,29 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
             _mapper = mapper;
         }
 
-        public IEnumerable<EducationDTO> GetAllGroupByPlace()
+        public async Task<IEnumerable<EducationDTO>> GetAllGroupByPlaceAsync()
         {
-            var result = _repoWrapper.Education.FindAll().GroupBy(x => x.PlaceOfStudy).Select(x => x.FirstOrDefault()).ToList();
+            var result = await _repoWrapper.Education.FindAll().
+                GroupBy(x => x.PlaceOfStudy).
+                Select(x => x.FirstOrDefault()).
+                ToListAsync();
             return _mapper.Map<IEnumerable<Education>, IEnumerable<EducationDTO>>(result);
         }
 
-        public IEnumerable<EducationDTO> GetAllGroupBySpeciality()
+        public async Task<IEnumerable<EducationDTO>> GetAllGroupBySpecialityAsync()
         {
-            var result = _repoWrapper.Education.FindAll().GroupBy(x => x.Speciality).Select(x => x.FirstOrDefault()).ToList();
+            var result = await _repoWrapper.Education.FindAll().
+                GroupBy(x => x.Speciality).
+                Select(x => x.FirstOrDefault()).
+                ToListAsync();
             return _mapper.Map<IEnumerable<Education>, IEnumerable<EducationDTO>>(result);
         }
-        public EducationDTO GetById(int? educationId)
+        public async Task<EducationDTO> GetByIdAsync(int? educationId)
         {
-            return _mapper.Map<Education, EducationDTO>(_repoWrapper.Education.FindByCondition(x => x.ID == educationId).FirstOrDefault());
+            return _mapper.Map<Education, EducationDTO>(
+                await _repoWrapper.Education.FindByCondition(x => x.ID == educationId).
+                    FirstOrDefaultAsync()
+                );
         }
     }
 }
