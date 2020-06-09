@@ -14,6 +14,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest
@@ -305,10 +306,10 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void GetActionsFailureTest()
+        public async Task GetActionsFailureTest()
         {
             //Arrange
-            _actionManager.Setup(am => am.GetActionCategories())
+            _actionManager.Setup(am => am.GetActionCategoriesAsync())
                 .Throws(new Exception());
             _mapper.Setup(m => m.Map<List<EventCategoryDTO>, List<EventCategoryViewModel>>(It.IsAny<List<EventCategoryDTO>>())).Returns(new List<EventCategoryViewModel>());
             //Act  
@@ -322,15 +323,15 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void GetActionEmptyTest()
+        public async Task GetActionEmptyTest()
         {
             //Arrange
-            _actionManager.Setup(am => am.GetActionCategories())
-                .Returns(new List<EventCategoryDTO>());
+            _actionManager.Setup(am => am.GetActionCategoriesAsync())
+                .ReturnsAsync(new List<EventCategoryDTO>());
             _mapper.Setup(m => m.Map<List<EventCategoryDTO>, List<EventCategoryViewModel>>(It.IsAny<List<EventCategoryDTO>>())).Returns(new List<EventCategoryViewModel>());
             //Act  
             var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.GetAction() as ViewResult;
+            var actionResult =await actionsController.GetAction() as ViewResult;
             //Assert
             Assert.NotNull(actionResult);
             Assert.NotNull(actionResult.Model);

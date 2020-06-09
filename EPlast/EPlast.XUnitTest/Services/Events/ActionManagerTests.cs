@@ -14,6 +14,7 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using EPlast.DataAccess.Entities.Event;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace EPlast.XUnitTest.Services.Events
 {
@@ -44,18 +45,18 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public void GetActionCategoriesTest()
+        public async Task GetActionCategoriesTest()
         {
             //Arrange
-            _eventCategoryManager.Setup(x => x.GetDTO())
-                .Returns(new List<EventCategoryDTO>());
+            _eventCategoryManager.Setup(x => x.GetDTOAsync())
+                .ReturnsAsync(new List<EventCategoryDTO>());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
-            var methodResult = actionManager.GetActionCategories();
+            var methodResult = await actionManager.GetActionCategoriesAsync();
             //Assert
             Assert.NotNull(methodResult);
             Assert.IsType<List<EventCategoryDTO>>(methodResult);
-        }
+        }   
 
         [Fact]
         public void GetEventsTest()

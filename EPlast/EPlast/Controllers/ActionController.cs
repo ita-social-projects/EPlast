@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-
+using System.Threading.Tasks;
 
 namespace EPlast.Controllers
 {
@@ -22,11 +22,11 @@ namespace EPlast.Controllers
         }
 
         [Authorize]
-        public IActionResult GetAction()
+        public async Task<IActionResult> GetAction()
         {
             try
             {
-                var dto = _actionManager.GetActionCategories();
+                var dto =await _actionManager.GetActionCategoriesAsync();
                 var model = _mapper.Map<List<EventCategoryDTO>, List<EventCategoryViewModel>>(dto);
                 return View(model);
             }

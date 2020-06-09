@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using EPlast.DataAccess.Entities.Event;
+using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services.Events
 {
@@ -42,9 +43,9 @@ namespace EPlast.BussinessLayer.Services.Events
             _eventGalleryManager = eventGalleryManager;
         }
 
-        public List<EventCategoryDTO> GetActionCategories()
+        public async Task<List<EventCategoryDTO>> GetActionCategoriesAsync()
         {
-            var dto = _eventCategoryManager.GetDTO();
+            var dto = await _eventCategoryManager.GetDTOAsync();
             return dto;
         }
 
