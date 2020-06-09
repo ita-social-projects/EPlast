@@ -59,13 +59,13 @@ namespace EPlast.Controllers
 
             if (!string.IsNullOrEmpty(userId))
             {
-                var user = await _userManagerService.FindById(userId);
+                var user = await _userManagerService.FindByIdAsync(userId);
                 if (user == null)
                 {
                     _logger.Log(LogLevel.Error, $"Can`t find the User");
                     return RedirectToAction("HandleError", "Error", new { code = 404 });
                 }
-                var userRoles = await _userManagerService.GetRoles(user);
+                var userRoles = await _userManagerService.GetRolesAsync(user);
                 var allRoles = _adminService.GetRolesExceptAdmin();
 
                 RoleViewModel model = new RoleViewModel

@@ -498,12 +498,12 @@ namespace EPlast.Controllers
                 {
                     // _logger.Log(LogLevel.Error, "User id is null");
                     // return RedirectToAction("HandleError", "Error", new { code = 500 });
-                    userId = _userManagerService.GetUserId(User);
+                    userId = await _userManagerService.GetUserIdAsync(User);
                 }
 
-                var user = _userService.GetUser(userId);
-                var time = await _userService.CheckOrAddPlastunRole(_mapper.Map<UserDTO, UserViewModel>(user).Id, user.RegistredOn);
-                var isUserPlastun = await _userManagerService.IsInRole(user, "Пластун");
+                var user = await _userService.GetUserAsync(userId);
+                var time = await _userService.CheckOrAddPlastunRoleAsync(_mapper.Map<UserDTO, UserViewModel>(user).Id, user.RegistredOn);
+                var isUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун");
 
                 var model = new PersonalDataViewModel
                 {
@@ -532,10 +532,10 @@ namespace EPlast.Controllers
                     return RedirectToAction("HandleError", "Error", new { code = 500 });
                 }
 
-                var user = _userService.GetUser(userId);
+                var user = await _userService.GetUserAsync(userId);
                 var _confUsers = _userService.GetConfirmedUsers(user);
-                var canApprove = _userService.CanApprove(_confUsers, userId, User);
-                var time = await _userService.CheckOrAddPlastunRole(user.Id, user.RegistredOn);
+                var canApprove = await _userService.CanApproveAsync(_confUsers, userId, User);
+                var time = await _userService.CheckOrAddPlastunRoleAsync(user.Id, user.RegistredOn);
                 var clubApprover = _userService.GetClubAdminConfirmedUser(user);
                 var cityApprover = _userService.GetCityAdminConfirmedUser(user);
 
@@ -549,11 +549,11 @@ namespace EPlast.Controllers
                         ConfirmedUsers = _mapper.Map<IEnumerable<ConfirmedUserDTO>, IEnumerable<ConfirmedUserViewModel>>(_confUsers),
                         ClubApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(clubApprover),
                         CityApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(cityApprover),
-                        IsUserHeadOfCity = await _userManagerService.IsInRole(user, "Голова Станиці"),
-                        IsUserHeadOfClub = await _userManagerService.IsInRole(user, "Голова Куреня"),
-                        IsUserHeadOfRegion = await _userManagerService.IsInRole(user, "Голова Округу"),
-                        IsUserPlastun = await _userManagerService.IsInRole(user, "Пластун"),
-                        CurrentUserId = _userManagerService.GetUserId(User)
+                        IsUserHeadOfCity = await _userManagerService.IsInRoleAsync(user, "Голова Станиці"),
+                        IsUserHeadOfClub = await _userManagerService.IsInRoleAsync(user, "Голова Куреня"),
+                        IsUserHeadOfRegion = await _userManagerService.IsInRoleAsync(user, "Голова Округу"),
+                        IsUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун"),
+                        CurrentUserId =await  _userManagerService.GetUserIdAsync(User)
                     };
 
                     return View(model);
@@ -568,11 +568,11 @@ namespace EPlast.Controllers
             }
         }
 
-        public IActionResult ApproveUser(string userId, bool _isClubAdmin = false, bool _isCityAdmin = false)
+        public IActionResult ApproveUser(string userId, bool isClubAdmin = false, bool isCityAdmin = false)
         {
             if (userId != null)
             {
-                _confirmedUserService.Create(User, userId, _isClubAdmin, _isCityAdmin);
+                _confirmedUserService.CreateAsync(User, userId, isClubAdmin, isCityAdmin);
                 return RedirectToAction("Approvers", "Account", new { userId = userId });
             }
             _loggerService.LogError("User id is null");
@@ -582,14 +582,14 @@ namespace EPlast.Controllers
         [Authorize]
         public IActionResult ApproverDelete(int confirmedId, string userId)
         {
-            _confirmedUserService.Delete(confirmedId);
+            _confirmedUserService.DeleteAsync(confirmedId);
             _loggerService.LogInformation("Approve succesfuly deleted");
             return RedirectToAction("UserProfile", "Account", new { userId = userId });
         }
 
         [Authorize]
         [HttpGet]
-        public IActionResult Edit(string userId)
+        public async Task<IActionResult> Edit(string userId)
         {
             if (userId == null)
             {
@@ -599,25 +599,25 @@ namespace EPlast.Controllers
 
             try
             {
-                var user = _userService.GetUser(userId);
+                var user = await _userService.GetUserAsync(userId);
 
-                var genders = (from item in _genderService.GetAll() select new SelectListItem { Text = item.Name, Value = item.ID.ToString() });
+                var genders = (from item in await _genderService.GetAllAsync() select new SelectListItem { Text = item.Name, Value = item.ID.ToString() });
 
-                var placeOfStudyUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(_educationService.GetAllGroupByPlace());
-                var specialityUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(_educationService.GetAllGroupBySpeciality());
-                var placeOfWorkUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(_workService.GetAllGroupByPlace());
-                var positionUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(_workService.GetAllGroupByPosition());
+                var placeOfStudyUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(await _educationService.GetAllGroupByPlaceAsync());
+                var specialityUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(await _educationService.GetAllGroupBySpecialityAsync());
+                var placeOfWorkUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(await _workService.GetAllGroupByPlaceAsync());
+                var positionUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(await _workService.GetAllGroupByPositionAsync());
 
                 var educView = new EducationUserViewModel { PlaceOfStudyID = user.UserProfile.EducationId, SpecialityID = user.UserProfile.EducationId, PlaceOfStudyList = placeOfStudyUnique, SpecialityList = specialityUnique };
                 var workView = new WorkUserViewModel { PlaceOfWorkID = user.UserProfile.WorkId, PositionID = user.UserProfile.WorkId, PlaceOfWorkList = placeOfWorkUnique, PositionList = positionUnique };
                 var model = new EditUserViewModel()
                 {
                     User = _mapper.Map<UserDTO, UserViewModel>(user),
-                    Nationalities = _mapper.Map<IEnumerable<NationalityDTO>, IEnumerable<NationalityViewModel>>(_nationalityService.GetAll()),
-                    Religions = _mapper.Map<IEnumerable<ReligionDTO>, IEnumerable<ReligionViewModel>>(_religionService.GetAll()),
+                    Nationalities = _mapper.Map<IEnumerable<NationalityDTO>, IEnumerable<NationalityViewModel>>(await _nationalityService.GetAllAsync()),
+                    Religions = _mapper.Map<IEnumerable<ReligionDTO>, IEnumerable<ReligionViewModel>>(await _religionService.GetAllAsync()),
                     EducationView = educView,
                     WorkView = workView,
-                    Degrees = _mapper.Map<IEnumerable<DegreeDTO>, IEnumerable<DegreeViewModel>>(_degreeService.GetAll()),
+                    Degrees = _mapper.Map<IEnumerable<DegreeDTO>, IEnumerable<DegreeViewModel>>(await _degreeService.GetAllAsync()),
                     Genders = genders
                 };
 
@@ -632,11 +632,11 @@ namespace EPlast.Controllers
 
         [Authorize]
         [HttpPost]
-        public IActionResult Edit(EditUserViewModel model, IFormFile file)
+        public async Task<IActionResult> Edit(EditUserViewModel model, IFormFile file)
         {
             try
             {
-                _userService.Update(_mapper.Map<UserViewModel, UserDTO>(model.User), file, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID, model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
+                await _userService.UpdateAsync(_mapper.Map<UserViewModel, UserDTO>(model.User), file, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID, model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
                 _loggerService.LogInformation($"User {model.User.Email} was edited profile and saved in the database");
                 return RedirectToAction("UserProfile");
             }
@@ -650,12 +650,12 @@ namespace EPlast.Controllers
         {
             try
             {
-                var user = _userService.GetUser(userId);
+                var user = await _userService.GetUserAsync(userId);
                 var result = new PositionUserViewModel
                 {
                     User = _mapper.Map<UserDTO, UserViewModel>(user),
-                    TimeToJoinPlast = await _userService.CheckOrAddPlastunRole(userId, user.RegistredOn),
-                    IsUserPlastun = await _userManagerService.IsInRole(user, "Пластун")
+                    TimeToJoinPlast = await _userService.CheckOrAddPlastunRoleAsync(userId, user.RegistredOn),
+                    IsUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун")
                 };
                 return View(result);
             }
