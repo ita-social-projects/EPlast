@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using EPlast.DataAccess.Entities.Event;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace EPlast.XUnitTest.Services.Events
 {
@@ -20,14 +21,14 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public void GetDTOTest()
+        public async Task GetDTOTest()
         {
             //Arrange
             _repoWrapper.Setup(x=>x.EventCategory.FindAll())
                 .Returns(GetEventCategories());
             //Act
             var eventCategoryManager = new EventCategoryManager(_repoWrapper.Object);
-            var methodResult = eventCategoryManager.GetDTO();
+            var methodResult =await eventCategoryManager.GetDTOAsync();
             //Assert
             Assert.NotNull(methodResult);
             Assert.IsType<List<EventCategoryDTO>>(methodResult);

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using System.Linq;
 using EPlast.DataAccess.Entities.Event;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services.Events
 {
@@ -114,10 +115,10 @@ namespace EPlast.BussinessLayer.Services.Events
             }
         }
 
-        public IEnumerable<Participant> GetParticipantsByUserId(string userId)
+        public async Task<IEnumerable<Participant>> GetParticipantsByUserIdAsync(string userId)
         {
-            var participants = _repoWrapper.Participant.FindByCondition(p => p.UserId == userId)
-                .Include(i => i.Event).ToList();
+            var participants = await _repoWrapper.Participant.FindByCondition(p => p.UserId == userId)
+                .Include(i => i.Event).ToListAsync();
             return participants;
         }
     }

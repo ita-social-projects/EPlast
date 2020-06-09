@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 
@@ -11,6 +12,6 @@ namespace EPlast.BussinessLayer.Interfaces.Events
         int ChangeStatusToApproved(int id);
         int ChangeStatusToUnderReview(int id);
         int ChangeStatusToRejected(int id);
-        IEnumerable<Participant> GetParticipantsByUserId(string userId);
+        Task<IEnumerable<Participant>> GetParticipantsByUserIdAsync(string userId);
     }
 }
