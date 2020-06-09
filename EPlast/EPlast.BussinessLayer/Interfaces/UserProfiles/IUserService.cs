@@ -1,10 +1,10 @@
-﻿using System;
+﻿using EPlast.BussinessLayer.DTO;
+using EPlast.BussinessLayer.DTO.UserProfiles;
+using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using EPlast.BussinessLayer.DTO;
-using EPlast.BussinessLayer.DTO.UserProfiles;
-using Microsoft.AspNetCore.Http;
 
 namespace EPlast.BussinessLayer.Interfaces.UserProfiles
 {

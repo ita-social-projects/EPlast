@@ -110,7 +110,7 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
         public async Task UpdateAsync(UserDTO user, IFormFile file, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
 
-            user.ImagePath=await UploadPhoto(user, file);
+            user.ImagePath = await UploadPhotoAsync(user, file);
             user.UserProfile.Nationality = CheckFieldForNull(user.UserProfile.NationalityId, user.UserProfile.Nationality.Name, user.UserProfile.Nationality);
             user.UserProfile.Religion = CheckFieldForNull(user.UserProfile.ReligionId, user.UserProfile.Religion.Name, user.UserProfile.Religion);
             user.UserProfile.Degree = CheckFieldForNull(user.UserProfile.DegreeId, user.UserProfile.Degree.Name, user.UserProfile.Degree);
@@ -193,10 +193,10 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
             return model;
         }
 
-        private async Task<string> UploadPhoto(UserDTO user, IFormFile file)
+        private async Task<string> UploadPhotoAsync(UserDTO user, IFormFile file)
         {
             var userId = user.Id;
-            var oldImageName =(await _repoWrapper.User.FindByCondition(i => i.Id == userId).FirstOrDefaultAsync()).ImagePath;
+            var oldImageName = (await _repoWrapper.User.FindByCondition(i => i.Id == userId).FirstOrDefaultAsync()).ImagePath;
             if (file != null && file.Length > 0)
             {
 
