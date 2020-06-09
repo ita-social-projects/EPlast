@@ -10,12 +10,12 @@ namespace EPlast.BussinessLayer.Interfaces.UserProfiles
 {
     public interface IUserService
     {
-        UserDTO GetUser(string userId);
-        void Update(UserDTO user, IFormFile file, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId);
-        Task<TimeSpan> CheckOrAddPlastunRole(string userId, DateTime registeredOn);
+        Task<UserDTO> GetUserAsync(string userId);
+        Task UpdateAsync(UserDTO user, IFormFile file, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId);
+        Task<TimeSpan> CheckOrAddPlastunRoleAsync(string userId, DateTime registeredOn);
         IEnumerable<ConfirmedUserDTO> GetConfirmedUsers(UserDTO user);
         ConfirmedUserDTO GetClubAdminConfirmedUser(UserDTO user);
         ConfirmedUserDTO GetCityAdminConfirmedUser(UserDTO user);
-        bool CanApprove(IEnumerable<ConfirmedUserDTO> confUsers, string userId, ClaimsPrincipal user);
+        Task<bool> CanApproveAsync(IEnumerable<ConfirmedUserDTO> confUsers, string userId, ClaimsPrincipal user);
     }
 }

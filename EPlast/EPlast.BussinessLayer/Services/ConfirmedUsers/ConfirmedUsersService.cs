@@ -2,8 +2,8 @@
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
-using System.Linq;
 using System.Security.Claims;
 
 namespace EPlast.BussinessLayer.Services
@@ -19,20 +19,20 @@ namespace EPlast.BussinessLayer.Services
             _userManager = userManager;
         }
 
-        public void Create(ClaimsPrincipal user, string userId, bool isClubAdmin = false, bool isCityAdmin = false)
+        public async void CreateAsync(ClaimsPrincipal user, string userId, bool isClubAdmin = false, bool isCityAdmin = false)
         {
-            var id = _userManager.GetUserId(user);
+            var id = await _userManager.GetUserIdAsync(await _userManager.GetUserAsync(user));
             var conUser = new ConfirmedUser { UserID = userId, ConfirmDate = DateTime.Now, isClubAdmin = isClubAdmin, isCityAdmin = isCityAdmin };
             var appUser = new Approver { UserID = id, ConfirmedUser = conUser };
             conUser.Approver = appUser;
 
-            _repoWrapper.ConfirmedUser.Create(conUser);
-            _repoWrapper.Save();
+            await _repoWrapper.ConfirmedUser.CreateAsync(conUser);
+            await _repoWrapper.SaveAsync();
         }
-        public void Delete(int confirmedUserId)
+        public async void DeleteAsync(int confirmedUserId)
         {
-            _repoWrapper.ConfirmedUser.Delete(_repoWrapper.ConfirmedUser.FindByCondition(x => x.ID == confirmedUserId).First());
-            _repoWrapper.Save();
+            _repoWrapper.ConfirmedUser.Delete(await _repoWrapper.ConfirmedUser.FindByCondition(x => x.ID == confirmedUserId).FirstAsync());
+            await _repoWrapper.SaveAsync();
         }
     }
 }
