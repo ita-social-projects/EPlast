@@ -6,6 +6,7 @@ using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,19 +26,24 @@ namespace EPlast.BussinessLayer.Services
             _mapper = mapper;
             _roleManager = roleManager;
         }
-        public IEnumerable<IdentityRole> GetRolesExceptAdmin()
+        public async Task<IEnumerable<IdentityRole>> GetRolesExceptAdminAsync()
         {
             var admin = _roleManager.Roles.Where(i => i.Name == "Admin");
-            var allRoles = _roleManager.Roles.Except(admin).OrderBy(i => i.Name).ToList();
+            var allRoles = await _roleManager.Roles.
+                Except(admin).
+                OrderBy(i => i.Name).
+                ToListAsync();
             return allRoles;
         }
 
-        public async Task Edit(string userId, List<string> roles)
+        public async Task EditAsync(string userId, List<string> roles)
         {
             User user = await _userManager.FindByIdAsync(userId);
             var userRoles = await _userManager.GetRolesAsync(user);
             var addedRoles = roles.Except(userRoles);
-            var removedRoles = userRoles.Except(roles).Except(new List<string> { "Admin" });
+            var removedRoles = userRoles.
+                Except(roles).
+                Except(new List<string> { "Admin" });
             await _userManager.AddToRolesAsync(user, addedRoles);
             await _userManager.RemoveFromRolesAsync(user, removedRoles);
             var currentRoles = await _userManager.GetRolesAsync(user);
@@ -47,30 +53,30 @@ namespace EPlast.BussinessLayer.Services
             }
         }
 
-        public async Task DeleteUser(string userId)
+        public async Task DeleteUserAsync(string userId)
         {
-            User user = _repoWrapper.User.FindByCondition(i => i.Id == userId).FirstOrDefault();
+            User user = await _repoWrapper.User.FindByCondition(i => i.Id == userId).FirstOrDefaultAsync();
             var roles = await _userManager.GetRolesAsync(user);
             if (user != null && !roles.Contains("Admin"))
             {
                 _repoWrapper.User.Delete(user);
-                _repoWrapper.Save();
+                await _repoWrapper.SaveAsync();
             }
         }
 
-        public async Task<IEnumerable<UserTableDTO>> UsersTable()
+        public async Task<IEnumerable<UserTableDTO>> UsersTableAsync()
         {
-            var users = _repoWrapper.User
+            var users = await _repoWrapper.User
                     .Include(x => x.UserProfile, x => x.UserPlastDegrees, x => x.UserProfile.Gender)
-                    .ToList();
+                    .ToListAsync();
 
-            var cities = _repoWrapper.City
+            var cities = await _repoWrapper.City
                 .Include(x => x.Region)
-                .ToList();
-            var clubMembers = _repoWrapper.ClubMembers.Include(x => x.Club)
-                                                      .ToList();
-            var cityMembers = _repoWrapper.CityMembers.Include(x => x.City)
-                                                      .ToList();
+                .ToListAsync();
+            var clubMembers = await _repoWrapper.ClubMembers.Include(x => x.Club)
+                                                      .ToListAsync();
+            var cityMembers = await _repoWrapper.CityMembers.Include(x => x.City)
+                                                      .ToListAsync();
             List<UserTableDTO> userTable = new List<UserTableDTO>();
             foreach (var user in users)
             {

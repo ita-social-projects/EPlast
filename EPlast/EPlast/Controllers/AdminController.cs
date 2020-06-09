@@ -43,7 +43,7 @@ namespace EPlast.Controllers
         {
             try
             {
-                var result = _mapper.Map<IEnumerable<UserTableDTO>, IEnumerable<UserTableViewModel>>(await _adminService.UsersTable());
+                var result = _mapper.Map<IEnumerable<UserTableDTO>, IEnumerable<UserTableViewModel>>(await _adminService.UsersTableAsync());
                 return View(result);
             }
             catch (Exception e)
@@ -66,7 +66,7 @@ namespace EPlast.Controllers
                     return RedirectToAction("HandleError", "Error", new { code = 404 });
                 }
                 var userRoles = await _userManagerService.GetRolesAsync(user);
-                var allRoles = _adminService.GetRolesExceptAdmin();
+                var allRoles = await _adminService.GetRolesExceptAdminAsync();
 
                 RoleViewModel model = new RoleViewModel
                 {
@@ -88,7 +88,7 @@ namespace EPlast.Controllers
 
             if (!string.IsNullOrEmpty(userId))
             {
-                await _adminService.Edit(userId, roles);
+                await _adminService.EditAsync(userId, roles);
                 _logger.LogInformation("Successful role change for {0}", userId);
                 return RedirectToAction("UsersTable");
             }
@@ -112,7 +112,7 @@ namespace EPlast.Controllers
             {
                 if (!string.IsNullOrEmpty(userId))
                 {
-                    await _adminService.DeleteUser(userId);
+                    await _adminService.DeleteUserAsync(userId);
                     _logger.LogInformation("Successful delete user {0}", userId);
                     return RedirectToAction("UsersTable");
                 }
