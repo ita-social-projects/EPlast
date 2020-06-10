@@ -3,11 +3,12 @@ using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services.Events
 {
@@ -23,7 +24,7 @@ namespace EPlast.BussinessLayer.Services.Events
         }
 
 
-        public int AddPictures(int id, IList<IFormFile> files)
+        public async Task<int> AddPicturesAsync(int id, IList<IFormFile> files)
         {
             try
             {
@@ -38,12 +39,12 @@ namespace EPlast.BussinessLayer.Services.Events
                             var filePath = Path.Combine(uploads, fileName);
                             img.Save(filePath);
                             var gallery = new Gallary() { GalaryFileName = fileName };
-                            _repoWrapper.Gallary.Create(gallery);
-                            _repoWrapper.EventGallary.Create(new EventGallary { EventID = id, Gallary = gallery });
+                            await _repoWrapper.Gallary.CreateAsync(gallery);
+                            await _repoWrapper.EventGallary.CreateAsync(new EventGallary { EventID = id, Gallary = gallery });
                         }
                     }
                 }
-                _repoWrapper.Save();
+                await _repoWrapper.SaveAsync();
                 return StatusCodes.Status200OK;
             }
             catch
@@ -52,18 +53,20 @@ namespace EPlast.BussinessLayer.Services.Events
             }
         }
 
-        public int DeletePicture(int id)
+        public async Task<int> DeletePictureAsync(int id)
         {
             try
             {
-                Gallary objectToDelete = _repoWrapper.Gallary.FindByCondition(g => g.ID == id).First();
+                Gallary objectToDelete = await _repoWrapper.Gallary
+                    .FindByCondition(g => g.ID == id)
+                    .FirstAsync();
                 _repoWrapper.Gallary.Delete(objectToDelete);
                 var picturePath = Path.Combine(_env.WebRootPath, "images\\EventsGallery", objectToDelete.GalaryFileName);
                 if (File.Exists(picturePath))
                 {
                     File.Delete(picturePath);
                 }
-                _repoWrapper.Save();
+                await _repoWrapper.SaveAsync();
                 return StatusCodes.Status200OK;
             }
             catch
