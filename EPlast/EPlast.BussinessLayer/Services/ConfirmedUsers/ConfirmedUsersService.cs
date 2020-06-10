@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services
 {
@@ -19,7 +20,7 @@ namespace EPlast.BussinessLayer.Services
             _userManager = userManager;
         }
 
-        public async void CreateAsync(ClaimsPrincipal user, string userId, bool isClubAdmin = false, bool isCityAdmin = false)
+        public async Task CreateAsync(ClaimsPrincipal user, string userId, bool isClubAdmin = false, bool isCityAdmin = false)
         {
             var id = await _userManager.GetUserIdAsync(await _userManager.GetUserAsync(user));
             var conUser = new ConfirmedUser { UserID = userId, ConfirmDate = DateTime.Now, isClubAdmin = isClubAdmin, isCityAdmin = isCityAdmin };
@@ -29,7 +30,7 @@ namespace EPlast.BussinessLayer.Services
             await _repoWrapper.ConfirmedUser.CreateAsync(conUser);
             await _repoWrapper.SaveAsync();
         }
-        public async void DeleteAsync(int confirmedUserId)
+        public async Task DeleteAsync(int confirmedUserId)
         {
             _repoWrapper.ConfirmedUser.Delete(await _repoWrapper.ConfirmedUser.FindByCondition(x => x.ID == confirmedUserId).FirstAsync());
             await _repoWrapper.SaveAsync();

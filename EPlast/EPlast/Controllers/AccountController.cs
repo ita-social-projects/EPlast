@@ -568,11 +568,11 @@ namespace EPlast.Controllers
             }
         }
 
-        public IActionResult ApproveUser(string userId, bool isClubAdmin = false, bool isCityAdmin = false)
+        public async Task<IActionResult> ApproveUser(string userId, bool isClubAdmin = false, bool isCityAdmin = false)
         {
             if (userId != null)
             {
-                _confirmedUserService.CreateAsync(User, userId, isClubAdmin, isCityAdmin);
+                await _confirmedUserService.CreateAsync(User, userId, isClubAdmin, isCityAdmin);
                 return RedirectToAction("Approvers", "Account", new { userId = userId });
             }
             _loggerService.LogError("User id is null");
@@ -580,11 +580,11 @@ namespace EPlast.Controllers
         }
 
         [Authorize]
-        public IActionResult ApproverDelete(int confirmedId, string userId)
+        public async Task<IActionResult> ApproverDelete(int confirmedId, string userId)
         {
-            _confirmedUserService.DeleteAsync(confirmedId);
+            await _confirmedUserService.DeleteAsync(confirmedId);
             _loggerService.LogInformation("Approve succesfuly deleted");
-            return RedirectToAction("UserProfile", "Account", new { userId = userId });
+            return RedirectToAction("Approvers", "Account", new { userId = userId });
         }
 
         [Authorize]
