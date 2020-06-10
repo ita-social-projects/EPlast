@@ -6,6 +6,7 @@ using EPlast.DataAccess.Repositories;
 using Moq;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.UserProfiles
@@ -21,14 +22,14 @@ namespace EPlast.XUnitTest.Services.UserProfiles
             _mapper = new Mock<IMapper>();
         }
         [Fact]
-        public void GetAllTest()
+        public async Task GetAllTest()
         {
             _repoWrapper.Setup(r => r.Degree.FindAll()).Returns(new List<Degree>().AsQueryable());
 
             var service = new DegreeService(_repoWrapper.Object, _mapper.Object);
             _mapper.Setup(x => x.Map<Degree, DegreeDTO>(It.IsAny<Degree>())).Returns(new DegreeDTO());
             // Act
-            var result = service.GetAll();
+            var result = await service.GetAllAsync();
             // Assert
             Assert.NotNull(result);
             Assert.IsAssignableFrom<IEnumerable<DegreeDTO>>(result);

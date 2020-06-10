@@ -553,7 +553,7 @@ namespace EPlast.Controllers
                         IsUserHeadOfClub = await _userManagerService.IsInRoleAsync(user, "Голова Куреня"),
                         IsUserHeadOfRegion = await _userManagerService.IsInRoleAsync(user, "Голова Округу"),
                         IsUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун"),
-                        CurrentUserId =await  _userManagerService.GetUserIdAsync(User)
+                        CurrentUserId = await _userManagerService.GetUserIdAsync(User)
                     };
 
                     return View(model);
