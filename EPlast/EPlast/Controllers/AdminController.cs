@@ -127,20 +127,19 @@ namespace EPlast.Controllers
         }
 
         [HttpGet]
-        public IActionResult RegionsAdmins()
+        public async  Task<IActionResult> RegionsAdmins()
         {
-            var cities = _cityService.GetAllDTO();
             var model = new RegionsAdminsViewModel
             {
-                Cities = _mapper.Map<IEnumerable<CityDTO>, IEnumerable<CityViewModel>>(cities)
+                Cities = _mapper.Map<IEnumerable<CityDTO>, IEnumerable<CityViewModel>>(await _cityService.GetAllDTOAsync())
             };
             return View(model);
         }
 
         [HttpGet]
-        public IActionResult GetAdmins(int cityId)
+        public async Task<IActionResult> GetAdmins(int cityId)
         {
-            var res = _mapper.Map<IEnumerable<CityAdministrationDTO>, IEnumerable<CityAdministrationViewModel>>(_cityAdministrationService.GetByCityId(cityId));
+            var res = _mapper.Map<IEnumerable<CityAdministrationDTO>, IEnumerable<CityAdministrationViewModel>>(await _cityAdministrationService.GetByCityIdAsync(cityId));
             return PartialView(res);
         }
     }
