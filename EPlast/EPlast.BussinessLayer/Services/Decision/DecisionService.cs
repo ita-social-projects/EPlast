@@ -46,8 +46,8 @@ namespace EPlast.BussinessLayer
             DecisionDTO decision = null;
             try
             {
-                decision =_mapper.Map<DecisionDTO>(await _repoWrapper.Decesion.FindByCondition(x => x.ID == decisionId)
-                    .FirstAsync());
+                decision = _mapper.Map<DecisionDTO>((await _repoWrapper.Decesion.FindByConditionAsync(x => x.ID == decisionId))
+                    .First());
             }
             catch (Exception e)
             {
@@ -57,7 +57,7 @@ namespace EPlast.BussinessLayer
             return decision;
         }
 
-        public async  Task<DecisionWrapperDTO> CreateDecisionAsync()
+        public async Task<DecisionWrapperDTO> CreateDecisionAsync()
         {
             DecisionWrapperDTO decisionWrapperDto = null;
             try
@@ -106,7 +106,7 @@ namespace EPlast.BussinessLayer
             Decesion decision = null;
             try
             {
-                decision = await _repoWrapper.Decesion.FindByCondition(x => x.ID == decisionDto.ID).FirstAsync();
+                decision = (await _repoWrapper.Decesion.FindByConditionAsync(x => x.ID == decisionDto.ID)).First();
                 decision.Name = decision.Name;
                 decision.Description = decision.Description;
                 _repoWrapper.Decesion.Update(decision);
@@ -203,15 +203,15 @@ namespace EPlast.BussinessLayer
 
         public async Task<List<OrganizationDTO>> GetOrganizationListAsync()
         {
-            return _mapper.Map<List<OrganizationDTO>>(await _repoWrapper.Organization.FindAll().ToListAsync());
+            return _mapper.Map<List<OrganizationDTO>>(await _repoWrapper.Organization.FindAllAsync());
         }
 
         public async Task<List<DecisionTargetDTO>> GetDecisionTargetListAsync()
         {
-            return _mapper.Map<List<DecisionTargetDTO>>(await _repoWrapper.DecesionTarget.FindAll().ToListAsync());
+            return _mapper.Map<List<DecisionTargetDTO>>(await _repoWrapper.DecesionTarget.FindAllAsync());
         }
 
-        public  IEnumerable<SelectListItem> GetDecisionStatusTypes()
+        public IEnumerable<SelectListItem> GetDecisionStatusTypes()
         {
             return _decisionVMCreator.GetDecesionStatusTypes();
         }
@@ -221,7 +221,7 @@ namespace EPlast.BussinessLayer
             var success = false;
             try
             {
-                var decision =await _repoWrapper.Decesion.FindByCondition(d => d.ID == id).FirstAsync();
+                var decision = (await _repoWrapper.Decesion.FindByConditionAsync(d => d.ID == id)).First();
                 if (decision == null)
                     throw new ArgumentNullException($"Decision with {id} id not found");
                 success = true;
@@ -251,7 +251,7 @@ namespace EPlast.BussinessLayer
             return Path.Combine(_appEnvironment.WebRootPath + DecesionsDocumentFolder, decisionId.ToString());
         }
 
-        private static  Dictionary<string, string> GetMimeTypes()
+        private static Dictionary<string, string> GetMimeTypes()
         {
             return new Dictionary<string, string>
             {
