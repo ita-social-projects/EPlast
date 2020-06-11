@@ -12,6 +12,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using EPlast.BussinessLayer.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
 using Xunit;
@@ -21,10 +22,11 @@ namespace EPlast.XUnitTest
     public class DecisionServiceTests
     {
         private DecisionService _decisionService;
+        private static Mock<IRepositoryWrapper> _repository;
 
         private static DecisionService CreateDecisionService(int decisionId = 1)
         {
-            var repository = new Mock<IRepositoryWrapper>();
+            _repository = new Mock<IRepositoryWrapper>();
             var hostingEnvironment = new Mock<IHostingEnvironment>();
             var directoryManager = new Mock<IDirectoryManager>();
             var fileManager = new Mock<IFileManager>();
@@ -45,25 +47,17 @@ namespace EPlast.XUnitTest
 
             fileManager.Setup(f => f.Exists(It.IsAny<string>())).Returns(true);
 
-            repository.Setup(rep => rep.DecesionTarget.FindAll()).Returns(GetTestDecisionTargetsQueryable);
-            repository.Setup(rep => rep.Decesion.FindByConditionAsync(It.IsAny<Expression<Func<Decesion, bool>>>()))
-                .ReturnsAsync(
-                    (Expression<Func<Decesion, bool>> condition) =>
-                        GetTestDecesionQueryable().Where(condition)
-                );
-            repository.Setup(rep => rep.Decesion.Include(x => x.DecesionTarget, x => x.Organization))
-                .Returns(GetTestDecesionQueryable());
-            repository.Setup(rep => rep.Decesion.Attach(new Decesion()));
-            repository.Setup(rep => rep.Decesion.Create(new Decesion()));
-            repository.Setup(rep => rep.Decesion.Update(new Decesion()));
-            repository.Setup(rep => rep.SaveAsync());
+            _repository.Setup(rep => rep.Decesion.Attach(new Decesion()));
+            _repository.Setup(rep => rep.Decesion.Create(new Decesion()));
+            _repository.Setup(rep => rep.Decesion.Update(new Decesion()));
+            _repository.Setup(rep => rep.SaveAsync());
 
             mapper.Setup(m => m.Map<List<DecisionTargetDTO>>(It.IsAny<List<DecesionTarget>>()))
                 .Returns(GetTestDecisionTargetsDtoList);
             mapper.Setup(m => m.Map<DecisionDTO>(It.IsAny<Decesion>()))
                 .Returns(() => GetTestDecisionsDtoListElement(decisionId));
             mapper.Setup(m => m.Map<List<DecisionDTO>>(It.IsAny<List<Decesion>>())).Returns(GetTestDecisionsDtoList);
-            return new DecisionService(repository.Object, hostingEnvironment.Object, directoryManager.Object,
+            return new DecisionService(_repository.Object, hostingEnvironment.Object, directoryManager.Object,
                 fileManager.Object, fileStreamManager.Object, mapper.Object, decisionVmCreator.Object, logger.Object);
         }
 
@@ -81,7 +75,9 @@ namespace EPlast.XUnitTest
         public async Task CreateDecisionDecisionTargetsCountTest()
         {
             _decisionService = CreateDecisionService();
-
+            _repository.Setup(rep => rep.DecesionTarget.GetAllAsync(It.IsAny<Expression<Func<DecesionTarget, bool>>>(),
+                    It.IsAny<Func<IQueryable<DecesionTarget>, IIncludableQueryable<DecesionTarget, object>>>()))
+                .ReturnsAsync(GetTestDecisionTargetsQueryable);
             var decision = await _decisionService.CreateDecisionAsync();
 
             Assert.Equal(GetTestDecisionTargetsDtoList().Count, decision.DecisionTargets.Count());
@@ -116,6 +112,9 @@ namespace EPlast.XUnitTest
         public async Task GetDecisionListTest()
         {
             _decisionService = CreateDecisionService();
+            _repository.Setup(rep => rep.Decesion.GetAllAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
+                    It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
+                .ReturnsAsync(GetTestDecesionQueryable());
 
             var decision = await _decisionService.GetDecisionListAsync();
 
@@ -126,7 +125,9 @@ namespace EPlast.XUnitTest
         public async Task GetDecisionListCountTest()
         {
             _decisionService = CreateDecisionService();
-
+            _repository.Setup(rep => rep.Decesion.GetAllAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
+                    It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
+                .ReturnsAsync(GetTestDecesionQueryable());
             var decision = await _decisionService.GetDecisionListAsync();
 
             Assert.Equal(GetTestDecisionsDtoList().Count, decision.Count);
@@ -140,6 +141,9 @@ namespace EPlast.XUnitTest
         public async Task ChangeDecisionTest(int decisionId, string decisionNewName, string decisionNewDescription)
         {
             _decisionService = CreateDecisionService();
+            _repository.Setup(rep => rep.Decesion.GetFirstAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
+                    It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
+                .ReturnsAsync(GetTestDecesionQueryable().FirstOrDefault());
 
             var changingDecisionDto = await _decisionService.GetDecisionAsync(decisionId);
             changingDecisionDto.Name = decisionNewName;
@@ -153,10 +157,13 @@ namespace EPlast.XUnitTest
         [InlineData(-1, false)]
         [InlineData(0, false)]
         [InlineData(1, true)]
-        [InlineData(40, false)]
+        [InlineData(2, true)]
         public async Task DeleteDecisionTest(int decisionId, bool expected)
         {
             _decisionService = CreateDecisionService();
+            _repository.Setup(rep => rep.Decesion.GetFirstAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
+                    It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
+                .ReturnsAsync(GetTestDecesionQueryable().FirstOrDefault(d => d.ID == decisionId));
 
             var actual = await _decisionService.DeleteDecisionAsync(decisionId);
 
@@ -228,10 +235,10 @@ namespace EPlast.XUnitTest
         {
             return new List<DecisionDTO>
             {
-                new DecisionDTO {ID = 1,HaveFile = true,Description = "old"},
-                new DecisionDTO {ID = 2,Description = "old"},
-                new DecisionDTO {ID = 3,HaveFile = true,Description = "old"},
-                new DecisionDTO {ID = 4,Description = "old"}
+                new DecisionDTO {ID = 1,HaveFile = true,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
+                new DecisionDTO {ID = 2,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
+                new DecisionDTO {ID = 3,HaveFile = true,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
+                new DecisionDTO {ID = 4,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()}
             };
         }
 

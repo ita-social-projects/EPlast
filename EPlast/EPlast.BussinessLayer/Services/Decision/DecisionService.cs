@@ -46,8 +46,7 @@ namespace EPlast.BussinessLayer
             DecisionDTO decision = null;
             try
             {
-                decision = _mapper.Map<DecisionDTO>((await _repoWrapper.Decesion.FindByConditionAsync(x => x.ID == decisionId))
-                    .First());
+                decision = _mapper.Map<DecisionDTO>(await _repoWrapper.Decesion.GetFirstAsync(x => x.ID == decisionId));
             }
             catch (Exception e)
             {
@@ -106,7 +105,7 @@ namespace EPlast.BussinessLayer
             Decesion decision = null;
             try
             {
-                decision = (await _repoWrapper.Decesion.FindByConditionAsync(x => x.ID == decisionDto.ID)).First();
+                decision = await _repoWrapper.Decesion.GetFirstAsync(x => x.ID == decisionDto.ID);
                 decision.Name = decision.Name;
                 decision.Description = decision.Description;
                 _repoWrapper.Decesion.Update(decision);
@@ -144,11 +143,8 @@ namespace EPlast.BussinessLayer
             try
             {
                 organizational = _mapper.Map<OrganizationDTO>(string.IsNullOrEmpty(organization.OrganizationName)
-                    ? await _repoWrapper.Organization.FindByCondition(x => x.ID == organization.ID)
-                        .FirstAsync()
-                    : await _repoWrapper.Organization
-                        .FindByCondition(x => x.OrganizationName.Equals(organization.OrganizationName))
-                        .FirstAsync());
+                    ? await _repoWrapper.Organization.GetFirstAsync(x => x.ID == organization.ID)
+                    : await _repoWrapper.Organization.GetFirstAsync(x => x.OrganizationName.Equals(organization.OrganizationName)));
             }
             catch (Exception e)
             {
@@ -203,12 +199,12 @@ namespace EPlast.BussinessLayer
 
         public async Task<List<OrganizationDTO>> GetOrganizationListAsync()
         {
-            return _mapper.Map<List<OrganizationDTO>>(await _repoWrapper.Organization.FindAllAsync());
+            return _mapper.Map<List<OrganizationDTO>>((await _repoWrapper.Organization.GetAllAsync()).ToList());
         }
 
         public async Task<List<DecisionTargetDTO>> GetDecisionTargetListAsync()
         {
-            return _mapper.Map<List<DecisionTargetDTO>>(await _repoWrapper.DecesionTarget.FindAllAsync());
+            return _mapper.Map<List<DecisionTargetDTO>>((await _repoWrapper.DecesionTarget.GetAllAsync()).ToList());
         }
 
         public IEnumerable<SelectListItem> GetDecisionStatusTypes()
@@ -221,7 +217,7 @@ namespace EPlast.BussinessLayer
             var success = false;
             try
             {
-                var decision = (await _repoWrapper.Decesion.FindByConditionAsync(d => d.ID == id)).First();
+                var decision = (await _repoWrapper.Decesion.GetFirstAsync(d => d.ID == id));
                 if (decision == null)
                     throw new ArgumentNullException($"Decision with {id} id not found");
                 success = true;
@@ -238,11 +234,11 @@ namespace EPlast.BussinessLayer
 
         private async Task<List<DecisionWrapperDTO>> getDecisionListAsync()
         {
+            var decisions = (await _repoWrapper.Decesion.GetAllAsync(include: dec =>
+                dec.Include(d => d.DecesionTarget).Include(d => d.Organization))).ToList();
             return _mapper
-                .Map<List<DecisionDTO>>(await _repoWrapper.Decesion
-                    .Include(x => x.DecesionTarget, x => x.Organization)
-                    .ToListAsync())
-                .Select(decision => new DecisionWrapperDTO { Decision = decision })
+                .Map<List<DecisionDTO>>(decisions)
+                    .Select(decision => new DecisionWrapperDTO { Decision = decision })
                 .ToList();
         }
 
