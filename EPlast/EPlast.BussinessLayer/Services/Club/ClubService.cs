@@ -116,22 +116,23 @@ namespace EPlast.BussinessLayer.Services.Club
         {
             if (file != null && file.Length > 0)
             {
-                var img = Image.FromStream(file.OpenReadStream());
-                var uploads = Path.Combine(_env.WebRootPath, "images\\Club");
-
-                if (!string.IsNullOrEmpty(oldImageName))
+                using (var img = Image.FromStream(file.OpenReadStream()))
                 {
-                    var oldPath = Path.Combine(uploads, oldImageName);
-
-                    if (File.Exists(oldPath))
+                    var uploads = Path.Combine(_env.WebRootPath, "images\\Club");
+                    if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default.jpg"))
                     {
-                        File.Delete(oldPath);
+                        var oldPath = Path.Combine(uploads, oldImageName);
+                        if (File.Exists(oldPath))
+                        {
+                            File.Delete(oldPath);
+                        }
                     }
+
+                    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                    var filePath = Path.Combine(uploads, fileName);
+                    img.Save(filePath);
+                    club.Logo = fileName;
                 }
-                var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-                var filePath = Path.Combine(uploads, fileName);
-                img.Save(filePath);
-                club.Logo = fileName;
             }
             else
             {
