@@ -2,7 +2,6 @@
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -32,7 +31,7 @@ namespace EPlast.BussinessLayer.Services
         }
         public async Task DeleteAsync(int confirmedUserId)
         {
-            _repoWrapper.ConfirmedUser.Delete(await _repoWrapper.ConfirmedUser.FindByCondition(x => x.ID == confirmedUserId).FirstAsync());
+            _repoWrapper.ConfirmedUser.Delete(await _repoWrapper.ConfirmedUser.GetFirstAsync(x => x.ID == confirmedUserId));
             await _repoWrapper.SaveAsync();
         }
     }

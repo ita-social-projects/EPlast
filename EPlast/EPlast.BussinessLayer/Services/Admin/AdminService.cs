@@ -55,7 +55,7 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task DeleteUserAsync(string userId)
         {
-            User user = await _repoWrapper.User.FindByCondition(i => i.Id == userId).FirstOrDefaultAsync();
+            User user = await _repoWrapper.User.GetFirstOrDefaultAsync(x => x.Id == userId);
             var roles = await _userManager.GetRolesAsync(user);
             if (user != null && !roles.Contains("Admin"))
             {
@@ -66,17 +66,17 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task<IEnumerable<UserTableDTO>> UsersTableAsync()
         {
-            var users = await _repoWrapper.User
-                    .Include(x => x.UserProfile, x => x.UserPlastDegrees, x => x.UserProfile.Gender)
-                    .ToListAsync();
+            var users = await _repoWrapper.User.GetAllAsync(null,
+                i => i.Include(x => x.UserProfile).
+                        ThenInclude(x => x.Gender).
+                    Include(x => x.UserPlastDegrees));
 
-            var cities = await _repoWrapper.City
-                .Include(x => x.Region)
-                .ToListAsync();
-            var clubMembers = await _repoWrapper.ClubMembers.Include(x => x.Club)
-                                                      .ToListAsync();
-            var cityMembers = await _repoWrapper.CityMembers.Include(x => x.City)
-                                                      .ToListAsync();
+            var cities = await _repoWrapper.City.
+                GetAllAsync(null, x => x.Include(i => i.Region));
+            var clubMembers = await _repoWrapper.ClubMembers.
+                GetAllAsync(null, x => x.Include(i => i.Club));
+            var cityMembers = await _repoWrapper.CityMembers.
+                GetAllAsync(null, x => x.Include(i => i.City));
             List<UserTableDTO> userTable = new List<UserTableDTO>();
             foreach (var user in users)
             {

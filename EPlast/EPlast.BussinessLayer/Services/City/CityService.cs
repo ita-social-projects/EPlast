@@ -30,7 +30,7 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task<IEnumerable<DataAccessCity.City>> GetAllAsync()
         {
-            return await _repoWrapper.City.FindAll().ToListAsync();
+            return await _repoWrapper.City.GetAllAsync();
         }
         public async Task<IEnumerable<CityDTO>> GetAllDTOAsync()
         {

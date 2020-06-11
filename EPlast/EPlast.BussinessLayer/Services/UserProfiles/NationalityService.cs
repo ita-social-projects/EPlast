@@ -3,7 +3,6 @@ using EPlast.BussinessLayer.DTO.UserProfiles;
 using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -22,9 +21,7 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
 
         public async Task<IEnumerable<NationalityDTO>> GetAllAsync()
         {
-            var result = await _repoWrapper.Nationality.FindAll().
-                ToListAsync();
-            return _mapper.Map<IEnumerable<Nationality>, IEnumerable<NationalityDTO>>(result);
+            return _mapper.Map<IEnumerable<Nationality>, IEnumerable<NationalityDTO>>(await _repoWrapper.Nationality.GetAllAsync());
         }
     }
 }
