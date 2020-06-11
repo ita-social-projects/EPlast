@@ -46,8 +46,8 @@ namespace EPlast.XUnitTest
             fileManager.Setup(f => f.Exists(It.IsAny<string>())).Returns(true);
 
             repository.Setup(rep => rep.DecesionTarget.FindAll()).Returns(GetTestDecisionTargetsQueryable);
-            repository.Setup(rep => rep.Decesion.FindByCondition(It.IsAny<Expression<Func<Decesion, bool>>>()))
-                .Returns(
+            repository.Setup(rep => rep.Decesion.FindByConditionAsync(It.IsAny<Expression<Func<Decesion, bool>>>()))
+                .ReturnsAsync(
                     (Expression<Func<Decesion, bool>> condition) =>
                         GetTestDecesionQueryable().Where(condition)
                 );
@@ -56,7 +56,7 @@ namespace EPlast.XUnitTest
             repository.Setup(rep => rep.Decesion.Attach(new Decesion()));
             repository.Setup(rep => rep.Decesion.Create(new Decesion()));
             repository.Setup(rep => rep.Decesion.Update(new Decesion()));
-            repository.Setup(rep => rep.Save());
+            repository.Setup(rep => rep.SaveAsync());
 
             mapper.Setup(m => m.Map<List<DecisionTargetDTO>>(It.IsAny<List<DecesionTarget>>()))
                 .Returns(GetTestDecisionTargetsDtoList);
@@ -68,21 +68,21 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void CreateDecisionTest()
+        public async Task CreateDecisionTest()
         {
             _decisionService = CreateDecisionService();
 
-            var decision = _decisionService.CreateDecision();
+            var decision = await _decisionService.CreateDecisionAsync();
 
             Assert.IsType<DecisionWrapperDTO>(decision);
         }
 
         [Fact]
-        public void CreateDecisionDecisionTargetsCountTest()
+        public async Task CreateDecisionDecisionTargetsCountTest()
         {
             _decisionService = CreateDecisionService();
 
-            var decision = _decisionService.CreateDecision();
+            var decision = await _decisionService.CreateDecisionAsync();
 
             Assert.Equal(GetTestDecisionTargetsDtoList().Count, decision.DecisionTargets.Count());
         }
@@ -91,43 +91,43 @@ namespace EPlast.XUnitTest
         [InlineData(1)]
         [InlineData(2)]
         [InlineData(3)]
-        public void GetDecisionTest(int decisionId)
+        public async Task GetDecisionTest(int decisionId)
         {
             _decisionService = CreateDecisionService(decisionId);
 
-            var decision = _decisionService.GetDecision(decisionId);
+            var decision = await _decisionService.GetDecisionAsync(decisionId);
 
             Assert.Equal(decisionId, decision.ID);
         }
 
         [Fact]
-        public void GetDecisionTestForNull()
+        public async Task GetDecisionTestForNull()
         {
             const int decisionId = 0;
 
             _decisionService = CreateDecisionService(decisionId);
 
-            var decision = _decisionService.GetDecision(decisionId);
+            var decision = await _decisionService.GetDecisionAsync(decisionId);
 
             Assert.Null(decision);
         }
 
         [Fact]
-        public void GetDecisionListTest()
+        public async Task GetDecisionListTest()
         {
             _decisionService = CreateDecisionService();
 
-            var decision = _decisionService.GetDecisionList();
+            var decision = await _decisionService.GetDecisionListAsync();
 
             Assert.IsType<List<DecisionWrapperDTO>>(decision);
         }
 
         [Fact]
-        public void GetDecisionListCountTest()
+        public async Task GetDecisionListCountTest()
         {
             _decisionService = CreateDecisionService();
 
-            var decision = _decisionService.GetDecisionList();
+            var decision = await _decisionService.GetDecisionListAsync();
 
             Assert.Equal(GetTestDecisionsDtoList().Count, decision.Count);
         }
@@ -137,14 +137,14 @@ namespace EPlast.XUnitTest
         [InlineData(1, "", "new text")]
         [InlineData(1, "new name", "")]
         [InlineData(1, "", "")]
-        public void ChangeDecisionTest(int decisionId, string decisionNewName, string decisionNewDescription)
+        public async Task ChangeDecisionTest(int decisionId, string decisionNewName, string decisionNewDescription)
         {
             _decisionService = CreateDecisionService();
 
-            var changingDecisionDto = _decisionService.GetDecision(decisionId);
+            var changingDecisionDto = await _decisionService.GetDecisionAsync(decisionId);
             changingDecisionDto.Name = decisionNewName;
             changingDecisionDto.Description = decisionNewDescription;
-            var changeDecisionState = _decisionService.ChangeDecision(changingDecisionDto);
+            var changeDecisionState = await _decisionService.ChangeDecisionAsync(changingDecisionDto);
 
             Assert.True(changeDecisionState);
         }
@@ -154,11 +154,11 @@ namespace EPlast.XUnitTest
         [InlineData(0, false)]
         [InlineData(1, true)]
         [InlineData(40, false)]
-        public void DeleteDecisionTest(int decisionId, bool expected)
+        public async Task DeleteDecisionTest(int decisionId, bool expected)
         {
             _decisionService = CreateDecisionService();
 
-            var actual = _decisionService.DeleteDecision(decisionId);
+            var actual = await _decisionService.DeleteDecisionAsync(decisionId);
 
             Assert.Equal(expected, actual);
         }

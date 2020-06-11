@@ -32,7 +32,7 @@ namespace EPlast.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public async  Task<DecisionViewModel> CreateDecision()
+        public async Task<DecisionViewModel> CreateDecision()
         {
             DecisionViewModel decisionViewModel = null;
             try
@@ -47,7 +47,7 @@ namespace EPlast.Controllers
                                                 Text = item.OrganizationName,
                                                 Value = item.ID.ToString()
                                             },
-                    DecisionTargets = _mapper.Map<List<DecisionTarget>>( await _decisionService.GetDecisionTargetListAsync()),
+                    DecisionTargets = _mapper.Map<List<DecisionTarget>>(await _decisionService.GetDecisionTargetListAsync()),
                     DecisionStatusTypeListItems = _decisionService.GetDecisionStatusTypes()
                 };
             }
@@ -152,7 +152,7 @@ namespace EPlast.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public async  Task<IActionResult> ReadDecision()
+        public async Task<IActionResult> ReadDecision()
         {
             List<DecisionViewModel> decisions = null;
             try
@@ -174,7 +174,7 @@ namespace EPlast.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async  Task<JsonResult> DeleteDecision(int id)
+        public async Task<JsonResult> DeleteDecision(int id)
         {
             return await _decisionService.DeleteDecisionAsync(id) ? Json(new
             {
