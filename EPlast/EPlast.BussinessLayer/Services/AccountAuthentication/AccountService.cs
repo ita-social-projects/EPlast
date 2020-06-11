@@ -262,7 +262,6 @@ namespace EPlast.BussinessLayer.Services
                     UserProfile = new UserProfile()
                 };
                 await _userManager.CreateAsync(user);
-                _userManager.Dispose();
             }
             await _userManager.AddToRoleAsync(user, "Прихильник");
             await _userManager.AddLoginAsync(user, externalLoginInfo);
