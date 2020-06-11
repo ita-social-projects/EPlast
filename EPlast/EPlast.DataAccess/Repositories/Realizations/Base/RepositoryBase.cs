@@ -22,50 +22,9 @@ namespace EPlast.DataAccess.Repositories
             return this.EPlastDBContext.Set<T>().AsNoTracking();
         }
 
-        public async Task<IEnumerable<T>> FindAllAsync(params Expression<Func<T, object>>[] includeProperties)
-        {
-            IQueryable<T> query = this.GetQueryable(includeProperties);
-
-            return await query.ToListAsync();
-        }
-
-        /// <summary>
-        /// Gets a list of entities.
-        /// </summary>
-        /// <param name="includeProperties">A list of submodels that should be included in the search result.</param>
-        /// <returns>A list of all entities (with deffered execution via <see cref="IQueryable">)</returns>
-        private IQueryable<T> GetQueryable(params Expression<Func<T, object>>[] includeProperties) // We can add some filters, static filter, ordering and etc
-        {
-            IQueryable<T> queryable = this.EPlastDBContext.Set<T>().AsNoTracking(); // ?
-            if (includeProperties != null)
-            {
-                queryable = includeProperties.Aggregate(queryable, (current, includeProperty) => current.Include(includeProperty));
-            }
-
-            return queryable;
-        }
-
         public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression)
         {
             return this.EPlastDBContext.Set<T>().Where(expression).AsNoTracking();
-        }
-
-        public async Task<IEnumerable<T>> FindByConditionAsync(Expression<Func<T, bool>> expression)
-        {
-            IQueryable<T> query = this.BuildQuery(expression);
-
-            return await query.ToListAsync();
-        }
-
-        private IQueryable<T> BuildQuery(Expression<Func<T, bool>> predicate) //TODO: add includeProperties, ordering, count or etc
-        {
-            IQueryable<T> query = this.EPlastDBContext.Set<T>().AsNoTracking(); //?
-            if(predicate != null)
-            {
-                query = query.Where(predicate);
-            }
-
-            return query;
         }
 
         public void Create(T entity)
@@ -107,6 +66,55 @@ namespace EPlast.DataAccess.Repositories
             }
 
             return query == null ? this.EPlastDBContext.Set<T>() : (IQueryable<T>)query;
+        }
+
+        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        {
+            return await this.GetQuery(predicate, include).ToListAsync();
+        }
+
+        public async Task<T> GetFirstAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        {
+            return await this.GetQuery(predicate, include).FirstAsync();
+        }
+
+        public async Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        {
+            return await this.GetQuery(predicate, include).FirstOrDefaultAsync();
+        }
+
+        public async Task<T> GetLastAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        {
+            return await this.GetQuery(predicate, include).LastAsync();
+        }
+
+        public async Task<T> GetLastOrDefaultAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        {
+            return await this.GetQuery(predicate, include).LastOrDefaultAsync();
+        }
+
+        public async Task<T> GetSingleAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        {
+            return await this.GetQuery(predicate, include).SingleAsync();
+        }
+
+        public async Task<T> GetSingleOrDefaultAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        {
+            return await this.GetQuery(predicate, include).SingleOrDefaultAsync();
+        }
+
+        private IQueryable<T> GetQuery(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        {
+            var query = this.EPlastDBContext.Set<T>().AsNoTracking();
+            if (include != null)
+            {
+                query = include(query);
+            }
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+            return query;
         }
     }
 }
