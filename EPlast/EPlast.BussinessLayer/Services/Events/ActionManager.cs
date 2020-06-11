@@ -163,8 +163,7 @@ namespace EPlast.BussinessLayer.Services.Events
             try
             {
                 Event objectToDelete = await _repoWrapper.Event
-                    .FindByCondition(e => e.ID == id)
-                    .FirstAsync();
+                    .GetFirstAsync(e => e.ID == id);
                 _repoWrapper.Event.Delete(objectToDelete);
                 await _repoWrapper.SaveAsync();
                 return StatusCodes.Status200OK;
@@ -180,8 +179,7 @@ namespace EPlast.BussinessLayer.Services.Events
             try
             {
                 Event targetEvent = await _repoWrapper.Event
-                    .FindByCondition(e => e.ID == id)
-                    .FirstAsync();
+                    .GetFirstAsync(e => e.ID == id);
                 var userId = _userManager.GetUserId(user);
                 int result = await _participantManager.SubscribeOnEventAsync(targetEvent, userId);
                 return result;
@@ -197,8 +195,7 @@ namespace EPlast.BussinessLayer.Services.Events
             try
             {
                 Event targetEvent = await _repoWrapper.Event
-                    .FindByCondition(e => e.ID == id)
-                    .FirstAsync();
+                    .GetFirstAsync(e => e.ID == id);
                 var userId = _userManager.GetUserId(user);
                 int result = await _participantManager.UnSubscribeOnEventAsync(targetEvent, userId);
                 return result;
@@ -243,8 +240,7 @@ namespace EPlast.BussinessLayer.Services.Events
         private async Task CheckEventsStatusesAsync(int id, int actionId, int finishedEvent)
         {
             var eventsToCheck = await _repoWrapper.Event
-                .FindByCondition(e => e.EventCategoryID == id && e.EventTypeID == actionId)
-                .ToListAsync();
+                .GetAllAsync(e => e.EventCategoryID == id && e.EventTypeID == actionId);
             foreach (var eventToCheck in eventsToCheck)
             {
                 if (eventToCheck.EventDateEnd.Date <= DateTime.Now.Date && eventToCheck.EventStatusID != finishedEvent)
@@ -258,8 +254,8 @@ namespace EPlast.BussinessLayer.Services.Events
 
         private async Task CheckEventStatusAsync(int id, int finishedEvent)
         {
-            var eventToCheck = await _repoWrapper.Event.FindByCondition(e => e.ID == id)
-                .FirstAsync();
+            var eventToCheck = await _repoWrapper.Event
+                .GetFirstAsync(e => e.ID == id);
             if (eventToCheck.EventDateEnd.Date <= DateTime.Now.Date && eventToCheck.EventStatusID != finishedEvent)
             {
                 eventToCheck.EventStatusID = finishedEvent;
