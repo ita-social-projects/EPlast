@@ -3,7 +3,6 @@ using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -58,8 +57,7 @@ namespace EPlast.BussinessLayer.Services.Events
             try
             {
                 Gallary objectToDelete = await _repoWrapper.Gallary
-                    .FindByCondition(g => g.ID == id)
-                    .FirstAsync();
+                    .GetFirstAsync(predicate: g => g.ID == id);
                 _repoWrapper.Gallary.Delete(objectToDelete);
                 var picturePath = Path.Combine(_env.WebRootPath, "images\\EventsGallery", objectToDelete.GalaryFileName);
                 if (File.Exists(picturePath))

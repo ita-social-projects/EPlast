@@ -1,6 +1,5 @@
 ﻿using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.DataAccess.Repositories;
-using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services.Events
@@ -17,8 +16,8 @@ namespace EPlast.BussinessLayer.Services.Events
         public async Task<int> GetTypeIdAsync(string typeName)
         {
             var type = await _repoWrapper.EventType
-                .FindByCondition(et => et.EventTypeName == typeName)
-                .FirstAsync();
+                .GetFirstAsync(predicate: et => et.EventTypeName == typeName);
+
             return type.ID;
         }
     }
