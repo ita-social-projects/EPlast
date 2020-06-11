@@ -119,9 +119,9 @@ namespace EPlast.Controllers
                 _logger.Log(LogLevel.Error, $"User, with userId: {userId}, is null");
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
-            catch
+            catch(Exception e)
             {
-                _logger.Log(LogLevel.Error, "Smth went wrong");
+                _logger.Log(LogLevel.Error, $"Smth went wrong {e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }

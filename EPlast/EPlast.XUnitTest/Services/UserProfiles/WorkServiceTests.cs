@@ -26,7 +26,7 @@ namespace EPlast.XUnitTest.Services.UserProfiles
         [Fact]
         public async Task GetAllGroupByPlaceTest()
         {
-            _repoWrapper.Setup(r => r.Work.FindAll()).Returns(new List<Work>().AsQueryable());
+            _repoWrapper.Setup(r => r.Work.GetAllAsync(null, null)).ReturnsAsync(new List<Work>().AsQueryable());
 
             var service = new WorkService(_repoWrapper.Object, _mapper.Object);
             _mapper.Setup(x => x.Map<Work, WorkDTO>(It.IsAny<Work>())).Returns(new WorkDTO());
@@ -39,7 +39,7 @@ namespace EPlast.XUnitTest.Services.UserProfiles
         [Fact]
         public async Task GetAllGroupByPositionTest()
         {
-            _repoWrapper.Setup(r => r.Work.FindAll()).Returns(new List<Work>().AsQueryable());
+            _repoWrapper.Setup(r => r.Work.GetAllAsync(null, null)).ReturnsAsync(new List<Work>().AsQueryable());
 
             var service = new WorkService(_repoWrapper.Object, _mapper.Object);
             _mapper.Setup(x => x.Map<Work, WorkDTO>(It.IsAny<Work>())).Returns(new WorkDTO());
@@ -52,7 +52,7 @@ namespace EPlast.XUnitTest.Services.UserProfiles
         [Fact]
         public async Task GetByIdTest()
         {
-            _repoWrapper.Setup(r => r.Work.FindByCondition(It.IsAny<Expression<Func<Work, bool>>>())).Returns(new List<Work>().AsQueryable());
+            _repoWrapper.Setup(r => r.Work.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Work, bool>>>(), null)).ReturnsAsync(new Work());
 
             var service = new WorkService(_repoWrapper.Object, _mapper.Object);
             _mapper.Setup(x => x.Map<Work, WorkDTO>(It.IsAny<Work>())).Returns(new WorkDTO());

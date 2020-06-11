@@ -3,7 +3,6 @@ using EPlast.BussinessLayer.DTO.UserProfiles;
 using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -41,9 +40,7 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
         public async Task<WorkDTO> GetByIdAsync(int? workId)
         {
             return _mapper.Map<Work, WorkDTO>(
-                await _repoWrapper.Work.FindByCondition(x => x.ID == workId).
-                    FirstOrDefaultAsync()
-                );
+                await _repoWrapper.Work.GetFirstOrDefaultAsync(x => x.ID == workId));
         }
     }
 }

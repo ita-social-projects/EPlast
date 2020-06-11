@@ -24,7 +24,7 @@ namespace EPlast.XUnitTest.Services.UserProfiles
         [Fact]
         public async Task GetAllTest()
         {
-            _repoWrapper.Setup(r => r.Nationality.FindAll()).Returns(new List<Nationality>().AsQueryable());
+            _repoWrapper.Setup(r => r.Nationality.GetAllAsync(null, null)).ReturnsAsync(new List<Nationality>().AsQueryable());
 
             var service = new NationalityService(_repoWrapper.Object, _mapper.Object);
             _mapper.Setup(x => x.Map<Nationality, NationalityDTO>(It.IsAny<Nationality>())).Returns(new NationalityDTO());
