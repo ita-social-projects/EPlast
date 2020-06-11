@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\EventUserControllerTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Ical.Net" Version="4.1.11" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
@@ -28,5 +32,9 @@
     <ProjectReference Include="..\EPlast.DataAccess\EPlast.DataAccess.csproj" />
     <ProjectReference Include="..\EPlast.Resources\EPlast.Resources.csproj" />
     <ProjectReference Include="..\EPlast\EPlast.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="NewFolder\" />
   </ItemGroup>
 </Project>

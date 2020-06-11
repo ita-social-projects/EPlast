@@ -1,11 +1,10 @@
 ﻿using EPlast.BussinessLayer.DTO.Events;
 using EPlast.BussinessLayer.Services.Events;
-using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Moq;
 using System.Collections.Generic;
 using System.Linq;
-using EPlast.DataAccess.Entities.Event;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.Events
@@ -20,18 +19,18 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public void GetDTOTest()
+        public async void GetDTOTest()
         {
             //Arrange
-            _repoWrapper.Setup(x=>x.EventCategory.FindAll())
-                .Returns(GetEventCategories());
+            _repoWrapper.Setup(x => x.EventCategory.GetAllAsync(null, null))
+                .ReturnsAsync(GetEventCategories());
             //Act
             var eventCategoryManager = new EventCategoryManager(_repoWrapper.Object);
-            var methodResult = eventCategoryManager.GetDTO();
+            var methodResult = await eventCategoryManager.GetDTOAsync();
             //Assert
             Assert.NotNull(methodResult);
             Assert.IsType<List<EventCategoryDTO>>(methodResult);
-            Assert.Equal(GetEventCategories().Count(),methodResult.Count);
+            Assert.Equal(GetEventCategories().Count(), methodResult.Count);
         }
         public IQueryable<EventCategory> GetEventCategories()
         {

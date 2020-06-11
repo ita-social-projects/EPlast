@@ -1,5 +1,5 @@
 ﻿using EPlast.BussinessLayer.Services.Events;
-using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -9,9 +9,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Linq.Expressions;
-using EPlast.DataAccess.Entities.Event;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.Events
@@ -28,48 +26,50 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public void DeletePictureSuccessTest()
+        public async void DeletePictureSuccessTest()
         {
             //Arrange
             int eventId = 5;
-            _repoWrapper.Setup(x => x.Gallary.FindByCondition(It.IsAny<Expression<Func<Gallary, bool>>>()))
-                .Returns(new List<Gallary> { new Gallary { ID = 2, GalaryFileName = "picture.jpj" } }.AsQueryable());
+            _repoWrapper.Setup(x =>
+                    x.Gallary.GetFirstAsync(It.IsAny<Expression<Func<Gallary, bool>>>(), null))
+                .ReturnsAsync(new Gallary { ID = 2, GalaryFileName = "picture.jpj" });
             _env.Setup(e => e.WebRootPath).Returns("Webroot\\");
             //Act
             var eventGalleryManager = new EventGalleryManager(_repoWrapper.Object, _env.Object);
-            var methodResult = eventGalleryManager.DeletePicture(eventId);
+            var methodResult = await eventGalleryManager.DeletePictureAsync(eventId);
             //Assert
             _repoWrapper.Verify(r => r.Gallary.Delete(It.IsAny<Gallary>()), Times.Once());
-            _repoWrapper.Verify(r => r.Save(), Times.Once());
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once());
             Assert.Equal(StatusCodes.Status200OK, methodResult);
         }
 
         [Fact]
-        public void DeletePictureFailTest()
+        public async void DeletePictureFailTest()
         {
             //Arrange
             int eventId = 5;
-            _repoWrapper.Setup(x => x.Gallary.FindByCondition(It.IsAny<Expression<Func<Gallary, bool>>>()))
-                .Throws(new Exception());
+            _repoWrapper.Setup(x =>
+                    x.Gallary.GetFirstAsync(It.IsAny<Expression<Func<Gallary, bool>>>(), null))
+                .ThrowsAsync(new Exception());
             _env.Setup(e => e.WebRootPath).Returns("Webroot\\");
             //Act
             var eventGalleryManager = new EventGalleryManager(_repoWrapper.Object, _env.Object);
-            var methodResult = eventGalleryManager.DeletePicture(eventId);
+            var methodResult = await eventGalleryManager.DeletePictureAsync(eventId);
             //Assert
             Assert.Equal(StatusCodes.Status500InternalServerError, methodResult);
         }
 
         [Fact]
-        public void FillEventGalleryTest()
+        public async void FillEventGalleryTest()
         {
             //Arrange
             int eventId = 5;
-            _repoWrapper.Setup(x => x.Gallary.Create((It.IsAny<Gallary>())));
-            _repoWrapper.Setup(x => x.EventGallary.Create((It.IsAny<EventGallary>())));
+            _repoWrapper.Setup(x => x.Gallary.CreateAsync((It.IsAny<Gallary>())));
+            _repoWrapper.Setup(x => x.EventGallary.CreateAsync((It.IsAny<EventGallary>())));
             _env.Setup(e => e.WebRootPath).Returns("Webroot\\");
             //Act  
-            var eventGalleryManager = new EventGalleryManager(_repoWrapper.Object,_env.Object);
-            var methodResult = eventGalleryManager.AddPictures(eventId, FakeFiles());
+            var eventGalleryManager = new EventGalleryManager(_repoWrapper.Object, _env.Object);
+            var methodResult = await eventGalleryManager.AddPicturesAsync(eventId, FakeFiles());
             //Assert
             Assert.Equal(StatusCodes.Status500InternalServerError, methodResult);
         }

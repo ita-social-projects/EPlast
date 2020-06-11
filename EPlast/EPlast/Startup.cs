@@ -13,7 +13,7 @@ using EPlast.BussinessLayer.Services.City;
 using EPlast.BussinessLayer.Services.City.CityAccess;
 using EPlast.BussinessLayer.Services.Club;
 using EPlast.BussinessLayer.Services.Events;
-using EPlast.BussinessLayer.Services.EventUser;
+//using EPlast.BussinessLayer.Services.EventUser;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.BussinessLayer.Services.UserProfiles;
 using EPlast.BussinessLayer.Settings;
@@ -113,7 +113,7 @@ namespace EPlast
             services.AddScoped<IParticipantStatusManager, ParticipantStatusManager>();
             services.AddScoped<IParticipantManager, ParticipantManager>();
             services.AddScoped<IEventGalleryManager, EventGalleryManager>();
-            services.AddScoped<IEventUserManager, EventUserManager>();
+            //services.AddScoped<IEventUserManager, EventUserManager>();
             services.AddScoped<IEventAdminManager, EventAdminManager>();
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
