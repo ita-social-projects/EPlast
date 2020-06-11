@@ -38,12 +38,18 @@ namespace EPlast.BussinessLayer.Services.Club
         {
             var club = await GetClubAdministrationAsync(clubID);
             
-            return new ClubProfileDTO { Club = club, ClubAdministration = club.ClubAdministration };
+            var clubProfileDTO = new ClubProfileDTO
+            {
+                Club = club,
+                ClubAdministration = club.ClubAdministration
+            };
+
+            return clubProfileDTO;
         }
 
         public async Task<bool> DeleteClubAdminAsync(int id)
         {
-            ClubAdministration admin = await _repoWrapper.GetClubAdministration
+            var admin = await _repoWrapper.GetClubAdministration
                 .FindByCondition(i => i.ID == id)
                 .FirstOrDefaultAsync();
             
@@ -60,12 +66,13 @@ namespace EPlast.BussinessLayer.Services.Club
 
         public async Task SetAdminEndDateAsync(AdminEndDateDTO adminEndDate)
         {
-            ClubAdministration admin = await _repoWrapper.GetClubAdministration
+            var admin = await _repoWrapper.GetClubAdministration
                 .FindByCondition(i => i.ID == adminEndDate.AdminId)
                 .FirstOrDefaultAsync();
 
             admin.EndDate = adminEndDate.EndDate;
             _repoWrapper.GetClubAdministration.Update(admin);
+            
             await _repoWrapper.SaveAsync();
         }
 

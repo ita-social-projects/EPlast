@@ -270,7 +270,7 @@ namespace EPlast.Controllers
 
             await _clubMembersService.AddFollowerAsync(clubIndex, userId);
 
-            return RedirectToAction("UserProfile", "Account", new { userId });
+            return RedirectToAction("UserProfile", "Account", userId);
         }
 
         [HttpGet]
