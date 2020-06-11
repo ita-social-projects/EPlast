@@ -81,11 +81,11 @@ namespace EPlast.XUnitTest
                 AnnualReport = new AnnualReportViewModel { CityId = city.ID, MembersStatistic = new MembersStatisticViewModel() }
             };
             _cityAccessService.Setup(cas => cas.GetCitiesAsync(It.IsAny<ClaimsPrincipal>()))
-                .Returns(Task.FromResult(cities));
+                .ReturnsAsync(cities);
             _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
                 .Returns(city);
             _cityMembersService.Setup(c => c.GetCurrentByCityIdAsync(It.IsAny<int>()))
-                .Returns(Task.FromResult(cityMembersDTOs));
+                .ReturnsAsync(cityMembersDTOs);
             _mapper.Setup(m => m.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(It.IsAny<IEnumerable<CityMembersDTO>>()))
                 .Returns(cityMembers);
 
@@ -110,7 +110,7 @@ namespace EPlast.XUnitTest
             };
             var city = new CityViewModel { ID = cities.First().ID, Name = cities.First().Name };
             _cityAccessService.Setup(cas => cas.GetCitiesAsync(It.IsAny<ClaimsPrincipal>()))
-               .Returns(Task.FromResult(cities));
+               .ReturnsAsync(cities);
             _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
                 .Returns(city);
             _annualReportService.Setup(a => a.CheckCanBeCreatedAsync(It.IsAny<int>()))
@@ -130,7 +130,7 @@ namespace EPlast.XUnitTest
         {
             // Arrange
             _cityAccessService.Setup(cas => cas.GetCitiesAsync(It.IsAny<ClaimsPrincipal>()))
-               .Returns(Task.FromResult(Enumerable.Empty<CityDTO>()));
+               .ReturnsAsync(Enumerable.Empty<CityDTO>());
 
             // Act
             var result = await controller.CreateAsync();
@@ -181,13 +181,13 @@ namespace EPlast.XUnitTest
                 AnnualReport = new AnnualReportViewModel { CityId = city.ID, MembersStatistic = new MembersStatisticViewModel() }
             };
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .Returns(Task.FromResult(true));
+                .ReturnsAsync(true);
             _cityService.Setup(c => c.GetById(It.IsAny<int>()))
                 .Returns(cityDTO);
             _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
                 .Returns(city);
             _cityMembersService.Setup(c => c.GetCurrentByCityIdAsync(It.IsAny<int>()))
-                .Returns(Task.FromResult(cityMembersDTOs));
+                .ReturnsAsync(cityMembersDTOs);
             _mapper.Setup(m => m.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(It.IsAny<IEnumerable<CityMembersDTO>>()))
                 .Returns(cityMembers);
 
@@ -207,7 +207,7 @@ namespace EPlast.XUnitTest
         {
             // Arrange
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .Returns(Task.FromResult(true));
+                .ReturnsAsync(true);
             _annualReportService.Setup(a => a.CheckCanBeCreatedAsync(It.IsAny<int>()))
                 .Throws(new AnnualReportException("Станиця має непідтверджені звіти!"));
 
@@ -225,7 +225,7 @@ namespace EPlast.XUnitTest
         {
             // Arrange
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .Returns(Task.FromResult(true));
+                .ReturnsAsync(true);
             _cityService.Setup(c => c.GetById(It.IsAny<int>()))
                 .Returns(default(CityDTO));
             _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
@@ -248,7 +248,7 @@ namespace EPlast.XUnitTest
         {
             // Arrange
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .Returns(Task.FromResult(false));
+                .ReturnsAsync(false);
 
             // Act
             var result = await controller.CreateAsAdminAsync(It.IsAny<int>());
@@ -321,7 +321,7 @@ namespace EPlast.XUnitTest
             _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
                 .Returns(city);
             _cityMembersService.Setup(c => c.GetCurrentByCityIdAsync(It.IsAny<int>()))
-                .Returns(Task.FromResult(cityMembersDTOs));
+                .ReturnsAsync(cityMembersDTOs);
             _mapper.Setup(m => m.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(It.IsAny<IEnumerable<CityMembersDTO>>()))
                 .Returns(cityMembers);
 
