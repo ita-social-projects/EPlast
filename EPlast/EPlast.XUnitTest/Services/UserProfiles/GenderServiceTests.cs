@@ -24,7 +24,7 @@ namespace EPlast.XUnitTest.Services.UserProfiles
         [Fact]
         public async Task GetAllTest()
         {
-            _repoWrapper.Setup(r => r.Gender.FindAll()).Returns(new List<Gender>().AsQueryable());
+            _repoWrapper.Setup(r => r.Gender.GetAllAsync(null, null)).ReturnsAsync(new List<Gender>().AsQueryable());
 
             var service = new GenderService(_repoWrapper.Object, _mapper.Object);
             _mapper.Setup(x => x.Map<Gender, GenderDTO>(It.IsAny<Gender>())).Returns(new GenderDTO());

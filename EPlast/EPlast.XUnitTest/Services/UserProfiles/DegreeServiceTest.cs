@@ -24,7 +24,7 @@ namespace EPlast.XUnitTest.Services.UserProfiles
         [Fact]
         public async Task GetAllTest()
         {
-            _repoWrapper.Setup(r => r.Degree.FindAll()).Returns(new List<Degree>().AsQueryable());
+            _repoWrapper.Setup(r => r.Degree.GetAllAsync(null,null)).ReturnsAsync(new List<Degree>().AsQueryable());
 
             var service = new DegreeService(_repoWrapper.Object, _mapper.Object);
             _mapper.Setup(x => x.Map<Degree, DegreeDTO>(It.IsAny<Degree>())).Returns(new DegreeDTO());

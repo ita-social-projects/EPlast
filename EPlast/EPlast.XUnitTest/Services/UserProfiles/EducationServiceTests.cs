@@ -26,7 +26,7 @@ namespace EPlast.XUnitTest.Services.UserProfiles
         [Fact]
         public async Task GetAllGroupByPlaceTest()
         {
-            _repoWrapper.Setup(r => r.Education.FindAll()).Returns(new List<Education>().AsQueryable());
+            _repoWrapper.Setup(r => r.Education.GetAllAsync(null,null)).ReturnsAsync(new List<Education>().AsQueryable());
 
             var service = new EducationService(_repoWrapper.Object, _mapper.Object);
             _mapper.Setup(x => x.Map<Education, EducationDTO>(It.IsAny<Education>())).Returns(new EducationDTO());
@@ -39,7 +39,7 @@ namespace EPlast.XUnitTest.Services.UserProfiles
         [Fact]
         public async Task GetAllGroupBySpecialityTest()
         {
-            _repoWrapper.Setup(r => r.Education.FindAll()).Returns(new List<Education>().AsQueryable());
+            _repoWrapper.Setup(r => r.Education.GetAllAsync(null, null)).ReturnsAsync(new List<Education>().AsQueryable());
 
             var service = new EducationService(_repoWrapper.Object, _mapper.Object);
             _mapper.Setup(x => x.Map<Education, EducationDTO>(It.IsAny<Education>())).Returns(new EducationDTO());
@@ -52,7 +52,7 @@ namespace EPlast.XUnitTest.Services.UserProfiles
         [Fact]
         public async Task GetByIdTest()
         {
-            _repoWrapper.Setup(r => r.Education.FindByCondition(It.IsAny<Expression<Func<Education, bool>>>())).Returns(new List<Education>().AsQueryable());
+            _repoWrapper.Setup(r => r.Education.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Education, bool>>>(),null)).ReturnsAsync(new Education());
 
             var service = new EducationService(_repoWrapper.Object, _mapper.Object);
             _mapper.Setup(x => x.Map<Education, EducationDTO>(It.IsAny<Education>())).Returns(new EducationDTO());

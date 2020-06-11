@@ -9,7 +9,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.UserArea
@@ -31,7 +30,7 @@ namespace EPlast.XUnitTest.Services.UserArea
         public async Task CreateTest()
         {
             _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns("1");
-            _repoWrapper.Setup(x => x.ConfirmedUser.FindAll()).Returns(new List<ConfirmedUser>().AsQueryable());
+            _repoWrapper.Setup(x =>  x.ConfirmedUser.GetAllAsync(null,null)).ReturnsAsync(new List<ConfirmedUser>().AsQueryable());
             var service = new ConfirmedUsersService(_repoWrapper.Object, _userManager.Object);
 
             await service.CreateAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<string>());
@@ -43,7 +42,7 @@ namespace EPlast.XUnitTest.Services.UserArea
         public async Task DeleteTest()
         {
 
-            _repoWrapper.Setup(x =>  x.ConfirmedUser.FindByCondition( It.IsAny<Expression<Func<ConfirmedUser, bool>>>())).Returns(new List<ConfirmedUser> { new ConfirmedUser() }.AsQueryable());
+            _repoWrapper.Setup(x =>  x.ConfirmedUser.GetFirstAsync(It.IsAny<Expression<Func<ConfirmedUser, bool>>>(), null)).ReturnsAsync(new ConfirmedUser());
             var service = new ConfirmedUsersService(_repoWrapper.Object, _userManager.Object);
 
             await service.DeleteAsync(It.IsAny<int>());
