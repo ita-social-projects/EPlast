@@ -5,7 +5,6 @@ using EPlast.BussinessLayer.Interfaces.Club;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services.Club

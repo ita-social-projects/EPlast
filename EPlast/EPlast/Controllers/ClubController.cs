@@ -160,49 +160,52 @@ namespace EPlast.Controllers
         }
 
         [HttpGet]
-        public IActionResult ChangeIsApprovedStatus(int index, int clubIndex)
+        public async Task<IActionResult> ChangeIsApprovedStatus(int index, int clubIndex)
         {
             try
             {
-                _clubMembersService.ToggleIsApprovedInClubMembers(index, clubIndex);
+                await _clubMembersService.ToggleIsApprovedInClubMembersAsync(index, clubIndex);
 
                 return RedirectToAction("ClubMembers", new { index = clubIndex });
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
+                
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
 
         [HttpGet]
-        public IActionResult ChangeIsApprovedStatusFollowers(int index, int clubIndex)
+        public async Task<IActionResult> ChangeIsApprovedStatusFollowers(int index, int clubIndex)
         {
             try
             {
-                _clubMembersService.ToggleIsApprovedInClubMembers(index, clubIndex);
+                await _clubMembersService.ToggleIsApprovedInClubMembersAsync(index, clubIndex);
 
                 return RedirectToAction("ClubFollowers", new { index = clubIndex });
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
+
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
 
         [HttpGet]
-        public IActionResult ChangeIsApprovedStatusClub(int index, int clubIndex)
+        public async Task<IActionResult> ChangeIsApprovedStatusClub(int index, int clubIndex)
         {
             try
             {
-                _clubMembersService.ToggleIsApprovedInClubMembers(index, clubIndex);
+                await _clubMembersService.ToggleIsApprovedInClubMembersAsync(index, clubIndex);
 
                 return RedirectToAction("Club", new { index = clubIndex });
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
+                
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
@@ -261,11 +264,11 @@ namespace EPlast.Controllers
             return View(model);
         }
 
-        public IActionResult AddAsClubFollower(int clubIndex, string userId)
+        public async Task<IActionResult> AddAsClubFollower(int clubIndex, string userId)
         {
             userId = User.IsInRole("Admin") ? userId : _userManagerService.GetUserId(User);
 
-            _clubMembersService.AddFollower(clubIndex, userId);
+            await _clubMembersService.AddFollowerAsync(clubIndex, userId);
 
             return RedirectToAction("UserProfile", "Account", new { userId });
         }
