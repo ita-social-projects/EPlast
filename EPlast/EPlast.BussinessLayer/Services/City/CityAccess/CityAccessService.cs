@@ -34,7 +34,7 @@ namespace EPlast.BussinessLayer.Services.City.CityAccess
             {
                 if (roles.Contains(key))
                 {
-                    var cities = _cityAccessGetters[key].GetCities(user.Id);
+                    var cities = await _cityAccessGetters[key].GetCities(user.Id);
                     return _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityDTO>>(cities);
                 }
             }
