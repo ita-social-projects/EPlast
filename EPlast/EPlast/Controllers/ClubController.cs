@@ -31,11 +31,13 @@ namespace EPlast.Controllers
             _logger = logger;
             _userManagerService = userManagerService;
         }
+
         private void CheckCurrentUserRoles(ref ClubProfileViewModel viewModel)
         {
             viewModel.IsCurrentUserClubAdmin = _userManagerService.GetUserId(User) == viewModel.ClubAdmin?.Id;
             viewModel.IsCurrentUserAdmin = User.IsInRole("Admin");
         }
+
         public async Task<IActionResult> Index()
         {
             var clubs = await _clubService.GetAllClubsAsync();
@@ -59,11 +61,14 @@ namespace EPlast.Controllers
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
-        public IActionResult ClubAdmins(int index)
+
+        public async Task<IActionResult> ClubAdmins(int index)
         {
             try
             {
-                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(_clubAdministrationService.GetCurrentClubAdministrationByID(index));
+                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(await _clubAdministrationService
+                    .GetCurrentClubAdministrationByIDAsync(index));
+
                 CheckCurrentUserRoles(ref viewModel);
 
                 return View(viewModel);
@@ -74,6 +79,7 @@ namespace EPlast.Controllers
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
+
         public async Task<IActionResult> ClubMembers(int index)
         {
             try
@@ -89,6 +95,7 @@ namespace EPlast.Controllers
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
+
         public async Task<IActionResult> ClubFollowers(int index)
         {
             try
@@ -151,72 +158,77 @@ namespace EPlast.Controllers
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
+
         [HttpGet]
-        public IActionResult ChangeIsApprovedStatus(int index, int clubIndex)
+        public async Task<IActionResult> ChangeIsApprovedStatus(int index, int clubIndex)
         {
             try
             {
-                _clubMembersService.ToggleIsApprovedInClubMembers(index, clubIndex);
+                await _clubMembersService.ToggleIsApprovedInClubMembersAsync(index, clubIndex);
 
                 return RedirectToAction("ClubMembers", new { index = clubIndex });
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
+
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
+
         [HttpGet]
-        public IActionResult ChangeIsApprovedStatusFollowers(int index, int clubIndex)
+        public async Task<IActionResult> ChangeIsApprovedStatusFollowers(int index, int clubIndex)
         {
             try
             {
-                _clubMembersService.ToggleIsApprovedInClubMembers(index, clubIndex);
+                await _clubMembersService.ToggleIsApprovedInClubMembersAsync(index, clubIndex);
 
                 return RedirectToAction("ClubFollowers", new { index = clubIndex });
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
+
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
+
         [HttpGet]
-        public IActionResult ChangeIsApprovedStatusClub(int index, int clubIndex)
+        public async Task<IActionResult> ChangeIsApprovedStatusClub(int index, int clubIndex)
         {
             try
             {
-                _clubMembersService.ToggleIsApprovedInClubMembers(index, clubIndex);
+                await _clubMembersService.ToggleIsApprovedInClubMembersAsync(index, clubIndex);
 
                 return RedirectToAction("Club", new { index = clubIndex });
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
+
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
+
         [HttpGet]
-        public IActionResult DeleteFromAdmins(int adminId, int clubIndex)
+        public async Task<IActionResult> DeleteFromAdmins(int adminId, int clubIndex)
         {
-            bool isSuccessfull = _clubAdministrationService.DeleteClubAdmin(adminId);
+            bool isSuccessfull = await _clubAdministrationService.DeleteClubAdminAsync(adminId);
 
             if (isSuccessfull)
             {
                 return RedirectToAction("ClubAdmins", new { index = clubIndex });
             }
-            else
-            {
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
-            }
+
+            return RedirectToAction("HandleError", "Error", new { code = 505 });
         }
 
         [HttpPost]
-        public int AddEndDate([FromBody] AdminEndDateDTO adminEndDate)
+        public async Task<int> AddEndDate([FromBody] AdminEndDateDTO adminEndDate)
         {
             try
             {
-                _clubAdministrationService.SetAdminEndDate(adminEndDate);
+                await _clubAdministrationService.SetAdminEndDateAsync(adminEndDate);
 
                 return 1;
             }
@@ -225,12 +237,13 @@ namespace EPlast.Controllers
                 return 0;
             }
         }
+
         [HttpPost]
-        public IActionResult AddToClubAdministration([FromBody] ClubAdministrationDTO createdAdmin)
+        public async Task<IActionResult> AddToClubAdministration([FromBody] ClubAdministrationDTO createdAdmin)
         {
             try
             {
-                _clubAdministrationService.AddClubAdmin(createdAdmin);
+                await _clubAdministrationService.AddClubAdminAsync(createdAdmin);
 
                 return Json(true);
             }
@@ -251,13 +264,13 @@ namespace EPlast.Controllers
             return View(model);
         }
 
-        public IActionResult AddAsClubFollower(int clubIndex, string userId)
+        public async Task<IActionResult> AddAsClubFollower(int clubIndex, string userId)
         {
             userId = User.IsInRole("Admin") ? userId : _userManagerService.GetUserId(User);
 
-            _clubMembersService.AddFollower(clubIndex, userId);
+            await _clubMembersService.AddFollowerAsync(clubIndex, userId);
 
-            return RedirectToAction("UserProfile", "Account", new { userId });
+            return RedirectToAction("UserProfile", "Account", userId);
         }
 
         [HttpGet]
