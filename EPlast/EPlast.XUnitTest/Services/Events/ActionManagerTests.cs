@@ -3,16 +3,17 @@ using EPlast.BussinessLayer.DTO.Events;
 using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.BussinessLayer.Services.Events;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
-using EPlast.DataAccess.Entities.Event;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.Events
@@ -44,234 +45,234 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public void GetActionCategoriesTest()
+        public async void GetActionCategoriesTest()
         {
             //Arrange
-            _eventCategoryManager.Setup(x => x.GetDTO())
-                .Returns(new List<EventCategoryDTO>());
+            _eventCategoryManager.Setup(x => x.GetDTOAsync())
+                .ReturnsAsync(new List<EventCategoryDTO>());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
-            var methodResult = actionManager.GetActionCategories();
+            var methodResult = await actionManager.GetActionCategoriesAsync();
             //Assert
             Assert.NotNull(methodResult);
             Assert.IsType<List<EventCategoryDTO>>(methodResult);
         }
 
         [Fact]
-        public void GetEventsTest()
+        public async void GetEventsTest()
         {
             //Arrange
             string expectedID = "abc-1";
             int actionId = 3;
             int fakeId = 3;
-            _eventStatusManager.Setup(x => x.GetStatusId(It.IsAny<string>()))
-                .Returns(fakeId);
-            _participantStatusManager.Setup(x => x.GetStatusId(It.IsAny<string>()))
-                .Returns(fakeId);
-            _eventTypeManager.Setup(x => x.GetTypeId(It.IsAny<string>()))
-                .Returns(fakeId);
+            _eventStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(fakeId);
+            _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(fakeId);
+            _eventTypeManager.Setup(x => x.GetTypeIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(fakeId);
             _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()))
                 .Returns(expectedID);
-            _repoWrapper.Setup(x => x.Event.FindByCondition(It.IsAny<Expression<Func<Event, bool>>>()))
-                .Returns(GetEvents());
+            _repoWrapper.Setup(x => x.Event.GetAllAsync(It.IsAny<Expression<Func<Event, bool>>>(), It.IsAny<Func<IQueryable<Event>, IIncludableQueryable<Event, object>>>()))
+                .ReturnsAsync(GetEvents());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
-            var methodResult = actionManager.GetEvents(actionId, new ClaimsPrincipal());
+            var methodResult = await actionManager.GetEventsAsync(actionId, new ClaimsPrincipal());
             //Assert
             Assert.NotNull(methodResult);
             Assert.IsType<List<GeneralEventDTO>>(methodResult);
             Assert.Equal(GetEvents().Count(), methodResult.Count);
         }
         [Fact]
-        public void GetEventInfoTest()
+        public async void GetEventInfoTest()
         {
             //Arrange
             string expectedID = "abc-1";
             int eventId = 3;
             int fakeId = 3;
-            _eventStatusManager.Setup(x => x.GetStatusId(It.IsAny<string>()))
-                .Returns(fakeId);
-            _participantStatusManager.Setup(x => x.GetStatusId(It.IsAny<string>()))
-                .Returns(fakeId);
+            _eventStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(fakeId);
+            _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(fakeId);
             _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()))
                 .Returns(expectedID);
             _mapper.Setup(m => m.Map<Event, EventInfoDTO>(It.IsAny<Event>())).Returns(new EventInfoDTO());
-            _repoWrapper.Setup(x => x.Event.FindByCondition(It.IsAny<Expression<Func<Event, bool>>>()))
-                .Returns(GetEvents());
+            _repoWrapper.Setup(x => x.Event.GetFirstAsync(It.IsAny<Expression<Func<Event, bool>>>(), It.IsAny<Func<IQueryable<Event>, IIncludableQueryable<Event, object>>>()))
+                .ReturnsAsync(GetEvents().First());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
-            var methodResult = actionManager.GetEventInfo(eventId, new ClaimsPrincipal());
+            var methodResult = await actionManager.GetEventInfoAsync(eventId, new ClaimsPrincipal());
             //Assert
             Assert.NotNull(methodResult);
             Assert.IsType<EventDTO>(methodResult);
         }
 
         [Fact]
-        public void DeleteEventSuccessTest()
+        public async void DeleteEventSuccessTest()
         {
             //Arrange
             int testEventId = 2;
-            _repoWrapper.Setup(x => x.Event.FindByCondition(It.IsAny<Expression<Func<Event, bool>>>()))
-                .Returns(GetEvents());
+            _repoWrapper.Setup(x => x.Event.GetFirstAsync(It.IsAny<Expression<Func<Event, bool>>>(), null))
+                .ReturnsAsync(GetEvents().First());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
-            var methodResult = actionManager.DeleteEvent(testEventId);
+            var methodResult = await actionManager.DeleteEventAsync(testEventId);
             //Assert
             _repoWrapper.Verify(r => r.Event.Delete(It.IsAny<Event>()), Times.Once());
-            _repoWrapper.Verify(r => r.Save(), Times.Once());
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once());
             Assert.Equal(StatusCodes.Status200OK, methodResult);
         }
 
         [Fact]
-        public void DeleteEventFailTest()
+        public async void DeleteEventFailTest()
         {
             //Arrange
             int testEventId = 2;
-            _repoWrapper.Setup(x => x.Event.FindByCondition(It.IsAny<Expression<Func<Event, bool>>>()))
-                .Throws(new Exception());
+            _repoWrapper.Setup(x => x.Event.GetFirstAsync(It.IsAny<Expression<Func<Event, bool>>>(), null))
+                .ThrowsAsync(new Exception());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
-            var methodResult = actionManager.DeleteEvent(testEventId);
+            var methodResult = await actionManager.DeleteEventAsync(testEventId);
             //Assert
             Assert.Equal(StatusCodes.Status500InternalServerError, methodResult);
         }
 
         [Fact]
-        public void SubscribeOnEventSuccessTest()
+        public async void SubscribeOnEventSuccessTest()
         {
             //Arrange
             int testEventId = 2;
             string userId = "051fe5ee6ge";
-            _repoWrapper.Setup(x => x.Event.FindByCondition(It.IsAny<Expression<Func<Event, bool>>>()))
-                .Returns(GetEvents());
+            _repoWrapper.Setup(x => x.Event.GetFirstAsync(It.IsAny<Expression<Func<Event, bool>>>(), null))
+                .ReturnsAsync(GetEvents().First());
             _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()))
                 .Returns(userId);
-            _participantManager.Setup(x => x.SubscribeOnEvent(It.IsAny<Event>(), It.IsAny<string>()))
-                .Returns(StatusCodes.Status200OK);
+            _participantManager.Setup(x => x.SubscribeOnEventAsync(It.IsAny<Event>(), It.IsAny<string>()))
+                .ReturnsAsync(StatusCodes.Status200OK);
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
-            var methodResult = actionManager.SubscribeOnEvent(testEventId, new ClaimsPrincipal());
+            var methodResult = await actionManager.SubscribeOnEventAsync(testEventId, new ClaimsPrincipal());
             //Assert
             Assert.Equal(StatusCodes.Status200OK, methodResult);
         }
         [Fact]
-        public void SubscribeOnEventFailTest()
+        public async void SubscribeOnEventFailTest()
         {
             //Arrange
             int testEventId = 2;
             string userId = "051fe5ee6ge";
-            _repoWrapper.Setup(x => x.Event.FindByCondition(It.IsAny<Expression<Func<Event, bool>>>()))
-                .Returns(GetEvents());
+            _repoWrapper.Setup(x => x.Event.GetFirstAsync(It.IsAny<Expression<Func<Event, bool>>>(), null))
+                .ReturnsAsync(GetEvents().First());
             _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()))
                 .Returns(userId);
-            _participantManager.Setup(x => x.SubscribeOnEvent(It.IsAny<Event>(), It.IsAny<string>()))
-                .Throws(new Exception());
+            _participantManager.Setup(x => x.SubscribeOnEventAsync(It.IsAny<Event>(), It.IsAny<string>()))
+                .ThrowsAsync(new Exception());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
-            var methodResult = actionManager.SubscribeOnEvent(testEventId, new ClaimsPrincipal());
+            var methodResult = await actionManager.SubscribeOnEventAsync(testEventId, new ClaimsPrincipal());
             //Assert
             Assert.Equal(StatusCodes.Status500InternalServerError, methodResult);
         }
 
         [Fact]
-        public void UnSubscribeOnEventSuccessTest()
+        public async void UnSubscribeOnEventSuccessTest()
         {
             //Arrange
             int testEventId = 2;
             string userId = "051fe5ee6ge";
-            _repoWrapper.Setup(x => x.Event.FindByCondition(It.IsAny<Expression<Func<Event, bool>>>()))
-                .Returns(GetEvents());
+            _repoWrapper.Setup(x => x.Event.GetFirstAsync(It.IsAny<Expression<Func<Event, bool>>>(), null))
+                .ReturnsAsync(GetEvents().First());
             _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()))
                 .Returns(userId);
-            _participantManager.Setup(x => x.UnSubscribeOnEvent(It.IsAny<Event>(), It.IsAny<string>()))
-                .Returns(StatusCodes.Status200OK);
+            _participantManager.Setup(x => x.UnSubscribeOnEventAsync(It.IsAny<Event>(), It.IsAny<string>()))
+                .ReturnsAsync(StatusCodes.Status200OK);
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
-            var methodResult = actionManager.UnSubscribeOnEvent(testEventId, new ClaimsPrincipal());
+            var methodResult = await actionManager.UnSubscribeOnEventAsync(testEventId, new ClaimsPrincipal());
             //Assert
             Assert.Equal(StatusCodes.Status200OK, methodResult);
         }
         [Fact]
-        public void UnSubscribeOnEventFailTest()
+        public async void UnSubscribeOnEventFailTest()
         {
             //Arrange
             int testEventId = 2;
             string userId = "051fe5ee6ge";
-            _repoWrapper.Setup(x => x.Event.FindByCondition(It.IsAny<Expression<Func<Event, bool>>>()))
-                .Returns(GetEvents());
+            _repoWrapper.Setup(x => x.Event.GetFirstAsync(It.IsAny<Expression<Func<Event, bool>>>(), null))
+                .ReturnsAsync(GetEvents().First());
             _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()))
                 .Returns(userId);
-            _participantManager.Setup(x => x.UnSubscribeOnEvent(It.IsAny<Event>(), It.IsAny<string>()))
-                .Throws(new Exception());
+            _participantManager.Setup(x => x.UnSubscribeOnEventAsync(It.IsAny<Event>(), It.IsAny<string>()))
+                .ThrowsAsync(new Exception());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
-            var methodResult = actionManager.UnSubscribeOnEvent(testEventId, new ClaimsPrincipal());
+            var methodResult = await actionManager.UnSubscribeOnEventAsync(testEventId, new ClaimsPrincipal());
             //Assert
             Assert.Equal(StatusCodes.Status500InternalServerError, methodResult);
         }
 
         [Fact]
-        public void ApproveParticipantTest()
+        public async void ApproveParticipantTest()
         {
             //Arrange
             int testParticipantId = 3;
-            _participantManager.Setup(x => x.ChangeStatusToApproved(It.IsAny<int>()))
-                .Returns(StatusCodes.Status200OK);
+            _participantManager.Setup(x => x.ChangeStatusToApprovedAsync(It.IsAny<int>()))
+                .ReturnsAsync(StatusCodes.Status200OK);
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
-            var methodResult = actionManager.ApproveParticipant(testParticipantId);
+            var methodResult = await actionManager.ApproveParticipantAsync(testParticipantId);
             //Assert
             Assert.Equal(StatusCodes.Status200OK, methodResult);
         }
         [Fact]
-        public void UnderReviewParticipantTest()
+        public async void UnderReviewParticipantTest()
         {
             //Arrange
             int testParticipantId = 3;
-            _participantManager.Setup(x => x.ChangeStatusToUnderReview(It.IsAny<int>()))
-                .Returns(StatusCodes.Status200OK);
+            _participantManager.Setup(x => x.ChangeStatusToUnderReviewAsync(It.IsAny<int>()))
+                .ReturnsAsync(StatusCodes.Status200OK);
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
-            var methodResult = actionManager.UnderReviewParticipant(testParticipantId);
+            var methodResult = await actionManager.UnderReviewParticipantAsync(testParticipantId);
             //Assert
             Assert.Equal(StatusCodes.Status200OK, methodResult);
         }
         [Fact]
-        public void RejectParticipantTest()
+        public async void RejectParticipantTest()
         {
             //Arrange
             int testParticipantId = 3;
-            _participantManager.Setup(x => x.ChangeStatusToRejected(It.IsAny<int>()))
-                .Returns(StatusCodes.Status200OK);
+            _participantManager.Setup(x => x.ChangeStatusToRejectedAsync(It.IsAny<int>()))
+                .ReturnsAsync(StatusCodes.Status200OK);
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
-            var methodResult = actionManager.RejectParticipant(testParticipantId);
+            var methodResult = await actionManager.RejectParticipantAsync(testParticipantId);
             //Assert
             Assert.Equal(StatusCodes.Status200OK, methodResult);
         }
         [Fact]
-        public void FillEventGalleryTest()
+        public async void FillEventGalleryTest()
         {
             //Arrange
             int eventId = 3;
-            _eventGalleryManager.Setup(x => x.AddPictures(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
-                .Returns(StatusCodes.Status200OK);
+            _eventGalleryManager.Setup(x => x.AddPicturesAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
+                .ReturnsAsync(StatusCodes.Status200OK);
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
-            var methodResult = actionManager.FillEventGallery(eventId, new List<IFormFile>());
+            var methodResult = await actionManager.FillEventGalleryAsync(eventId, new List<IFormFile>());
             //Assert
             Assert.Equal(StatusCodes.Status200OK, methodResult);
         }
         [Fact]
-        public void DeletePictureTest()
+        public async void DeletePictureTest()
         {
             //Arrange
             int eventId = 3;
-            _eventGalleryManager.Setup(x => x.DeletePicture(It.IsAny<int>()))
-                .Returns(StatusCodes.Status200OK);
+            _eventGalleryManager.Setup(x => x.DeletePictureAsync(It.IsAny<int>()))
+                .ReturnsAsync(StatusCodes.Status200OK);
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
-            var methodResult = actionManager.DeletePicture(eventId);
+            var methodResult = await actionManager.DeletePictureAsync(eventId);
             //Assert
             Assert.Equal(StatusCodes.Status200OK, methodResult);
         }

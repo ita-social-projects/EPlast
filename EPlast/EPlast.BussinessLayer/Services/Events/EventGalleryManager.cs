@@ -22,7 +22,6 @@ namespace EPlast.BussinessLayer.Services.Events
             _env = env;
         }
 
-
         public async Task<int> AddPicturesAsync(int id, IList<IFormFile> files)
         {
             try
