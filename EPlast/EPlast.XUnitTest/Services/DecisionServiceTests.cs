@@ -65,6 +65,9 @@ namespace EPlast.XUnitTest
         public async Task CreateDecisionTest()
         {
             _decisionService = CreateDecisionService();
+            _repository.Setup(rep => rep.DecesionTarget.GetAllAsync(It.IsAny<Expression<Func<DecesionTarget, bool>>>(),
+                    It.IsAny<Func<IQueryable<DecesionTarget>, IIncludableQueryable<DecesionTarget, object>>>()))
+                .ReturnsAsync(GetTestDecisionTargetsQueryable);
 
             var decision = await _decisionService.CreateDecisionAsync();
 
