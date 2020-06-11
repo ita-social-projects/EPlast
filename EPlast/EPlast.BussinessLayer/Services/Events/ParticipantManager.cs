@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using EPlast.BussinessLayer.Interfaces.Events;
+﻿using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Http;
-using System.Linq;
-using System.Threading.Tasks;
-using EPlast.DataAccess.Entities.Event;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services.Events
 {
@@ -49,13 +48,15 @@ namespace EPlast.BussinessLayer.Services.Events
             {
                 int rejectedStatus = await _participantStatusManager.GetStatusIdAsync("Відмовлено");
                 int finishedEvent = await _eventStatusManager.GetStatusIdAsync("Завершений(-на)");
-                Participant participantToDelete = await _repoWrapper.Participant.FindByCondition(p => p.EventId == targetEvent.ID && p.UserId == userId).FirstAsync();
+                Participant participantToDelete = await _repoWrapper.Participant
+                    .GetFirstAsync(predicate: p => p.EventId == targetEvent.ID && p.UserId == userId);
                 if (participantToDelete.ParticipantStatusId == rejectedStatus || targetEvent.EventStatusID == finishedEvent)
                 {
                     return StatusCodes.Status409Conflict;
                 }
                 _repoWrapper.Participant.Delete(participantToDelete);
                 await _repoWrapper.SaveAsync();
+
                 return StatusCodes.Status200OK;
             }
             catch
@@ -68,11 +69,13 @@ namespace EPlast.BussinessLayer.Services.Events
         {
             try
             {
-                Participant participant = await _repoWrapper.Participant.FindByCondition(p => p.ID == id).FirstAsync();
+                var participant = await _repoWrapper.Participant
+                    .GetFirstAsync(predicate: p => p.ID == id);
                 int approvedStatus = await _participantStatusManager.GetStatusIdAsync("Учасник");
                 participant.ParticipantStatusId = approvedStatus;
                 _repoWrapper.Participant.Update(participant);
                 await _repoWrapper.SaveAsync();
+
                 return StatusCodes.Status200OK;
             }
             catch
@@ -85,11 +88,13 @@ namespace EPlast.BussinessLayer.Services.Events
         {
             try
             {
-                Participant participant = await _repoWrapper.Participant.FindByCondition(p => p.ID == id).FirstAsync();
+                var participant = await _repoWrapper.Participant
+                    .GetFirstAsync(predicate: p => p.ID == id);
                 int undeterminedStatus = await _participantStatusManager.GetStatusIdAsync("Розглядається");
                 participant.ParticipantStatusId = undeterminedStatus;
                 _repoWrapper.Participant.Update(participant);
                 await _repoWrapper.SaveAsync();
+
                 return StatusCodes.Status200OK;
             }
             catch
@@ -102,11 +107,13 @@ namespace EPlast.BussinessLayer.Services.Events
         {
             try
             {
-                Participant participant = await _repoWrapper.Participant.FindByCondition(p => p.ID == id).FirstAsync();
+                var participant = await _repoWrapper.Participant
+                    .GetFirstAsync(predicate: p => p.ID == id);
                 int rejectedStatus = await _participantStatusManager.GetStatusIdAsync("Відмовлено");
                 participant.ParticipantStatusId = rejectedStatus;
                 _repoWrapper.Participant.Update(participant);
                 await _repoWrapper.SaveAsync();
+
                 return StatusCodes.Status200OK;
             }
             catch
@@ -117,9 +124,13 @@ namespace EPlast.BussinessLayer.Services.Events
 
         public async Task<IEnumerable<Participant>> GetParticipantsByUserIdAsync(string userId)
         {
-            var participants = await _repoWrapper.Participant.FindByCondition(p => p.UserId == userId)
-                .Include(i => i.Event)
-                .ToListAsync();
+
+            var participants = await _repoWrapper.Participant
+                .GetAllAsync(
+                    predicate: p => p.UserId == userId,
+                    include: source => source.Include(i => i.Event)
+                );
+
             return participants;
         }
     }
