@@ -5,7 +5,7 @@ using EPlast.BussinessLayer.Interfaces.Club;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services.Club
 {
@@ -19,70 +19,82 @@ namespace EPlast.BussinessLayer.Services.Club
             _repoWrapper = repoWrapper;
             _mapper = mapper;
         }
-        private ClubDTO GetClubAdministration(int clubID)
+
+        private async Task<ClubDTO> GetClubAdministrationAsync(int clubID)
         {
-            var club = _repoWrapper.Club
+            var club = await _repoWrapper.Club
                 .FindByCondition(q => q.ID == clubID)
                 .Include(c => c.ClubAdministration)
                 .ThenInclude(t => t.AdminType)
                 .Include(n => n.ClubAdministration)
                 .ThenInclude(t => t.ClubMembers)
                 .ThenInclude(us => us.User)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
+            
             return _mapper.Map<DataAccess.Entities.Club, ClubDTO>(club);
         }
 
-        public ClubProfileDTO GetCurrentClubAdministrationByID(int clubID)
+        public async Task<ClubProfileDTO> GetCurrentClubAdministrationByIDAsync(int clubID)
         {
-            var club = GetClubAdministration(clubID);
-            return new ClubProfileDTO { Club = club, ClubAdministration = club.ClubAdministration };
+            var club = await GetClubAdministrationAsync(clubID);
+            
+            var clubProfileDTO = new ClubProfileDTO
+            {
+                Club = club,
+                ClubAdministration = club.ClubAdministration
+            };
+
+            return clubProfileDTO;
         }
 
-        public bool DeleteClubAdmin(int id)
+        public async Task<bool> DeleteClubAdminAsync(int id)
         {
-            ClubAdministration admin = _repoWrapper.GetClubAdministration
-                .FindByCondition(i => i.ID == id).FirstOrDefault();
+            var admin = await _repoWrapper.GetClubAdministration
+                .FindByCondition(i => i.ID == id)
+                .FirstOrDefaultAsync();
+            
             if (admin != null)
             {
                 _repoWrapper.GetClubAdministration.Delete(admin);
-                _repoWrapper.Save();
+                await _repoWrapper.SaveAsync();
+              
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            
+            return false;
         }
 
-        public void SetAdminEndDate(AdminEndDateDTO adminEndDate)
+        public async Task SetAdminEndDateAsync(AdminEndDateDTO adminEndDate)
         {
-            ClubAdministration admin = _repoWrapper.GetClubAdministration
+            var admin = await _repoWrapper.GetClubAdministration
                 .FindByCondition(i => i.ID == adminEndDate.AdminId)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
+
             admin.EndDate = adminEndDate.EndDate;
             _repoWrapper.GetClubAdministration.Update(admin);
-            _repoWrapper.Save();
+            
+            await _repoWrapper.SaveAsync();
         }
 
-        public void AddClubAdmin(ClubAdministrationDTO createdAdmin)
+        public async Task AddClubAdminAsync(ClubAdministrationDTO createdAdmin)
         {
-            var adminType = _repoWrapper.AdminType
+            var adminType = await _repoWrapper.AdminType
                 .FindByCondition(i => i.AdminTypeName == createdAdmin.AdminTypeName)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
+
             int adminTypeId;
 
             if (adminType == null)
             {
                 var newAdminType = new AdminType() { AdminTypeName = createdAdmin.AdminTypeName };
-                _repoWrapper.AdminType.Create(newAdminType);
-                _repoWrapper.Save();
                 adminTypeId = newAdminType.ID;
+                
+                await _repoWrapper.AdminType.CreateAsync(newAdminType);
+                await _repoWrapper.SaveAsync();
             }
             else
-            {
                 adminTypeId = adminType.ID;
-            }
-
+            
             ClubAdministration newClubAdmin = new ClubAdministration()
             {
                 ClubMembersID = createdAdmin.ClubMembersID,
@@ -92,8 +104,8 @@ namespace EPlast.BussinessLayer.Services.Club
                 AdminTypeId = adminTypeId
             };
 
-            _repoWrapper.GetClubAdministration.Create(newClubAdmin);
-            _repoWrapper.Save();
+            await _repoWrapper.GetClubAdministration.CreateAsync(newClubAdmin);
+            await _repoWrapper.SaveAsync();
         }
     }
 }
