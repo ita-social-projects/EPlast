@@ -23,20 +23,20 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
 
         public async Task<IEnumerable<WorkDTO>> GetAllGroupByPlaceAsync()
         {
-            var result = await _repoWrapper.Work.FindAll().
-                GroupBy(x => x.PlaceOfwork).
-                Select(x => x.FirstOrDefault()).
-                ToListAsync();
-            return _mapper.Map<IEnumerable<Work>, IEnumerable<WorkDTO>>(result);
+            return _mapper.Map<IEnumerable<Work>, IEnumerable<WorkDTO>>(
+                (await _repoWrapper.Work.GetAllAsync()).
+                    GroupBy(x => x.PlaceOfwork).
+                    Select(x => x.FirstOrDefault())
+                );
         }
 
         public async Task<IEnumerable<WorkDTO>> GetAllGroupByPositionAsync()
         {
-            var result = await _repoWrapper.Work.FindAll().
-                GroupBy(x => x.Position).
-                Select(x => x.FirstOrDefault()).
-                ToListAsync();
-            return _mapper.Map<IEnumerable<Work>, IEnumerable<WorkDTO>>(result);
+            return _mapper.Map<IEnumerable<Work>, IEnumerable<WorkDTO>>(
+                (await _repoWrapper.Work.GetAllAsync()).
+                    GroupBy(x => x.Position).
+                    Select(x => x.FirstOrDefault())
+                );
         }
         public async Task<WorkDTO> GetByIdAsync(int? workId)
         {

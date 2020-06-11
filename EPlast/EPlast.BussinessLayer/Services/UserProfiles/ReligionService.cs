@@ -22,9 +22,7 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
 
         public async Task<IEnumerable<ReligionDTO>> GetAllAsync()
         {
-            var result = await _repoWrapper.Religion.FindAll().
-                ToListAsync();
-            return _mapper.Map<IEnumerable<Religion>, IEnumerable<ReligionDTO>>(result);
+            return _mapper.Map<IEnumerable<Religion>, IEnumerable<ReligionDTO>>(await _repoWrapper.Religion.GetAllAsync());
         }
     }
 }

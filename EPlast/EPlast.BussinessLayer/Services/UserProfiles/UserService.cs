@@ -37,24 +37,24 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
         }
         public async Task<UserDTO> GetUserAsync(string userId)
         {
-            var user = await _repoWrapper.User.
-                FindByCondition(q => q.Id == userId).
-                Include(i => i.UserProfile).
-                    ThenInclude(x => x.Nationality).
-                Include(g => g.UserProfile).
-                    ThenInclude(g => g.Gender).
-                Include(g => g.UserProfile).
-                    ThenInclude(g => g.Education).
-                Include(g => g.UserProfile).
-                    ThenInclude(g => g.Degree).
-                Include(g => g.UserProfile).
-                    ThenInclude(g => g.Religion).
-                Include(g => g.UserProfile).
-                    ThenInclude(g => g.Work).
-                Include(x => x.ConfirmedUsers).
+            var user = await _repoWrapper.User.GetFirstAsync(
+                i => i.Id == userId,
+                i =>
+                    i.Include(g => g.UserProfile).
+                        ThenInclude(x => x.Nationality).
+                    Include(g => g.UserProfile).
+                        ThenInclude(g => g.Gender).
+                    Include(g => g.UserProfile).
+                        ThenInclude(g => g.Education).
+                    Include(g => g.UserProfile).
+                        ThenInclude(g => g.Degree).
+                    Include(g => g.UserProfile).
+                        ThenInclude(g => g.Religion).
+                    Include(g => g.UserProfile).
+                        ThenInclude(g => g.Work).
+                    Include(x => x.ConfirmedUsers).
                         ThenInclude(q => (q as ConfirmedUser).Approver).
-                            ThenInclude(q => q.User).
-                FirstOrDefaultAsync();
+                            ThenInclude(q => q.User));
             var model = _mapper.Map<User, UserDTO>(user);
             return model;
         }
@@ -109,7 +109,6 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
         }
         public async Task UpdateAsync(UserDTO user, IFormFile file, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
-
             user.ImagePath = await UploadPhotoAsync(user, file);
             user.UserProfile.Nationality = CheckFieldForNull(user.UserProfile.NationalityId, user.UserProfile.Nationality.Name, user.UserProfile.Nationality);
             user.UserProfile.Religion = CheckFieldForNull(user.UserProfile.ReligionId, user.UserProfile.Religion.Name, user.UserProfile.Religion);
@@ -196,7 +195,7 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
         private async Task<string> UploadPhotoAsync(UserDTO user, IFormFile file)
         {
             var userId = user.Id;
-            var oldImageName = (await _repoWrapper.User.FindByCondition(i => i.Id == userId).FirstOrDefaultAsync()).ImagePath;
+            var oldImageName = (await _repoWrapper.User.GetFirstOrDefaultAsync(x => x.Id == userId)).ImagePath;
             if (file != null && file.Length > 0)
             {
 

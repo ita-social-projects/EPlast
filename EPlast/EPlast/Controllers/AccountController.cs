@@ -533,8 +533,8 @@ namespace EPlast.Controllers
                 }
 
                 var user = await _userService.GetUserAsync(userId);
-                var _confUsers = _userService.GetConfirmedUsers(user);
-                var canApprove = await _userService.CanApproveAsync(_confUsers, userId, User);
+                var confirmedUsers = _userService.GetConfirmedUsers(user);
+                var canApprove = await _userService.CanApproveAsync(confirmedUsers, userId, User);
                 var time = await _userService.CheckOrAddPlastunRoleAsync(user.Id, user.RegistredOn);
                 var clubApprover = _userService.GetClubAdminConfirmedUser(user);
                 var cityApprover = _userService.GetCityAdminConfirmedUser(user);
@@ -546,7 +546,7 @@ namespace EPlast.Controllers
                         User = _mapper.Map<UserDTO, UserViewModel>(user),
                         canApprove = canApprove,
                         TimeToJoinPlast = time,
-                        ConfirmedUsers = _mapper.Map<IEnumerable<ConfirmedUserDTO>, IEnumerable<ConfirmedUserViewModel>>(_confUsers),
+                        ConfirmedUsers = _mapper.Map<IEnumerable<ConfirmedUserDTO>, IEnumerable<ConfirmedUserViewModel>>(confirmedUsers),
                         ClubApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(clubApprover),
                         CityApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(cityApprover),
                         IsUserHeadOfCity = await _userManagerService.IsInRoleAsync(user, "Голова Станиці"),
