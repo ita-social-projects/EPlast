@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EPlast.Controllers
 {
@@ -35,19 +36,19 @@ namespace EPlast.Controllers
             viewModel.IsCurrentUserClubAdmin = _userManagerService.GetUserId(User) == viewModel.ClubAdmin?.Id;
             viewModel.IsCurrentUserAdmin = User.IsInRole("Admin");
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var clubs = _clubService.GetAllClubs();
+            var clubs = await _clubService.GetAllClubsAsync();
             var viewModels = _mapper.Map<IEnumerable<ClubDTO>, IEnumerable<ClubViewModel>>(clubs);
 
             return View(viewModels);
         }
 
-        public IActionResult Club(int index)
+        public async Task<IActionResult> Club(int index)
         {
             try
             {
-                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(_clubService.GetClubProfile(index));
+                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(await _clubService.GetClubProfileAsync(index));
                 CheckCurrentUserRoles(ref viewModel);
 
                 return View(viewModel);
@@ -73,11 +74,11 @@ namespace EPlast.Controllers
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
-        public IActionResult ClubMembers(int index)
+        public async Task<IActionResult> ClubMembers(int index)
         {
             try
             {
-                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(_clubService.GetClubMembersOrFollowers(index, true));
+                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(await _clubService.GetClubMembersOrFollowersAsync(index, true));
                 CheckCurrentUserRoles(ref viewModel);
 
                 return View(viewModel);
@@ -88,11 +89,11 @@ namespace EPlast.Controllers
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
-        public IActionResult ClubFollowers(int index)
+        public async Task<IActionResult> ClubFollowers(int index)
         {
             try
             {
-                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(_clubService.GetClubMembersOrFollowers(index, false));
+                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(await _clubService.GetClubMembersOrFollowersAsync(index, false));
                 CheckCurrentUserRoles(ref viewModel);
 
                 return View(viewModel);
@@ -104,11 +105,11 @@ namespace EPlast.Controllers
             }
         }
 
-        public IActionResult ClubDescription(int index)
+        public async Task<IActionResult> ClubDescription(int index)
         {
             try
             {
-                var viewModel = _mapper.Map<ClubDTO, ClubViewModel>(_clubService.GetClubInfoById(index));
+                var viewModel = _mapper.Map<ClubDTO, ClubViewModel>(await _clubService.GetClubInfoByIdAsync(index));
 
                 return View(viewModel);
             }
@@ -120,11 +121,11 @@ namespace EPlast.Controllers
         }
 
         [HttpGet]
-        public IActionResult EditClub(int index)
+        public async Task<IActionResult> EditClub(int index)
         {
             try
             {
-                var viewModel = _mapper.Map<ClubDTO, ClubViewModel>(_clubService.GetClubInfoById(index));
+                var viewModel = _mapper.Map<ClubDTO, ClubViewModel>(await _clubService.GetClubInfoByIdAsync(index));
 
                 return View(viewModel);
             }
@@ -136,11 +137,11 @@ namespace EPlast.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditClub(ClubViewModel model, IFormFile file)
+        public async Task<IActionResult> EditClub(ClubViewModel model, IFormFile file)
         {
             try
             {
-                _clubService.Update(_mapper.Map<ClubViewModel, ClubDTO>(model), file);
+                await _clubService.UpdateAsync(_mapper.Map<ClubViewModel, ClubDTO>(model), file);
 
                 return RedirectToAction("Club", new { index = model.ID });
             }
@@ -239,9 +240,9 @@ namespace EPlast.Controllers
             }
         }
 
-        public IActionResult ChooseAClub(string userId)
+        public async Task<IActionResult> ChooseAClub(string userId)
         {
-            var clubs = _mapper.Map<IEnumerable<ClubDTO>, IEnumerable<ClubViewModel>>(_clubService.GetAllClubs());
+            var clubs = _mapper.Map<IEnumerable<ClubDTO>, IEnumerable<ClubViewModel>>(await _clubService.GetAllClubsAsync());
             var model = new ClubChooseAClubViewModel
             {
                 Clubs = clubs,
@@ -274,11 +275,11 @@ namespace EPlast.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateClub(ClubViewModel model, IFormFile file)
+        public async Task<IActionResult> CreateClub(ClubViewModel model, IFormFile file)
         {
             try
             {
-                var club = _clubService.Create(_mapper.Map<ClubViewModel, ClubDTO>(model), file);
+                var club = await _clubService.CreateAsync(_mapper.Map<ClubViewModel, ClubDTO>(model), file);
 
                 return RedirectToAction("Club", new { index = club.ID });
             }
