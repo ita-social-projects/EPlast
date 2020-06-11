@@ -13,7 +13,6 @@ using EPlast.ViewModels.UserInformation.UserProfile;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using System;
@@ -114,7 +113,7 @@ namespace EPlast.XUnitTest
                .Returns(Task.FromResult(cities));
             _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
                 .Returns(city);
-            _annualReportService.Setup(a => a.CheckCreatedAndUnconfirmed(It.IsAny<int>()))
+            _annualReportService.Setup(a => a.CheckCanBeCreatedAsync(It.IsAny<int>()))
                 .Throws(new AnnualReportException("Станиця має непідтверджені звіти!"));
 
             // Act
@@ -209,7 +208,7 @@ namespace EPlast.XUnitTest
             // Arrange
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .Returns(Task.FromResult(true));
-            _annualReportService.Setup(a => a.CheckCreatedAndUnconfirmed(It.IsAny<int>()))
+            _annualReportService.Setup(a => a.CheckCanBeCreatedAsync(It.IsAny<int>()))
                 .Throws(new AnnualReportException("Станиця має непідтверджені звіти!"));
 
             // Act
