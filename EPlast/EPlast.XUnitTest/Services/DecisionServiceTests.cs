@@ -52,11 +52,11 @@ namespace EPlast.XUnitTest
             _repository.Setup(rep => rep.Decesion.Update(new Decesion()));
             _repository.Setup(rep => rep.SaveAsync());
 
-            mapper.Setup(m => m.Map<List<DecisionTargetDTO>>(It.IsAny<List<DecesionTarget>>()))
+            mapper.Setup(m => m.Map<IEnumerable<DecisionTargetDTO>>(It.IsAny<IEnumerable<DecesionTarget>>()))
                 .Returns(GetTestDecisionTargetsDtoList);
             mapper.Setup(m => m.Map<DecisionDTO>(It.IsAny<Decesion>()))
                 .Returns(() => GetTestDecisionsDtoListElement(decisionId));
-            mapper.Setup(m => m.Map<List<DecisionDTO>>(It.IsAny<List<Decesion>>())).Returns(GetTestDecisionsDtoList);
+            mapper.Setup(m => m.Map<IEnumerable<DecisionDTO>>(It.IsAny<IEnumerable<Decesion>>())).Returns(GetTestDecisionsDtoList);
             return new DecisionService(_repository.Object, hostingEnvironment.Object, directoryManager.Object,
                 fileManager.Object, fileStreamManager.Object, mapper.Object, decisionVmCreator.Object, logger.Object);
         }
@@ -131,7 +131,7 @@ namespace EPlast.XUnitTest
             _repository.Setup(rep => rep.Decesion.GetAllAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
                     It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
                 .ReturnsAsync(GetTestDecesionQueryable());
-            var decision = await _decisionService.GetDecisionListAsync();
+            var decision = (await _decisionService.GetDecisionListAsync()).ToList();
 
             Assert.Equal(GetTestDecisionsDtoList().Count, decision.Count);
         }

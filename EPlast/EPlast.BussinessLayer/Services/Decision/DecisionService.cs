@@ -75,19 +75,25 @@ namespace EPlast.BussinessLayer
             return decisionWrapperDto;
         }
 
-        public async Task<List<DecisionWrapperDTO>> GetDecisionListAsync()
+        public async Task<IEnumerable<DecisionWrapperDTO>> GetDecisionListAsync()
         {
-            List<DecisionWrapperDTO> decisionList = null;
+            IEnumerable<DecisionWrapperDTO> decisions = null;
             try
             {
-                decisionList = await getDecisionListAsync();
-                foreach (var decision in decisionList)
+                decisions = (await GetDecisionAsync()).ToList();
+                foreach (var decision in decisions)
                 {
                     var path = _appEnvironment.WebRootPath + DecesionsDocumentFolder + decision.Decision.ID;
-                    if (!decision.Decision.HaveFile || !_directoryManager.Exists(path)) continue;
+                    if (!decision.Decision.HaveFile || !_directoryManager.Exists(path))
+                    {
+                        continue;
+                    }
                     var files = _directoryManager.GetFiles(path);
 
-                    if (files.Length == 0) throw new ArgumentException($"File count in '{path}' is 0");
+                    if (files.Length == 0)
+                    {
+                        throw new ArgumentException($"File count in '{path}' is 0");
+                    }
 
                     decision.Filename = Path.GetFileName(files.First());
                 }
@@ -97,7 +103,7 @@ namespace EPlast.BussinessLayer
                 _logger.LogError($"Exception: {e.Message}");
             }
 
-            return decisionList;
+            return decisions;
         }
 
         public async Task<bool> ChangeDecisionAsync(DecisionDTO decisionDto)
@@ -194,17 +200,18 @@ namespace EPlast.BussinessLayer
         {
             var types = GetMimeTypes();
             var ext = Path.GetExtension(Path.Combine(GetDecisionFilePath(decisionId), filename)).ToLowerInvariant();
+
             return types[ext];
         }
 
-        public async Task<List<OrganizationDTO>> GetOrganizationListAsync()
+        public async Task<IEnumerable<OrganizationDTO>> GetOrganizationListAsync()
         {
-            return _mapper.Map<List<OrganizationDTO>>((await _repoWrapper.Organization.GetAllAsync()).ToList());
+            return _mapper.Map<IEnumerable<OrganizationDTO>>((await _repoWrapper.Organization.GetAllAsync()));
         }
 
-        public async Task<List<DecisionTargetDTO>> GetDecisionTargetListAsync()
+        public async Task<IEnumerable<DecisionTargetDTO>> GetDecisionTargetListAsync()
         {
-            return _mapper.Map<List<DecisionTargetDTO>>((await _repoWrapper.DecesionTarget.GetAllAsync()).ToList());
+            return _mapper.Map<IEnumerable<DecisionTargetDTO>>((await _repoWrapper.DecesionTarget.GetAllAsync()));
         }
 
         public IEnumerable<SelectListItem> GetDecisionStatusTypes()
@@ -232,14 +239,13 @@ namespace EPlast.BussinessLayer
             return success;
         }
 
-        private async Task<List<DecisionWrapperDTO>> getDecisionListAsync()
+        private async Task<IEnumerable<DecisionWrapperDTO>> GetDecisionAsync()
         {
-            var decisions = (await _repoWrapper.Decesion.GetAllAsync(include: dec =>
-                dec.Include(d => d.DecesionTarget).Include(d => d.Organization))).ToList();
+            IEnumerable<Decesion> decisions = await _repoWrapper.Decesion.GetAllAsync(include: dec =>
+                dec.Include(d => d.DecesionTarget).Include(d => d.Organization));
             return _mapper
-                .Map<List<DecisionDTO>>(decisions)
-                    .Select(decision => new DecisionWrapperDTO { Decision = decision })
-                .ToList();
+                .Map<IEnumerable<DecisionDTO>>(decisions)
+                    .Select(decision => new DecisionWrapperDTO { Decision = decision });
         }
 
         private string GetDecisionFilePath(int decisionId)
