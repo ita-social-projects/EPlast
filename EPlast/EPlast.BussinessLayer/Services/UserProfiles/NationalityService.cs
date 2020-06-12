@@ -4,7 +4,7 @@ using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services.UserProfiles
 {
@@ -19,10 +19,9 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
             _mapper = mapper;
         }
 
-        public IEnumerable<NationalityDTO> GetAll()
+        public async Task<IEnumerable<NationalityDTO>> GetAllAsync()
         {
-            var result = _repoWrapper.Nationality.FindAll().ToList();
-            return _mapper.Map<IEnumerable<Nationality>, IEnumerable<NationalityDTO>>(result);
+            return _mapper.Map<IEnumerable<Nationality>, IEnumerable<NationalityDTO>>(await _repoWrapper.Nationality.GetAllAsync());
         }
     }
 }

@@ -11,6 +11,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest
@@ -30,16 +31,16 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void IndexTest()
+        public async Task IndexTest()
         {
-            _cityService.Setup(c => c.GetAllDTO())
-                .Returns(new List<CityDTO>());
+            _cityService.Setup(c => c.GetAllDTOAsync())
+                .ReturnsAsync(new List<CityDTO>());
             _mapper.Setup(
                     m => m.Map<IEnumerable<CityDTO>, IEnumerable<CityViewModel>>(It.IsAny<IEnumerable<CityDTO>>()))
                 .Returns(() => new List<CityViewModel>());
             CityController cityController = CreateCityController;
 
-            var result = cityController.Index();
+            var result = await cityController.Index();
 
             Assert.NotNull(result);
             Assert.IsType<ViewResult>(result);
