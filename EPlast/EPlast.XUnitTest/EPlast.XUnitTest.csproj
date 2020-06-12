@@ -29,4 +29,8 @@
     <ProjectReference Include="..\EPlast.Resources\EPlast.Resources.csproj" />
     <ProjectReference Include="..\EPlast\EPlast.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="NewFolder\" />
+  </ItemGroup>
 </Project>
