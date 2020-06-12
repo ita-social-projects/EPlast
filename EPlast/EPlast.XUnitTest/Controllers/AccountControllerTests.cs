@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using EPlast.BussinessLayer.DTO;
 using EPlast.BussinessLayer.DTO.UserProfiles;
 using EPlast.BussinessLayer.Interfaces;
@@ -36,7 +35,6 @@ namespace EPlast.XUnitTest
         private Mock<ILogger<AccountController>> _logger;
         private Mock<IEmailConfirmation> _emailConfirm;
         private Mock<IHostingEnvironment> _hostEnv;
-        private Mock<IUserAccessManager> _userAccessManager;
         private Mock<IUserService> _userService;
         private Mock<INationalityService> _nationalityService;
         private Mock<IEducationService> _educationService;
@@ -61,7 +59,6 @@ namespace EPlast.XUnitTest
             _logger = new Mock<ILogger<AccountController>>();
             _emailConfirm = new Mock<IEmailConfirmation>();
             _hostEnv = new Mock<IHostingEnvironment>();
-            _userAccessManager = new Mock<IUserAccessManager>();
             _userService = new Mock<IUserService>();
             _nationalityService = new Mock<INationalityService>();
             _educationService = new Mock<IEducationService>();
