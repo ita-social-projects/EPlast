@@ -1,12 +1,9 @@
 ﻿using EPlast.BussinessLayer.Services.Events;
-using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Moq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using EPlast.DataAccess.Entities.Event;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.Events
@@ -14,33 +11,34 @@ namespace EPlast.XUnitTest.Services.Events
     public class EventTypeManagerTests
     {
         private readonly Mock<IRepositoryWrapper> _repoWrapper;
+
         public EventTypeManagerTests()
         {
             _repoWrapper = new Mock<IRepositoryWrapper>();
         }
+
         [Fact]
-        public void GetTypeIdTest()
+        public async void GetTypeIdTest()
         {
             //Arrange
             string typeName = "Status Name";
-            _repoWrapper.Setup(x => x.EventType.FindByCondition(It.IsAny<Expression<Func<EventType, bool>>>()))
-                .Returns(GetEventTypes());
+            _repoWrapper.Setup(x =>
+                    x.EventType.GetFirstAsync(It.IsAny<Expression<Func<EventType, bool>>>(), null))
+                .ReturnsAsync(GetEventType());
             //Act
             var eventTypeManager = new EventTypeManager(_repoWrapper.Object);
-            var methodResult = eventTypeManager.GetTypeId(typeName);
+            var methodResult = await eventTypeManager.GetTypeIdAsync(typeName);
             //Assert
             Assert.Equal(1, methodResult);
         }
-        public IQueryable<EventType> GetEventTypes()
+
+        public EventType GetEventType()
         {
-            var eventTypes = new List<EventType>
+            return new EventType()
             {
-                new EventType(){
-                    ID = 1,
-                    EventTypeName = "Type 1"
-                }
-            }.AsQueryable();
-            return eventTypes;
+                ID = 1,
+                EventTypeName = "Type 1"
+            };
         }
     }
-}
+}  

@@ -94,7 +94,14 @@
                     </div>
                     <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
                         @Html.TextBoxFor(x => x.Event.EventDateStart,
-                            new { type = "datetime", @placeholder = "Виберіть дату...", @id = "txtFromDate", @class = "border textBoxInput" })
+                            new 
+                            { 
+                                type = "datetime",
+                                @placeholder = "Виберіть дату...",
+                                @id = "txtFromDate",
+                                @class = "border textBoxInput" , 
+                                autocomplete = "off"
+                            })
                     </div>
                 </div>
                 <span asp-validation-for="Event.EventDateStart" class="text-danger "></span>
@@ -104,7 +111,15 @@
                     </div>
                     <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
                         @Html.TextBoxFor(x => x.Event.EventDateEnd,
-                            new { type = "datetime", @placeholder = "Виберіть дату...", @id = "txtToDate", @class = "border textBoxInput" })
+                            new
+                            {
+                                type = "datetime",
+                                @placeholder = "Виберіть дату...",
+                                @id = "txtToDate",
+                                @class = "border textBoxInput",
+                                autocomplete = "off"
+                            })
+                        @Html.HiddenFor(i => i.Event.EventDateEnd, new { @id = "autocomplete_input_id_1" })
                     </div>
                 </div>
                 <span asp-validation-for="Event.EventDateEnd" class="text-danger "></span>
