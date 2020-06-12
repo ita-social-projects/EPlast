@@ -106,8 +106,8 @@ namespace EPlast.BussinessLayer
             try
             {
                 decision = await _repoWrapper.Decesion.GetFirstAsync(x => x.ID == decisionDto.ID);
-                decision.Name = decision.Name;
-                decision.Description = decision.Description;
+                decision.Name = decisionDto.Name;
+                decision.Description = decisionDto.Description;
                 _repoWrapper.Decesion.Update(decision);
                 await _repoWrapper.SaveAsync();
             }
