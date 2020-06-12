@@ -3,7 +3,8 @@ using System.Runtime.Serialization;
 
 namespace EPlast.BussinessLayer.Exceptions
 {
-    public class AnnualReportException : Exception, ISerializable
+    [Serializable]
+    public class AnnualReportException : Exception
     {
         public AnnualReportException(string message) : base(message)
         {
