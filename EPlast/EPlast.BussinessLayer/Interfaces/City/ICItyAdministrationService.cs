@@ -6,6 +6,6 @@ namespace EPlast.BussinessLayer.Interfaces.City
 {
     public interface ICItyAdministrationService
     {
-        Task<IEnumerable<CityAdministrationDTO>> GetByCityIdAsync(int cityAdministrationId);
+        Task<IEnumerable<CityAdministrationDTO>> GetByCityIdAsync(int cityId);
     }
 }
