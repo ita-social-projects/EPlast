@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EPlast.Controllers
 {
@@ -22,9 +23,9 @@ namespace EPlast.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View(_mapper.Map<IEnumerable<CityDTO>, IEnumerable<CityViewModel>>(_cityService.GetAllDTO()));
+            return View(_mapper.Map<IEnumerable<CityDTO>, IEnumerable<CityViewModel>>(await _cityService.GetAllDTOAsync()));
         }
 
         public IActionResult CityProfile(int cityId)

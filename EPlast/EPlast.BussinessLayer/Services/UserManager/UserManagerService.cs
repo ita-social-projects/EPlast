@@ -20,14 +20,14 @@ namespace EPlast.BussinessLayer.Services
             _mapper = mapper;
         }
 
-        public async Task<bool> IsInRole(UserDTO user, params string[] roles)
+        public async Task<bool> IsInRoleAsync(UserDTO user, params string[] roles)
         {
 
-            var user_first = _mapper.Map<UserDTO, User>(user);
+            var userFirst = _mapper.Map<UserDTO, User>(user);
 
             foreach (var i in roles)
             {
-                if (await _userManager.IsInRoleAsync(user_first, i))
+                if (await _userManager.IsInRoleAsync(userFirst, i))
                 {
                     return true;
                 }
@@ -35,14 +35,14 @@ namespace EPlast.BussinessLayer.Services
             return false;
         }
 
-        public async Task<bool> IsInRole(ClaimsPrincipal user, params string[] roles)
+        public async Task<bool> IsInRoleAsync(ClaimsPrincipal user, params string[] roles)
         {
 
-            var user_first = await _userManager.GetUserAsync(user);
+            var userFirst = await _userManager.GetUserAsync(user);
 
             foreach (var i in roles)
             {
-                if (await _userManager.IsInRoleAsync(user_first, i))
+                if (await _userManager.IsInRoleAsync(userFirst, i))
                 {
                     return true;
                 }
@@ -50,18 +50,18 @@ namespace EPlast.BussinessLayer.Services
             return false;
         }
 
-        public string GetUserId(ClaimsPrincipal user)
+        public async Task<string> GetUserIdAsync(ClaimsPrincipal user)
         {
-            var id = _userManager.GetUserId(user);
+            var id = await _userManager.GetUserIdAsync(await _userManager.GetUserAsync(user));
             return id;
         }
 
-        public async Task<UserDTO> FindById(string userId)
+        public async Task<UserDTO> FindByIdAsync(string userId)
         {
             var result = _mapper.Map<User, UserDTO>(await _userManager.FindByIdAsync(userId));
             return result;
         }
-        public async Task<IEnumerable<string>> GetRoles(UserDTO user)
+        public async Task<IEnumerable<string>> GetRolesAsync(UserDTO user)
         {
             var result = await _userManager.GetRolesAsync(_mapper.Map<UserDTO, User>(user));
             return result;

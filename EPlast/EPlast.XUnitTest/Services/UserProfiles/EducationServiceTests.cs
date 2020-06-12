@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.UserProfiles
@@ -24,40 +24,40 @@ namespace EPlast.XUnitTest.Services.UserProfiles
             _mapper = new Mock<IMapper>();
         }
         [Fact]
-        public void GetAllGroupByPlaceTest()
+        public async Task GetAllGroupByPlaceTest()
         {
-            _repoWrapper.Setup(r => r.Education.FindAll()).Returns(new List<Education>().AsQueryable());
+            _repoWrapper.Setup(r => r.Education.GetAllAsync(null,null)).ReturnsAsync(new List<Education>().AsQueryable());
 
             var service = new EducationService(_repoWrapper.Object, _mapper.Object);
             _mapper.Setup(x => x.Map<Education, EducationDTO>(It.IsAny<Education>())).Returns(new EducationDTO());
             // Act
-            var result = service.GetAllGroupByPlace();
+            var result = await service.GetAllGroupByPlaceAsync();
             // Assert
             Assert.NotNull(result);
             Assert.IsAssignableFrom<IEnumerable<EducationDTO>>(result);
         }
         [Fact]
-        public void GetAllGroupBySpecialityTest()
+        public async Task GetAllGroupBySpecialityTest()
         {
-            _repoWrapper.Setup(r => r.Education.FindAll()).Returns(new List<Education>().AsQueryable());
+            _repoWrapper.Setup(r => r.Education.GetAllAsync(null, null)).ReturnsAsync(new List<Education>().AsQueryable());
 
             var service = new EducationService(_repoWrapper.Object, _mapper.Object);
             _mapper.Setup(x => x.Map<Education, EducationDTO>(It.IsAny<Education>())).Returns(new EducationDTO());
             // Act
-            var result = service.GetAllGroupBySpeciality();
+            var result = await service.GetAllGroupBySpecialityAsync();
             // Assert
             Assert.NotNull(result);
             Assert.IsAssignableFrom<IEnumerable<EducationDTO>>(result);
         }
         [Fact]
-        public void GetByIdTest()
+        public async Task GetByIdTest()
         {
-            _repoWrapper.Setup(r => r.Education.FindByCondition(It.IsAny<Expression<Func<Education, bool>>>())).Returns(new List<Education>().AsQueryable());
+            _repoWrapper.Setup(r => r.Education.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Education, bool>>>(),null)).ReturnsAsync(new Education());
 
             var service = new EducationService(_repoWrapper.Object, _mapper.Object);
             _mapper.Setup(x => x.Map<Education, EducationDTO>(It.IsAny<Education>())).Returns(new EducationDTO());
             // Act
-            var result = service.GetById(1);
+            var result = await service.GetByIdAsync(1);
             // Assert
             Assert.NotNull(result);
             Assert.IsType<EducationDTO>(result);
