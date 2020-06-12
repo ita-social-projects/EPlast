@@ -141,7 +141,7 @@ namespace EPlast.XUnitTest.Services.UserArea
 
             var service = new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object, _workService.Object, _educationService.Object);
             // Act
-            var result = await service.CheckOrAddPlastunRoleAsync("1", DateTime.Now);
+            var result = await service.CheckOrAddPlastunRoleAsync("1", DateTime.MinValue);
             // Assert
             var res = Assert.IsType<TimeSpan>(result);
         }
