@@ -6,6 +6,7 @@ using EPlast.DataAccess.Repositories;
 using Moq;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.UserProfiles
@@ -21,14 +22,14 @@ namespace EPlast.XUnitTest.Services.UserProfiles
             _mapper = new Mock<IMapper>();
         }
         [Fact]
-        public void GetAllTest()
+        public async Task GetAllTest()
         {
-            _repoWrapper.Setup(r => r.Gender.FindAll()).Returns(new List<Gender>().AsQueryable());
+            _repoWrapper.Setup(r => r.Gender.GetAllAsync(null, null)).ReturnsAsync(new List<Gender>().AsQueryable());
 
             var service = new GenderService(_repoWrapper.Object, _mapper.Object);
             _mapper.Setup(x => x.Map<Gender, GenderDTO>(It.IsAny<Gender>())).Returns(new GenderDTO());
             // Act
-            var result = service.GetAll();
+            var result = await service.GetAllAsync();
             // Assert
             Assert.NotNull(result);
             Assert.IsAssignableFrom<IEnumerable<GenderDTO>>(result);
