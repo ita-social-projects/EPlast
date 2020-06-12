@@ -46,7 +46,7 @@ namespace EPlast.Controllers
                 if (await _cityAccessService.HasAccessAsync(User, cityId))
                 {
                     await _annualReportService.CheckCanBeCreatedAsync(cityId);
-                    var cityDTO = _cityService.GetById(cityId);
+                    var cityDTO = await _cityService.GetByIdAsync(cityId);
                     var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
                     return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Creating));
                 }
@@ -106,7 +106,7 @@ namespace EPlast.Controllers
                 }
                 else
                 {
-                    var cityDTO = _cityService.GetById(annualReport.CityId);
+                    var cityDTO = await _cityService.GetByIdAsync(annualReport.CityId);
                     var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
                     ViewData["ErrorMessage"] = "Річний звіт заповнений некоректно!";
                     return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Creating, annualReport));
@@ -231,7 +231,7 @@ namespace EPlast.Controllers
             {
                 var annualReportDTO = await _annualReportService.GetByIdAsync(User, id);
                 var annualReport = _mapper.Map<AnnualReportDTO, AnnualReportViewModel>(annualReportDTO);
-                var cityDTO = _cityService.GetById(annualReport.CityId);
+                var cityDTO = await _cityService.GetByIdAsync(annualReport.CityId);
                 var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
                 return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Editing, annualReport));
             }
@@ -262,7 +262,7 @@ namespace EPlast.Controllers
                 }
                 else
                 {
-                    var cityDTO = _cityService.GetById(annualReport.CityId);
+                    var cityDTO = await _cityService.GetByIdAsync(annualReport.CityId);
                     var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
                     ViewData["ErrorMessage"] = "Річний звіт заповнений некоректно!";
                     return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Editing, annualReport));

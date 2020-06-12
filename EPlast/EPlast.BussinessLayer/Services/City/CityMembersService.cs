@@ -22,10 +22,10 @@ namespace EPlast.BussinessLayer.Services.City
 
         public async Task<IEnumerable<CityMembersDTO>> GetCurrentByCityIdAsync(int cityId)
         {
-            var cityMembers = await _repositoryWrapper.CityMembers
-                .FindByCondition(cm => cm.CityId == cityId && cm.EndDate == null)
-                .Include(cm => cm.User)
-                .ToListAsync();
+            var cityMembers = await _repositoryWrapper.CityMembers.GetAllAsync(
+                    predicate: c => c.CityId == cityId && c.EndDate == null,
+                    include: source => source
+                        .Include(c => c.User));
             return _mapper.Map<IEnumerable<CityMembers>, IEnumerable<CityMembersDTO>>(cityMembers);
         }
     }
