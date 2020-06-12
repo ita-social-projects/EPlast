@@ -3,7 +3,6 @@ using EPlast.BussinessLayer.DTO.UserProfiles;
 using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
