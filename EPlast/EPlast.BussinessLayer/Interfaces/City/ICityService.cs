@@ -10,15 +10,15 @@ namespace EPlast.BussinessLayer.Interfaces.City
     {
         Task<IEnumerable<DataAccessCity.City>> GetAllAsync();
         Task<IEnumerable<CityDTO>> GetAllDTOAsync();
-        CityDTO GetById(int cityId);
-        CityProfileDTO CityProfile(int cityId);
-        CityProfileDTO CityMembers(int cityId);
-        CityProfileDTO CityFollowers(int cityId);
-        CityProfileDTO CityAdmins(int cityId);
-        CityProfileDTO CityDocuments(int cityId);
-        CityProfileDTO Edit(int cityId);
-        void Edit(CityProfileDTO model, IFormFile file);
-        int Create(CityProfileDTO model, IFormFile file);
+        Task<CityDTO> GetByIdAsync(int cityId);
+        Task<CityProfileDTO> CityProfileAsync(int cityId);
+        Task<CityProfileDTO> CityMembersAsync(int cityId);
+        Task<CityProfileDTO> CityFollowersAsync(int cityId);
+        Task<CityProfileDTO> CityAdminsAsync(int cityId);
+        Task<CityProfileDTO> CityDocumentsAsync(int cityId);
+        Task<CityProfileDTO> EditAsync(int cityId);
+        Task EditAsync(CityProfileDTO model, IFormFile file);
+        Task<int> CreateAsync(CityProfileDTO model, IFormFile file);
 
     }
 }

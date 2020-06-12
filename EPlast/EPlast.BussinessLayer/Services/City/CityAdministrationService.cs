@@ -13,6 +13,7 @@ namespace EPlast.BussinessLayer.Services.City
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
+
         public CityAdministrationService(IRepositoryWrapper repoWrapper, IMapper mapper)
         {
             _repoWrapper = repoWrapper;
