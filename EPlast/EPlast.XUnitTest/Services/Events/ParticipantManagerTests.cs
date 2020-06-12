@@ -1,14 +1,12 @@
 ﻿using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.BussinessLayer.Services.Events;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using EPlast.DataAccess.Entities.Event;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.Events
@@ -28,257 +26,242 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public void SubscribeOnEventSuccessTest()
+        public async void SubscribeOnEventSuccessTest()
         {
             //Arrange
-            var targetEvent = new Event() { ID = 1, EventStatusID = 3};
+            var targetEvent = new Event() { ID = 1, EventStatusID = 3 };
             string userId = "abc-1";
             int underReviewStatus = 1;
             int finishedEventStatus = 2;
-            _repoWrapper.Setup(x => x.Participant.Create((It.IsAny<Participant>())));
-            _participantStatusManager.Setup(x => x.GetStatusId(It.IsAny<string>()))
-                .Returns(underReviewStatus);
-            _eventStatusManager.Setup(x => x.GetStatusId(It.IsAny<string>()))
-                .Returns(finishedEventStatus);
+            _repoWrapper.Setup(x => x.Participant.CreateAsync((It.IsAny<Participant>())));
+            _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(underReviewStatus);
+            _eventStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(finishedEventStatus);
             //Act
-            var participantManager = new ParticipantManager(_repoWrapper.Object,_eventStatusManager.Object,_participantStatusManager.Object);
-            var methodResult = participantManager.SubscribeOnEvent(targetEvent,userId);
+            var participantManager = new ParticipantManager(_repoWrapper.Object, _eventStatusManager.Object, _participantStatusManager.Object);
+            var methodResult = await participantManager.SubscribeOnEventAsync(targetEvent, userId);
             //Assert
-            _repoWrapper.Verify(r => r.Participant.Create(It.IsAny<Participant>()), Times.Once());
-            _repoWrapper.Verify(r => r.Save(), Times.Once());
+            _repoWrapper.Verify(r => r.Participant.CreateAsync(It.IsAny<Participant>()), Times.Once());
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once());
             Assert.Equal(StatusCodes.Status200OK, methodResult);
         }
 
         [Fact]
-        public void SubscribeOnEventConflictTest()
+        public async void SubscribeOnEventConflictTest()
         {
             //Arrange
             var targetEvent = new Event() { ID = 1, EventStatusID = 2 };
             string userId = "abc-1";
             int underReviewStatus = 1;
             int finishedEventStatus = 2;
-            _participantStatusManager.Setup(x => x.GetStatusId(It.IsAny<string>()))
-                .Returns(underReviewStatus);
-            _eventStatusManager.Setup(x => x.GetStatusId(It.IsAny<string>()))
-                .Returns(finishedEventStatus);
+            _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(underReviewStatus);
+            _eventStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(finishedEventStatus);
             //Act
             var participantManager = new ParticipantManager(_repoWrapper.Object, _eventStatusManager.Object, _participantStatusManager.Object);
-            var methodResult = participantManager.SubscribeOnEvent(targetEvent, userId);
+            var methodResult = await participantManager.SubscribeOnEventAsync(targetEvent, userId);
             //Assert
             Assert.Equal(StatusCodes.Status409Conflict, methodResult);
         }
 
         [Fact]
-        public void SubscribeOnEventFailTest()
+        public async void SubscribeOnEventFailTest()
         {
             //Arrange
             var targetEvent = new Event() { ID = 1, EventStatusID = 2 };
             string userId = "abc-1";
             int finishedEventStatus = 2;
-            _participantStatusManager.Setup(x => x.GetStatusId(It.IsAny<string>()))
-                .Throws(new Exception());
-            _eventStatusManager.Setup(x => x.GetStatusId(It.IsAny<string>()))
-                .Returns(finishedEventStatus);
+            _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ThrowsAsync(new Exception());
+            _eventStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(finishedEventStatus);
             //Act
             var participantManager = new ParticipantManager(_repoWrapper.Object, _eventStatusManager.Object, _participantStatusManager.Object);
-            var methodResult = participantManager.SubscribeOnEvent(targetEvent, userId);
+            var methodResult = await participantManager.SubscribeOnEventAsync(targetEvent, userId);
             //Assert
             Assert.Equal(StatusCodes.Status500InternalServerError, methodResult);
         }
 
         [Fact]
-        public void UnSubscribeOnEventSuccessTest()
+        public async void UnSubscribeOnEventSuccessTest()
         {
             //Arrange
             var targetEvent = new Event() { ID = 1, EventStatusID = 3 };
             string userId = "abc-1";
             int rejectedStatus = 1;
             int finishedEventStatus = 2;
-            _repoWrapper.Setup(x => x.Participant.FindByCondition(It.IsAny<Expression<Func<Participant, bool>>>()))
-                .Returns(new List<Participant>
-                {
-                    new Participant{ID=1,ParticipantStatusId=3,EventId=1,UserId="abc-1"},
-                    new Participant{ID=2,ParticipantStatusId=3,EventId=1,UserId="abc-2"},
-                    new Participant{ID=3,ParticipantStatusId=1,EventId=1,UserId="abc-3"}
-                }.AsQueryable());
-            _participantStatusManager.Setup(x => x.GetStatusId(It.IsAny<string>()))
-                .Returns(rejectedStatus);
-            _eventStatusManager.Setup(x => x.GetStatusId(It.IsAny<string>()))
-                .Returns(finishedEventStatus);
+            _repoWrapper.Setup(x => x.Participant.GetFirstAsync(It.IsAny<Expression<Func<Participant, bool>>>(), null))
+                .ReturnsAsync(
+                    new Participant { ID = 1, ParticipantStatusId = 3, EventId = 1, UserId = "abc-1" }
+                );
+            _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(rejectedStatus);
+            _eventStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(finishedEventStatus);
             //Act
             var participantManager = new ParticipantManager(_repoWrapper.Object, _eventStatusManager.Object, _participantStatusManager.Object);
-            var methodResult = participantManager.UnSubscribeOnEvent(targetEvent, userId);
+            var methodResult = await participantManager.UnSubscribeOnEventAsync(targetEvent, userId);
             //Assert
             _repoWrapper.Verify(r => r.Participant.Delete(It.IsAny<Participant>()), Times.Once());
-            _repoWrapper.Verify(r => r.Save(), Times.Once());
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once());
             Assert.Equal(StatusCodes.Status200OK, methodResult);
         }
         [Fact]
-        public void UnSubscribeOnEventConflictTest()
+        public async void UnSubscribeOnEventConflictTest()
         {
             //Arrange
             var targetEvent = new Event() { ID = 1, EventStatusID = 3 };
             string userId = "abc-1";
             int rejectedStatus = 3;
             int finishedEventStatus = 2;
-            _repoWrapper.Setup(x => x.Participant.FindByCondition(It.IsAny<Expression<Func<Participant, bool>>>()))
-                .Returns(new List<Participant>
-                {
-                    new Participant{ID=1,ParticipantStatusId=3,EventId=1,UserId="abc-1"},
-                    new Participant{ID=2,ParticipantStatusId=3,EventId=1,UserId="abc-2"},
-                    new Participant{ID=3,ParticipantStatusId=1,EventId=1,UserId="abc-3"}
-                }.AsQueryable());
-            _participantStatusManager.Setup(x => x.GetStatusId(It.IsAny<string>()))
-                .Returns(rejectedStatus);
-            _eventStatusManager.Setup(x => x.GetStatusId(It.IsAny<string>()))
-                .Returns(finishedEventStatus);
+            _repoWrapper.Setup(x => x.Participant.GetFirstAsync(It.IsAny<Expression<Func<Participant, bool>>>(), null))
+                .ReturnsAsync(
+                    new Participant { ID = 1, ParticipantStatusId = 3, EventId = 1, UserId = "abc-1" }
+                );
+            _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(rejectedStatus);
+            _eventStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(finishedEventStatus);
             //Act
             var participantManager = new ParticipantManager(_repoWrapper.Object, _eventStatusManager.Object, _participantStatusManager.Object);
-            var methodResult = participantManager.UnSubscribeOnEvent(targetEvent, userId);
+            var methodResult = await participantManager.UnSubscribeOnEventAsync(targetEvent, userId);
             //Assert
             Assert.Equal(StatusCodes.Status409Conflict, methodResult);
         }
 
         [Fact]
-        public void UnSubscribeOnEventFailTest()
+        public async void UnSubscribeOnEventFailTest()
         {
             //Arrange
             var targetEvent = new Event() { ID = 1, EventStatusID = 3 };
             string userId = "abc-1";
             int rejectedStatus = 3;
             int finishedEventStatus = 2;
-            _repoWrapper.Setup(x => x.Participant.FindByCondition(It.IsAny<Expression<Func<Participant, bool>>>()))
-                .Throws(new Exception());
-            _participantStatusManager.Setup(x => x.GetStatusId(It.IsAny<string>()))
-                .Returns(rejectedStatus);
-            _eventStatusManager.Setup(x => x.GetStatusId(It.IsAny<string>()))
-                .Returns(finishedEventStatus);
+            _repoWrapper.Setup(x => x.Participant.GetFirstAsync(It.IsAny<Expression<Func<Participant, bool>>>(), null))
+                .ThrowsAsync(new Exception());
+            _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(rejectedStatus);
+            _eventStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(finishedEventStatus);
             //Act
             var participantManager = new ParticipantManager(_repoWrapper.Object, _eventStatusManager.Object, _participantStatusManager.Object);
-            var methodResult = participantManager.UnSubscribeOnEvent(targetEvent, userId);
+            var methodResult = await participantManager.UnSubscribeOnEventAsync(targetEvent, userId);
             //Assert
             Assert.Equal(StatusCodes.Status500InternalServerError, methodResult);
         }
 
         [Fact]
-        public void ChangeStatusToApprovedSuccessTest()
+        public async void ChangeStatusToApprovedSuccessTest()
         {
             //Arrange
             int participantId = 1;
             int participantStatus = 3;
-            _repoWrapper.Setup(x => x.Participant.FindByCondition(It.IsAny<Expression<Func<Participant, bool>>>()))
-                .Returns(new List<Participant>
-                {
-                    new Participant{ID=1,ParticipantStatusId=3,EventId=1,UserId="abc-1"},
-                    new Participant{ID=2,ParticipantStatusId=3,EventId=1,UserId="abc-2"},
-                    new Participant{ID=3,ParticipantStatusId=1,EventId=1,UserId="abc-3"}
-                }.AsQueryable());
-            _participantStatusManager.Setup(x => x.GetStatusId(It.IsAny<string>()))
-                .Returns(participantStatus);
+            _repoWrapper.Setup(x => x.Participant.GetFirstAsync(It.IsAny<Expression<Func<Participant, bool>>>(), null))
+                .ReturnsAsync(
+                    new Participant { ID = 1, ParticipantStatusId = 3, EventId = 1, UserId = "abc-1" }
+                    );
+            _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(participantStatus);
             //Act
             var participantManager = new ParticipantManager(_repoWrapper.Object, _eventStatusManager.Object, _participantStatusManager.Object);
-            var methodResult = participantManager.ChangeStatusToApproved(participantId);
+            var methodResult = await participantManager.ChangeStatusToApprovedAsync(participantId);
             //Assert
             _repoWrapper.Verify(r => r.Participant.Update(It.IsAny<Participant>()), Times.Once());
-            _repoWrapper.Verify(r => r.Save(), Times.Once());
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once());
             Assert.Equal(StatusCodes.Status200OK, methodResult);
         }
 
         [Fact]
-        public void ChangeStatusToApprovedFailTest()
+        public async void ChangeStatusToApprovedFailTest()
         {
             //Arrange
             int participantId = 1;
             int participantStatus = 3;
-            _repoWrapper.Setup(x => x.Participant.FindByCondition(It.IsAny<Expression<Func<Participant, bool>>>()))
-                .Throws(new Exception());
-            _participantStatusManager.Setup(x => x.GetStatusId(It.IsAny<string>()))
-                .Returns(participantStatus);
+            _repoWrapper.Setup(x => x.Participant.GetFirstAsync(It.IsAny<Expression<Func<Participant, bool>>>(), null))
+                .ThrowsAsync(new Exception());
+            _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(participantStatus);
             //Act
             var participantManager = new ParticipantManager(_repoWrapper.Object, _eventStatusManager.Object, _participantStatusManager.Object);
-            var methodResult = participantManager.ChangeStatusToApproved(participantId);
+            var methodResult = await participantManager.ChangeStatusToApprovedAsync(participantId);
             //Assert
             Assert.Equal(StatusCodes.Status500InternalServerError, methodResult);
         }
 
         [Fact]
-        public void ChangeStatusToUnderReviewSuccessTest()
+        public async void ChangeStatusToUnderReviewSuccessTest()
         {
             //Arrange
             int participantId = 1;
             int participantStatus = 3;
-            _repoWrapper.Setup(x => x.Participant.FindByCondition(It.IsAny<Expression<Func<Participant, bool>>>()))
-                .Returns(new List<Participant>
-                {
-                    new Participant{ID=1,ParticipantStatusId=3,EventId=1,UserId="abc-1"},
-                    new Participant{ID=2,ParticipantStatusId=3,EventId=1,UserId="abc-2"},
-                    new Participant{ID=3,ParticipantStatusId=1,EventId=1,UserId="abc-3"}
-                }.AsQueryable());
-            _participantStatusManager.Setup(x => x.GetStatusId(It.IsAny<string>()))
-                .Returns(participantStatus);
+            _repoWrapper.Setup(x => x.Participant.GetFirstAsync(It.IsAny<Expression<Func<Participant, bool>>>(), null))
+                .ReturnsAsync(
+                    new Participant { ID = 1, ParticipantStatusId = 3, EventId = 1, UserId = "abc-1" }
+                );
+            _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(participantStatus);
             //Act
             var participantManager = new ParticipantManager(_repoWrapper.Object, _eventStatusManager.Object, _participantStatusManager.Object);
-            var methodResult = participantManager.ChangeStatusToUnderReview(participantId);
+            var methodResult = await participantManager.ChangeStatusToUnderReviewAsync(participantId);
             //Assert
             _repoWrapper.Verify(r => r.Participant.Update(It.IsAny<Participant>()), Times.Once());
-            _repoWrapper.Verify(r => r.Save(), Times.Once());
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once());
             Assert.Equal(StatusCodes.Status200OK, methodResult);
         }
 
         [Fact]
-        public void ChangeStatusToUnderReviewFailTest()
+        public async void ChangeStatusToUnderReviewFailTest()
         {
             //Arrange
             int participantId = 1;
             int participantStatus = 3;
-            _repoWrapper.Setup(x => x.Participant.FindByCondition(It.IsAny<Expression<Func<Participant, bool>>>()))
-                .Throws(new Exception());
-            _participantStatusManager.Setup(x => x.GetStatusId(It.IsAny<string>()))
-                .Returns(participantStatus);
+            _repoWrapper.Setup(x => x.Participant.GetFirstAsync(It.IsAny<Expression<Func<Participant, bool>>>(), null))
+                .ThrowsAsync(new Exception());
+            _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(participantStatus);
             //Act
             var participantManager = new ParticipantManager(_repoWrapper.Object, _eventStatusManager.Object, _participantStatusManager.Object);
-            var methodResult = participantManager.ChangeStatusToUnderReview(participantId);
+            var methodResult = await participantManager.ChangeStatusToUnderReviewAsync(participantId);
             //Assert
             Assert.Equal(StatusCodes.Status500InternalServerError, methodResult);
         }
 
         [Fact]
-        public void ChangeStatusToRejectedSuccessTest()
+        public async void ChangeStatusToRejectedSuccessTest()
         {
             //Arrange
             int participantId = 1;
             int participantStatus = 3;
-            _repoWrapper.Setup(x => x.Participant.FindByCondition(It.IsAny<Expression<Func<Participant, bool>>>()))
-                .Returns(new List<Participant>
-                {
-                    new Participant{ID=1,ParticipantStatusId=3,EventId=1,UserId="abc-1"},
-                    new Participant{ID=2,ParticipantStatusId=3,EventId=1,UserId="abc-2"},
-                    new Participant{ID=3,ParticipantStatusId=1,EventId=1,UserId="abc-3"}
-                }.AsQueryable());
-            _participantStatusManager.Setup(x => x.GetStatusId(It.IsAny<string>()))
-                .Returns(participantStatus);
+            _repoWrapper.Setup(x => x.Participant.GetFirstAsync(It.IsAny<Expression<Func<Participant, bool>>>(), null))
+                .ReturnsAsync(
+                    new Participant { ID = 1, ParticipantStatusId = 3, EventId = 1, UserId = "abc-1" }
+                );
+            _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(participantStatus);
             //Act
             var participantManager = new ParticipantManager(_repoWrapper.Object, _eventStatusManager.Object, _participantStatusManager.Object);
-            var methodResult = participantManager.ChangeStatusToRejected(participantId);
+            var methodResult = await participantManager.ChangeStatusToRejectedAsync(participantId);
             //Assert
             _repoWrapper.Verify(r => r.Participant.Update(It.IsAny<Participant>()), Times.Once());
-            _repoWrapper.Verify(r => r.Save(), Times.Once());
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once());
             Assert.Equal(StatusCodes.Status200OK, methodResult);
         }
 
         [Fact]
-        public void ChangeStatusToRejectedFailTest()
+        public async void ChangeStatusToRejectedFailTest()
         {
             //Arrange
             int participantId = 1;
             int participantStatus = 3;
-            _repoWrapper.Setup(x => x.Participant.FindByCondition(It.IsAny<Expression<Func<Participant, bool>>>()))
-                .Throws(new Exception());
-            _participantStatusManager.Setup(x => x.GetStatusId(It.IsAny<string>()))
-                .Returns(participantStatus);
+            _repoWrapper.Setup(x => x.Participant.GetFirstAsync(It.IsAny<Expression<Func<Participant, bool>>>(), null))
+                .ThrowsAsync(new Exception());
+            _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(participantStatus);
             //Act
             var participantManager = new ParticipantManager(_repoWrapper.Object, _eventStatusManager.Object, _participantStatusManager.Object);
-            var methodResult = participantManager.ChangeStatusToRejected(participantId);
+            var methodResult = await participantManager.ChangeStatusToRejectedAsync(participantId);
             //Assert
             Assert.Equal(StatusCodes.Status500InternalServerError, methodResult);
         }
