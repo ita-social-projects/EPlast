@@ -1,5 +1,6 @@
 ﻿using EPlast.DataAccess.Repositories;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using DatabaseEntities = EPlast.DataAccess.Entities;
 
 namespace EPlast.BussinessLayer.Services.City.CityAccess.CityAccessGetters
@@ -13,9 +14,9 @@ namespace EPlast.BussinessLayer.Services.City.CityAccess.CityAccessGetters
             _repositoryWrapper = repositoryWrapper;
         }
 
-        public IEnumerable<DatabaseEntities.City> GetCities(string userId)
+        public async Task<IEnumerable<DatabaseEntities.City>> GetCities(string userId)
         {
-            return _repositoryWrapper.City.FindAll();
+            return await _repositoryWrapper.City.GetAllAsync();
         }
     }
 }

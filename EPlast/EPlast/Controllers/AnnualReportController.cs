@@ -45,7 +45,7 @@ namespace EPlast.Controllers
             {
                 if (await _cityAccessService.HasAccessAsync(User, cityId))
                 {
-                    await _annualReportService.CheckCreatedAndUnconfirmed(cityId);
+                    await _annualReportService.CheckCanBeCreatedAsync(cityId);
                     var cityDTO = _cityService.GetById(cityId);
                     var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
                     return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Creating));
@@ -76,7 +76,7 @@ namespace EPlast.Controllers
             {
                 var citiesDTO = await _cityAccessService.GetCitiesAsync(User);
                 var city = _mapper.Map<CityDTO, CityViewModel>(citiesDTO.First());
-                await _annualReportService.CheckCreatedAndUnconfirmed(city.ID);
+                await _annualReportService.CheckCanBeCreatedAsync(city.ID);
                 return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Creating));
             }
             catch (AnnualReportException e)
