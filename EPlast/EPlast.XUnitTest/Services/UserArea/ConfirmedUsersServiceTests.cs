@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.UserArea
@@ -26,23 +27,28 @@ namespace EPlast.XUnitTest.Services.UserArea
         }
 
         [Fact]
-        public void CreateTest()
+        public async Task CreateTest()
         {
             _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns("1");
-            _repoWrapper.Setup(x => x.ConfirmedUser.FindAll()).Returns(new List<ConfirmedUser>().AsQueryable());
+            _repoWrapper.Setup(x =>  x.ConfirmedUser.GetAllAsync(null,null)).ReturnsAsync(new List<ConfirmedUser>().AsQueryable());
             var service = new ConfirmedUsersService(_repoWrapper.Object, _userManager.Object);
-            service.Create(It.IsAny<ClaimsPrincipal>(), It.IsAny<string>());
-            _repoWrapper.Verify(r => r.ConfirmedUser.Create(It.IsAny<ConfirmedUser>()), Times.Once());
-            _repoWrapper.Verify(r => r.Save(), Times.Once());
+
+            await service.CreateAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<string>());
+
+            _repoWrapper.Verify(r => r.ConfirmedUser.CreateAsync(It.IsAny<ConfirmedUser>()), Times.Once());
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once());
         }
         [Fact]
-        public void DeleteTest()
+        public async Task DeleteTest()
         {
-            _repoWrapper.Setup(x => x.ConfirmedUser.FindByCondition(It.IsAny<Expression<Func<ConfirmedUser, bool>>>())).Returns(new List<ConfirmedUser> { new ConfirmedUser() }.AsQueryable());
+
+            _repoWrapper.Setup(x =>  x.ConfirmedUser.GetFirstAsync(It.IsAny<Expression<Func<ConfirmedUser, bool>>>(), null)).ReturnsAsync(new ConfirmedUser());
             var service = new ConfirmedUsersService(_repoWrapper.Object, _userManager.Object);
-            service.Delete(It.IsAny<int>());
+
+            await service.DeleteAsync(It.IsAny<int>());
+
             _repoWrapper.Verify(r => r.ConfirmedUser.Delete(It.IsAny<ConfirmedUser>()), Times.Once());
-            _repoWrapper.Verify(r => r.Save(), Times.Once());
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once());
         }
     }
 }

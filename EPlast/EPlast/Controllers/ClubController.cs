@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EPlast.Controllers
 {
@@ -30,10 +31,11 @@ namespace EPlast.Controllers
             _logger = logger;
             _userManagerService = userManagerService;
         }
-        private void CheckCurrentUserRoles(ref ClubProfileViewModel viewModel)
+        private async Task<ClubProfileViewModel> CheckCurrentUserRoles(ClubProfileViewModel viewModel)
         {
-            viewModel.IsCurrentUserClubAdmin = _userManagerService.GetUserId(User) == viewModel.ClubAdmin?.Id;
+            viewModel.IsCurrentUserClubAdmin = await _userManagerService.GetUserIdAsync(User) == viewModel.ClubAdmin?.Id;
             viewModel.IsCurrentUserAdmin = User.IsInRole("Admin");
+            return viewModel;
         }
         public IActionResult Index()
         {
@@ -43,12 +45,12 @@ namespace EPlast.Controllers
             return View(viewModels);
         }
 
-        public IActionResult Club(int index)
+        public async Task<IActionResult> Club(int index)
         {
             try
             {
                 var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(_clubService.GetClubProfile(index));
-                CheckCurrentUserRoles(ref viewModel);
+                viewModel = await CheckCurrentUserRoles(viewModel);
 
                 return View(viewModel);
             }
@@ -58,12 +60,12 @@ namespace EPlast.Controllers
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
-        public IActionResult ClubAdmins(int index)
+        public async Task<IActionResult> ClubAdmins(int index)
         {
             try
             {
                 var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(_clubAdministrationService.GetCurrentClubAdministrationByID(index));
-                CheckCurrentUserRoles(ref viewModel);
+                viewModel = await CheckCurrentUserRoles(viewModel);
 
                 return View(viewModel);
             }
@@ -73,12 +75,12 @@ namespace EPlast.Controllers
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
-        public IActionResult ClubMembers(int index)
+        public async Task<IActionResult> ClubMembers(int index)
         {
             try
             {
                 var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(_clubService.GetClubMembersOrFollowers(index, true));
-                CheckCurrentUserRoles(ref viewModel);
+                viewModel = await CheckCurrentUserRoles(viewModel);
 
                 return View(viewModel);
             }
@@ -88,12 +90,12 @@ namespace EPlast.Controllers
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
-        public IActionResult ClubFollowers(int index)
+        public async Task<IActionResult> ClubFollowers(int index)
         {
             try
             {
                 var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(_clubService.GetClubMembersOrFollowers(index, false));
-                CheckCurrentUserRoles(ref viewModel);
+                viewModel = await CheckCurrentUserRoles(viewModel);
 
                 return View(viewModel);
             }
@@ -250,9 +252,9 @@ namespace EPlast.Controllers
             return View(model);
         }
 
-        public IActionResult AddAsClubFollower(int clubIndex, string userId)
+        public async Task<IActionResult> AddAsClubFollower(int clubIndex, string userId)
         {
-            userId = User.IsInRole("Admin") ? userId : _userManagerService.GetUserId(User);
+            userId = User.IsInRole("Admin") ? userId : await _userManagerService.GetUserIdAsync(User);
 
             _clubMembersService.AddFollower(clubIndex, userId);
 
