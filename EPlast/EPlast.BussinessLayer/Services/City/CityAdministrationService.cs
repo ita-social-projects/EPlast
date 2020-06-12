@@ -21,11 +21,10 @@ namespace EPlast.BussinessLayer.Services.City
 
         public async Task<IEnumerable<CityAdministrationDTO>> GetByCityIdAsync(int cityId)
         {
-            var cityAdministration = await _repoWrapper.CityAdministration
-                    .FindByCondition(ca => ca.CityId == cityId)
-                        .Include(ca => ca.User)
-                        .Include(ca => ca.AdminType).
-                    ToListAsync();
+            var cityAdministration = await _repoWrapper.CityAdministration.GetAllAsync(
+                predicate:x=>x.CityId==cityId,
+                include:x=>x.Include(q=>q.User).
+                    Include(q=>q.AdminType));
             return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(cityAdministration);
         }
     }
