@@ -7,25 +7,25 @@ namespace EPlast.BussinessLayer
 {
     public interface IDecisionService
     {
-        DecisionDTO GetDecision(int decisionId);
+        Task<DecisionDTO> GetDecisionAsync(int decisionId);
 
-        bool ChangeDecision(DecisionDTO decision);
+        Task<bool> ChangeDecisionAsync(DecisionDTO decision);
 
-        bool DeleteDecision(int id);
+        Task<bool> DeleteDecisionAsync(int id);
 
         Task<int> SaveDecisionAsync(DecisionWrapperDTO decision);
 
         Task<byte[]> DownloadDecisionFileAsync(int decisionId);
 
-        DecisionWrapperDTO CreateDecision();
+        Task<DecisionWrapperDTO> CreateDecisionAsync();
 
-        OrganizationDTO GetDecisionOrganization(OrganizationDTO organization);
+        Task<OrganizationDTO> GetDecisionOrganizationAsync(OrganizationDTO organization);
 
-        List<OrganizationDTO> GetOrganizationList();
+        Task<IEnumerable<OrganizationDTO>> GetOrganizationListAsync();
 
-        List<DecisionTargetDTO> GetDecisionTargetList();
+        Task<IEnumerable<DecisionTargetDTO>> GetDecisionTargetListAsync();
 
-        List<DecisionWrapperDTO> GetDecisionList();
+        Task<IEnumerable<DecisionWrapperDTO>> GetDecisionListAsync();
 
         IEnumerable<SelectListItem> GetDecisionStatusTypes();
 
