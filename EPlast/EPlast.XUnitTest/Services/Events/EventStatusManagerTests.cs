@@ -1,12 +1,9 @@
 ﻿using EPlast.BussinessLayer.Services.Events;
-using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Moq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using EPlast.DataAccess.Entities.Event;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.Events
@@ -20,28 +17,26 @@ namespace EPlast.XUnitTest.Services.Events
             _repoWrapper = new Mock<IRepositoryWrapper>();
         }
         [Fact]
-        public void GetStatusIdTest()
+        public async void GetStatusIdTest()
         {
             //Arrange
             string statusName = "Status Name";
-            _repoWrapper.Setup(x => x.EventStatus.FindByCondition(It.IsAny<Expression<Func<EventStatus, bool>>>()))
-                .Returns(GetEventStatuses());
+            _repoWrapper.Setup(x =>
+                    x.EventStatus.GetFirstAsync(It.IsAny<Expression<Func<EventStatus, bool>>>(), null))
+                .ReturnsAsync(GetEventStatus());
             //Act
             var eventStatusManager = new EventStatusManager(_repoWrapper.Object);
-            var methodResult = eventStatusManager.GetStatusId(statusName);
+            var methodResult =await eventStatusManager.GetStatusIdAsync(statusName);
             //Assert
             Assert.Equal(1, methodResult);
         }
-        public IQueryable<EventStatus> GetEventStatuses()
+        public EventStatus GetEventStatus()
         {
-            var eventStatuses = new List<EventStatus>
+            return new EventStatus()
             {
-                new EventStatus(){
-                    ID = 1,
-                    EventStatusName = "Status 1"
-                }
-            }.AsQueryable();
-            return eventStatuses;
+                ID = 1,
+                EventStatusName = "Status 1"
+            };
         }
     }
 }

@@ -3,8 +3,6 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Moq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using Xunit;
 
@@ -19,28 +17,26 @@ namespace EPlast.XUnitTest.Services.Events
             _repoWrapper = new Mock<IRepositoryWrapper>();
         }
         [Fact]
-        public void GetStatusIdTest()
+        public async void GetStatusIdTest()
         {
             //Arrange
             string statusName = "Status Name";
-            _repoWrapper.Setup(x => x.ParticipantStatus.FindByCondition(It.IsAny<Expression<Func<ParticipantStatus, bool>>>()))
-                .Returns(GetParticipantStatuses());
+            _repoWrapper.Setup(x =>
+                    x.ParticipantStatus.GetFirstAsync(It.IsAny<Expression<Func<ParticipantStatus, bool>>>(), null))
+                .ReturnsAsync(GetParticipantStatus());
             //Act
             var participantStatusManager = new ParticipantStatusManager(_repoWrapper.Object);
-            var methodResult = participantStatusManager.GetStatusId(statusName);
+            var methodResult = await participantStatusManager.GetStatusIdAsync(statusName);
             //Assert
             Assert.Equal(1, methodResult);
         }
-        public IQueryable<ParticipantStatus> GetParticipantStatuses()
+        public ParticipantStatus GetParticipantStatus()
         {
-            var participantStatuses = new List<ParticipantStatus>
+            return new ParticipantStatus()
             {
-                new ParticipantStatus(){
-                    ID = 1,
-                    ParticipantStatusName = "Status 1"
-                }
-            }.AsQueryable();
-            return participantStatuses;
+                ID = 1,
+                ParticipantStatusName = "Status 1"
+            };
         }
     }
 
