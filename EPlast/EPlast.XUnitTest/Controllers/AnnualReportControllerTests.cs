@@ -182,8 +182,8 @@ namespace EPlast.XUnitTest
             };
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .ReturnsAsync(true);
-            _cityService.Setup(c => c.GetById(It.IsAny<int>()))
-                .Returns(cityDTO);
+            _cityService.Setup(c => c.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(cityDTO);
             _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
                 .Returns(city);
             _cityMembersService.Setup(c => c.GetCurrentByCityIdAsync(It.IsAny<int>()))
@@ -226,8 +226,8 @@ namespace EPlast.XUnitTest
             // Arrange
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .ReturnsAsync(true);
-            _cityService.Setup(c => c.GetById(It.IsAny<int>()))
-                .Returns(default(CityDTO));
+            _cityService.Setup(c => c.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(default(CityDTO));
             _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
                 .Returns(default(CityViewModel));
 
@@ -316,8 +316,8 @@ namespace EPlast.XUnitTest
                 AnnualReport = new AnnualReportViewModel { CityId = city.ID, MembersStatistic = new MembersStatisticViewModel() }
             };
             controller.ModelState.AddModelError(string.Empty, string.Empty);
-            _cityService.Setup(c => c.GetById(It.IsAny<int>()))
-                .Returns(cityDTO);
+            _cityService.Setup(c => c.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(cityDTO);
             _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
                 .Returns(city);
             _cityMembersService.Setup(c => c.GetCurrentByCityIdAsync(It.IsAny<int>()))
@@ -361,8 +361,8 @@ namespace EPlast.XUnitTest
         {
             // Arrange
             controller.ModelState.AddModelError(string.Empty, string.Empty);
-            _cityService.Setup(c => c.GetById(It.IsAny<int>()))
-                .Returns(default(CityDTO));
+            _cityService.Setup(c => c.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(default(CityDTO));
             _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
                 .Returns(default(CityViewModel));
 
