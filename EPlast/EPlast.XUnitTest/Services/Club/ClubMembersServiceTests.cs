@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace EPlast.XUnitTest.Services.Club
+namespace EPlast.XUnitTest.Services.ClubTests
 {
     public class ClubMembersServiceTests
     {
@@ -65,18 +65,5 @@ namespace EPlast.XUnitTest.Services.Club
                 }
             };
         }
-
-        //[Fact]
-        //public void ChangeIsApprovedStatus_ClubMembersUpdated()
-        //{
-        //    //arrange
-        //    ChangeIsApprovedStatusRepositorySetup();
-
-        //    //action            
-        //    controller.ChangeIsApprovedStatus(1, 1);
-
-        //    //assert
-        //    _repository.Verify(r => r.ClubMembers.Update(It.IsAny<ClubMembers>()), Times.Once());
-        //}
     }
 }
