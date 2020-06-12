@@ -3,7 +3,6 @@ using EPlast.BussinessLayer.DTO.EventUser;
 using EPlast.BussinessLayer.Interfaces.EventUser;
 using EPlast.ViewModels.EventUser;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EPlast.Controllers
@@ -117,7 +116,7 @@ namespace EPlast.Controllers
                 }
                 else
                 {
-                    var dto =await _eventUserManager.InitializeEventEditDTOAsync(createVM.Event.ID);
+                    var dto = await _eventUserManager.InitializeEventEditDTOAsync(createVM.Event.ID);
                     var model = _mapper.Map<EventCreateDTO, EventCreateViewModel>(dto);
                     return View(model);
                 }
