@@ -21,11 +21,11 @@ namespace EPlast.BussinessLayer
 
         Task<OrganizationDTO> GetDecisionOrganizationAsync(OrganizationDTO organization);
 
-        Task<List<OrganizationDTO>> GetOrganizationListAsync();
+        Task<IEnumerable<OrganizationDTO>> GetOrganizationListAsync();
 
-        Task<List<DecisionTargetDTO>> GetDecisionTargetListAsync();
+        Task<IEnumerable<DecisionTargetDTO>> GetDecisionTargetListAsync();
 
-        Task<List<DecisionWrapperDTO>> GetDecisionListAsync();
+        Task<IEnumerable<DecisionWrapperDTO>> GetDecisionListAsync();
 
         IEnumerable<SelectListItem> GetDecisionStatusTypes();
 

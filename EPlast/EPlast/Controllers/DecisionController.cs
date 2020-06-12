@@ -37,7 +37,7 @@ namespace EPlast.Controllers
             DecisionViewModel decisionViewModel = null;
             try
             {
-                var organizations = _mapper.Map<List<Organization>>(await _decisionService.GetOrganizationListAsync());
+                var organizations = _mapper.Map<IEnumerable<Organization>>(await _decisionService.GetOrganizationListAsync());
                 decisionViewModel = new DecisionViewModel
                 {
                     DecisionWrapper = _mapper.Map<DecisionWrapper>(await _decisionService.CreateDecisionAsync()),
@@ -47,7 +47,7 @@ namespace EPlast.Controllers
                                                 Text = item.OrganizationName,
                                                 Value = item.ID.ToString()
                                             },
-                    DecisionTargets = _mapper.Map<List<DecisionTarget>>(await _decisionService.GetDecisionTargetListAsync()),
+                    DecisionTargets = _mapper.Map<IEnumerable<DecisionTarget>>(await _decisionService.GetDecisionTargetListAsync()),
                     DecisionStatusTypeListItems = _decisionService.GetDecisionStatusTypes()
                 };
             }
@@ -74,6 +74,7 @@ namespace EPlast.Controllers
                 _loggerService.LogError($"{e.Message}");
                 success = false;
             }
+
             return Json(new { success, decision });
         }
 
@@ -91,6 +92,7 @@ namespace EPlast.Controllers
             {
                 _loggerService.LogError($"{e.Message}");
             }
+
             return Json(new
             {
                 success,
@@ -110,6 +112,7 @@ namespace EPlast.Controllers
                     decisionWrapper == null)
                 {
                     ModelState.AddModelError("", "Дані введені неправильно");
+
                     return Json(new
                     {
                         success = false,
@@ -123,12 +126,14 @@ namespace EPlast.Controllers
                     decisionWrapper.File.Length > 10485760)
                 {
                     ModelState.AddModelError("", "файл за великий (більше 10 Мб)");
+
                     return Json(new { success = false, text = "file length > 10485760" });
                 }
 
                 decisionWrapper.Decision.HaveFile = decisionWrapper.File != null;
                 decisionWrapper.Decision.ID = await _decisionService.SaveDecisionAsync(
                     _mapper.Map<DecisionWrapperDTO>(decisionWrapper));
+
                 return Json(new
                 {
                     success = true,
@@ -159,7 +164,7 @@ namespace EPlast.Controllers
             {
                 decisions = new List<DecisionViewModel>
                 (
-                    _mapper.Map<List<DecisionWrapper>>(await _decisionService.GetDecisionListAsync())
+                    _mapper.Map<IEnumerable<DecisionWrapper>>(await _decisionService.GetDecisionListAsync())
                         .Select(decesion => new DecisionViewModel { DecisionWrapper = decesion })
                         .ToList()
                 );
@@ -199,6 +204,7 @@ namespace EPlast.Controllers
 
                 return RedirectToAction("HandleError", "Error");
             }
+
             return File(fileBytes, _decisionService.GetContentType(id, filename), filename);
         }
 
@@ -215,11 +221,13 @@ namespace EPlast.Controllers
             {
                 DecisionIdVerify(objId);
                 var arr = await _PDFService.DecisionCreatePDFAsync(objId);
+
                 return File(arr, "application/pdf");
             }
             catch (Exception e)
             {
                 _loggerService.LogError($"{e.Message}");
+
                 return RedirectToAction("HandleError", "Error");
             }
         }

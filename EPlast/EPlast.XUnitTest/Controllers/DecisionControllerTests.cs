@@ -115,11 +115,11 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task CreateDecisionCorrectTest()
         {
-            _mapper.Setup(m => m.Map<List<Organization>>(It.IsAny<List<OrganizationDTO>>()))
+            _mapper.Setup(m => m.Map<IEnumerable<Organization>>(It.IsAny<IEnumerable<OrganizationDTO>>()))
                 .Returns(new List<Organization>());
-            _mapper.Setup(m => m.Map<List<DecisionWrapper>>(It.IsAny<List<DecisionWrapperDTO>>()))
+            _mapper.Setup(m => m.Map<IEnumerable<DecisionWrapper>>(It.IsAny<IEnumerable<DecisionWrapperDTO>>()))
                 .Returns(new List<DecisionWrapper>());
-            _mapper.Setup(m => m.Map<List<DecisionTarget>>(It.IsAny<List<DecisionTargetDTO>>()))
+            _mapper.Setup(m => m.Map<IEnumerable<DecisionTarget>>(It.IsAny<IEnumerable<DecisionTargetDTO>>()))
                 .Returns(new List<DecisionTarget>());
             _decisionService.Setup(d => d.GetDecisionStatusTypes()).Returns(new List<SelectListItem>());
             DecisionController documentationController = CreateDocumentationController;
@@ -132,11 +132,11 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task CreateDecisionFailTest()
         {
-            _mapper.Setup(m => m.Map<List<Organization>>(It.IsAny<List<OrganizationDTO>>()))
+            _mapper.Setup(m => m.Map<IEnumerable<Organization>>(It.IsAny<IEnumerable<OrganizationDTO>>()))
                 .Returns(() => null);
-            _mapper.Setup(m => m.Map<List<DecisionWrapper>>(It.IsAny<List<DecisionWrapperDTO>>()))
+            _mapper.Setup(m => m.Map<IEnumerable<DecisionWrapper>>(It.IsAny<IEnumerable<DecisionWrapperDTO>>()))
                 .Returns(new List<DecisionWrapper>());
-            _mapper.Setup(m => m.Map<List<DecisionTarget>>(It.IsAny<List<DecisionTargetDTO>>()))
+            _mapper.Setup(m => m.Map<IEnumerable<DecisionTarget>>(It.IsAny<IEnumerable<DecisionTargetDTO>>()))
                 .Returns(new List<DecisionTarget>());
             _decisionService.Setup(d => d.GetDecisionStatusTypes()).Returns(new List<SelectListItem>());
             DecisionController documentationController = CreateDocumentationController;
@@ -149,7 +149,7 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task ReadDecisionFailTest()
         {
-            _mapper.Setup(m => m.Map<List<DecisionWrapper>>(It.IsAny<List<DecisionWrapperDTO>>()))
+            _mapper.Setup(m => m.Map<IEnumerable<DecisionWrapper>>(It.IsAny<IEnumerable<DecisionWrapperDTO>>()))
                 .Returns(() => null);
             DecisionController documentationController = CreateDocumentationController;
 
@@ -157,20 +157,19 @@ namespace EPlast.XUnitTest
             var viewResult = Assert.IsType<ViewResult>(result);
 
             Assert.IsType<ViewResult>(result);
-            Assert.Null(((Tuple<DecisionViewModel, List<DecisionViewModel>>)viewResult.Model).Item1);
             Assert.Null(((Tuple<DecisionViewModel, List<DecisionViewModel>>)viewResult.Model).Item2);
         }
 
         [Fact]
         public async Task ReadDecisionCorrectTest()
         {
-            _mapper.Setup(m => m.Map<List<DecisionWrapper>>(It.IsAny<List<DecisionWrapperDTO>>()))
+            _mapper.Setup(m => m.Map<IEnumerable<DecisionWrapper>>(It.IsAny<IEnumerable<DecisionWrapperDTO>>()))
                 .Returns(new List<DecisionWrapper>());
-            _mapper.Setup(m => m.Map<List<Organization>>(It.IsAny<List<OrganizationDTO>>()))
+            _mapper.Setup(m => m.Map<IEnumerable<Organization>>(It.IsAny<IEnumerable<OrganizationDTO>>()))
                 .Returns(new List<Organization>());
-            _mapper.Setup(m => m.Map<List<DecisionWrapper>>(It.IsAny<List<DecisionWrapperDTO>>()))
+            _mapper.Setup(m => m.Map<IEnumerable<DecisionWrapper>>(It.IsAny<IEnumerable<DecisionWrapperDTO>>()))
                 .Returns(new List<DecisionWrapper>());
-            _mapper.Setup(m => m.Map<List<DecisionTarget>>(It.IsAny<List<DecisionTargetDTO>>()))
+            _mapper.Setup(m => m.Map<IEnumerable<DecisionTarget>>(It.IsAny<IEnumerable<DecisionTargetDTO>>()))
                 .Returns(new List<DecisionTarget>());
             DecisionController documentationController = CreateDocumentationController;
 
