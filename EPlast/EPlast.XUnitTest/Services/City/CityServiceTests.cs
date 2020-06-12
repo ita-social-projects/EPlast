@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Xunit;
 
 
@@ -52,21 +53,21 @@ namespace EPlast.XUnitTest.Services.City
         }
 
         [Fact]
-        public void GetAllTest()
+        public async Task GetAllTest()
         {
             CityService cityService = CreateCityService();
 
-            var result = cityService.GetAll();
+            var result = await cityService.GetAllAsync();
 
             Assert.NotNull(result);
         }
 
         [Fact]
-        public void GetAllDtoTest()
+        public async Task GetAllDtoTest()
         {
             CityService cityService = CreateCityService();
 
-            var result = cityService.GetAllDTO();
+            var result = await cityService.GetAllDTOAsync();
 
             Assert.NotNull(result);
         }

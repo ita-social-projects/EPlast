@@ -5,6 +5,7 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services.UserProfiles
 {
@@ -19,20 +20,27 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
             _mapper = mapper;
         }
 
-        public IEnumerable<EducationDTO> GetAllGroupByPlace()
+        public async Task<IEnumerable<EducationDTO>> GetAllGroupByPlaceAsync()
         {
-            var result = _repoWrapper.Education.FindAll().GroupBy(x => x.PlaceOfStudy).Select(x => x.FirstOrDefault()).ToList();
-            return _mapper.Map<IEnumerable<Education>, IEnumerable<EducationDTO>>(result);
+            return _mapper.Map<IEnumerable<Education>, IEnumerable<EducationDTO>>(
+                (await _repoWrapper.Education.GetAllAsync()).
+                    GroupBy(x => x.PlaceOfStudy).
+                    Select(x => x.FirstOrDefault())
+                );
         }
 
-        public IEnumerable<EducationDTO> GetAllGroupBySpeciality()
+        public async Task<IEnumerable<EducationDTO>> GetAllGroupBySpecialityAsync()
         {
-            var result = _repoWrapper.Education.FindAll().GroupBy(x => x.Speciality).Select(x => x.FirstOrDefault()).ToList();
-            return _mapper.Map<IEnumerable<Education>, IEnumerable<EducationDTO>>(result);
+            return _mapper.Map<IEnumerable<Education>, IEnumerable<EducationDTO>>(
+                (await _repoWrapper.Education.GetAllAsync()).
+                    GroupBy(x => x.Speciality).
+                    Select(x => x.FirstOrDefault())
+                );
         }
-        public EducationDTO GetById(int? educationId)
+        public async Task<EducationDTO> GetByIdAsync(int? educationId)
         {
-            return _mapper.Map<Education, EducationDTO>(_repoWrapper.Education.FindByCondition(x => x.ID == educationId).FirstOrDefault());
+            return _mapper.Map<Education, EducationDTO>(
+                await _repoWrapper.Education.GetFirstOrDefaultAsync(x => x.ID == educationId));
         }
     }
 }
