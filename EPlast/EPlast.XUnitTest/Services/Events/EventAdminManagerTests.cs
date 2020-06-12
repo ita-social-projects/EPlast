@@ -2,7 +2,10 @@
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Moq;
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.Events
@@ -17,14 +20,15 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public void GetEventAdminByUserId()
+        public async Task GetEventAdminByUserId()
         {
             //Arrange
             string userId = "1";
-            _repoWrapper.Setup(x => x.EventAdmin.FindByCondition(q => q.UserID == userId));
+            _repoWrapper.Setup(x => x.EventAdmin.GetFirstAsync(It.IsAny<Expression<Func<EventAdmin, bool>>>(), null))
+                .ReturnsAsync(new EventAdmin());
             //Act
             var eventAdminManager = new EventAdminManager(_repoWrapper.Object);
-            var methodResult = eventAdminManager.GetEventAdminsByUserId(userId);
+            var methodResult = await eventAdminManager.GetEventAdminsByUserIdAsync(userId);
 
             //Assert
             Assert.NotNull(methodResult);
