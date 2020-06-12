@@ -6,6 +6,7 @@ using Moq;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace EPlast.XUnitTest.Services.Events
 {
