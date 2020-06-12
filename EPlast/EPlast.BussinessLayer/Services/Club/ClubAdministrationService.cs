@@ -23,14 +23,14 @@ namespace EPlast.BussinessLayer.Services.Club
         private async Task<ClubDTO> GetClubAdministrationAsync(int clubID)
         {
             var club = await _repoWrapper.Club
-                .FindByCondition(q => q.ID == clubID)
-                .Include(c => c.ClubAdministration)
-                .ThenInclude(t => t.AdminType)
-                .Include(n => n.ClubAdministration)
-                .ThenInclude(t => t.ClubMembers)
-                .ThenInclude(us => us.User)
-                .FirstOrDefaultAsync();
-            
+                .GetFirstOrDefaultAsync(
+                    i => i.ID == clubID,
+                    i => i.Include(c => c.ClubAdministration)
+                            .ThenInclude(t => t.AdminType)
+                        .Include(n => n.ClubAdministration)
+                            .ThenInclude(t => t.ClubMembers)
+                            .ThenInclude(us => us.User));
+
             return _mapper.Map<DataAccess.Entities.Club, ClubDTO>(club);
         }
 
@@ -50,9 +50,8 @@ namespace EPlast.BussinessLayer.Services.Club
         public async Task<bool> DeleteClubAdminAsync(int id)
         {
             var admin = await _repoWrapper.GetClubAdministration
-                .FindByCondition(i => i.ID == id)
-                .FirstOrDefaultAsync();
-            
+                .GetFirstOrDefaultAsync(i => i.ID == id);
+
             if (admin != null)
             {
                 _repoWrapper.GetClubAdministration.Delete(admin);
@@ -67,8 +66,7 @@ namespace EPlast.BussinessLayer.Services.Club
         public async Task SetAdminEndDateAsync(AdminEndDateDTO adminEndDate)
         {
             var admin = await _repoWrapper.GetClubAdministration
-                .FindByCondition(i => i.ID == adminEndDate.AdminId)
-                .FirstOrDefaultAsync();
+                .GetFirstOrDefaultAsync(i => i.ID == adminEndDate.AdminId);
 
             admin.EndDate = adminEndDate.EndDate;
             _repoWrapper.GetClubAdministration.Update(admin);
@@ -79,8 +77,7 @@ namespace EPlast.BussinessLayer.Services.Club
         public async Task AddClubAdminAsync(ClubAdministrationDTO createdAdmin)
         {
             var adminType = await _repoWrapper.AdminType
-                .FindByCondition(i => i.AdminTypeName == createdAdmin.AdminTypeName)
-                .FirstOrDefaultAsync();
+                .GetFirstOrDefaultAsync(i => i.AdminTypeName == createdAdmin.AdminTypeName);
 
             int adminTypeId;
 
