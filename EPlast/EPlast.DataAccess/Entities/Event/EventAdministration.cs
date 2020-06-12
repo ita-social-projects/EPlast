@@ -6,7 +6,7 @@ namespace EPlast.DataAccess.Entities.Event
     {
         public int ID { get; set; }
         public string AdministrationType { get; set; }
-        public Entities.Event.Event Event { get; set; }
+        public Event Event { get; set; }
         public int EventID { get; set; }
         public User User { get; set; }
         [Required(ErrorMessage = "Ви повинні обрати адміністрацію події")]

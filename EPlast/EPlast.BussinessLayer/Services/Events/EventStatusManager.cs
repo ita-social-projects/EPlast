@@ -1,6 +1,6 @@
 ﻿using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.DataAccess.Repositories;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services.Events
 {
@@ -13,10 +13,12 @@ namespace EPlast.BussinessLayer.Services.Events
             _repoWrapper = repoWrapper;
         }
 
-        public int GetStatusId(string statusName)
+        public async Task<int> GetStatusIdAsync(string statusName)
         {
-            int statusId = _repoWrapper.EventStatus.FindByCondition(e => e.EventStatusName == statusName).First().ID;
-            return statusId;
+            var status = await _repoWrapper.EventStatus
+                .GetFirstAsync(predicate: e => e.EventStatusName == statusName);
+
+            return status.ID;
         }
     }
 }
