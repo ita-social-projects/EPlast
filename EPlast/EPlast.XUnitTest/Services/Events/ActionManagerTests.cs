@@ -15,6 +15,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace EPlast.XUnitTest.Services.Events
 {
@@ -48,11 +49,11 @@ namespace EPlast.XUnitTest.Services.Events
         public async void GetActionCategoriesTest()
         {
             //Arrange
-            _eventCategoryManager.Setup(x => x.GetDTOAsync())
-                .ReturnsAsync(new List<EventCategoryDTO>());
+            _eventCategoryManager.Setup(x => x.GetDTO())
+                .Returns(new List<EventCategoryDTO>());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
-            var methodResult = await actionManager.GetActionCategoriesAsync();
+            var methodResult = actionManager.GetActionCategories();
             //Assert
             Assert.NotNull(methodResult);
             Assert.IsType<List<EventCategoryDTO>>(methodResult);
