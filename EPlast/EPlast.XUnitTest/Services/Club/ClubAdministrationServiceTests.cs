@@ -97,20 +97,24 @@ namespace EPlast.XUnitTest.Services.ClubTests
             _repoWrapper.Verify(i => i.GetClubAdministration.Update(It.IsAny<ClubAdministration>()), Times.Once());
         }
 
-        //[Fact]
-        //public async Task AddClubAdminAsync()
-        //{
-        //    //Arrange
-        //    _repoWrapper
-        //       .Setup(s => s.AdminType.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<AdminType, bool>>>(), null))
-        //       .ReturnsAsync(GetTestAdminType());
+        [Fact]
+        public async Task AddClubAdminAsync()
+        {
+            //Arrange
+            _repoWrapper
+               .Setup(s => s.AdminType.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<AdminType, bool>>>(), null))
+               .ReturnsAsync(GetTestAdminType());
 
-        //    //Act
-        //    await _clubAdministrationService.AddClubAdminAsync(GetTestClubAdministrationDTO());
+            _repoWrapper
+                .Setup(s => s.GetClubAdministration.CreateAsync(It.IsAny<ClubAdministration>()));
 
-        //    //Assert
-        //    _repoWrapper.Verify(i => i.GetClubAdministration.Update(It.IsAny<ClubAdministration>()), Times.Once());
-        //}
+            //Act
+            await _clubAdministrationService.AddClubAdminAsync(GetTestClubAdministrationDTO());
+
+            //Assert
+            _repoWrapper.Verify(i => i.GetClubAdministration.CreateAsync(It.IsAny<ClubAdministration>()), Times.Once());
+            _repoWrapper.Verify(i => i.SaveAsync(), Times.Once());
+        }
 
         private ClubAdministration GetTestClubAdministration()
         {
