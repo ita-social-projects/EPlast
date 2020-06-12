@@ -1,4 +1,8 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BussinessLayer.DTO.EventUser;
 using EPlast.BussinessLayer.Interfaces.EventUser;
 using EPlast.Controllers;
@@ -7,13 +11,9 @@ using EPlast.ViewModels.EventUser;
 using EPlast.ViewModels.UserInformation.UserProfile;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace EPlast.XUnitTest
+namespace EPlast.XUnitTest.Controllers
 {
     public class EventUserControllerTests
     {

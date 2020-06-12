@@ -2,6 +2,7 @@
 using EPlast.BussinessLayer.DTO.Events;
 using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -10,8 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using EPlast.DataAccess.Entities.Event;
 using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services.Events
@@ -125,31 +124,6 @@ namespace EPlast.BussinessLayer.Services.Events
                 IsUserRejectedParticipant = targetEvent.Participants.Any(p => p.UserId == _userManager.GetUserId(user) && p.ParticipantStatusId == rejectedStatus),
                 IsEventFinished = targetEvent.EventStatusID == finishedEvent
             };
-
-            //EventDTO dto = await _repoWrapper.Event.FindByCondition(e => e.ID == id)
-            //    .Include(e => e.Participants)
-            //    .ThenInclude(p => p.User)
-            //    .Include(e => e.Participants)
-            //    .ThenInclude(p => p.ParticipantStatus)
-            //    .Include(e => e.EventAdmins)
-            //    .ThenInclude(evAdm => evAdm.User)
-            //    .Include(e => e.EventStatus)
-            //    .Include(e => e.EventAdministrations)
-            //    .Include(e => e.EventType)
-            //    .Include(e => e.EventCategory)
-            //    .Include(e => e.EventGallarys)
-            //    .ThenInclude(eg => eg.Gallary)
-            //    .Select(e => new EventDTO()
-            //    {
-            //        Event = _mapper.Map<Event, EventInfoDTO>(e),
-            //        IsUserEventAdmin = (e.EventAdmins.Any(evAdm => evAdm.UserID == _userManager.GetUserId(user))) || isUserGlobalEventAdmin,
-            //        IsUserParticipant = e.Participants.Any(p => p.UserId == _userManager.GetUserId(user)),
-            //        IsUserApprovedParticipant = e.Participants.Any(p => p.UserId == _userManager.GetUserId(user) && p.ParticipantStatusId == approvedStatus),
-            //        IsUserUndeterminedParticipant = e.Participants.Any(p => p.UserId == _userManager.GetUserId(user) && p.ParticipantStatusId == undeterminedStatus),
-            //        IsUserRejectedParticipant = e.Participants.Any(p => p.UserId == _userManager.GetUserId(user) && p.ParticipantStatusId == rejectedStatus),
-            //        IsEventFinished = e.EventStatusID == finishedEvent
-            //    })
-            //    .FirstAsync();
 
             if (!dto.IsUserEventAdmin)
             {

@@ -19,8 +19,9 @@ namespace EPlast.BussinessLayer.Services.Events
 
         public async Task<IEnumerable<EventAdmin>> GetEventAdminsByUserIdAsync(string userId)
         {
-            var eventAdmins =await _repoWrapper.EventAdmin.FindByCondition(i => i.UserID == userId)
-                .Include(i => i.Event).Include(i => i.User).ToListAsync();
+            var eventAdmins = (await _repoWrapper.EventAdmin.GetAllAsync(predicate: i => i.UserID == userId, include: source => source.
+                Include(i => i.Event).Include(i => i.User))).ToList();
+
             return eventAdmins;
         }
     }
