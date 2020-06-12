@@ -1,10 +1,11 @@
 ﻿using EPlast.BussinessLayer.DTO.UserProfiles;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Interfaces.UserProfiles
 {
     public interface IGenderService
     {
-       IEnumerable<GenderDTO> GetAll();
+        Task<IEnumerable<GenderDTO>> GetAllAsync();
     }
 }

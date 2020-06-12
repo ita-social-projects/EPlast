@@ -7,9 +7,9 @@ namespace EPlast.BussinessLayer.Services.Interfaces
 {
     public interface IAdminService
     {
-        IEnumerable<IdentityRole> GetRolesExceptAdmin();
-        Task Edit(string userId, List<string> roles);
-        Task DeleteUser(string userId);
-        Task<IEnumerable<UserTableDTO>> UsersTable();
+        Task<IEnumerable<IdentityRole>> GetRolesExceptAdminAsync();
+        Task EditAsync(string userId, List<string> roles);
+        Task DeleteUserAsync(string userId);
+        Task<IEnumerable<UserTableDTO>> UsersTableAsync();
     }
 }

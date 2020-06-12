@@ -1,14 +1,15 @@
 ﻿using EPlast.BussinessLayer.DTO.City;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using DataAccessCity = EPlast.DataAccess.Entities;
 
 namespace EPlast.BussinessLayer.Interfaces.City
 {
     public interface ICityService
     {
-        IEnumerable<DataAccessCity.City> GetAll();
-        IEnumerable<CityDTO> GetAllDTO();
+        Task<IEnumerable<DataAccessCity.City>> GetAllAsync();
+        Task<IEnumerable<CityDTO>> GetAllDTOAsync();
         CityDTO GetById(int cityId);
         CityProfileDTO CityProfile(int cityId);
         CityProfileDTO CityMembers(int cityId);
