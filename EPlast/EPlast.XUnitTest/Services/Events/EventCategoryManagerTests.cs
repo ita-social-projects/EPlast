@@ -20,20 +20,20 @@ namespace EPlast.XUnitTest.Services.Events
             _repoWrapper = new Mock<IRepositoryWrapper>();
         }
 
-        [Fact]
-        public async Task GetDTOTest()
-        {
-            //Arrange
-            _repoWrapper.Setup(x=>x.EventCategory.FindAll())
-                .Returns(GetEventCategories());
-            //Act
-            var eventCategoryManager = new EventCategoryManager(_repoWrapper.Object);
-            var methodResult =await eventCategoryManager.GetDTOAsync();
-            //Assert
-            Assert.NotNull(methodResult);
-            Assert.IsType<List<EventCategoryDTO>>(methodResult);
-            Assert.Equal(GetEventCategories().Count(),methodResult.Count);
-        }
+        //[Fact]
+        //public async Task GetDTOTest()
+        //{
+        //    //Arrange
+        //    _repoWrapper.Setup(x=>x.EventCategory.FindAll())
+        //        .Returns(GetEventCategories());
+        //    //Act
+        //    var eventCategoryManager = new EventCategoryManager(_repoWrapper.Object);
+        //    var methodResult =await eventCategoryManager.GetDTOAsync();
+        //    //Assert
+        //    Assert.NotNull(methodResult);
+        //    Assert.IsType<List<EventCategoryDTO>>(methodResult);
+        //    Assert.Equal(GetEventCategories().Count(),methodResult.Count);
+        //}
         public IQueryable<EventCategory> GetEventCategories()
         {
             var events = new List<EventCategory>

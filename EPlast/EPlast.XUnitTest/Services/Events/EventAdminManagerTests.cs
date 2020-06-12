@@ -17,19 +17,19 @@ namespace EPlast.XUnitTest.Services.Events
             _repoWrapper = new Mock<IRepositoryWrapper>();
         }
 
-        [Fact]
-        public async Task GetEventAdminByUserId()
-        {
-            //Arrange
-            string userId = "1";
-            _repoWrapper.Setup(x => x.EventAdmin.FindByCondition(q => q.UserID == userId));
-            //Act
-            var eventAdminManager = new EventAdminManager(_repoWrapper.Object);
-            var methodResult = await eventAdminManager.GetEventAdminsByUserIdAsync(userId);
+        //[Fact]
+        //public async Task GetEventAdminByUserId()
+        //{
+        //    //Arrange
+        //    string userId = "1";
+        //    _repoWrapper.Setup(x => x.EventAdmin.FindByCondition(q => q.UserID == userId));
+        //    //Act
+        //    var eventAdminManager = new EventAdminManager(_repoWrapper.Object);
+        //    var methodResult = await eventAdminManager.GetEventAdminsByUserIdAsync(userId);
 
-            //Assert
-            Assert.NotNull(methodResult);
-            Assert.IsType<List<EventAdmin>>(methodResult);
-        }
+        //    //Assert
+        //    Assert.NotNull(methodResult);
+        //    Assert.IsType<List<EventAdmin>>(methodResult);
+        //}
     }
 }
