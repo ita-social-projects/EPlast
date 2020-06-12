@@ -47,7 +47,7 @@ namespace EPlast.XUnitTest
         {
             //Arrange
             _eventUserManager.Setup(x => x.EventUserAsync(It.IsAny<string>(), It.IsAny<ClaimsPrincipal>()))
-                .Throws(new Exception());
+                .ThrowsAsync(new Exception());
             _mapper.Setup(m => m.Map<EventUserDTO, EventUserViewModel>(It.IsAny<EventUserDTO>()))
                 .Returns(new EventUserViewModel());
             //Act  
@@ -81,7 +81,7 @@ namespace EPlast.XUnitTest
         {
             //Arrange
             _eventUserManager.Setup(x => x.InitializeEventCreateDTOAsync())
-                .Throws(new Exception());
+                .ThrowsAsync(new Exception());
             _mapper.Setup(m => m.Map<EventCreateDTO, EventCreateViewModel>(It.IsAny<EventCreateDTO>()))
                      .Returns(new EventCreateViewModel());
             //Act  
@@ -208,8 +208,8 @@ namespace EPlast.XUnitTest
         {
             //Arrange
             int eventId = 1;
-            _mapper.Setup(m => m.Map<EventCreateDTO, EventCreateViewModel>(It.IsAny<EventCreateDTO>())).Throws(new Exception());
-            _eventUserManager.Setup(x => x.InitializeEventEditDTOAsync(eventId));
+            _mapper.Setup(m => m.Map<EventCreateDTO, EventCreateViewModel>(It.IsAny<EventCreateDTO>())).Returns(new EventCreateViewModel());
+            _eventUserManager.Setup(x => x.InitializeEventEditDTOAsync(eventId)).ThrowsAsync(new Exception());
 
             //Act
             var eventUserController = new EventUserController(_eventUserManager.Object, _mapper.Object);

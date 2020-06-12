@@ -3,6 +3,7 @@ using EPlast.BussinessLayer.DTO.EventUser;
 using EPlast.BussinessLayer.Interfaces.EventUser;
 using EPlast.ViewModels.EventUser;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EPlast.Controllers

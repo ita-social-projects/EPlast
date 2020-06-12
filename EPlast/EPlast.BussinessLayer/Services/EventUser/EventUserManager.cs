@@ -50,7 +50,7 @@ namespace EPlast.BussinessLayer.Services.EventUser
                 userId = currentUserId;
             }
 
-            var targetUser = await _repoWrapper.User.FindByCondition(q => q.Id == userId).FirstAsync();
+            var targetUser = await _repoWrapper.User.GetFirstAsync(predicate: q => q.Id == userId);
             EventUserDTO model = new EventUserDTO { User = _mapper.Map<User, UserDTO>(targetUser) };
             var eventAdmins = await _eventAdminManager.GetEventAdminsByUserIdAsync(userId);
             var participants = await _participantManager.GetParticipantsByUserIdAsync(userId);
@@ -81,9 +81,9 @@ namespace EPlast.BussinessLayer.Services.EventUser
 
         public async Task<EventCreateDTO> InitializeEventCreateDTOAsync()
         {
-            var eventCategories =await _eventCategoryManager.GetDTOAsync();
-            var users = _mapper.Map<List<User>, IEnumerable<UserDTO>>(_repoWrapper.User.FindAll().ToList());
-            var eventTypes = _mapper.Map<List<EventType>, IEnumerable<EventTypeDTO>>(_repoWrapper.EventType.FindAll().ToList());
+            var eventCategories = await _eventCategoryManager.GetDTOAsync();
+            var users = _mapper.Map<List<User>, IEnumerable<UserDTO>>((await _repoWrapper.User.GetAllAsync()).ToList());
+            var eventTypes = _mapper.Map<List<EventType>, IEnumerable<EventTypeDTO>>((await _repoWrapper.EventType.GetAllAsync()).ToList());
             var model = new EventCreateDTO()
             {
                 Users = users,
@@ -95,14 +95,15 @@ namespace EPlast.BussinessLayer.Services.EventUser
 
         public async Task<EventCreateDTO> InitializeEventCreateDTOAsync(int eventId)
         {
-            var createdEvent = await _repoWrapper.Event.FindByCondition(e => e.ID == eventId)
-                .Include(e => e.EventAdmins)
-                .FirstAsync();
+            var createdEvent = await _repoWrapper.Event.GetFirstAsync(predicate: e => e.ID == eventId, include: source => source
+                .Include(e => e.EventAdmins));
+
             var userId = createdEvent.EventAdmins.First().UserID;
             var setAdministrationModel = new EventCreateDTO()
             {
                 Event = _mapper.Map<Event, EventCreationDTO>(createdEvent),
-                Users = _mapper.Map<List<User>, IEnumerable<UserDTO>>(_repoWrapper.User.FindByCondition(i => i.Id != userId).ToList())
+                Users = _mapper.Map<List<User>, IEnumerable<UserDTO>>((await _repoWrapper.User.GetAllAsync(predicate: i => i.Id != userId)).
+                ToList())
             };
             return setAdministrationModel;
         }
@@ -150,7 +151,7 @@ namespace EPlast.BussinessLayer.Services.EventUser
         public async Task<EventCreateDTO> InitializeEventEditDTOAsync(int eventId)
         {
             var editedEvent = await _repoWrapper.Event.
-                FindByCondition(e => e.ID == eventId).
+                GetFirstAsync(predicate: e => e.ID == eventId, include: source => source.
                 Include(q => q.EventCategory).
                 Include(q => q.EventAdmins).
                 ThenInclude(q => q.User).
@@ -158,11 +159,10 @@ namespace EPlast.BussinessLayer.Services.EventUser
                 ThenInclude(q => q.User).
                 Include(q => q.EventType).
                 Include(q => q.EventStatus).
-                Include(q => q.Participants).
-                FirstAsync();
+                Include(q => q.Participants));
 
-            var users = _mapper.Map<List<User>, IEnumerable<UserDTO>>(_repoWrapper.User.FindAll().ToList());
-            var eventTypes = _mapper.Map<List<EventType>, IEnumerable<EventTypeDTO>>(_repoWrapper.EventType.FindAll().ToList());
+            var users = _mapper.Map<List<User>, IEnumerable<UserDTO>>((await _repoWrapper.User.GetAllAsync()).ToList());
+            var eventTypes = _mapper.Map<List<EventType>, IEnumerable<EventTypeDTO>>((await _repoWrapper.EventType.GetAllAsync()).ToList());
             var eventCategories = await _eventCategoryManager.GetDTOAsync();
             var model = new EventCreateDTO()
             {
