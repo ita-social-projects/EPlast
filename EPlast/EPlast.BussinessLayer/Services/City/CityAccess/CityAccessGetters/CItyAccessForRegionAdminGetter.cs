@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using DatabaseEntities = EPlast.DataAccess.Entities;
 
 namespace EPlast.BussinessLayer.Services.City.CityAccess.CityAccessGetters
@@ -15,13 +16,13 @@ namespace EPlast.BussinessLayer.Services.City.CityAccess.CityAccessGetters
             _repositoryWrapper = repositoryWrapper;
         }
 
-        public IEnumerable<DatabaseEntities.City> GetCities(string userId)
+        public async Task<IEnumerable<DatabaseEntities.City>> GetCities(string userId)
         {
-            var regionAdministration = _repositoryWrapper.RegionAdministration
-                .FindByCondition(ra => ra.User.Id == userId && ra.EndDate == null)
-                .Include(ra => ra.Region)
-                .FirstOrDefault();
-            return regionAdministration != null ? _repositoryWrapper.City.FindByCondition(c => c.Region.ID == regionAdministration.Region.ID)
+            var regionAdministration = await _repositoryWrapper.RegionAdministration.GetFirstOrDefaultAsync(
+                    predicate: r => r.User.Id == userId && r.EndDate == null,
+                    include: source => source
+                        .Include(r => r.Region));
+            return regionAdministration != null ? await _repositoryWrapper.City.GetAllAsync(predicate: c => c.Region.ID == regionAdministration.Region.ID)
                 : Enumerable.Empty<DatabaseEntities.City>();
         }
     }
