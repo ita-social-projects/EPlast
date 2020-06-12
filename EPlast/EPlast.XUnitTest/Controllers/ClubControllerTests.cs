@@ -206,40 +206,40 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task ClubAdminsRetursView()
         {
-            //arrange
+            //Arrange
             _mapper
                 .Setup(s => s.Map<ClubProfileDTO>(It.IsAny<ClubProfileViewModel>()))
                 .Returns(GetTestClubProfileDTO());
 
-            //action
+            //Act
             var result = await controller.ClubAdmins(1);
 
-            // assert
+            //Assert
             Assert.NotNull(result);
         }
 
         [Fact]
         public async Task ClubAdminsRetursHandleError()
         {
-            //arrange
+            //Arrange
             _mapper
                 .Setup(s => s.Map<ClubProfileDTO>(It.IsAny<ClubProfileViewModel>()))
                 .Returns((ClubProfileDTO)null);
 
-            //action
+            //Act
             var result = await controller.ClubAdmins(1);
 
-            // assert
+            //Assert
             Assert.NotNull(result);
         }
 
         [Fact]
         public async Task ChangeIsApprovedStatusClubReturnClub()
         {
-            //action
+            //Act
             var result = await controller.ChangeIsApprovedStatusClub(1, 1);
 
-            // assert
+            //Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.NotNull(viewResult);
             Assert.Equal("Club", viewResult.ActionName);
@@ -248,15 +248,15 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task ChangeIsApprovedStatusClubReturnHandleError()
         {
-            //arrange
+            //Arrange
             _clubMembersService
                 .Setup(s => s.ToggleIsApprovedInClubMembersAsync(1, 1))
                 .Returns((Task)null);
 
-            //action
+            //Act
             var result = await controller.ChangeIsApprovedStatusClub(1, 1);
 
-            // assert
+            //Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.NotNull(viewResult);
             Assert.Equal("HandleError", viewResult.ActionName);
@@ -265,15 +265,15 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task DeleteFromAdminsReturnsClubAdmins()
         {
-            //Assert
+            //Arrange
             _clubAdministrationService
                 .Setup(s => s.DeleteClubAdminAsync(It.IsAny<int>()))
                 .ReturnsAsync(true);
 
-            //action
+            //Act
             var result = await controller.DeleteFromAdmins(1, 1);
 
-            // assert
+            //Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.NotNull(viewResult);
             Assert.Equal("ClubAdmins", viewResult.ActionName);
@@ -282,15 +282,15 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task DeleteFromAdminsReturnsHandleError()
         {
-            //arrange
+            //Arrange
             _clubAdministrationService
                 .Setup(s => s.DeleteClubAdminAsync(It.IsAny<int>()))
                 .ReturnsAsync(false);
 
-            //action
+            //Act
             var result = await controller.DeleteFromAdmins(1, 1);
 
-            // assert
+            //Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.NotNull(viewResult);
             Assert.Equal("HandleError", viewResult.ActionName);
@@ -299,35 +299,35 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task AddEndDateReturns1()
         {
-            //action
+            //Act
             var result = await controller.AddEndDate(GetTestAdminEndDateDTO());
 
-            // assert
+            //Assert
             Assert.Equal(1, result);
         }
 
         [Fact]
         public async Task AddEndDateReturns0()
         {
-            //arrange
+            //Arrange
             _clubAdministrationService
                 .Setup(s => s.SetAdminEndDateAsync(It.IsAny<AdminEndDateDTO>()))
                 .Returns((Task)null);
 
-            //action
+            //Act
             var result = await controller.AddEndDate(GetTestAdminEndDateDTO());
 
-            // assert
+            //Assert
             Assert.Equal(0, result);
         }
 
         [Fact]
         public async Task AddToClubAdministrationReturnJsonTrue()
         {
-            //action
+            //Act
             var result = await controller.AddToClubAdministration(GetTestClubAdministrationDTO());
 
-            // assert
+            //Assert
             var jsonResult = Assert.IsType<JsonResult>(result);
             Assert.Contains("True", jsonResult.Value.ToString());
         }
@@ -335,15 +335,15 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task AddToClubAdministrationReturnJsonFalse()
         {
-            //Assert
+            //Arrange
             _clubAdministrationService
                 .Setup(s => s.AddClubAdminAsync(It.IsAny<ClubAdministrationDTO>()))
                 .Returns((Task)null);
 
-            //action
+            //Act
             var result = await controller.AddToClubAdministration(GetTestClubAdministrationDTO());
 
-            // assert
+            //Assert
             var jsonResult = Assert.IsType<JsonResult>(result);
             Assert.Contains("False", jsonResult.Value.ToString());
         }
@@ -351,7 +351,7 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task AddAsClubFollowerReturnsUserProfile()
         {
-            //Assert
+            //Arrange
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
                 new Claim(ClaimTypes.Name, "example name"),
@@ -368,10 +368,10 @@ namespace EPlast.XUnitTest
                 .Setup(s => s.GetUserId(It.IsAny<ClaimsPrincipal>()))
                 .Returns("aaaa-bbbb-cccc");
 
-            //action
+            //Act
             var result = await controller.AddAsClubFollower(1, "aaaa-bbbb-cccc");
 
-            // assert
+            //Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.NotNull(viewResult);
             Assert.Equal("UserProfile", viewResult.ActionName);

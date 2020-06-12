@@ -25,7 +25,8 @@ namespace EPlast.BussinessLayer.Services.Club
             var club = await _repoWrapper.Club
                 .GetFirstOrDefaultAsync(
                     i => i.ID == clubID,
-                    i => i.Include(c => c.ClubAdministration)
+                    i => i
+                        .Include(c => c.ClubAdministration)
                             .ThenInclude(t => t.AdminType)
                         .Include(n => n.ClubAdministration)
                             .ThenInclude(t => t.ClubMembers)
