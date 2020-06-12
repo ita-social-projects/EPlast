@@ -8,7 +8,6 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using System;
@@ -46,7 +45,7 @@ namespace EPlast.XUnitTest.Services.Events
             _eventCategoryManager = new Mock<IEventCategoryManager>();
             _eventStatusManager = new Mock<IEventStatusManager>();
 
-//        }
+        }
 
         [Fact]
         public async Task EventUserSuccessTest()
@@ -112,7 +111,7 @@ namespace EPlast.XUnitTest.Services.Events
                     IIncludableQueryable<Event, object>>>())).ReturnsAsync(
                 new Event()
                 {
-                    EventAdmins = new List<EventAdmin>() { GetEventAdmins()}
+                    EventAdmins = new List<EventAdmin>() { GetEventAdmins() }
                 }
                 );
             _repoWrapper.Setup(x => x.User.GetFirstAsync(It.IsAny<Expression<Func<User, bool>>>(), null))
@@ -136,7 +135,7 @@ namespace EPlast.XUnitTest.Services.Events
         public async Task CreateEventTest()
         {
             int statusId = 1;
-            _eventStatusManager.Setup(s => s.GetStatusId(It.IsAny<string>())).Returns(statusId);
+            _eventStatusManager.Setup(s => s.GetStatusIdAsync(It.IsAny<string>())).ReturnsAsync(statusId);
 
             _mapper.Setup(m => m.Map<EventCreationDTO, Event>(It.IsAny<EventCreationDTO>()))
                 .Returns(new Event());
@@ -192,10 +191,10 @@ namespace EPlast.XUnitTest.Services.Events
                 _eventStatusManager.Object);
             var methodResult = await eventUserManager.InitializeEventEditDTOAsync(eventId);
 
-//            //Assert
-//            Assert.NotNull(methodResult);
-//            Assert.IsType<EventCreateDTO>(methodResult);
-//        }
+            //Assert
+            Assert.NotNull(methodResult);
+            Assert.IsType<EventCreateDTO>(methodResult);
+        }
 
 
         public EventCreateDTO GetEventCreateDTO()

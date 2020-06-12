@@ -71,7 +71,7 @@ namespace EPlast.BussinessLayer.Services.EventUser
                     model.PlanedEvents.Add(eventToAdd);
                 }
                 else if (participant.Event.EventDateEnd < DateTime.Now &&
-                         participant.ParticipantStatusId == _participantStatusManager.GetStatusId("Учасник"))
+                         participant.ParticipantStatusId == await _participantStatusManager.GetStatusIdAsync("Учасник"))
                 {
                     model.VisitedEvents.Add(eventToAdd);
                 }
@@ -110,7 +110,7 @@ namespace EPlast.BussinessLayer.Services.EventUser
 
         public async Task<int> CreateEventAsync(EventCreateDTO model)
         {
-            model.Event.EventStatusID = _eventStatusManager.GetStatusId("Не затверджені");
+            model.Event.EventStatusID = await _eventStatusManager.GetStatusIdAsync("Не затверджені");
             var eventToCreate = _mapper.Map<EventCreationDTO, Event>(model.Event);
             EventAdmin eventAdmin = new EventAdmin()
             {
