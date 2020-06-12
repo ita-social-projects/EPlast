@@ -43,25 +43,24 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task<AnnualReportDTO> GetByIdAsync(ClaimsPrincipal claimsPrincipal, int id)
         {
-            var annualReport = await _repositoryWrapper.AnnualReports
-                .FindByCondition(ar => ar.ID == id)
-                .Include(ar => ar.MembersStatistic)
-                .Include(ar => ar.CityManagement)
-                    .ThenInclude(cm => cm.CityAdminNew)
-                .Include(ar => ar.City)
-                .FirstAsync();
+            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstAsync(
+                    predicate: a => a.ID == id,
+                    include: source => source
+                        .Include(a => a.MembersStatistic)
+                        .Include(a => a.CityManagement)
+                            .ThenInclude(c => c.CityAdminNew)
+                        .Include(a => a.City));
             return await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId) ? _mapper.Map<AnnualReport, AnnualReportDTO>(annualReport)
                 : throw new AnnualReportException(ErrorMessageNoAccess);
         }
 
         public async Task<IEnumerable<AnnualReportDTO>> GetAllAsync(ClaimsPrincipal claimsPrincipal)
         {
-            var annualReports = await _repositoryWrapper.AnnualReports
-                .FindAll()
-                .Include(ar => ar.User)
-                .Include(ar => ar.City)
-                    .ThenInclude(c => c.Region)
-                .ToListAsync();
+            var annualReports = await _repositoryWrapper.AnnualReports.GetAllAsync(
+                    include: source => source
+                        .Include(ar => ar.User)
+                        .Include(ar => ar.City)
+                            .ThenInclude(c => c.Region));
             var citiesDTO = await _cityAccessService.GetCitiesAsync(claimsPrincipal);
             var filteredAnnualReports = annualReports.Where(ar => citiesDTO.Any(c => c.ID == ar.CityId));
             return _mapper.Map<IEnumerable<AnnualReport>, IEnumerable<AnnualReportDTO>>(filteredAnnualReports);
@@ -73,7 +72,7 @@ namespace EPlast.BussinessLayer.Services
             {
                 throw new AnnualReportException(ErrorMessageNoAccess);
             }
-            await this.CheckCreatedAndUnconfirmed(annualReportDTO.CityId);
+            await this.CheckCanBeCreatedAsync(annualReportDTO.CityId);
             var annualReport = _mapper.Map<AnnualReportDTO, AnnualReport>(annualReportDTO);
             var user = await _userManager.GetUserAsync(claimsPrincipal);
             annualReport.UserId = user.Id;
@@ -85,10 +84,9 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task EditAsync(ClaimsPrincipal claimsPrincipal, AnnualReportDTO annualReportDTO)
         {
-            var annualReport = await _repositoryWrapper.AnnualReports
-                .FindByCondition(ar => ar.ID == annualReportDTO.ID && ar.CityId == annualReportDTO.CityId && ar.UserId == annualReportDTO.UserId
-                && ar.Date.Date == annualReportDTO.Date.Date && ar.Status == DatabaseEntities.AnnualReportStatus.Unconfirmed)
-                .FirstOrDefaultAsync();
+            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
+                    predicate: a => a.ID == annualReportDTO.ID && a.CityId == annualReportDTO.CityId && a.UserId == annualReportDTO.UserId
+                        && a.Date.Date == annualReportDTO.Date.Date && a.Status == DatabaseEntities.AnnualReportStatus.Unconfirmed);
             if (annualReport == null || annualReportDTO.Status != DTO.AnnualReportStatus.Unconfirmed)
             {
                 throw new AnnualReportException(ErrorMessageEditFailed);
@@ -104,10 +102,10 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task ConfirmAsync(ClaimsPrincipal claimsPrincipal, int id)
         {
-            var annualReport = await _repositoryWrapper.AnnualReports
-                .FindByCondition(ar => ar.ID == id && ar.Status == DatabaseEntities.AnnualReportStatus.Unconfirmed)
-                .Include(ar => ar.CityManagement)
-                .FirstAsync();
+            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstAsync(
+                    predicate: a => a.ID == id && a.Status == DatabaseEntities.AnnualReportStatus.Unconfirmed,
+                    include: source => source
+                        .Include(a => a.CityManagement));
             if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
             {
                 throw new AnnualReportException(ErrorMessageNoAccess);
@@ -122,10 +120,10 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task CancelAsync(ClaimsPrincipal claimsPrincipal, int id)
         {
-            var annualReport = await _repositoryWrapper.AnnualReports
-                .FindByCondition(ar => ar.ID == id && ar.Status == DatabaseEntities.AnnualReportStatus.Confirmed)
-                .Include(ar => ar.CityManagement)
-                .FirstAsync();
+            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstAsync(
+                    predicate: a => a.ID == id && a.Status == DatabaseEntities.AnnualReportStatus.Confirmed,
+                    include: source => source
+                        .Include(ar => ar.CityManagement));
             if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
             {
                 throw new AnnualReportException(ErrorMessageNoAccess);
@@ -142,9 +140,8 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task DeleteAsync(ClaimsPrincipal claimsPrincipal, int id)
         {
-            var annualReport = await _repositoryWrapper.AnnualReports
-                .FindByCondition(ar => ar.ID == id && ar.Status == DatabaseEntities.AnnualReportStatus.Unconfirmed)
-                .FirstAsync();
+            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstAsync(
+                    predicate: a => a.ID == id && a.Status == DatabaseEntities.AnnualReportStatus.Unconfirmed);
             if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
             {
                 throw new AnnualReportException(ErrorMessageNoAccess);
@@ -155,21 +152,19 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task<bool> HasUnconfirmedAsync(int cityId)
         {
-            var annualReport = await _repositoryWrapper.AnnualReports
-                .FindByCondition(ar => ar.CityId == cityId && ar.Status == DatabaseEntities.AnnualReportStatus.Unconfirmed)
-                .FirstOrDefaultAsync();
+            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
+                predicate: a => a.CityId == cityId && a.Status == DatabaseEntities.AnnualReportStatus.Unconfirmed);
             return annualReport != null;
         }
 
         public async Task<bool> HasCreatedAsync(int cityId)
         {
-            var annualReport = await _repositoryWrapper.AnnualReports
-                .FindByCondition(ar => ar.CityId == cityId && ar.Date.Year == DateTime.Now.Year)
-                .FirstOrDefaultAsync();
+            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
+                predicate: a => a.CityId == cityId && a.Date.Year == DateTime.Now.Year);
             return annualReport != null;
         }
 
-        public async Task CheckCreatedAndUnconfirmed(int cityId)
+        public async Task CheckCanBeCreatedAsync(int cityId)
         {
             if (await this.HasCreatedAsync(cityId))
             {
@@ -183,9 +178,8 @@ namespace EPlast.BussinessLayer.Services
 
         private async Task SaveLastConfirmedAsync(int cityId)
         {
-            var annualReport = await _repositoryWrapper.AnnualReports
-                .FindByCondition(ar => ar.CityId == cityId && ar.Status == DatabaseEntities.AnnualReportStatus.Confirmed)
-                .FirstOrDefaultAsync();
+            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
+                predicate: a => a.CityId == cityId && a.Status == DatabaseEntities.AnnualReportStatus.Confirmed);
             if (annualReport != null)
             {
                 annualReport.Status = DatabaseEntities.AnnualReportStatus.Saved;
@@ -195,9 +189,8 @@ namespace EPlast.BussinessLayer.Services
 
         private async Task ChangeCityAdministrationAsync(AnnualReport annualReport)
         {
-            var oldCityAdministration = await _repositoryWrapper.CityAdministration
-                .FindByCondition(ca => ca.CityId == annualReport.CityId && ca.EndDate == null && ca.AdminTypeId == _cityAdminType.ID)
-                .FirstOrDefaultAsync();
+            var oldCityAdministration = await _repositoryWrapper.CityAdministration.GetFirstOrDefaultAsync(
+                predicate: c => c.CityId == annualReport.CityId && c.EndDate == null && c.AdminTypeId == _cityAdminType.ID);
             if (oldCityAdministration != null && oldCityAdministration.UserId != annualReport.CityManagement.UserId)
             {
                 var user = await _userManager.FindByIdAsync(oldCityAdministration.UserId);
@@ -222,9 +215,8 @@ namespace EPlast.BussinessLayer.Services
 
         private async Task ChangeCityLegalStatusAsync(AnnualReport annualReport)
         {
-            var oldCityLegalStatus = await _repositoryWrapper.CityLegalStatuses
-                .FindByCondition(cls => cls.CityId == annualReport.CityId && cls.DateFinish == null)
-                .FirstOrDefaultAsync();
+            var oldCityLegalStatus = await _repositoryWrapper.CityLegalStatuses.GetFirstOrDefaultAsync(
+                predicate: c => c.CityId == annualReport.CityId && c.DateFinish == null);
             if (oldCityLegalStatus != null && oldCityLegalStatus.LegalStatusType != annualReport.CityManagement.CityLegalStatusNew)
             {
                 oldCityLegalStatus.DateFinish = DateTime.Now;
@@ -244,18 +236,16 @@ namespace EPlast.BussinessLayer.Services
 
         private async Task RevertCityAdministrationAsync(int revertPointId, int cityId)
         {
-            var cityAdministraions = await _repositoryWrapper.CityAdministration
-                .FindByCondition(ca => ca.ID > revertPointId && ca.CityId == cityId && ca.AdminTypeId == _cityAdminType.ID)
-                .ToListAsync();
+            var cityAdministraions = await _repositoryWrapper.CityAdministration.GetAllAsync(
+                predicate: c => c.ID > revertPointId && c.CityId == cityId && c.AdminTypeId == _cityAdminType.ID);
             foreach (var cityAdministration in cityAdministraions)
             {
                 var user = await _userManager.FindByIdAsync(cityAdministration.UserId);
                 await _userManager.RemoveFromRoleAsync(user, _cityAdminType.AdminTypeName);
                 _repositoryWrapper.CityAdministration.Delete(cityAdministration);
             }
-            var cityAdministrationRevertPoint = await _repositoryWrapper.CityAdministration
-                .FindByCondition(ca => ca.ID == revertPointId)
-                .FirstOrDefaultAsync();
+            var cityAdministrationRevertPoint = await _repositoryWrapper.CityAdministration.GetFirstOrDefaultAsync(
+                predicate: c => c.ID == revertPointId);
             if (cityAdministrationRevertPoint != null)
             {
                 var user = await _userManager.FindByIdAsync(cityAdministrationRevertPoint.UserId);
@@ -267,16 +257,14 @@ namespace EPlast.BussinessLayer.Services
 
         private async Task RevertCityLegalStatusAsync(int revertPointId, int cityId)
         {
-            var cityLegalStatuses = await _repositoryWrapper.CityLegalStatuses
-                .FindByCondition(cls => cls.Id > revertPointId && cls.CityId == cityId)
-                .ToListAsync();
+            var cityLegalStatuses = await _repositoryWrapper.CityLegalStatuses.GetAllAsync(
+                predicate: c => c.Id > revertPointId && c.CityId == cityId);
             foreach (var cityLegalStatus in cityLegalStatuses)
             {
                 _repositoryWrapper.CityLegalStatuses.Delete(cityLegalStatus);
             }
-            var cityLegalStatusRevertPoint = await _repositoryWrapper.CityLegalStatuses
-                .FindByCondition(cls => cls.Id == revertPointId)
-                .FirstOrDefaultAsync();
+            var cityLegalStatusRevertPoint = await _repositoryWrapper.CityLegalStatuses.GetFirstOrDefaultAsync(
+                predicate: c => c.Id == revertPointId);
             if (cityLegalStatusRevertPoint != null)
             {
                 cityLegalStatusRevertPoint.DateFinish = null;

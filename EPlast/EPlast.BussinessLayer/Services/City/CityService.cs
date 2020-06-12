@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using DataAccessCity = EPlast.DataAccess.Entities;
 
 namespace EPlast.BussinessLayer.Services
@@ -27,13 +28,13 @@ namespace EPlast.BussinessLayer.Services
             _env = env;
         }
 
-        public IEnumerable<DataAccessCity.City> GetAll()
+        public async Task<IEnumerable<DataAccessCity.City>> GetAllAsync()
         {
-            return _repoWrapper.City.FindAll();
+            return await _repoWrapper.City.GetAllAsync();
         }
-        public IEnumerable<CityDTO> GetAllDTO()
+        public async Task<IEnumerable<CityDTO>> GetAllDTOAsync()
         {
-            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(GetAll());
+            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(await GetAllAsync());
         }
 
         public CityDTO GetById(int cityId)
@@ -125,7 +126,7 @@ namespace EPlast.BussinessLayer.Services
             _repoWrapper.Save();
             return modelToCreate.ID;
         }
-        private void UploadPhoto( CityDTO city, IFormFile file)
+        private void UploadPhoto(CityDTO city, IFormFile file)
         {
             var cityId = city.ID;
             var oldImageName = _repoWrapper.City.FindByCondition(i => i.ID == cityId).FirstOrDefault()?.Logo;
