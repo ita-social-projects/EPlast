@@ -1,7 +1,6 @@
 ﻿using EPlast.BussinessLayer.Interfaces.Club;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services.Club
@@ -18,8 +17,7 @@ namespace EPlast.BussinessLayer.Services.Club
         public async Task ToggleIsApprovedInClubMembersAsync(int memberId, int clubId)
         {
             var person = await _repoWrapper.ClubMembers
-                .FindByCondition(u => u.ID == memberId && u.ClubId == clubId)
-                .FirstOrDefaultAsync();
+                .GetFirstOrDefaultAsync(u => u.ID == memberId && u.ClubId == clubId);
 
             if (person != null)
                 person.IsApproved = !person.IsApproved;
@@ -31,8 +29,7 @@ namespace EPlast.BussinessLayer.Services.Club
         public async Task AddFollowerAsync(int index, string userId)
         {
             var oldMember = await _repoWrapper.ClubMembers
-                    .FindByCondition(i => i.UserId == userId)
-                    .FirstOrDefaultAsync();
+                .GetFirstOrDefaultAsync(i => i.UserId == userId);
 
             if (oldMember != null)
             {

@@ -266,11 +266,11 @@ namespace EPlast.Controllers
 
         public async Task<IActionResult> AddAsClubFollower(int clubIndex, string userId)
         {
-            userId = User.IsInRole("Admin") ? userId : _userManagerService.GetUserId(User);
+            userId = User.IsInRole("Admin") ? userId : _userManagerService.GetUserId(User); 
 
             await _clubMembersService.AddFollowerAsync(clubIndex, userId);
 
-            return RedirectToAction("UserProfile", "Account", userId);
+            return RedirectToAction("UserProfile", "Account", new { userId });
         }
 
         [HttpGet]
