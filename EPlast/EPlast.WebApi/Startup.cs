@@ -74,8 +74,10 @@ namespace EPlast.WebApi
             services.AddCors();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "MyApi", Version = "v1" });
+                c.SwaggerDoc("V1", new OpenApiInfo { Title = "MyApi", Version = "V1" });
+                c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
             });
+
             services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
@@ -180,16 +182,6 @@ namespace EPlast.WebApi
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
             });
 
-            /*services.AddCors(o => o.AddPolicy("AllowAll",
-            builder =>
-            {
-                builder
-                    .AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials();
-            }));*/
-
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
@@ -203,14 +195,14 @@ namespace EPlast.WebApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
+            app.UseSwagger()
+                .UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API Version 1");
+                c.SwaggerEndpoint("/swagger/V1/swagger.json", "MyApi");
             });
 
             var supportedCultures = new[]
-{
+            {
                 new CultureInfo("uk-UA"),
                 new CultureInfo("en-US"),
                 new CultureInfo("en"),
