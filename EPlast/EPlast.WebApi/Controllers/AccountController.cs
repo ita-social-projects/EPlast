@@ -85,7 +85,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPost("/signin")]
+        [HttpPost("signin")]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel loginVM, string returnUrl)
         {
@@ -142,7 +142,7 @@ namespace EPlast.WebApi.Controllers
             return Ok("signup");
         }
 
-        [HttpPost("signup")]
+        /*[HttpPost("signup")]
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel registerVM)
         {
@@ -228,6 +228,6 @@ namespace EPlast.WebApi.Controllers
         public IActionResult ConfirmedEmail()
         {
             return Ok("ConfirmedEmail");
-        }
+        }*/
     }
 }
