@@ -35,57 +35,61 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
             _workService = workService;
             _educationService = educationService;
         }
-        public UserDTO GetUser(string userId)
+        public async Task<UserDTO> GetUserAsync(string userId)
         {
-            var user = _repoWrapper.User.
-                FindByCondition(q => q.Id == userId).
-                Include(i => i.UserProfile).
-                    ThenInclude(x => x.Nationality).
-                Include(g => g.UserProfile).
-                    ThenInclude(g => g.Gender).
-                Include(g => g.UserProfile).
-                    ThenInclude(g => g.Education).
-                Include(g => g.UserProfile).
-                    ThenInclude(g => g.Degree).
-                Include(g => g.UserProfile).
-                    ThenInclude(g => g.Religion).
-                Include(g => g.UserProfile).
-                    ThenInclude(g => g.Work).
-                Include(x => x.ConfirmedUsers).
+            var user = await _repoWrapper.User.GetFirstAsync(
+                i => i.Id == userId,
+                i =>
+                    i.Include(g => g.UserProfile).
+                        ThenInclude(x => x.Nationality).
+                    Include(g => g.UserProfile).
+                        ThenInclude(g => g.Gender).
+                    Include(g => g.UserProfile).
+                        ThenInclude(g => g.Education).
+                    Include(g => g.UserProfile).
+                        ThenInclude(g => g.Degree).
+                    Include(g => g.UserProfile).
+                        ThenInclude(g => g.Religion).
+                    Include(g => g.UserProfile).
+                        ThenInclude(g => g.Work).
+                    Include(x => x.ConfirmedUsers).
                         ThenInclude(q => (q as ConfirmedUser).Approver).
-                        ThenInclude(q => q.User).
-                    FirstOrDefault();
+                            ThenInclude(q => q.User));
             var model = _mapper.Map<User, UserDTO>(user);
             return model;
         }
 
         public IEnumerable<ConfirmedUserDTO> GetConfirmedUsers(UserDTO user)
         {
-            var result = user.ConfirmedUsers.Where(x => x.isCityAdmin == false && x.isClubAdmin == false);
+            var result = user.ConfirmedUsers.
+                Where(x => x.isCityAdmin == false && x.isClubAdmin == false);
             return result;
         }
 
         public ConfirmedUserDTO GetClubAdminConfirmedUser(UserDTO user)
         {
-            var result = user.ConfirmedUsers.FirstOrDefault(x => x.isClubAdmin == true);
+            var result = user.ConfirmedUsers.
+                FirstOrDefault(x => x.isClubAdmin == true);
             return result;
         }
 
         public ConfirmedUserDTO GetCityAdminConfirmedUser(UserDTO user)
         {
-            var result = user.ConfirmedUsers.FirstOrDefault(x => x.isCityAdmin == true);
+            var result = user.ConfirmedUsers.
+                FirstOrDefault(x => x.isCityAdmin == true);
             return result;
         }
-        public bool CanApprove(IEnumerable<ConfirmedUserDTO> confUsers, string userId, ClaimsPrincipal user)
+        public async Task<bool> CanApproveAsync(IEnumerable<ConfirmedUserDTO> confUsers, string userId, ClaimsPrincipal user)
         {
-            var currentUserId = _userManager.GetUserId(user);
+            var currentUser = await _userManager.GetUserAsync(user);
+            var currentUserId = currentUser.Id;
 
             var canApprove = confUsers.Count() < 3
                     && !confUsers.Any(x => x.Approver.UserID == currentUserId)
-                    && !(currentUserId == userId);
+                    && currentUserId != userId;
             return canApprove;
         }
-        public async Task<TimeSpan> CheckOrAddPlastunRole(string userId, DateTime registeredOn)
+        public async Task<TimeSpan> CheckOrAddPlastunRoleAsync(string userId, DateTime registeredOn)
         {
             try
             {
@@ -103,28 +107,27 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
                 return TimeSpan.Zero;
             }
         }
-        public void Update(UserDTO user, IFormFile file, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
+        public async Task UpdateAsync(UserDTO user, IFormFile file, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
-
-            UploadPhoto(ref user, file);
+            user.ImagePath = await UploadPhotoAsync(user, file);
             user.UserProfile.Nationality = CheckFieldForNull(user.UserProfile.NationalityId, user.UserProfile.Nationality.Name, user.UserProfile.Nationality);
             user.UserProfile.Religion = CheckFieldForNull(user.UserProfile.ReligionId, user.UserProfile.Religion.Name, user.UserProfile.Religion);
             user.UserProfile.Degree = CheckFieldForNull(user.UserProfile.DegreeId, user.UserProfile.Degree.Name, user.UserProfile.Degree);
-            user.UserProfile.EducationId = CheckEducationFields(user.UserProfile.Education.PlaceOfStudy, user.UserProfile.Education.Speciality, placeOfStudyId, specialityId);
+            user.UserProfile.EducationId = await CheckEducationFieldsAsync(user.UserProfile.Education.PlaceOfStudy, user.UserProfile.Education.Speciality, placeOfStudyId, specialityId);
             user.UserProfile.Education = CheckFieldForNull(user.UserProfile.EducationId, user.UserProfile.Education.PlaceOfStudy, user.UserProfile.Education.Speciality, user.UserProfile.Education);
-            user.UserProfile.WorkId = CheckWorkFields(user.UserProfile.Work.PlaceOfwork, user.UserProfile.Work.Position, placeOfWorkId, positionId);
+            user.UserProfile.WorkId = await CheckWorkFieldsAsync(user.UserProfile.Work.PlaceOfwork, user.UserProfile.Work.Position, placeOfWorkId, positionId);
             user.UserProfile.Work = CheckFieldForNull(user.UserProfile.WorkId, user.UserProfile.Work.PlaceOfwork, user.UserProfile.Work.Position, user.UserProfile.Work);
             var userForUpdate = _mapper.Map<UserDTO, User>(user);
             _repoWrapper.User.Update(userForUpdate);
             _repoWrapper.UserProfile.Update(userForUpdate.UserProfile);
-            _repoWrapper.Save();
+            await _repoWrapper.SaveAsync();
         }
 
-        private int? CheckEducationFields(string firstName, string secondName, int? firstId, int? secondId)
+        private async Task<int?> CheckEducationFieldsAsync(string firstName, string secondName, int? firstId, int? secondId)
         {
 
-            var spec = _educationService?.GetById(secondId);
-            var placeStudy = _educationService?.GetById(firstId);
+            var spec = await _educationService?.GetByIdAsync(secondId);
+            var placeStudy = await _educationService?.GetByIdAsync(firstId);
             if (secondId == firstId)
             {
                 return secondId;
@@ -146,10 +149,10 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
             }
         }
 
-        private int? CheckWorkFields(string firstName, string secondName, int? firstId, int? secondId)
+        private async Task<int?> CheckWorkFieldsAsync(string firstName, string secondName, int? firstId, int? secondId)
         {
-            var placefWork = _workService?.GetById(firstId);
-            var position = _workService?.GetById(secondId);
+            var placeOfWork = await _workService?.GetByIdAsync(firstId);
+            var position = await _workService?.GetByIdAsync(secondId);
             if (secondId == firstId)
             {
                 return secondId;
@@ -160,9 +163,9 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
                 {
                     return position.ID;
                 }
-                else if (placefWork != null && placefWork.Position == secondName)
+                else if (placeOfWork != null && placeOfWork.Position == secondName)
                 {
-                    return placefWork.ID;
+                    return placeOfWork.ID;
                 }
                 else
                 {
@@ -189,10 +192,10 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
             return model;
         }
 
-        private void UploadPhoto(ref UserDTO user, IFormFile file)
+        private async Task<string> UploadPhotoAsync(UserDTO user, IFormFile file)
         {
             var userId = user.Id;
-            var oldImageName = _repoWrapper.User.FindByCondition(i => i.Id == userId).FirstOrDefault().ImagePath;
+            var oldImageName = (await _repoWrapper.User.GetFirstOrDefaultAsync(x => x.Id == userId)).ImagePath;
             if (file != null && file.Length > 0)
             {
 
@@ -211,12 +214,12 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
                     var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
                     var filePath = Path.Combine(uploads, fileName);
                     img.Save(filePath);
-                    user.ImagePath = fileName;
+                    return fileName;
                 }
             }
             else
             {
-                user.ImagePath = oldImageName;
+                return oldImageName;
             }
         }
     }

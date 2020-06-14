@@ -5,6 +5,7 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services.City
 {
@@ -12,18 +13,19 @@ namespace EPlast.BussinessLayer.Services.City
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
+
         public CityAdministrationService(IRepositoryWrapper repoWrapper, IMapper mapper)
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
         }
 
-        public IEnumerable<CityAdministrationDTO> GetByCityId(int cityId)
+        public async Task<IEnumerable<CityAdministrationDTO>> GetByCityIdAsync(int cityId)
         {
-            var cityAdministration = _repoWrapper.CityAdministration
-                    .FindByCondition(ca => ca.CityId == cityId)
-                        .Include(ca => ca.User)
-                        .Include(ca => ca.AdminType);
+            var cityAdministration = await _repoWrapper.CityAdministration.GetAllAsync(
+                predicate: x => x.CityId == cityId,
+                include: x => x.Include(q => q.User).
+                     Include(q => q.AdminType));
             return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(cityAdministration);
         }
     }

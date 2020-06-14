@@ -1,10 +1,11 @@
 ﻿using EPlast.BussinessLayer.DTO.City;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Interfaces.City
 {
     public interface ICItyAdministrationService
     {
-        IEnumerable<CityAdministrationDTO> GetByCityId(int cityAdministrationId);
+        Task<IEnumerable<CityAdministrationDTO>> GetByCityIdAsync(int cityId);
     }
 }

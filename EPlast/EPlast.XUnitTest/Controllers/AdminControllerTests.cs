@@ -51,9 +51,9 @@ namespace EPlast.XUnitTest
         public async Task EditGetTest()
         {
             var user = new UserDTO();
-            _userManagerService.Setup(x => x.FindById(It.IsAny<string>())).ReturnsAsync(user);
-            _userManagerService.Setup(x => x.GetRoles(It.IsAny<UserDTO>())).ReturnsAsync(new List<string>());
-            _adminService.Setup(x => x.GetRolesExceptAdmin()).Returns(new List<IdentityRole>().AsQueryable());
+            _userManagerService.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(user);
+            _userManagerService.Setup(x => x.GetRolesAsync(It.IsAny<UserDTO>())).ReturnsAsync(new List<string>());
+            _adminService.Setup(x => x.GetRolesExceptAdminAsync()).ReturnsAsync(new List<IdentityRole>().AsQueryable());
 
             var controller = new AdminController(_logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object,
                 _cityService.Object, _cityAdministrationService.Object);
@@ -143,13 +143,13 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void RegionsAdminsTest()
+        public async Task RegionsAdminsTest()
         {
-            _cityService.Setup(x => x.GetAllDTO()).Returns(new List<CityDTO>());
+            _cityService.Setup(x => x.GetAllDTOAsync()).ReturnsAsync(new List<CityDTO>());
             var controller = new AdminController(_logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object,
                 _cityService.Object, _cityAdministrationService.Object);
             // Act
-            var result = controller.RegionsAdmins();
+            var result = await controller.RegionsAdmins();
             // Assert
 
             var viewResult = Assert.IsType<ViewResult>(result);
@@ -157,14 +157,14 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void GetAdminsTest()
+        public async Task GetAdminsTest()
         {
-            _cityAdministrationService.Setup(x => x.GetByCityId(It.IsAny<int>())).Returns(new List<CityAdministrationDTO>());
+            _cityAdministrationService.Setup(x => x.GetByCityIdAsync(It.IsAny<int>())).ReturnsAsync(new List<CityAdministrationDTO>());
             _mapper.Setup(x => x.Map<IEnumerable<CityAdministrationDTO>, IEnumerable<CityAdministrationViewModel>>(It.IsAny<IEnumerable<CityAdministrationDTO>>()));
             var controller = new AdminController(_logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object,
                 _cityService.Object, _cityAdministrationService.Object);
             // Act
-            var result = controller.GetAdmins(1);
+            var result =await controller.GetAdmins(1);
             // Assert
             var viewResult = Assert.IsType<PartialViewResult>(result);
             Assert.IsAssignableFrom<CityAdministrationViewModel[]>(viewResult.Model);
@@ -174,7 +174,7 @@ namespace EPlast.XUnitTest
         public async Task UsersTableTest()
         {
 
-            _adminService.Setup(x => x.UsersTable()).ReturnsAsync(new List<UserTableDTO>());
+            _adminService.Setup(x => x.UsersTableAsync()).ReturnsAsync(new List<UserTableDTO>());
             _mapper.Setup(x => x.Map<IEnumerable<UserTableDTO>, IEnumerable<UserTableViewModel>>(It.IsAny<IEnumerable<UserTableDTO>>()));
             var controller = new AdminController(_logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object,
                 _cityService.Object, _cityAdministrationService.Object);

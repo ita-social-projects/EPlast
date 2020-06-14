@@ -2,7 +2,7 @@
 
 namespace EPlast.BussinessLayer.DTO.EventUser
 {
-    public class EventDTO
+    public class EventCreationDTO
     {
         public int ID { get; set; }
         public string EventName { get; set; }

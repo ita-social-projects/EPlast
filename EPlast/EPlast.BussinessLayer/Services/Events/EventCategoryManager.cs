@@ -3,6 +3,7 @@ using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.DataAccess.Repositories;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services.Events
 {
@@ -14,15 +15,17 @@ namespace EPlast.BussinessLayer.Services.Events
         {
             _repoWrapper = repoWrapper;
         }
-        public List<EventCategoryDTO> GetDTO()
+        public async Task<List<EventCategoryDTO>> GetDTOAsync()
         {
-            List<EventCategoryDTO> dto = _repoWrapper.EventCategory.FindAll()
+            var eventCategories = (await _repoWrapper.EventCategory.GetAllAsync()).ToList();
+            var dto = eventCategories
                 .Select(eventCategory => new EventCategoryDTO()
                 {
                     EventCategoryId = eventCategory.ID,
                     EventCategoryName = eventCategory.EventCategoryName
                 })
                 .ToList();
+
             return dto;
         }
     }

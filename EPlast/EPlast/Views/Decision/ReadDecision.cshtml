@@ -1,6 +1,5 @@
 ﻿@using EPlast.ViewModels
-@using EPlast.BussinessLayer.ExtensionMethods
-@using EPlast.Controllers
+
 @model Tuple<DecisionViewModel, List<DecisionViewModel>>
 @{
     ViewData["Title"] = "Читання рішень";
@@ -66,7 +65,7 @@
                         <td>
                             @if (!string.IsNullOrEmpty(item.DecisionWrapper.Filename))
                             {
-                                <a asp-controller="Documentation" asp-action="Download" asp-route-id="@item.DecisionWrapper.Decision.ID" asp-route-filename="@item.DecisionWrapper.Filename">додаток.@item.DecisionWrapper.Filename.Split('.')[1]</a>
+                                <a asp-controller="Decision" asp-action="Download" asp-route-id="@item.DecisionWrapper.Decision.ID" asp-route-filename="@item.DecisionWrapper.Filename">додаток.@item.DecisionWrapper.Filename.Split('.')[1]</a>
                             }
                         </td>
                     </tr>
@@ -79,23 +78,23 @@
 <div id="CreateDecisionModal" role="dialog" tabindex="-1" class="modal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <partial name="~/Views/Documentation/_CreateDecision.cshtml" model="Model.Item1" />
+            <partial name="~/Views/Decision/_CreateDecision.cshtml" model="Model.Item1" />
         </div>
     </div>
 </div>
 <div id="EditDecisionModal" role="dialog" tabindex="-1" class="modal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <partial name="~/Views/Documentation/_EditDecision.cshtml" />
+            <partial name="~/Views/Decision/_EditDecision.cshtml" />
         </div>
     </div>
 </div>
 <div id="DeleteDecisionModal" role="dialog" tabindex="-1" class="modal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <partial name="~/Views/Documentation/_DeleteDecision.cshtml" />
+            <partial name="~/Views/Decision/_DeleteDecision.cshtml" />
         </div>
     </div>
 </div>
-<partial name="_SuccessModal" model="@ViewData["Message"]" />
-<partial name="_ErrorModal" model="@ViewData["ErrorMessage"]" />
+<partial name="_SuccessModal" model="@ViewData[" Message"]" />
+<partial name="_ErrorModal" model="@ViewData[" ErrorMessage"]" />

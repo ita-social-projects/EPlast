@@ -1,7 +1,9 @@
-﻿namespace EPlast.BussinessLayer.Interfaces.Events
+﻿using System.Threading.Tasks;
+
+namespace EPlast.BussinessLayer.Interfaces.Events
 {
     public interface IEventTypeManager
     {
-        int GetTypeId(string typeName);
+        Task<int> GetTypeIdAsync(string typeName);
     }
 }

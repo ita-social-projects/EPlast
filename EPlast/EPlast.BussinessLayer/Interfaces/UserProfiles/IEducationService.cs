@@ -1,12 +1,13 @@
 ﻿using EPlast.BussinessLayer.DTO.UserProfiles;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Interfaces.UserProfiles
 {
     public interface IEducationService
     {
-        EducationDTO GetById(int? educationId);
-        IEnumerable<EducationDTO> GetAllGroupByPlace();
-        IEnumerable<EducationDTO> GetAllGroupBySpeciality();
+        Task<EducationDTO> GetByIdAsync(int? educationId);
+        Task<IEnumerable<EducationDTO>> GetAllGroupByPlaceAsync();
+        Task<IEnumerable<EducationDTO>> GetAllGroupBySpecialityAsync();
     }
 }

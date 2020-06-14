@@ -4,6 +4,7 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services.Events
 {
@@ -16,10 +17,11 @@ namespace EPlast.BussinessLayer.Services.Events
             _repoWrapper = repoWrapper;
         }
 
-        public IEnumerable<EventAdmin> GetEventAdminsByUserId(string userId)
+        public async Task<IEnumerable<EventAdmin>> GetEventAdminsByUserIdAsync(string userId)
         {
-            var eventAdmins = _repoWrapper.EventAdmin.FindByCondition(i => i.UserID == userId)
-                .Include(i => i.Event).Include(i => i.User).ToList();
+            var eventAdmins = (await _repoWrapper.EventAdmin.GetAllAsync(predicate: i => i.UserID == userId, include: source => source.
+                Include(i => i.Event).Include(i => i.User))).ToList();
+
             return eventAdmins;
         }
     }

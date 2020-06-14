@@ -1,14 +1,17 @@
 ﻿using EPlast.BussinessLayer.DTO.EventUser;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Interfaces.EventUser
 {
     public interface IEventUserManager
     {
-        EventUserDTO EventUser(string userId, ClaimsPrincipal user);
-        EventCreateDTO InitializeEventCreateDTO();
-        EventCreateDTO InitializeEventCreateDTO(int eventId);
-        int CreateEvent(EventCreateDTO model);
-        void SetAdministration(EventCreateDTO model);
+        Task<EventUserDTO> EventUserAsync(string userId, ClaimsPrincipal user);
+        Task<EventCreateDTO> InitializeEventCreateDTOAsync();
+        Task<EventCreateDTO> InitializeEventCreateDTOAsync(int eventId);
+        Task<int> CreateEventAsync(EventCreateDTO model);
+        Task SetAdministrationAsync(EventCreateDTO model);
+        Task<EventCreateDTO> InitializeEventEditDTOAsync(int eventId);
+        Task EditEventAsync(EventCreateDTO model);
     }
 }

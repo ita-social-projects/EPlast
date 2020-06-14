@@ -1,7 +1,9 @@
-﻿namespace EPlast.BussinessLayer.Interfaces.Events
+﻿using System.Threading.Tasks;
+
+namespace EPlast.BussinessLayer.Interfaces.Events
 {
     public interface IParticipantStatusManager
     {
-        int GetStatusId(string statusName);
+        Task<int> GetStatusIdAsync(string statusName);
     }
 }
