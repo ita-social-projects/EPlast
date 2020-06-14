@@ -10,7 +10,6 @@ using EPlast.ViewModels.City;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,17 +19,17 @@ namespace EPlast.Controllers
 {
     public class AnnualReportController : Controller
     {
-        private readonly ILogger _logger;
+        private readonly ILoggerService<AnnualReportController> _loggerService;
         private readonly IMapper _mapper;
         private readonly IAnnualReportService _annualReportService;
         private readonly ICityAccessService _cityAccessService;
         private readonly ICityMembersService _cityMembersService;
         private readonly ICityService _cityService;
 
-        public AnnualReportController(ILogger<AnnualReportController> logger, IMapper mapper, IAnnualReportService annualReportService, ICityAccessService cityAccessService,
+        public AnnualReportController(ILoggerService<AnnualReportController> loggerService, IMapper mapper, IAnnualReportService annualReportService, ICityAccessService cityAccessService,
             ICityMembersService cityMembersService, ICityService cityService)
         {
-            _logger = logger;
+            _loggerService = loggerService;
             _mapper = mapper;
             _annualReportService = annualReportService;
             _cityAccessService = cityAccessService;
@@ -38,45 +37,22 @@ namespace EPlast.Controllers
             _cityService = cityService;
         }
 
-        [Authorize(Roles = "Голова Станиці")]
-        [HttpGet]
-        public async Task<IActionResult> CreateAsync()
-        {
-            try
-            {
-                var citiesDTO = await _cityAccessService.GetCitiesAsync(User);
-                var city = _mapper.Map<CityDTO, CityViewModel>(citiesDTO.First());
-                await _annualReportService.CheckCreatedAndUnconfirmed(city.ID);
-                return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Creating));
-            }
-            catch (AnnualReportException e)
-            {
-                ViewData["ErrorMessage"] = e.Message;
-                return View("CreateEditAsync");
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Exception: {e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
-            }
-        }
-
         [Authorize(Roles = "Admin, Голова Округу")]
         [HttpGet]
-        public async Task<IActionResult> CreateAsync(int cityId)
+        public async Task<IActionResult> CreateAsAdminAsync(int cityId)
         {
             try
             {
                 if (await _cityAccessService.HasAccessAsync(User, cityId))
                 {
-                    await _annualReportService.CheckCreatedAndUnconfirmed(cityId);
-                    var cityDTO = _cityService.GetById(cityId);
+                    await _annualReportService.CheckCanBeCreatedAsync(cityId);
+                    var cityDTO = await _cityService.GetByIdAsync(cityId);
                     var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
                     return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Creating));
                 }
                 else
                 {
-                    _logger.LogError($"Exception: {User} does not have access to the city (cityId - {cityId})");
+                    _loggerService.LogError($"Exception: {User} does not have access to the city (cityId - {cityId})");
                     return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
                 }
             }
@@ -87,7 +63,30 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Exception: {e.Message}");
+                _loggerService.LogError($"Exception: {e.Message}");
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
+            }
+        }
+
+        [Authorize(Roles = "Голова Станиці")]
+        [HttpGet]
+        public async Task<IActionResult> CreateAsync()
+        {
+            try
+            {
+                var citiesDTO = await _cityAccessService.GetCitiesAsync(User);
+                var city = _mapper.Map<CityDTO, CityViewModel>(citiesDTO.First());
+                await _annualReportService.CheckCanBeCreatedAsync(city.ID);
+                return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Creating));
+            }
+            catch (AnnualReportException e)
+            {
+                ViewData["ErrorMessage"] = e.Message;
+                return View("CreateEditAsync");
+            }
+            catch (Exception e)
+            {
+                _loggerService.LogError($"Exception: {e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
             }
         }
@@ -107,7 +106,7 @@ namespace EPlast.Controllers
                 }
                 else
                 {
-                    var cityDTO = _cityService.GetById(annualReport.CityId);
+                    var cityDTO = await _cityService.GetByIdAsync(annualReport.CityId);
                     var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
                     ViewData["ErrorMessage"] = "Річний звіт заповнений некоректно!";
                     return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Creating, annualReport));
@@ -120,7 +119,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Exception: {e.Message}");
+                _loggerService.LogError($"Exception: {e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
             }
         }
@@ -142,7 +141,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Exception: {e.Message}");
+                _loggerService.LogError($"Exception: {e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
             }
         }
@@ -162,7 +161,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Exception: {e.Message}");
+                _loggerService.LogError($"Exception: {e.Message}");
                 return NotFound("Не вдалося завантажити річний звіт!");
             }
         }
@@ -181,7 +180,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Exception: {e.Message}");
+                _loggerService.LogError($"Exception: {e.Message}");
                 return NotFound("Не вдалося підтвердити річний звіт!");
             }
         }
@@ -200,7 +199,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Exception: {e.Message}");
+                _loggerService.LogError($"Exception: {e.Message}");
                 return NotFound("Не вдалося скасувати річний звіт!");
             }
         }
@@ -219,7 +218,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Exception: {e.Message}");
+                _loggerService.LogError($"Exception: {e.Message}");
                 return NotFound("Не вдалося видалити річний звіт!");
             }
         }
@@ -232,7 +231,7 @@ namespace EPlast.Controllers
             {
                 var annualReportDTO = await _annualReportService.GetByIdAsync(User, id);
                 var annualReport = _mapper.Map<AnnualReportDTO, AnnualReportViewModel>(annualReportDTO);
-                var cityDTO = _cityService.GetById(annualReport.CityId);
+                var cityDTO = await _cityService.GetByIdAsync(annualReport.CityId);
                 var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
                 return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Editing, annualReport));
             }
@@ -243,7 +242,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Exception: {e.Message}");
+                _loggerService.LogError($"Exception: {e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
             }
         }
@@ -263,7 +262,7 @@ namespace EPlast.Controllers
                 }
                 else
                 {
-                    var cityDTO = _cityService.GetById(annualReport.CityId);
+                    var cityDTO = await _cityService.GetByIdAsync(annualReport.CityId);
                     var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
                     ViewData["ErrorMessage"] = "Річний звіт заповнений некоректно!";
                     return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Editing, annualReport));
@@ -276,7 +275,7 @@ namespace EPlast.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"Exception: {e.Message}");
+                _loggerService.LogError($"Exception: {e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
             }
         }

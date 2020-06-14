@@ -8,19 +8,22 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest
 {
     public class CityControllerTests
     {
-
         private readonly Mock<ICityService> _cityService;
         private readonly Mock<IMapper> _mapper;
-        private readonly Mock<ILoggerService<CityController>> _logger; 
+        private readonly Mock<ILoggerService<CityController>> _logger;
+
         private CityController CreateCityController => new CityController(_logger.Object, _cityService.Object, _mapper.Object);
+
         public CityControllerTests()
         {
             _cityService = new Mock<ICityService>();
@@ -29,189 +32,489 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void IndexTest()
+        public async Task IndexTest()
         {
-            _cityService.Setup(c => c.GetAllDTO())
-                .Returns(new List<CityDTO>());
-            _mapper.Setup(
-                    m => m.Map<IEnumerable<CityDTO>, IEnumerable<CityViewModel>>(It.IsAny<IEnumerable<CityDTO>>()))
+            // Arrange
+            _cityService.Setup(c => c.GetAllDTOAsync())
+                .ReturnsAsync(new List<CityDTO>());
+            _mapper.Setup(m => m.Map<IEnumerable<CityDTO>, IEnumerable<CityViewModel>>(It.IsAny<IEnumerable<CityDTO>>()))
                 .Returns(() => new List<CityViewModel>());
             CityController cityController = CreateCityController;
 
-            var result = cityController.Index();
+            // Act
+            var result = await cityController.Index();
 
+            // Assert
             Assert.NotNull(result);
             Assert.IsType<ViewResult>(result);
         }
 
         [Fact]
-        public void CityProfileTests()
+        public async Task CityProfileTests()
         {
-
-            _cityService.Setup(c => c.CityProfile(It.IsAny<int>()))
-                .Returns(() => new CityProfileDTO());
+            // Arrange
+            _cityService.Setup(c => c.CityProfileAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => new CityProfileDTO());
             _mapper.Setup(c => c.Map<CityProfileDTO, CityProfileViewModel>(It.IsAny<CityProfileDTO>()))
                 .Returns(new CityProfileViewModel());
             CityController cityController = CreateCityController;
 
-            var result = cityController.CityProfile(1);
+            // Act
+            var result = await cityController.CityProfile(FakeId);
 
+            // Assert
             Assert.NotNull(result);
             Assert.IsType<ViewResult>(result);
         }
 
         [Fact]
-        public void EditWithValidModelStateTest()
+        public async Task CityProfileInvalidIdTests()
         {
-            CityProfileViewModel model = createFakeCityProfileViewModels(1).First();
-            IFormFile file = new FormFile(null, 1234, 1134, "fdd", "dfsdf");
-            _mapper.Setup(m => m.Map<CityProfileViewModel, CityProfileDTO>(It.IsAny<CityProfileViewModel>()))
-                .Returns(new CityProfileDTO());
-            _cityService.Setup(c => c.Edit(It.IsAny<CityProfileDTO>(), It.IsAny<IFormFile>()))
-                .Verifiable();
+            // Arrange
+            _cityService.Setup(c => c.CityProfileAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
             CityController cityController = CreateCityController;
 
-            var result = cityController.Edit(model, file);
+            // Act
+            var result = await cityController.CityProfile(FakeId);
 
+            // Assert
             Assert.NotNull(result);
             Assert.IsType<RedirectToActionResult>(result);
         }
 
         [Fact]
-        public void EditWithInvalidModelStateTest()
+        public async Task CityProfileExceptionTests()
         {
-            CityProfileViewModel model = createFakeCityProfileViewModels(1).First();
+            // Arrange
+            _cityService.Setup(c => c.CityProfileAsync(It.IsAny<int>()))
+                .ThrowsAsync(new ArgumentException("some message"));
+            CityController cityController = CreateCityController;
+
+            // Act
+            var result = await cityController.CityProfile(FakeId);
+
+            // Assert
+            Assert.NotNull(result);
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task CityMembersCorrectTest()
+        {
+            // Arrange
+            _mapper.Setup(c => c.Map<CityProfileDTO, CityProfileViewModel>(It.IsAny<CityProfileDTO>()))
+                .Returns(() => new CityProfileViewModel());
+            _cityService.Setup(c => c.CityMembersAsync(It.IsAny<int>()))
+                .ReturnsAsync(new CityProfileDTO());
+            CityController cityController = CreateCityController;
+
+            // Act
+            var result = await cityController.CityMembers(FakeId);
+
+            // Assert
+            Assert.IsType<ViewResult>(result);
+        }
+
+        [Fact]
+        public async Task CityMembersInvalidIdTest()
+        {
+            // Arrange
+            _mapper.Setup(c => c.Map<CityProfileDTO, CityProfileViewModel>(It.IsAny<CityProfileDTO>()))
+                .Returns(() => new CityProfileViewModel());
+            _cityService.Setup(c => c.CityMembersAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            CityController cityController = CreateCityController;
+
+            // Act
+            var result = await cityController.CityMembers(FakeId);
+
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task CityMembersExceptionTest()
+        {
+            // Arrange
+            _cityService.Setup(c => c.CityMembersAsync(It.IsAny<int>()))
+                .ThrowsAsync(new ArgumentException("some message"));
+            CityController cityController = CreateCityController;
+
+            // Act
+            var result = await cityController.CityMembers(FakeId);
+
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task CityFollowersCorrectTest()
+        {
+            // Arrange
+            _mapper.Setup(c => c.Map<CityProfileDTO, CityProfileViewModel>(It.IsAny<CityProfileDTO>()))
+                .Returns(() => new CityProfileViewModel());
+            _cityService.Setup(c => c.CityFollowersAsync(It.IsAny<int>()))
+                .ReturnsAsync(new CityProfileDTO());
+            CityController cityController = CreateCityController;
+
+            // Act
+            var result = await cityController.CityFollowers(FakeId);
+
+            // Assert
+            Assert.IsType<ViewResult>(result);
+        }
+
+        [Fact]
+        public async Task CityFollowersInvalidIdTest()
+        {
+            // Arrange
+            _cityService.Setup(c => c.CityFollowersAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            CityController cityController = CreateCityController;
+
+            // Act
+            var result = await cityController.CityFollowers(FakeId);
+
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task CityFollowersExceptionTest()
+        {
+            // Arrange
+            _cityService.Setup(c => c.CityFollowersAsync(It.IsAny<int>()))
+                .ThrowsAsync(new ArgumentException("some message"));
+            CityController cityController = CreateCityController;
+
+            // Act
+            var result = await cityController.CityFollowers(FakeId);
+
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task CityAdminsCorrectTest()
+        {
+            // Arrange
+            _mapper.Setup(c => c.Map<CityProfileDTO, CityProfileViewModel>(It.IsAny<CityProfileDTO>()))
+                .Returns(() => new CityProfileViewModel());
+            _cityService.Setup(c => c.CityAdminsAsync(It.IsAny<int>()))
+                .ReturnsAsync(new CityProfileDTO());
+            CityController cityController = CreateCityController;
+
+            // Act
+            var result = await cityController.CityAdmins(FakeId);
+
+            // Assert
+            Assert.IsType<ViewResult>(result);
+        }
+
+        [Fact]
+        public async Task CityAdminsInvalidIdTest()
+        {
+            // Arrange
+            _cityService.Setup(c => c.CityAdminsAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            CityController cityController = CreateCityController;
+
+            // Act
+            var result = await cityController.CityAdmins(FakeId);
+
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task CityAdminsExceptionTest()
+        {
+            // Arrange
+            _cityService.Setup(c => c.CityAdminsAsync(It.IsAny<int>()))
+                .ThrowsAsync(new ArgumentException("some message"));
+            CityController cityController = CreateCityController;
+
+            // Act
+            var result = await cityController.CityAdmins(FakeId);
+
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task EditGetCorrectTest()
+        {
+            // Arrange
+            _mapper.Setup(c => c.Map<CityProfileDTO, CityProfileViewModel>(It.IsAny<CityProfileDTO>()))
+                .Returns(() => new CityProfileViewModel());
+            _cityService.Setup(c => c.EditAsync(It.IsAny<int>()))
+                .ReturnsAsync(new CityProfileDTO());
+            CityController cityController = CreateCityController;
+
+            // Act
+            var result = await cityController.Edit(FakeId);
+
+            // Assert
+            Assert.IsType<ViewResult>(result);
+        }
+
+        [Fact]
+        public async Task EditGetInvalidIdTest()
+        {
+            // Arrange
+            _cityService.Setup(c => c.EditAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            CityController cityController = CreateCityController;
+
+            // Act
+            var result = await cityController.Edit(FakeId);
+
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task EditGetExceptionTest()
+        {
+            // Arrange
+            _cityService.Setup(c => c.EditAsync(It.IsAny<int>()))
+                .ThrowsAsync(new ArgumentException("some message"));
+            CityController cityController = CreateCityController;
+
+            // Act
+            var result = await cityController.Edit(1);
+
+            // Asser
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task EditWithValidModelStateTest()
+        {
+            // Arrange
+            CityProfileViewModel model = CreateFakeCityProfileViewModels(1).First();
             IFormFile file = new FormFile(null, 1234, 1134, "fdd", "dfsdf");
             _mapper.Setup(m => m.Map<CityProfileViewModel, CityProfileDTO>(It.IsAny<CityProfileViewModel>()))
                 .Returns(new CityProfileDTO());
-            _cityService.Setup(c => c.Edit(It.IsAny<CityProfileDTO>(), It.IsAny<IFormFile>()))
+            _cityService.Setup(c => c.EditAsync(It.IsAny<CityProfileDTO>(), It.IsAny<IFormFile>()))
+                .Verifiable();
+            CityController cityController = CreateCityController;
+
+            // Act
+            var result = await cityController.Edit(model, file);
+
+            // Assert
+            Assert.NotNull(result);
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("CityProfile", viewResult.ActionName);
+            Assert.Equal("City", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task EditWithInvalidModelStateTest()
+        {
+            // Arrange
+            CityProfileViewModel model = CreateFakeCityProfileViewModels(1).First();
+            IFormFile file = new FormFile(null, 1234, 1134, "fdd", "dfsdf");
+            _mapper.Setup(m => m.Map<CityProfileViewModel, CityProfileDTO>(It.IsAny<CityProfileViewModel>()))
+                .Returns(new CityProfileDTO());
+            _cityService.Setup(c => c.EditAsync(It.IsAny<CityProfileDTO>(), It.IsAny<IFormFile>()))
                 .Verifiable();
             CityController cityController = CreateCityController;
             cityController.ModelState.AddModelError("NameError", "Required");
-            var result = cityController.Edit(model, file);
 
+            // Act
+            var result = await cityController.Edit(model, file);
+
+            // Assert
             Assert.NotNull(result);
             Assert.IsType<ViewResult>(result);
         }
 
-        //[Fact]
-        //public void EditWithExceptionTest()
-        //{
-        //    CityProfileViewModel model = createFakeCityProfileViewModels(1).First();
-        //    model.City = null;
-        //    IFormFile file = new FormFile(null, 1234, 1134, "fdd", "dfsdf");
-        //    _mapper.Setup(m => m.Map<CityProfileViewModel, CityProfileDTO>(It.IsAny<CityProfileViewModel>()))
-        //        .Returns(new CityProfileDTO());
-        //    _cityService.Setup(c => c.Edit(It.IsAny<CityProfileDTO>(), It.IsAny<IFormFile>()))
-        //        .Verifiable();
-        //    CityController cityController = CreateCityController;
-        //    cityController.ModelState.AddModelError("NameError", "Required");
-
-        //    var result = cityController.Edit(model, file);
-
-        //    var viewResult = Assert.IsType<RedirectToActionResult>(result);
-        //    Assert.NotNull(viewResult);
-        //    Assert.Equal("HandleError", viewResult.ActionName);
-        //    Assert.Equal("Error", viewResult.ControllerName);
-        //}
-
         [Fact]
-        public void EditGetCorrectTest()
+        public async Task EditWithExceptionTest()
         {
-            _mapper.Setup(c => c.Map<CityProfileDTO, CityProfileViewModel>(It.IsAny<CityProfileDTO>()))
-                .Returns(() => new CityProfileViewModel());
-            _cityService.Setup(c => c.Edit(It.IsAny<int>()))
-                .Returns(new CityProfileDTO());
+            // Arrange
+            CityProfileViewModel model = CreateFakeCityProfileViewModels(1).First();
+            model.City = null;
+            IFormFile file = new FormFile(null, 1234, 1134, "fdd", "dfsdf");
+            _cityService.Setup(c => c.EditAsync(It.IsAny<CityProfileDTO>(), It.IsAny<IFormFile>()))
+                .ThrowsAsync(new ArgumentException("some message"));
             CityController cityController = CreateCityController;
 
-            var result = cityController.Edit(1);
+            // Act
+            var result = await cityController.Edit(model, file);
 
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public void CreateGetCorrectTest()
+        {
+            // Arrange
+            CityController cityController = CreateCityController;
+
+            // Act
+            var result = cityController.Create();
+
+            // Assert
             Assert.IsType<ViewResult>(result);
         }
 
         [Fact]
-        public void CityAdminsCorrectTest()
+        public async Task CityDocumentsCorrectTest()
         {
-            _mapper.Setup(c => c.Map<CityProfileDTO, CityProfileViewModel>(It.IsAny<CityProfileDTO>()))
-                .Returns(() => new CityProfileViewModel());
-            _cityService.Setup(c => c.CityAdmins(It.IsAny<int>()))
-                .Returns(new CityProfileDTO());
-            CityController cityController = CreateCityController;
-
-            var result = cityController.CityAdmins(1);
-
-            Assert.IsType<ViewResult>(result);
-        }
-
-        [Fact]
-        public void CityFollowersCorrectTest()
-        {
-            _mapper.Setup(c => c.Map<CityProfileDTO, CityProfileViewModel>(It.IsAny<CityProfileDTO>()))
-                .Returns(() => new CityProfileViewModel());
-            _cityService.Setup(c => c.CityFollowers(It.IsAny<int>()))
-                .Returns(new CityProfileDTO());
-            CityController cityController = CreateCityController;
-
-            var result = cityController.CityFollowers(1);
-
-            Assert.IsType<ViewResult>(result);
-        }
-
-        [Fact]
-        public void CityMembersCorrectTest()
-        {
-            _mapper.Setup(c => c.Map<CityProfileDTO, CityProfileViewModel>(It.IsAny<CityProfileDTO>()))
-                .Returns(() => new CityProfileViewModel());
-            _cityService.Setup(c => c.CityMembers(It.IsAny<int>()))
-                .Returns(new CityProfileDTO());
-            CityController cityController = CreateCityController;
-
-            var result = cityController.CityMembers(1);
-
-            Assert.IsType<ViewResult>(result);
-        }
-
-        [Fact]
-        public void CityDocumentsCorrectTest()
-        {
-            _cityService.Setup(c => c.CityDocuments(It.IsAny<int>()))
-                .Returns(new CityProfileDTO());
+            // Arrange
+            _cityService.Setup(c => c.CityDocumentsAsync(It.IsAny<int>()))
+                .ReturnsAsync(new CityProfileDTO());
             _mapper.Setup(m => m.Map<CityProfileDTO, CityProfileViewModel>(It.IsAny<CityProfileDTO>()))
                 .Returns(new CityProfileViewModel());
             CityController cityController = CreateCityController;
 
-            var result = cityController.CityDocuments(3);
+            // Act
+            var result = await cityController.CityDocuments(FakeId);
 
+            // Assert
             Assert.IsType<ViewResult>(result);
         }
 
         [Fact]
-        public void DetailsDocumentsCorrectTest()
+        public async Task CityDocumentsInvalidIdTest()
         {
-            _cityService.Setup(c => c.GetById(It.IsAny<int>()))
-                .Returns(new CityDTO());
+            // Arrange
+            _cityService.Setup(c => c.CityDocumentsAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            CityController cityController = CreateCityController;
+
+            // Act
+            var result = await cityController.CityDocuments(FakeId);
+
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task CityDocumentsExceptionTest()
+        {
+            // Arrange
+            _cityService.Setup(c => c.CityDocumentsAsync(It.IsAny<int>()))
+                .ThrowsAsync(new ArgumentException("some message"));
+            CityController cityController = CreateCityController;
+
+            // Act
+            var result = await cityController.CityDocuments(FakeId);
+
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task DetailsCorrectTest()
+        {
+            // Arrange
+            _cityService.Setup(c => c.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new CityDTO());
             _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
                 .Returns(new CityViewModel());
             CityController cityController = CreateCityController;
 
-            var result = cityController.CityDocuments(3);
+            // Act
+            var result = await cityController.Details(3);
 
+            // Assert
             Assert.IsType<ViewResult>(result);
         }
 
         [Fact]
-        public void CreateWithValidModelStateTest()
+        public async Task DetailsInvalidIdTest()
         {
-            CityProfileViewModel model = createFakeCityProfileViewModels(1).First();
+            // Arrange
+            _cityService.Setup(c => c.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            CityController cityController = CreateCityController;
+
+            // Act
+            var result = await cityController.Details(3);
+
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task DetailsExceptionTest()
+        {
+            // Arrange
+            _cityService.Setup(c => c.GetByIdAsync(It.IsAny<int>()))
+                .ThrowsAsync(new ArgumentException("some message"));
+            CityController cityController = CreateCityController;
+
+            // Act
+            var result = await cityController.Details(3);
+
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task CreateWithValidModelStateTest()
+        {
+            // Arrange
+            CityProfileViewModel model = CreateFakeCityProfileViewModels(1).First();
             IFormFile file = new FormFile(null, 1234, 1134, "fdd", "dfsdf");
             _mapper.Setup(m => m.Map<CityProfileViewModel, CityProfileDTO>(It.IsAny<CityProfileViewModel>()))
                 .Returns(new CityProfileDTO());
-            _cityService.Setup(c => c.Create(It.IsAny<CityProfileDTO>(), It.IsAny<IFormFile>()))
-                .Returns(3);
+            _cityService.Setup(c => c.CreateAsync(It.IsAny<CityProfileDTO>(), It.IsAny<IFormFile>()))
+                .ReturnsAsync(3);
             CityController cityController = CreateCityController;
 
-            var result = cityController.Create(model, file);
+            // Act
+            var result = await cityController.Create(model, file);
 
+            // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.NotNull(viewResult);
             Assert.Equal("CityProfile", viewResult.ActionName);
@@ -219,54 +522,48 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void CreateWithInvalidModelStateTest()
+        public async Task CreateWithInvalidModelStateTest()
         {
-            CityProfileViewModel model = createFakeCityProfileViewModels(1).First();
+            // Arrange
+            CityProfileViewModel model = CreateFakeCityProfileViewModels(1).First();
             IFormFile file = new FormFile(null, 1234, 1134, "fdd", "dfsdf");
             _mapper.Setup(m => m.Map<CityProfileViewModel, CityProfileDTO>(It.IsAny<CityProfileViewModel>()))
                 .Returns(new CityProfileDTO());
-            _cityService.Setup(c => c.Create(It.IsAny<CityProfileDTO>(), It.IsAny<IFormFile>()))
-                .Returns(3);
+            _cityService.Setup(c => c.CreateAsync(It.IsAny<CityProfileDTO>(), It.IsAny<IFormFile>()))
+                .ReturnsAsync(3);
             CityController cityController = CreateCityController;
             cityController.ModelState.AddModelError("NameError", "Required");
 
-            var result = cityController.Create(model, file);
+            // Act
+            var result = await cityController.Create(model, file);
 
+            // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.NotNull(viewResult);
         }
 
         [Fact]
-        public void CreateGetCorrectTest()
+        public async Task CreateWithExceptionTest()
         {
+            // Arrange
+            CityProfileViewModel model = CreateFakeCityProfileViewModels(1).First();
+            IFormFile file = new FormFile(null, 1234, 1134, "fdd", "dfsdf");
+            _cityService.Setup(c => c.CreateAsync(It.IsAny<CityProfileDTO>(), It.IsAny<IFormFile>()))
+                .ThrowsAsync(new ArgumentException("some message"));
             CityController cityController = CreateCityController;
 
-            var result = cityController.Create();
+            // Act
+            var result = await cityController.Create(model, file);
 
-            Assert.IsType<ViewResult>(result);
-
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
         }
 
-        //[Fact]
-        //public void CreateWithExceptionTest()
-        //{
-        //    CityProfileViewModel model = createFakeCityProfileViewModels(1).First();
-        //    IFormFile file = new FormFile(null, 1234, 1134, "fdd", "dfsdf");
-        //    _mapper.Setup(m => m.Map<CityProfileViewModel, CityProfileDTO>(It.IsAny<CityProfileViewModel>()))
-        //        .Returns(() => null);
-        //    _cityService.Setup(c => c.Create(It.IsAny<CityProfileDTO>(), It.IsAny<IFormFile>()))
-        //        .Returns(3);
-        //    CityController cityController = CreateCityController;
-
-        //    var result = cityController.Create(model, file);
-
-        //    var viewResult = Assert.IsType<RedirectToActionResult>(result);
-        //    Assert.NotNull(viewResult);
-        //    Assert.Equal("HandleError", viewResult.ActionName);
-        //    Assert.Equal("Error", viewResult.ControllerName);
-        //}
-
-        private IQueryable<CityProfileViewModel> createFakeCityProfileViewModels(int count)
+        private int FakeId => 1;
+        private IQueryable<CityProfileViewModel> CreateFakeCityProfileViewModels(int count)
         {
             List<CityProfileViewModel> cityProfilesDto = new List<CityProfileViewModel>();
             for (int i = 0; i < count; i++)

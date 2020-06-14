@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Interfaces.Events
 {
     public interface IEventGalleryManager
     {
-        int AddPictures(int id, IList<IFormFile> files);
-        int DeletePicture(int id);
+        Task<int> AddPicturesAsync(int id, IList<IFormFile> files);
+        Task<int> DeletePictureAsync(int id);
     }
 }

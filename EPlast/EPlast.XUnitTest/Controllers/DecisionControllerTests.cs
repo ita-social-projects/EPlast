@@ -12,20 +12,24 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BussinessLayer.Services.Interfaces;
 using Xunit;
 using Organization = EPlast.Models.Organization;
 
 namespace EPlast.XUnitTest
 {
-    public class DocumentationControllerDecisionTests
+    public class DecisionControllerTests
     {
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<IDecisionService> _decisionService;
+        private readonly Mock<ILoggerService<DecisionController>> _loggerService;
 
-        public DocumentationControllerDecisionTests()
+        public DecisionControllerTests()
+
         {
             _mapper = new Mock<IMapper>();
             _decisionService = new Mock<IDecisionService>();
+            _loggerService = new Mock<ILoggerService<DecisionController>>();
         }
 
         [Theory]
@@ -33,15 +37,15 @@ namespace EPlast.XUnitTest
         [InlineData(3, true)]
         [InlineData(42, false)]
         [InlineData(21, false)]
-        public void GetDecisionByIdTest(int id, bool expected)
+        public async Task GetDecisionByIdTest(int id, bool expected)
         {
-            _decisionService.Setup(d => d.GetDecision(It.IsAny<int>()))
-                .Returns(() => CreateDecisionsDtoQueryable().First(x => x.ID == id));
+            _decisionService.Setup(d => d.GetDecisionAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => CreateDecisionsDtoQueryable().First(x => x.ID == id));
             _mapper.Setup(d => d.Map<Decision>(It.IsAny<DecisionDTO>()))
                 .Returns(() => CreateDecisionsQueryable().First(x => x.ID == id));
-            DocumentationController documentationController = CreateDocumentationController;
+            DecisionController documentationController = CreateDocumentationController;
 
-            JsonResult jsonResult = documentationController.GetDecision(id);
+            JsonResult jsonResult = await documentationController.GetDecision(id);
             bool actual = jsonResult.Value.ToString().Contains("True");
 
             Assert.Equal(expected, actual);
@@ -50,16 +54,16 @@ namespace EPlast.XUnitTest
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void ChangeDecisionTest(bool expected)
+        public async Task ChangeDecisionTest(bool expected)
         {
             DecisionViewModel decisionViewModel = CreateDecisionViewModel();
             _mapper.Setup(m => m.Map<DecisionDTO>(It.IsAny<Decision>()))
                  .Returns(new DecisionDTO());
-            _decisionService.Setup(d => d.ChangeDecision(It.IsAny<DecisionDTO>()))
-                .Returns(() => expected);
-            DocumentationController documentationController = CreateDocumentationController;
+            _decisionService.Setup(d => d.ChangeDecisionAsync(It.IsAny<DecisionDTO>()))
+                .ReturnsAsync(() => expected);
+            DecisionController documentationController = CreateDocumentationController;
 
-            JsonResult jsonResult = documentationController.ChangeDecision(decisionViewModel);
+            JsonResult jsonResult = await documentationController.ChangeDecision(decisionViewModel.DecisionWrapper.Decision);
             bool actual = jsonResult.Value.ToString().Contains("True");
 
             Assert.Equal(expected, actual);
@@ -68,11 +72,10 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task SaveDecisionWithNullDecisionViewMode()
         {
+            DecisionWrapper decisionWrapper = null;
+            DecisionController documentationController = CreateDocumentationController;
 
-            DecisionViewModel decisionViewModel = null;
-            DocumentationController documentationController = CreateDocumentationController;
-
-            JsonResult jsonResult = await documentationController.SaveDecision(decisionViewModel);
+            JsonResult jsonResult = await documentationController.SaveDecision(decisionWrapper);
             bool actual = jsonResult.Value.ToString().Contains("False");
 
             Assert.True(actual);
@@ -83,9 +86,9 @@ namespace EPlast.XUnitTest
         {
             DecisionViewModel decisionViewModel = CreateDecisionViewModel();
             decisionViewModel.DecisionWrapper.File = new FormFile(null, 1234, 11241234, "fdd", "dfsdf");
-            DocumentationController documentationController = CreateDocumentationController;
+            DecisionController documentationController = CreateDocumentationController;
 
-            JsonResult jsonResult = await documentationController.SaveDecision(decisionViewModel);
+            JsonResult jsonResult = await documentationController.SaveDecision(decisionViewModel.DecisionWrapper);
             bool actual = jsonResult.Value.ToString().Contains("file length > 10485760");
 
             Assert.True(actual);
@@ -97,80 +100,82 @@ namespace EPlast.XUnitTest
             _mapper.Setup(m => m.Map<DecisionWrapperDTO>(It.IsAny<DecisionWrapper>()))
                 .Returns(new DecisionWrapperDTO());
             _decisionService.Setup(d => d.SaveDecisionAsync(It.IsAny<DecisionWrapperDTO>()))
-                .Returns(Task.FromResult(true));
+                .Returns(Task.FromResult(5));
+            _decisionService.Setup(d => d.GetDecisionOrganizationAsync(It.IsAny<OrganizationDTO>()))
+                .ReturnsAsync(new OrganizationDTO { OrganizationName = string.Empty });
             DecisionViewModel decisionViewModel = CreateDecisionViewModel();
-            DocumentationController documentationController = CreateDocumentationController;
+            DecisionController documentationController = CreateDocumentationController;
 
-            JsonResult jsonResult = await documentationController.SaveDecision(decisionViewModel);
+            JsonResult jsonResult = await documentationController.SaveDecision(decisionViewModel.DecisionWrapper);
             bool actual = jsonResult.Value.ToString().Contains("True");
 
             Assert.True(actual);
         }
 
         [Fact]
-        public void CreateDecisionCorrectTest()
+        public async Task CreateDecisionCorrectTest()
         {
-            _mapper.Setup(m => m.Map<List<Organization>>(It.IsAny<List<OrganizationDTO>>()))
+            _mapper.Setup(m => m.Map<IEnumerable<Organization>>(It.IsAny<IEnumerable<OrganizationDTO>>()))
                 .Returns(new List<Organization>());
-            _mapper.Setup(m => m.Map<List<DecisionWrapper>>(It.IsAny<List<DecisionWrapperDTO>>()))
+            _mapper.Setup(m => m.Map<IEnumerable<DecisionWrapper>>(It.IsAny<IEnumerable<DecisionWrapperDTO>>()))
                 .Returns(new List<DecisionWrapper>());
-            _mapper.Setup(m => m.Map<List<DecisionTarget>>(It.IsAny<List<DecisionTargetDTO>>()))
+            _mapper.Setup(m => m.Map<IEnumerable<DecisionTarget>>(It.IsAny<IEnumerable<DecisionTargetDTO>>()))
                 .Returns(new List<DecisionTarget>());
             _decisionService.Setup(d => d.GetDecisionStatusTypes()).Returns(new List<SelectListItem>());
-            DocumentationController documentationController = CreateDocumentationController;
+            DecisionController documentationController = CreateDocumentationController;
 
-            DecisionViewModel decisionViewModel = documentationController.CreateDecision();
+            DecisionViewModel decisionViewModel = await documentationController.CreateDecision();
 
             Assert.IsType<DecisionViewModel>(decisionViewModel);
-
         }
+
         [Fact]
-        public void CreateDecisionFailTest()
+        public async Task CreateDecisionFailTest()
         {
-            _mapper.Setup(m => m.Map<List<Organization>>(It.IsAny<List<OrganizationDTO>>()))
+            _mapper.Setup(m => m.Map<IEnumerable<Organization>>(It.IsAny<IEnumerable<OrganizationDTO>>()))
                 .Returns(() => null);
-            _mapper.Setup(m => m.Map<List<DecisionWrapper>>(It.IsAny<List<DecisionWrapperDTO>>()))
+            _mapper.Setup(m => m.Map<IEnumerable<DecisionWrapper>>(It.IsAny<IEnumerable<DecisionWrapperDTO>>()))
                 .Returns(new List<DecisionWrapper>());
-            _mapper.Setup(m => m.Map<List<DecisionTarget>>(It.IsAny<List<DecisionTargetDTO>>()))
+            _mapper.Setup(m => m.Map<IEnumerable<DecisionTarget>>(It.IsAny<IEnumerable<DecisionTargetDTO>>()))
                 .Returns(new List<DecisionTarget>());
             _decisionService.Setup(d => d.GetDecisionStatusTypes()).Returns(new List<SelectListItem>());
-            DocumentationController documentationController = CreateDocumentationController;
+            DecisionController documentationController = CreateDocumentationController;
 
-            DecisionViewModel decisionViewModel = documentationController.CreateDecision();
+            DecisionViewModel decisionViewModel = await documentationController.CreateDecision();
 
             Assert.True(decisionViewModel == null);
-
         }
+
         [Fact]
-        public void ReadDecisionFailTest()
+        public async Task ReadDecisionFailTest()
         {
-            _mapper.Setup(m => m.Map<List<DecisionWrapper>>(It.IsAny<List<DecisionWrapperDTO>>()))
+            _mapper.Setup(m => m.Map<IEnumerable<DecisionWrapper>>(It.IsAny<IEnumerable<DecisionWrapperDTO>>()))
                 .Returns(() => null);
-            DocumentationController documentationController = CreateDocumentationController;
+            DecisionController documentationController = CreateDocumentationController;
 
-            var result = documentationController.ReadDecision();
-            var viewResult = Assert.IsType<RedirectToActionResult>(result);
-
-            Assert.Equal("HandleError", viewResult.ActionName);
-            Assert.Equal("Error", viewResult.ControllerName);
-        }
-        [Fact]
-        public void ReadDecisionCorrectTest()
-        {
-            _mapper.Setup(m => m.Map<List<DecisionWrapper>>(It.IsAny<List<DecisionWrapperDTO>>()))
-                .Returns(new List<DecisionWrapper>());
-            _mapper.Setup(m => m.Map<List<Organization>>(It.IsAny<List<OrganizationDTO>>()))
-                .Returns(new List<Organization>());
-            _mapper.Setup(m => m.Map<List<DecisionWrapper>>(It.IsAny<List<DecisionWrapperDTO>>()))
-                .Returns(new List<DecisionWrapper>());
-            _mapper.Setup(m => m.Map<List<DecisionTarget>>(It.IsAny<List<DecisionTargetDTO>>()))
-                .Returns(new List<DecisionTarget>());
-            DocumentationController documentationController = CreateDocumentationController;
-
-            var result = documentationController.ReadDecision();
+            var result = await documentationController.ReadDecision();
+            var viewResult = Assert.IsType<ViewResult>(result);
 
             Assert.IsType<ViewResult>(result);
+            Assert.Null(((Tuple<DecisionViewModel, List<DecisionViewModel>>)viewResult.Model).Item2);
+        }
 
+        [Fact]
+        public async Task ReadDecisionCorrectTest()
+        {
+            _mapper.Setup(m => m.Map<IEnumerable<DecisionWrapper>>(It.IsAny<IEnumerable<DecisionWrapperDTO>>()))
+                .Returns(new List<DecisionWrapper>());
+            _mapper.Setup(m => m.Map<IEnumerable<Organization>>(It.IsAny<IEnumerable<OrganizationDTO>>()))
+                .Returns(new List<Organization>());
+            _mapper.Setup(m => m.Map<IEnumerable<DecisionWrapper>>(It.IsAny<IEnumerable<DecisionWrapperDTO>>()))
+                .Returns(new List<DecisionWrapper>());
+            _mapper.Setup(m => m.Map<IEnumerable<DecisionTarget>>(It.IsAny<IEnumerable<DecisionTargetDTO>>()))
+                .Returns(new List<DecisionTarget>());
+            DecisionController documentationController = CreateDocumentationController;
+
+            var result = await documentationController.ReadDecision();
+
+            Assert.IsType<ViewResult>(result);
         }
 
         [Theory]
@@ -178,7 +183,7 @@ namespace EPlast.XUnitTest
         [InlineData(2, true)]
         [InlineData(42, false)]
         [InlineData(-1, false)]
-        public void DeleteDecisionTest(int id, bool expected)
+        public async Task DeleteDecisionTest(int id, bool expected)
         {
             Decision decision;
             try
@@ -189,11 +194,11 @@ namespace EPlast.XUnitTest
             {
                 decision = null;
             }
-            _decisionService.Setup(d => d.DeleteDecision(It.IsAny<int>()))
-                .Returns(() => decision != null);
-            DocumentationController documentationController = CreateDocumentationController;
+            _decisionService.Setup(d => d.DeleteDecisionAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => decision != null);
+            DecisionController documentationController = CreateDocumentationController;
 
-            JsonResult jsonResult = documentationController.DeleteDecision(id);
+            JsonResult jsonResult = await documentationController.DeleteDecision(id);
             bool actual = jsonResult.Value.ToString().Contains("True");
 
             Assert.Equal(expected, actual);
@@ -212,6 +217,7 @@ namespace EPlast.XUnitTest
             }
             return decisions.AsQueryable();
         }
+
         private static IEnumerable<Decision> CreateDecisionsQueryable()
         {
             List<Decision> decisions = new List<Decision>();
@@ -232,7 +238,6 @@ namespace EPlast.XUnitTest
             {
                 Decision = new Decision
                 {
-
                     ID = 1,
                     Name = "Test Decision",
                     DecisionStatusType = DecisionStatusType.InReview,
@@ -243,9 +248,9 @@ namespace EPlast.XUnitTest
                     HaveFile = haveFile
                 }
             }
-
         };
-        private DocumentationController CreateDocumentationController =>
-            new DocumentationController(null, _decisionService.Object, _mapper.Object);
+
+        private DecisionController CreateDocumentationController =>
+            new DecisionController(null, _decisionService.Object, _mapper.Object, _loggerService.Object);
     }
 }

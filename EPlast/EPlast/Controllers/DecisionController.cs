@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer;
 using EPlast.BussinessLayer.DTO;
-using EPlast.DataAccess.Entities;
 using EPlast.Models;
 using EPlast.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -11,170 +10,178 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BussinessLayer.Services.Interfaces;
 using Organization = EPlast.Models.Organization;
 
 namespace EPlast.Controllers
 {
-    public class DocumentationController : Controller
+    public class DecisionController : Controller
     {
         private readonly IDecisionService _decisionService;
         private readonly IMapper _mapper;
         private readonly IPdfService _PDFService;
+        private readonly ILoggerService<DecisionController> _loggerService;
 
-        public DocumentationController(IPdfService PDFService, IDecisionService decisionService, IMapper mapper)
+        public DecisionController(IPdfService PDFService, IDecisionService decisionService,
+            IMapper mapper, ILoggerService<DecisionController> loggerService)
         {
             _PDFService = PDFService;
             _decisionService = decisionService;
             _mapper = mapper;
-        }
-
-        public IActionResult Index()
-        {
-            return View();
+            _loggerService = loggerService;
         }
 
         [Authorize(Roles = "Admin")]
-        public DecisionViewModel CreateDecision()
+        public async Task<DecisionViewModel> CreateDecision()
         {
-            DecisionViewModel decesionViewModel = null;
+            DecisionViewModel decisionViewModel = null;
             try
             {
-                var organizations = _mapper.Map<List<Organization>>(_decisionService.GetOrganizationList());
-                decesionViewModel = new DecisionViewModel
+                var organizations = _mapper.Map<IEnumerable<Organization>>(await _decisionService.GetOrganizationListAsync());
+                decisionViewModel = new DecisionViewModel
                 {
-                    DecisionWrapper = _mapper.Map<DecisionWrapper>(_decisionService.CreateDecision()),
+                    DecisionWrapper = _mapper.Map<DecisionWrapper>(await _decisionService.CreateDecisionAsync()),
                     OrganizationListItems = from item in organizations
                                             select new SelectListItem
                                             {
                                                 Text = item.OrganizationName,
                                                 Value = item.ID.ToString()
                                             },
-                    DecisionTargets = _mapper.Map<List<DecisionTarget>>(_decisionService.GetDecisionTargetList()),
+                    DecisionTargets = _mapper.Map<IEnumerable<DecisionTarget>>(await _decisionService.GetDecisionTargetListAsync()),
                     DecisionStatusTypeListItems = _decisionService.GetDecisionStatusTypes()
                 };
             }
             catch (Exception e)
             {
-                RedirectToAction("HandleError", "Error");
-                return null;
+                _loggerService.LogError($"{e.Message}");
             }
 
-            return decesionViewModel;
+            return decisionViewModel;
         }
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        public JsonResult GetDecision(int id)
+        public async Task<JsonResult> GetDecision(int id)
         {
+            bool success = true;
+            Decision decision = null;
             try
             {
-                var decision = _mapper.Map<Decesion>(_decisionService.GetDecision(id));
-                return Json(new { success = true, decision });
+                decision = _mapper.Map<Decision>(await _decisionService.GetDecisionAsync(id));
             }
-            catch
+            catch (Exception e)
             {
-                return Json(new { success = false });
+                _loggerService.LogError($"{e.Message}");
+                success = false;
             }
+
+            return Json(new { success, decision });
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public JsonResult ChangeDecision(DecisionViewModel decesionViewModel)
+        public async Task<JsonResult> ChangeDecision(Decision decision)
         {
             var success = false;
             try
             {
-                success = _decisionService.ChangeDecision(
-                    _mapper.Map<DecisionDTO>(decesionViewModel.DecisionWrapper.Decision));
-                return Json(new
-                {
-                    success,
-                    text = "Зміни пройшли успішно!",
-                    decesion = decesionViewModel.DecisionWrapper.Decision
-                });
+                success = await _decisionService.ChangeDecisionAsync(
+                    _mapper.Map<DecisionDTO>(decision));
             }
-            catch
+            catch (Exception e)
             {
-                return Json(new { success });
+                _loggerService.LogError($"{e.Message}");
             }
+
+            return Json(new
+            {
+                success,
+                text = "Зміни пройшли успішно!",
+                decision
+            });
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<JsonResult> SaveDecision(DecisionViewModel decesionViewModel)
+        public async Task<JsonResult> SaveDecision(DecisionWrapper decisionWrapper)
         {
-            var success = false;
             try
             {
-                ModelState.Remove("Decesion.DecesionStatusType");
-                if (!ModelState.IsValid && decesionViewModel.DecisionWrapper.Decision.DecisionTarget.ID != 0 ||
-                    decesionViewModel == null)
+                ModelState.Remove("DecisionWrapper.Decision.DecisionStatusType");
+                if (!ModelState.IsValid && decisionWrapper.Decision.DecisionTarget.ID != 0 ||
+                    decisionWrapper == null)
                 {
                     ModelState.AddModelError("", "Дані введені неправильно");
+
                     return Json(new
                     {
-                        success,
+                        success = false,
                         text = ModelState.Values.SelectMany(v => v.Errors),
-                        model = decesionViewModel,
+                        model = decisionWrapper,
                         modelstate = ModelState
                     });
                 }
 
-                if (decesionViewModel.DecisionWrapper.File != null &&
-                    decesionViewModel.DecisionWrapper.File.Length > 10485760)
+                if (decisionWrapper.File != null &&
+                    decisionWrapper.File.Length > 10485760)
                 {
                     ModelState.AddModelError("", "файл за великий (більше 10 Мб)");
-                    return Json(new { success, text = "file length > 10485760" });
+
+                    return Json(new { success = false, text = "file length > 10485760" });
                 }
 
-                decesionViewModel.DecisionWrapper.Decision.HaveFile = decesionViewModel.DecisionWrapper.File != null;
-                success = await _decisionService.SaveDecisionAsync(
-                    _mapper.Map<DecisionWrapperDTO>(decesionViewModel.DecisionWrapper));
+                decisionWrapper.Decision.HaveFile = decisionWrapper.File != null;
+                decisionWrapper.Decision.ID = await _decisionService.SaveDecisionAsync(
+                    _mapper.Map<DecisionWrapperDTO>(decisionWrapper));
+
                 return Json(new
                 {
-                    success,
+                    success = true,
                     Text = "Рішення додано!",
-                    decision = decesionViewModel.DecisionWrapper.Decision,
-                    decesionOrganization = _mapper.Map<Organization>(
-                        _decisionService.GetDecisionOrganization(decesionViewModel.DecisionWrapper.Decision.ID))
+                    decision = decisionWrapper.Decision,
+                    decisionOrganization = (await _decisionService
+                        .GetDecisionOrganizationAsync(_mapper.Map<OrganizationDTO>(decisionWrapper.Decision.Organization)))
+                        .OrganizationName
                 });
             }
             catch (Exception e)
             {
+                _loggerService.LogError($"{e.Message}");
+
                 return Json(new
                 {
-                    success,
+                    success = false,
                     text = e.Message
                 });
             }
         }
 
         [Authorize(Roles = "Admin")]
-        public IActionResult ReadDecision()
+        public async Task<IActionResult> ReadDecision()
         {
             List<DecisionViewModel> decisions = null;
             try
             {
                 decisions = new List<DecisionViewModel>
                 (
-                    _mapper.Map<List<DecisionWrapper>>(_decisionService.GetDecisionList())
+                    _mapper.Map<IEnumerable<DecisionWrapper>>(await _decisionService.GetDecisionListAsync())
                         .Select(decesion => new DecisionViewModel { DecisionWrapper = decesion })
                         .ToList()
                 );
             }
-            catch
+            catch (Exception e)
             {
-                return RedirectToAction("HandleError", "Error");
+                _loggerService.LogError($"{e.Message}");
             }
 
-            return View(Tuple.Create(CreateDecision(), decisions));
+            return View(Tuple.Create(await CreateDecision(), decisions));
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public JsonResult DeleteDecision(int id)
+        public async Task<JsonResult> DeleteDecision(int id)
         {
-            return _decisionService.DeleteDecision(id) ? Json(new
+            return await _decisionService.DeleteDecisionAsync(id) ? Json(new
             {
                 success = true,
                 text = "Зміни пройшли успішно!"
@@ -188,14 +195,22 @@ namespace EPlast.Controllers
             byte[] fileBytes;
             try
             {
-                if (id <= 0) throw new ArgumentException("Decision id cannot be null lest than zero");
+                DecisionIdVerify(id);
                 fileBytes = await _decisionService.DownloadDecisionFileAsync(id);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                _loggerService.LogError($"{e.Message}");
+
                 return RedirectToAction("HandleError", "Error");
             }
+
             return File(fileBytes, _decisionService.GetContentType(id, filename), filename);
+        }
+
+        private static void DecisionIdVerify(int id)
+        {
+            if (id <= 0) throw new ArgumentException("Decision id cannot be null lest than zero");
         }
 
         [Authorize(Roles = "Admin")]
@@ -204,13 +219,15 @@ namespace EPlast.Controllers
         {
             try
             {
-                if (objId <= 0) throw new ArgumentException("Cannot crated pdf id is not valid");
-
+                DecisionIdVerify(objId);
                 var arr = await _PDFService.DecisionCreatePDFAsync(objId);
+
                 return File(arr, "application/pdf");
             }
-            catch
+            catch (Exception e)
             {
+                _loggerService.LogError($"{e.Message}");
+
                 return RedirectToAction("HandleError", "Error");
             }
         }
