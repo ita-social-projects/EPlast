@@ -607,11 +607,11 @@ namespace EPlast.XUnitTest
             accountController.ControllerContext.HttpContext = new DefaultHttpContext();
 
             mockMapper
-               .Setup(s => s.Map<ForgotPasswordDTO>(It.IsAny<ForgotPasswordViewModel>()))
+               .Setup(s => s.Map<ForgotPasswordDto>(It.IsAny<ForgotPasswordViewModel>()))
                .Returns(GetTestForgotPasswordDto());
 
             mockAccountService
-                .Setup(s => s.SendEmailReseting(It.IsAny<string>(), It.IsAny<ForgotPasswordDTO>()))
+                .Setup(s => s.SendEmailReseting(It.IsAny<string>(), It.IsAny<ForgotPasswordDto>()))
                 .Verifiable();
 
             //Act
@@ -1102,9 +1102,9 @@ namespace EPlast.XUnitTest
             return registerDto;
         }
 
-        private ForgotPasswordDTO GetTestForgotPasswordDto()
+        private ForgotPasswordDto GetTestForgotPasswordDto()
         {
-            var forgotpasswordDto = new ForgotPasswordDTO
+            var forgotpasswordDto = new ForgotPasswordDto
             {
                 Email = "andriishainoha@gmail.com"
             };
