@@ -6,8 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BussinessLayer;
-using EPlast.BussinessLayer.AccessManagers;
-using EPlast.BussinessLayer.AccessManagers.Interfaces;
+//using EPlast.BussinessLayer.AccessManagers;
+//using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using EPlast.BussinessLayer.Interfaces;
 using EPlast.BussinessLayer.Interfaces.City;
 using EPlast.BussinessLayer.Interfaces.Club;
@@ -26,8 +26,6 @@ using EPlast.BussinessLayer.Settings;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using EPlast.Models.ViewModelInitializations;
-using EPlast.Models.ViewModelInitializations.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -75,7 +73,7 @@ namespace EPlast.WebApi
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("V1", new OpenApiInfo { Title = "MyApi", Version = "V1" });
-                c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+                //c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
             });
 
             services.AddScoped<IHomeService, HomeService>();
@@ -108,9 +106,9 @@ namespace EPlast.WebApi
             services.AddScoped<IClubService, ClubService>();
             services.AddScoped<IClubAdministrationService, ClubAdministrationService>();
             services.AddScoped<IClubMembersService, ClubMembersService>();
-            services.AddScoped<ICreateEventVMInitializer, CreateEventVMInitializer>();
-            services.AddScoped<IUserAccessManagerSettings, UserAccessManagerSettings>();
-            services.AddScoped<IUserAccessManager, UserAccessManager>();
+            //services.AddScoped<ICreateEventVMInitializer, CreateEventVMInitializer>();
+            //services.AddScoped<IUserAccessManagerSettings, UserAccessManagerSettings>();
+            //services.AddScoped<IUserAccessManager, UserAccessManager>();
             services.AddScoped<IActionManager, ActionManager>();
             services.AddScoped<IEventCategoryManager, EventCategoryManager>();
             services.AddScoped<IEventTypeManager, EventTypeManager>();
@@ -195,8 +193,8 @@ namespace EPlast.WebApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseSwagger()
-                .UseSwaggerUI(c =>
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/V1/swagger.json", "MyApi");
             });
@@ -231,15 +229,7 @@ namespace EPlast.WebApi
             app.UseHttpsRedirection();
             app.UseMvc();
             app.UseAuthentication();
-            /*app.UseCors(builder =>
-                builder
-                .WithOrigins("") тут добавити урл
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials()
-            );*/
             app.UseCors("CorsPolicy");
-
         }
     }
 }

@@ -8,7 +8,7 @@ using EPlast.BussinessLayer.Interfaces;
 using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.Resources;
-using EPlast.ViewModels;
+using EPlast.WebApi.Models.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
@@ -65,7 +65,7 @@ namespace EPlast.WebApi.Controllers
             _resourceForErrors = resourceForErrors;
         }
 
-        [HttpGet]
+        [HttpGet("signin")]
         [AllowAnonymous]
         public async Task<IActionResult> Login(string returnUrl)
         {
@@ -135,7 +135,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpGet("signup")]   //тут треба писати api/account/signup
+        [HttpGet("signup")]
         [AllowAnonymous]
         public IActionResult Register()
         {
