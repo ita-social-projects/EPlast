@@ -43,7 +43,7 @@ namespace EPlast.Controllers
         {
             try
             {
-                var result = _mapper.Map<IEnumerable<UserTableDTO>, IEnumerable<UserTableViewModel>>(await _adminService.UsersTable());
+                var result = _mapper.Map<IEnumerable<UserTableDTO>, IEnumerable<UserTableViewModel>>(await _adminService.UsersTableAsync());
                 return View(result);
             }
             catch (Exception e)
@@ -59,14 +59,14 @@ namespace EPlast.Controllers
 
             if (!string.IsNullOrEmpty(userId))
             {
-                var user = await _userManagerService.FindById(userId);
+                var user = await _userManagerService.FindByIdAsync(userId);
                 if (user == null)
                 {
                     _logger.Log(LogLevel.Error, $"Can`t find the User");
                     return RedirectToAction("HandleError", "Error", new { code = 404 });
                 }
-                var userRoles = await _userManagerService.GetRoles(user);
-                var allRoles = _adminService.GetRolesExceptAdmin();
+                var userRoles = await _userManagerService.GetRolesAsync(user);
+                var allRoles = await _adminService.GetRolesExceptAdminAsync();
 
                 RoleViewModel model = new RoleViewModel
                 {
@@ -88,7 +88,7 @@ namespace EPlast.Controllers
 
             if (!string.IsNullOrEmpty(userId))
             {
-                await _adminService.Edit(userId, roles);
+                await _adminService.EditAsync(userId, roles);
                 _logger.LogInformation("Successful role change for {0}", userId);
                 return RedirectToAction("UsersTable");
             }
@@ -112,35 +112,34 @@ namespace EPlast.Controllers
             {
                 if (!string.IsNullOrEmpty(userId))
                 {
-                    await _adminService.DeleteUser(userId);
+                    await _adminService.DeleteUserAsync(userId);
                     _logger.LogInformation("Successful delete user {0}", userId);
                     return RedirectToAction("UsersTable");
                 }
                 _logger.Log(LogLevel.Error, $"User, with userId: {userId}, is null");
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
-            catch
+            catch(Exception e)
             {
-                _logger.Log(LogLevel.Error, "Smth went wrong");
+                _logger.Log(LogLevel.Error, $"Smth went wrong {e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 505 });
             }
         }
 
         [HttpGet]
-        public IActionResult RegionsAdmins()
+        public async  Task<IActionResult> RegionsAdmins()
         {
-            var cities = _cityService.GetAllDTO();
             var model = new RegionsAdminsViewModel
             {
-                Cities = _mapper.Map<IEnumerable<CityDTO>, IEnumerable<CityViewModel>>(cities)
+                Cities = _mapper.Map<IEnumerable<CityDTO>, IEnumerable<CityViewModel>>(await _cityService.GetAllDTOAsync())
             };
             return View(model);
         }
 
         [HttpGet]
-        public IActionResult GetAdmins(int cityId)
+        public async Task<IActionResult> GetAdmins(int cityId)
         {
-            var res = _mapper.Map<IEnumerable<CityAdministrationDTO>, IEnumerable<CityAdministrationViewModel>>(_cityAdministrationService.GetByCityId(cityId));
+            var res = _mapper.Map<IEnumerable<CityAdministrationDTO>, IEnumerable<CityAdministrationViewModel>>(await _cityAdministrationService.GetByCityIdAsync(cityId));
             return PartialView(res);
         }
     }

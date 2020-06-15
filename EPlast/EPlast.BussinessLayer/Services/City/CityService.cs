@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using DataAccessCity = EPlast.DataAccess.Entities;
 
 namespace EPlast.BussinessLayer.Services
@@ -27,108 +28,108 @@ namespace EPlast.BussinessLayer.Services
             _env = env;
         }
 
-        public IEnumerable<DataAccessCity.City> GetAll()
+        public async Task<IEnumerable<DataAccessCity.City>> GetAllAsync()
         {
-            return _repoWrapper.City.FindAll();
-        }
-        public IEnumerable<CityDTO> GetAllDTO()
-        {
-            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(GetAll());
+            return await _repoWrapper.City.GetAllAsync();
         }
 
-        public CityDTO GetById(int cityId)
+        public async Task<IEnumerable<CityDTO>> GetAllDTOAsync()
         {
-            var city = _repoWrapper.City
-                   .FindByCondition(q => q.ID == cityId)
-                   .Include(c => c.CityAdministration)
-                    .ThenInclude(t => t.AdminType)
-                   .Include(k => k.CityAdministration)
-                      .ThenInclude(a => a.User)
-                   .Include(m => m.CityMembers)
-                      .ThenInclude(u => u.User)
-                   .Include(l => l.CityDocuments)
-                       .ThenInclude(d => d.CityDocumentType)
-                   .FirstOrDefault();
+            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(await GetAllAsync());
+        }
+
+        public async Task<CityDTO> GetByIdAsync(int cityId)
+        {
+            var city = await _repoWrapper.City.GetFirstOrDefaultAsync(
+                    predicate: c => c.ID == cityId,
+                    include : source => source
+                        .Include(c => c.CityAdministration)
+                            .ThenInclude(t => t.AdminType)
+                        .Include(k => k.CityAdministration)
+                            .ThenInclude(a => a.User)
+                        .Include(m => m.CityMembers)
+                            .ThenInclude(u => u.User)
+                        .Include(l => l.CityDocuments)
+                            .ThenInclude(d => d.CityDocumentType));
             return _mapper.Map<DataAccessCity.City, CityDTO>(city);
         }
 
-        public CityProfileDTO CityProfile(int cityId)
+        public async Task<CityProfileDTO> CityProfileAsync(int cityId)
         {
-            var city = GetById(cityId);
-
-            var cityHead = city?.CityAdministration
-                    ?.FirstOrDefault(a => a.EndDate == null && a.AdminType.AdminTypeName == "Голова Станиці");
-
+            var city = await GetByIdAsync(cityId);
+            var cityHead = city?.CityAdministration?.FirstOrDefault(a => a.EndDate == null && a.AdminType.AdminTypeName == "Голова Станиці");
             var cityAdmins = city?.CityAdministration
                 .Where(a => a.EndDate == null && a.AdminType.AdminTypeName != "Голова Станиці")
                 .ToList();
-
             var members = city?.CityMembers.Where(m => m.EndDate == null && m.StartDate != null).Take(6).ToList();
             var followers = city?.CityMembers.Where(m => m.EndDate == null && m.StartDate == null).Take(6).ToList();
-
             var cityDoc = city?.CityDocuments.Take(4).ToList();
             return new CityProfileDTO { City = city, CityHead = cityHead, Members = members, Followers = followers, CityAdmins = cityAdmins, CityDoc = cityDoc };
         }
-        public CityProfileDTO CityMembers(int cityId)
-        {
-            var city = GetById(cityId);
 
+        public async Task<CityProfileDTO> CityMembersAsync(int cityId)
+        {
+            var city = await GetByIdAsync(cityId);
             var members = city.CityMembers.Where(m => m.EndDate == null && m.StartDate != null).ToList();
             return new CityProfileDTO { City = city, Members = members };
         }
-        public CityProfileDTO CityFollowers(int cityId)
-        {
-            var city = GetById(cityId);
 
+        public async Task<CityProfileDTO> CityFollowersAsync(int cityId)
+        {
+            var city = await GetByIdAsync(cityId);
             var followers = city.CityMembers.Where(m => m.EndDate == null && m.StartDate == null).ToList();
             return new CityProfileDTO { City = city, Followers = followers };
         }
-        public CityProfileDTO CityAdmins(int cityId)
-        {
-            var city = GetById(cityId);
 
+        public async Task<CityProfileDTO> CityAdminsAsync(int cityId)
+        {
+            var city = await GetByIdAsync(cityId);
             var cityAdmins = city.CityAdministration
-                                     .Where(a => a.EndDate == null && a.AdminType.AdminTypeName != "Голова Станиці")
-                                     .ToList();
+                .Where(a => a.EndDate == null && a.AdminType.AdminTypeName != "Голова Станиці")
+                .ToList();
             return new CityProfileDTO { City = city, CityAdmins = cityAdmins };
         }
-        public CityProfileDTO CityDocuments(int cityId)
-        {
-            var city = GetById(cityId);
 
+        public async Task<CityProfileDTO> CityDocumentsAsync(int cityId)
+        {
+            var city = await GetByIdAsync(cityId);
             var cityDoc = city.CityDocuments.ToList();
             return new CityProfileDTO { City = city, CityDoc = cityDoc };
         }
-        public CityProfileDTO Edit(int cityId)
-        {
-            var city = GetById(cityId);
 
+        public async Task<CityProfileDTO> EditAsync(int cityId)
+        {
+            var city = await GetByIdAsync(cityId);
             var cityAdmins = city.CityAdministration.Where(a => a.EndDate == null).ToList();
             var members = city.CityMembers.Where(p => cityAdmins.All(a => a.UserId != p.UserId)).Where(m => m.EndDate == null && m.StartDate != null).ToList();
             var followers = city.CityMembers.Where(m => m.EndDate == null && m.StartDate == null).ToList();
-
             return new CityProfileDTO { City = city, CityAdmins = cityAdmins, Members = members, Followers = followers };
         }
-        public void Edit(CityProfileDTO model, IFormFile file)
+
+        public async Task EditAsync(CityProfileDTO model, IFormFile file)
         {
             var city = model.City;
-            UploadPhoto(city, file);
+            await UploadPhotoAsync(city, file);
             _repoWrapper.City.Update(_mapper.Map<CityDTO, DataAccessCity.City>(model.City));
-            _repoWrapper.Save();
+            await _repoWrapper.SaveAsync();
         }
-        public int Create(CityProfileDTO model, IFormFile file)
+
+        public async Task<int> CreateAsync(CityProfileDTO model, IFormFile file)
         {
             var city = model.City;
-            UploadPhoto(city, file);
+            await UploadPhotoAsync(city, file);
             var modelToCreate = _mapper.Map<CityDTO, DataAccessCity.City>(model.City);
-            _repoWrapper.City.Create(modelToCreate);
-            _repoWrapper.Save();
+            await _repoWrapper.City.CreateAsync(modelToCreate);
+            await _repoWrapper.SaveAsync();
             return modelToCreate.ID;
         }
-        private void UploadPhoto( CityDTO city, IFormFile file)
+
+        private async Task UploadPhotoAsync(CityDTO city, IFormFile file)
         {
             var cityId = city.ID;
-            var oldImageName = _repoWrapper.City.FindByCondition(i => i.ID == cityId).FirstOrDefault()?.Logo;
+            var oldImageName = (await _repoWrapper.City.GetFirstOrDefaultAsync(
+                predicate: i => i.ID == cityId))
+                ?.Logo;
             if (file != null && file.Length > 0)
             {
                 using (var img = Image.FromStream(file.OpenReadStream()))

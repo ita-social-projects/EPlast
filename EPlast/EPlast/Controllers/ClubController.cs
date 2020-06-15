@@ -22,7 +22,9 @@ namespace EPlast.Controllers
         private readonly ILoggerService<ClubController> _logger;
         private readonly IUserManagerService _userManagerService;
 
-        public ClubController(IClubService clubService, IClubAdministrationService clubAdministrationService, IClubMembersService clubMembersService, IMapper mapper, ILoggerService<ClubController> logger, IUserManagerService userManagerService)
+        public ClubController(IClubService clubService, IClubAdministrationService clubAdministrationService,
+            IClubMembersService clubMembersService, IMapper mapper, ILoggerService<ClubController> logger,
+            IUserManagerService userManagerService)
         {
             _clubService = clubService;
             _clubAdministrationService = clubAdministrationService;
@@ -32,10 +34,13 @@ namespace EPlast.Controllers
             _userManagerService = userManagerService;
         }
 
-        private void CheckCurrentUserRoles(ref ClubProfileViewModel viewModel)
+        private async Task<ClubProfileViewModel> CheckCurrentUserRoles(ClubProfileViewModel viewModel)
         {
-            viewModel.IsCurrentUserClubAdmin = _userManagerService.GetUserId(User) == viewModel.ClubAdmin?.Id;
+            viewModel.IsCurrentUserClubAdmin =
+                await _userManagerService.GetUserIdAsync(User) == viewModel.ClubAdmin?.Id;
             viewModel.IsCurrentUserAdmin = User.IsInRole("Admin");
+
+            return viewModel;
         }
 
         public async Task<IActionResult> Index()
@@ -51,14 +56,14 @@ namespace EPlast.Controllers
             try
             {
                 var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(await _clubService.GetClubProfileAsync(index));
-                CheckCurrentUserRoles(ref viewModel);
+                viewModel = await CheckCurrentUserRoles(viewModel);
 
                 return View(viewModel);
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+                return RedirectToAction("HandleError", "Error", new {code = 505});
             }
         }
 
@@ -66,17 +71,16 @@ namespace EPlast.Controllers
         {
             try
             {
-                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(await _clubAdministrationService
-                    .GetCurrentClubAdministrationByIDAsync(index));
-
-                CheckCurrentUserRoles(ref viewModel);
+                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(
+                    await _clubAdministrationService.GetCurrentClubAdministrationByIDAsync(index));
+                viewModel = await CheckCurrentUserRoles(viewModel);
 
                 return View(viewModel);
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+                return RedirectToAction("HandleError", "Error", new {code = 505});
             }
         }
 
@@ -84,15 +88,16 @@ namespace EPlast.Controllers
         {
             try
             {
-                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(await _clubService.GetClubMembersOrFollowersAsync(index, true));
-                CheckCurrentUserRoles(ref viewModel);
+                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(
+                        await _clubService.GetClubMembersOrFollowersAsync(index, true));
+                viewModel = await CheckCurrentUserRoles(viewModel);
 
                 return View(viewModel);
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+                return RedirectToAction("HandleError", "Error", new {code = 505});
             }
         }
 
@@ -100,15 +105,16 @@ namespace EPlast.Controllers
         {
             try
             {
-                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(await _clubService.GetClubMembersOrFollowersAsync(index, false));
-                CheckCurrentUserRoles(ref viewModel);
+                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(
+                        await _clubService.GetClubMembersOrFollowersAsync(index, false));
+                viewModel = await CheckCurrentUserRoles(viewModel);
 
                 return View(viewModel);
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+                return RedirectToAction("HandleError", "Error", new {code = 505});
             }
         }
 
@@ -123,7 +129,7 @@ namespace EPlast.Controllers
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+                return RedirectToAction("HandleError", "Error", new {code = 505});
             }
         }
 
@@ -139,7 +145,7 @@ namespace EPlast.Controllers
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+                return RedirectToAction("HandleError", "Error", new {code = 505});
             }
         }
 
@@ -150,12 +156,13 @@ namespace EPlast.Controllers
             {
                 await _clubService.UpdateAsync(_mapper.Map<ClubViewModel, ClubDTO>(model), file);
 
-                return RedirectToAction("Club", new { index = model.ID });
+                return RedirectToAction("Club", new {index = model.ID});
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+
+                return RedirectToAction("HandleError", "Error", new {code = 505});
             }
         }
 
@@ -166,13 +173,13 @@ namespace EPlast.Controllers
             {
                 await _clubMembersService.ToggleIsApprovedInClubMembersAsync(index, clubIndex);
 
-                return RedirectToAction("ClubMembers", new { index = clubIndex });
+                return RedirectToAction("ClubMembers", new {index = clubIndex});
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+                return RedirectToAction("HandleError", "Error", new {code = 505});
             }
         }
 
@@ -183,13 +190,13 @@ namespace EPlast.Controllers
             {
                 await _clubMembersService.ToggleIsApprovedInClubMembersAsync(index, clubIndex);
 
-                return RedirectToAction("ClubFollowers", new { index = clubIndex });
+                return RedirectToAction("ClubFollowers", new {index = clubIndex});
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+                return RedirectToAction("HandleError", "Error", new {code = 505});
             }
         }
 
@@ -200,27 +207,27 @@ namespace EPlast.Controllers
             {
                 await _clubMembersService.ToggleIsApprovedInClubMembersAsync(index, clubIndex);
 
-                return RedirectToAction("Club", new { index = clubIndex });
+                return RedirectToAction("Club", new {index = clubIndex});
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+                return RedirectToAction("HandleError", "Error", new {code = 505});
             }
         }
 
         [HttpGet]
         public async Task<IActionResult> DeleteFromAdmins(int adminId, int clubIndex)
         {
-            bool isSuccessfull = await _clubAdministrationService.DeleteClubAdminAsync(adminId);
+            bool isSuccessful = await _clubAdministrationService.DeleteClubAdminAsync(adminId);
 
-            if (isSuccessfull)
+            if (isSuccessful)
             {
-                return RedirectToAction("ClubAdmins", new { index = clubIndex });
+                return RedirectToAction("ClubAdmins", new {index = clubIndex});
             }
 
-            return RedirectToAction("HandleError", "Error", new { code = 505 });
+            return RedirectToAction("HandleError", "Error", new {code = 505});
         }
 
         [HttpPost]
@@ -266,11 +273,10 @@ namespace EPlast.Controllers
 
         public async Task<IActionResult> AddAsClubFollower(int clubIndex, string userId)
         {
-            userId = User.IsInRole("Admin") ? userId : _userManagerService.GetUserId(User); 
-
+            userId = User.IsInRole("Admin") ? userId : await _userManagerService.GetUserIdAsync(User);
             await _clubMembersService.AddFollowerAsync(clubIndex, userId);
 
-            return RedirectToAction("UserProfile", "Account", new { userId });
+            return RedirectToAction("UserProfile", "Account", new {userId});
         }
 
         [HttpGet]
@@ -283,7 +289,8 @@ namespace EPlast.Controllers
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+
+                return RedirectToAction("HandleError", "Error", new {code = 505});
             }
         }
 
@@ -294,12 +301,13 @@ namespace EPlast.Controllers
             {
                 var club = await _clubService.CreateAsync(_mapper.Map<ClubViewModel, ClubDTO>(model), file);
 
-                return RedirectToAction("Club", new { index = club.ID });
+                return RedirectToAction("Club", new {index = club.ID});
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+
+                return RedirectToAction("HandleError", "Error", new {code = 505});
             }
         }
     }

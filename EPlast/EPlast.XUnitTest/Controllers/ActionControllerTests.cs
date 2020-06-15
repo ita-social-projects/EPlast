@@ -1,12 +1,4 @@
-﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO.Events;
-using EPlast.BussinessLayer.Interfaces.Events;
-using EPlast.Controllers;
-using EPlast.ViewModels.Events;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -14,9 +6,17 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using AutoMapper;
+using EPlast.BussinessLayer.DTO.Events;
+using EPlast.BussinessLayer.Interfaces.Events;
+using EPlast.Controllers;
+using EPlast.ViewModels.Events;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
 using Xunit;
 
-namespace EPlast.XUnitTest
+namespace EPlast.XUnitTest.Controllers
 {
     public class ActionControllerTests
     {
@@ -30,15 +30,15 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void DeletePictureSuccessTest()
+        public async void DeletePictureSuccessTest()
         {
             //Arrange
             int testGalleryId = 2;
-            _actionManager.Setup(x => x.DeletePicture(It.IsAny<int>()))
-                .Returns(StatusCodes.Status200OK);
+            _actionManager.Setup(x => x.DeletePictureAsync(It.IsAny<int>()))
+                .ReturnsAsync(StatusCodes.Status200OK);
             //Act
             var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.DeletePicture(testGalleryId);
+            var actionResult = await actionsController.DeletePicture(testGalleryId);
             var codeResult = actionResult as StatusCodeResult;
             //Assert
             Assert.NotNull(actionResult);
@@ -47,15 +47,15 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void DeletePictureFailTest()
+        public async void DeletePictureFailTest()
         {
             //Arrange
             int testGalleryId = 2;
-            _actionManager.Setup(x => x.DeletePicture(It.IsAny<int>()))
-                .Throws(new Exception());
+            _actionManager.Setup(x => x.DeletePictureAsync(It.IsAny<int>()))
+                .ThrowsAsync(new Exception());
             //Act
             var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.DeletePicture(testGalleryId);
+            var actionResult = await actionsController.DeletePicture(testGalleryId);
             var codeResult = actionResult as StatusCodeResult;
             //Assert
             Assert.NotNull(actionResult);
@@ -64,15 +64,15 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void DeleteEventSuccessTest()
+        public async void DeleteEventSuccessTest()
         {
             //Arrange
             int eventId = 2;
-            _actionManager.Setup(x => x.DeleteEvent(It.IsAny<int>()))
-                .Returns(StatusCodes.Status200OK);
+            _actionManager.Setup(x => x.DeleteEventAsync(It.IsAny<int>()))
+                .ReturnsAsync(StatusCodes.Status200OK);
             //Act
             var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.DeleteEvent(eventId);
+            var actionResult = await actionsController.DeleteEvent(eventId);
             var codeResult = actionResult as StatusCodeResult;
             //Assert
             Assert.NotNull(actionResult);
@@ -81,15 +81,15 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void DeleteEventFailTest()
+        public async void DeleteEventFailTest()
         {
             //Arrange
             int eventId = 2;
-            _actionManager.Setup(x => x.DeleteEvent(It.IsAny<int>()))
-                .Throws(new Exception());
+            _actionManager.Setup(x => x.DeleteEventAsync(It.IsAny<int>()))
+                .ThrowsAsync(new Exception());
             //Act
             var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.DeleteEvent(eventId);
+            var actionResult = await actionsController.DeleteEvent(eventId);
             var codeResult = actionResult as StatusCodeResult;
             //Assert
             Assert.NotNull(actionResult);
@@ -99,15 +99,49 @@ namespace EPlast.XUnitTest
 
 
         [Fact]
-        public void UnsubscribeOnEventSuccessTest()
+        public async void UnsubscribeOnEventSuccessTest()
         {
             //Arrange
             int eventId = 2;
-            _actionManager.Setup(x => x.UnSubscribeOnEvent(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
-                .Returns(StatusCodes.Status200OK);
+            _actionManager.Setup(x => x.UnSubscribeOnEventAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(StatusCodes.Status200OK);
             //Act
             var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.UnSubscribeOnEvent(eventId);
+            var actionResult = await actionsController.UnSubscribeOnEvent(eventId);
+            var codeResult =  actionResult as StatusCodeResult;
+            //Assert
+            Assert.NotNull(actionResult);
+            Assert.IsType<StatusCodeResult>(actionResult);
+            Assert.Equal(StatusCodes.Status200OK, codeResult?.StatusCode);
+        }
+
+        [Fact]
+        public async void UnsubscribeOnEventFailTest()
+        {
+            //Arrange
+            int eventId = 2;
+            _actionManager.Setup(x => x.UnSubscribeOnEventAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                .ThrowsAsync(new Exception());
+            //Act
+            var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
+            var actionResult = await actionsController.UnSubscribeOnEvent(eventId);
+            var codeResult = actionResult as StatusCodeResult;
+            //Assert
+            Assert.NotNull(actionResult);
+            Assert.IsType<StatusCodeResult>(actionResult);
+            Assert.Equal(StatusCodes.Status500InternalServerError, codeResult?.StatusCode);
+        }
+
+        [Fact]
+        public async void SubscribeOnEventSuccessTest()
+        {
+            //Arrange
+            int eventId = 2;
+            _actionManager.Setup(x => x.SubscribeOnEventAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(StatusCodes.Status200OK);
+            //Act
+            var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
+            var actionResult = await actionsController.SubscribeOnEvent(eventId);
             var codeResult = actionResult as StatusCodeResult;
             //Assert
             Assert.NotNull(actionResult);
@@ -116,15 +150,15 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void UnsubscribeOnEventFailTest()
+        public async void SubscribeOnEventFailTest()
         {
             //Arrange
             int eventId = 2;
-            _actionManager.Setup(x => x.UnSubscribeOnEvent(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
-                .Throws(new Exception());
+            _actionManager.Setup(x => x.SubscribeOnEventAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                .ThrowsAsync(new Exception());
             //Act
             var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.UnSubscribeOnEvent(eventId);
+            var actionResult = await actionsController.SubscribeOnEvent(eventId);
             var codeResult = actionResult as StatusCodeResult;
             //Assert
             Assert.NotNull(actionResult);
@@ -133,15 +167,15 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void SubscribeOnEventSuccessTest()
+        public async void ApproveParticipantSuccessTest()
         {
             //Arrange
-            int eventId = 2;
-            _actionManager.Setup(x => x.SubscribeOnEvent(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
-                .Returns(StatusCodes.Status200OK);
+            int participantId = 2;
+            _actionManager.Setup(x => x.ApproveParticipantAsync(It.IsAny<int>()))
+                .ReturnsAsync(StatusCodes.Status200OK);
             //Act
             var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.SubscribeOnEvent(eventId);
+            var actionResult = await actionsController.ApproveParticipant(participantId);
             var codeResult = actionResult as StatusCodeResult;
             //Assert
             Assert.NotNull(actionResult);
@@ -150,32 +184,15 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void SubscribeOnEventFailTest()
-        {
-            //Arrange
-            int eventId = 2;
-            _actionManager.Setup(x => x.SubscribeOnEvent(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
-                .Throws(new Exception());
-            //Act
-            var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.SubscribeOnEvent(eventId);
-            var codeResult = actionResult as StatusCodeResult;
-            //Assert
-            Assert.NotNull(actionResult);
-            Assert.IsType<StatusCodeResult>(actionResult);
-            Assert.Equal(StatusCodes.Status500InternalServerError, codeResult?.StatusCode);
-        }
-
-        [Fact]
-        public void ApproveParticipantSuccessTest()
+        public async void UndetermineParticipantSuccessTest()
         {
             //Arrange
             int participantId = 2;
-            _actionManager.Setup(x => x.ApproveParticipant(It.IsAny<int>()))
-                .Returns(StatusCodes.Status200OK);
+            _actionManager.Setup(x => x.UnderReviewParticipantAsync(It.IsAny<int>()))
+                .ReturnsAsync(StatusCodes.Status200OK);
             //Act
             var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.ApproveParticipant(participantId);
+            var actionResult = await actionsController.UndetermineParticipant(participantId);
             var codeResult = actionResult as StatusCodeResult;
             //Assert
             Assert.NotNull(actionResult);
@@ -184,15 +201,15 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void UndetermineParticipantSuccessTest()
+        public async void RejectParticipantSuccessTest()
         {
             //Arrange
             int participantId = 2;
-            _actionManager.Setup(x => x.UnderReviewParticipant(It.IsAny<int>()))
-                .Returns(StatusCodes.Status200OK);
+            _actionManager.Setup(x => x.RejectParticipantAsync(It.IsAny<int>()))
+                .ReturnsAsync(StatusCodes.Status200OK);
             //Act
             var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.UndetermineParticipant(participantId);
+            var actionResult = await actionsController.RejectParticipant(participantId);
             var codeResult = actionResult as StatusCodeResult;
             //Assert
             Assert.NotNull(actionResult);
@@ -201,32 +218,15 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void RejectParticipantSuccessTest()
+        public async void ApproveParticipantFailTest()
         {
             //Arrange
             int participantId = 2;
-            _actionManager.Setup(x => x.RejectParticipant(It.IsAny<int>()))
-                .Returns(StatusCodes.Status200OK);
-            //Act
-            var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.RejectParticipant(participantId);
-            var codeResult = actionResult as StatusCodeResult;
-            //Assert
-            Assert.NotNull(actionResult);
-            Assert.IsType<StatusCodeResult>(actionResult);
-            Assert.Equal(StatusCodes.Status200OK, codeResult?.StatusCode);
-        }
-
-        [Fact]
-        public void ApproveParticipantFailTest()
-        {
-            //Arrange
-            int participantId = 2;
-            _actionManager.Setup(x => x.ApproveParticipant(It.IsAny<int>()))
+            _actionManager.Setup(x => x.ApproveParticipantAsync(It.IsAny<int>()))
                 .Throws(new Exception());
             //Act
             var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.ApproveParticipant(participantId);
+            var actionResult = await actionsController.ApproveParticipant(participantId);
             var codeResult = actionResult as StatusCodeResult;
             //Assert
             Assert.NotNull(actionResult);
@@ -235,15 +235,15 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void UndetermineParticipantFailTest()
+        public async void UndetermineParticipantFailTest()
         {
             //Arrange
             int participantId = 2;
-            _actionManager.Setup(x => x.UnderReviewParticipant(It.IsAny<int>()))
-                .Throws(new Exception());
+            _actionManager.Setup(x => x.UnderReviewParticipantAsync(It.IsAny<int>()))
+                .ThrowsAsync(new Exception());
             //Act
             var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.UndetermineParticipant(participantId);
+            var actionResult = await actionsController.UndetermineParticipant(participantId);
             var codeResult = actionResult as StatusCodeResult;
             //Assert
             Assert.NotNull(actionResult);
@@ -252,15 +252,15 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void RejectParticipantFailTest()
+        public async void RejectParticipantFailTest()
         {
             //Arrange
             int participantId = 2;
-            _actionManager.Setup(x => x.RejectParticipant(It.IsAny<int>()))
-                .Throws(new Exception());
+            _actionManager.Setup(x => x.RejectParticipantAsync(It.IsAny<int>()))
+                .ThrowsAsync(new Exception());
             //Act
             var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.RejectParticipant(participantId);
+            var actionResult = await actionsController.RejectParticipant(participantId);
             var codeResult = actionResult as StatusCodeResult;
             //Assert
             Assert.NotNull(actionResult);
@@ -269,16 +269,16 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void EventInfoFailureTest()
+        public async void EventInfoFailureTest()
         {
             //Arrange
-            _actionManager.Setup(am => am.GetEventInfo(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
-                .Throws(new Exception());
+            _actionManager.Setup(am => am.GetEventInfoAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                .ThrowsAsync(new Exception());
             _mapper.Setup(m => m.Map<EventDTO, EventViewModel>(It.IsAny<EventDTO>())).Returns(new EventViewModel());
             int eventID = 3;
             //Act  
             var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.EventInfo(eventID);
+            var actionResult = await actionsController.EventInfo(eventID);
             //Arrange
             Assert.NotNull(actionResult);
             var viewResult = Assert.IsType<RedirectToActionResult>(actionResult);
@@ -287,16 +287,16 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void EventInfoSuccessTest()
+        public async void EventInfoSuccessTest()
         {
             //Arrange
-            _actionManager.Setup(am => am.GetEventInfo(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
-                .Returns(new EventDTO());
+            _actionManager.Setup(am => am.GetEventInfoAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new EventDTO());
             _mapper.Setup(m => m.Map<EventDTO, EventViewModel>(It.IsAny<EventDTO>())).Returns(GetEventViewModel());
             int eventID = 3;
             //Act  
             var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.EventInfo(eventID);
+            var actionResult = await actionsController.EventInfo(eventID);
             //Arrange
             Assert.NotNull(actionResult);
             var viewResult = Assert.IsType<ViewResult>(actionResult);
@@ -305,15 +305,15 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void GetActionsFailureTest()
+        public async void GetActionsFailureTest()
         {
             //Arrange
-            _actionManager.Setup(am => am.GetActionCategories())
-                .Throws(new Exception());
+            _actionManager.Setup(am => am.GetActionCategoriesAsync())
+                .ThrowsAsync(new Exception());
             _mapper.Setup(m => m.Map<List<EventCategoryDTO>, List<EventCategoryViewModel>>(It.IsAny<List<EventCategoryDTO>>())).Returns(new List<EventCategoryViewModel>());
             //Act  
             var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.GetAction();
+            var actionResult = await actionsController.GetAction();
             //Arrange
             Assert.NotNull(actionResult);
             var viewResult = Assert.IsType<RedirectToActionResult>(actionResult);
@@ -322,15 +322,15 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void GetActionEmptyTest()
+        public async void GetActionEmptyTest()
         {
             //Arrange
-            _actionManager.Setup(am => am.GetActionCategories())
-                .Returns(new List<EventCategoryDTO>());
+            _actionManager.Setup(am => am.GetActionCategoriesAsync())
+                .ReturnsAsync(new List<EventCategoryDTO>());
             _mapper.Setup(m => m.Map<List<EventCategoryDTO>, List<EventCategoryViewModel>>(It.IsAny<List<EventCategoryDTO>>())).Returns(new List<EventCategoryViewModel>());
             //Act  
             var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.GetAction() as ViewResult;
+            var actionResult = await actionsController.GetAction() as ViewResult;
             //Assert
             Assert.NotNull(actionResult);
             Assert.NotNull(actionResult.Model);
@@ -340,16 +340,16 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void GetEventsFailureTest()
+        public async void GetEventsFailureTest()
         {
             //Arrange
-            _actionManager.Setup(am => am.GetEvents(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
-                .Throws(new Exception());
+            _actionManager.Setup(am => am.GetEventsAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                .ThrowsAsync(new Exception());
             _mapper.Setup(m => m.Map<List<GeneralEventDTO>, List<GeneralEventViewModel>>(It.IsAny<List<GeneralEventDTO>>())).Returns(new List<GeneralEventViewModel>());
             int id = 3;
             //Act  
             var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.Events(id);
+            var actionResult = await actionsController.Events(id);
             //Arrange
             Assert.NotNull(actionResult);
             var viewResult = Assert.IsType<RedirectToActionResult>(actionResult);
@@ -358,16 +358,16 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void GetEventsEmptyTest()
+        public async void GetEventsEmptyTest()
         {
             //Arrange
-            _actionManager.Setup(am => am.GetEvents(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
-                .Returns(new List<GeneralEventDTO>());
+            _actionManager.Setup(am => am.GetEventsAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new List<GeneralEventDTO>());
             _mapper.Setup(m => m.Map<List<GeneralEventDTO>, List<GeneralEventViewModel>>(It.IsAny<List<GeneralEventDTO>>())).Returns(new List<GeneralEventViewModel>());
             int id = 3;
             //Act  
             var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.Events(id) as ViewResult;
+            var actionResult = await actionsController.Events(id) as ViewResult;
             //Assert
             Assert.NotNull(actionResult);
             Assert.NotNull(actionResult.Model);
@@ -377,15 +377,15 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void FillEventGallerySuccessTest()
+        public async void FillEventGallerySuccessTest()
         {
             //Arrange
             int eventId = 2;
-            _actionManager.Setup(x => x.FillEventGallery(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
-                .Returns(StatusCodes.Status200OK);
+            _actionManager.Setup(x => x.FillEventGalleryAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
+                .ReturnsAsync(StatusCodes.Status200OK);
             //Act
             var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.FillEventGallery(eventId, FakeFiles());
+            var actionResult = await actionsController.FillEventGallery(eventId, FakeFiles());
             var codeResult = actionResult as StatusCodeResult;
             //Assert
             Assert.NotNull(actionResult);
@@ -394,15 +394,15 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public void FillEventGalleryFailTest()
+        public async void FillEventGalleryFailTest()
         {
             //Arrange
             int eventId = 2;
-            _actionManager.Setup(x => x.FillEventGallery(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
-                .Throws(new Exception());
+            _actionManager.Setup(x => x.FillEventGalleryAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
+                .ThrowsAsync(new Exception());
             //Act
             var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = actionsController.FillEventGallery(eventId, FakeFiles());
+            var actionResult = await actionsController.FillEventGallery(eventId, FakeFiles());
             var codeResult = actionResult as StatusCodeResult;
             //Assert
             Assert.NotNull(actionResult);

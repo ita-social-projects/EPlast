@@ -9,8 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Xunit;
-
 
 namespace EPlast.XUnitTest.Services.City
 {
@@ -52,102 +52,104 @@ namespace EPlast.XUnitTest.Services.City
         }
 
         [Fact]
-        public void GetAllTest()
+        public async Task GetAllTest()
         {
             CityService cityService = CreateCityService();
 
-            var result = cityService.GetAll();
+            var result = await cityService.GetAllAsync();
 
             Assert.NotNull(result);
         }
 
         [Fact]
-        public void GetAllDtoTest()
+        public async Task GetAllDtoTest()
         {
             CityService cityService = CreateCityService();
 
-            var result = cityService.GetAllDTO();
+            var result = await cityService.GetAllDTOAsync();
 
             Assert.NotNull(result);
         }
 
         [Fact]
-        public void GetByIdTest()
+        public async Task GetByIdTest()
         {
             CityService cityService = CreateCityService();
 
-            var result = cityService.GetById(GetIdForSearch);
+            var result = await cityService.GetByIdAsync(GetIdForSearch);
 
             Assert.NotNull(result);
             Assert.IsType<CityDTO>(result);
         }
 
         [Fact]
-        public void CityProfileTest()
+        public async Task CityProfileTest()
         {
             CityService cityService = CreateCityService();
 
-            var result = cityService.CityProfile(GetIdForSearch);
+            var result = await cityService.CityProfileAsync(GetIdForSearch);
 
             Assert.NotNull(result);
             Assert.IsType<CityProfileDTO>(result);
         }
 
         [Fact]
-        public void CityMembersTest()
+        public async Task CityMembersTest()
         {
             CityService cityService = CreateCityService();
 
-            var result = cityService.CityMembers(GetIdForSearch);
+            var result = await cityService.CityMembersAsync(GetIdForSearch);
 
             Assert.NotNull(result);
             Assert.IsType<CityProfileDTO>(result);
         }
 
         [Fact]
-        public void CityFollowersTest()
+        public async Task CityFollowersTest()
         {
             CityService cityService = CreateCityService();
 
-            var result = cityService.CityFollowers(GetIdForSearch);
-
-            Assert.NotNull(result);
-            Assert.IsType<CityProfileDTO>(result);
-        }
-        [Fact]
-        public void CityAdminsTest()
-        {
-            CityService cityService = CreateCityService();
-
-            var result = cityService.CityAdmins(GetIdForSearch);
-
-            Assert.NotNull(result);
-            Assert.IsType<CityProfileDTO>(result);
-        }
-        [Fact]
-        public void CityDocumentsTest()
-        {
-            CityService cityService = CreateCityService();
-
-            var result = cityService.CityDocuments(GetIdForSearch);
+            var result = await cityService.CityFollowersAsync(GetIdForSearch);
 
             Assert.NotNull(result);
             Assert.IsType<CityProfileDTO>(result);
         }
 
         [Fact]
-        public void EditGetTest()
+        public async Task CityAdminsTest()
         {
             CityService cityService = CreateCityService();
 
-            var result = cityService.Edit(GetIdForSearch);
+            var result = await cityService.CityAdminsAsync(GetIdForSearch);
 
             Assert.NotNull(result);
             Assert.IsType<CityProfileDTO>(result);
         }
 
         [Fact]
-        public void CreateTest()
+        public async Task CityDocumentsTest()
+        {
+            CityService cityService = CreateCityService();
+
+            var result = await cityService.CityDocumentsAsync(GetIdForSearch);
+
+            Assert.NotNull(result);
+            Assert.IsType<CityProfileDTO>(result);
+        }
+
+        [Fact]
+        public async Task EditGetTest()
+        {
+            CityService cityService = CreateCityService();
+
+            var result = await cityService.EditAsync(GetIdForSearch);
+
+            Assert.NotNull(result);
+            Assert.IsType<CityProfileDTO>(result);
+        }
+
+        [Fact]
+        public async Task CreateTest()
         {
             CityService cityService = CreateCityService();
             CityProfileDTO cityProfileDto = new CityProfileDTO
@@ -158,7 +160,7 @@ namespace EPlast.XUnitTest.Services.City
                 }
             };
 
-            var result = cityService.Create(cityProfileDto, null);
+            var result = await cityService.CreateAsync(cityProfileDto, null);
 
             Assert.Equal(cityProfileDto.City.ID, result);
         }
