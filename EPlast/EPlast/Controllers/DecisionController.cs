@@ -32,22 +32,22 @@ namespace EPlast.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public DecisionViewModel CreateDecision()
+        public async Task<DecisionViewModel> CreateDecision()
         {
-            DecisionViewModel decesionViewModel = null;
+            DecisionViewModel decisionViewModel = null;
             try
             {
-                var organizations = _mapper.Map<List<Organization>>(_decisionService.GetOrganizationList());
-                decesionViewModel = new DecisionViewModel
+                var organizations = _mapper.Map<IEnumerable<Organization>>(await _decisionService.GetOrganizationListAsync());
+                decisionViewModel = new DecisionViewModel
                 {
-                    DecisionWrapper = _mapper.Map<DecisionWrapper>(_decisionService.CreateDecision()),
+                    DecisionWrapper = _mapper.Map<DecisionWrapper>(await _decisionService.CreateDecisionAsync()),
                     OrganizationListItems = from item in organizations
                                             select new SelectListItem
                                             {
                                                 Text = item.OrganizationName,
                                                 Value = item.ID.ToString()
                                             },
-                    DecisionTargets = _mapper.Map<List<DecisionTarget>>(_decisionService.GetDecisionTargetList()),
+                    DecisionTargets = _mapper.Map<IEnumerable<DecisionTarget>>(await _decisionService.GetDecisionTargetListAsync()),
                     DecisionStatusTypeListItems = _decisionService.GetDecisionStatusTypes()
                 };
             }
@@ -56,41 +56,43 @@ namespace EPlast.Controllers
                 _loggerService.LogError($"{e.Message}");
             }
 
-            return decesionViewModel;
+            return decisionViewModel;
         }
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        public JsonResult GetDecision(int id)
+        public async Task<JsonResult> GetDecision(int id)
         {
             bool success = true;
             Decision decision = null;
             try
             {
-                decision = _mapper.Map<Decision>(_decisionService.GetDecision(id));
+                decision = _mapper.Map<Decision>(await _decisionService.GetDecisionAsync(id));
             }
             catch (Exception e)
             {
                 _loggerService.LogError($"{e.Message}");
                 success = false;
             }
+
             return Json(new { success, decision });
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public JsonResult ChangeDecision(Decision decision)
+        public async Task<JsonResult> ChangeDecision(Decision decision)
         {
             var success = false;
             try
             {
-                success = _decisionService.ChangeDecision(
+                success = await _decisionService.ChangeDecisionAsync(
                     _mapper.Map<DecisionDTO>(decision));
             }
             catch (Exception e)
             {
                 _loggerService.LogError($"{e.Message}");
             }
+
             return Json(new
             {
                 success,
@@ -110,6 +112,7 @@ namespace EPlast.Controllers
                     decisionWrapper == null)
                 {
                     ModelState.AddModelError("", "Дані введені неправильно");
+
                     return Json(new
                     {
                         success = false,
@@ -123,19 +126,21 @@ namespace EPlast.Controllers
                     decisionWrapper.File.Length > 10485760)
                 {
                     ModelState.AddModelError("", "файл за великий (більше 10 Мб)");
+
                     return Json(new { success = false, text = "file length > 10485760" });
                 }
 
                 decisionWrapper.Decision.HaveFile = decisionWrapper.File != null;
                 decisionWrapper.Decision.ID = await _decisionService.SaveDecisionAsync(
                     _mapper.Map<DecisionWrapperDTO>(decisionWrapper));
+
                 return Json(new
                 {
                     success = true,
                     Text = "Рішення додано!",
                     decision = decisionWrapper.Decision,
-                    decisionOrganization = _decisionService
-                        .GetDecisionOrganization(_mapper.Map<OrganizationDTO>(decisionWrapper.Decision.Organization))
+                    decisionOrganization = (await _decisionService
+                        .GetDecisionOrganizationAsync(_mapper.Map<OrganizationDTO>(decisionWrapper.Decision.Organization)))
                         .OrganizationName
                 });
             }
@@ -152,14 +157,14 @@ namespace EPlast.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public IActionResult ReadDecision()
+        public async Task<IActionResult> ReadDecision()
         {
             List<DecisionViewModel> decisions = null;
             try
             {
                 decisions = new List<DecisionViewModel>
                 (
-                    _mapper.Map<List<DecisionWrapper>>(_decisionService.GetDecisionList())
+                    _mapper.Map<IEnumerable<DecisionWrapper>>(await _decisionService.GetDecisionListAsync())
                         .Select(decesion => new DecisionViewModel { DecisionWrapper = decesion })
                         .ToList()
                 );
@@ -169,14 +174,14 @@ namespace EPlast.Controllers
                 _loggerService.LogError($"{e.Message}");
             }
 
-            return View(Tuple.Create(CreateDecision(), decisions));
+            return View(Tuple.Create(await CreateDecision(), decisions));
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public JsonResult DeleteDecision(int id)
+        public async Task<JsonResult> DeleteDecision(int id)
         {
-            return _decisionService.DeleteDecision(id) ? Json(new
+            return await _decisionService.DeleteDecisionAsync(id) ? Json(new
             {
                 success = true,
                 text = "Зміни пройшли успішно!"
@@ -199,6 +204,7 @@ namespace EPlast.Controllers
 
                 return RedirectToAction("HandleError", "Error");
             }
+
             return File(fileBytes, _decisionService.GetContentType(id, filename), filename);
         }
 
@@ -215,11 +221,13 @@ namespace EPlast.Controllers
             {
                 DecisionIdVerify(objId);
                 var arr = await _PDFService.DecisionCreatePDFAsync(objId);
+
                 return File(arr, "application/pdf");
             }
             catch (Exception e)
             {
                 _loggerService.LogError($"{e.Message}");
+
                 return RedirectToAction("HandleError", "Error");
             }
         }

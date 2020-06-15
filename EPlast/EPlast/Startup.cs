@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer;
-using EPlast.BussinessLayer.AccessManagers;
-using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using EPlast.BussinessLayer.Interfaces;
 using EPlast.BussinessLayer.Interfaces.City;
 using EPlast.BussinessLayer.Interfaces.Club;
@@ -72,7 +70,7 @@ namespace EPlast
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            
+
             services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
@@ -104,8 +102,6 @@ namespace EPlast
             services.AddScoped<IClubAdministrationService, ClubAdministrationService>();
             services.AddScoped<IClubMembersService, ClubMembersService>();
             services.AddScoped<ICreateEventVMInitializer, CreateEventVMInitializer>();
-            services.AddScoped<IUserAccessManagerSettings, UserAccessManagerSettings>();
-            services.AddScoped<IUserAccessManager, UserAccessManager>();
             services.AddScoped<IActionManager, ActionManager>();
             services.AddScoped<IEventCategoryManager, EventCategoryManager>();
             services.AddScoped<IEventTypeManager, EventTypeManager>();
