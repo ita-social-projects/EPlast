@@ -70,7 +70,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                LoginDTO loginDto = new LoginDTO
+                LoginDto loginDto = new LoginDto
                 {
                     ReturnUrl = returnUrl,
                     ExternalLogins = (await _accountService.GetAuthSchemesAsync()).ToList()
@@ -86,7 +86,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("signin")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginDTO loginDto, string returnUrl)
+        public async Task<IActionResult> Login(LoginDto loginDto, string returnUrl)
         {
             try
             {
@@ -143,7 +143,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("signup")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(RegisterDTO registerDto)
+        public async Task<IActionResult> Register(RegisterDto registerDto)
         {
             try
             {

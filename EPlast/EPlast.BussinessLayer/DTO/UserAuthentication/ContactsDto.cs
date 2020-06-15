@@ -5,7 +5,7 @@ using System.Text;
 
 namespace EPlast.BussinessLayer.DTO.Account
 {
-    public class ContactsDTO
+    public class ContactsDto
     {
         [Required(ErrorMessage = "Поле ім'я є обов'язковим")]
         [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЇїЄєҐґ']{1,20}((\s+|-)[a-zA-Zа-яА-ЯІіЇїЄєҐґ']{1,20})*$",

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace EPlast.BussinessLayer.DTO.Account
 {
-    public class RegisterDTO
+    public class RegisterDto
     {
         [Required(ErrorMessage = "Поле електронна пошта є обов'язковим")]
         [EmailAddress(ErrorMessage = "Введене поле не є правильним для електронної пошти")]

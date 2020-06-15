@@ -5,7 +5,7 @@ using System.Text;
 
 namespace EPlast.BussinessLayer.DTO.Account
 {
-    public class ChangePasswordDTO
+    public class ChangePasswordDto
     {
         [Required(ErrorMessage = "Поле поточний пароль є обов'язковим")]
         [DataType(DataType.Password)]

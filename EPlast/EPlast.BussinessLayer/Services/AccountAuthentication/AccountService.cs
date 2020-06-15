@@ -40,7 +40,7 @@ namespace EPlast.BussinessLayer.Services
             _config = config;
         }
 
-        public async Task<SignInResult> SignInAsync(LoginDTO loginDto)
+        public async Task<SignInResult> SignInAsync(LoginDto loginDto)
         {
             var user = _userManager.FindByEmailAsync(loginDto.Email);
             var result = await _signInManager.PasswordSignInAsync(user.Result, loginDto.Password, loginDto.RememberMe, true);
@@ -52,7 +52,7 @@ namespace EPlast.BussinessLayer.Services
             await _signInManager.SignOutAsync();
         }
 
-        public async Task<IdentityResult> CreateUserAsync(RegisterDTO registerDto)
+        public async Task<IdentityResult> CreateUserAsync(RegisterDto registerDto)
         {
             var user = new User()
             {
@@ -77,7 +77,7 @@ namespace EPlast.BussinessLayer.Services
             return result;
         }
 
-        public async Task<IdentityResult> ChangePasswordAsync(string userId, ChangePasswordDTO changePasswordDto)
+        public async Task<IdentityResult> ChangePasswordAsync(string userId, ChangePasswordDto changePasswordDto)
         {
             var user = await _userManager.FindByIdAsync(userId);
             var result = await _userManager.ChangePasswordAsync(user, changePasswordDto.CurrentPassword,
@@ -115,7 +115,7 @@ namespace EPlast.BussinessLayer.Services
             return result;
         }
 
-        public async Task<string> AddRoleAndTokenAsync(RegisterDTO registerDto) 
+        public async Task<string> AddRoleAndTokenAsync(RegisterDto registerDto) 
         {
             var user = await _userManager.FindByEmailAsync(registerDto.Email);
             await _userManager.AddToRoleAsync(user, "Прихильник");
@@ -136,7 +136,7 @@ namespace EPlast.BussinessLayer.Services
             return code;
         }
 
-        public async Task<IdentityResult> ResetPasswordAsync(string userId, ResetPasswordDTO resetPasswordDto)
+        public async Task<IdentityResult> ResetPasswordAsync(string userId, ResetPasswordDto resetPasswordDto)
         {
             var user = await _userManager.FindByIdAsync(userId);
             var result = await _userManager.ResetPasswordAsync(user, HttpUtility.UrlDecode(resetPasswordDto.Code), resetPasswordDto.Password);
@@ -206,7 +206,7 @@ namespace EPlast.BussinessLayer.Services
                 $"Підтвердіть реєстрацію, перейшовши за :  <a href='{confirmationLink}'>посиланням</a> ", "Адміністрація сайту EPlast");
         }
 
-        public async Task SendEmailRegistr(string confirmationLink, RegisterDTO registerDto)
+        public async Task SendEmailRegistr(string confirmationLink, RegisterDto registerDto)
         {
             var user = await _userManager.FindByEmailAsync(registerDto.Email);
             user.EmailSendedOnRegister = DateTime.Now;
@@ -215,7 +215,7 @@ namespace EPlast.BussinessLayer.Services
                 $"Підтвердіть реєстрацію, перейшовши за :  <a href='{confirmationLink}'>посиланням</a> ", "Адміністрація сайту EPlast");
         }
 
-        public async Task SendEmailReseting(string confirmationLink, ForgotPasswordDTO forgotPasswordDto) 
+        public async Task SendEmailReseting(string confirmationLink, ForgotPasswordDto forgotPasswordDto) 
         {
             var user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email);
             user.EmailSendedOnForgotPassword = DateTime.Now;
@@ -276,7 +276,7 @@ namespace EPlast.BussinessLayer.Services
             await _signInManager.SignInAsync(user, isPersistent: false);
         }
 
-        private string GenerateJSONWebToken(LoginDTO userInfo)
+        private string GenerateJSONWebToken(LoginDto userInfo)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
