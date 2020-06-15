@@ -144,29 +144,25 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("signup")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(RegisterDto registerDto)
+        public async Task<IActionResult> Register(RegisterDto registerDto) // тещу з оцього
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
-                    ModelState.AddModelError("", _resourceForErrors["Register-InCorrectData"]);
-                    return Ok("Register");
+                    return BadRequest(_resourceForErrors["Register-InCorrectData"]);
                 }
-
                 var registeredUser = await _accountService.FindByEmailAsync(registerDto.Email);
                 if (registeredUser != null)
                 {
-                    ModelState.AddModelError("", _resourceForErrors["Register-RegisteredUser"]);
-                    return Ok("Register");
+                    return BadRequest(_resourceForErrors["Register-RegisteredUser"]);
                 }
                 else
                 {
                     var result = await _accountService.CreateUserAsync(registerDto);
                     if (!result.Succeeded)
                     {
-                        ModelState.AddModelError("", _resourceForErrors["Register-InCorrectPassword"]);
-                        return Ok("Register");
+                        return BadRequest(_resourceForErrors["Register-InCorrectPassword"]);
                     }
                     else
                     {
@@ -185,7 +181,7 @@ namespace EPlast.WebApi.Controllers
             catch (Exception e)
             {
                 _loggerService.LogError($"Exception: {e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
+                return BadRequest();
             }
         }
 

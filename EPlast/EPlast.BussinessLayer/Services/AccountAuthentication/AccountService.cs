@@ -26,7 +26,6 @@ namespace EPlast.BussinessLayer.Services
         private readonly IMapper _mapper;
         private readonly IConfiguration _config;
 
-
         public AccountService(UserManager<User> userManager,
             SignInManager<User> signInManager,
             IEmailConfirmation emailConfirmation,
