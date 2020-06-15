@@ -81,7 +81,7 @@ namespace EPlast.WebApi.Controllers
             catch (Exception e)
             {
                 _loggerService.LogError($"Exception: {e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
+                return BadRequest();
             }
         }
 
@@ -99,15 +99,13 @@ namespace EPlast.WebApi.Controllers
                     var user = await _accountService.FindByEmailAsync(loginDto.Email);
                     if (user == null)
                     {
-                        ModelState.AddModelError("", _resourceForErrors["Login-NotRegistered"]);
-                        return Ok(loginDto);
+                        return BadRequest(_resourceForErrors["Login-NotRegistered"]);
                     }
                     else
                     {
                         if (!await _accountService.IsEmailConfirmedAsync(user))
                         {
-                            ModelState.AddModelError("", _resourceForErrors["Login-NotConfirmed"]);
-                            return Ok(loginDto);
+                            return BadRequest(_resourceForErrors["Login-NotConfirmed"]);
                         }
                     }
                     var result = await _accountService.SignInAsync(loginDto);
@@ -121,17 +119,15 @@ namespace EPlast.WebApi.Controllers
                     }
                     else
                     {
-                        ModelState.AddModelError("", _resourceForErrors["Login-InCorrectPassword"]);
-                        return Ok(loginDto);
+                        return BadRequest(_resourceForErrors["Login-InCorrectPassword"]);
                     }
                 }
-                //return View("Login", loginVM);
-                return Ok(loginDto);
+                return Ok();
             }
             catch (Exception e)
             {
                 _loggerService.LogError($"Exception: {e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
+                return BadRequest();
             }
         }
 
@@ -144,7 +140,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("signup")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(RegisterDto registerDto) // тещу з оцього
+        public async Task<IActionResult> Register(RegisterDto registerDto)
         {
             try
             {
