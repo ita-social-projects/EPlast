@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO.Account;
 using EPlast.BussinessLayer.Interfaces;
 using EPlast.BussinessLayer.Interfaces.UserProfiles;
@@ -15,6 +10,10 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -231,7 +230,7 @@ namespace EPlast.WebApi.Controllers
             return Ok("ConfirmedEmail");
         }
 
-        [HttpGet]
+        [HttpGet("resendEmailForRegistering")]
         [AllowAnonymous]
         public async Task<IActionResult> ResendEmailForRegistering(string userId)
         {
@@ -422,7 +421,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         
-        [HttpPost]
+        [HttpPost("externalLogin")]
         [AllowAnonymous]
         public IActionResult ExternalLogin(string provider, string returnUrl)
         {
@@ -433,6 +432,7 @@ namespace EPlast.WebApi.Controllers
             return new ChallengeResult(provider, properties);
         }
 
+        [HttpGet("externalLoginCallBack")]
         [AllowAnonymous]
         public async Task<IActionResult> ExternalLoginCallBack(string returnUrl = null, string remoteError = null)
         {
