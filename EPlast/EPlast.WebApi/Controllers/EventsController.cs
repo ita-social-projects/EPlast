@@ -74,7 +74,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpDelete("~/api/pictures/{pictureId:int}/events")]
+        [HttpDelete("pictures/{pictureId:int}")]
         public async Task<IActionResult> DeletePicture(int pictureId)
         {
             try
@@ -116,7 +116,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPut("~/api/participants/{participantId:int}/status/approved/events")]
+        [HttpPut("participants/{participantId:int}/status/approved")]
         public async Task<IActionResult> ApproveParticipant(int participantId)
         {
             try
@@ -130,7 +130,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPut("~/api/participants/{participantId:int}/status/underReviewed/events")]
+        [HttpPut("participants/{participantId:int}/status/underReviewed")]
         public async Task<IActionResult> UnderReviewParticipant(int participantId)
         {
             try
@@ -144,7 +144,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPut("~/api/participants/{participantId:int}/status/rejected/events")]
+        [HttpPut("participants/{participantId:int}/status/rejected")]
         public async Task<IActionResult> RejectParticipant(int participantId)
         {
             try
