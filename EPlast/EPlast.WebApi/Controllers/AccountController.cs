@@ -1,32 +1,26 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO;
 using EPlast.BussinessLayer.DTO.Account;
-using EPlast.BussinessLayer.DTO.UserProfiles;
 using EPlast.BussinessLayer.Interfaces;
 using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.Resources;
-using EPlast.ViewModels;
-using EPlast.ViewModels.UserInformation;
-using EPlast.ViewModels.UserInformation.UserProfile;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace EPlast.Controllers
+namespace EPlast.WebApi.Controllers
 {
-    [Controller]
-    public class AccountController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    [EnableCors("CorsPolicy")]
+    public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
         private readonly IMapper _mapper;
@@ -71,18 +65,18 @@ namespace EPlast.Controllers
             _resourceForErrors = resourceForErrors;
         }
 
-        [HttpGet]
+        [HttpGet("signin")]
         [AllowAnonymous]
         public async Task<IActionResult> Login(string returnUrl)
         {
             try
             {
-                LoginViewModel loginViewModel = new LoginViewModel
+                LoginDto loginDto = new LoginDto
                 {
                     ReturnUrl = returnUrl,
                     ExternalLogins = (await _accountService.GetAuthSchemesAsync()).ToList()
                 };
-                return View(loginViewModel);
+                return Ok(loginDto);
             }
             catch (Exception e)
             {
@@ -91,32 +85,32 @@ namespace EPlast.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("signin")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginViewModel loginVM, string returnUrl)
+        public async Task<IActionResult> Login(LoginDto loginDto, string returnUrl)
         {
             try
             {
-                loginVM.ReturnUrl = returnUrl;
-                loginVM.ExternalLogins = (await _accountService.GetAuthSchemesAsync()).ToList();
+                loginDto.ReturnUrl = returnUrl;
+                loginDto.ExternalLogins = (await _accountService.GetAuthSchemesAsync()).ToList();
 
                 if (ModelState.IsValid)
                 {
-                    var user = await _accountService.FindByEmailAsync(loginVM.Email);
+                    var user = await _accountService.FindByEmailAsync(loginDto.Email);
                     if (user == null)
                     {
                         ModelState.AddModelError("", _resourceForErrors["Login-NotRegistered"]);
-                        return View(loginVM);
+                        return Ok(loginDto);
                     }
                     else
                     {
                         if (!await _accountService.IsEmailConfirmedAsync(user))
                         {
                             ModelState.AddModelError("", _resourceForErrors["Login-NotConfirmed"]);
-                            return View(loginVM);
+                            return Ok(loginDto);
                         }
                     }
-                    var result = await _accountService.SignInAsync(_mapper.Map<LoginDto>(loginVM));
+                    var result = await _accountService.SignInAsync(loginDto);
                     if (result.IsLockedOut)
                     {
                         return RedirectToAction("AccountLocked", "Account");
@@ -128,10 +122,11 @@ namespace EPlast.Controllers
                     else
                     {
                         ModelState.AddModelError("", _resourceForErrors["Login-InCorrectPassword"]);
-                        return View(loginVM);
+                        return Ok(loginDto);
                     }
                 }
-                return View("Login", loginVM);
+                //return View("Login", loginVM);
+                return Ok(loginDto);
             }
             catch (Exception e)
             {
@@ -140,50 +135,50 @@ namespace EPlast.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet("signup")]
         [AllowAnonymous]
         public IActionResult Register()
         {
-            return View("Register");
+            return Ok("signup");
         }
 
-        [HttpPost]
+        [HttpPost("signup")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(RegisterViewModel registerVM)
+        public async Task<IActionResult> Register(RegisterDto registerDto)
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
                     ModelState.AddModelError("", _resourceForErrors["Register-InCorrectData"]);
-                    return View("Register");
+                    return Ok("Register");
                 }
 
-                var registeredUser = await _accountService.FindByEmailAsync(registerVM.Email);
+                var registeredUser = await _accountService.FindByEmailAsync(registerDto.Email);
                 if (registeredUser != null)
                 {
                     ModelState.AddModelError("", _resourceForErrors["Register-RegisteredUser"]);
-                    return View("Register");
+                    return Ok("Register");
                 }
                 else
                 {
-                    var result = await _accountService.CreateUserAsync(_mapper.Map<RegisterViewModel, RegisterDto>(registerVM));
+                    var result = await _accountService.CreateUserAsync(registerDto);
                     if (!result.Succeeded)
                     {
                         ModelState.AddModelError("", _resourceForErrors["Register-InCorrectPassword"]);
-                        return View("Register");
+                        return Ok("Register");
                     }
                     else
                     {
-                        string code = await _accountService.AddRoleAndTokenAsync(_mapper.Map<RegisterViewModel, RegisterDto>(registerVM));
-                        var userDto = await _accountService.FindByEmailAsync(registerVM.Email);
+                        string code = await _accountService.AddRoleAndTokenAsync(registerDto);
+                        var userDto = await _accountService.FindByEmailAsync(registerDto.Email);
                         string confirmationLink = Url.Action(
                             nameof(ConfirmingEmail),
                             "Account",
                             new { code = code, userId = userDto.Id },
                               protocol: HttpContext.Request.Scheme);
                         await _accountService.SendEmailRegistr(confirmationLink, userDto);
-                        return View("AcceptingEmail");
+                      return Ok("AcceptingEmail");
                     }
                 }
             }
@@ -194,33 +189,7 @@ namespace EPlast.Controllers
             }
         }
 
-        [HttpGet]
-        public IActionResult ConfirmedEmail()
-        {
-            return View("ConfirmedEmail");
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> ResendEmailForRegistering(string userId)
-        {
-            var userDto = await _accountService.FindByIdAsync(userId);
-            if (userDto == null)
-            {
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
-            }
-            string code = await _accountService.GenerateConfToken(userDto);
-            var confirmationLink = Url.Action(
-                nameof(ConfirmingEmail),
-                "Account",
-                new { code = code, userId = userDto.Id },
-                protocol: HttpContext.Request.Scheme);
-
-            await _accountService.SendEmailRegistr(confirmationLink, userDto);
-            return View("ResendEmailConfirmation");
-        }
-
-        [HttpGet]
+        [HttpGet("confirmingEmail")]
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmingEmail(string userId, string code)
         {
@@ -241,7 +210,7 @@ namespace EPlast.Controllers
 
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("ConfirmedEmail", "Account");
+                    return Ok("ConfirmedEmail");
                 }
                 else
                 {
@@ -250,19 +219,45 @@ namespace EPlast.Controllers
             }
             else
             {
-                return View("ConfirmEmailNotAllowed", userDto);
+                //return Ok("ConfirmEmailNotAllowed", userDto);
+                return Ok("ConfirmedEmailNotAllowed");
             }
         }
 
+        [HttpGet("confirmedEmail")]
+        public IActionResult ConfirmedEmail()
+        {
+            return Ok("ConfirmedEmail");
+        }
 
-        [HttpGet]
+        [HttpGet("resendEmailForRegistering")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResendEmailForRegistering(string userId)
+        {
+            var userDto = await _accountService.FindByIdAsync(userId);
+            if (userDto == null)
+            {
+                return RedirectToAction("HandleError", "Error", new { code = 500 });
+            }
+            string code = await _accountService.GenerateConfToken(userDto);
+            var confirmationLink = Url.Action(
+                nameof(ConfirmingEmail),
+                "Account",
+                new { code = code, userId = userDto.Id },
+                protocol: HttpContext.Request.Scheme);
+
+            await _accountService.SendEmailRegistr(confirmationLink, userDto);
+            return Ok("ResendEmailConfirmation");
+        }
+
+        [HttpGet("accountLocked")]
         [AllowAnonymous]
         public IActionResult AccountLocked()
         {
-            return View("AccountLocked");
+            return Ok("AccountLocked");
         }
 
-        [HttpPost]
+        [HttpPost("logout")]
         [ValidateAntiForgeryToken]
         [Authorize]
         public IActionResult Logout()
@@ -271,27 +266,27 @@ namespace EPlast.Controllers
             return RedirectToAction("Login", "Account");
         }
 
-        [HttpGet]
+        [HttpGet("forgotPassword")]
         [AllowAnonymous]
         public IActionResult ForgotPassword()
         {
-            return View("ForgotPassword");
+            return Ok("ForgotPassword");
         }
 
-        [HttpPost]
+        [HttpPost("forgotPassword")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel forgotpasswordVM)
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto forgotpasswordDto)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var userDto = await _accountService.FindByEmailAsync(forgotpasswordVM.Email);
+                    var userDto = await _accountService.FindByEmailAsync(forgotpasswordDto.Email);
                     if (userDto == null || !(await _accountService.IsEmailConfirmedAsync(userDto)))
                     {
                         ModelState.AddModelError("", _resourceForErrors["Forgot-NotRegisteredUser"]);
-                        return View("ForgotPassword");
+                        return Ok("ForgotPassword");
                     }
                     string code = await _accountService.GenerateResetTokenAsync(userDto);
                     string confirmationLink = Url.Action(
@@ -299,10 +294,10 @@ namespace EPlast.Controllers
                         "Account",
                         new { userId = userDto.Id, code = HttpUtility.UrlEncode(code) },
                         protocol: HttpContext.Request.Scheme);
-                    await _accountService.SendEmailReseting(confirmationLink, _mapper.Map<ForgotPasswordDto>(forgotpasswordVM));
-                    return View("ForgotPasswordConfirmation");
+                    await _accountService.SendEmailReseting(confirmationLink, forgotpasswordDto);
+                    return Ok("ForgotPasswordConfirmation");
                 }
-                return View("ForgotPassword");
+                return Ok("ForgotPassword");
             }
             catch (Exception e)
             {
@@ -311,7 +306,7 @@ namespace EPlast.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet("resetPassword")]
         [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(string userId, string code = null)
         {
@@ -329,42 +324,43 @@ namespace EPlast.Controllers
                 }
                 else
                 {
-                    return View("ResetPassword");
+                    return Ok("ResetPassword");
                 }
             }
             else
             {
-                return View("ResetPasswordNotAllowed", userDto);
+                //return Ok("ResetPasswordNotAllowed", userDto);
+                return Ok("ResetPasswordNotAllowed");
             }
         }
 
-        [HttpPost]
+        [HttpPost("resetPassword")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel resetpasswordVM)
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto resetpasswordDto)
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
-                    return View("ResetPassword");
+                    return Ok("ResetPassword");
                 }
-                var userDto = await _accountService.FindByEmailAsync(resetpasswordVM.Email);
+                var userDto = await _accountService.FindByEmailAsync(resetpasswordDto.Email);
                 if (userDto == null)
                 {
                     ModelState.AddModelError("", _resourceForErrors["Reset-NotRegisteredUser"]);
-                    return View("ResetPassword");
+                    return Ok("ResetPassword");
                 }
-                var result = await _accountService.ResetPasswordAsync(userDto.Id, _mapper.Map<ResetPasswordDto>(resetpasswordVM));
+                var result = await _accountService.ResetPasswordAsync(userDto.Id, resetpasswordDto);
                 if (result.Succeeded)
                 {
                     await _accountService.CheckingForLocking(userDto);
-                    return View("ResetPasswordConfirmation");
+                    return Ok("ResetPasswordConfirmation");
                 }
                 else
                 {
                     ModelState.AddModelError("", _resourceForErrors["Reset-PasswordProblems"]);
-                    return View("ResetPassword");
+                    return Ok("ResetPassword");
                 }
             }
             catch (Exception e)
@@ -374,7 +370,7 @@ namespace EPlast.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet("changePassword")]
         [Authorize]
         public async Task<IActionResult> ChangePassword()
         {
@@ -382,17 +378,17 @@ namespace EPlast.Controllers
             var result = userDto.SocialNetworking;
             if (result != true)
             {
-                return View("ChangePassword");
+                return Ok("ChangePassword");
             }
             else
             {
-                return View("ChangePasswordNotAllowed");
+                return Ok("ChangePasswordNotAllowed");
             }
         }
 
-        [HttpPost]
+        [HttpPost("changePassword")]
         [Authorize]
-        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel changepasswordModel)
+        public async Task<IActionResult> ChangePassword(ChangePasswordDto changepasswordDto)
         {
             try
             {
@@ -403,18 +399,18 @@ namespace EPlast.Controllers
                     {
                         return RedirectToAction("Login");
                     }
-                    var result = await _accountService.ChangePasswordAsync(userDto.Id, _mapper.Map<ChangePasswordDto>(changepasswordModel));
+                    var result = await _accountService.ChangePasswordAsync(userDto.Id, changepasswordDto);
                     if (!result.Succeeded)
                     {
                         ModelState.AddModelError("", _resourceForErrors["Change-PasswordProblems"]);
-                        return View("ChangePassword");
+                        return Ok("ChangePassword");
                     }
                     _accountService.RefreshSignInAsync(userDto);
-                    return View("ChangePasswordConfirmation");
+                    return Ok("ChangePasswordConfirmation");
                 }
                 else
                 {
-                    return View("ChangePassword");
+                    return Ok("ChangePassword");
                 }
             }
             catch (Exception e)
@@ -424,8 +420,9 @@ namespace EPlast.Controllers
             }
         }
 
+        
+        [HttpPost("externalLogin")]
         [AllowAnonymous]
-        [HttpPost]
         public IActionResult ExternalLogin(string provider, string returnUrl)
         {
             string redirectUrl = Url.Action("ExternalLoginCallBack",
@@ -435,13 +432,14 @@ namespace EPlast.Controllers
             return new ChallengeResult(provider, properties);
         }
 
+        [HttpGet("externalLoginCallBack")]
         [AllowAnonymous]
         public async Task<IActionResult> ExternalLoginCallBack(string returnUrl = null, string remoteError = null)
         {
             try
             {
                 returnUrl = returnUrl ?? Url.Content("~/Account/UserProfile");
-                LoginViewModel loginViewModel = new LoginViewModel
+                LoginDto loginDto = new LoginDto
                 {
                     ReturnUrl = returnUrl,
                     ExternalLogins = (await _accountService.GetAuthSchemesAsync()).ToList()
@@ -450,13 +448,15 @@ namespace EPlast.Controllers
                 if (remoteError != null)
                 {
                     ModelState.AddModelError("", _resourceForErrors["Error-ExternalLoginProvider"]);
-                    return View("Login", loginViewModel);
+                    //return View("Login", loginDto);
+                    return Ok("Login");
                 }
                 var info = await _accountService.GetInfoAsync();
                 if (info == null)
                 {
                     ModelState.AddModelError(string.Empty, _resourceForErrors["Error-ExternalLoginInfo"]);
-                    return View("Login", loginViewModel);
+                    //return View("Login", loginDto);
+                    return Ok("Login");
                 }
 
                 var signInResult = await _accountService.GetSignInResultAsync(info);
@@ -466,7 +466,8 @@ namespace EPlast.Controllers
                 }
                 else
                 {
-                    var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+                    var email = "defaultEmail";
+                        //info.Principal.FindFirstValue(ClaimTypes.Email);
                     if (info.LoginProvider.ToString() == "Google")
                     {
                         if (email != null)
@@ -480,171 +481,12 @@ namespace EPlast.Controllers
                         await _accountService.FacebookAuthentication(email, info);
                         return LocalRedirect(returnUrl);
                     }
-                    return View("Error");
+                    return Ok("Error");
                 }
             }
             catch (Exception e)
             {
                 _loggerService.LogError($"Exception: {e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
-            }
-        }
-
-        [Authorize]
-        [HttpGet]
-        public async Task<IActionResult> UserProfile(string userId)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(userId))
-                {
-                    // _logger.Log(LogLevel.Error, "User id is null");
-                    // return RedirectToAction("HandleError", "Error", new { code = 500 });
-                    userId = await _userManagerService.GetUserIdAsync(User);
-                }
-
-                var user = await _userService.GetUserAsync(userId);
-                var time = await _userService.CheckOrAddPlastunRoleAsync(_mapper.Map<UserDTO, UserViewModel>(user).Id, user.RegistredOn);
-                var isUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун");
-
-                var model = new PersonalDataViewModel
-                {
-                    User = _mapper.Map<UserDTO, UserViewModel>(user),
-                    TimeToJoinPlast = time,
-                    IsUserPlastun = isUserPlastun
-                };
-
-                return View(model);
-            }
-            catch
-            {
-                _loggerService.LogError("Smth went wrong");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
-            }
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Approvers(string userId)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(userId))
-                {
-                    _loggerService.LogError("User id is null");
-                    return RedirectToAction("HandleError", "Error", new { code = 500 });
-                }
-
-                var user = await _userService.GetUserAsync(userId);
-                var confirmedUsers = _userService.GetConfirmedUsers(user);
-                var canApprove = await _userService.CanApproveAsync(confirmedUsers, userId, User);
-                var time = await _userService.CheckOrAddPlastunRoleAsync(user.Id, user.RegistredOn);
-                var clubApprover = _userService.GetClubAdminConfirmedUser(user);
-                var cityApprover = _userService.GetCityAdminConfirmedUser(user);
-
-                if (user != null)
-                {
-                    var model = new UserApproversViewModel
-                    {
-                        User = _mapper.Map<UserDTO, UserViewModel>(user),
-                        canApprove = canApprove,
-                        TimeToJoinPlast = time,
-                        ConfirmedUsers = _mapper.Map<IEnumerable<ConfirmedUserDTO>, IEnumerable<ConfirmedUserViewModel>>(confirmedUsers),
-                        ClubApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(clubApprover),
-                        CityApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(cityApprover),
-                        IsUserHeadOfCity = await _userManagerService.IsInRoleAsync(user, "Голова Станиці"),
-                        IsUserHeadOfClub = await _userManagerService.IsInRoleAsync(user, "Голова Куреня"),
-                        IsUserHeadOfRegion = await _userManagerService.IsInRoleAsync(user, "Голова Округу"),
-                        IsUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун"),
-                        CurrentUserId = await _userManagerService.GetUserIdAsync(User)
-                    };
-
-                    return View(model);
-                }
-                _loggerService.LogError($"Can`t find this user:{userId}, or smth else");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
-            }
-            catch
-            {
-                _loggerService.LogError("Smth went wrong");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
-            }
-        }
-
-        public async Task<IActionResult> ApproveUser(string userId, bool isClubAdmin = false, bool isCityAdmin = false)
-        {
-            if (userId != null)
-            {
-                await _confirmedUserService.CreateAsync(User, userId, isClubAdmin, isCityAdmin);
-                return RedirectToAction("Approvers", "Account", new { userId = userId });
-            }
-            _loggerService.LogError("User id is null");
-            return RedirectToAction("HandleError", "Error", new { code = 500 });
-        }
-
-        [Authorize]
-        public async Task<IActionResult> ApproverDelete(int confirmedId, string userId)
-        {
-            await _confirmedUserService.DeleteAsync(confirmedId);
-            _loggerService.LogInformation("Approve succesfuly deleted");
-            return RedirectToAction("Approvers", "Account", new { userId = userId });
-        }
-
-        [Authorize]
-        [HttpGet]
-        public async Task<IActionResult> Edit(string userId)
-        {
-            if (userId == null)
-            {
-                _loggerService.LogError("User id is null");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
-            }
-
-            try
-            {
-                var user = await _userService.GetUserAsync(userId);
-
-                var genders = (from item in await _genderService.GetAllAsync() select new SelectListItem { Text = item.Name, Value = item.ID.ToString() });
-
-                var placeOfStudyUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(await _educationService.GetAllGroupByPlaceAsync());
-                var specialityUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(await _educationService.GetAllGroupBySpecialityAsync());
-                var placeOfWorkUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(await _workService.GetAllGroupByPlaceAsync());
-                var positionUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(await _workService.GetAllGroupByPositionAsync());
-
-                var educView = new EducationUserViewModel { PlaceOfStudyID = user.UserProfile.EducationId, SpecialityID = user.UserProfile.EducationId, PlaceOfStudyList = placeOfStudyUnique, SpecialityList = specialityUnique };
-                var workView = new WorkUserViewModel { PlaceOfWorkID = user.UserProfile.WorkId, PositionID = user.UserProfile.WorkId, PlaceOfWorkList = placeOfWorkUnique, PositionList = positionUnique };
-                var model = new EditUserViewModel()
-                {
-                    User = _mapper.Map<UserDTO, UserViewModel>(user),
-                    Nationalities = _mapper.Map<IEnumerable<NationalityDTO>, IEnumerable<NationalityViewModel>>(await _nationalityService.GetAllAsync()),
-                    Religions = _mapper.Map<IEnumerable<ReligionDTO>, IEnumerable<ReligionViewModel>>(await _religionService.GetAllAsync()),
-                    EducationView = educView,
-                    WorkView = workView,
-                    Degrees = _mapper.Map<IEnumerable<DegreeDTO>, IEnumerable<DegreeViewModel>>(await _degreeService.GetAllAsync()),
-                    Genders = genders
-                };
-
-                return View(model);
-            }
-            catch (Exception e)
-            {
-                _loggerService.LogError($"Exception: { e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
-            }
-        }
-
-        [Authorize]
-        [HttpPost]
-        public async Task<IActionResult> Edit(EditUserViewModel model, IFormFile file)
-        {
-            try
-            {
-                await _userService.UpdateAsync(_mapper.Map<UserViewModel, UserDTO>(model.User), file, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID, model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
-                _loggerService.LogInformation($"User {model.User.Email} was edited profile and saved in the database");
-                return RedirectToAction("UserProfile");
-            }
-            catch (Exception e)
-            {
-                _loggerService.LogError($"Exception: { e.Message}");
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
