@@ -275,8 +275,14 @@ namespace EPlast.BussinessLayer.Services
             await _signInManager.SignInAsync(user, isPersistent: false);
         }
 
-        private string GenerateJSONWebToken(LoginDto userInfo)
+        private string GenerateJSONWebToken(LoginDto loginDto)
         {
+            /*var claims = new[]
+            {
+                new Claim(ClaimTypes.Email, loginDto.Email),
+                new Claim(ClaimTypes., loginDto.Email),
+                
+            };*/
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
@@ -285,7 +291,7 @@ namespace EPlast.BussinessLayer.Services
               null,
               expires: DateTime.Now.AddMinutes(120),
               signingCredentials: credentials);
-
+                
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
