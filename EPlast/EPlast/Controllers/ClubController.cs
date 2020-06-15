@@ -122,9 +122,13 @@ namespace EPlast.Controllers
         {
             try
             {
-                var viewModel = _mapper.Map<ClubDTO, ClubViewModel>(await _clubService.GetClubInfoByIdAsync(index));
+                var clubDTO = await _clubService.GetClubInfoByIdAsync(index);
+                if (clubDTO == null)
+                {
+                    return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
+                }
 
-                return View(viewModel);
+                return View(_mapper.Map<ClubDTO, ClubViewModel>(clubDTO));
             }
             catch (Exception e)
             {
@@ -138,9 +142,12 @@ namespace EPlast.Controllers
         {
             try
             {
-                var viewModel = _mapper.Map<ClubDTO, ClubViewModel>(await _clubService.GetClubInfoByIdAsync(index));
-
-                return View(viewModel);
+              var clubDto=await _clubService.GetClubInfoByIdAsync(index);
+                if (clubDto == null)
+                {
+                    return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
+                }
+                return View(_mapper.Map<ClubDTO, ClubViewModel>(clubDto));
             }
             catch (Exception e)
             {
