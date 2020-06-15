@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using EPlast.BussinessLayer.DTO.Events;
-using EPlast.BussinessLayer.Interfaces.Events;
-using EPlast.WebApi.Models;
-
+﻿using EPlast.BussinessLayer.Interfaces.Events;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -22,8 +16,8 @@ namespace EPlast.WebApi.Controllers
             _actionManager = actionManager;
         }
 
-        [HttpGet("authors")]
-        public async Task<IActionResult> Get()
+        [HttpGet("categories")]
+        public async Task<IActionResult> GetCategories()
         {
             try
             {
@@ -36,147 +30,146 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetEventsByCategoryId(int categoryId)
-        //{
-        //    try
-        //    {
-        //        var model = await _actionManager.GetEventsAsync(categoryId, User);
+        [HttpGet("~/api/categories/{categoryId:int}/events")]
+        public async Task<IActionResult> GetEventsByCategoryId(int categoryId)
+        {
+            try
+            {
+                var model = await _actionManager.GetEventsAsync(categoryId, User);
 
-        //        return Ok(model);
-        //    }
-        //    catch
-        //    {
-        //        return BadRequest();
-        //    }
-        //}
+                return Ok(model);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
 
-        //[HttpGet]
-        //public async Task<IActionResult> Get(int id)
-        //{
-        //    try
-        //    {
-        //        var model = await _actionManager.GetEventInfoAsync(id, User);
+        [HttpGet("{id:int}/details")]
+        public async Task<IActionResult> GetEventDetail(int id)
+        {
+            try
+            {
+                var model = await _actionManager.GetEventInfoAsync(id, User);
 
-        //        return Ok(model);
-        //    }
-        //    catch
-        //    {
-        //        return BadRequest();
-        //    }
-        //}
+                return Ok(model);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
 
-        //[HttpDelete]
-        //public async Task<IActionResult> Delete(int id)
-        //{
-        //    try
-        //    {
-        //        var code = await _actionManager.DeleteEventAsync(id);
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var code = await _actionManager.DeleteEventAsync(id);
+                return StatusCode(code);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
 
-        //        return StatusCode(code);
-        //    }
-        //    catch
-        //    {
-        //        return BadRequest();
-        //    }
-        //}
+        [HttpDelete("~/api/pictures/{pictureId:int}/events")]
+        public async Task<IActionResult> DeletePicture(int pictureId)
+        {
+            try
+            {
+                var code = await _actionManager.DeletePictureAsync(pictureId);
+                return StatusCode(code);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
 
-        //[HttpDelete]
-        //public async Task<IActionResult> DeletePicture(int id)
-        //{
-        //    try
-        //    {
-        //        var code = await _actionManager.DeletePictureAsync(id);
-        //        return StatusCode(code);
-        //    }
-        //    catch
-        //    {
-        //        return BadRequest();
-        //    }
-        //}
+        [HttpPost("{eventId:int}/participants")]
+        public async Task<IActionResult> SubscribeOnEvent(int eventId)
+        {
+            try
+            {
+                var code = await _actionManager.SubscribeOnEventAsync(eventId, User);
+                return StatusCode(code);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
 
-        //[HttpPost("/vouchers/client/{clientId}/voucher/{voucherId}/comments")]
-        //public async Task<IActionResult> SubscribeOnEvent(int id)
-        //{
-        //    try
-        //    {
-        //        var code = await _actionManager.SubscribeOnEventAsync(id, User);
-        //        return StatusCode(code);
-        //    }
-        //    catch
-        //    {
-        //        return BadRequest();
-        //    }
-        //}
+        [HttpDelete("{eventId:int}/participants")]
+        public async Task<IActionResult> UnSubscribeOnEvent(int eventId)
+        {
+            try
+            {
+                var code = await _actionManager.UnSubscribeOnEventAsync(eventId, User);
+                return StatusCode(code);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
 
-        //[HttpDelete]
-        //public async Task<IActionResult> UnSubscribeOnEvent(int id)
-        //{
-        //    try
-        //    {
-        //        var code = await _actionManager.UnSubscribeOnEventAsync(id, User);
-        //        return StatusCode(code);
-        //    }
-        //    catch
-        //    {
-        //        return BadRequest();
-        //    }
-        //}
+        [HttpPut("~/api/participants/{participantId:int}/status/approved/events")]
+        public async Task<IActionResult> ApproveParticipant(int participantId)
+        {
+            try
+            {
+                var code = await _actionManager.ApproveParticipantAsync(participantId);
+                return StatusCode(code);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
 
-        //[HttpPut]
-        //public async Task<IActionResult> ApproveParticipant(int id)
-        //{
-        //    try
-        //    {
-        //        var code = await _actionManager.ApproveParticipantAsync(id);
-        //        return StatusCode(code);
-        //    }
-        //    catch
-        //    {
-        //        return BadRequest();
-        //    }
-        //}
+        [HttpPut("~/api/participants/{participantId:int}/status/underReviewed/events")]
+        public async Task<IActionResult> UnderReviewParticipant(int participantId)
+        {
+            try
+            {
+                var code = await _actionManager.UnderReviewParticipantAsync(participantId);
+                return StatusCode(code);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
 
-        //[HttpPut]
-        //public async Task<IActionResult> UndetermineParticipant(int id)
-        //{
-        //    try
-        //    {
-        //        var code = await _actionManager.UnderReviewParticipantAsync(id);
-        //        return StatusCode(code);
-        //    }
-        //    catch
-        //    {
-        //        return BadRequest();
-        //    }
-        //}
+        [HttpPut("~/api/participants/{participantId:int}/status/rejected/events")]
+        public async Task<IActionResult> RejectParticipant(int participantId)
+        {
+            try
+            {
+                var code = await _actionManager.RejectParticipantAsync(participantId);
+                return StatusCode(code);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
 
-        //[HttpPut]
-        //public async Task<IActionResult> RejectParticipant(int id)
-        //{
-        //    try
-        //    {
-        //        var code = await _actionManager.RejectParticipantAsync(id);
-        //        return StatusCode(code);
-        //    }
-        //    catch
-        //    {
-        //        return BadRequest();
-        //    }
-        //}
-
-        //[HttpPost]
-        //public async Task<IActionResult> FillEventGallery(int id, IList<IFormFile> files)
-        //{
-        //    try
-        //    {
-        //        var code = await _actionManager.FillEventGalleryAsync(id, files);
-        //        return StatusCode(code);
-        //    }
-        //    catch
-        //    {
-        //        return BadRequest();
-        //    }
-        //}
+        [HttpPost("{eventId:int}/eventGallery")]
+        public async Task<IActionResult> FillEventGallery(int eventId, [FromForm] IList<IFormFile> files)
+        {
+            try
+            {
+                var code = await _actionManager.FillEventGalleryAsync(eventId, files);
+                return StatusCode(code);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
     }
 }
