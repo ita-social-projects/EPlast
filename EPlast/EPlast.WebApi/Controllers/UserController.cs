@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using EPlast.BussinessLayer.DTO.UserProfiles;
+﻿using AutoMapper;
 using EPlast.BussinessLayer.Interfaces;
 using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.BussinessLayer.Services.Interfaces;
-using EPlast.Controllers;
 using EPlast.Resources;
-using EPlast.ViewModels.UserInformation;
-using EPlast.ViewModels.UserInformation.UserProfile;
+using EPlast.WebApi.Models.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -24,8 +20,6 @@ namespace EPlast.WebApi.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IAccountService _accountService;
-        private readonly IMapper _mapper;
         private readonly IUserService _userService;
         private readonly INationalityService _nationalityService;
         private readonly IEducationService _educationService;
@@ -36,7 +30,6 @@ namespace EPlast.WebApi.Controllers
         private readonly IUserManagerService _userManagerService;
         private readonly IConfirmedUsersService _confirmedUserService;
         private readonly ILoggerService<AccountController> _loggerService;
-        private readonly IStringLocalizer<AuthenticationErrors> _resourceForErrors;
 
         public UserController(IUserService userService,
             INationalityService nationalityService,
@@ -52,7 +45,6 @@ namespace EPlast.WebApi.Controllers
             IAccountService accountService,
             IStringLocalizer<AuthenticationErrors> resourceForErrors)
         {
-            _accountService = accountService;
             _userService = userService;
             _nationalityService = nationalityService;
             _religionService = religionService;
@@ -61,23 +53,13 @@ namespace EPlast.WebApi.Controllers
             _educationService = educationService;
             _genderService = genderService;
             _confirmedUserService = confirmedUserService;
-            _mapper = mapper;
             _userManagerService = userManagerService;
             _loggerService = loggerService;
-            _resourceForErrors = resourceForErrors;
-        }
-        // GET api/userValues
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<string>>> GetAsync(string ID)
-        {
-            return new string[] { "value1", "value2" };
         }
 
-        // GET api/values/5
-        [Authorize]
         [HttpGet("{userId}")]
-        [Route("userProfile")]
-        public async Task<ActionResult<string>> UserProfile(string userId)
+        // [Route("userProfile")]
+        public async Task<IActionResult> Get(string userId)
         {
             try
             {
@@ -87,24 +69,24 @@ namespace EPlast.WebApi.Controllers
                     // return RedirectToAction("HandleError", "Error", new { code = 500 });
                     userId = await _userManagerService.GetUserIdAsync(User);
                 }
-                
+
                 var user = await _userService.GetUserAsync(userId);
-                var time = await _userService.CheckOrAddPlastunRoleAsync(_mapper.Map<UserDTO, UserViewModel>(user).Id, user.RegistredOn);
+                var time = await _userService.CheckOrAddPlastunRoleAsync(user.Id, user.RegistredOn);
                 var isUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун");
 
                 var model = new PersonalDataViewModel
                 {
-                    User = _mapper.Map<UserDTO, UserViewModel>(user),
+                    User = user,
                     TimeToJoinPlast = time,
                     IsUserPlastun = isUserPlastun
                 };
 
                 return Ok(model);
             }
-            catch
+            catch (Exception e)
             {
-                _loggerService.LogError("Smth went wrong");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
+                _loggerService.LogError($"Smth went wrong: {e.Message}");
+                return BadRequest();
             }
         }
 
@@ -115,7 +97,7 @@ namespace EPlast.WebApi.Controllers
             if (userId == null)
             {
                 _loggerService.LogError("User id is null");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
+                return BadRequest();
             }
 
             try
@@ -124,21 +106,21 @@ namespace EPlast.WebApi.Controllers
 
                 var genders = (from item in await _genderService.GetAllAsync() select new SelectListItem { Text = item.Name, Value = item.ID.ToString() });
 
-                var placeOfStudyUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(await _educationService.GetAllGroupByPlaceAsync());
-                var specialityUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(await _educationService.GetAllGroupBySpecialityAsync());
-                var placeOfWorkUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(await _workService.GetAllGroupByPlaceAsync());
-                var positionUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(await _workService.GetAllGroupByPositionAsync());
+                var placeOfStudyUnique = await _educationService.GetAllGroupByPlaceAsync();
+                var specialityUnique = await _educationService.GetAllGroupBySpecialityAsync();
+                var placeOfWorkUnique = await _workService.GetAllGroupByPlaceAsync();
+                var positionUnique = await _workService.GetAllGroupByPositionAsync();
 
-                var educView = new EducationUserViewModel { PlaceOfStudyID = user.UserProfile.EducationId, SpecialityID = user.UserProfile.EducationId, PlaceOfStudyList = placeOfStudyUnique, SpecialityList = specialityUnique };
-                var workView = new WorkUserViewModel { PlaceOfWorkID = user.UserProfile.WorkId, PositionID = user.UserProfile.WorkId, PlaceOfWorkList = placeOfWorkUnique, PositionList = positionUnique };
+                var educView = new UserEducationViewModel { PlaceOfStudyID = user.UserProfile.EducationId, SpecialityID = user.UserProfile.EducationId, PlaceOfStudyList = placeOfStudyUnique, SpecialityList = specialityUnique };
+                var workView = new UserWorkViewModel { PlaceOfWorkID = user.UserProfile.WorkId, PositionID = user.UserProfile.WorkId, PlaceOfWorkList = placeOfWorkUnique, PositionList = positionUnique };
                 var model = new EditUserViewModel()
                 {
-                    User = _mapper.Map<UserDTO, UserViewModel>(user),
-                    Nationalities = _mapper.Map<IEnumerable<NationalityDTO>, IEnumerable<NationalityViewModel>>(await _nationalityService.GetAllAsync()),
-                    Religions = _mapper.Map<IEnumerable<ReligionDTO>, IEnumerable<ReligionViewModel>>(await _religionService.GetAllAsync()),
+                    User = user,
+                    Nationalities = await _nationalityService.GetAllAsync(),
+                    Religions = await _religionService.GetAllAsync(),
                     EducationView = educView,
                     WorkView = workView,
-                    Degrees = _mapper.Map<IEnumerable<DegreeDTO>, IEnumerable<DegreeViewModel>>(await _degreeService.GetAllAsync()),
+                    Degrees = await _degreeService.GetAllAsync(),
                     Genders = genders
                 };
 
@@ -147,7 +129,7 @@ namespace EPlast.WebApi.Controllers
             catch (Exception e)
             {
                 _loggerService.LogError($"Exception: { e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
+                return BadRequest();
             }
         }
 
@@ -157,51 +139,52 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                await _userService.UpdateAsync(_mapper.Map<UserViewModel, UserDTO>(model.User), file, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID, model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
+                await _userService.UpdateAsync(model.User, file, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID, model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
                 _loggerService.LogInformation($"User {model.User.Email} was edited profile and saved in the database");
-                return RedirectToAction("UserProfile");
+
+                return Ok();
             }
             catch (Exception e)
             {
                 _loggerService.LogError($"Exception: { e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
+                return BadRequest();
             }
         }
         [Authorize]
         public async Task<IActionResult> ApproveUser(string userId, bool isClubAdmin = false, bool isCityAdmin = false)
         {
-            if (userId != null)
+            try
             {
-                await _confirmedUserService.CreateAsync(User, userId, isClubAdmin, isCityAdmin);
-                return RedirectToAction("Approvers", "Account", new { userId = userId });
+                if (userId != null)
+                {
+                    await _confirmedUserService.CreateAsync(User, userId, isClubAdmin, isCityAdmin);
+                    return Ok();
+                }
+                throw new ArgumentException("User id is null");
             }
-            _loggerService.LogError("User id is null");
-            return RedirectToAction("HandleError", "Error", new { code = 500 });
+            catch (Exception e)
+            {
+                _loggerService.LogError($"Exception: { e.Message}");
+                return BadRequest();
+            }
         }
 
         [Authorize]
-        public async Task<IActionResult> ApproverDelete(int confirmedId, string userId)
+        public async Task<IActionResult> ApproverDelete(int confirmedId)
         {
-            await _confirmedUserService.DeleteAsync(confirmedId);
-            _loggerService.LogInformation("Approve succesfuly deleted");
-            return RedirectToAction("Approvers", "Account", new { userId = userId });
-        }
-        // POST api/values
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
+            try
+            {
+                await _confirmedUserService.DeleteAsync(confirmedId);
+                _loggerService.LogInformation("Approve succesfuly deleted");
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _loggerService.LogError($"Exception: { e.Message}");
+                return BadRequest();
+            }
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }

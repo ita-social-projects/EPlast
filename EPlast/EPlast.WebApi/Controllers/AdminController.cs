@@ -1,23 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using EPlast.BussinessLayer.DTO;
-using EPlast.BussinessLayer.DTO.City;
+﻿using AutoMapper;
 using EPlast.BussinessLayer.Interfaces.City;
 using EPlast.BussinessLayer.Services.Interfaces;
-using EPlast.ViewModels;
-using EPlast.ViewModels.City;
+using EPlast.WebApi.Models.Admin;
+using EPlast.WebApi.Models.Role;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AdminController: ControllerBase
+    public class AdminController : ControllerBase
     {
         private readonly ILogger _logger;
         private readonly IUserManagerService _userManagerService;
@@ -47,13 +44,13 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                var result = _mapper.Map<IEnumerable<UserTableDTO>, IEnumerable<UserTableViewModel>>(await _adminService.UsersTableAsync());
+                var result = await _adminService.UsersTableAsync();
                 return Ok(result);
             }
             catch (Exception e)
             {
                 _logger.Log(LogLevel.Error, $"Exception: {e.Message}");
-                return RedirectToAction("HandleError", "Error");
+                return BadRequest();
             }
         }
 
@@ -62,29 +59,36 @@ namespace EPlast.WebApi.Controllers
         [Route("Edit")]
         public async Task<IActionResult> Edit(string userId)
         {
-
-            if (!string.IsNullOrEmpty(userId))
+            try
             {
-                var user = await _userManagerService.FindByIdAsync(userId);
-                if (user == null)
+                if (!string.IsNullOrEmpty(userId))
                 {
-                    _logger.Log(LogLevel.Error, $"Can`t find the User");
-                    return RedirectToAction("HandleError", "Error", new { code = 404 });
-                }
-                var userRoles = await _userManagerService.GetRolesAsync(user);
-                var allRoles = await _adminService.GetRolesExceptAdminAsync();
+                    var user = await _userManagerService.FindByIdAsync(userId);
+                    if (user == null)
+                    {
+                        _logger.Log(LogLevel.Error, $"Can`t find the User");
+                        return BadRequest();
+                    }
+                    var userRoles = await _userManagerService.GetRolesAsync(user);
+                    var allRoles = await _adminService.GetRolesExceptAdminAsync();
 
-                RoleViewModel model = new RoleViewModel
-                {
-                    UserID = user.Id,
-                    UserEmail = user.Email,
-                    UserRoles = userRoles,
-                    AllRoles = allRoles
-                };
-                return Ok(model);
+                    RoleViewModel model = new RoleViewModel
+                    {
+                        UserID = user.Id,
+                        UserEmail = user.Email,
+                        UserRoles = userRoles,
+                        AllRoles = allRoles
+                    };
+
+                    return Ok(model);
+                }
+                throw new ArgumentException("User id is null");
             }
-            _logger.Log(LogLevel.Error, $"User, with userId: {userId}, is null");
-            return RedirectToAction("HandleError", "Error", new { code = 404 });
+            catch (Exception e)
+            {
+                _logger.Log(LogLevel.Error, $"Exception: {e.Message}");
+                return BadRequest();
+            }
         }
 
         [Authorize(Roles = "Admin")]
@@ -92,15 +96,21 @@ namespace EPlast.WebApi.Controllers
         [Route("Edit")]
         public async Task<IActionResult> Edit(string userId, List<string> roles)
         {
-
-            if (!string.IsNullOrEmpty(userId))
+            try
             {
-                await _adminService.EditAsync(userId, roles);
-                _logger.LogInformation("Successful role change for {0}", userId);
-                return RedirectToAction("UsersTable");
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    await _adminService.EditAsync(userId, roles);
+                    _logger.LogInformation($"Successful change role for {userId}");
+                    return Ok();
+                }
+                throw new ArgumentException("User id is null");
             }
-            _logger.Log(LogLevel.Error, $"User, with userId: {userId}, is null");
-            return RedirectToAction("HandleError", "Error", new { code = 404 });
+            catch (Exception e)
+            {
+                _logger.Log(LogLevel.Error, $"Exception: {e.Message}");
+                return BadRequest();
+            }
         }
 
         [HttpGet("{userId}")]
@@ -109,8 +119,7 @@ namespace EPlast.WebApi.Controllers
         [Route("Delete")]
         public ActionResult ConfirmDelete(string userId)
         {
-            ViewBag.userId = userId;
-            return PartialView();
+            return Ok(userId);
         }
 
         [Authorize(Roles = "Admin")]
@@ -124,15 +133,15 @@ namespace EPlast.WebApi.Controllers
                 {
                     await _adminService.DeleteUserAsync(userId);
                     _logger.LogInformation("Successful delete user {0}", userId);
-                    return RedirectToAction("UsersTable");
+
+                    return Ok();
                 }
-                _logger.Log(LogLevel.Error, $"User, with userId: {userId}, is null");
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+                throw new ArgumentException("User id is null");
             }
             catch (Exception e)
             {
                 _logger.Log(LogLevel.Error, $"Smth went wrong {e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+                return BadRequest();
             }
         }
 
@@ -140,10 +149,11 @@ namespace EPlast.WebApi.Controllers
         [Route("RegionsAdmins")]
         public async Task<IActionResult> RegionsAdmins()
         {
-            var model = new RegionsAdminsViewModel
+            var model = new CitiesAdminsViewModel()
             {
-                Cities = _mapper.Map<IEnumerable<CityDTO>, IEnumerable<CityViewModel>>(await _cityService.GetAllDTOAsync())
+                Cities = await _cityService.GetAllDTOAsync()
             };
+
             return Ok(model);
         }
 
@@ -151,8 +161,7 @@ namespace EPlast.WebApi.Controllers
         [Route("GetAdmins")]
         public async Task<IActionResult> GetAdmins(int cityId)
         {
-            var res = _mapper.Map<IEnumerable<CityAdministrationDTO>, IEnumerable<CityAdministrationViewModel>>(await _cityAdministrationService.GetByCityIdAsync(cityId));
-            return Ok(res);
+            return Ok(await _cityAdministrationService.GetByCityIdAsync(cityId));
         }
     }
 }
