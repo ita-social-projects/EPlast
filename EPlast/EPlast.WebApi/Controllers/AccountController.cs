@@ -8,7 +8,6 @@ using EPlast.BussinessLayer.Interfaces;
 using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.Resources;
-using EPlast.WebApi.Models.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
@@ -71,12 +70,12 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                LoginViewModel loginViewModel = new LoginViewModel
+                LoginDTO loginDto = new LoginDTO
                 {
                     ReturnUrl = returnUrl,
                     ExternalLogins = (await _accountService.GetAuthSchemesAsync()).ToList()
                 };
-                return Ok(loginViewModel);
+                return Ok(loginDto);
             }
             catch (Exception e)
             {
@@ -87,30 +86,30 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("signin")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginViewModel loginVM, string returnUrl)
+        public async Task<IActionResult> Login(LoginDTO loginDto, string returnUrl)
         {
             try
             {
-                loginVM.ReturnUrl = returnUrl;
-                loginVM.ExternalLogins = (await _accountService.GetAuthSchemesAsync()).ToList();
+                loginDto.ReturnUrl = returnUrl;
+                loginDto.ExternalLogins = (await _accountService.GetAuthSchemesAsync()).ToList();
 
                 if (ModelState.IsValid)
                 {
-                    var user = await _accountService.FindByEmailAsync(loginVM.Email);
+                    var user = await _accountService.FindByEmailAsync(loginDto.Email);
                     if (user == null)
                     {
                         ModelState.AddModelError("", _resourceForErrors["Login-NotRegistered"]);
-                        return Ok(loginVM);
+                        return Ok(loginDto);
                     }
                     else
                     {
                         if (!await _accountService.IsEmailConfirmedAsync(user))
                         {
                             ModelState.AddModelError("", _resourceForErrors["Login-NotConfirmed"]);
-                            return Ok(loginVM);
+                            return Ok(loginDto);
                         }
                     }
-                    var result = await _accountService.SignInAsync(_mapper.Map<LoginDto>(loginVM));
+                    var result = await _accountService.SignInAsync(loginDto);
                     if (result.IsLockedOut)
                     {
                         return RedirectToAction("AccountLocked", "Account");
@@ -122,11 +121,11 @@ namespace EPlast.WebApi.Controllers
                     else
                     {
                         ModelState.AddModelError("", _resourceForErrors["Login-InCorrectPassword"]);
-                        return Ok(loginVM);
+                        return Ok(loginDto);
                     }
                 }
                 //return View("Login", loginVM);
-                return Ok(loginVM);
+                return Ok(loginDto);
             }
             catch (Exception e)
             {
@@ -142,9 +141,9 @@ namespace EPlast.WebApi.Controllers
             return Ok("signup");
         }
 
-        /*[HttpPost("signup")]
+        [HttpPost("signup")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(RegisterViewModel registerVM)
+        public async Task<IActionResult> Register(RegisterDTO registerDto)
         {
             try
             {
@@ -154,7 +153,7 @@ namespace EPlast.WebApi.Controllers
                     return Ok("Register");
                 }
 
-                var registeredUser = await _accountService.FindByEmailAsync(registerVM.Email);
+                var registeredUser = await _accountService.FindByEmailAsync(registerDto.Email);
                 if (registeredUser != null)
                 {
                     ModelState.AddModelError("", _resourceForErrors["Register-RegisteredUser"]);
@@ -162,7 +161,7 @@ namespace EPlast.WebApi.Controllers
                 }
                 else
                 {
-                    var result = await _accountService.CreateUserAsync(_mapper.Map<RegisterViewModel, RegisterDto>(registerVM));
+                    var result = await _accountService.CreateUserAsync(registerDto);
                     if (!result.Succeeded)
                     {
                         ModelState.AddModelError("", _resourceForErrors["Register-InCorrectPassword"]);
@@ -170,8 +169,8 @@ namespace EPlast.WebApi.Controllers
                     }
                     else
                     {
-                        string code = await _accountService.AddRoleAndTokenAsync(_mapper.Map<RegisterViewModel, RegisterDto>(registerVM));
-                        var userDto = await _accountService.FindByEmailAsync(registerVM.Email);
+                        string code = await _accountService.AddRoleAndTokenAsync(registerDto);
+                        var userDto = await _accountService.FindByEmailAsync(registerDto.Email);
                         string confirmationLink = Url.Action(
                             nameof(ConfirmingEmail),
                             "Account",
@@ -228,6 +227,6 @@ namespace EPlast.WebApi.Controllers
         public IActionResult ConfirmedEmail()
         {
             return Ok("ConfirmedEmail");
-        }*/
+        }
     }
 }

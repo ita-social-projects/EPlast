@@ -299,7 +299,7 @@ namespace EPlast.Controllers
                         "Account",
                         new { userId = userDto.Id, code = HttpUtility.UrlEncode(code) },
                         protocol: HttpContext.Request.Scheme);
-                    await _accountService.SendEmailReseting(confirmationLink, _mapper.Map<ForgotPasswordDto>(forgotpasswordVM));
+                    await _accountService.SendEmailReseting(confirmationLink, _mapper.Map<ForgotPasswordDTO>(forgotpasswordVM));
                     return View("ForgotPasswordConfirmation");
                 }
                 return View("ForgotPassword");
