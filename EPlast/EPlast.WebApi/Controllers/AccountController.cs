@@ -174,7 +174,8 @@ namespace EPlast.WebApi.Controllers
                             new { code = code, userId = userDto.Id },
                               protocol: HttpContext.Request.Scheme);
                         await _accountService.SendEmailRegistr(confirmationLink, userDto);
-                      return Ok("AcceptingEmail");
+            
+                        return Ok("AcceptingEmail");
                     }
                 }
             }
@@ -192,30 +193,29 @@ namespace EPlast.WebApi.Controllers
             var userDto = await _accountService.FindByIdAsync(userId);
             if (userDto == null)
             {
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
+                return BadRequest();
             }
             int totalTime = _accountService.GetTimeAfterRegistr(userDto);
             if (totalTime < 180)
             {
                 if (string.IsNullOrWhiteSpace(userId) && string.IsNullOrWhiteSpace(code))
                 {
-                    return RedirectToAction("HandleError", "Error", new { code = 500 });
+                    return BadRequest();
                 }
-
                 var result = await _accountService.ConfirmEmailAsync(userDto.Id, code);
-
-                if (result.Succeeded)
+           
+                if (result.Succeeded) 
                 {
                     return Ok("ConfirmedEmail");
                 }
                 else
                 {
-                    return RedirectToAction("HandleError", "Error", new { code = 500 });
+                    return BadRequest();
                 }
             }
             else
             {
-                //return Ok("ConfirmEmailNotAllowed", userDto);
+                //return View("ConfirmEmailNotAllowed", userDto);
                 return Ok("ConfirmedEmailNotAllowed");
             }
         }
@@ -233,7 +233,7 @@ namespace EPlast.WebApi.Controllers
             var userDto = await _accountService.FindByIdAsync(userId);
             if (userDto == null)
             {
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
+                return BadRequest();
             }
             string code = await _accountService.GenerateConfToken(userDto);
             var confirmationLink = Url.Action(
@@ -241,8 +241,8 @@ namespace EPlast.WebApi.Controllers
                 "Account",
                 new { code = code, userId = userDto.Id },
                 protocol: HttpContext.Request.Scheme);
-
             await _accountService.SendEmailRegistr(confirmationLink, userDto);
+            
             return Ok("ResendEmailConfirmation");
         }
 
@@ -259,7 +259,7 @@ namespace EPlast.WebApi.Controllers
         public IActionResult Logout()
         {
             _accountService.SignOutAsync();
-            return RedirectToAction("Login", "Account");
+            return Ok("HomePage");
         }
 
         [HttpGet("forgotPassword")]
@@ -281,8 +281,7 @@ namespace EPlast.WebApi.Controllers
                     var userDto = await _accountService.FindByEmailAsync(forgotpasswordDto.Email);
                     if (userDto == null || !(await _accountService.IsEmailConfirmedAsync(userDto)))
                     {
-                        ModelState.AddModelError("", _resourceForErrors["Forgot-NotRegisteredUser"]);
-                        return Ok("ForgotPassword");
+                        return BadRequest(_resourceForErrors["Forgot-NotRegisteredUser"]);
                     }
                     string code = await _accountService.GenerateResetTokenAsync(userDto);
                     string confirmationLink = Url.Action(
@@ -298,7 +297,7 @@ namespace EPlast.WebApi.Controllers
             catch (Exception e)
             {
                 _loggerService.LogError($"Exception: {e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
+                return BadRequest();
             }
         }
 
@@ -309,14 +308,14 @@ namespace EPlast.WebApi.Controllers
             var userDto = await _accountService.FindByIdAsync(userId);
             if (userDto == null)
             {
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
+                return BadRequest();
             }
             int totalTime = _accountService.GetTimeAfterReset(userDto);
             if (totalTime < 180)
             {
                 if (string.IsNullOrWhiteSpace(code))
                 {
-                    return RedirectToAction("HandleError", "Error", new { code = 500 });
+                    return BadRequest();
                 }
                 else
                 {
@@ -325,7 +324,7 @@ namespace EPlast.WebApi.Controllers
             }
             else
             {
-                //return Ok("ResetPasswordNotAllowed", userDto);
+                //return View("ResetPasswordNotAllowed", userDto);
                 return Ok("ResetPasswordNotAllowed");
             }
         }
@@ -344,8 +343,7 @@ namespace EPlast.WebApi.Controllers
                 var userDto = await _accountService.FindByEmailAsync(resetpasswordDto.Email);
                 if (userDto == null)
                 {
-                    ModelState.AddModelError("", _resourceForErrors["Reset-NotRegisteredUser"]);
-                    return Ok("ResetPassword");
+                    return BadRequest(_resourceForErrors["Reset-NotRegisteredUser"]);
                 }
                 var result = await _accountService.ResetPasswordAsync(userDto.Id, resetpasswordDto);
                 if (result.Succeeded)
@@ -362,7 +360,7 @@ namespace EPlast.WebApi.Controllers
             catch (Exception e)
             {
                 _loggerService.LogError($"Exception: {e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
+                return BadRequest();
             }
         }
 
@@ -393,13 +391,13 @@ namespace EPlast.WebApi.Controllers
                     var userDto = await _accountService.GetUserAsync(User);
                     if (userDto == null)
                     {
-                        return RedirectToAction("Login");
+                        //return RedirectToAction("Login");
+                        return Ok();
                     }
                     var result = await _accountService.ChangePasswordAsync(userDto.Id, changepasswordDto);
                     if (!result.Succeeded)
                     {
-                        ModelState.AddModelError("", _resourceForErrors["Change-PasswordProblems"]);
-                        return Ok("ChangePassword");
+                        return BadRequest(_resourceForErrors["Change-PasswordProblems"]);
                     }
                     _accountService.RefreshSignInAsync(userDto);
                     return Ok("ChangePasswordConfirmation");
@@ -412,11 +410,10 @@ namespace EPlast.WebApi.Controllers
             catch (Exception e)
             {
                 _loggerService.LogError($"Exception: {e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
+                return BadRequest();
             }
         }
 
-        
         [HttpPost("externalLogin")]
         [AllowAnonymous]
         public IActionResult ExternalLogin(string provider, string returnUrl)
@@ -443,16 +440,12 @@ namespace EPlast.WebApi.Controllers
 
                 if (remoteError != null)
                 {
-                    ModelState.AddModelError("", _resourceForErrors["Error-ExternalLoginProvider"]);
-                    //return View("Login", loginDto);
-                    return Ok("Login");
+                    return BadRequest(_resourceForErrors["Error-ExternalLoginProvider"]);
                 }
                 var info = await _accountService.GetInfoAsync();
                 if (info == null)
                 {
-                    ModelState.AddModelError(string.Empty, _resourceForErrors["Error-ExternalLoginInfo"]);
-                    //return View("Login", loginDto);
-                    return Ok("Login");
+                    return BadRequest(_resourceForErrors["Error-ExternalLoginInfo"]);
                 }
 
                 var signInResult = await _accountService.GetSignInResultAsync(info);
@@ -477,13 +470,13 @@ namespace EPlast.WebApi.Controllers
                         await _accountService.FacebookAuthentication(email, info);
                         return LocalRedirect(returnUrl);
                     }
-                    return Ok("Error");
+                    return BadRequest();
                 }
             }
             catch (Exception e)
             {
                 _loggerService.LogError($"Exception: {e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
+                return BadRequest();
             }
         }
     }
