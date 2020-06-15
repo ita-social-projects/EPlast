@@ -8,7 +8,7 @@ namespace EPlast.Models.Mapping
     {
         public ForgotPasswordProfile()
         {
-            CreateMap<ForgotPasswordDto, ForgotPasswordViewModel>().ReverseMap();
+            CreateMap<ForgotPasswordDTO, ForgotPasswordViewModel>().ReverseMap();
         }
     }
 }
