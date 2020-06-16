@@ -70,7 +70,7 @@ namespace EPlast.BussinessLayer.Services.Club
 
         private UserDTO GetCurrentClubAdmin(ClubDTO club)
         {
-            return club.ClubAdministration
+            return club?.ClubAdministration
                     .Where(a => (a.EndDate >= DateTime.Now || a.EndDate == null) && a.AdminType.AdminTypeName == "Курінний")
                     .Select(a => a.ClubMembers.User)
                     .FirstOrDefault();
@@ -78,28 +78,28 @@ namespace EPlast.BussinessLayer.Services.Club
 
         private IEnumerable<ClubAdministrationDTO> GetCurrentClubAdministration(ClubDTO club)
         {
-            return club.ClubAdministration
+            return club?.ClubAdministration
                 .Where(a => a.EndDate >= DateTime.Now || a.EndDate == null)
                 .ToList();
         }
 
         private List<ClubMembersDTO> GetClubMembers(ClubDTO club, bool isApproved, int amount)
         {
-            return club.ClubMembers.Where(m => m.IsApproved == isApproved)
+            return club?.ClubMembers.Where(m => m.IsApproved == isApproved)
                 .Take(amount)
                 .ToList();
         }
 
         private List<ClubMembersDTO> GetClubMembers(ClubDTO club, bool isApproved)
         {
-            return club.ClubMembers.Where(m => m.IsApproved == isApproved)
+            return club?.ClubMembers.Where(m => m.IsApproved == isApproved)
                 .ToList();
         }
 
         public async Task UpdateAsync(ClubDTO club, IFormFile file)
         {
             var clubInfo = await GetClubInfoByIdAsync(club.ID);
-            var oldImageName = clubInfo.Logo;
+            var oldImageName = clubInfo?.Logo;
             UpdateOrCreateAnImage(club, file, oldImageName);
             _repoWrapper.Club.Update(_mapper.Map<ClubDTO, DataAccessClub.Club>(club));
             await _repoWrapper.SaveAsync();

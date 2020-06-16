@@ -55,7 +55,12 @@ namespace EPlast.Controllers
         {
             try
             {
-                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(await _clubService.GetClubProfileAsync(index));
+                var clubProfileDto = await _clubService.GetClubProfileAsync(index);
+                if (clubProfileDto.Club == null)
+                {
+                    return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
+                }
+                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(clubProfileDto);
                 viewModel = await CheckCurrentUserRoles(viewModel);
 
                 return View(viewModel);
@@ -63,7 +68,7 @@ namespace EPlast.Controllers
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new {code = 505});
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -80,7 +85,7 @@ namespace EPlast.Controllers
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new {code = 505});
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -97,7 +102,7 @@ namespace EPlast.Controllers
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new {code = 505});
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -114,7 +119,7 @@ namespace EPlast.Controllers
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new {code = 505});
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -133,7 +138,7 @@ namespace EPlast.Controllers
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new {code = 505});
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -152,7 +157,7 @@ namespace EPlast.Controllers
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new {code = 505});
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -169,7 +174,7 @@ namespace EPlast.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return RedirectToAction("HandleError", "Error", new {code = 505});
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -186,7 +191,7 @@ namespace EPlast.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return RedirectToAction("HandleError", "Error", new {code = 505});
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -203,7 +208,7 @@ namespace EPlast.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return RedirectToAction("HandleError", "Error", new {code = 505});
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -220,7 +225,7 @@ namespace EPlast.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return RedirectToAction("HandleError", "Error", new {code = 505});
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -234,7 +239,7 @@ namespace EPlast.Controllers
                 return RedirectToAction("ClubAdmins", new {index = clubIndex});
             }
 
-            return RedirectToAction("HandleError", "Error", new {code = 505});
+            return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
         }
 
         [HttpPost]
@@ -297,7 +302,7 @@ namespace EPlast.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return RedirectToAction("HandleError", "Error", new {code = 505});
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -314,7 +319,7 @@ namespace EPlast.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return RedirectToAction("HandleError", "Error", new {code = 505});
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
     }
