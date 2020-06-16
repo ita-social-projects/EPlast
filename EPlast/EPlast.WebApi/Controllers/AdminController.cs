@@ -1,9 +1,7 @@
-﻿using AutoMapper;
-using EPlast.BussinessLayer.Interfaces.City;
+﻿using EPlast.BussinessLayer.Interfaces.City;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.WebApi.Models.Admin;
 using EPlast.WebApi.Models.Role;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -19,27 +17,23 @@ namespace EPlast.WebApi.Controllers
         private readonly ILogger _logger;
         private readonly IUserManagerService _userManagerService;
         private readonly IAdminService _adminService;
-        private readonly IMapper _mapper;
         private readonly ICityService _cityService;
         private readonly ICItyAdministrationService _cityAdministrationService;
 
         public AdminController(ILogger<AdminController> logger,
             IUserManagerService userManagerService,
             IAdminService adminService,
-            IMapper mapper,
             ICityService cityService,
             ICItyAdministrationService cityAdministrationService)
         {
             _logger = logger;
             _userManagerService = userManagerService;
             _adminService = adminService;
-            _mapper = mapper;
             _cityService = cityService;
             _cityAdministrationService = cityAdministrationService;
         }
-        [Authorize]
-        [HttpGet]
-        [Route("UsersTable")]
+        // [Authorize]
+        [HttpGet("usersTable")]
         public async Task<IActionResult> UsersTable()
         {
             try
@@ -54,9 +48,8 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpGet("{userId}")]
-        [Route("Edit")]
+        // [Authorize(Roles = "Admin")]
+        [HttpGet("editRole/{userId}")]
         public async Task<IActionResult> Edit(string userId)
         {
             try
@@ -91,9 +84,8 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpPost]
-        [Route("Edit")]
+        // [Authorize(Roles = "Admin")]
+        [HttpPut("editRole")]
         public async Task<IActionResult> Edit(string userId, List<string> roles)
         {
             try
@@ -113,18 +105,16 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpGet("{userId}")]
-        [Authorize(Roles = "Admin")]
+        [HttpGet("confirmDelete/{userId}")]
+        //  [Authorize(Roles = "Admin")]
         [ActionName("Delete")]
-        [Route("Delete")]
         public ActionResult ConfirmDelete(string userId)
         {
             return Ok(userId);
         }
-
-        [Authorize(Roles = "Admin")]
-        [Route("Delete")]
-        [HttpGet("{userId}")]
+        //4906ff3f-c236-4b53-9924-3aa9aec63b4a
+        //  [Authorize(Roles = "Admin")]
+        [HttpDelete("deleteUser/{userId}")]
         public async Task<IActionResult> Delete(string userId)
         {
             try
@@ -145,8 +135,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("RegionsAdmins")]
+        [HttpGet("regionsAdmins")]
         public async Task<IActionResult> RegionsAdmins()
         {
             var model = new CitiesAdminsViewModel()
@@ -157,8 +146,7 @@ namespace EPlast.WebApi.Controllers
             return Ok(model);
         }
 
-        [HttpGet("{cityId}")]
-        [Route("GetAdmins")]
+        [HttpGet("cityAdmins/{cityId}")]
         public async Task<IActionResult> GetAdmins(int cityId)
         {
             return Ok(await _cityAdministrationService.GetByCityIdAsync(cityId));

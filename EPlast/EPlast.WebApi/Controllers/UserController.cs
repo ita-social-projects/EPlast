@@ -1,15 +1,9 @@
-﻿using AutoMapper;
-using EPlast.BussinessLayer.Interfaces;
-using EPlast.BussinessLayer.Interfaces.UserProfiles;
+﻿using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.BussinessLayer.Services.Interfaces;
-using EPlast.Resources;
 using EPlast.WebApi.Models.User;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Localization;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -40,10 +34,7 @@ namespace EPlast.WebApi.Controllers
             IDegreeService degreeService,
             IConfirmedUsersService confirmedUserService,
             IUserManagerService userManagerService,
-            IMapper mapper,
-            ILoggerService<AccountController> loggerService,
-            IAccountService accountService,
-            IStringLocalizer<AuthenticationErrors> resourceForErrors)
+            ILoggerService<AccountController> loggerService)
         {
             _userService = userService;
             _nationalityService = nationalityService;
@@ -58,7 +49,6 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("{userId}")]
-        // [Route("userProfile")]
         public async Task<IActionResult> Get(string userId)
         {
             try
@@ -90,8 +80,8 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [Authorize]
-        [HttpGet("{userId}")]
+        //[Authorize]
+        [HttpGet("edit/{userId}")]
         public async Task<IActionResult> Edit(string userId)
         {
             if (userId == null)
@@ -133,8 +123,8 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [Authorize]
-        [HttpPost]
+        // [Authorize]
+        [HttpPut("edit")]
         public async Task<IActionResult> Edit(EditUserViewModel model, IFormFile file)
         {
             try
@@ -150,7 +140,8 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest();
             }
         }
-        [Authorize]
+        // [Authorize]
+        [HttpPost("approveUser/{userId}/{isClubAdmin}/{isCityAdmin}")]
         public async Task<IActionResult> ApproveUser(string userId, bool isClubAdmin = false, bool isCityAdmin = false)
         {
             try
@@ -169,7 +160,8 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [Authorize]
+        //   [Authorize]
+        [HttpDelete("deleteApprove/{confirmedId}")]
         public async Task<IActionResult> ApproverDelete(int confirmedId)
         {
             try

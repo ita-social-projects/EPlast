@@ -1,14 +1,13 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO.UserProfiles;
-using EPlast.DataAccess.Entities;
 
-namespace EPlast.BussinessLayer.Mapping.UserMapping
+namespace EPlast.BussinessLayer.Mapping.User
 {
     public class UserMappingProfile : Profile
     {
         public UserMappingProfile()
         {
-            CreateMap<User, UserDTO>().ReverseMap();
+            CreateMap<DataAccess.Entities.User, UserDTO>().ReverseMap();
         }
     }
 }
