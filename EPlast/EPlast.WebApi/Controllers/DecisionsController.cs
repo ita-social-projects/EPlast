@@ -1,16 +1,14 @@
-﻿using System;
+﻿using EPlast.BussinessLayer;
+using EPlast.BussinessLayer.DTO;
+using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.WebApi.Models.Decision;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
-using EPlast.BussinessLayer;
-using EPlast.BussinessLayer.DTO;
-using EPlast.BussinessLayer.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using EPlast.WebApi.Models.Decision;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -31,8 +29,8 @@ namespace EPlast.WebApi.Controllers
             _loggerService = loggerService;
         }
 
-     //   [Authorize(Roles = "Admin")]
-        [HttpPost("create")]
+        [Authorize(Roles = "Admin")]
+        [HttpPost("NewDecision")]
         public async Task<ActionResult<DecisionViewModel>> Create()
         {
             DecisionViewModel decisionViewModel = null;
@@ -56,11 +54,11 @@ namespace EPlast.WebApi.Controllers
             {
                 _loggerService.LogError($"{e.Message}");
             }
-            //TODO:
+
             return Created("Decision", decisionViewModel);
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
@@ -77,7 +75,8 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest();
             }
         }
-    //   [Authorize(Roles = "Admin")]
+
+        [Authorize(Roles = "Admin")]
         [HttpPut]
         public async Task<IActionResult> Update(DecisionDTO decision)
         {
@@ -97,13 +96,13 @@ namespace EPlast.WebApi.Controllers
         }
 
 
-    //    [Authorize(Roles = "Admin")]
-        [HttpPost("save")]
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
         public async Task<IActionResult> Save(DecisionWrapperDTO decisionWrapper)
         {
             try
             {
-             
+
                 if (decisionWrapper.Decision.DecisionTarget.ID != 0 || decisionWrapper == null)
                 {
                     return BadRequest("Дані введені неправильно");
@@ -133,7 +132,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-     //   [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> ReadDecision()
         {
@@ -155,7 +154,7 @@ namespace EPlast.WebApi.Controllers
             return Ok(Tuple.Create(await Create(), decisions));
         }
 
-  //      [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -168,8 +167,8 @@ namespace EPlast.WebApi.Controllers
             return NotFound();
         }
 
-    //    [Authorize(Roles = "Admin")]
-        [HttpPost("{id}")]
+        [Authorize(Roles = "Admin")]
+        [HttpPost("downloadfile")]
         public async Task<IActionResult> Download(int id, string filename)
         {
             byte[] fileBytes;
@@ -188,9 +187,9 @@ namespace EPlast.WebApi.Controllers
             return File(fileBytes, _decisionService.GetContentType(id, filename), filename);
         }
 
-    //    [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost("createpdf")]
-        public async Task<IActionResult> CreatePdfAsync(int objId)
+        public async Task<IActionResult> CreatePdf(int objId)
         {
             try
             {
