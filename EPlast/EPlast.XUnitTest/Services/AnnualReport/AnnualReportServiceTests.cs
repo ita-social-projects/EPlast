@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO;
 using EPlast.BussinessLayer.DTO.City;
-using EPlast.BussinessLayer.Exceptions;
 using EPlast.BussinessLayer.Services;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.DataAccess.Repositories;
@@ -59,7 +58,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         }
 
         [Fact]
-        public async Task GetByIdAsyncNotFound()
+        public async Task GetByIdAsyncNullReferenceException()
         {
             // Arrange
             _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
@@ -74,7 +73,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         }
 
         [Fact]
-        public async Task GetByIdAsyncNoAccess()
+        public async Task GetByIdAsyncUnauthorizedAccessException()
         {
             // Arrange
             _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
@@ -84,7 +83,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
                 .ReturnsAsync(false);
 
             // Act
-            var result = await Assert.ThrowsAsync<AnnualReportException>(() => _annualReportService.GetByIdAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()));
+            var result = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.GetByIdAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()));
 
             // Assert
             Assert.Equal(ErrorMessageNoAccess, result.Message);
@@ -130,14 +129,14 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         }
 
         [Fact]
-        public async Task CreateAsyncNoAccess()
+        public async Task CreateAsyncUnauthorizedAccessException()
         {
             // Arrange
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .ReturnsAsync(false);
 
             // Act
-            var result = await Assert.ThrowsAsync<AnnualReportException>(() => _annualReportService.CreateAsync(It.IsAny<ClaimsPrincipal>(), new AnnualReportDTO()));
+            var result = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.CreateAsync(It.IsAny<ClaimsPrincipal>(), new AnnualReportDTO()));
 
             // Assert
             Assert.Equal(ErrorMessageNoAccess, result.Message);
@@ -155,7 +154,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
                 .ReturnsAsync(new DatabaseEntities.AnnualReport());
 
             // Act
-            var result = await Assert.ThrowsAsync<AnnualReportException>(() => _annualReportService.CreateAsync(It.IsAny<ClaimsPrincipal>(), new AnnualReportDTO()));
+            var result = await Assert.ThrowsAsync<InvalidOperationException>(() => _annualReportService.CreateAsync(It.IsAny<ClaimsPrincipal>(), new AnnualReportDTO()));
 
             // Assert
             Assert.Equal(ErrorMessageHasCreated, result.Message);
@@ -174,7 +173,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
                 .ReturnsAsync(new DatabaseEntities.AnnualReport());
 
             // Act
-            var result = await Assert.ThrowsAsync<AnnualReportException>(() => _annualReportService.CreateAsync(It.IsAny<ClaimsPrincipal>(), new AnnualReportDTO()));
+            var result = await Assert.ThrowsAsync<InvalidOperationException>(() => _annualReportService.CreateAsync(It.IsAny<ClaimsPrincipal>(), new AnnualReportDTO()));
 
             // Assert
             Assert.Equal(ErrorMessageHasUnconfirmed, result.Message);
@@ -186,7 +185,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         public async Task EditAsyncCorrect()
         {
             // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
+            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
                 .ReturnsAsync(new DatabaseEntities.AnnualReport());
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .ReturnsAsync(true);
@@ -200,31 +199,30 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         }
 
         [Fact]
-        public async Task EditAsyncNotFound()
+        public async Task EditAsyncNullReferenceException()
         {
             // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
+            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
                 .ReturnsAsync((DatabaseEntities.AnnualReport)null);
 
             // Act
-            var result = await Assert.ThrowsAsync<AnnualReportException>(() => 
+            var result = await Assert.ThrowsAsync<NullReferenceException>(() => 
                 _annualReportService.EditAsync(It.IsAny<ClaimsPrincipal>(), new AnnualReportDTO { Status = AnnualReportStatus.Unconfirmed }));
 
             // Assert
-            Assert.Equal(ErrorMessageEditFailed, result.Message);
             _repositoryWrapper.Verify(r => r.AnnualReports.Update(It.IsAny<DatabaseEntities.AnnualReport>()), Times.Never);
             _repositoryWrapper.Verify(r => r.SaveAsync(), Times.Never);
         }
 
         [Fact]
-        public async Task EditAsyncNotUnconfirmed()
+        public async Task EditAsyncInvalidOperationException()
         {
             // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
+            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
                 .ReturnsAsync(new DatabaseEntities.AnnualReport());
 
             // Act
-            var result = await Assert.ThrowsAsync<AnnualReportException>(() =>
+            var result = await Assert.ThrowsAsync<InvalidOperationException>(() =>
                 _annualReportService.EditAsync(It.IsAny<ClaimsPrincipal>(), new AnnualReportDTO { Status = AnnualReportStatus.Confirmed }));
 
             // Assert
@@ -234,16 +232,16 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         }
 
         [Fact]
-        public async Task EditAsyncNoAccess()
+        public async Task EditAsyncUnauthorizedAccessException()
         {
             // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
+            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
                 .ReturnsAsync(new DatabaseEntities.AnnualReport());
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .ReturnsAsync(false);
 
             // Act
-            var result = await Assert.ThrowsAsync<AnnualReportException>(() =>
+            var result = await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
                 _annualReportService.EditAsync(It.IsAny<ClaimsPrincipal>(), new AnnualReportDTO { Status = AnnualReportStatus.Unconfirmed }));
 
             // Assert
@@ -511,7 +509,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         }
 
         [Fact]
-        public async Task ConfirmAsyncNoAccess()
+        public async Task ConfirmAsyncUnauthorizedAccessException()
         {
             // Arrange
             _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
@@ -521,7 +519,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
                 .ReturnsAsync(false);
 
             // Act
-            var result = await Assert.ThrowsAsync<AnnualReportException>(() => _annualReportService.ConfirmAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()));
+            var result = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.ConfirmAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()));
 
             // Assert
             Assert.Equal(ErrorMessageNoAccess, result.Message);
@@ -529,7 +527,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         }
 
         [Fact]
-        public async Task ConfirmAsyncError()
+        public async Task ConfirmAsyncNullReferenceException()
         {
             // Arrange
             _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
@@ -652,7 +650,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         }
 
         [Fact]
-        public async Task CancelAsyncNoAccess()
+        public async Task CancelAsyncUnauthorizedAccessException()
         {
             // Arrange
             _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
@@ -662,7 +660,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
                 .ReturnsAsync(false);
 
             // Act
-            var result = await Assert.ThrowsAsync<AnnualReportException>(() => _annualReportService.CancelAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()));
+            var result = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.CancelAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()));
 
             // Assert
             Assert.Equal(ErrorMessageNoAccess, result.Message);
@@ -670,7 +668,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         }
 
         [Fact]
-        public async Task CancelAsyncError()
+        public async Task CancelAsyncNullReferenceException()
         {
             // Arrange
             _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
@@ -702,7 +700,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         }
 
         [Fact]
-        public async Task DeleteAsyncError()
+        public async Task DeleteAsyncNullReferenceException()
         {
             // Arrange
             _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
@@ -717,7 +715,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         }
 
         [Fact]
-        public async Task DeleteAsyncNoAccess()
+        public async Task DeleteAsyncUnauthorizedAccessException()
         {
             // Arrange
             _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
@@ -726,7 +724,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
                 .ReturnsAsync(false);
 
             // Act
-            var result = await Assert.ThrowsAsync<AnnualReportException>(() => _annualReportService.DeleteAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()));
+            var result = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.DeleteAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()));
 
             // Assert
             Assert.Equal(ErrorMessageNoAccess, result.Message);
