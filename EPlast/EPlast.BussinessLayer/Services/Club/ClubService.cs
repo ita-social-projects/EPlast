@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using DataAccessClub = EPlast.DataAccess.Entities;
 
 namespace EPlast.BussinessLayer.Services.Club
@@ -28,105 +29,103 @@ namespace EPlast.BussinessLayer.Services.Club
             _env = env;
         }
 
-        public IEnumerable<ClubDTO> GetAllClubs()
+        public async Task<IEnumerable<ClubDTO>> GetAllClubsAsync()
         {
-            var clubs = _repoWrapper.Club.FindAll().ToList();
-            return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubDTO>>(clubs);
+            return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubDTO>>(await _repoWrapper.Club.GetAllAsync());
         }
 
-        public ClubProfileDTO GetClubProfile(int clubId)
+        public async Task<ClubProfileDTO> GetClubProfileAsync(int clubId)
         {
-            var club = GetByIdWithDetails(clubId);
+            var club = await GetByIdWithDetailsAsync(clubId);
             var members = GetClubMembers(club, true, 6);
             var followers = GetClubMembers(club, false, 6);
-            var clubAdmin = GetCurrentClubAdmin(club);
             var clubAdministration = GetCurrentClubAdministration(club);
+            var clubAdmin = GetCurrentClubAdmin(club);
 
-            return new ClubProfileDTO { Club = club, Members = members, Followers = followers, ClubAdmin = clubAdmin, ClubAdministration = clubAdministration};
+            return new ClubProfileDTO { Club = club, Members = members, Followers = followers, ClubAdmin = clubAdmin, ClubAdministration = clubAdministration };
         }
 
-        public ClubDTO GetClubInfoById(int id)
+        public async Task<ClubDTO> GetClubInfoByIdAsync(int id)
         {
-            var club = _repoWrapper.Club
-                .FindByCondition(q => q.ID == id)
-                .FirstOrDefault();
-            return _mapper.Map<DataAccessClub.Club, ClubDTO>(club);
+            return _mapper.Map<DataAccessClub.Club, ClubDTO>(
+                await _repoWrapper.Club.GetFirstOrDefaultAsync(c => c.ID == id));
         }
 
-        private ClubDTO GetByIdWithDetails(int id)
+        private async Task<ClubDTO> GetByIdWithDetailsAsync(int id)
         {
-            var club = _repoWrapper.Club
-                   .FindByCondition(q => q.ID == id)
-                   .Include(c => c.ClubAdministration)
-                   .ThenInclude(t => t.AdminType)
-                   .Include(n => n.ClubAdministration)
-                   .ThenInclude(t => t.ClubMembers)
-                   .ThenInclude(us => us.User)
-                   .Include(m => m.ClubMembers)
-                   .ThenInclude(u => u.User)
-                   .FirstOrDefault();
+            var club = await _repoWrapper.Club
+                .GetFirstOrDefaultAsync(
+                    q => q.ID == id,
+                    q =>
+                        q.Include(c => c.ClubAdministration)
+                            .ThenInclude(t => t.AdminType)
+                            .Include(n => n.ClubAdministration)
+                            .ThenInclude(t => t.ClubMembers)
+                            .ThenInclude(us => us.User)
+                            .Include(m => m.ClubMembers)
+                            .ThenInclude(u => u.User));
+
             return _mapper.Map<DataAccessClub.Club, ClubDTO>(club);
         }
 
         private UserDTO GetCurrentClubAdmin(ClubDTO club)
         {
-            var clubAdmin = club.ClubAdministration
+            return club?.ClubAdministration
                     .Where(a => (a.EndDate >= DateTime.Now || a.EndDate == null) && a.AdminType.AdminTypeName == "Курінний")
                     .Select(a => a.ClubMembers.User)
                     .FirstOrDefault();
-            return clubAdmin;
         }
+
         private IEnumerable<ClubAdministrationDTO> GetCurrentClubAdministration(ClubDTO club)
         {
-            var clubAdministration = club.ClubAdministration
+            return club?.ClubAdministration
                 .Where(a => a.EndDate >= DateTime.Now || a.EndDate == null)
                 .ToList();
-            return clubAdministration;
         }
 
         private List<ClubMembersDTO> GetClubMembers(ClubDTO club, bool isApproved, int amount)
         {
-            var members = club.ClubMembers.Where(m => m.IsApproved == isApproved)
+            return club?.ClubMembers.Where(m => m.IsApproved == isApproved)
                 .Take(amount)
                 .ToList();
-            return members;
         }
 
         private List<ClubMembersDTO> GetClubMembers(ClubDTO club, bool isApproved)
         {
-            var members = club.ClubMembers.Where(m => m.IsApproved == isApproved)
+            return club?.ClubMembers.Where(m => m.IsApproved == isApproved)
                 .ToList();
-            return members;
         }
 
-        public void Update(ClubDTO club, IFormFile file)
+        public async Task UpdateAsync(ClubDTO club, IFormFile file)
         {
-            var oldImageName = GetClubInfoById(club.ID).Logo;
+            var clubInfo = await GetClubInfoByIdAsync(club.ID);
+            var oldImageName = clubInfo?.Logo;
             UpdateOrCreateAnImage(club, file, oldImageName);
             _repoWrapper.Club.Update(_mapper.Map<ClubDTO, DataAccessClub.Club>(club));
-            _repoWrapper.Save();
+            await _repoWrapper.SaveAsync();
         }
 
         private void UpdateOrCreateAnImage(ClubDTO club, IFormFile file, string oldImageName = null)
         {
             if (file != null && file.Length > 0)
             {
-                var img = Image.FromStream(file.OpenReadStream());
-                var uploads = Path.Combine(_env.WebRootPath, "images\\Club");
-
-                if (!string.IsNullOrEmpty(oldImageName))
+                using (var img = Image.FromStream(file.OpenReadStream()))
                 {
-                    var oldPath = Path.Combine(uploads, oldImageName);
-
-                    if (File.Exists(oldPath))
+                    var uploads = Path.Combine(_env.WebRootPath, "images\\Club");
+                    if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default.jpg"))
                     {
-                        File.Delete(oldPath);
+                        var oldPath = Path.Combine(uploads, oldImageName);
+                        if (File.Exists(oldPath))
+                        {
+                            File.Delete(oldPath);
+                        }
                     }
+
+                    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                    var filePath = Path.Combine(uploads, fileName);
+                    img.Save(filePath);
+                    club.Logo = fileName;
                 }
-                var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-                var filePath = Path.Combine(uploads, fileName);
-                img.Save(filePath);
-                club.Logo = fileName;
             }
             else
             {
@@ -134,18 +133,19 @@ namespace EPlast.BussinessLayer.Services.Club
             }
         }
 
-        public ClubDTO Create(ClubDTO club, IFormFile file)
+        public async Task<ClubDTO> CreateAsync(ClubDTO club, IFormFile file)
         {
             var newClub = _mapper.Map<ClubDTO, DataAccessClub.Club>(club);
             UpdateOrCreateAnImage(club, file);
-            _repoWrapper.Club.Create(newClub);
-            _repoWrapper.Save();
+            await _repoWrapper.Club.CreateAsync(newClub);
+            await _repoWrapper.SaveAsync();
+
             return _mapper.Map<DataAccessClub.Club, ClubDTO>(newClub);
         }
 
-        public ClubProfileDTO GetClubMembersOrFollowers(int clubId, bool isApproved)
+        public async Task<ClubProfileDTO> GetClubMembersOrFollowersAsync(int clubId, bool isApproved)
         {
-            var club = GetByIdWithDetails(clubId);
+            var club = await GetByIdWithDetailsAsync(clubId);
             var members = GetClubMembers(club, isApproved);
             var clubAdmin = GetCurrentClubAdmin(club);
 
