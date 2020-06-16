@@ -32,8 +32,8 @@ namespace EPlast.WebApi.Controllers
         }
 
      //   [Authorize(Roles = "Admin")]
-        [HttpPost]
-        public async Task<ActionResult<DecisionViewModel>> CreateDecision()
+        [HttpPost("create")]
+        public async Task<ActionResult<DecisionViewModel>> Create()
         {
             DecisionViewModel decisionViewModel = null;
             try
@@ -98,59 +98,38 @@ namespace EPlast.WebApi.Controllers
 
 
     //    [Authorize(Roles = "Admin")]
-        [HttpPost]
-        public async Task<IActionResult> SaveDecision(DecisionWrapperDTO decisionWrapper)
+        [HttpPost("save")]
+        public async Task<IActionResult> Save(DecisionWrapperDTO decisionWrapper)
         {
             try
             {
-                //TODO
-               // ModelState.Remove("DecisionWrapper.Decision.DecisionStatusType");
+             
                 if (decisionWrapper.Decision.DecisionTarget.ID != 0 || decisionWrapper == null)
                 {
-                  //  ModelState.AddModelError("", "Дані введені неправильно");
-
                     return BadRequest("Дані введені неправильно");
-                    //return Json(new
-                    //{
-                    //    success = false,
-                    //    text = ModelState.Values.SelectMany(v => v.Errors),
-                    //    model = decisionWrapper,
-                    //    modelstate = ModelState
-                    //});
                 }
 
                 if (decisionWrapper.File != null && decisionWrapper.File.Length > 10485760)
                 {
-                    //   ModelState.AddModelError("", "файл за великий (більше 10 Мб)");
-
                     return BadRequest("файл за великий (більше 10 Мб)");
-                   // return Json(new { success = false, text = "file length > 10485760" });
                 }
 
                 decisionWrapper.Decision.HaveFile = decisionWrapper.File != null;
                 decisionWrapper.Decision.ID = await _decisionService.SaveDecisionAsync(decisionWrapper);
 
-                return Created("Decision", decisionWrapper);
-                //return Json(new
-                //{
-                //    success = true,
-                //    Text = "Рішення додано!",
-                //    decision = decisionWrapper.Decision,
-                //    decisionOrganization = (await _decisionService
-                //        .GetDecisionOrganizationAsync(_mapper.Map<OrganizationDTO>(decisionWrapper.Decision.Organization)))
-                //        .OrganizationName
-                //});
+                return Created("Decision", new
+                {
+                    decision = decisionWrapper.Decision,
+                    decisionOrganization = (await _decisionService
+                            .GetDecisionOrganizationAsync(decisionWrapper.Decision.Organization))
+                            .OrganizationName
+                });
             }
             catch (Exception e)
             {
                 _loggerService.LogError($"{e.Message}");
 
                 return BadRequest(e.Message);
-                //return Json(new
-                //{
-                //    success = false,
-                //    text = e.Message
-                //});
             }
         }
 
@@ -173,7 +152,7 @@ namespace EPlast.WebApi.Controllers
                 _loggerService.LogError($"{e.Message}");
             }
 
-            return Ok(Tuple.Create(await CreateDecision(), decisions));
+            return Ok(Tuple.Create(await Create(), decisions));
         }
 
   //      [Authorize(Roles = "Admin")]
@@ -190,7 +169,7 @@ namespace EPlast.WebApi.Controllers
         }
 
     //    [Authorize(Roles = "Admin")]
-        [HttpPost]
+        [HttpPost("{id}")]
         public async Task<IActionResult> Download(int id, string filename)
         {
             byte[] fileBytes;
@@ -210,7 +189,7 @@ namespace EPlast.WebApi.Controllers
         }
 
     //    [Authorize(Roles = "Admin")]
-        [HttpPost]
+        [HttpPost("createpdf")]
         public async Task<IActionResult> CreatePdfAsync(int objId)
         {
             try
