@@ -81,7 +81,7 @@ namespace EPlast.XUnitTest.Controllers
         public async Task Club_FindByID_ReturnsAView()
         {
             _clubService.Setup(c => c.GetClubProfileAsync(It.IsAny<int>()))
-                .ReturnsAsync(() => new ClubProfileDTO());
+                .ReturnsAsync(() => new ClubProfileDTO {Club = new ClubDTO()});
             _mapper.Setup(c => c.Map<ClubProfileDTO, ClubProfileViewModel>(It.IsAny<ClubProfileDTO>()))
                 .Returns(new ClubProfileViewModel());
 
