@@ -29,7 +29,7 @@ namespace EPlast.WebApi.Controllers
             _loggerService = loggerService;
         }
 
-        [Authorize(Roles = "Admin")]
+  //      [Authorize(Roles = "Admin")]
         [HttpPost("NewDecision")]
         public async Task<ActionResult<DecisionViewModel>> Create()
         {
@@ -58,7 +58,7 @@ namespace EPlast.WebApi.Controllers
             return Created("Decision", decisionViewModel);
         }
 
-        [Authorize(Roles = "Admin")]
+//        [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
@@ -76,7 +76,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
+       // [Authorize(Roles = "Admin")]
         [HttpPut]
         public async Task<IActionResult> Update(DecisionDTO decision)
         {
@@ -96,7 +96,7 @@ namespace EPlast.WebApi.Controllers
         }
 
 
-        [Authorize(Roles = "Admin")]
+      //  [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Save(DecisionWrapperDTO decisionWrapper)
         {
@@ -115,13 +115,13 @@ namespace EPlast.WebApi.Controllers
 
                 decisionWrapper.Decision.HaveFile = decisionWrapper.File != null;
                 decisionWrapper.Decision.ID = await _decisionService.SaveDecisionAsync(decisionWrapper);
-
+                var decisionOrganizations = (await _decisionService
+                            .GetDecisionOrganizationAsync(decisionWrapper.Decision.Organization))
+                            .OrganizationName;
                 return Created("Decision", new
                 {
                     decision = decisionWrapper.Decision,
-                    decisionOrganization = (await _decisionService
-                            .GetDecisionOrganizationAsync(decisionWrapper.Decision.Organization))
-                            .OrganizationName
+                    decisionOrganization = decisionOrganizations
                 });
             }
             catch (Exception e)
@@ -132,7 +132,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
+      //  [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> ReadDecision()
         {
@@ -154,7 +154,7 @@ namespace EPlast.WebApi.Controllers
             return Ok(Tuple.Create(await Create(), decisions));
         }
 
-        [Authorize(Roles = "Admin")]
+    //    [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -167,7 +167,7 @@ namespace EPlast.WebApi.Controllers
             return NotFound();
         }
 
-        [Authorize(Roles = "Admin")]
+      //  [Authorize(Roles = "Admin")]
         [HttpPost("downloadfile")]
         public async Task<IActionResult> Download(int id, string filename)
         {
@@ -187,7 +187,7 @@ namespace EPlast.WebApi.Controllers
             return File(fileBytes, _decisionService.GetContentType(id, filename), filename);
         }
 
-        [Authorize(Roles = "Admin")]
+//        [Authorize(Roles = "Admin")]
         [HttpPost("createpdf")]
         public async Task<IActionResult> CreatePdf(int objId)
         {
