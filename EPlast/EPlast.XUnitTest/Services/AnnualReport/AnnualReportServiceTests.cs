@@ -191,7 +191,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
                 .ReturnsAsync(true);
 
             // Act
-            await _annualReportService.EditAsync(It.IsAny<ClaimsPrincipal>(), new AnnualReportDTO { Status = AnnualReportStatus.Unconfirmed });
+            await _annualReportService.EditAsync(It.IsAny<ClaimsPrincipal>(), new AnnualReportDTO { Status = AnnualReportStatusDTO.Unconfirmed });
 
             // Assert
             _repositoryWrapper.Verify(r => r.AnnualReports.Update(It.IsAny<DatabaseEntities.AnnualReport>()));
@@ -207,7 +207,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
 
             // Act
             var result = await Assert.ThrowsAsync<NullReferenceException>(() => 
-                _annualReportService.EditAsync(It.IsAny<ClaimsPrincipal>(), new AnnualReportDTO { Status = AnnualReportStatus.Unconfirmed }));
+                _annualReportService.EditAsync(It.IsAny<ClaimsPrincipal>(), new AnnualReportDTO { Status = AnnualReportStatusDTO.Unconfirmed }));
 
             // Assert
             _repositoryWrapper.Verify(r => r.AnnualReports.Update(It.IsAny<DatabaseEntities.AnnualReport>()), Times.Never);
@@ -223,7 +223,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
 
             // Act
             var result = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-                _annualReportService.EditAsync(It.IsAny<ClaimsPrincipal>(), new AnnualReportDTO { Status = AnnualReportStatus.Confirmed }));
+                _annualReportService.EditAsync(It.IsAny<ClaimsPrincipal>(), new AnnualReportDTO { Status = AnnualReportStatusDTO.Confirmed }));
 
             // Assert
             Assert.Equal(ErrorMessageEditFailed, result.Message);
@@ -242,7 +242,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
 
             // Act
             var result = await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
-                _annualReportService.EditAsync(It.IsAny<ClaimsPrincipal>(), new AnnualReportDTO { Status = AnnualReportStatus.Unconfirmed }));
+                _annualReportService.EditAsync(It.IsAny<ClaimsPrincipal>(), new AnnualReportDTO { Status = AnnualReportStatusDTO.Unconfirmed }));
 
             // Assert
             Assert.Equal(ErrorMessageNoAccess, result.Message);

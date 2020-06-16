@@ -86,7 +86,7 @@ namespace EPlast.BussinessLayer.Services
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstAsync(
                     predicate: a => a.ID == annualReportDTO.ID && a.CityId == annualReportDTO.CityId && a.UserId == annualReportDTO.UserId
                         && a.Date.Date == annualReportDTO.Date.Date && a.Status == DatabaseEntities.AnnualReportStatus.Unconfirmed);
-            if (annualReportDTO.Status != DTO.AnnualReportStatus.Unconfirmed)
+            if (annualReportDTO.Status != DTO.AnnualReportStatusDTO.Unconfirmed)
             {
                 throw new InvalidOperationException(ErrorMessageEditFailed);
             }
