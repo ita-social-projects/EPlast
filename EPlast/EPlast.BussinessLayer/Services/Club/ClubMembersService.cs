@@ -1,7 +1,7 @@
 ﻿using EPlast.BussinessLayer.Interfaces.Club;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.BussinessLayer.Services.Club
 {
@@ -14,32 +14,27 @@ namespace EPlast.BussinessLayer.Services.Club
             _repoWrapper = repoWrapper;
         }
 
-        public void ToggleIsApprovedInClubMembers(int memberId, int clubId)
+        public async Task ToggleIsApprovedInClubMembersAsync(int memberId, int clubId)
         {
-            var person = _repoWrapper.ClubMembers
-                .FindByCondition(u => u.ID == memberId && u.ClubId == clubId)
-                .FirstOrDefault();
+            var person = await _repoWrapper.ClubMembers
+                .GetFirstOrDefaultAsync(u => u.ID == memberId && u.ClubId == clubId);
 
             if (person != null)
-            {
                 person.IsApproved = !person.IsApproved;
-            }
-
+            
             _repoWrapper.ClubMembers.Update(person);
-            _repoWrapper.Save();
+            await _repoWrapper.SaveAsync();
         }
 
-        public void AddFollower(int index, string userId)
+        public async Task AddFollowerAsync(int index, string userId)
         {
-            ClubMembers oldMember =
-                _repoWrapper.ClubMembers
-                    .FindByCondition(i => i.UserId == userId)
-                    .FirstOrDefault();
+            var oldMember = await _repoWrapper.ClubMembers
+                .GetFirstOrDefaultAsync(i => i.UserId == userId);
 
             if (oldMember != null)
             {
                 _repoWrapper.ClubMembers.Delete(oldMember);
-                _repoWrapper.Save();
+                await _repoWrapper.SaveAsync();
             }
 
             ClubMembers newMember = new ClubMembers()
@@ -49,8 +44,8 @@ namespace EPlast.BussinessLayer.Services.Club
                 UserId = userId
             };
 
-            _repoWrapper.ClubMembers.Create(newMember);
-            _repoWrapper.Save();
+            await _repoWrapper.ClubMembers.CreateAsync(newMember);
+            await _repoWrapper.SaveAsync();
         }
     }
 }
