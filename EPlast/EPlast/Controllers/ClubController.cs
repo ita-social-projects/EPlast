@@ -22,7 +22,9 @@ namespace EPlast.Controllers
         private readonly ILoggerService<ClubController> _logger;
         private readonly IUserManagerService _userManagerService;
 
-        public ClubController(IClubService clubService, IClubAdministrationService clubAdministrationService, IClubMembersService clubMembersService, IMapper mapper, ILoggerService<ClubController> logger, IUserManagerService userManagerService)
+        public ClubController(IClubService clubService, IClubAdministrationService clubAdministrationService,
+            IClubMembersService clubMembersService, IMapper mapper, ILoggerService<ClubController> logger,
+            IUserManagerService userManagerService)
         {
             _clubService = clubService;
             _clubAdministrationService = clubAdministrationService;
@@ -31,15 +33,19 @@ namespace EPlast.Controllers
             _logger = logger;
             _userManagerService = userManagerService;
         }
+
         private async Task<ClubProfileViewModel> CheckCurrentUserRoles(ClubProfileViewModel viewModel)
         {
-            viewModel.IsCurrentUserClubAdmin = await _userManagerService.GetUserIdAsync(User) == viewModel.ClubAdmin?.Id;
+            viewModel.IsCurrentUserClubAdmin =
+                await _userManagerService.GetUserIdAsync(User) == viewModel.ClubAdmin?.Id;
             viewModel.IsCurrentUserAdmin = User.IsInRole("Admin");
+
             return viewModel;
         }
-        public IActionResult Index()
+
+        public async Task<IActionResult> Index()
         {
-            var clubs = _clubService.GetAllClubs();
+            var clubs = await _clubService.GetAllClubsAsync();
             var viewModels = _mapper.Map<IEnumerable<ClubDTO>, IEnumerable<ClubViewModel>>(clubs);
 
             return View(viewModels);
@@ -49,7 +55,12 @@ namespace EPlast.Controllers
         {
             try
             {
-                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(_clubService.GetClubProfile(index));
+                var clubProfileDto = await _clubService.GetClubProfileAsync(index);
+                if (clubProfileDto.Club == null)
+                {
+                    return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
+                }
+                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(clubProfileDto);
                 viewModel = await CheckCurrentUserRoles(viewModel);
 
                 return View(viewModel);
@@ -57,14 +68,16 @@ namespace EPlast.Controllers
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
+
         public async Task<IActionResult> ClubAdmins(int index)
         {
             try
             {
-                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(_clubAdministrationService.GetCurrentClubAdministrationByID(index));
+                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(
+                    await _clubAdministrationService.GetCurrentClubAdministrationByIDAsync(index));
                 viewModel = await CheckCurrentUserRoles(viewModel);
 
                 return View(viewModel);
@@ -72,14 +85,16 @@ namespace EPlast.Controllers
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
+
         public async Task<IActionResult> ClubMembers(int index)
         {
             try
             {
-                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(_clubService.GetClubMembersOrFollowers(index, true));
+                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(
+                        await _clubService.GetClubMembersOrFollowersAsync(index, true));
                 viewModel = await CheckCurrentUserRoles(viewModel);
 
                 return View(viewModel);
@@ -87,14 +102,16 @@ namespace EPlast.Controllers
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
+
         public async Task<IActionResult> ClubFollowers(int index)
         {
             try
             {
-                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(_clubService.GetClubMembersOrFollowers(index, false));
+                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(
+                        await _clubService.GetClubMembersOrFollowersAsync(index, false));
                 viewModel = await CheckCurrentUserRoles(viewModel);
 
                 return View(viewModel);
@@ -102,122 +119,135 @@ namespace EPlast.Controllers
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
-        public IActionResult ClubDescription(int index)
+        public async Task<IActionResult> ClubDescription(int index)
         {
             try
             {
-                var viewModel = _mapper.Map<ClubDTO, ClubViewModel>(_clubService.GetClubInfoById(index));
+                var clubDTO = await _clubService.GetClubInfoByIdAsync(index);
+                if (clubDTO == null)
+                {
+                    return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
+                }
 
-                return View(viewModel);
+                return View(_mapper.Map<ClubDTO, ClubViewModel>(clubDTO));
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
         [HttpGet]
-        public IActionResult EditClub(int index)
+        public async Task<IActionResult> EditClub(int index)
         {
             try
             {
-                var viewModel = _mapper.Map<ClubDTO, ClubViewModel>(_clubService.GetClubInfoById(index));
-
-                return View(viewModel);
+              var clubDto=await _clubService.GetClubInfoByIdAsync(index);
+                if (clubDto == null)
+                {
+                    return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
+                }
+                return View(_mapper.Map<ClubDTO, ClubViewModel>(clubDto));
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
         [HttpPost]
-        public IActionResult EditClub(ClubViewModel model, IFormFile file)
+        public async Task<IActionResult> EditClub(ClubViewModel model, IFormFile file)
         {
             try
             {
-                _clubService.Update(_mapper.Map<ClubViewModel, ClubDTO>(model), file);
+                await _clubService.UpdateAsync(_mapper.Map<ClubViewModel, ClubDTO>(model), file);
 
-                return RedirectToAction("Club", new { index = model.ID });
+                return RedirectToAction("Club", new {index = model.ID});
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
+
         [HttpGet]
-        public IActionResult ChangeIsApprovedStatus(int index, int clubIndex)
+        public async Task<IActionResult> ChangeIsApprovedStatus(int index, int clubIndex)
         {
             try
             {
-                _clubMembersService.ToggleIsApprovedInClubMembers(index, clubIndex);
+                await _clubMembersService.ToggleIsApprovedInClubMembersAsync(index, clubIndex);
 
-                return RedirectToAction("ClubMembers", new { index = clubIndex });
+                return RedirectToAction("ClubMembers", new {index = clubIndex});
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
+
         [HttpGet]
-        public IActionResult ChangeIsApprovedStatusFollowers(int index, int clubIndex)
+        public async Task<IActionResult> ChangeIsApprovedStatusFollowers(int index, int clubIndex)
         {
             try
             {
-                _clubMembersService.ToggleIsApprovedInClubMembers(index, clubIndex);
+                await _clubMembersService.ToggleIsApprovedInClubMembersAsync(index, clubIndex);
 
-                return RedirectToAction("ClubFollowers", new { index = clubIndex });
+                return RedirectToAction("ClubFollowers", new {index = clubIndex});
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
+
         [HttpGet]
-        public IActionResult ChangeIsApprovedStatusClub(int index, int clubIndex)
+        public async Task<IActionResult> ChangeIsApprovedStatusClub(int index, int clubIndex)
         {
             try
             {
-                _clubMembersService.ToggleIsApprovedInClubMembers(index, clubIndex);
+                await _clubMembersService.ToggleIsApprovedInClubMembersAsync(index, clubIndex);
 
-                return RedirectToAction("Club", new { index = clubIndex });
+                return RedirectToAction("Club", new {index = clubIndex});
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
-        [HttpGet]
-        public IActionResult DeleteFromAdmins(int adminId, int clubIndex)
-        {
-            bool isSuccessfull = _clubAdministrationService.DeleteClubAdmin(adminId);
 
-            if (isSuccessfull)
+        [HttpGet]
+        public async Task<IActionResult> DeleteFromAdmins(int adminId, int clubIndex)
+        {
+            bool isSuccessful = await _clubAdministrationService.DeleteClubAdminAsync(adminId);
+
+            if (isSuccessful)
             {
-                return RedirectToAction("ClubAdmins", new { index = clubIndex });
+                return RedirectToAction("ClubAdmins", new {index = clubIndex});
             }
-            else
-            {
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
-            }
+
+            return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
         }
 
         [HttpPost]
-        public int AddEndDate([FromBody] AdminEndDateDTO adminEndDate)
+        public async Task<int> AddEndDate([FromBody] AdminEndDateDTO adminEndDate)
         {
             try
             {
-                _clubAdministrationService.SetAdminEndDate(adminEndDate);
+                await _clubAdministrationService.SetAdminEndDateAsync(adminEndDate);
 
                 return 1;
             }
@@ -226,12 +256,13 @@ namespace EPlast.Controllers
                 return 0;
             }
         }
+
         [HttpPost]
-        public IActionResult AddToClubAdministration([FromBody] ClubAdministrationDTO createdAdmin)
+        public async Task<IActionResult> AddToClubAdministration([FromBody] ClubAdministrationDTO createdAdmin)
         {
             try
             {
-                _clubAdministrationService.AddClubAdmin(createdAdmin);
+                await _clubAdministrationService.AddClubAdminAsync(createdAdmin);
 
                 return Json(true);
             }
@@ -241,9 +272,9 @@ namespace EPlast.Controllers
             }
         }
 
-        public IActionResult ChooseAClub(string userId)
+        public async Task<IActionResult> ChooseAClub(string userId)
         {
-            var clubs = _mapper.Map<IEnumerable<ClubDTO>, IEnumerable<ClubViewModel>>(_clubService.GetAllClubs());
+            var clubs = _mapper.Map<IEnumerable<ClubDTO>, IEnumerable<ClubViewModel>>(await _clubService.GetAllClubsAsync());
             var model = new ClubChooseAClubViewModel
             {
                 Clubs = clubs,
@@ -255,10 +286,9 @@ namespace EPlast.Controllers
         public async Task<IActionResult> AddAsClubFollower(int clubIndex, string userId)
         {
             userId = User.IsInRole("Admin") ? userId : await _userManagerService.GetUserIdAsync(User);
+            await _clubMembersService.AddFollowerAsync(clubIndex, userId);
 
-            _clubMembersService.AddFollower(clubIndex, userId);
-
-            return RedirectToAction("UserProfile", "Account", new { userId });
+            return RedirectToAction("UserProfile", "Account", new {userId});
         }
 
         [HttpGet]
@@ -271,23 +301,25 @@ namespace EPlast.Controllers
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
         [HttpPost]
-        public IActionResult CreateClub(ClubViewModel model, IFormFile file)
+        public async Task<IActionResult> CreateClub(ClubViewModel model, IFormFile file)
         {
             try
             {
-                var club = _clubService.Create(_mapper.Map<ClubViewModel, ClubDTO>(model), file);
+                var club = await _clubService.CreateAsync(_mapper.Map<ClubViewModel, ClubDTO>(model), file);
 
-                return RedirectToAction("Club", new { index = club.ID });
+                return RedirectToAction("Club", new {index = club.ID});
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new { code = 505 });
+
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
     }

@@ -648,24 +648,5 @@ namespace EPlast.Controllers
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
         }
-        public async Task<IActionResult> Positions(string userId)
-        {
-            try
-            {
-                var user = await _userService.GetUserAsync(userId);
-                var result = new PositionUserViewModel
-                {
-                    User = _mapper.Map<UserDTO, UserViewModel>(user),
-                    TimeToJoinPlast = await _userService.CheckOrAddPlastunRoleAsync(userId, user.RegistredOn),
-                    IsUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун")
-                };
-                return View(result);
-            }
-            catch (Exception e)
-            {
-                _loggerService.LogError($"Exception: { e.Message}");
-                return RedirectToAction("HandleError", "Error");
-            }
-        }
     }
 }
