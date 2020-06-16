@@ -112,7 +112,7 @@ namespace EPlast.WebApi.Controllers
         {
             return Ok(userId);
         }
-        //4906ff3f-c236-4b53-9924-3aa9aec63b4a
+
         //  [Authorize(Roles = "Admin")]
         [HttpDelete("deleteUser/{userId}")]
         public async Task<IActionResult> Delete(string userId)
