@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO;
-using EPlast.BussinessLayer.Exceptions;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -51,7 +50,7 @@ namespace EPlast.BussinessLayer.Services
                             .ThenInclude(c => c.CityAdminNew)
                         .Include(a => a.City));
             return await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId) ? _mapper.Map<AnnualReport, AnnualReportDTO>(annualReport)
-                : throw new AnnualReportException(ErrorMessageNoAccess);
+                : throw new UnauthorizedAccessException(ErrorMessageNoAccess);
         }
 
         public async Task<IEnumerable<AnnualReportDTO>> GetAllAsync(ClaimsPrincipal claimsPrincipal)
@@ -70,9 +69,9 @@ namespace EPlast.BussinessLayer.Services
         {
             if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReportDTO.CityId))
             {
-                throw new AnnualReportException(ErrorMessageNoAccess);
+                throw new UnauthorizedAccessException(ErrorMessageNoAccess);
             }
-            await this.CheckCanBeCreatedAsync(annualReportDTO.CityId);
+            await CheckCanBeCreatedAsync(annualReportDTO.CityId);
             var annualReport = _mapper.Map<AnnualReportDTO, AnnualReport>(annualReportDTO);
             var user = await _userManager.GetUserAsync(claimsPrincipal);
             annualReport.UserId = user.Id;
@@ -84,16 +83,16 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task EditAsync(ClaimsPrincipal claimsPrincipal, AnnualReportDTO annualReportDTO)
         {
-            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
+            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstAsync(
                     predicate: a => a.ID == annualReportDTO.ID && a.CityId == annualReportDTO.CityId && a.UserId == annualReportDTO.UserId
                         && a.Date.Date == annualReportDTO.Date.Date && a.Status == DatabaseEntities.AnnualReportStatus.Unconfirmed);
-            if (annualReport == null || annualReportDTO.Status != DTO.AnnualReportStatus.Unconfirmed)
+            if (annualReportDTO.Status != DTO.AnnualReportStatus.Unconfirmed)
             {
-                throw new AnnualReportException(ErrorMessageEditFailed);
+                throw new InvalidOperationException(ErrorMessageEditFailed);
             }
             if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
             {
-                throw new AnnualReportException(ErrorMessageNoAccess);
+                throw new UnauthorizedAccessException(ErrorMessageNoAccess);
             }
             annualReport = _mapper.Map<AnnualReportDTO, AnnualReport>(annualReportDTO);
             _repositoryWrapper.AnnualReports.Update(annualReport);
@@ -108,13 +107,13 @@ namespace EPlast.BussinessLayer.Services
                         .Include(a => a.CityManagement));
             if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
             {
-                throw new AnnualReportException(ErrorMessageNoAccess);
+                throw new UnauthorizedAccessException(ErrorMessageNoAccess);
             }
             annualReport.Status = DatabaseEntities.AnnualReportStatus.Confirmed;
-            await this.ChangeCityAdministrationAsync(annualReport);
-            await this.ChangeCityLegalStatusAsync(annualReport);
+            await ChangeCityAdministrationAsync(annualReport);
+            await ChangeCityLegalStatusAsync(annualReport);
             _repositoryWrapper.AnnualReports.Update(annualReport);
-            await this.SaveLastConfirmedAsync(annualReport.CityId);
+            await SaveLastConfirmedAsync(annualReport.CityId);
             await _repositoryWrapper.SaveAsync();
         }
 
@@ -126,15 +125,15 @@ namespace EPlast.BussinessLayer.Services
                         .Include(ar => ar.CityManagement));
             if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
             {
-                throw new AnnualReportException(ErrorMessageNoAccess);
+                throw new UnauthorizedAccessException(ErrorMessageNoAccess);
             }
             annualReport.Status = DatabaseEntities.AnnualReportStatus.Unconfirmed;
             var cityAdministrationRevertPoint = annualReport.CityManagement.CityAdminOldId ?? default;
             var cityLegalStatusRevertPoint = annualReport.CityManagement.CityLegalStatusOldId ?? default;
             annualReport.CityManagement.CityAdminOldId = annualReport.CityManagement.CityLegalStatusOldId = null;
             _repositoryWrapper.AnnualReports.Update(annualReport);
-            await this.RevertCityAdministrationAsync(cityAdministrationRevertPoint, annualReport.CityId);
-            await this.RevertCityLegalStatusAsync(cityLegalStatusRevertPoint, annualReport.CityId);
+            await RevertCityAdministrationAsync(cityAdministrationRevertPoint, annualReport.CityId);
+            await RevertCityLegalStatusAsync(cityLegalStatusRevertPoint, annualReport.CityId);
             await _repositoryWrapper.SaveAsync();
         }
 
@@ -144,7 +143,7 @@ namespace EPlast.BussinessLayer.Services
                     predicate: a => a.ID == id && a.Status == DatabaseEntities.AnnualReportStatus.Unconfirmed);
             if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
             {
-                throw new AnnualReportException(ErrorMessageNoAccess);
+                throw new UnauthorizedAccessException(ErrorMessageNoAccess);
             }
             _repositoryWrapper.AnnualReports.Delete(annualReport);
             await _repositoryWrapper.SaveAsync();
@@ -166,13 +165,13 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task CheckCanBeCreatedAsync(int cityId)
         {
-            if (await this.HasCreatedAsync(cityId))
+            if (await HasCreatedAsync(cityId))
             {
-                throw new AnnualReportException(ErrorMessageHasCreated);
+                throw new InvalidOperationException(ErrorMessageHasCreated);
             }
-            if (await this.HasUnconfirmedAsync(cityId))
+            if (await HasUnconfirmedAsync(cityId))
             {
-                throw new AnnualReportException(ErrorMessageHasUnconfirmed);
+                throw new InvalidOperationException(ErrorMessageHasUnconfirmed);
             }
         }
 
