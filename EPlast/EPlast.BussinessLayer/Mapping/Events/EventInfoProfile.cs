@@ -1,8 +1,7 @@
-﻿using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO.Events;
-using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
+using System.Linq;
 
 namespace EPlast.BussinessLayer.Mapping.Events
 {
