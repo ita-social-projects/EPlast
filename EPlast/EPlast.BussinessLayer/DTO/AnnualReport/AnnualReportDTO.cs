@@ -10,7 +10,7 @@ namespace EPlast.BussinessLayer.DTO
 
         public DateTime Date { get; set; }
 
-        public AnnualReportStatus Status { get; set; }
+        public AnnualReportStatusDTO Status { get; set; }
 
         public int NumberOfSeatsInCity { get; set; }
 
