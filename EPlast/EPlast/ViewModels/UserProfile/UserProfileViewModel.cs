@@ -25,7 +25,9 @@ namespace EPlast.ViewModels.UserInformation.UserProfile
         public int? GenderID { get; set; }
         public GenderViewModel Gender { get; set; }
         [Display(Name = "Домашня адреса")]
-        [MaxLength(50, ErrorMessage = "Адреса не може перевищувати 50 символів")]
+        [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.-]{1,31}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.-]{1,31})*$",
+            ErrorMessage = "Домашня адреса має містити тільки літери та цифри")]
+        [StringLength(30, MinimumLength = 3, ErrorMessage = "Домашня адреса повинна складати від 3 до 30 символів")]
         public string Address { get; set; }
         public string UserID { get; set; }
         public UserViewModel User { get; set; }
