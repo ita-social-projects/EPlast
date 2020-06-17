@@ -2,7 +2,7 @@
 
 namespace EPlast.BussinessLayer.DTO
 {
-    public enum AnnualReportStatus
+    public enum AnnualReportStatusDTO
     {
         [Description("Непідтверджений")]
         Unconfirmed,

@@ -1,5 +1,6 @@
 ﻿using EPlast.BussinessLayer.DTO.City;
 using EPlast.BussinessLayer.DTO.UserProfiles;
+using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.BussinessLayer.DTO
 {
@@ -7,7 +8,8 @@ namespace EPlast.BussinessLayer.DTO
     {
         public int ID { get; set; }
 
-        public CityLegalStatusType CityLegalStatusNew { get; set; }
+        [Required(ErrorMessage = "Оберіть правовий статус осередку")]
+        public CityLegalStatusTypeDTO CityLegalStatusNew { get; set; }
 
         public int? CityLegalStatusOldId { get; set; }
         public CityLegalStatusDTO CityLegalStatusOld { get; set; }

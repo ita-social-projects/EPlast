@@ -2,7 +2,7 @@
 
 namespace EPlast.BussinessLayer.DTO
 {
-    public enum CityLegalStatusType
+    public enum CityLegalStatusTypeDTO
     {
         [Description("Зареєстрована юридична особа")]
         RegisteredLegalEntity,
