@@ -193,8 +193,8 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPut]
-        [Authorize]
+        [HttpPut("changeapprovestatus")]
+        //[Authorize]
         public async Task<IActionResult> ChangeIsApprovedStatus(int memberId, int clubIndex)
         {
             try
@@ -211,8 +211,8 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPut]
-        [Authorize]
+        [HttpPut("changeapprovestatusfollowers")]
+        //[Authorize]
         public async Task<IActionResult> ChangeIsApprovedStatusFollowers(int memberId, int clubIndex)
         {
             try
@@ -229,8 +229,8 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPut]
-        [Authorize]
+        [HttpPut("changeapprovestatusclub")]
+        //[Authorize]
         public async Task<IActionResult> ChangeIsApprovedStatusClub(int memberId, int clubIndex)
         {
             try
@@ -247,8 +247,8 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPut]
-        [Authorize]
+        [HttpDelete("deleteadmin")]
+        //[Authorize]
         public async Task<IActionResult> DeleteFromAdmins(int adminId, int clubIndex)
         {
             bool isSuccessful = await _clubAdministrationService.DeleteClubAdminAsync(adminId);
@@ -261,8 +261,8 @@ namespace EPlast.WebApi.Controllers
             return StatusCode(505);
         }
 
-        [HttpPut]
-        [Authorize]
+        [HttpPut("addenddate")]
+        //[Authorize]
         public async Task<int> AddEndDate([FromBody] AdminEndDateDTO adminEndDate)
         {
             try
