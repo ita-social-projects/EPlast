@@ -51,7 +51,10 @@ namespace EPlast.BussinessLayer.Services.EventUser
             }
 
             var targetUser = await _repoWrapper.User.GetFirstAsync(predicate: q => q.Id == userId);
-            EventUserDTO model = new EventUserDTO { User = _mapper.Map<User, UserDTO>(targetUser) };
+            var model = new EventUserDTO 
+            { 
+                User = _mapper.Map<User, UserDTO>(targetUser) 
+            };
             var eventAdmins = await _eventAdminManager.GetEventAdminsByUserIdAsync(userId);
             var participants = await _participantManager.GetParticipantsByUserIdAsync(userId);
             model.CreatedEvents = new List<EventGeneralInfoDTO>();
@@ -83,7 +86,8 @@ namespace EPlast.BussinessLayer.Services.EventUser
         {
             var eventCategories = await _eventCategoryManager.GetDTOAsync();
             var users = _mapper.Map<List<User>, IEnumerable<UserDTO>>((await _repoWrapper.User.GetAllAsync()).ToList());
-            var eventTypes = _mapper.Map<List<EventType>, IEnumerable<EventTypeDTO>>((await _repoWrapper.EventType.GetAllAsync()).ToList());
+            var eventTypes = _mapper.Map<List<EventType>, IEnumerable<EventTypeDTO>>((await _repoWrapper.EventType.GetAllAsync())
+                .ToList());
             var model = new EventCreateDTO()
             {
                 Users = users,
@@ -92,6 +96,7 @@ namespace EPlast.BussinessLayer.Services.EventUser
             };
             return model;
         }
+
 
         public async Task<EventCreateDTO> InitializeEventCreateDTOAsync(int eventId)
         {
@@ -176,6 +181,7 @@ namespace EPlast.BussinessLayer.Services.EventUser
 
         public async Task EditEventAsync(EventCreateDTO model)
         {
+            model.Event.EventStatusID = await _eventStatusManager.GetStatusIdAsync("Не затверджені");
             var eventEdit = _mapper.Map<EventCreationDTO, Event>(model.Event);
             _repoWrapper.Event.Update(eventEdit);
             await _repoWrapper.SaveAsync();
