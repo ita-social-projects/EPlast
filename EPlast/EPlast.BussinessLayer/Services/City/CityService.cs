@@ -51,12 +51,17 @@ namespace EPlast.BussinessLayer.Services
                             .ThenInclude(u => u.User)
                         .Include(l => l.CityDocuments)
                             .ThenInclude(d => d.CityDocumentType));
+
             return _mapper.Map<DataAccessCity.City, CityDTO>(city);
         }
 
         public async Task<CityProfileDTO> CityProfileAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
+            if (city == null)
+            {
+                return null;
+            }
             var cityHead = city?.CityAdministration?.FirstOrDefault(a => a.EndDate == null && a.AdminType.AdminTypeName == "Голова Станиці");
             var cityAdmins = city?.CityAdministration
                 .Where(a => a.EndDate == null && a.AdminType.AdminTypeName != "Голова Станиці")
@@ -64,45 +69,71 @@ namespace EPlast.BussinessLayer.Services
             var members = city?.CityMembers.Where(m => m.EndDate == null && m.StartDate != null).Take(6).ToList();
             var followers = city?.CityMembers.Where(m => m.EndDate == null && m.StartDate == null).Take(6).ToList();
             var cityDoc = city?.CityDocuments.Take(4).ToList();
+
             return new CityProfileDTO { City = city, CityHead = cityHead, Members = members, Followers = followers, CityAdmins = cityAdmins, CityDoc = cityDoc };
         }
 
         public async Task<CityProfileDTO> CityMembersAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
+            if (city == null)
+            {
+                return null;
+            }
             var members = city.CityMembers.Where(m => m.EndDate == null && m.StartDate != null).ToList();
+
             return new CityProfileDTO { City = city, Members = members };
         }
 
         public async Task<CityProfileDTO> CityFollowersAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
+            if (city == null)
+            {
+                return null;
+            }
             var followers = city.CityMembers.Where(m => m.EndDate == null && m.StartDate == null).ToList();
+
             return new CityProfileDTO { City = city, Followers = followers };
         }
 
         public async Task<CityProfileDTO> CityAdminsAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
+            if (city == null)
+            {
+                return null;
+            }
             var cityAdmins = city.CityAdministration
                 .Where(a => a.EndDate == null && a.AdminType.AdminTypeName != "Голова Станиці")
                 .ToList();
+
             return new CityProfileDTO { City = city, CityAdmins = cityAdmins };
         }
 
         public async Task<CityProfileDTO> CityDocumentsAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
+            if (city == null)
+            {
+                return null;
+            }
             var cityDoc = city.CityDocuments.ToList();
+
             return new CityProfileDTO { City = city, CityDoc = cityDoc };
         }
 
         public async Task<CityProfileDTO> EditAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
+            if (city == null)
+            {
+                return null;
+            }
             var cityAdmins = city.CityAdministration.Where(a => a.EndDate == null).ToList();
             var members = city.CityMembers.Where(p => cityAdmins.All(a => a.UserId != p.UserId)).Where(m => m.EndDate == null && m.StartDate != null).ToList();
             var followers = city.CityMembers.Where(m => m.EndDate == null && m.StartDate == null).ToList();
+
             return new CityProfileDTO { City = city, CityAdmins = cityAdmins, Members = members, Followers = followers };
         }
 
@@ -121,6 +152,7 @@ namespace EPlast.BussinessLayer.Services
             var modelToCreate = _mapper.Map<CityDTO, DataAccessCity.City>(model.City);
             await _repoWrapper.City.CreateAsync(modelToCreate);
             await _repoWrapper.SaveAsync();
+
             return modelToCreate.ID;
         }
 
