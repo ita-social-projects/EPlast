@@ -55,7 +55,7 @@ namespace EPlast.WebApi.Controllers
                 _loggerService.LogError($"{e.Message}");
             }
 
-            return Created("Decision", decisionViewModel);
+            return Created("Decisions/NewDecision", decisionViewModel);
         }
 
 //        [Authorize(Roles = "Admin")]
@@ -118,7 +118,7 @@ namespace EPlast.WebApi.Controllers
                 var decisionOrganizations = (await _decisionService
                             .GetDecisionOrganizationAsync(decisionWrapper.Decision.Organization))
                             .OrganizationName;
-                return Created("Decision", new
+                return Created("decisions", new
                 {
                     decision = decisionWrapper.Decision,
                     decisionOrganization = decisionOrganizations
