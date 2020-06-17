@@ -1,9 +1,11 @@
 ﻿
+using System.Threading.Tasks;
+
 namespace EPlast.BussinessLayer.Interfaces.Club
 {
     public interface IClubMembersService
     {
-        void ToggleIsApprovedInClubMembers(int memberId, int clubId);
-        void AddFollower(int index, string userId);
+        Task ToggleIsApprovedInClubMembersAsync(int memberId, int clubId);
+        Task AddFollowerAsync(int index, string userId);
     }
 }
