@@ -79,41 +79,5 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest();
             }
         }
-
-        [HttpGet("clubadmins/{clubID:int}")]
-        public async Task<IActionResult> ClubAdmins(int clubID)
-        {
-            try
-            {
-                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(
-                    await _clubAdministrationService.GetCurrentClubAdministrationByIDAsync(clubID));
-                viewModel = await CheckCurrentUserRoles(viewModel);
-
-                return Ok(viewModel);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Exception :{e.Message}");
-
-                return StatusCode(505);
-            }
-        }
-
-        [HttpGet("changeisapprovedstatus/{memberId:int},{clubIndex:int}")]
-        public async Task<IActionResult> ChangeIsApprovedStatus(int memberId, int clubIndex)
-        {
-            try
-            {
-                await _clubMembersService.ToggleIsApprovedInClubMembersAsync(memberId, clubIndex);
-
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Exception :{e.Message}");
-
-                return StatusCode(505);
-            }
-        }
     }
 }
