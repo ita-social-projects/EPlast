@@ -1,23 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO;
 using EPlast.BussinessLayer.DTO.Club;
 using EPlast.BussinessLayer.Interfaces.Club;
 using EPlast.BussinessLayer.Services.Interfaces;
-using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Models.Club;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ClubController:ControllerBase
+    public class ClubController : ControllerBase
     {
         private readonly IClubService _clubService;
         private readonly IClubAdministrationService _clubAdministrationService;
@@ -45,9 +43,9 @@ namespace EPlast.WebApi.Controllers
 
             return viewModel;
         }
-        
+
         [HttpGet("index")]
-        public async  Task<IActionResult> Index()
+        public async Task<IActionResult> Index()
         {
             var clubs = await _clubService.GetAllClubsAsync();
 
@@ -83,7 +81,7 @@ namespace EPlast.WebApi.Controllers
                 return StatusCode(500);
             }
         }
-        
+
         [HttpGet("ClubMembers/{clubId}")]
         public async Task<IActionResult> ClubMembers(int clubId)
         {
@@ -110,7 +108,7 @@ namespace EPlast.WebApi.Controllers
                 return StatusCode(500);
             }
         }
-        
+
         [HttpGet("ClubFollowers/{clubId}")]
         public async Task<IActionResult> ClubFollowers(int clubId)
         {
@@ -137,7 +135,7 @@ namespace EPlast.WebApi.Controllers
                 return StatusCode(500);
             }
         }
-        
+
         [HttpGet("ClubDescription/{clubId}")]
         public async Task<IActionResult> ClubDescription(int clubId)
         {
@@ -157,7 +155,7 @@ namespace EPlast.WebApi.Controllers
                 return StatusCode(500);
             }
         }
-        
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> EditClub(ClubDTO club, IFormFile file)
@@ -166,7 +164,7 @@ namespace EPlast.WebApi.Controllers
             {
                 await _clubService.UpdateAsync(club, file);
 
-                return RedirectToAction("Club", new {index = club.ID});
+                return RedirectToAction("Club", new { index = club.ID });
             }
             catch (Exception e)
             {
