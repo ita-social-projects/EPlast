@@ -20,7 +20,6 @@ namespace EPlast.BussinessLayer.Services
         private const string ErrorMessageHasCreated = "Річний звіт для даної станиці вже створений!";
         private const string ErrorMessageHasUnconfirmed = "Станиця має непідтверджені звіти!";
         private const string ErrorMessageEditFailed = "Не вдалося редагувати річний звіт!";
-        private const string ErrorMessageNotFound = "Не вдалося знайти річний звіт!";
 
         private readonly AdminType _cityAdminType;
 
@@ -49,10 +48,6 @@ namespace EPlast.BussinessLayer.Services
                         .Include(a => a.CityManagement)
                             .ThenInclude(c => c.CityAdminNew)
                         .Include(a => a.City));
-            if (annualReport == null)
-            {
-                throw new NullReferenceException(ErrorMessageNotFound);
-            }
             return await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId) ? _mapper.Map<AnnualReport, AnnualReportDTO>(annualReport)
                 : throw new UnauthorizedAccessException(ErrorMessageNoAccess);
         }
@@ -90,10 +85,6 @@ namespace EPlast.BussinessLayer.Services
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == annualReportDTO.ID && a.CityId == annualReportDTO.CityId && a.UserId == annualReportDTO.UserId
                         && a.Date.Date == annualReportDTO.Date.Date && a.Status == AnnualReportStatus.Unconfirmed);
-            if (annualReport == null)
-            {
-                throw new NullReferenceException(ErrorMessageNotFound);
-            }
             if (annualReportDTO.Status != AnnualReportStatusDTO.Unconfirmed)
             {
                 throw new InvalidOperationException(ErrorMessageEditFailed);
@@ -113,10 +104,6 @@ namespace EPlast.BussinessLayer.Services
                     predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed,
                     include: source => source
                         .Include(a => a.CityManagement));
-            if (annualReport == null)
-            {
-                throw new NullReferenceException(ErrorMessageNotFound);
-            }
             if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
             {
                 throw new UnauthorizedAccessException(ErrorMessageNoAccess);
@@ -135,10 +122,6 @@ namespace EPlast.BussinessLayer.Services
                     predicate: a => a.ID == id && a.Status == AnnualReportStatus.Confirmed,
                     include: source => source
                         .Include(ar => ar.CityManagement));
-            if (annualReport == null)
-            {
-                throw new NullReferenceException(ErrorMessageNotFound);
-            }
             if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
             {
                 throw new UnauthorizedAccessException(ErrorMessageNoAccess);
@@ -157,10 +140,6 @@ namespace EPlast.BussinessLayer.Services
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed);
-            if (annualReport == null)
-            {
-                throw new NullReferenceException(ErrorMessageNotFound);
-            }
             if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
             {
                 throw new UnauthorizedAccessException(ErrorMessageNoAccess);
