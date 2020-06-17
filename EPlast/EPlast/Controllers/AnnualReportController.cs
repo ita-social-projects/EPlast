@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO;
 using EPlast.BussinessLayer.DTO.City;
-using EPlast.BussinessLayer.Exceptions;
 using EPlast.BussinessLayer.Interfaces.City;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.Models.Enums;
@@ -56,7 +55,7 @@ namespace EPlast.Controllers
                     return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
                 }
             }
-            catch (AnnualReportException e)
+            catch (InvalidOperationException e)
             {
                 ViewData["ErrorMessage"] = e.Message;
                 return View("CreateEditAsync");
@@ -79,7 +78,7 @@ namespace EPlast.Controllers
                 await _annualReportService.CheckCanBeCreatedAsync(city.ID);
                 return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Creating));
             }
-            catch (AnnualReportException e)
+            catch (InvalidOperationException e)
             {
                 ViewData["ErrorMessage"] = e.Message;
                 return View("CreateEditAsync");
@@ -112,7 +111,12 @@ namespace EPlast.Controllers
                     return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Creating, annualReport));
                 }
             }
-            catch (AnnualReportException e)
+            catch (InvalidOperationException e)
+            {
+                ViewData["ErrorMessage"] = e.Message;
+                return View("CreateEditAsync");
+            }
+            catch (UnauthorizedAccessException e)
             {
                 ViewData["ErrorMessage"] = e.Message;
                 return View("CreateEditAsync");
@@ -155,7 +159,7 @@ namespace EPlast.Controllers
                 var annualReport = _mapper.Map<AnnualReportDTO, AnnualReportViewModel>(annualReportDTO);
                 return PartialView("_Get", annualReport);
             }
-            catch (AnnualReportException e)
+            catch (UnauthorizedAccessException e)
             {
                 return NotFound(e.Message);
             }
@@ -174,7 +178,7 @@ namespace EPlast.Controllers
                 await _annualReportService.ConfirmAsync(User, id);
                 return Ok("Річний звіт станиці успішно підтверджено!");
             }
-            catch (AnnualReportException e)
+            catch (UnauthorizedAccessException e)
             {
                 return NotFound(e.Message);
             }
@@ -193,7 +197,7 @@ namespace EPlast.Controllers
                 await _annualReportService.CancelAsync(User, id);
                 return Ok("Річний звіт станиці успішно скасовано!");
             }
-            catch (AnnualReportException e)
+            catch (UnauthorizedAccessException e)
             {
                 return NotFound(e.Message);
             }
@@ -212,7 +216,7 @@ namespace EPlast.Controllers
                 await _annualReportService.DeleteAsync(User, id);
                 return Ok("Річний звіт станиці успішно видалено!");
             }
-            catch (AnnualReportException e)
+            catch (UnauthorizedAccessException e)
             {
                 return NotFound(e.Message);
             }
@@ -235,7 +239,7 @@ namespace EPlast.Controllers
                 var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
                 return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Editing, annualReport));
             }
-            catch (AnnualReportException e)
+            catch (UnauthorizedAccessException e)
             {
                 ViewData["ErrorMessage"] = e.Message;
                 return View("CreateEditAsync");
@@ -268,7 +272,12 @@ namespace EPlast.Controllers
                     return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Editing, annualReport));
                 }
             }
-            catch (AnnualReportException e)
+            catch (InvalidOperationException e)
+            {
+                ViewData["ErrorMessage"] = e.Message;
+                return View("CreateEditAsync");
+            }
+            catch (UnauthorizedAccessException e)
             {
                 ViewData["ErrorMessage"] = e.Message;
                 return View("CreateEditAsync");

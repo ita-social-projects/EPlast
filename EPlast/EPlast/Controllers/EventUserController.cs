@@ -68,9 +68,9 @@ namespace EPlast.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> SetAdministration(int id)
+        public async Task<IActionResult> SetAdministration(int eventId)
         {
-            var dto = await _eventUserManager.InitializeEventCreateDTOAsync(id);
+            var dto = await _eventUserManager.InitializeEventCreateDTOAsync(eventId);
             var model = _mapper.Map<EventCreateDTO, EventCreateViewModel>(dto);
             return View(model);
         }

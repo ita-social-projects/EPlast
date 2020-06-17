@@ -2,7 +2,6 @@
 using EPlast.BussinessLayer.DTO;
 using EPlast.BussinessLayer.DTO.City;
 using EPlast.BussinessLayer.DTO.UserProfiles;
-using EPlast.BussinessLayer.Exceptions;
 using EPlast.BussinessLayer.Interfaces.City;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.Controllers;
@@ -114,7 +113,7 @@ namespace EPlast.XUnitTest
             _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
                 .Returns(city);
             _annualReportService.Setup(a => a.CheckCanBeCreatedAsync(It.IsAny<int>()))
-                .Throws(new AnnualReportException("Станиця має непідтверджені звіти!"));
+                .Throws(new InvalidOperationException("Станиця має непідтверджені звіти!"));
 
             // Act
             var result = await controller.CreateAsync();
@@ -130,7 +129,7 @@ namespace EPlast.XUnitTest
         {
             // Arrange
             _cityAccessService.Setup(cas => cas.GetCitiesAsync(It.IsAny<ClaimsPrincipal>()))
-               .ReturnsAsync(Enumerable.Empty<CityDTO>());
+               .ReturnsAsync(default(IEnumerable<CityDTO>));
 
             // Act
             var result = await controller.CreateAsync();
@@ -209,7 +208,7 @@ namespace EPlast.XUnitTest
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .ReturnsAsync(true);
             _annualReportService.Setup(a => a.CheckCanBeCreatedAsync(It.IsAny<int>()))
-                .Throws(new AnnualReportException("Станиця має непідтверджені звіти!"));
+                .Throws(new InvalidOperationException("Станиця має непідтверджені звіти!"));
 
             // Act
             var result = await controller.CreateAsAdminAsync(It.IsAny<int>());
@@ -337,13 +336,13 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task CreateAsyncPostAnnualReportError()
+        public async Task CreateAsyncPostInvalidOperationException()
         {
             // Arrange
             _mapper.Setup(m => m.Map<AnnualReportViewModel, AnnualReportDTO>(It.IsAny<AnnualReportViewModel>()))
                 .Returns(default(AnnualReportDTO));
             _annualReportService.Setup(a => a.CreateAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AnnualReportDTO>()))
-                .Throws(new AnnualReportException(string.Empty));
+                .Throws(new InvalidOperationException(string.Empty));
 
             // Act
             var result = await controller.CreateAsync(It.IsAny<AnnualReportViewModel>());
@@ -353,7 +352,25 @@ namespace EPlast.XUnitTest
             Assert.Equal("CreateEditAsync", viewResult.ViewName);
             Assert.Null(viewResult.Model);
             Assert.Equal(string.Empty, viewResult.ViewData["ErrorMessage"]);
+        }
 
+        [Fact]
+        public async Task CreateAsyncPostUnauthorizedAccessException()
+        {
+            // Arrange
+            _mapper.Setup(m => m.Map<AnnualReportViewModel, AnnualReportDTO>(It.IsAny<AnnualReportViewModel>()))
+                .Returns(default(AnnualReportDTO));
+            _annualReportService.Setup(a => a.CreateAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AnnualReportDTO>()))
+                .Throws(new UnauthorizedAccessException(string.Empty));
+
+            // Act
+            var result = await controller.CreateAsync(It.IsAny<AnnualReportViewModel>());
+
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            Assert.Equal("CreateEditAsync", viewResult.ViewName);
+            Assert.Null(viewResult.Model);
+            Assert.Equal(string.Empty, viewResult.ViewData["ErrorMessage"]);
         }
 
         [Fact]
@@ -450,7 +467,7 @@ namespace EPlast.XUnitTest
         {
             // Arrange
             _mapper.Setup(m => m.Map<AnnualReportDTO, AnnualReportViewModel>(It.IsAny<AnnualReportDTO>()))
-                .Throws(default(AnnualReportException));
+                .Throws(default(UnauthorizedAccessException));
 
             // Act
             var result = await controller.GetAsync(It.IsAny<int>());
@@ -492,7 +509,7 @@ namespace EPlast.XUnitTest
         {
             // Arrange
             _annualReportService.Setup(a => a.ConfirmAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .Throws(default(AnnualReportException));
+                .Throws(default(UnauthorizedAccessException));
 
             // Act
             var result = await controller.ConfirmAsync(It.IsAny<int>());
@@ -534,7 +551,7 @@ namespace EPlast.XUnitTest
         {
             // Arrange
             _annualReportService.Setup(a => a.CancelAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .Throws(default(AnnualReportException));
+                .Throws(default(UnauthorizedAccessException));
 
             // Act
             var result = await controller.CancelAsync(It.IsAny<int>());
@@ -576,7 +593,7 @@ namespace EPlast.XUnitTest
         {
             // Arrange
             _annualReportService.Setup(a => a.DeleteAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .Throws(default(AnnualReportException));
+                .Throws(default(UnauthorizedAccessException));
 
             // Act
             var result = await controller.DeleteAsync(It.IsAny<int>());
@@ -664,7 +681,7 @@ namespace EPlast.XUnitTest
         {
             // Arrange
             _annualReportService.Setup(a => a.GetByIdAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .Throws(new AnnualReportException("Станиця має непідтверджені звіти!"));
+                .Throws(new UnauthorizedAccessException("Станиця має непідтверджені звіти!"));
 
             // Act
             var result = await controller.EditAsync(It.IsAny<int>());
@@ -771,11 +788,28 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task EditAsyncPostAnnualReportError()
+        public async Task EditAsyncPostUnauthorizedAccessException()
         {
             // Arrange
             _annualReportService.Setup(a => a.EditAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AnnualReportDTO>()))
-                .Throws(new AnnualReportException(string.Empty));
+                .Throws(new UnauthorizedAccessException(string.Empty));
+
+            // Act
+            var result = await controller.EditAsync(It.IsAny<AnnualReportViewModel>());
+
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            Assert.Equal("CreateEditAsync", viewResult.ViewName);
+            Assert.Null(viewResult.Model);
+            Assert.Equal(string.Empty, viewResult.ViewData["ErrorMessage"]);
+        }
+
+        [Fact]
+        public async Task EditAsyncPostInvalidOperationException()
+        {
+            // Arrange
+            _annualReportService.Setup(a => a.EditAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AnnualReportDTO>()))
+                .Throws(new InvalidOperationException(string.Empty));
 
             // Act
             var result = await controller.EditAsync(It.IsAny<AnnualReportViewModel>());
