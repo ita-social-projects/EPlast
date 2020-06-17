@@ -52,8 +52,13 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task<string> GetUserIdAsync(ClaimsPrincipal user)
         {
-            var id = await _userManager.GetUserIdAsync(await _userManager.GetUserAsync(user));
-            return id;
+            var userAsync = await _userManager.GetUserAsync(user);
+            if (userAsync == null)
+            {
+                // Return null if User not authorized.
+                return null;
+            }
+            return _userManager.GetUserId(user);
         }
 
         public async Task<UserDTO> FindByIdAsync(string userId)

@@ -1,16 +1,14 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO.Club;
-using EPlast.DataAccess.Entities;
-//using EPlast.ViewModels;
+using DataAccessCity = EPlast.DataAccess.Entities;
 
-namespace EPlast.BussinessLayer.Mapping
+namespace EPlast.BussinessLayer.Mapping.Club
 {
     public class ClubProfile : Profile
     {
         public ClubProfile()
         {
-            CreateMap<Club, ClubDTO>().ReverseMap();
-            //CreateMap<ClubViewModel, ClubDTO>().ReverseMap();
+            CreateMap<DataAccessCity.Club, ClubDTO>().ReverseMap();
         }
     }
 }
