@@ -46,7 +46,7 @@ namespace EPlast.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -66,7 +66,7 @@ namespace EPlast.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -86,7 +86,7 @@ namespace EPlast.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -106,7 +106,7 @@ namespace EPlast.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -127,7 +127,7 @@ namespace EPlast.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -150,7 +150,7 @@ namespace EPlast.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
                 
-                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
 
         }
@@ -166,7 +166,7 @@ namespace EPlast.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
                 
-                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -188,7 +188,7 @@ namespace EPlast.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
                 
-                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -208,7 +208,7 @@ namespace EPlast.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
                 
-                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -228,7 +228,7 @@ namespace EPlast.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
                 
-                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status500InternalServerError });
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
