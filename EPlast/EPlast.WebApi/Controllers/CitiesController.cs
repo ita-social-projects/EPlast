@@ -39,7 +39,7 @@ namespace EPlast.WebApi.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return StatusCode(500);
+                return BadRequest();
             }
         }
         [HttpGet("Members/{cityId}")]
@@ -59,7 +59,7 @@ namespace EPlast.WebApi.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return StatusCode(500);
+                return BadRequest();
             }
         }
 
@@ -80,7 +80,7 @@ namespace EPlast.WebApi.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return StatusCode(500);
+                return BadRequest();
             }
         }
 
@@ -101,7 +101,7 @@ namespace EPlast.WebApi.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return StatusCode(500);
+                return BadRequest();
             }
         }
 
@@ -122,7 +122,7 @@ namespace EPlast.WebApi.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return StatusCode(500);
+                return BadRequest();
             }
         }
 
@@ -144,8 +144,8 @@ namespace EPlast.WebApi.Controllers
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                
-                return StatusCode(500);
+
+                return BadRequest();
             }
 
         }
@@ -161,7 +161,7 @@ namespace EPlast.WebApi.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return StatusCode(500);
+                return BadRequest();
             }
         }
 
@@ -183,7 +183,7 @@ namespace EPlast.WebApi.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return StatusCode(500);
+                return BadRequest();
             }
         }
 
@@ -204,7 +204,7 @@ namespace EPlast.WebApi.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return StatusCode(500);
+                return BadRequest();
             }
         }
 
@@ -225,7 +225,7 @@ namespace EPlast.WebApi.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return StatusCode(500);
+                return BadRequest();
             }
         }
     }
