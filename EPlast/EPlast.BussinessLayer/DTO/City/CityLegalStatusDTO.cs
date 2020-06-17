@@ -8,7 +8,7 @@ namespace EPlast.BussinessLayer.DTO
         public int Id { get; set; }
         public DateTime DateStart { get; set; }
         public DateTime? DateFinish { get; set; }
-        public CityLegalStatusType LegalStatusType { get; set; }
+        public CityLegalStatusTypeDTO LegalStatusType { get; set; }
 
         public int CityId { get; set; }
         public CityDTO City { get; set; }
