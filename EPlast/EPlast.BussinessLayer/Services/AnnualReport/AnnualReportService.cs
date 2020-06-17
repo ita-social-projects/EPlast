@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using DatabaseEntities = EPlast.DataAccess.Entities;
 
 namespace EPlast.BussinessLayer.Services
 {
@@ -21,6 +20,7 @@ namespace EPlast.BussinessLayer.Services
         private const string ErrorMessageHasCreated = "Річний звіт для даної станиці вже створений!";
         private const string ErrorMessageHasUnconfirmed = "Станиця має непідтверджені звіти!";
         private const string ErrorMessageEditFailed = "Не вдалося редагувати річний звіт!";
+        private const string ErrorMessageNotFound = "Не вдалося знайти річний звіт!";
 
         private readonly AdminType _cityAdminType;
 
@@ -42,13 +42,17 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task<AnnualReportDTO> GetByIdAsync(ClaimsPrincipal claimsPrincipal, int id)
         {
-            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstAsync(
+            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == id,
                     include: source => source
                         .Include(a => a.MembersStatistic)
                         .Include(a => a.CityManagement)
                             .ThenInclude(c => c.CityAdminNew)
                         .Include(a => a.City));
+            if (annualReport == null)
+            {
+                throw new NullReferenceException(ErrorMessageNotFound);
+            }
             return await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId) ? _mapper.Map<AnnualReport, AnnualReportDTO>(annualReport)
                 : throw new UnauthorizedAccessException(ErrorMessageNoAccess);
         }
@@ -76,17 +80,21 @@ namespace EPlast.BussinessLayer.Services
             var user = await _userManager.GetUserAsync(claimsPrincipal);
             annualReport.UserId = user.Id;
             annualReport.Date = DateTime.Now;
-            annualReport.Status = DatabaseEntities.AnnualReportStatus.Unconfirmed;
+            annualReport.Status = AnnualReportStatus.Unconfirmed;
             await _repositoryWrapper.AnnualReports.CreateAsync(annualReport);
             await _repositoryWrapper.SaveAsync();
         }
 
         public async Task EditAsync(ClaimsPrincipal claimsPrincipal, AnnualReportDTO annualReportDTO)
         {
-            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstAsync(
+            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == annualReportDTO.ID && a.CityId == annualReportDTO.CityId && a.UserId == annualReportDTO.UserId
-                        && a.Date.Date == annualReportDTO.Date.Date && a.Status == DatabaseEntities.AnnualReportStatus.Unconfirmed);
-            if (annualReportDTO.Status != DTO.AnnualReportStatusDTO.Unconfirmed)
+                        && a.Date.Date == annualReportDTO.Date.Date && a.Status == AnnualReportStatus.Unconfirmed);
+            if (annualReport == null)
+            {
+                throw new NullReferenceException(ErrorMessageNotFound);
+            }
+            if (annualReportDTO.Status != AnnualReportStatusDTO.Unconfirmed)
             {
                 throw new InvalidOperationException(ErrorMessageEditFailed);
             }
@@ -101,15 +109,19 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task ConfirmAsync(ClaimsPrincipal claimsPrincipal, int id)
         {
-            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstAsync(
-                    predicate: a => a.ID == id && a.Status == DatabaseEntities.AnnualReportStatus.Unconfirmed,
+            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
+                    predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed,
                     include: source => source
                         .Include(a => a.CityManagement));
+            if (annualReport == null)
+            {
+                throw new NullReferenceException(ErrorMessageNotFound);
+            }
             if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
             {
                 throw new UnauthorizedAccessException(ErrorMessageNoAccess);
             }
-            annualReport.Status = DatabaseEntities.AnnualReportStatus.Confirmed;
+            annualReport.Status = AnnualReportStatus.Confirmed;
             await ChangeCityAdministrationAsync(annualReport);
             await ChangeCityLegalStatusAsync(annualReport);
             _repositoryWrapper.AnnualReports.Update(annualReport);
@@ -119,15 +131,19 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task CancelAsync(ClaimsPrincipal claimsPrincipal, int id)
         {
-            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstAsync(
-                    predicate: a => a.ID == id && a.Status == DatabaseEntities.AnnualReportStatus.Confirmed,
+            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
+                    predicate: a => a.ID == id && a.Status == AnnualReportStatus.Confirmed,
                     include: source => source
                         .Include(ar => ar.CityManagement));
+            if (annualReport == null)
+            {
+                throw new NullReferenceException(ErrorMessageNotFound);
+            }
             if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
             {
                 throw new UnauthorizedAccessException(ErrorMessageNoAccess);
             }
-            annualReport.Status = DatabaseEntities.AnnualReportStatus.Unconfirmed;
+            annualReport.Status = AnnualReportStatus.Unconfirmed;
             var cityAdministrationRevertPoint = annualReport.CityManagement.CityAdminOldId ?? default;
             var cityLegalStatusRevertPoint = annualReport.CityManagement.CityLegalStatusOldId ?? default;
             annualReport.CityManagement.CityAdminOldId = annualReport.CityManagement.CityLegalStatusOldId = null;
@@ -139,8 +155,12 @@ namespace EPlast.BussinessLayer.Services
 
         public async Task DeleteAsync(ClaimsPrincipal claimsPrincipal, int id)
         {
-            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstAsync(
-                    predicate: a => a.ID == id && a.Status == DatabaseEntities.AnnualReportStatus.Unconfirmed);
+            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
+                    predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed);
+            if (annualReport == null)
+            {
+                throw new NullReferenceException(ErrorMessageNotFound);
+            }
             if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
             {
                 throw new UnauthorizedAccessException(ErrorMessageNoAccess);
@@ -152,7 +172,7 @@ namespace EPlast.BussinessLayer.Services
         public async Task<bool> HasUnconfirmedAsync(int cityId)
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
-                predicate: a => a.CityId == cityId && a.Status == DatabaseEntities.AnnualReportStatus.Unconfirmed);
+                predicate: a => a.CityId == cityId && a.Status == AnnualReportStatus.Unconfirmed);
             return annualReport != null;
         }
 
@@ -178,10 +198,10 @@ namespace EPlast.BussinessLayer.Services
         private async Task SaveLastConfirmedAsync(int cityId)
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
-                predicate: a => a.CityId == cityId && a.Status == DatabaseEntities.AnnualReportStatus.Confirmed);
+                predicate: a => a.CityId == cityId && a.Status == AnnualReportStatus.Confirmed);
             if (annualReport != null)
             {
-                annualReport.Status = DatabaseEntities.AnnualReportStatus.Saved;
+                annualReport.Status = AnnualReportStatus.Saved;
                 _repositoryWrapper.AnnualReports.Update(annualReport);
             }
         }
