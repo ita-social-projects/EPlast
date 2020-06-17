@@ -10,9 +10,11 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EPlast.Controllers
 {
+    [Authorize]
     public class ClubController : Controller
     {
         private readonly IClubService _clubService;
@@ -36,13 +38,14 @@ namespace EPlast.Controllers
 
         private async Task<ClubProfileViewModel> CheckCurrentUserRoles(ClubProfileViewModel viewModel)
         {
-            viewModel.IsCurrentUserClubAdmin =
-                await _userManagerService.GetUserIdAsync(User) == viewModel.ClubAdmin?.Id;
+            var userId = await _userManagerService.GetUserIdAsync(User);
+            viewModel.IsCurrentUserClubAdmin = userId != null && userId == viewModel.ClubAdmin?.Id;
             viewModel.IsCurrentUserAdmin = User.IsInRole("Admin");
 
             return viewModel;
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             var clubs = await _clubService.GetAllClubsAsync();
@@ -51,6 +54,7 @@ namespace EPlast.Controllers
             return View(viewModels);
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> Club(int index)
         {
             try
@@ -89,6 +93,7 @@ namespace EPlast.Controllers
             }
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> ClubMembers(int index)
         {
             try
@@ -106,6 +111,7 @@ namespace EPlast.Controllers
             }
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> ClubFollowers(int index)
         {
             try
@@ -123,6 +129,7 @@ namespace EPlast.Controllers
             }
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> ClubDescription(int index)
         {
             try
