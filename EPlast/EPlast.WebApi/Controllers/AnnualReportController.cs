@@ -26,7 +26,7 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _annualReportService.GetAllAsync(User));
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
             try
@@ -105,7 +105,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPut("confirm/{id}")]
+        [HttpPut("confirm/{id:int}")]
         public async Task<IActionResult> Confirm(int id)
         {
             try
@@ -125,7 +125,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPut("cancel/{id}")]
+        [HttpPut("cancel/{id:int}")]
         public async Task<IActionResult> Cancel(int id)
         {
             try
@@ -145,7 +145,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
