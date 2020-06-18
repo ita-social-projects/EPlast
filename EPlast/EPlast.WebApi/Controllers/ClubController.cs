@@ -284,5 +284,29 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest();
             }
         }
+
+        [HttpPost("addadmin")]
+        public async Task<IActionResult> AddAdmin(ClubAdministrationDTO createdAdmin)
+        {
+            try
+            {
+                await _clubAdministrationService.AddClubAdminAsync(createdAdmin);
+
+                return Ok(true);
+            }
+            catch (Exception)
+            {
+                return Ok(false);
+            }
+        }
+
+        [HttpPost("addfollower")]
+        public async Task<IActionResult> AddFollower(int clubIndex, string userId)
+        {
+            userId = User.IsInRole("Admin") ? userId : await _userManagerService.GetUserIdAsync(User);
+            await _clubMembersService.AddFollowerAsync(clubIndex, userId);
+
+            return Ok();
+        }
     }
 }
