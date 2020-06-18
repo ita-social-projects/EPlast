@@ -87,7 +87,7 @@ namespace EPlast.XUnitTest.Services.City
         {
             CityService cityService = CreateCityService();
 
-            var result = await cityService.CityProfileAsync(GetIdForSearch);
+            var result = await cityService.GetCityProfileAsync(GetIdForSearch);
 
             Assert.NotNull(result);
             Assert.IsType<CityProfileDTO>(result);
@@ -98,7 +98,7 @@ namespace EPlast.XUnitTest.Services.City
         {
             CityService cityService = CreateCityService();
 
-            var result = await cityService.CityMembersAsync(GetIdForSearch);
+            var result = await cityService.GetCityMembersAsync(GetIdForSearch);
 
             Assert.NotNull(result);
             Assert.IsType<CityProfileDTO>(result);
@@ -109,7 +109,7 @@ namespace EPlast.XUnitTest.Services.City
         {
             CityService cityService = CreateCityService();
 
-            var result = await cityService.CityFollowersAsync(GetIdForSearch);
+            var result = await cityService.GetCityFollowersAsync(GetIdForSearch);
 
             Assert.NotNull(result);
             Assert.IsType<CityProfileDTO>(result);
@@ -120,7 +120,7 @@ namespace EPlast.XUnitTest.Services.City
         {
             CityService cityService = CreateCityService();
 
-            var result = await cityService.CityAdminsAsync(GetIdForSearch);
+            var result = await cityService.GetCityAdminsAsync(GetIdForSearch);
 
             Assert.NotNull(result);
             Assert.IsType<CityProfileDTO>(result);
@@ -131,7 +131,7 @@ namespace EPlast.XUnitTest.Services.City
         {
             CityService cityService = CreateCityService();
 
-            var result = await cityService.CityDocumentsAsync(GetIdForSearch);
+            var result = await cityService.GetCityDocumentsAsync(GetIdForSearch);
 
             Assert.NotNull(result);
             Assert.IsType<CityProfileDTO>(result);

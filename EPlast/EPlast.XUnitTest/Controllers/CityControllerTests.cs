@@ -53,7 +53,7 @@ namespace EPlast.XUnitTest
         public async Task CityProfileTests()
         {
             // Arrange
-            _cityService.Setup(c => c.CityProfileAsync(It.IsAny<int>()))
+            _cityService.Setup(c => c.GetCityProfileAsync(It.IsAny<int>()))
                 .ReturnsAsync(() => new CityProfileDTO());
             _mapper.Setup(c => c.Map<CityProfileDTO, CityProfileViewModel>(It.IsAny<CityProfileDTO>()))
                 .Returns(new CityProfileViewModel());
@@ -71,7 +71,7 @@ namespace EPlast.XUnitTest
         public async Task CityProfileInvalidIdTests()
         {
             // Arrange
-            _cityService.Setup(c => c.CityProfileAsync(It.IsAny<int>()))
+            _cityService.Setup(c => c.GetCityProfileAsync(It.IsAny<int>()))
                 .ReturnsAsync(() => null);
             CityController cityController = CreateCityController;
 
@@ -87,7 +87,7 @@ namespace EPlast.XUnitTest
         public async Task CityProfileExceptionTests()
         {
             // Arrange
-            _cityService.Setup(c => c.CityProfileAsync(It.IsAny<int>()))
+            _cityService.Setup(c => c.GetCityProfileAsync(It.IsAny<int>()))
                 .ThrowsAsync(new ArgumentException("some message"));
             CityController cityController = CreateCityController;
 
@@ -108,7 +108,7 @@ namespace EPlast.XUnitTest
             // Arrange
             _mapper.Setup(c => c.Map<CityProfileDTO, CityProfileViewModel>(It.IsAny<CityProfileDTO>()))
                 .Returns(() => new CityProfileViewModel());
-            _cityService.Setup(c => c.CityMembersAsync(It.IsAny<int>()))
+            _cityService.Setup(c => c.GetCityMembersAsync(It.IsAny<int>()))
                 .ReturnsAsync(new CityProfileDTO());
             CityController cityController = CreateCityController;
 
@@ -125,7 +125,7 @@ namespace EPlast.XUnitTest
             // Arrange
             _mapper.Setup(c => c.Map<CityProfileDTO, CityProfileViewModel>(It.IsAny<CityProfileDTO>()))
                 .Returns(() => new CityProfileViewModel());
-            _cityService.Setup(c => c.CityMembersAsync(It.IsAny<int>()))
+            _cityService.Setup(c => c.GetCityMembersAsync(It.IsAny<int>()))
                 .ReturnsAsync(() => null);
             CityController cityController = CreateCityController;
 
@@ -143,7 +143,7 @@ namespace EPlast.XUnitTest
         public async Task CityMembersExceptionTest()
         {
             // Arrange
-            _cityService.Setup(c => c.CityMembersAsync(It.IsAny<int>()))
+            _cityService.Setup(c => c.GetCityMembersAsync(It.IsAny<int>()))
                 .ThrowsAsync(new ArgumentException("some message"));
             CityController cityController = CreateCityController;
 
@@ -163,7 +163,7 @@ namespace EPlast.XUnitTest
             // Arrange
             _mapper.Setup(c => c.Map<CityProfileDTO, CityProfileViewModel>(It.IsAny<CityProfileDTO>()))
                 .Returns(() => new CityProfileViewModel());
-            _cityService.Setup(c => c.CityFollowersAsync(It.IsAny<int>()))
+            _cityService.Setup(c => c.GetCityFollowersAsync(It.IsAny<int>()))
                 .ReturnsAsync(new CityProfileDTO());
             CityController cityController = CreateCityController;
 
@@ -178,7 +178,7 @@ namespace EPlast.XUnitTest
         public async Task CityFollowersInvalidIdTest()
         {
             // Arrange
-            _cityService.Setup(c => c.CityFollowersAsync(It.IsAny<int>()))
+            _cityService.Setup(c => c.GetCityFollowersAsync(It.IsAny<int>()))
                 .ReturnsAsync(() => null);
             CityController cityController = CreateCityController;
 
@@ -196,7 +196,7 @@ namespace EPlast.XUnitTest
         public async Task CityFollowersExceptionTest()
         {
             // Arrange
-            _cityService.Setup(c => c.CityFollowersAsync(It.IsAny<int>()))
+            _cityService.Setup(c => c.GetCityFollowersAsync(It.IsAny<int>()))
                 .ThrowsAsync(new ArgumentException("some message"));
             CityController cityController = CreateCityController;
 
@@ -216,7 +216,7 @@ namespace EPlast.XUnitTest
             // Arrange
             _mapper.Setup(c => c.Map<CityProfileDTO, CityProfileViewModel>(It.IsAny<CityProfileDTO>()))
                 .Returns(() => new CityProfileViewModel());
-            _cityService.Setup(c => c.CityAdminsAsync(It.IsAny<int>()))
+            _cityService.Setup(c => c.GetCityAdminsAsync(It.IsAny<int>()))
                 .ReturnsAsync(new CityProfileDTO());
             CityController cityController = CreateCityController;
 
@@ -231,7 +231,7 @@ namespace EPlast.XUnitTest
         public async Task CityAdminsInvalidIdTest()
         {
             // Arrange
-            _cityService.Setup(c => c.CityAdminsAsync(It.IsAny<int>()))
+            _cityService.Setup(c => c.GetCityAdminsAsync(It.IsAny<int>()))
                 .ReturnsAsync(() => null);
             CityController cityController = CreateCityController;
 
@@ -249,7 +249,7 @@ namespace EPlast.XUnitTest
         public async Task CityAdminsExceptionTest()
         {
             // Arrange
-            _cityService.Setup(c => c.CityAdminsAsync(It.IsAny<int>()))
+            _cityService.Setup(c => c.GetCityAdminsAsync(It.IsAny<int>()))
                 .ThrowsAsync(new ArgumentException("some message"));
             CityController cityController = CreateCityController;
 
@@ -397,7 +397,7 @@ namespace EPlast.XUnitTest
         public async Task CityDocumentsCorrectTest()
         {
             // Arrange
-            _cityService.Setup(c => c.CityDocumentsAsync(It.IsAny<int>()))
+            _cityService.Setup(c => c.GetCityDocumentsAsync(It.IsAny<int>()))
                 .ReturnsAsync(new CityProfileDTO());
             _mapper.Setup(m => m.Map<CityProfileDTO, CityProfileViewModel>(It.IsAny<CityProfileDTO>()))
                 .Returns(new CityProfileViewModel());
@@ -414,7 +414,7 @@ namespace EPlast.XUnitTest
         public async Task CityDocumentsInvalidIdTest()
         {
             // Arrange
-            _cityService.Setup(c => c.CityDocumentsAsync(It.IsAny<int>()))
+            _cityService.Setup(c => c.GetCityDocumentsAsync(It.IsAny<int>()))
                 .ReturnsAsync(() => null);
             CityController cityController = CreateCityController;
 
@@ -432,7 +432,7 @@ namespace EPlast.XUnitTest
         public async Task CityDocumentsExceptionTest()
         {
             // Arrange
-            _cityService.Setup(c => c.CityDocumentsAsync(It.IsAny<int>()))
+            _cityService.Setup(c => c.GetCityDocumentsAsync(It.IsAny<int>()))
                 .ThrowsAsync(new ArgumentException("some message"));
             CityController cityController = CreateCityController;
 
