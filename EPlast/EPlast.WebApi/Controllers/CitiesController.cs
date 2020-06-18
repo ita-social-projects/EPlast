@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO.City;
+﻿using EPlast.BussinessLayer.DTO.City;
 using EPlast.BussinessLayer.Interfaces.City;
 using EPlast.BussinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -27,11 +26,12 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                CityProfileDTO cityProfileDto = await _cityService.CityProfileAsync(cityId);
+                CityProfileDTO cityProfileDto = await _cityService.GetCityProfileAsync(cityId);
                 if (cityProfileDto == null)
                 {
                     return NotFound();
                 }
+
                 return Ok(cityProfileDto);
 
             }
@@ -47,7 +47,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                CityProfileDTO cityProfileDto = await _cityService.CityMembersAsync(cityId);
+                CityProfileDTO cityProfileDto = await _cityService.GetCityMembersAsync(cityId);
                 if (cityProfileDto == null)
                 {
                     return NotFound();
@@ -68,7 +68,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                CityProfileDTO cityProfile = await _cityService.CityFollowersAsync(cityId);
+                CityProfileDTO cityProfile = await _cityService.GetCityFollowersAsync(cityId);
                 if (cityProfile == null)
                 {
                     return NotFound();
@@ -89,7 +89,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                CityProfileDTO cityProfileDto = await _cityService.CityAdminsAsync(cityId);
+                CityProfileDTO cityProfileDto = await _cityService.GetCityAdminsAsync(cityId);
                 if (cityProfileDto == null)
                 {
                     return NotFound();
@@ -133,12 +133,12 @@ namespace EPlast.WebApi.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest();
+                    return BadRequest(ModelState);
                 }
                 await _cityService.EditAsync(cityProfileDTO, file);
                 _logger.LogInformation($"City {cityProfileDTO.City.Name} was edited profile and saved in the database");
 
-                return CreatedAtAction(nameof(Get), cityProfileDTO);
+                return NoContent();
 
             }
             catch (Exception e)
@@ -172,7 +172,7 @@ namespace EPlast.WebApi.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(cityProfileDto);
+                    return BadRequest(ModelState);
                 }
                 int cityId = await _cityService.CreateAsync(cityProfileDto, file);
 
@@ -213,7 +213,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                CityProfileDTO cityProfileDto = await _cityService.CityDocumentsAsync(cityId);
+                CityProfileDTO cityProfileDto = await _cityService.GetCityDocumentsAsync(cityId);
                 if (cityProfileDto == null)
                 {
                     return NotFound();

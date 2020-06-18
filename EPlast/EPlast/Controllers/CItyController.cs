@@ -33,13 +33,13 @@ namespace EPlast.Controllers
         {
             try
             {
-                CityProfileDTO cityProfileDto = await _cityService.CityProfileAsync(cityId);
+                CityProfileDTO cityProfileDto = await _cityService.GetCityProfileAsync(cityId);
                 if (cityProfileDto == null)
                 {
                     return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
                 }
 
-                return View(_mapper.Map<CityProfileDTO, CityProfileViewModel>(await _cityService.CityProfileAsync(cityId)));
+                return View(_mapper.Map<CityProfileDTO, CityProfileViewModel>(await _cityService.GetCityProfileAsync(cityId)));
 
             }
             catch (Exception e)
@@ -54,13 +54,13 @@ namespace EPlast.Controllers
         {
             try
             {
-                CityProfileDTO cityProfileDto = await _cityService.CityMembersAsync(cityId);
+                CityProfileDTO cityProfileDto = await _cityService.GetCityMembersAsync(cityId);
                 if (cityProfileDto == null)
                 {
                     return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
                 }
 
-                return View(_mapper.Map<CityProfileDTO, CityProfileViewModel>(await _cityService.CityMembersAsync(cityId)));
+                return View(_mapper.Map<CityProfileDTO, CityProfileViewModel>(await _cityService.GetCityMembersAsync(cityId)));
             }
             catch (Exception e)
             {
@@ -74,7 +74,7 @@ namespace EPlast.Controllers
         {
             try
             {
-                CityProfileDTO cityProfile = await _cityService.CityFollowersAsync(cityId);
+                CityProfileDTO cityProfile = await _cityService.GetCityFollowersAsync(cityId);
                 if (cityProfile == null)
                 {
                     return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
@@ -94,13 +94,13 @@ namespace EPlast.Controllers
         {
             try
             {
-                CityProfileDTO cityProfileDto = await _cityService.CityAdminsAsync(cityId);
+                CityProfileDTO cityProfileDto = await _cityService.GetCityAdminsAsync(cityId);
                 if (cityProfileDto == null)
                 {
                     return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
                 }
 
-                return View(_mapper.Map<CityProfileDTO, CityProfileViewModel>(await _cityService.CityAdminsAsync(cityId)));
+                return View(_mapper.Map<CityProfileDTO, CityProfileViewModel>(await _cityService.GetCityAdminsAsync(cityId)));
             }
             catch (Exception e)
             {
@@ -216,7 +216,7 @@ namespace EPlast.Controllers
         {
             try
             {
-                CityProfileDTO cityProfileDto = await _cityService.CityDocumentsAsync(cityId);
+                CityProfileDTO cityProfileDto = await _cityService.GetCityDocumentsAsync(cityId);
                 if (cityProfileDto == null)
                 {
                     return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
