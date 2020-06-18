@@ -20,7 +20,9 @@ namespace EPlast.BussinessLayer.Services.Club
                 .GetFirstOrDefaultAsync(u => u.ID == memberId && u.ClubId == clubId);
 
             if (person != null)
+            {
                 person.IsApproved = !person.IsApproved;
+            }
             
             _repoWrapper.ClubMembers.Update(person);
             await _repoWrapper.SaveAsync();

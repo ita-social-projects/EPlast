@@ -174,13 +174,24 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpGet("clubadmins/{clubID:int}")]
-        public async Task<IActionResult> ClubAdmins(int clubID)
+        [HttpGet("clubadmins/{clubId:int}")]
+        public async Task<IActionResult> ClubAdmins(int clubId)
         {
             try
             {
-                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(
-                    await _clubAdministrationService.GetCurrentClubAdministrationByIDAsync(clubID));
+                var clubProfileDto = await _clubAdministrationService.GetCurrentClubAdministrationByIDAsync(clubId);
+
+                if (clubProfileDto.Club == null)
+                {
+                    return NotFound();
+                }
+
+                var viewModel = new ClubProfileViewModel()
+                {
+                    Club = clubProfileDto.Club,
+                    ClubAdmin = clubProfileDto.ClubAdmin,
+                    ClubAdministration = clubProfileDto.ClubAdministration.ToList()
+                };
                 viewModel = await CheckCurrentUserRoles(viewModel);
 
                 return Ok(viewModel);
@@ -189,91 +200,88 @@ namespace EPlast.WebApi.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return StatusCode(505);
-            }
-        }
-
-        [HttpPut("changeapprovestatus")]
-        //[Authorize]
-        public async Task<IActionResult> ChangeIsApprovedStatus(int memberId, int clubIndex)
-        {
-            try
-            {
-                await _clubMembersService.ToggleIsApprovedInClubMembersAsync(memberId, clubIndex);
-
-                return CreatedAtAction(nameof(ClubMembers), clubIndex);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Exception :{e.Message}");
-
-                return StatusCode(505);
-            }
-        }
-
-        [HttpPut("changeapprovestatusfollowers")]
-        //[Authorize]
-        public async Task<IActionResult> ChangeIsApprovedStatusFollowers(int memberId, int clubIndex)
-        {
-            try
-            {
-                await _clubMembersService.ToggleIsApprovedInClubMembersAsync(memberId, clubIndex);
-
-                return CreatedAtAction(nameof(ClubFollowers), clubIndex);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Exception :{e.Message}");
-
-                return StatusCode(505);
-            }
-        }
-
-        [HttpPut("changeapprovestatusclub")]
-        //[Authorize]
-        public async Task<IActionResult> ChangeIsApprovedStatusClub(int memberId, int clubIndex)
-        {
-            try
-            {
-                await _clubMembersService.ToggleIsApprovedInClubMembersAsync(memberId, clubIndex);
-
-                return CreatedAtAction(nameof(Club), clubIndex);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Exception :{e.Message}");
-
-                return StatusCode(505);
+                return BadRequest();
             }
         }
 
         [HttpDelete("deleteadmin")]
-        //[Authorize]
-        public async Task<IActionResult> DeleteFromAdmins(int adminId, int clubIndex)
+        public async Task<IActionResult> DeleteAdmin(int adminId)
         {
             bool isSuccessful = await _clubAdministrationService.DeleteClubAdminAsync(adminId);
 
             if (isSuccessful)
             {
-                return CreatedAtAction(nameof(ClubAdmins), clubIndex);
+                return Ok();
             }
 
-            return StatusCode(505);
+            return BadRequest();
+        }
+
+        [HttpPut("changeapprovestatus")]
+        public async Task<IActionResult> ChangeApproveStatus(int memberId, int clubIndex)
+        {
+            try
+            {
+                await _clubMembersService.ToggleIsApprovedInClubMembersAsync(memberId, clubIndex);
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return BadRequest();
+            }
+        }
+
+        [HttpPut("changeapprovestatusfollower")]
+        public async Task<IActionResult> ChangeApproveStatusFollower(int memberId, int clubIndex)
+        {
+            try
+            {
+                await _clubMembersService.ToggleIsApprovedInClubMembersAsync(memberId, clubIndex);
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return BadRequest();
+            }
+        }
+
+        [HttpPut("changeapprovestatusclub")]
+        public async Task<IActionResult> ChangeApproveStatusClub(int memberId, int clubIndex)
+        {
+            try
+            {
+                await _clubMembersService.ToggleIsApprovedInClubMembersAsync(memberId, clubIndex);
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return BadRequest();
+            }
         }
 
         [HttpPut("addenddate")]
-        //[Authorize]
-        public async Task<int> AddEndDate([FromBody] AdminEndDateDTO adminEndDate)
+        public async Task<IActionResult> AddEndDate(AdminEndDateDTO adminEndDate)
         {
             try
             {
                 await _clubAdministrationService.SetAdminEndDateAsync(adminEndDate);
 
-                return 1;
+                return Ok();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return 0;
+                _logger.LogError($"Exception :{e.Message}");
+
+                return BadRequest();
             }
         }
     }
