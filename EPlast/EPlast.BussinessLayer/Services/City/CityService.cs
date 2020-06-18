@@ -55,7 +55,7 @@ namespace EPlast.BussinessLayer.Services
             return _mapper.Map<DataAccessCity.City, CityDTO>(city);
         }
 
-        public async Task<CityProfileDTO> CityProfileAsync(int cityId)
+        public async Task<CityProfileDTO> GetCityProfileAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
             if (city == null)
@@ -73,7 +73,7 @@ namespace EPlast.BussinessLayer.Services
             return new CityProfileDTO { City = city, CityHead = cityHead, Members = members, Followers = followers, CityAdmins = cityAdmins, CityDoc = cityDoc };
         }
 
-        public async Task<CityProfileDTO> CityMembersAsync(int cityId)
+        public async Task<CityProfileDTO> GetCityMembersAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
             if (city == null)
@@ -85,7 +85,7 @@ namespace EPlast.BussinessLayer.Services
             return new CityProfileDTO { City = city, Members = members };
         }
 
-        public async Task<CityProfileDTO> CityFollowersAsync(int cityId)
+        public async Task<CityProfileDTO> GetCityFollowersAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
             if (city == null)
@@ -97,7 +97,7 @@ namespace EPlast.BussinessLayer.Services
             return new CityProfileDTO { City = city, Followers = followers };
         }
 
-        public async Task<CityProfileDTO> CityAdminsAsync(int cityId)
+        public async Task<CityProfileDTO> GetCityAdminsAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
             if (city == null)
@@ -111,7 +111,7 @@ namespace EPlast.BussinessLayer.Services
             return new CityProfileDTO { City = city, CityAdmins = cityAdmins };
         }
 
-        public async Task<CityProfileDTO> CityDocumentsAsync(int cityId)
+        public async Task<CityProfileDTO> GetCityDocumentsAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
             if (city == null)
