@@ -91,7 +91,9 @@ namespace EPlast.BussinessLayer.Services.Club
                 await _repoWrapper.SaveAsync();
             }
             else
+            {
                 adminTypeId = adminType.ID;
+            }
             
             ClubAdministration newClubAdmin = new ClubAdministration()
             {
