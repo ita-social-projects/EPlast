@@ -37,5 +37,6 @@ namespace EPlast.BussinessLayer.Interfaces
         Task SendEmailReseting(string confirmationLink, ForgotPasswordDto forgotPasswordDto);
         Task GoogleAuthentication(string email, ExternalLoginInfo externalLoginInfo);
         Task FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo);
+        string GenerateJSONWebToken(LoginDto loginDto);
     }
 }

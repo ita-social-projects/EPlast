@@ -115,7 +115,9 @@ namespace EPlast.WebApi.Controllers
                     }
                     if (result.Succeeded)
                     {
-                        return RedirectToAction("UserProfile", "Account");
+                        //return RedirectToAction("UserProfile", "Account");
+                        var tokenStr = _accountService.GenerateJSONWebToken(loginDto);
+                        return Ok(new { token = tokenStr });
                     }
                     else
                     {
