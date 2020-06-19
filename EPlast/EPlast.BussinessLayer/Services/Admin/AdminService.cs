@@ -81,7 +81,7 @@ namespace EPlast.BussinessLayer.Services
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
-                var cityName = cityMembers.Where(x => x.User.Id.Equals(user.Id) && x.EndDate == null)
+                var cityName = cityMembers.Where(x => x.UserId.Equals(user.Id) && x.EndDate == null)
                                           .Select(x => x.City.Name)
                                           .LastOrDefault() ?? string.Empty;
 
