@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO;
-using EPlast.BussinessLayer.DTO.City;
+using EPlast.BussinessLayer.DTO.AnnualReport;
 using EPlast.BussinessLayer.Services;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.DataAccess.Repositories;
@@ -14,6 +13,7 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
+using CityDTOs = EPlast.BussinessLayer.DTO.City;
 using DatabaseEntities = EPlast.DataAccess.Entities;
 
 namespace EPlast.XUnitTest.Services.AnnualReport
@@ -99,7 +99,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
                 It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
                     .ReturnsAsync(new List<DatabaseEntities.AnnualReport> { new DatabaseEntities.AnnualReport() });
             _cityAccessService.Setup(c => c.GetCitiesAsync(It.IsAny<ClaimsPrincipal>()))
-                .ReturnsAsync(new List<CityDTO> { new CityDTO() });
+                .ReturnsAsync(new List<CityDTOs.CityDTO> { new CityDTOs.CityDTO() });
 
             // Act
             await _annualReportService.GetAllAsync(It.IsAny<ClaimsPrincipal>());
