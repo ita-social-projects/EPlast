@@ -4,11 +4,11 @@ using DatabaseEntities = EPlast.DataAccess.Entities;
 
 namespace EPlast.BussinessLayer.Mapping.AnnualReport
 {
-    public class AnnualReportProfile : Profile
+    public class UserProfile : Profile
     {
-        public AnnualReportProfile()
+        public UserProfile()
         {
-            CreateMap<DatabaseEntities.AnnualReport, AnnualReportDTO>().ReverseMap();
+            CreateMap<DatabaseEntities.User, UserAnnualReportDTO>().ReverseMap();
         }
     }
 }

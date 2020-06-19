@@ -1,10 +1,7 @@
-﻿using EPlast.Models.Enums;
-using EPlast.ViewModels.City;
-using EPlast.ViewModels.UserInformation.UserProfile;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace EPlast.ViewModels
+namespace EPlast.ViewModels.AnnualReport
 {
     public class AnnualReportViewModel
     {
@@ -12,7 +9,7 @@ namespace EPlast.ViewModels
 
         public DateTime Date { get; set; }
 
-        public AnnualReportStatus Status { get; set; }
+        public AnnualReportStatusViewModel Status { get; set; }
 
         [Required(ErrorMessage = "Заповніть поле")]
         [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
