@@ -24,7 +24,6 @@ namespace EPlast.DataAccess.Entities
         public string OfficeNumber { get; set; }
         [MaxLength(7, ErrorMessage = "Поштовий індекс станиці не має перевищувати 7 символів")]
         public string PostIndex { get; set; }
-        public Region Region { get; set; }
         [StringLength(int.MaxValue, MinimumLength = 3)]
         public string Logo { get; set; }
         public ICollection<CityDocuments> CityDocuments { get; set; }
@@ -33,5 +32,8 @@ namespace EPlast.DataAccess.Entities
         public ICollection<CityAdministration> CityAdministration { get; set; }
         public ICollection<AnnualReport> AnnualReports { get; set; }
         public ICollection<CityLegalStatus> CityLegalStatuses { get; set; }
+
+        public int RegionId { get; set; }
+        public Region Region { get; set; }
     }
 }
