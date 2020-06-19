@@ -68,7 +68,18 @@ namespace EPlast.WebApi
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("V1", new OpenApiInfo { Title = "MyApi", Version = "V1" });
-                //c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+                c.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                {
+                    In = "header",
+                    Description = "Please enter 'Bearer' space and JWT",
+                    Name = "Authorization",
+                    Type = "apiKey"
+                });
+                c.AddSecurityRequirement(
+                    new Dictionary<string, IEnumerable<string>>
+                {
+                    { "Bearer", new string[]{}}
+                });
             });
 
             services.AddScoped<IHomeService, HomeService>();
@@ -101,9 +112,6 @@ namespace EPlast.WebApi
             services.AddScoped<IClubService, ClubService>();
             services.AddScoped<IClubAdministrationService, ClubAdministrationService>();
             services.AddScoped<IClubMembersService, ClubMembersService>();
-            //services.AddScoped<ICreateEventVMInitializer, CreateEventVMInitializer>();
-            //services.AddScoped<IUserAccessManagerSettings, UserAccessManagerSettings>();
-            //services.AddScoped<IUserAccessManager, UserAccessManager>();
             services.AddScoped<IActionManager, ActionManager>();
             services.AddScoped<IEventCategoryManager, EventCategoryManager>();
             services.AddScoped<IEventTypeManager, EventTypeManager>();
@@ -135,15 +143,15 @@ namespace EPlast.WebApi
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                       ValidateIssuer = true,
-                       ValidateAudience = true,
-                       ValidateLifetime = true,
-                       ValidateIssuerSigningKey = true,
-                       ValidIssuer = Configuration["Jwt:Issuer"],
-                       ValidAudience = Configuration["Jwt:Issuer"],
-                       IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
-                };
-              });
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = Configuration["Jwt:Issuer"],
+                        ValidAudience = Configuration["Jwt:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                    };
+                });
 
             services.Configure<RequestLocalizationOptions>(
             opts =>
