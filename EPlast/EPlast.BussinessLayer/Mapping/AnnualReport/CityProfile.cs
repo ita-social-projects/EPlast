@@ -8,7 +8,7 @@ namespace EPlast.BussinessLayer.Mapping.AnnualReport
     {
         public CityProfile()
         {
-            CreateMap<DatabaseEntities.City, CityAnnualReportDTO>().ReverseMap();
+            CreateMap<DatabaseEntities.City, CityDTO>().ReverseMap();
         }
     }
 }

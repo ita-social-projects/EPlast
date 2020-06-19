@@ -9,8 +9,8 @@ namespace EPlast.Mapping.AnnualReport
     {
         public RegionProfile()
         {
-            CreateMap<Region, RegionAnnualReportDTO>().ReverseMap();
-            CreateMap<RegionViewModel, RegionAnnualReportDTO>().ReverseMap();
+            CreateMap<Region, RegionDTO>().ReverseMap();
+            CreateMap<RegionViewModel, RegionDTO>().ReverseMap();
         }
     }
 }
