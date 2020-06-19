@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EPlast.BussinessLayer.DTO
+namespace EPlast.BussinessLayer.DTO.AnnualReport
 {
     public class MembersStatisticDTO
     {
@@ -50,6 +50,5 @@ namespace EPlast.BussinessLayer.DTO
         public int NumberOfSeigneurMembers { get; set; }
 
         public int AnnualReportId { get; set; }
-        public AnnualReportDTO AnnualReport { get; set; }
     }
 }
