@@ -9,8 +9,8 @@ namespace EPlast.Mapping.AnnualReport
     {
         public CityProfile()
         {
-            CreateMap<DatabaseEntities.City, CityAnnualReportDTO>().ReverseMap();
-            CreateMap<CityViewModel, CityAnnualReportDTO>().ReverseMap();
+            CreateMap<DatabaseEntities.City, CityDTO>().ReverseMap();
+            CreateMap<CityViewModel, CityDTO>().ReverseMap();
         }
     }
 }

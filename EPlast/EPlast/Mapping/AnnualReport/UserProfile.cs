@@ -9,8 +9,8 @@ namespace EPlast.Mapping.AnnualReport
     {
         public UserProfile()
         {
-            CreateMap<User, UserAnnualReportDTO>().ReverseMap();
-            CreateMap<UserViewModel, UserAnnualReportDTO>().ReverseMap();
+            CreateMap<User, UserDTO>().ReverseMap();
+            CreateMap<UserViewModel, UserDTO>().ReverseMap();
         }
     }
 }

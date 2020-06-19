@@ -1,6 +1,6 @@
 ﻿namespace EPlast.BussinessLayer.DTO.AnnualReport
 {
-    public class UserAnnualReportDTO
+    public class UserDTO
     {
         public string Id { get; set; }
         public string FirstName { get; set; }

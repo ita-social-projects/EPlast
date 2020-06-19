@@ -80,9 +80,9 @@ namespace EPlast.BussinessLayer.DTO.AnnualReport
         public CityManagementDTO CityManagement { get; set; }
 
         public string UserId { get; set; }
-        public UserAnnualReportDTO User { get; set; }
+        public UserDTO User { get; set; }
 
         public int CityId { get; set; }
-        public CityAnnualReportDTO City { get; set; }
+        public CityDTO City { get; set; }
     }
 }

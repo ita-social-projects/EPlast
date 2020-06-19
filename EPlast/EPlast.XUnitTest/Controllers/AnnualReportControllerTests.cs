@@ -139,7 +139,7 @@ namespace EPlast.XUnitTest
             Assert.Equal("HandleError", viewResult.ActionName);
             Assert.Equal("Error", viewResult.ControllerName);
             Assert.Equal(StatusCodes.Status500InternalServerError, viewResult.RouteValues["code"]);
-            _mapper.Verify(m => m.Map<CityAnnualReportDTO, CityViewModel>(It.IsAny<CityAnnualReportDTO>()), Times.Never);
+            _mapper.Verify(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()), Times.Never);
         }
 
         [Fact]

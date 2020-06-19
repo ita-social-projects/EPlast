@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer;
-//using EPlast.BussinessLayer.AccessManagers;
-//using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using EPlast.BussinessLayer.Interfaces;
 using EPlast.BussinessLayer.Interfaces.City;
 using EPlast.BussinessLayer.Interfaces.Club;
@@ -48,7 +46,6 @@ namespace EPlast.WebApi
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
@@ -69,6 +66,10 @@ namespace EPlast.WebApi
             {
                 c.SwaggerDoc("V1", new OpenApiInfo { Title = "MyApi", Version = "V1" });
                 //c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+            });
+            services.ConfigureSwaggerGen(options =>
+            {
+                options.CustomSchemaIds(x => x.FullName);
             });
 
             services.AddScoped<IHomeService, HomeService>();
@@ -101,9 +102,6 @@ namespace EPlast.WebApi
             services.AddScoped<IClubService, ClubService>();
             services.AddScoped<IClubAdministrationService, ClubAdministrationService>();
             services.AddScoped<IClubMembersService, ClubMembersService>();
-            //services.AddScoped<ICreateEventVMInitializer, CreateEventVMInitializer>();
-            //services.AddScoped<IUserAccessManagerSettings, UserAccessManagerSettings>();
-            //services.AddScoped<IUserAccessManager, UserAccessManager>();
             services.AddScoped<IActionManager, ActionManager>();
             services.AddScoped<IEventCategoryManager, EventCategoryManager>();
             services.AddScoped<IEventTypeManager, EventTypeManager>();

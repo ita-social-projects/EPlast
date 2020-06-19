@@ -12,11 +12,10 @@ namespace EPlast.BussinessLayer.DTO.AnnualReport
         public int? CityLegalStatusOldId { get; set; }
 
         public string UserId { get; set; }
-        public UserAnnualReportDTO CityAdminNew { get; set; }
+        public UserDTO CityAdminNew { get; set; }
 
         public int? CityAdminOldId { get; set; }
 
         public int AnnualReportId { get; set; }
-        public AnnualReportDTO AnnualReport { get; set; }
     }
 }
