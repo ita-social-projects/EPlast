@@ -12,6 +12,8 @@ namespace EPlast.BussinessLayer.Interfaces.Club
         Task<ClubDTO> GetClubInfoByIdAsync(int id);
         Task<ClubProfileDTO> GetClubMembersOrFollowersAsync(int clubId, bool isApproved);
         Task UpdateAsync(ClubDTO club, IFormFile file);
+        Task UpdateAsync(ClubDTO club);
         Task<ClubDTO> CreateAsync(ClubDTO club, IFormFile file);
+        Task<ClubDTO> CreateAsync(ClubDTO club);
     }
 }

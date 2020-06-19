@@ -104,6 +104,14 @@ namespace EPlast.BussinessLayer.Services.Club
             _repoWrapper.Club.Update(_mapper.Map<ClubDTO, DataAccessClub.Club>(club));
             await _repoWrapper.SaveAsync();
         }
+        
+        public async Task UpdateAsync(ClubDTO club)
+        {
+            var clubInfo = await GetClubInfoByIdAsync(club.ID);
+            var oldImageName = clubInfo?.Logo;
+            _repoWrapper.Club.Update(_mapper.Map<ClubDTO, DataAccessClub.Club>(club));
+            await _repoWrapper.SaveAsync();
+        }
 
         private void UpdateOrCreateAnImage(ClubDTO club, IFormFile file, string oldImageName = null)
         {
@@ -137,6 +145,15 @@ namespace EPlast.BussinessLayer.Services.Club
         {
             var newClub = _mapper.Map<ClubDTO, DataAccessClub.Club>(club);
             UpdateOrCreateAnImage(club, file);
+            await _repoWrapper.Club.CreateAsync(newClub);
+            await _repoWrapper.SaveAsync();
+
+            return _mapper.Map<DataAccessClub.Club, ClubDTO>(newClub);
+        }
+        
+        public async Task<ClubDTO> CreateAsync(ClubDTO club)
+        {
+            var newClub = _mapper.Map<ClubDTO, DataAccessClub.Club>(club);
             await _repoWrapper.Club.CreateAsync(newClub);
             await _repoWrapper.SaveAsync();
 

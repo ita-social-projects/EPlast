@@ -1,16 +1,15 @@
-﻿using System.Collections.Generic;
-using EPlast.BussinessLayer.DTO.Club;
-using EPlast.BussinessLayer.DTO.UserProfiles;
+﻿using EPlast.WebApi.Models.User;
+using System.Collections.Generic;
 
 namespace EPlast.WebApi.Models.Club
 {
     public class ClubProfileViewModel
     {
-        public ClubDTO Club { get; set; }
-        public UserDTO ClubAdmin { get; set; }
-        public List<ClubMembersDTO> Members { get; set; }
-        public List<ClubMembersDTO> Followers { get; set; }
-        public ICollection<ClubAdministrationDTO> ClubAdministration { get; set; }
+        public ClubViewModel Club { get; set; }
+        public UserInfoViewModel ClubAdmin { get; set; }
+        public List<ClubMembersViewModel> Members { get; set; }
+        public List<ClubMembersViewModel> Followers { get; set; }
+        public ICollection<ClubAdministrationViewModel> ClubAdministration { get; set; }
         public bool IsCurrentUserClubAdmin { get; set; }
         public bool IsCurrentUserAdmin { get; set; }
     }
