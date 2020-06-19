@@ -1,5 +1,4 @@
-﻿using EPlast.DataAccess.Entities;
-using System;
+﻿using System;
 
 namespace EPlast.BussinessLayer.DTO.Club
 {
@@ -8,7 +7,7 @@ namespace EPlast.BussinessLayer.DTO.Club
         public int ID { get; set; }
         public int AdminTypeId { get; set; }
         public string AdminTypeName { get; set; }
-        public AdminType AdminType { get; set; }
+        public AdminTypeDTO AdminType { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public int? ClubId { get; set; }

@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using EPlast.BussinessLayer.DTO;
 using EPlast.BussinessLayer.DTO.Club;
 using EPlast.BussinessLayer.Interfaces.Club;
@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
@@ -20,20 +20,20 @@ namespace EPlast.WebApi.Controllers
         private readonly IClubService _clubService;
         private readonly IClubAdministrationService _clubAdministrationService;
         private readonly IClubMembersService _clubMembersService;
-        private readonly IMapper _mapper;
         private readonly ILoggerService<ClubController> _logger;
         private readonly IUserManagerService _userManagerService;
+        private readonly IMapper _mapper;
 
         public ClubController(IClubService clubService, IClubAdministrationService clubAdministrationService,
-            IClubMembersService clubMembersService, IMapper mapper, ILoggerService<ClubController> logger,
-            IUserManagerService userManagerService)
+            IClubMembersService clubMembersService, ILoggerService<ClubController> logger,
+            IUserManagerService userManagerService, IMapper mapper)
         {
             _clubService = clubService;
             _clubAdministrationService = clubAdministrationService;
             _clubMembersService = clubMembersService;
-            _mapper = mapper;
             _logger = logger;
             _userManagerService = userManagerService;
+            _mapper = mapper;
         }
         private async Task<ClubProfileViewModel> CheckCurrentUserRoles(ClubProfileViewModel viewModel)
         {
@@ -44,15 +44,15 @@ namespace EPlast.WebApi.Controllers
             return viewModel;
         }
 
-        [HttpGet("index")]
+        [HttpGet("Index")]
         public async Task<IActionResult> Index()
         {
             var clubs = await _clubService.GetAllClubsAsync();
 
-            return Ok(clubs);
+            return Ok(_mapper.Map<IEnumerable<ClubDTO>, IEnumerable<ClubViewModel>>(clubs));
         }
 
-        [HttpGet("club/{clubId}")]
+        [HttpGet("Club/{clubId}")]
         public async Task<IActionResult> Club(int clubId)
         {
             try
@@ -62,14 +62,7 @@ namespace EPlast.WebApi.Controllers
                 {
                     return NotFound();
                 }
-                var viewModel = new ClubProfileViewModel()
-                {
-                    Club = clubProfileDto.Club,
-                    Members = clubProfileDto.Members,
-                    Followers = clubProfileDto.Followers,
-                    ClubAdministration = clubProfileDto.ClubAdministration.ToList(),
-                    ClubAdmin = clubProfileDto.ClubAdmin
-                };
+                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(clubProfileDto);
 
                 viewModel = await CheckCurrentUserRoles(viewModel);
 
@@ -92,12 +85,7 @@ namespace EPlast.WebApi.Controllers
                 {
                     return NotFound();
                 }
-                var viewModel = new ClubProfileViewModel()
-                {
-                    Club = clubProfileDto.Club,
-                    Members = clubProfileDto.Members,
-                    ClubAdmin = clubProfileDto.ClubAdmin
-                };
+                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(clubProfileDto);
                 viewModel = await CheckCurrentUserRoles(viewModel);
 
                 return Ok(viewModel);
@@ -119,12 +107,7 @@ namespace EPlast.WebApi.Controllers
                 {
                     return NotFound();
                 }
-                var viewModel = new ClubProfileViewModel()
-                {
-                    Club = clubProfileDto.Club,
-                    Followers = clubProfileDto.Members,
-                    ClubAdmin = clubProfileDto.ClubAdmin
-                };
+                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(clubProfileDto);
                 viewModel = await CheckCurrentUserRoles(viewModel);
 
                 return Ok(viewModel);
@@ -147,7 +130,7 @@ namespace EPlast.WebApi.Controllers
                     return NotFound();
                 }
 
-                return Ok(clubDTO);
+                return Ok(_mapper.Map<ClubDTO, ClubViewModel>(clubDTO));
             }
             catch (Exception e)
             {
@@ -156,15 +139,32 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("Edit")]
         [Authorize]
-        public async Task<IActionResult> EditClub(ClubDTO club, IFormFile file)
+        public async Task<IActionResult> Edit(ClubViewModel club)
         {
             try
             {
-                await _clubService.UpdateAsync(club, file);
+                await _clubService.UpdateAsync(_mapper.Map<ClubViewModel, ClubDTO>(club));
 
-                return RedirectToAction("Club", new { index = club.ID });
+                return Ok("Updated");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create(ClubViewModel model, [FromForm] IFormFile file)
+        {
+            try
+            {
+                var club = await _clubService.CreateAsync(_mapper.Map<ClubViewModel, ClubDTO>(model), file);
+
+                return Ok(club);
             }
             catch (Exception e)
             {
@@ -186,12 +186,7 @@ namespace EPlast.WebApi.Controllers
                     return NotFound();
                 }
 
-                var viewModel = new ClubProfileViewModel()
-                {
-                    Club = clubProfileDto.Club,
-                    ClubAdmin = clubProfileDto.ClubAdmin,
-                    ClubAdministration = clubProfileDto.ClubAdministration.ToList()
-                };
+                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(clubProfileDto);
                 viewModel = await CheckCurrentUserRoles(viewModel);
 
                 return Ok(viewModel);
@@ -217,14 +212,14 @@ namespace EPlast.WebApi.Controllers
             return BadRequest();
         }
 
-        [HttpPut("changeapprovestatus")]
+        [HttpPut("change-approve-status")]
         public async Task<IActionResult> ChangeApproveStatus(int memberId, int clubIndex)
         {
             try
             {
                 await _clubMembersService.ToggleIsApprovedInClubMembersAsync(memberId, clubIndex);
 
-                return Ok();
+                return Ok(true);
             }
             catch (Exception e)
             {
@@ -241,7 +236,7 @@ namespace EPlast.WebApi.Controllers
             {
                 await _clubMembersService.ToggleIsApprovedInClubMembersAsync(memberId, clubIndex);
 
-                return Ok();
+                return Ok(true);
             }
             catch (Exception e)
             {
@@ -258,7 +253,7 @@ namespace EPlast.WebApi.Controllers
             {
                 await _clubMembersService.ToggleIsApprovedInClubMembersAsync(memberId, clubIndex);
 
-                return Ok();
+                return Ok(true);
             }
             catch (Exception e)
             {
@@ -275,7 +270,7 @@ namespace EPlast.WebApi.Controllers
             {
                 await _clubAdministrationService.SetAdminEndDateAsync(adminEndDate);
 
-                return Ok();
+                return Ok(true);
             }
             catch (Exception e)
             {

@@ -1,8 +1,8 @@
-﻿using EPlast.ViewModels.Admin;
+﻿using EPlast.WebApi.Models.Admin;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace EPlast.ViewModels
+namespace EPlast.WebApi.Models.Club
 {
     public class ClubAdministrationViewModel
     {
@@ -13,7 +13,6 @@ namespace EPlast.ViewModels
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public int? ClubId { get; set; }
-        public ClubViewModel Club { get; set; }
         public ClubMembersViewModel ClubMembers { get; set; }
         public int ClubMembersID { get; set; }
     }

@@ -1,8 +1,7 @@
-﻿using EPlast.ViewModels.UserProfile;
-using System.Collections.Generic;
+﻿using EPlast.WebApi.Models.User;
 using System.ComponentModel.DataAnnotations;
 
-namespace EPlast.ViewModels
+namespace EPlast.WebApi.Models.Club
 {
     public class ClubMembersViewModel
     {
@@ -10,9 +9,7 @@ namespace EPlast.ViewModels
         public string UserId { get; set; }
         public UserInfoViewModel User { get; set; }
         public int ClubId { get; set; }
-        public ClubViewModel Club { get; set; }
         [Required]
         public bool IsApproved { get; set; }
-        public ICollection<ClubAdministrationViewModel> ClubAdministration { get; set; }
     }
 }

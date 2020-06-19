@@ -49,9 +49,8 @@ namespace EPlast.Controllers
         public async Task<IActionResult> Index()
         {
             var clubs = await _clubService.GetAllClubsAsync();
-            var viewModels = _mapper.Map<IEnumerable<ClubDTO>, IEnumerable<ClubViewModel>>(clubs);
 
-            return View(viewModels);
+            return View(_mapper.Map<IEnumerable<ClubDTO>, IEnumerable<ClubViewModel>>(clubs));
         }
 
         [AllowAnonymous]
