@@ -1,4 +1,4 @@
-﻿using EPlast.BussinessLayer.DTO;
+﻿using EPlast.BussinessLayer.DTO.AnnualReport;
 using EPlast.BussinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -1,9 +1,7 @@
-﻿using EPlast.BussinessLayer.DTO.City;
-using EPlast.BussinessLayer.DTO.UserProfiles;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace EPlast.BussinessLayer.DTO
+namespace EPlast.BussinessLayer.DTO.AnnualReport
 {
     public class AnnualReportDTO
     {
@@ -82,9 +80,9 @@ namespace EPlast.BussinessLayer.DTO
         public CityManagementDTO CityManagement { get; set; }
 
         public string UserId { get; set; }
-        public UserDTO User { get; set; }
+        public UserAnnualReportDTO User { get; set; }
 
         public int CityId { get; set; }
-        public CityDTO City { get; set; }
+        public CityAnnualReportDTO City { get; set; }
     }
 }

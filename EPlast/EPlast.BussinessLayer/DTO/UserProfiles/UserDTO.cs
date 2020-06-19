@@ -43,7 +43,6 @@ namespace EPlast.BussinessLayer.DTO.UserProfiles
         public IEnumerable<UnconfirmedCityMember> UnconfirmedCityMembers { get; set; }
         public IEnumerable<ClubMembers> ClubMembers { get; set; }
         public IEnumerable<RegionAdministration> RegionAdministrations { get; set; }
-        public IEnumerable<AnnualReport> AnnualReports { get; set; }
         public IEnumerable<UserPlastDegree> UserPlastDegrees { get; set; }
 
         public UserDTO()

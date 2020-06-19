@@ -42,7 +42,6 @@ namespace EPlast.BussinessLayer.DTO.City
         public IEnumerable<CityMembersDTO> CityMembers { get; set; }
         public IEnumerable<UnconfirmedCityMember> UnconfirmedCityMember { get; set; }
         public IEnumerable<CityAdministrationDTO> CityAdministration { get; set; }
-        public IEnumerable<AnnualReport> AnnualReports { get; set; }
         public IEnumerable<CityLegalStatus> CityLegalStatuses { get; set; }
     }
 }

@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO;
-using EPlast.BussinessLayer.DTO.City;
-using EPlast.BussinessLayer.DTO.UserProfiles;
+using EPlast.BussinessLayer.DTO.AnnualReport;
+using CityDTOs = EPlast.BussinessLayer.DTO.City;
+using UserDTOs = EPlast.BussinessLayer.DTO.UserProfiles;
 using EPlast.BussinessLayer.Interfaces.City;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.Controllers;
 using EPlast.Models.Enums;
-using EPlast.ViewModels;
-using EPlast.ViewModels.City;
-using EPlast.ViewModels.UserInformation.UserProfile;
+using EPlast.ViewModels.AnnualReport;
+using CityVMs = EPlast.ViewModels.City;
+using UserVMs = EPlast.ViewModels.UserInformation.UserProfile;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -43,21 +43,21 @@ namespace EPlast.XUnitTest
         public async Task CreateAsyncCorrect()
         {
             // Arrange
-            IEnumerable<CityDTO> cities = new List<CityDTO>
+            IEnumerable<CityDTOs.CityDTO> cities = new List<CityDTOs.CityDTO>
             {
-                new CityDTO { ID = 1, Name = "Львів" }
+                new CityDTOs.CityDTO { ID = 1, Name = "Львів" }
             };
-            var city = new CityViewModel { ID = cities.First().ID, Name = cities.First().Name };
-            IEnumerable<CityMembersDTO> cityMembersDTOs = new List<CityMembersDTO>
+            var city = new CityVMs.CityViewModel { ID = cities.First().ID, Name = cities.First().Name };
+            IEnumerable<CityDTOs.CityMembersDTO> cityMembersDTOs = new List<CityDTOs.CityMembersDTO>
             {
-                new CityMembersDTO { UserId = "1", User = new UserDTO { FirstName = "Петро", LastName = "Петренко" } }
+                new CityDTOs.CityMembersDTO { UserId = "1", User = new UserDTOs.UserDTO { FirstName = "Петро", LastName = "Петренко" } }
             };
-            var cityMembers = new List<CityMembersViewModel>
+            var cityMembers = new List<CityVMs.CityMembersViewModel>
             {
-                new CityMembersViewModel
+                new CityVMs.CityMembersViewModel
                 {
                     UserId = cityMembersDTOs.First().UserId,
-                    User = new UserViewModel { FirstName = cityMembersDTOs.First().User.FirstName, LastName = cityMembersDTOs.First().User.LastName }
+                    User = new UserVMs.UserViewModel { FirstName = cityMembersDTOs.First().User.FirstName, LastName = cityMembersDTOs.First().User.LastName }
                 }
             };
             var expectedViewModel = new CreateEditAnnualReportViewModel(cityMembers)
@@ -81,11 +81,11 @@ namespace EPlast.XUnitTest
             };
             _cityAccessService.Setup(cas => cas.GetCitiesAsync(It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(cities);
-            _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
+            _mapper.Setup(m => m.Map<CityDTOs.CityDTO, CityVMs.CityViewModel>(It.IsAny<CityDTOs.CityDTO>()))
                 .Returns(city);
             _cityMembersService.Setup(c => c.GetCurrentByCityIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(cityMembersDTOs);
-            _mapper.Setup(m => m.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(It.IsAny<IEnumerable<CityMembersDTO>>()))
+            _mapper.Setup(m => m.Map<IEnumerable<CityDTOs.CityMembersDTO>, IEnumerable<CityVMs.CityMembersViewModel>>(It.IsAny<IEnumerable<CityDTOs.CityMembersDTO>>()))
                 .Returns(cityMembers);
 
             // Act
@@ -103,14 +103,14 @@ namespace EPlast.XUnitTest
         public async Task CreateAsyncHasCreatedOrUnconfirmed()
         {
             // Arrange
-            IEnumerable<CityDTO> cities = new List<CityDTO>
+            IEnumerable<CityDTOs.CityDTO> cities = new List<CityDTOs.CityDTO>
             {
-                new CityDTO { ID = 1, Name = "Львів" }
+                new CityDTOs.CityDTO { ID = 1, Name = "Львів" }
             };
-            var city = new CityViewModel { ID = cities.First().ID, Name = cities.First().Name };
+            var city = new CityVMs.CityViewModel { ID = cities.First().ID, Name = cities.First().Name };
             _cityAccessService.Setup(cas => cas.GetCitiesAsync(It.IsAny<ClaimsPrincipal>()))
                .ReturnsAsync(cities);
-            _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
+            _mapper.Setup(m => m.Map<CityDTOs.CityDTO, CityVMs.CityViewModel>(It.IsAny<CityDTOs.CityDTO>()))
                 .Returns(city);
             _annualReportService.Setup(a => a.CheckCanBeCreatedAsync(It.IsAny<int>()))
                 .Throws(new InvalidOperationException("Станиця має непідтверджені звіти!"));
@@ -129,7 +129,7 @@ namespace EPlast.XUnitTest
         {
             // Arrange
             _cityAccessService.Setup(cas => cas.GetCitiesAsync(It.IsAny<ClaimsPrincipal>()))
-               .ReturnsAsync(default(IEnumerable<CityDTO>));
+               .ReturnsAsync(default(IEnumerable<CityDTOs.CityDTO>));
 
             // Act
             var result = await controller.CreateAsync();
@@ -139,25 +139,25 @@ namespace EPlast.XUnitTest
             Assert.Equal("HandleError", viewResult.ActionName);
             Assert.Equal("Error", viewResult.ControllerName);
             Assert.Equal(StatusCodes.Status500InternalServerError, viewResult.RouteValues["code"]);
-            _mapper.Verify(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()), Times.Never);
+            _mapper.Verify(m => m.Map<CityAnnualReportDTO, CityViewModel>(It.IsAny<CityAnnualReportDTO>()), Times.Never);
         }
 
         [Fact]
         public async Task CreateAsAdminAsyncCorrect()
         {
             // Arrange
-            var cityDTO = new CityDTO { ID = 1, Name = "Львів" };
-            var city = new CityViewModel { ID = cityDTO.ID, Name = cityDTO.Name };
-            IEnumerable<CityMembersDTO> cityMembersDTOs = new List<CityMembersDTO>
+            var cityDTO = new CityDTOs.CityDTO { ID = 1, Name = "Львів" };
+            var city = new CityVMs.CityViewModel { ID = cityDTO.ID, Name = cityDTO.Name };
+            IEnumerable<CityDTOs.CityMembersDTO> cityMembersDTOs = new List<CityDTOs.CityMembersDTO>
             {
-                new CityMembersDTO { UserId = "1", User = new UserDTO { FirstName = "Петро", LastName = "Петренко" } }
+                new CityDTOs.CityMembersDTO { UserId = "1", User = new UserDTOs.UserDTO { FirstName = "Петро", LastName = "Петренко" } }
             };
-            var cityMembers = new List<CityMembersViewModel>
+            var cityMembers = new List<CityVMs.CityMembersViewModel>
             {
-                new CityMembersViewModel
+                new CityVMs.CityMembersViewModel
                 {
                     UserId = cityMembersDTOs.First().UserId,
-                    User = new UserViewModel { FirstName = cityMembersDTOs.First().User.FirstName, LastName = cityMembersDTOs.First().User.LastName }
+                    User = new UserVMs.UserViewModel { FirstName = cityMembersDTOs.First().User.FirstName, LastName = cityMembersDTOs.First().User.LastName }
                 }
             };
             var expectedViewModel = new CreateEditAnnualReportViewModel(cityMembers)
@@ -183,11 +183,11 @@ namespace EPlast.XUnitTest
                 .ReturnsAsync(true);
             _cityService.Setup(c => c.GetByIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(cityDTO);
-            _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
+            _mapper.Setup(m => m.Map<CityDTOs.CityDTO, CityVMs.CityViewModel>(It.IsAny<CityDTOs.CityDTO>()))
                 .Returns(city);
             _cityMembersService.Setup(c => c.GetCurrentByCityIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(cityMembersDTOs);
-            _mapper.Setup(m => m.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(It.IsAny<IEnumerable<CityMembersDTO>>()))
+            _mapper.Setup(m => m.Map<IEnumerable<CityDTOs.CityMembersDTO>, IEnumerable<CityVMs.CityMembersViewModel>>(It.IsAny<IEnumerable<CityDTOs.CityMembersDTO>>()))
                 .Returns(cityMembers);
 
             // Act
@@ -226,9 +226,9 @@ namespace EPlast.XUnitTest
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .ReturnsAsync(true);
             _cityService.Setup(c => c.GetByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(default(CityDTO));
-            _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
-                .Returns(default(CityViewModel));
+                .ReturnsAsync(default(CityDTOs.CityDTO));
+            _mapper.Setup(m => m.Map<CityDTOs.CityDTO, CityVMs.CityViewModel>(It.IsAny<CityDTOs.CityDTO>()))
+                .Returns(default(CityVMs.CityViewModel));
 
             // Act
             var result = await controller.CreateAsAdminAsync(It.IsAny<int>());
@@ -238,7 +238,7 @@ namespace EPlast.XUnitTest
             Assert.Equal("HandleError", viewResult.ActionName);
             Assert.Equal("Error", viewResult.ControllerName);
             Assert.Equal(StatusCodes.Status500InternalServerError, viewResult.RouteValues["code"]);
-            _mapper.Verify(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()));
+            _mapper.Verify(m => m.Map<CityDTOs.CityDTO, CityVMs.CityViewModel>(It.IsAny<CityDTOs.CityDTO>()));
             _cityMembersService.Verify(c => c.GetCurrentByCityIdAsync(It.IsAny<int>()), Times.Never);
         }
 
@@ -281,18 +281,18 @@ namespace EPlast.XUnitTest
         public async Task CreateAsyncPostInvalid()
         {
             // Arrange
-            var cityDTO = new CityDTO { ID = 1, Name = "Львів" };
-            var city = new CityViewModel { ID = cityDTO.ID, Name = cityDTO.Name };
-            IEnumerable<CityMembersDTO> cityMembersDTOs = new List<CityMembersDTO>
+            var cityDTO = new CityDTOs.CityDTO { ID = 1, Name = "Львів" };
+            var city = new CityVMs.CityViewModel { ID = cityDTO.ID, Name = cityDTO.Name };
+            IEnumerable<CityDTOs.CityMembersDTO> cityMembersDTOs = new List<CityDTOs.CityMembersDTO>
             {
-                new CityMembersDTO { UserId = "1", User = new UserDTO { FirstName = "Петро", LastName = "Петренко" } }
+                new CityDTOs.CityMembersDTO { UserId = "1", User = new UserDTOs.UserDTO { FirstName = "Петро", LastName = "Петренко" } }
             };
-            var cityMembers = new List<CityMembersViewModel>
+            var cityMembers = new List<CityVMs.CityMembersViewModel>
             {
-                new CityMembersViewModel
+                new CityVMs.CityMembersViewModel
                 {
                     UserId = cityMembersDTOs.First().UserId,
-                    User = new UserViewModel { FirstName = cityMembersDTOs.First().User.FirstName, LastName = cityMembersDTOs.First().User.LastName }
+                    User = new UserVMs.UserViewModel { FirstName = cityMembersDTOs.First().User.FirstName, LastName = cityMembersDTOs.First().User.LastName }
                 }
             };
             var expectedViewModel = new CreateEditAnnualReportViewModel(cityMembers)
@@ -317,11 +317,11 @@ namespace EPlast.XUnitTest
             controller.ModelState.AddModelError(string.Empty, string.Empty);
             _cityService.Setup(c => c.GetByIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(cityDTO);
-            _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
+            _mapper.Setup(m => m.Map<CityDTOs.CityDTO, CityVMs.CityViewModel>(It.IsAny<CityDTOs.CityDTO>()))
                 .Returns(city);
             _cityMembersService.Setup(c => c.GetCurrentByCityIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(cityMembersDTOs);
-            _mapper.Setup(m => m.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(It.IsAny<IEnumerable<CityMembersDTO>>()))
+            _mapper.Setup(m => m.Map<IEnumerable<CityDTOs.CityMembersDTO>, IEnumerable<CityVMs.CityMembersViewModel>>(It.IsAny<IEnumerable<CityDTOs.CityMembersDTO>>()))
                 .Returns(cityMembers);
 
             // Act
@@ -379,9 +379,9 @@ namespace EPlast.XUnitTest
             // Arrange
             controller.ModelState.AddModelError(string.Empty, string.Empty);
             _cityService.Setup(c => c.GetByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(default(CityDTO));
-            _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
-                .Returns(default(CityViewModel));
+                .ReturnsAsync(default(CityDTOs.CityDTO));
+            _mapper.Setup(m => m.Map<CityDTOs.CityDTO, CityVMs.CityViewModel>(It.IsAny<CityDTOs.CityDTO>()))
+                .Returns(default(CityVMs.CityViewModel));
 
             // Act
             var result = await controller.CreateAsync(new AnnualReportViewModel());
@@ -401,11 +401,15 @@ namespace EPlast.XUnitTest
             {
                 new CityViewModel { ID = 1, Name = "Львів" }
             };
+            var citiesVMs = new List<CityVMs.CityViewModel>
+            {
+                new CityVMs.CityViewModel { ID = 1, Name = "Львів" }
+            };
             var annualReports = new List<AnnualReportViewModel>
             {
                 new AnnualReportViewModel { ID = 1, CityId = cities.First().ID, City = cities.First(), UserId = "1", Date = DateTime.Now }
             };
-            var expectedViewModel = new ViewAnnualReportsViewModel(cities)
+            var expectedViewModel = new ViewAnnualReportsViewModel(citiesVMs)
             {
                 Cities = new List<SelectListItem>
                 {
@@ -413,8 +417,8 @@ namespace EPlast.XUnitTest
                 },
                 AnnualReports = annualReports
             };
-            _mapper.Setup(m => m.Map<IEnumerable<CityDTO>, IEnumerable<CityViewModel>>(It.IsAny<IEnumerable<CityDTO>>()))
-                .Returns(cities);
+            _mapper.Setup(m => m.Map<IEnumerable<CityDTOs.CityDTO>, IEnumerable<CityVMs.CityViewModel>>(It.IsAny<IEnumerable<CityDTOs.CityDTO>>()))
+                .Returns(citiesVMs);
             _mapper.Setup(m => m.Map<IEnumerable<AnnualReportDTO>, IEnumerable<AnnualReportViewModel>>(It.IsAny<IEnumerable<AnnualReportDTO>>()))
                 .Returns(annualReports);
 
@@ -625,18 +629,23 @@ namespace EPlast.XUnitTest
             // Arrange
             var city = new CityViewModel
             {
+                ID = 1,
+                Name = "Львів"
+            };
+            var cityVM = new CityVMs.CityViewModel
+            {
                 ID = 1, Name = "Львів"
             };
             var annualReport = new AnnualReportViewModel
             {
                 ID = 1, CityId = city.ID, UserId = "1", Date = DateTime.Now, City = city
             };
-            var cityMembers = new List<CityMembersViewModel>
+            var cityMembers = new List<CityVMs.CityMembersViewModel>
             {
-                new CityMembersViewModel
+                new CityVMs.CityMembersViewModel
                 {
                     UserId = "1",
-                    User = new UserViewModel { FirstName = "Петро", LastName = "Петренко" }
+                    User = new UserVMs.UserViewModel { FirstName = "Петро", LastName = "Петренко" }
                 }
             };
             var expectedViewModel = new CreateEditAnnualReportViewModel(cityMembers)
@@ -660,9 +669,9 @@ namespace EPlast.XUnitTest
             };
             _mapper.Setup(m => m.Map<AnnualReportDTO, AnnualReportViewModel>(It.IsAny<AnnualReportDTO>()))
                 .Returns(annualReport);
-            _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
-                .Returns(city);
-            _mapper.Setup(m => m.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(It.IsAny<IEnumerable<CityMembersDTO>>()))
+            _mapper.Setup(m => m.Map<CityDTOs.CityDTO, CityVMs.CityViewModel>(It.IsAny<CityDTOs.CityDTO>()))
+                .Returns(cityVM);
+            _mapper.Setup(m => m.Map<IEnumerable<CityDTOs.CityMembersDTO>, IEnumerable<CityVMs.CityMembersViewModel>>(It.IsAny<IEnumerable<CityDTOs.CityMembersDTO>>()))
                 .Returns(cityMembers);
 
             // Act
@@ -730,7 +739,7 @@ namespace EPlast.XUnitTest
         public async Task EditAsyncPostInvalid()
         {
             // Arrange
-            var city = new CityViewModel
+            var city = new CityVMs.CityViewModel
             {
                 ID = 1,
                 Name = "Львів"
@@ -741,14 +750,18 @@ namespace EPlast.XUnitTest
                 CityId = city.ID,
                 UserId = "1",
                 Date = DateTime.Now,
-                City = city
+                City = new CityViewModel
+                {
+                    ID = 1,
+                    Name = "Львів"
+                }
             };
-            var cityMembers = new List<CityMembersViewModel>
+            var cityMembers = new List<CityVMs.CityMembersViewModel>
             {
-                new CityMembersViewModel
+                new CityVMs.CityMembersViewModel
                 {
                     UserId = "1",
-                    User = new UserViewModel { FirstName = "Петро", LastName = "Петренко" }
+                    User = new UserVMs.UserViewModel { FirstName = "Петро", LastName = "Петренко" }
                 }
             };
             var expectedViewModel = new CreateEditAnnualReportViewModel(cityMembers)
@@ -770,9 +783,9 @@ namespace EPlast.XUnitTest
                 },
                 AnnualReport = annualReport
             };
-            _mapper.Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
+            _mapper.Setup(m => m.Map<CityDTOs.CityDTO, CityVMs.CityViewModel>(It.IsAny<CityDTOs.CityDTO>()))
                 .Returns(city);
-            _mapper.Setup(m => m.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(It.IsAny<IEnumerable<CityMembersDTO>>()))
+            _mapper.Setup(m => m.Map<IEnumerable<CityDTOs.CityMembersDTO>, IEnumerable<CityVMs.CityMembersViewModel>>(It.IsAny<IEnumerable<CityDTOs.CityMembersDTO>>()))
                 .Returns(cityMembers);
             controller.ModelState.AddModelError(string.Empty, string.Empty);
 

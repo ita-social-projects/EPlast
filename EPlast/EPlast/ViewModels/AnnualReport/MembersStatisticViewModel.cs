@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EPlast.ViewModels
+namespace EPlast.ViewModels.AnnualReport
 {
     public class MembersStatisticViewModel
     {
