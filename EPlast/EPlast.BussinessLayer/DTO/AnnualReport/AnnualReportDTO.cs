@@ -1,9 +1,7 @@
-﻿using EPlast.BussinessLayer.DTO.City;
-using EPlast.BussinessLayer.DTO.UserProfiles;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace EPlast.BussinessLayer.DTO
+namespace EPlast.BussinessLayer.DTO.AnnualReport
 {
     public class AnnualReportDTO
     {

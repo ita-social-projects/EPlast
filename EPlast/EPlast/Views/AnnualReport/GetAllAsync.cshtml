@@ -1,6 +1,6 @@
-﻿@model EPlast.ViewModels.ViewAnnualReportsViewModel
+﻿@model EPlast.ViewModels.AnnualReport.ViewAnnualReportsViewModel
 @using EPlast.BussinessLayer.ExtensionMethods
-@using EPlast.Models.Enums
+@using EPlast.ViewModels.AnnualReport
 @{
     ViewData["Title"] = "Річні звіти";
 }
@@ -28,7 +28,7 @@
                 {
                     switch (annualReport.Status)
                     {
-                        case AnnualReportStatus.Unconfirmed:
+                        case AnnualReportStatusViewModel.Unconfirmed:
                             <tr class="unconfirmed-ar-menu">
                                 <td>@annualReport.ID</td>
                                 <td hidden>@annualReport.CityId</td>
@@ -39,7 +39,7 @@
                                 <td>@annualReport.Status.GetDescription()</td>
                             </tr>
                             break;
-                        case AnnualReportStatus.Confirmed:
+                        case AnnualReportStatusViewModel.Confirmed:
                             <tr class="confirmed-ar-menu">
                                 <td>@annualReport.ID</td>
                                 <td hidden>@annualReport.CityId</td>
@@ -50,7 +50,7 @@
                                 <td>@annualReport.Status.GetDescription()</td>
                             </tr>
                             break;
-                        case AnnualReportStatus.Saved:
+                        case AnnualReportStatusViewModel.Saved:
                             <tr class="saved-ar-menu">
                                 <td>@annualReport.ID</td>
                                 <td hidden>@annualReport.CityId</td>
