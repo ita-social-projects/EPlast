@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO;
+using EPlast.BussinessLayer.DTO.AnnualReport;
 using EPlast.DataAccess.Entities;
-using EPlast.ViewModels;
+using EPlast.ViewModels.AnnualReport;
 
-namespace EPlast.Mapping
+namespace EPlast.Mapping.AnnualReport
 {
     public class MembersStatisticProfile : Profile
     {

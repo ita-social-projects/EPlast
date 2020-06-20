@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
 
-namespace EPlast.BussinessLayer.DTO.AnnualReport
+namespace EPlast.ViewModels.AnnualReport
 {
-    public enum AnnualReportStatusDTO
+    public enum AnnualReportStatusViewModel
     {
         [Description("Непідтверджений")]
         Unconfirmed,
