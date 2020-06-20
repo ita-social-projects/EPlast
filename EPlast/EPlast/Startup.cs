@@ -33,6 +33,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BussinessLayer.Interfaces.Logging;
+using EPlast.BussinessLayer.Services.Logging;
 
 namespace EPlast
 {

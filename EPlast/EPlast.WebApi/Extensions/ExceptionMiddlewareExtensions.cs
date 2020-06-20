@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using EPlast.BussinessLayer.Interfaces.Logging;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.WebApi.Models.ErrorHandling;
 using Microsoft.AspNetCore.Builder;

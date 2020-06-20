@@ -34,6 +34,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using EPlast.BussinessLayer.Interfaces.Logging;
+using EPlast.BussinessLayer.Services.Logging;
 
 namespace EPlast.WebApi
 {
