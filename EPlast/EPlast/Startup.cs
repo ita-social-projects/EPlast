@@ -33,6 +33,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BussinessLayer.Interfaces.AzureStorage;
+using EPlast.BussinessLayer.Services.AzureStorage;
 
 namespace EPlast
 {
@@ -113,6 +115,8 @@ namespace EPlast
             services.AddScoped<IEventAdminManager, EventAdminManager>();
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
+            services.AddScoped<IBlobStorageRepository, BlobStorageRepository>();
+            services.AddSingleton<IAzureBlobConnectionFactory>(new AzureBlobConnectionFactory(Configuration));
 
             services.Configure<IdentityOptions>(options =>
             {
