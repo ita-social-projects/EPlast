@@ -1,5 +1,4 @@
 ﻿using EPlast.BussinessLayer.Interfaces.Logging;
-using EPlast.BussinessLayer.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace EPlast.BussinessLayer.Services.Logging
