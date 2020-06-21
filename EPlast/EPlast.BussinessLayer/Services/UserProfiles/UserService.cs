@@ -1,16 +1,15 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO;
 using EPlast.BussinessLayer.DTO.UserProfiles;
+using EPlast.BussinessLayer.Interfaces.AzureStorage;
 using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
@@ -23,17 +22,17 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
-        private readonly IHostingEnvironment _env;
         private readonly IWorkService _workService;
         private readonly IEducationService _educationService;
-        public UserService(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IMapper mapper, IHostingEnvironment env, IWorkService workService, IEducationService educationService)
+        private readonly IBlobStorageRepository _blobStorageRepository;
+        public UserService(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IMapper mapper, IWorkService workService, IEducationService educationService, IBlobStorageRepository blobStorageRepository)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
             _mapper = mapper;
-            _env = env;
             _workService = workService;
             _educationService = educationService;
+            _blobStorageRepository = blobStorageRepository;
         }
         public async Task<UserDTO> GetUserAsync(string userId)
         {
@@ -194,28 +193,17 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
 
         private async Task<string> UploadPhotoAsync(UserDTO user, IFormFile file)
         {
-            var userId = user.Id;
-            var oldImageName = (await _repoWrapper.User.GetFirstOrDefaultAsync(x => x.Id == userId)).ImagePath;
+            var oldImageName = (await _repoWrapper.User.GetFirstOrDefaultAsync(x => x.Id == user.Id)).ImagePath;
             if (file != null && file.Length > 0)
             {
-
-                using (var img = Image.FromStream(file.OpenReadStream()))
+                var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                await _blobStorageRepository.UploadBlobAsync(file, fileName, "UserImages");
+                if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default.png"))
                 {
-                    var uploads = Path.Combine(_env.WebRootPath, "images\\Users");
-                    if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default.png"))
-                    {
-                        var oldPath = Path.Combine(uploads, oldImageName);
-                        if (File.Exists(oldPath))
-                        {
-                            File.Delete(oldPath);
-                        }
-                    }
-
-                    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-                    var filePath = Path.Combine(uploads, fileName);
-                    img.Save(filePath);
-                    return fileName;
+                    await _blobStorageRepository.DeleteBlobAsync(oldImageName, "UserImages");
                 }
+
+                return fileName;
             }
             else
             {
