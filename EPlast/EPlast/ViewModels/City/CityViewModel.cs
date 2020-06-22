@@ -9,7 +9,7 @@ namespace EPlast.ViewModels.City
         public int ID { get; set; }
         [Required, MaxLength(50, ErrorMessage = "Назва станиці не має перевищувати 50 символів")]
         public string Name { get; set; }
-        [MaxLength(16, ErrorMessage = "Контактний номер станиці не має перевищувати 16 символів")]
+        [StringLength(18, ErrorMessage = "Контактний номер станиці повинен містити 12 цифр")]
         public string PhoneNumber { get; set; }
         [MaxLength(50, ErrorMessage = "Email станиці не має перевищувати 50 символів")]
         public string Email { get; set; }
@@ -25,6 +25,7 @@ namespace EPlast.ViewModels.City
         public string OfficeNumber { get; set; }
         [MaxLength(7, ErrorMessage = "Поштовий індекс станиці не має перевищувати 7 символів")]
         public string PostIndex { get; set; }
+        public int RegionId { get; set; }
         public Region Region { get; set; }
         [StringLength(int.MaxValue, MinimumLength = 3)]
         public string Logo { get; set; }

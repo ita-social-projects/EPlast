@@ -39,6 +39,11 @@
                                 <span asp-validation-for="City.Email" class="text-danger"></span>
                             </div>
                             <div class="form-group">
+                                <label asp-for="City.Region.RegionName" class="control-label">Регіон</label>
+                                <input asp-for="City.Region.RegionName" class="form-control" />
+                                <span asp-validation-for="City.Region.RegionName" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
                                 <label asp-for="City.Street" class="control-label">Вулиця</label>
                                 <input asp-for="City.Street" class="form-control" />
                                 <span asp-validation-for="City.Street" class="text-danger"></span>
