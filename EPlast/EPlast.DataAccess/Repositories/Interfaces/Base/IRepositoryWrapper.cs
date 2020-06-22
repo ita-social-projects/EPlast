@@ -1,5 +1,6 @@
 ﻿using EPlast.DataAccess.Repositories.Contracts;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Repositories.Interfaces.Events;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -22,6 +23,7 @@ namespace EPlast.DataAccess.Repositories
         IEventAdminRepository EventAdmin { get; }
         IEventTypeRepository EventType { get; }
         IEventStatusRepository EventStatus { get; }
+        IEventAdministrationTypeRepository EventAdministrationType { get; }
 
         IEducationRepository Education { get; }
         IDegreeRepository Degree { get; }

@@ -125,7 +125,7 @@ namespace EPlast.BussinessLayer.Services.EventUser
             EventAdministration eventAdministration = new EventAdministration()
             {
                 Event = eventToCreate,
-                AdministrationType = "Бунчужний/на",
+                //AdministrationType = "Бунчужний/на",
                 UserID = model.EventAdministration.UserID
             };
             await _repoWrapper.EventAdmin.CreateAsync(eventAdmin);
@@ -145,7 +145,7 @@ namespace EPlast.BussinessLayer.Services.EventUser
             EventAdministration eventAdministration = new EventAdministration()
             {
                 EventID = model.Event.ID,
-                AdministrationType = "Писар",
+                //AdministrationType = "Писар",
                 UserID = model.EventAdministration.UserID
             };
             await _repoWrapper.EventAdmin.CreateAsync(eventAdmin);
