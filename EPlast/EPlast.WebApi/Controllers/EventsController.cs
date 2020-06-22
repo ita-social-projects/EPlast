@@ -1,4 +1,5 @@
-﻿using EPlast.BussinessLayer.Interfaces.Events;
+﻿using System;
+using EPlast.BussinessLayer.Interfaces.Events;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -19,15 +20,8 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("categories")]
         public async Task<IActionResult> GetCategories()
         {
-            try
-            {
-                var model = await _actionManager.GetActionCategoriesAsync();
-                return Ok(model);
-            }
-            catch
-            {
-                return BadRequest();
-            }
+            //throw new NullReferenceException();
+            return Ok(await _actionManager.GetActionCategoriesAsync());
         }
 
         [HttpGet("~/api/categories/{categoryId:int}/events")]

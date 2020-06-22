@@ -17,6 +17,9 @@ namespace EPlast.WebApi
                 .ConfigureLogging((hostingContext, logging) =>
                 {
                     logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                    logging.AddConsole();
+                    logging.AddDebug();
+                    logging.AddEventSourceLogger();
                     logging.AddNLog();
                 })
                 .UseStartup<Startup>();
