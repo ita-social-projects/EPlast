@@ -5,7 +5,6 @@ using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.Controllers;
 using EPlast.ViewModels.City;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;

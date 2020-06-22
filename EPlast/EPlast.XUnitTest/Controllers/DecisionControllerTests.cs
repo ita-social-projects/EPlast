@@ -4,7 +4,6 @@ using EPlast.BussinessLayer.DTO;
 using EPlast.Controllers;
 using EPlast.Models;
 using EPlast.ViewModels;
-using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Moq;
@@ -15,6 +14,7 @@ using System.Threading.Tasks;
 using EPlast.BussinessLayer.Services.Interfaces;
 using Xunit;
 using Organization = EPlast.Models.Organization;
+using Microsoft.AspNetCore.Http;
 
 namespace EPlast.XUnitTest
 {
