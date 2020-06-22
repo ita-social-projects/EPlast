@@ -249,7 +249,8 @@ namespace EPlast
             //app.UseRequestLocalization();
 
             app.UseEndpoints(endpoints =>
-               endpoints.MapControllers());
+               endpoints.MapControllers()
+               );
             CreateRoles(services).Wait();
         }
     }
