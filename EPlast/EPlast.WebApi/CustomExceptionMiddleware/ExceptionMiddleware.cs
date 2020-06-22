@@ -1,10 +1,9 @@
-﻿using EPlast.WebApi.Models.ErrorHandling;
+﻿using EPlast.BussinessLayer.Interfaces.Logging;
+using EPlast.WebApi.Models.ErrorHandling;
 using Microsoft.AspNetCore.Http;
-using NLog;
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using EPlast.BussinessLayer.Interfaces.Logging;
 
 namespace EPlast.WebApi.CustomExceptionMiddleware
 {
@@ -12,7 +11,6 @@ namespace EPlast.WebApi.CustomExceptionMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly IGlobalLoggerService _logger;
-
 
         public ExceptionMiddleware(RequestDelegate next, IGlobalLoggerService logger)
         {
@@ -39,11 +37,11 @@ namespace EPlast.WebApi.CustomExceptionMiddleware
             catch (Exception ex)
             {
                 _logger.LogError(ex);
-                await HandleExceptionAsync(httpContext,HttpStatusCode.BadRequest,"Bad Request");
+                await HandleExceptionAsync(httpContext, HttpStatusCode.BadRequest, "Bad Request");
             }
         }
 
-        private Task HandleExceptionAsync(HttpContext context,HttpStatusCode statusCode, string message)
+        private Task HandleExceptionAsync(HttpContext context, HttpStatusCode statusCode, string message)
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)statusCode;
