@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO;
 using EPlast.BussinessLayer.DTO.UserProfiles;
+using EPlast.BussinessLayer.Interfaces.AzureStorage;
 using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.BussinessLayer.Services.UserProfiles;
 using EPlast.DataAccess.Entities;
@@ -14,7 +15,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using EPlast.BussinessLayer.Interfaces.AzureStorage;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.UserArea
@@ -28,7 +28,7 @@ namespace EPlast.XUnitTest.Services.UserArea
         private Mock<IMapper> _mapper;
         private Mock<IWorkService> _workService;
         private Mock<IEducationService> _educationService;
-        private Mock<IBlobStorageRepository> _blobStorage;
+        private Mock<IUserBlobStorageRepository> _userBlobStorage;
 
         public UserServiceTests()
         {
@@ -38,12 +38,12 @@ namespace EPlast.XUnitTest.Services.UserArea
             _mapper = new Mock<IMapper>();
             _workService = new Mock<IWorkService>();
             _educationService = new Mock<IEducationService>();
-            _blobStorage=new Mock<IBlobStorageRepository>();
+            _userBlobStorage=new Mock<IUserBlobStorageRepository>();
         }
 
         private UserService GetService()
         {
-            return new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _workService.Object, _educationService.Object,_blobStorage.Object);
+            return new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _workService.Object, _educationService.Object, _userBlobStorage.Object);
         }
         [Fact]
         public async Task GetUserProfileTest()

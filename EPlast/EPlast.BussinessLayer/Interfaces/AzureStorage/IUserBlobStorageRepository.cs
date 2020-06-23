@@ -1,0 +1,14 @@
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Azure.Storage.Blob;
+using System.Threading.Tasks;
+
+namespace EPlast.BussinessLayer.Interfaces.AzureStorage
+{
+    public interface IUserBlobStorageRepository
+    {
+        Task<CloudBlockBlob> GetBlobAsync(string blobName);
+        Task DeleteBlobAsync(string blobName);
+        Task UploadBlobAsync(IFormFile blobfile, string fileName);
+        Task UploadBlobForBase64Async(string base64, string fileName);
+    }
+}
