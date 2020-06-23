@@ -1,7 +1,8 @@
-﻿using EPlast.DataAccess.Repositories.Contracts;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using EPlast.DataAccess.Repositories.Contracts;
+using EPlast.DataAccess.Repositories.Interfaces.Events;
 
-namespace EPlast.DataAccess.Repositories
+namespace EPlast.DataAccess.Repositories.Realizations.Base
 {
     public class RepositoryWrapper : IRepositoryWrapper
     {
@@ -47,6 +48,7 @@ namespace EPlast.DataAccess.Repositories
         private IUserPlastDegreesRepository _userPlastDegrees;
         private ICityManagementsRepository _cityManagements;
         private IEventAdministrationRepository _eventAdministration;
+        private IEventAdministrationTypeRepository _eventAdministrationType;
 
         public IDecesionRepository Decesion
         {
@@ -158,6 +160,20 @@ namespace EPlast.DataAccess.Repositories
 
                 }
                 return _eventAdministration;
+            }
+        }
+
+        public IEventAdministrationTypeRepository EventAdministrationType
+        {
+            get
+            {
+
+                if (_eventAdministrationType == null)
+                {
+                    _eventAdministrationType = new EventAdministrationTypeRepository(_dbContext);
+
+                }
+                return _eventAdministrationType;
             }
         }
 
