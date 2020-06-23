@@ -1,11 +1,11 @@
-﻿using EPlast.BussinessLayer.Interfaces.AzureStorage;
+﻿using EPlast.BussinessLayer.Interfaces.AzureStorage.Base;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading.Tasks;
 
-namespace EPlast.BussinessLayer.Services.AzureStorage
+namespace EPlast.BussinessLayer.Services.AzureStorage.Base
 {
     public class AzureBlobConnectionFactory : IAzureBlobConnectionFactory
     {
@@ -17,10 +17,6 @@ namespace EPlast.BussinessLayer.Services.AzureStorage
         {
             _configuration = configuration;
         }
-        //public async Task<CloudBlobContainer> GetUserPhotosBlobContainer()
-        //{
-        //    return await GetBlobContainer("UserPhotos").ConfigureAwait(false);
-        //}
         public async Task<CloudBlobContainer> GetBlobContainer(string containerNameKey)
         {
             if (_blobContainer != null)

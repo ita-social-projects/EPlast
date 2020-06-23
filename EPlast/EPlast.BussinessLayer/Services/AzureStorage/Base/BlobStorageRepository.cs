@@ -1,11 +1,13 @@
-﻿using EPlast.BussinessLayer.Interfaces.AzureStorage;
+﻿using EPlast.BussinessLayer.Interfaces.AzureStorage.Base;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Storage.Blob;
+using System;
+using System.IO;
 using System.Threading.Tasks;
 
-namespace EPlast.BussinessLayer.Services.AzureStorage
+namespace EPlast.BussinessLayer.Services.AzureStorage.Base
 {
-    public class BlobStorageRepository : IBlobStorageRepository
+    public abstract class BlobStorageRepository : IBlobStorageRepository
     {
         private readonly IAzureBlobConnectionFactory _connectionFactory;
         public BlobStorageRepository(IAzureBlobConnectionFactory connectionFactory)
@@ -20,29 +22,36 @@ namespace EPlast.BussinessLayer.Services.AzureStorage
 
             return blockBlob;
         }
-        public async Task<bool> DeleteBlobAsync(string blobName, string containerName)
+        public async Task DeleteBlobAsync(string blobName, string containerName)
         {
             var cloudBlobContainer = await _connectionFactory.GetBlobContainer(containerName);
             CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(blobName);
-            bool deleted = blockBlob.DeleteIfExists();
-            return deleted;
+            if (!await blockBlob.DeleteIfExistsAsync())
+            {
+                throw new ArgumentException("Delete was failed");
+            }
         }
 
-        public async Task<bool> UploadBlobAsync(IFormFile blobfile, string fileName, string containerName)
+        public async Task UploadBlobAsync(IFormFile blobfile, string fileName, string containerName)
         {
-            if (blobfile == null)
-            {
-                return false;
-            }
-
             var cloudBlobContainer = await _connectionFactory.GetBlobContainer(containerName);
             CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(fileName);
             using (var fileStream = (blobfile.OpenReadStream()))
             {
                 blockBlob.UploadFromStream(fileStream);
             }
+        }
+        public async Task UploadBlobForBase64Async(string base64, string fileName, string containerName)
+        {
+            var cloudBlobContainer = await _connectionFactory.GetBlobContainer(containerName);
+            CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(fileName);
 
-            return true;
+            byte[] bytes = Convert.FromBase64String(base64);
+            using (MemoryStream ms = new MemoryStream(bytes))
+            {
+                blockBlob.UploadFromStream(ms);
+            }
+
         }
     }
 }
