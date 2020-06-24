@@ -1,6 +1,6 @@
-﻿using System;
+﻿using EPlast.BusinessLogicLayer.DTO.City;
+using EPlast.BusinessLogicLayer.DTO.Club;
 using System.Collections.Generic;
-using System.Text;
 
 namespace EPlast.BusinessLogicLayer.DTO.Admin
 {

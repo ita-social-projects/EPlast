@@ -1,4 +1,4 @@
-﻿using EPlast.BusinessLogicLayer.DTO;
+﻿using EPlast.BusinessLogicLayer.DTO.Admin;
 using EPlast.BusinessLogicLayer.DTO.Club;
 using System.Threading.Tasks;
 

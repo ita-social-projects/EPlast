@@ -1,24 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BusinessLogicLayer.DTO;
 using EPlast.BusinessLogicLayer.Interfaces.Logging;
-using EPlast.BusinessLogicLayer.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.BusinessLogicLayer
 {
     public class DecisionService : IDecisionService
     {
         private const string DecesionsDocumentFolder = @"\documents\";
-        private readonly IHostingEnvironment _appEnvironment;
+        private readonly IWebHostEnvironment _appEnvironment;
         private readonly IDecisionVmInitializer _decisionVMCreator;
         private readonly IDirectoryManager _directoryManager;
         private readonly IFileManager _fileManager;
@@ -27,7 +26,7 @@ namespace EPlast.BusinessLogicLayer
         private readonly ILoggerService<DecisionService> _logger;
         private readonly IRepositoryWrapper _repoWrapper;
 
-        public DecisionService(IRepositoryWrapper repoWrapper, IHostingEnvironment appEnvironment,
+        public DecisionService(IRepositoryWrapper repoWrapper, IWebHostEnvironment appEnvironment,
             IDirectoryManager directoryManager, IFileManager fileManager,
             IFileStreamManager fileStreamManager, IMapper mapper, IDecisionVmInitializer decisionVMCreator,
             ILoggerService<DecisionService> logger)

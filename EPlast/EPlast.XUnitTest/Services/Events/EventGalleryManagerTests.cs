@@ -17,12 +17,12 @@ namespace EPlast.XUnitTest.Services.Events
     public class EventGalleryManagerTests
     {
         private readonly Mock<IRepositoryWrapper> _repoWrapper;
-        private readonly Mock<IHostingEnvironment> _env;
+        private readonly Mock<IWebHostEnvironment> _env;
 
         public EventGalleryManagerTests()
         {
             _repoWrapper = new Mock<IRepositoryWrapper>();
-            _env = new Mock<IHostingEnvironment>();
+            _env = new Mock<IWebHostEnvironment>();
         }
 
         [Fact]

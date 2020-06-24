@@ -11,6 +11,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 using DataAccessCity = EPlast.DataAccess.Entities;
 
 namespace EPlast.BusinessLogicLayer.Services
@@ -19,9 +20,9 @@ namespace EPlast.BusinessLogicLayer.Services
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
-        private readonly IHostingEnvironment _env;
+        private readonly IWebHostEnvironment _env;
 
-        public CityService(IRepositoryWrapper repoWrapper, IMapper mapper, IHostingEnvironment env)
+        public CityService(IRepositoryWrapper repoWrapper, IMapper mapper, IWebHostEnvironment env)
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
