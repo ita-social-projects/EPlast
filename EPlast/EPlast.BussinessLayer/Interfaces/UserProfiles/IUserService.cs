@@ -19,6 +19,5 @@ namespace EPlast.BussinessLayer.Interfaces.UserProfiles
         ConfirmedUserDTO GetCityAdminConfirmedUser(UserDTO user);
         Task<bool> CanApproveAsync(IEnumerable<ConfirmedUserDTO> confUsers, string userId, ClaimsPrincipal user);
         Task<string> GetImageBase64Async(string fileName);
-
     }
 }

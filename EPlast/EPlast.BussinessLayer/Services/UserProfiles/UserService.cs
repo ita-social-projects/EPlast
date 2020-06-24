@@ -5,11 +5,13 @@ using EPlast.BussinessLayer.Interfaces.AzureStorage;
 using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
@@ -23,10 +25,11 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
         private readonly IWorkService _workService;
+        private readonly IHostingEnvironment _env;
         private readonly IEducationService _educationService;
         private readonly IUserBlobStorageRepository _userBlobStorage;
         public UserService(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IMapper mapper, IWorkService workService,
-            IEducationService educationService, IUserBlobStorageRepository userBlobStorage)
+            IEducationService educationService, IUserBlobStorageRepository userBlobStorage, IHostingEnvironment env)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
@@ -34,6 +37,7 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
             _workService = workService;
             _educationService = educationService;
             _userBlobStorage = userBlobStorage;
+            _env = env;
         }
         public async Task<UserDTO> GetUserAsync(string userId)
         {
@@ -109,7 +113,7 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
         }
         public async Task UpdateAsync(UserDTO user, IFormFile file, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
-            user.ImagePath = await UploadPhotoAsync(user.Id, file);
+            user.ImagePath = await UploadPhotoAsyncInFolder(user.Id, file);
             user.UserProfile.Nationality = CheckFieldForNull(user.UserProfile.NationalityId, user.UserProfile.Nationality.Name, user.UserProfile.Nationality);
             user.UserProfile.Religion = CheckFieldForNull(user.UserProfile.ReligionId, user.UserProfile.Religion.Name, user.UserProfile.Religion);
             user.UserProfile.Degree = CheckFieldForNull(user.UserProfile.DegreeId, user.UserProfile.Degree.Name, user.UserProfile.Degree);
@@ -211,7 +215,35 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
             }
             return model;
         }
+        private async Task<string> UploadPhotoAsyncInFolder(string userId, IFormFile file)
+        {
+            var oldImageName = (await _repoWrapper.User.GetFirstOrDefaultAsync(x => x.Id == userId)).ImagePath;
+            if (file != null && file.Length > 0)
+            {
 
+                using (var img = Image.FromStream(file.OpenReadStream()))
+                {
+                    var uploads = Path.Combine(_env.WebRootPath, "images\\Users");
+                    if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default.png"))
+                    {
+                        var oldPath = Path.Combine(uploads, oldImageName);
+                        if (File.Exists(oldPath))
+                        {
+                            File.Delete(oldPath);
+                        }
+                    }
+
+                    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                    var filePath = Path.Combine(uploads, fileName);
+                    img.Save(filePath);
+                    return fileName;
+                }
+            }
+            else
+            {
+                return oldImageName;
+            }
+        }
         private async Task<string> UploadPhotoAsync(string userId, IFormFile file)
         {
             var oldImageName = (await _repoWrapper.User.GetFirstOrDefaultAsync(x => x.Id == userId)).ImagePath;
