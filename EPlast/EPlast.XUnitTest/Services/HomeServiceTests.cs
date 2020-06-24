@@ -1,6 +1,6 @@
-﻿using EPlast.BussinessLayer;
-using EPlast.BussinessLayer.DTO;
-using EPlast.BussinessLayer.Interfaces;
+﻿using EPlast.BusinessLogicLayer;
+using EPlast.BusinessLogicLayer.DTO;
+using EPlast.BusinessLogicLayer.Interfaces;
 using Moq;
 using System.Threading.Tasks;
 using Xunit;

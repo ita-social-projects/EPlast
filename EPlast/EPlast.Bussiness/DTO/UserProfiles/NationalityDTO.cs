@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace EPlast.Bussiness.DTO.UserProfiles
+namespace EPlast.BusinessLogicLayer.DTO.UserProfiles
 {
     public class NationalityDTO
     {

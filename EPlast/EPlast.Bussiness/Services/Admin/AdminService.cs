@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using EPlast.Bussiness.DTO;
-using EPlast.Bussiness.DTO.UserProfiles;
-using EPlast.Bussiness.ExtensionMethods;
-using EPlast.Bussiness.Services.Interfaces;
+using EPlast.BusinessLogicLayer.DTO;
+using EPlast.BusinessLogicLayer.DTO.UserProfiles;
+using EPlast.BusinessLogicLayer.ExtensionMethods;
+using EPlast.BusinessLogicLayer.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Services
+namespace EPlast.BusinessLogicLayer.Services
 {
     public class AdminService : IAdminService
     {

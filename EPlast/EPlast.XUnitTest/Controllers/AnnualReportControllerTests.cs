@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO.AnnualReport;
-using CityDTOs = EPlast.BussinessLayer.DTO.City;
-using UserDTOs = EPlast.BussinessLayer.DTO.UserProfiles;
-using EPlast.BussinessLayer.Interfaces.City;
-using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.BusinessLogicLayer.DTO.AnnualReport;
+using CityDTOs = EPlast.BusinessLogicLayer.DTO.City;
+using UserDTOs = EPlast.BusinessLogicLayer.DTO.UserProfiles;
+using EPlast.BusinessLogicLayer.Interfaces.City;
+using EPlast.BusinessLogicLayer.Services.Interfaces;
 using EPlast.Controllers;
 using EPlast.Models.Enums;
 using EPlast.ViewModels.AnnualReport;
@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using EPlast.BussinessLayer.Interfaces.Logging;
+using EPlast.BusinessLogicLayer.Interfaces.Logging;
 using Xunit;
 
 namespace EPlast.XUnitTest

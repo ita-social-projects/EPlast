@@ -1,8 +1,8 @@
-﻿using EPlast.Bussiness.DTO.UserProfiles;
+﻿using EPlast.BusinessLogicLayer.DTO.UserProfiles;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace EPlast.Bussiness.DTO
+namespace EPlast.BusinessLogicLayer.DTO
 {
     public class ConfirmedUserDTO
     {

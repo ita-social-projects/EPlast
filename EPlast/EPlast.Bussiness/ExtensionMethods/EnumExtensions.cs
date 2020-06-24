@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace EPlast.Bussiness.ExtensionMethods
+namespace EPlast.BusinessLogicLayer.ExtensionMethods
 {
     public static class EnumExtensions
     {

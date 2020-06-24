@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO.City;
-using EPlast.BussinessLayer.Services.City.CityAccess;
-using EPlast.BussinessLayer.Services.Interfaces;
-using EPlast.BussinessLayer.Settings;
+using EPlast.BusinessLogicLayer.DTO.City;
+using EPlast.BusinessLogicLayer.Services.City.CityAccess;
+using EPlast.BusinessLogicLayer.Services.Interfaces;
+using EPlast.BusinessLogicLayer.Settings;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;

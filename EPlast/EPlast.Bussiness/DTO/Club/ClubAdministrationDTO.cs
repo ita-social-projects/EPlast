@@ -1,7 +1,7 @@
 ﻿using EPlast.DataAccess.Entities;
 using System;
 
-namespace EPlast.Bussiness.DTO.Club
+namespace EPlast.BusinessLogicLayer.DTO.Club
 {
     public class ClubAdministrationDTO
     {

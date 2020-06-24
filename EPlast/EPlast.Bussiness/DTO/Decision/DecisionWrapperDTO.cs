@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 
-namespace EPlast.Bussiness.DTO
+namespace EPlast.BusinessLogicLayer.DTO
 {
     public class DecisionWrapperDTO
     {

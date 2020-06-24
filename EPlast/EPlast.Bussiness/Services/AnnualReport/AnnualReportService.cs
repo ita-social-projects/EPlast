@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using EPlast.Bussiness.DTO.AnnualReport;
-using EPlast.Bussiness.Services.Interfaces;
+using EPlast.BusinessLogicLayer.DTO.AnnualReport;
+using EPlast.BusinessLogicLayer.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -11,7 +11,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Services
+namespace EPlast.BusinessLogicLayer.Services
 {
     public class AnnualReportService : IAnnualReportService
     {

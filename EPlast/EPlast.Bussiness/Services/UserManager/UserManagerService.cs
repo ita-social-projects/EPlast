@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
-using EPlast.Bussiness.DTO.UserProfiles;
-using EPlast.Bussiness.Services.Interfaces;
+using EPlast.BusinessLogicLayer.DTO.UserProfiles;
+using EPlast.BusinessLogicLayer.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Services
+namespace EPlast.BusinessLogicLayer.Services
 {
     public class UserManagerService : IUserManagerService
     {

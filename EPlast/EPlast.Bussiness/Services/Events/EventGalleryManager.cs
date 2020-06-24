@@ -1,4 +1,4 @@
-﻿using EPlast.Bussiness.Interfaces.Events;
+﻿using EPlast.BusinessLogicLayer.Interfaces.Events;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
@@ -9,7 +9,7 @@ using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Services.Events
+namespace EPlast.BusinessLogicLayer.Services.Events
 {
     public class EventGalleryManager : IEventGalleryManager
     {

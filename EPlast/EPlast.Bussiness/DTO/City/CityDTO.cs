@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace EPlast.Bussiness.DTO.City
+namespace EPlast.BusinessLogicLayer.DTO.City
 {
     public class CityDTO
     {

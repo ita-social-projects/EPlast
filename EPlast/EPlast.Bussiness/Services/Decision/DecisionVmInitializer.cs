@@ -1,11 +1,11 @@
-﻿using EPlast.Bussiness.ExtensionMethods;
+﻿using EPlast.BusinessLogicLayer.ExtensionMethods;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EPlast.Bussiness
+namespace EPlast.BusinessLogicLayer
 {
     public class DecisionVmInitializer : IDecisionVmInitializer
     {

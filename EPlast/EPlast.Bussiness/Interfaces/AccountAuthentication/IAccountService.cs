@@ -1,12 +1,12 @@
-﻿using EPlast.Bussiness.DTO.Account;
-using EPlast.Bussiness.DTO.UserProfiles;
+﻿using EPlast.BusinessLogicLayer.DTO.Account;
+using EPlast.BusinessLogicLayer.DTO.UserProfiles;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Interfaces
+namespace EPlast.BusinessLogicLayer.Interfaces
 {
     public interface IAccountService
     {

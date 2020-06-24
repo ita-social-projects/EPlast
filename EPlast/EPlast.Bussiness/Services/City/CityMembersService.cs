@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
-using EPlast.Bussiness.DTO.City;
-using EPlast.Bussiness.Services.Interfaces;
+using EPlast.BusinessLogicLayer.DTO.City;
+using EPlast.BusinessLogicLayer.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Services.City
+namespace EPlast.BusinessLogicLayer.Services.City
 {
     public class CityMembersService : ICityMembersService
     {

@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPlast.WebApi", "EPlast.Web
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPlast.AutomatedTest", "EPlast.AutomatedTest\EPlast.AutomatedTest.csproj", "{9D086B95-F82D-4412-B806-3DDFC1A0DAD8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EPlast.Bussiness", "EPlast.Bussiness\EPlast.Bussiness.csproj", "{AF51EDA6-C4E4-4018-AB34-12EB5E0B4DBC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EPlast.BusinessLogicLayer", "EPlast.Bussiness\EPlast.BusinessLogicLayer.csproj", "{AF51EDA6-C4E4-4018-AB34-12EB5E0B4DBC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

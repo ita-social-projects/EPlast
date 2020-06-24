@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using EPlast.Bussiness.DTO.Events;
-using EPlast.Bussiness.Interfaces.Events;
+using EPlast.BusinessLogicLayer.DTO.Events;
+using EPlast.BusinessLogicLayer.Interfaces.Events;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
@@ -13,7 +13,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Services.Events
+namespace EPlast.BusinessLogicLayer.Services.Events
 {
     public class ActionManager : IActionManager
     {

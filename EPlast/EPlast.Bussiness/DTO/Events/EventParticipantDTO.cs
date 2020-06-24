@@ -1,6 +1,6 @@
 ﻿
 
-namespace EPlast.Bussiness.DTO.Events
+namespace EPlast.BusinessLogicLayer.DTO.Events
 {
     public class EventParticipantDTO
     {

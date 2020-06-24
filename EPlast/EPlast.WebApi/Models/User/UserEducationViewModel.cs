@@ -1,4 +1,4 @@
-﻿using EPlast.BussinessLayer.DTO.UserProfiles;
+﻿using EPlast.BusinessLogicLayer.DTO.UserProfiles;
 using System.Collections.Generic;
 
 namespace EPlast.WebApi.Models.User

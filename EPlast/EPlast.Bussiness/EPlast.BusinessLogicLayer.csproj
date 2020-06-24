@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\EPlast.DataAccess\EPlast.DataAccess.csproj" />
   </ItemGroup>
 

@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO;
-using EPlast.BussinessLayer.DTO.Account;
-using EPlast.BussinessLayer.DTO.UserProfiles;
-using EPlast.BussinessLayer.Interfaces;
-using EPlast.BussinessLayer.Interfaces.UserProfiles;
-using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.BusinessLogicLayer.DTO;
+using EPlast.BusinessLogicLayer.DTO.Account;
+using EPlast.BusinessLogicLayer.DTO.UserProfiles;
+using EPlast.BusinessLogicLayer.Interfaces;
+using EPlast.BusinessLogicLayer.Interfaces.UserProfiles;
+using EPlast.BusinessLogicLayer.Services.Interfaces;
 using EPlast.Resources;
 using EPlast.ViewModels;
 using EPlast.ViewModels.UserInformation;
@@ -22,7 +22,7 @@ using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
-using EPlast.BussinessLayer.Interfaces.Logging;
+using EPlast.BusinessLogicLayer.Interfaces.Logging;
 
 namespace EPlast.Controllers
 {

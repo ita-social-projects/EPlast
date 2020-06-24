@@ -1,12 +1,12 @@
-﻿using EPlast.Bussiness.DTO;
-using EPlast.Bussiness.DTO.UserProfiles;
+﻿using EPlast.BusinessLogicLayer.DTO;
+using EPlast.BusinessLogicLayer.DTO.UserProfiles;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Interfaces.UserProfiles
+namespace EPlast.BusinessLogicLayer.Interfaces.UserProfiles
 {
     public interface IUserService
     {

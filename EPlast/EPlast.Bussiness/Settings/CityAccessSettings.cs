@@ -1,8 +1,8 @@
-﻿using EPlast.Bussiness.Services.City.CityAccess.CityAccessGetters;
+﻿using EPlast.BusinessLogicLayer.Services.City.CityAccess.CityAccessGetters;
 using EPlast.DataAccess.Repositories;
 using System.Collections.Generic;
 
-namespace EPlast.Bussiness.Settings
+namespace EPlast.BusinessLogicLayer.Settings
 {
     public class CityAccessSettings
     {

@@ -1,8 +1,8 @@
-﻿using EPlast.Bussiness.DTO.Events;
+﻿using EPlast.BusinessLogicLayer.DTO.Events;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Interfaces.Events
+namespace EPlast.BusinessLogicLayer.Interfaces.Events
 {
     public interface IEventCategoryManager
     {

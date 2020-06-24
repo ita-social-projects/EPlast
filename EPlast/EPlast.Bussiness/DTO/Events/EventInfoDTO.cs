@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 
-namespace EPlast.Bussiness.DTO.Events
+namespace EPlast.BusinessLogicLayer.DTO.Events
 {
     public class EventInfoDTO
     {

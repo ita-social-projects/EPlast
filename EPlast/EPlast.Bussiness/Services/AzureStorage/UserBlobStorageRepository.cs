@@ -1,11 +1,11 @@
-﻿using EPlast.Bussiness.Interfaces.AzureStorage;
-using EPlast.Bussiness.Interfaces.AzureStorage.Base;
-using EPlast.Bussiness.Services.AzureStorage.Base;
+﻿using EPlast.BusinessLogicLayer.Interfaces.AzureStorage;
+using EPlast.BusinessLogicLayer.Interfaces.AzureStorage.Base;
+using EPlast.BusinessLogicLayer.Services.AzureStorage.Base;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Storage.Blob;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Services.AzureStorage
+namespace EPlast.BusinessLogicLayer.Services.AzureStorage
 {
     public class UserBlobStorageRepository : BlobStorageRepository, IUserBlobStorageRepository
     {

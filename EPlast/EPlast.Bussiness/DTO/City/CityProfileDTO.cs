@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace EPlast.Bussiness.DTO.City
+namespace EPlast.BusinessLogicLayer.DTO.City
 {
     public class CityProfileDTO
     {

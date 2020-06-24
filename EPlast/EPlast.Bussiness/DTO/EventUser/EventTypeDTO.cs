@@ -1,4 +1,4 @@
-﻿namespace EPlast.Bussiness.DTO.EventUser
+﻿namespace EPlast.BusinessLogicLayer.DTO.EventUser
 {
     public class EventTypeDTO
     {

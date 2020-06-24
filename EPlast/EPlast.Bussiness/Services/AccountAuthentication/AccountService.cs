@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using EPlast.Bussiness.DTO.Account;
-using EPlast.Bussiness.DTO.UserProfiles;
-using EPlast.Bussiness.Interfaces;
+using EPlast.BusinessLogicLayer.DTO.Account;
+using EPlast.BusinessLogicLayer.DTO.UserProfiles;
+using EPlast.BusinessLogicLayer.Interfaces;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -16,7 +16,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace EPlast.Bussiness.Services
+namespace EPlast.BusinessLogicLayer.Services
 {
     public class AccountService : IAccountService
     {

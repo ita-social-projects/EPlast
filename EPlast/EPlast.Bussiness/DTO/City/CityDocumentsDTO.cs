@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EPlast.Bussiness.DTO.City
+namespace EPlast.BusinessLogicLayer.DTO.City
 {
     public class CityDocumentsDTO
     {

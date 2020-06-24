@@ -1,8 +1,8 @@
-﻿using EPlast.Bussiness.DTO.City;
+﻿using EPlast.BusinessLogicLayer.DTO.City;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Services.Interfaces
+namespace EPlast.BusinessLogicLayer.Services.Interfaces
 {
     public interface ICityMembersService
     {

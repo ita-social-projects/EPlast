@@ -1,8 +1,8 @@
-﻿using EPlast.Bussiness.DTO.Events;
+﻿using EPlast.BusinessLogicLayer.DTO.Events;
 using System.Collections.Generic;
-using EPlast.Bussiness.DTO.UserProfiles;
+using EPlast.BusinessLogicLayer.DTO.UserProfiles;
 
-namespace EPlast.Bussiness.DTO.EventUser
+namespace EPlast.BusinessLogicLayer.DTO.EventUser
 {
     public class EventCreateDTO
     {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using EPlast.BussinessLayer.DTO.City;
+using EPlast.BusinessLogicLayer.DTO.City;
 
-namespace EPlast.Bussiness.DTO
+namespace EPlast.BusinessLogicLayer.DTO
 {
     public class RegionDTO
     {

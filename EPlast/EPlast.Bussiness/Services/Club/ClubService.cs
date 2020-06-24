@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using EPlast.Bussiness.DTO.Club;
-using EPlast.Bussiness.DTO.UserProfiles;
-using EPlast.Bussiness.Interfaces.Club;
+using EPlast.BusinessLogicLayer.DTO.Club;
+using EPlast.BusinessLogicLayer.DTO.UserProfiles;
+using EPlast.BusinessLogicLayer.Interfaces.Club;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -14,7 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DataAccessClub = EPlast.DataAccess.Entities;
 
-namespace EPlast.Bussiness.Services.Club
+namespace EPlast.BusinessLogicLayer.Services.Club
 {
     public class ClubService : IClubService
     {

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO.AnnualReport;
-using EPlast.BussinessLayer.Interfaces.City;
-using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.BusinessLogicLayer.DTO.AnnualReport;
+using EPlast.BusinessLogicLayer.Interfaces.City;
+using EPlast.BusinessLogicLayer.Services.Interfaces;
 using EPlast.Models.Enums;
 using EPlast.ViewModels.AnnualReport;
 using Microsoft.AspNetCore.Authorization;
@@ -11,8 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BussinessLayer.Interfaces.Logging;
-using CityDTOs = EPlast.BussinessLayer.DTO.City;
+using EPlast.BusinessLogicLayer.Interfaces.Logging;
+using CityDTOs = EPlast.BusinessLogicLayer.DTO.City;
 using CityVMs = EPlast.ViewModels.City;
 
 namespace EPlast.Controllers

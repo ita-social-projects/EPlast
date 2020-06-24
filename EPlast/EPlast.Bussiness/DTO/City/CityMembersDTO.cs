@@ -1,7 +1,7 @@
-﻿using EPlast.BussinessLayer.DTO.UserProfiles;
+﻿using EPlast.BusinessLogicLayer.DTO.UserProfiles;
 using System;
 
-namespace EPlast.Bussiness.DTO.City
+namespace EPlast.BusinessLogicLayer.DTO.City
 {
     public class CityMembersDTO
     {

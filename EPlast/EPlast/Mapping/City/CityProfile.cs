@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO.City;
+using EPlast.BusinessLogicLayer.DTO.City;
 using EPlast.ViewModels.City;
 using DataAccessCity = EPlast.DataAccess.Entities;
 

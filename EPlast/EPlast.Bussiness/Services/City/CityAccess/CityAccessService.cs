@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using EPlast.Bussiness.DTO.City;
-using EPlast.Bussiness.Services.City.CityAccess.CityAccessGetters;
-using EPlast.Bussiness.Services.Interfaces;
-using EPlast.Bussiness.Settings;
+using EPlast.BusinessLogicLayer.DTO.City;
+using EPlast.BusinessLogicLayer.Services.City.CityAccess.CityAccessGetters;
+using EPlast.BusinessLogicLayer.Services.Interfaces;
+using EPlast.BusinessLogicLayer.Settings;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using DatabaseEntities = EPlast.DataAccess.Entities;
 
-namespace EPlast.Bussiness.Services.City.CityAccess
+namespace EPlast.BusinessLogicLayer.Services.City.CityAccess
 {
     public class CityAccessService : ICityAccessService
     {

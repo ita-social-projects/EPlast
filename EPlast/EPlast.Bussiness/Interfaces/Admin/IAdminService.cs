@@ -1,9 +1,9 @@
-﻿using EPlast.Bussiness.DTO;
+﻿using EPlast.BusinessLogicLayer.DTO;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Services.Interfaces
+namespace EPlast.BusinessLogicLayer.Services.Interfaces
 {
     public interface IAdminService
     {

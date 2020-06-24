@@ -1,8 +1,8 @@
-﻿using EPlast.Bussiness.ExtensionMethods;
+﻿using EPlast.BusinessLogicLayer.ExtensionMethods;
 using EPlast.DataAccess.Entities;
 using MigraDoc.DocumentObjectModel;
 
-namespace EPlast.Bussiness
+namespace EPlast.BusinessLogicLayer
 {
     public class DecisionDocument : PdfDocument
     {

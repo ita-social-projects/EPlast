@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using DatabaseEntities = EPlast.DataAccess.Entities;
 
-namespace EPlast.Bussiness.Services.City.CityAccess.CityAccessGetters
+namespace EPlast.BusinessLogicLayer.Services.City.CityAccess.CityAccessGetters
 {
     public interface ICItyAccessGetter
     {

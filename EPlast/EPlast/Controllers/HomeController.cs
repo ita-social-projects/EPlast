@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO;
-using EPlast.BussinessLayer.Interfaces;
+using EPlast.BusinessLogicLayer.DTO;
+using EPlast.BusinessLogicLayer.Interfaces;
 using EPlast.DataAccess.Repositories;
 using EPlast.Models;
 using EPlast.ViewModels;

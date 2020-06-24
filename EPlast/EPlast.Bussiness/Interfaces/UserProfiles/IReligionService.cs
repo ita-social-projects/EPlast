@@ -1,8 +1,8 @@
-﻿using EPlast.Bussiness.DTO.UserProfiles;
+﻿using EPlast.BusinessLogicLayer.DTO.UserProfiles;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Interfaces.UserProfiles
+namespace EPlast.BusinessLogicLayer.Interfaces.UserProfiles
 {
     public interface IReligionService
     {

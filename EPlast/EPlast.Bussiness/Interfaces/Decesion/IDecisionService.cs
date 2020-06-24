@@ -1,9 +1,9 @@
-﻿using EPlast.Bussiness.DTO;
+﻿using EPlast.BusinessLogicLayer.DTO;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness
+namespace EPlast.BusinessLogicLayer
 {
     public interface IDecisionService
     {

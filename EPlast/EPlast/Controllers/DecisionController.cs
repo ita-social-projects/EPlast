@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer;
-using EPlast.BussinessLayer.DTO;
+using EPlast.BusinessLogicLayer;
+using EPlast.BusinessLogicLayer.DTO;
 using EPlast.Models;
 using EPlast.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -10,8 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BussinessLayer.Interfaces.Logging;
-using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.BusinessLogicLayer.Interfaces.Logging;
+using EPlast.BusinessLogicLayer.Services.Interfaces;
 using Organization = EPlast.Models.Organization;
 
 namespace EPlast.Controllers

@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using EPlast.Bussiness.DTO;
+using EPlast.BusinessLogicLayer.DTO;
 using DatabaseEntities = EPlast.DataAccess.Entities;
 
-namespace EPlast.Bussiness.Mapping.Region
+namespace EPlast.BusinessLogicLayer.Mapping.Region
 {
     public class RegionProfile : Profile
     {

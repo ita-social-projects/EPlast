@@ -1,11 +1,11 @@
-﻿using EPlast.Bussiness.Interfaces;
-using EPlast.Bussiness.Settings;
+﻿using EPlast.BusinessLogicLayer.Interfaces;
+using EPlast.BusinessLogicLayer.Settings;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness
+namespace EPlast.BusinessLogicLayer
 {
     public class EmailConfirmationService:IEmailConfirmation
     {

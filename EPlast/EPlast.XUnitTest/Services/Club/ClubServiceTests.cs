@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO.Club;
-using EPlast.BussinessLayer.DTO.UserProfiles;
-using EPlast.BussinessLayer.Interfaces.Club;
-using EPlast.BussinessLayer.Services.Club;
+using EPlast.BusinessLogicLayer.DTO.Club;
+using EPlast.BusinessLogicLayer.DTO.UserProfiles;
+using EPlast.BusinessLogicLayer.Interfaces.Club;
+using EPlast.BusinessLogicLayer.Services.Club;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;

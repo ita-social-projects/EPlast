@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace EPlast.Bussiness.DTO.Account
+namespace EPlast.BusinessLogicLayer.DTO.Account
 {
     public class ResetPasswordDto
     {

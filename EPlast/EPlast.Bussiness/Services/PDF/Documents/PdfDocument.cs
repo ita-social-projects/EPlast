@@ -2,7 +2,7 @@
 using MigraDoc.DocumentObjectModel.Shapes;
 using System;
 
-namespace EPlast.Bussiness
+namespace EPlast.BusinessLogicLayer
 {
     public abstract class PdfDocument : IPdfDocument
     {

@@ -1,8 +1,8 @@
-﻿using EPlast.Bussiness.Interfaces.Logging;
+﻿using EPlast.BusinessLogicLayer.Interfaces.Logging;
 using NLog;
 using System;
 
-namespace EPlast.Bussiness.Services.Logging
+namespace EPlast.BusinessLogicLayer.Services.Logging
 {
     public class GlobalLoggerService : IGlobalLoggerService
     {

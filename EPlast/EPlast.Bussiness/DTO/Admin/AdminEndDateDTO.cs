@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace EPlast.Bussiness.DTO.Admin
+namespace EPlast.BusinessLogicLayer.DTO.Admin
 {
     public class AdminEndDateDTO
     {

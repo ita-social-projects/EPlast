@@ -5,7 +5,7 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 using Microsoft.AspNetCore.Identity;
 
-namespace EPlast.Bussiness.DTO.UserProfiles
+namespace EPlast.BusinessLogicLayer.DTO.UserProfiles
 {
     public class UserDTO : IdentityUser
     {

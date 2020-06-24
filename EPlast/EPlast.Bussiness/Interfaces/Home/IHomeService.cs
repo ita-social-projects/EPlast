@@ -1,7 +1,7 @@
-﻿using EPlast.Bussiness.DTO;
+﻿using EPlast.BusinessLogicLayer.DTO;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Interfaces
+namespace EPlast.BusinessLogicLayer.Interfaces
 {
     public interface IHomeService
     {

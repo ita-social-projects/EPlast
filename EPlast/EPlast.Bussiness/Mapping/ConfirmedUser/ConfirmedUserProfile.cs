@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using EPlast.Bussiness.DTO;
+using EPlast.BusinessLogicLayer.DTO;
 
-namespace EPlast.Bussiness.Mapping.ConfirmedUser
+namespace EPlast.BusinessLogicLayer.Mapping.ConfirmedUser
 {
     public class ConfirmedUserProfile : Profile
     {
