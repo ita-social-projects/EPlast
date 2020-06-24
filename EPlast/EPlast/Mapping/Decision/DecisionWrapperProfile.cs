@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EPlast.BusinessLogicLayer.DTO;
+using EPlast.BLL.DTO;
 using EPlast.Models;
 
 namespace EPlast.Mapping

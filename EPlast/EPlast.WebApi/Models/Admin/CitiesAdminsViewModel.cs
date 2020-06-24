@@ -1,4 +1,4 @@
-﻿using EPlast.BusinessLogicLayer.DTO.City;
+﻿using EPlast.BLL.DTO.City;
 using System.Collections.Generic;
 
 namespace EPlast.WebApi.Models.Admin

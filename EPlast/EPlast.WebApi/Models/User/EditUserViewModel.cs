@@ -1,4 +1,4 @@
-﻿using EPlast.BusinessLogicLayer.DTO.UserProfiles;
+﻿using EPlast.BLL.DTO.UserProfiles;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 

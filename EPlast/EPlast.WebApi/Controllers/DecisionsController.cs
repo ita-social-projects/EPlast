@@ -1,6 +1,6 @@
-﻿using EPlast.BusinessLogicLayer;
-using EPlast.BusinessLogicLayer.DTO;
-using EPlast.BusinessLogicLayer.Services.Interfaces;
+﻿using EPlast.BLL;
+using EPlast.BLL.DTO;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.WebApi.Models.Decision;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BusinessLogicLayer.Interfaces.Logging;
+using EPlast.BLL.Interfaces.Logging;
 
 namespace EPlast.WebApi.Controllers
 {

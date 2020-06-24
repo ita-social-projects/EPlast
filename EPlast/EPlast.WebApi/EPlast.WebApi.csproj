@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EPlast.BusinessLogicLayer\EPlast.BusinessLogicLayer.csproj" />
+    <ProjectReference Include="..\EPlast.BLL\EPlast.BLL.csproj" />
     <ProjectReference Include="..\EPlast.Resources\EPlast.Resources.csproj" />
   </ItemGroup>
 

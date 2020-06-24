@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using EPlast.BusinessLogicLayer.DTO.City;
-using EPlast.BusinessLogicLayer.Interfaces.City;
-using EPlast.BusinessLogicLayer.Services.Interfaces;
+using EPlast.BLL.DTO.City;
+using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.Controllers;
 using EPlast.ViewModels.City;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BusinessLogicLayer.Interfaces.Logging;
+using EPlast.BLL.Interfaces.Logging;
 using Xunit;
 
 namespace EPlast.XUnitTest

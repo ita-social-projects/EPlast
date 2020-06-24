@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using EPlast.BusinessLogicLayer.DTO.EventUser;
-using EPlast.BusinessLogicLayer.Interfaces.EventUser;
+using EPlast.BLL.DTO.EventUser;
+using EPlast.BLL.Interfaces.EventUser;
 using EPlast.ViewModels.EventUser;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;

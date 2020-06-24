@@ -1,4 +1,4 @@
-﻿using EPlast.BusinessLogicLayer.Interfaces.Logging;
+﻿using EPlast.BLL.Interfaces.Logging;
 using EPlast.WebApi.Models.ErrorHandling;
 using Microsoft.AspNetCore.Http;
 using System;

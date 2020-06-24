@@ -1,5 +1,5 @@
-﻿using EPlast.BusinessLogicLayer.Interfaces.UserProfiles;
-using EPlast.BusinessLogicLayer.Services.Interfaces;
+﻿using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.WebApi.Models.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BusinessLogicLayer.Interfaces.Logging;
+using EPlast.BLL.Interfaces.Logging;
 
 namespace EPlast.WebApi.Controllers
 {

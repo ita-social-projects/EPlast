@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using EPlast.BusinessLogicLayer.DTO.Account;
-using EPlast.BusinessLogicLayer.Interfaces;
-using EPlast.BusinessLogicLayer.Interfaces.UserProfiles;
-using EPlast.BusinessLogicLayer.Services.Interfaces;
+using EPlast.BLL.DTO.Account;
+using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -14,7 +14,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using EPlast.BusinessLogicLayer.Interfaces.Logging;
+using EPlast.BLL.Interfaces.Logging;
 
 namespace EPlast.WebApi.Controllers
 {

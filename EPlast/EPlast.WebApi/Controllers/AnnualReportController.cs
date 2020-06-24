@@ -1,10 +1,10 @@
-﻿using EPlast.BusinessLogicLayer.DTO.AnnualReport;
-using EPlast.BusinessLogicLayer.Services.Interfaces;
+﻿using EPlast.BLL.DTO.AnnualReport;
+using EPlast.BLL.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
-using EPlast.BusinessLogicLayer.Interfaces.Logging;
+using EPlast.BLL.Interfaces.Logging;
 
 namespace EPlast.WebApi.Controllers
 {

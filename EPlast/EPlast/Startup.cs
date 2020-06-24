@@ -1,26 +1,26 @@
 ﻿using AutoMapper;
-using EPlast.BusinessLogicLayer;
-using EPlast.BusinessLogicLayer.Interfaces;
-using EPlast.BusinessLogicLayer.Interfaces.AzureStorage;
-using EPlast.BusinessLogicLayer.Interfaces.AzureStorage.Base;
-using EPlast.BusinessLogicLayer.Interfaces.City;
-using EPlast.BusinessLogicLayer.Interfaces.Club;
-using EPlast.BusinessLogicLayer.Interfaces.Events;
-using EPlast.BusinessLogicLayer.Interfaces.EventUser;
-using EPlast.BusinessLogicLayer.Interfaces.Logging;
-using EPlast.BusinessLogicLayer.Interfaces.UserProfiles;
-using EPlast.BusinessLogicLayer.Services;
-using EPlast.BusinessLogicLayer.Services.AzureStorage;
-using EPlast.BusinessLogicLayer.Services.AzureStorage.Base;
-using EPlast.BusinessLogicLayer.Services.City;
-using EPlast.BusinessLogicLayer.Services.City.CityAccess;
-using EPlast.BusinessLogicLayer.Services.Club;
-using EPlast.BusinessLogicLayer.Services.Events;
-using EPlast.BusinessLogicLayer.Services.EventUser;
-using EPlast.BusinessLogicLayer.Services.Interfaces;
-using EPlast.BusinessLogicLayer.Services.Logging;
-using EPlast.BusinessLogicLayer.Services.UserProfiles;
-using EPlast.BusinessLogicLayer.Settings;
+using EPlast.BLL;
+using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Interfaces.AzureStorage.Base;
+using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.Club;
+using EPlast.BLL.Interfaces.Events;
+using EPlast.BLL.Interfaces.EventUser;
+using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Services;
+using EPlast.BLL.Services.AzureStorage;
+using EPlast.BLL.Services.AzureStorage.Base;
+using EPlast.BLL.Services.City;
+using EPlast.BLL.Services.City.CityAccess;
+using EPlast.BLL.Services.Club;
+using EPlast.BLL.Services.Events;
+using EPlast.BLL.Services.EventUser;
+using EPlast.BLL.Services.Interfaces;
+using EPlast.BLL.Services.Logging;
+using EPlast.BLL.Services.UserProfiles;
+using EPlast.BLL.Settings;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -57,7 +57,7 @@ namespace EPlast
         {
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()
                 .Where(x =>
-                    x.FullName.Equals("EPlast.BusinessLogicLayer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null") ||
+                    x.FullName.Equals("EPlast.BLL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null") ||
                     x.FullName.Equals("EPlast, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null")));
             services.AddOptions();
             services.AddDbContextPool<EPlastDBContext>(options =>
