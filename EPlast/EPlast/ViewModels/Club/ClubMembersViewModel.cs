@@ -13,6 +13,6 @@ namespace EPlast.ViewModels
         public ClubViewModel Club { get; set; }
         [Required]
         public bool IsApproved { get; set; }
-        public ICollection<ClubAdministrationViewModel> ClubAdministration { get; set; }
+        public IEnumerable<ClubAdministrationViewModel> ClubAdministration { get; set; }
     }
 }

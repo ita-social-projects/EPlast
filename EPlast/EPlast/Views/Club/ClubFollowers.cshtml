@@ -26,13 +26,13 @@
                         </a>
                         @if (Model.IsCurrentUserAdmin || Model.IsCurrentUserClubAdmin)
                         {
-                            <a class="btn btn-primary btn-lg colors-for-club-buttons" role="button" asp-controller="Club" asp-action="ChangeIsApprovedStatusFollowers" 
+                            <a class="btn btn-primary btn-lg colors-for-club-buttons" role="button" asp-controller="Club" asp-action="ChangeIsApprovedStatus" 
                                asp-route-index="@item.ID" asp-route-clubIndex="@item.Club.ID" style="display: block; color: white;">Додати в курінь</a>
                         }
                     </div>
                 </div>
             }
-            @if (Model.Followers.Count == 0)
+            @if (!Model.Followers.Any())
             {
                 <p>В цьому курені поки немає прихильників!</p>
             }

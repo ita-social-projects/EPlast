@@ -2,7 +2,7 @@
 using EPlast.BussinessLayer.DTO.Club;
 using EPlast.ViewModels;
 
-namespace EPlast.BussinessLayer.Mapping.Club
+namespace EPlast.Mapping
 {
     public class ClubProfile : Profile
     {

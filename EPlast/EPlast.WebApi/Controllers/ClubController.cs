@@ -1,5 +1,6 @@
+using System;
+using System.Threading.Tasks;
 using AutoMapper;
-using EPlast.BussinessLayer.DTO;
 using EPlast.BussinessLayer.DTO.Club;
 using EPlast.BussinessLayer.Interfaces.Club;
 using EPlast.BussinessLayer.Services.Interfaces;
@@ -7,9 +8,6 @@ using EPlast.WebApi.Models.Club;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -35,6 +33,7 @@ namespace EPlast.WebApi.Controllers
             _userManagerService = userManagerService;
             _mapper = mapper;
         }
+
         private async Task<ClubProfileViewModel> CheckCurrentUserRoles(ClubProfileViewModel viewModel)
         {
             var userId = await _userManagerService.GetUserIdAsync(User);
@@ -44,102 +43,103 @@ namespace EPlast.WebApi.Controllers
             return viewModel;
         }
 
-        [HttpGet("Index")]
+        [HttpGet("index")]
         public async Task<IActionResult> Index()
         {
-            var clubs = await _clubService.GetAllClubsAsync();
-
-            return Ok(_mapper.Map<IEnumerable<ClubDTO>, IEnumerable<ClubViewModel>>(clubs));
+            return Ok(await _clubService.GetAllClubsAsync());
         }
 
-        [HttpGet("Club/{clubId}")]
+        [HttpGet("{clubId:int}")]
         public async Task<IActionResult> Club(int clubId)
         {
             try
             {
-                var clubProfileDto = await _clubService.GetClubProfileAsync(clubId);
-                if (clubProfileDto.Club == null)
-                {
-                    return NotFound();
-                }
-                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(clubProfileDto);
-
+                var viewModel =
+                    _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(await _clubService.GetClubProfileAsync(clubId));
                 viewModel = await CheckCurrentUserRoles(viewModel);
 
                 return Ok(viewModel);
             }
+            catch (ArgumentNullException e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+                return NotFound();
+            }
             catch (Exception e)
             {
                 _logger.LogError($"Exception: {e.Message}");
-                return StatusCode(500);
+                return BadRequest();
             }
         }
 
-        [HttpGet("ClubMembers/{clubId}")]
-        public async Task<IActionResult> ClubMembers(int clubId)
+        [HttpGet("{clubId:int}/members")]
+        public async Task<IActionResult> GetClubMembers(int clubId)
         {
             try
             {
-                var clubProfileDto = await _clubService.GetClubMembersOrFollowersAsync(clubId, true);
-                if (clubProfileDto.Club == null)
-                {
-                    return NotFound();
-                }
-                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(clubProfileDto);
+                var viewModel =
+                    _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(
+                        await _clubService.GetClubMembersOrFollowersAsync(clubId, true));
                 viewModel = await CheckCurrentUserRoles(viewModel);
 
                 return Ok(viewModel);
             }
+            catch (ArgumentNullException e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+                return NotFound();
+            }
             catch (Exception e)
             {
                 _logger.LogError($"Exception: {e.Message}");
-                return StatusCode(500);
+                return BadRequest();
             }
         }
 
-        [HttpGet("ClubFollowers/{clubId}")]
-        public async Task<IActionResult> ClubFollowers(int clubId)
+        [HttpGet("{clubId:int}/followers")]
+        public async Task<IActionResult> GetClubFollowers(int clubId)
         {
             try
             {
-                var clubProfileDto = await _clubService.GetClubMembersOrFollowersAsync(clubId, false);
-                if (clubProfileDto.Club == null)
-                {
-                    return NotFound();
-                }
-                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(clubProfileDto);
+                var viewModel =
+                    _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(
+                        await _clubService.GetClubMembersOrFollowersAsync(clubId, false));
                 viewModel = await CheckCurrentUserRoles(viewModel);
 
                 return Ok(viewModel);
             }
+            catch (ArgumentNullException e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+                return NotFound();
+            }
             catch (Exception e)
             {
                 _logger.LogError($"Exception: {e.Message}");
-                return StatusCode(500);
+                return BadRequest();
             }
         }
 
-        [HttpGet("ClubDescription/{clubId}")]
+        [HttpGet("{clubId:int}/description")]
         public async Task<IActionResult> ClubDescription(int clubId)
         {
             try
             {
-                var clubDTO = await _clubService.GetClubInfoByIdAsync(clubId);
-                if (clubDTO == null)
-                {
-                    return NotFound();
-                }
-
-                return Ok(_mapper.Map<ClubDTO, ClubViewModel>(clubDTO));
+                return Ok(await _clubService.GetClubInfoByIdAsync(clubId));
+            }
+            catch (ArgumentNullException e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+                return NotFound();
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return StatusCode(500);
+                return BadRequest();
             }
         }
 
-        [HttpPost("Edit")]
+        [HttpPost("edit")]
         [Authorize]
         public async Task<IActionResult> Edit(ClubViewModel club)
         {
@@ -153,43 +153,16 @@ namespace EPlast.WebApi.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return StatusCode(500);
+                return BadRequest();
             }
         }
 
-        [HttpPost("Create")]
+        [HttpPost("create")]
         public async Task<IActionResult> Create(ClubViewModel model, [FromForm] IFormFile file)
         {
             try
             {
-                var club = await _clubService.CreateAsync(_mapper.Map<ClubViewModel, ClubDTO>(model), file);
-
-                return Ok(club);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Exception :{e.Message}");
-
-                return StatusCode(500);
-            }
-        }
-
-        [HttpGet("clubadmins/{clubId:int}")]
-        public async Task<IActionResult> ClubAdmins(int clubId)
-        {
-            try
-            {
-                var clubProfileDto = await _clubAdministrationService.GetCurrentClubAdministrationByIDAsync(clubId);
-
-                if (clubProfileDto.Club == null)
-                {
-                    return NotFound();
-                }
-
-                var viewModel = _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(clubProfileDto);
-                viewModel = await CheckCurrentUserRoles(viewModel);
-
-                return Ok(viewModel);
+                return Ok(await _clubService.CreateAsync(_mapper.Map<ClubViewModel, ClubDTO>(model), file));
             }
             catch (Exception e)
             {
@@ -199,27 +172,56 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpDelete("deleteadmin")]
-        public async Task<IActionResult> DeleteAdmin(int adminId)
+        [HttpGet("{clubId:int}/administration")]
+        public async Task<IActionResult> GetClubAdministration(int clubId)
         {
-            bool isSuccessful = await _clubAdministrationService.DeleteClubAdminAsync(adminId);
-
-            if (isSuccessful)
+            try
             {
-                return Ok();
+                var viewModel =
+                    _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(
+                        await _clubAdministrationService.GetClubAdministrationByIdAsync(clubId));
+                viewModel = await CheckCurrentUserRoles(viewModel);
+
+                return Ok(viewModel);
+            }
+            catch (ArgumentNullException e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return NotFound();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return BadRequest();
+            }
+        }
+
+        [HttpDelete("administration/{adminId:int}")]
+        public async Task<IActionResult> DeleteAdministration(int adminId)
+        {
+            if (await _clubAdministrationService.DeleteClubAdminAsync(adminId))
+            {
+                return Ok("Club Administrator with id={adminId} deleted.");
             }
 
             return BadRequest();
         }
 
-        [HttpPut("change-approve-status")]
-        public async Task<IActionResult> ChangeApproveStatus(int memberId, int clubIndex)
+        [HttpPut("{clubId:int}/member/{memberId:int}/change-status")]
+        public async Task<IActionResult> ChangeApproveStatus(int clubId, int memberId)
         {
             try
             {
-                await _clubMembersService.ToggleIsApprovedInClubMembersAsync(memberId, clubIndex);
+                return Ok(_mapper.Map<ClubMembersDTO, ClubMembersViewModel>(
+                    await _clubMembersService.ToggleIsApprovedInClubMembersAsync(memberId, clubId)));
+            }
+            catch (ArgumentNullException e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
 
-                return Ok(true);
+                return NotFound();
             }
             catch (Exception e)
             {
@@ -229,14 +231,18 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPut("changeapprovestatusfollower")]
-        public async Task<IActionResult> ChangeApproveStatusFollower(int memberId, int clubIndex)
+        [HttpPut("administration/{clubAdministrationId:int}/change-end-date")]
+        public async Task<IActionResult> AddEndDate(int clubAdministrationId, DateTime endDate)
         {
             try
             {
-                await _clubMembersService.ToggleIsApprovedInClubMembersAsync(memberId, clubIndex);
+                return Ok(await _clubAdministrationService.SetAdminEndDateAsync(clubAdministrationId, endDate));
+            }
+            catch (ArgumentNullException e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
 
-                return Ok(true);
+                return NotFound();
             }
             catch (Exception e)
             {
@@ -246,14 +252,23 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPut("changeapprovestatusclub")]
-        public async Task<IActionResult> ChangeApproveStatusClub(int memberId, int clubIndex)
+        [HttpPost("{clubId:int}/add-administration")]
+        public async Task<IActionResult> AddAdmin(int clubId, ClubAdministrationViewModel createdAdmin)
         {
             try
             {
-                await _clubMembersService.ToggleIsApprovedInClubMembersAsync(memberId, clubIndex);
+                var club = await _clubService.GetClubInfoByIdAsync(clubId);
+                var clubAdministration = _mapper.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(createdAdmin);
+                clubAdministration.ClubId = club.ID;
 
-                return Ok(true);
+                return Ok(_mapper.Map<ClubAdministrationDTO, ClubAdministrationViewModel>(
+                    await _clubAdministrationService.AddClubAdminAsync(clubAdministration)));
+            }
+            catch (ArgumentNullException e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return NotFound();
             }
             catch (Exception e)
             {
@@ -263,14 +278,20 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPut("addenddate")]
-        public async Task<IActionResult> AddEndDate(AdminEndDateDTO adminEndDate)
+        [HttpPost("{clubId:int}/add-follower/{userId:int}")]
+        public async Task<IActionResult> AddFollower(int clubId, string userId)
         {
             try
             {
-                await _clubAdministrationService.SetAdminEndDateAsync(adminEndDate);
+                userId = User.IsInRole("Admin") ? userId : await _userManagerService.GetUserIdAsync(User);
 
-                return Ok(true);
+                return Ok(await _clubMembersService.AddFollowerAsync(clubId, userId));
+            }
+            catch (ArgumentNullException e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return NotFound();
             }
             catch (Exception e)
             {
@@ -278,30 +299,6 @@ namespace EPlast.WebApi.Controllers
 
                 return BadRequest();
             }
-        }
-
-        [HttpPost("addadmin")]
-        public async Task<IActionResult> AddAdmin(ClubAdministrationDTO createdAdmin)
-        {
-            try
-            {
-                await _clubAdministrationService.AddClubAdminAsync(createdAdmin);
-
-                return Ok(true);
-            }
-            catch (Exception)
-            {
-                return Ok(false);
-            }
-        }
-
-        [HttpPost("addfollower")]
-        public async Task<IActionResult> AddFollower(int clubIndex, string userId)
-        {
-            userId = User.IsInRole("Admin") ? userId : await _userManagerService.GetUserIdAsync(User);
-            await _clubMembersService.AddFollowerAsync(clubIndex, userId);
-
-            return Ok();
         }
     }
 }

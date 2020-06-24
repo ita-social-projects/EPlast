@@ -39,7 +39,7 @@ namespace EPlast.DataAccess.Repositories
         IAdminTypeRepository AdminType { get; }
         IClubRepository Club { get; }
         IClubMembersRepository ClubMembers { get; }
-        IClubAdministrationRepository GetClubAdministration { get; }
+        IClubAdministrationRepository ClubAdministration { get; }
         IRegionRepository Region { get; }
         IRegionAdministrationRepository RegionAdministration { get; }
         IAnnualReportsRepository AnnualReports { get; }

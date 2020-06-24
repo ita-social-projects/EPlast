@@ -36,6 +36,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using EPlast.BussinessLayer.Interfaces.Admin;
+using EPlast.BussinessLayer.Services.Admin;
 
 namespace EPlast.WebApi
 {
@@ -100,6 +102,7 @@ namespace EPlast.WebApi
             services.AddScoped<ICityService, CityService>();
             services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
             services.AddScoped<IClubService, ClubService>();
+            services.AddScoped<IAdminTypeService, AdminTypeService>();
             services.AddScoped<IClubAdministrationService, ClubAdministrationService>();
             services.AddScoped<IClubMembersService, ClubMembersService>();
             //services.AddScoped<ICreateEventVMInitializer, CreateEventVMInitializer>();
