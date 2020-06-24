@@ -28,7 +28,7 @@ namespace EPlast.XUnitTest
         private static DecisionService CreateDecisionService(int decisionId = 1)
         {
             _repository = new Mock<IRepositoryWrapper>();
-            var hostingEnvironment = new Mock<IHostingEnvironment>();
+            var hostingEnvironment = new Mock<IWebHostEnvironment>();
             var directoryManager = new Mock<IDirectoryManager>();
             var fileManager = new Mock<IFileManager>();
             var fileStreamManager = new Mock<IFileStreamManager>();

@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="NewFolder\**" />
+    <EmbeddedResource Remove="NewFolder\**" />
+    <None Remove="NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Ical.Net" Version="4.1.11" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
@@ -25,12 +31,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EPlast.BusinessLogicLayer\EPlast.BusinessLogicLayerLogicLayer.csproj" />
+    <ProjectReference Include="..\EPlast.Bussiness\EPlast.BusinessLogicLayer.csproj" />
     <ProjectReference Include="..\EPlast.DataAccess\EPlast.DataAccess.csproj" />
     <ProjectReference Include="..\EPlast.Resources\EPlast.Resources.csproj" />
     <ProjectReference Include="..\EPlast\EPlast.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="NewFolder\" />
   </ItemGroup>
 </Project>

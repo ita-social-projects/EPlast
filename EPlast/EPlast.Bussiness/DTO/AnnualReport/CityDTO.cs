@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EPlast.BusinessLogicLayer.DTO.AnnualReport
+﻿namespace EPlast.BusinessLogicLayer.DTO.AnnualReport
 {
     public class CityDTO
     {

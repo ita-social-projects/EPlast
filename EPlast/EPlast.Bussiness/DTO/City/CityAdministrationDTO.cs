@@ -1,4 +1,5 @@
-﻿using EPlast.DataAccess.Entities;
+﻿using EPlast.BusinessLogicLayer.DTO.AnnualReport;
+using EPlast.DataAccess.Entities;
 using System;
 
 namespace EPlast.BusinessLogicLayer.DTO.City

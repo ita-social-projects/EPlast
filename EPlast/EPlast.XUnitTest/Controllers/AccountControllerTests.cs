@@ -35,7 +35,7 @@ namespace EPlast.XUnitTest
         private Mock<SignInManager<User>> _signInManager;
         private Mock<ILogger<AccountController>> _logger;
         private Mock<IEmailConfirmation> _emailConfirm;
-        private Mock<IHostingEnvironment> _hostEnv;
+        private Mock<IWebHostEnvironment> _hostEnv;
         private Mock<IUserService> _userService;
         private Mock<INationalityService> _nationalityService;
         private Mock<IEducationService> _educationService;
@@ -59,7 +59,7 @@ namespace EPlast.XUnitTest
             _signInManager = new Mock<SignInManager<User>>(_userManager.Object, _contextAccessor.Object, _userPrincipalFactory.Object, null, null, null);
             _logger = new Mock<ILogger<AccountController>>();
             _emailConfirm = new Mock<IEmailConfirmation>();
-            _hostEnv = new Mock<IHostingEnvironment>();
+            _hostEnv = new Mock<IWebHostEnvironment>();
             _userService = new Mock<IUserService>();
             _nationalityService = new Mock<INationalityService>();
             _educationService = new Mock<IEducationService>();

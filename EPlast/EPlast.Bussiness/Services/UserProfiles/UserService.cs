@@ -25,11 +25,11 @@ namespace EPlast.BusinessLogicLayer.Services.UserProfiles
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
         private readonly IWorkService _workService;
-        private readonly IHostingEnvironment _env;
+        private readonly IWebHostEnvironment _env;
         private readonly IEducationService _educationService;
         private readonly IUserBlobStorageRepository _userBlobStorage;
         public UserService(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IMapper mapper, IWorkService workService,
-            IEducationService educationService, IUserBlobStorageRepository userBlobStorage, IHostingEnvironment env)
+            IEducationService educationService, IUserBlobStorageRepository userBlobStorage, IWebHostEnvironment env)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;

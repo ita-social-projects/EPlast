@@ -1,6 +1,4 @@
-﻿
-using System.Collections.Generic;
-
+﻿using System.Collections.Generic;
 
 namespace EPlast.BusinessLogicLayer.DTO.Events
 {

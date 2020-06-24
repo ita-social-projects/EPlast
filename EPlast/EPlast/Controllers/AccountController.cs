@@ -3,6 +3,7 @@ using EPlast.BusinessLogicLayer.DTO;
 using EPlast.BusinessLogicLayer.DTO.Account;
 using EPlast.BusinessLogicLayer.DTO.UserProfiles;
 using EPlast.BusinessLogicLayer.Interfaces;
+using EPlast.BusinessLogicLayer.Interfaces.Logging;
 using EPlast.BusinessLogicLayer.Interfaces.UserProfiles;
 using EPlast.BusinessLogicLayer.Services.Interfaces;
 using EPlast.Resources;
@@ -18,11 +19,9 @@ using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
-using EPlast.BusinessLogicLayer.Interfaces.Logging;
 
 namespace EPlast.Controllers
 {

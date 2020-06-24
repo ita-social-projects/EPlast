@@ -19,10 +19,10 @@ namespace EPlast.BusinessLogicLayer.Services.Club
     public class ClubService : IClubService
     {
         private readonly IRepositoryWrapper _repoWrapper;
-        private readonly IHostingEnvironment _env;
+        private readonly IWebHostEnvironment _env;
         private readonly IMapper _mapper;
 
-        public ClubService(IRepositoryWrapper repoWrapper, IMapper mapper, IHostingEnvironment env)
+        public ClubService(IRepositoryWrapper repoWrapper, IMapper mapper, IWebHostEnvironment env)
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;

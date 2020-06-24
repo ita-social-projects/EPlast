@@ -28,7 +28,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
         {
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _mapper = new Mock<IMapper>();
-            var env = new Mock<IHostingEnvironment>();
+            var env = new Mock<IWebHostEnvironment>();
             _clubService = new ClubService(_repoWrapper.Object, _mapper.Object, env.Object);
         }
 

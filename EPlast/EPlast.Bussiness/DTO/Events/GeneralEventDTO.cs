@@ -1,5 +1,4 @@
-﻿
-namespace EPlast.BusinessLogicLayer.DTO.Events
+﻿namespace EPlast.BusinessLogicLayer.DTO.Events
 {
     public class GeneralEventDTO
     {

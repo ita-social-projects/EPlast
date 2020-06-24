@@ -8,15 +8,16 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace EPlast.BusinessLogicLayer.Services.Events
 {
     public class EventGalleryManager : IEventGalleryManager
     {
         private readonly IRepositoryWrapper _repoWrapper;
-        private readonly IHostingEnvironment _env;
+        private readonly IWebHostEnvironment _env;
 
-        public EventGalleryManager(IRepositoryWrapper repoWrapper, IHostingEnvironment env)
+        public EventGalleryManager(IRepositoryWrapper repoWrapper, IWebHostEnvironment env)
         {
             _repoWrapper = repoWrapper;
             _env = env;

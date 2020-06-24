@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.BusinessLogicLayer.Interfaces.Logging;
+using EPlast.BusinessLogicLayer.DTO.Admin;
 
 namespace EPlast.Controllers
 {

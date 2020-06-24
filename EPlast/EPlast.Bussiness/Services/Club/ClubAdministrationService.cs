@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EPlast.BusinessLogicLayer.DTO;
+using EPlast.BusinessLogicLayer.DTO.Admin;
 using EPlast.BusinessLogicLayer.DTO.Club;
 using EPlast.BusinessLogicLayer.Interfaces.Club;
 using EPlast.DataAccess.Entities;

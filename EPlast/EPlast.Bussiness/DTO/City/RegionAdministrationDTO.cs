@@ -1,4 +1,5 @@
 ﻿using System;
+using EPlast.BusinessLogicLayer.DTO.Admin;
 using EPlast.BusinessLogicLayer.DTO.UserProfiles;
 
 namespace EPlast.BusinessLogicLayer.DTO
