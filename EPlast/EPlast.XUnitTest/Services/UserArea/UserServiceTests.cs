@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO;
 using EPlast.BussinessLayer.DTO.UserProfiles;
+using EPlast.BussinessLayer.Interfaces.AzureStorage;
 using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.BussinessLayer.Services.UserProfiles;
 using EPlast.DataAccess.Entities;
@@ -27,18 +28,25 @@ namespace EPlast.XUnitTest.Services.UserArea
         private Mock<IMapper> _mapper;
         private Mock<IWorkService> _workService;
         private Mock<IEducationService> _educationService;
+        private Mock<IUserBlobStorageRepository> _userBlobStorage;
+        private Mock<IHostingEnvironment> _env;
 
         public UserServiceTests()
         {
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _userStoreMock = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(_userStoreMock.Object, null, null, null, null, null, null, null, null);
-            _hostEnv = new Mock<IHostingEnvironment>();
             _mapper = new Mock<IMapper>();
             _workService = new Mock<IWorkService>();
             _educationService = new Mock<IEducationService>();
+            _userBlobStorage=new Mock<IUserBlobStorageRepository>();
+            _env=new Mock<IHostingEnvironment>();
         }
 
+        private UserService GetService()
+        {
+            return new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _workService.Object, _educationService.Object, _userBlobStorage.Object,_env.Object);
+        }
         [Fact]
         public async Task GetUserProfileTest()
         {
@@ -57,7 +65,7 @@ namespace EPlast.XUnitTest.Services.UserArea
                 }
             });
 
-            var service = new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object, _workService.Object, _educationService.Object);
+            var service = GetService();
             _mapper.Setup(x => x.Map<User, UserDTO>(It.IsAny<User>())).Returns(new UserDTO());
             // Act
             var result = await service.GetUserAsync("1");
@@ -70,8 +78,7 @@ namespace EPlast.XUnitTest.Services.UserArea
         {
             UserDTO user = new UserDTO { ConfirmedUsers = new List<ConfirmedUserDTO>() };
 
-            var service = new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object, _workService.Object, _educationService.Object);
-            // Act
+            var service = GetService();            // Act
             var result = service.GetConfirmedUsers(user);
             // Assert
             Assert.NotNull(result);
@@ -82,8 +89,7 @@ namespace EPlast.XUnitTest.Services.UserArea
         {
             UserDTO user = new UserDTO { ConfirmedUsers = new List<ConfirmedUserDTO>() };
 
-            var service = new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object, _workService.Object, _educationService.Object);
-            // Act
+            var service = GetService();            // Act
             var result = service.GetConfirmedUsers(user);
             // Assert
             Assert.NotNull(result);
@@ -94,8 +100,7 @@ namespace EPlast.XUnitTest.Services.UserArea
         {
             UserDTO user = new UserDTO { ConfirmedUsers = new List<ConfirmedUserDTO>() };
 
-            var service = new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object, _workService.Object, _educationService.Object);
-            // Act
+            var service = GetService();            // Act
             var result = service.GetConfirmedUsers(user);
             // Assert
             Assert.NotNull(result);
@@ -112,8 +117,7 @@ namespace EPlast.XUnitTest.Services.UserArea
             var confUsers = new List<ConfirmedUserDTO> { conUser, conUser };
             _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User { Id = "1" });
 
-            var service = new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object, _workService.Object, _educationService.Object);
-            // Act
+            var service = GetService();            // Act
             var result = await service.CanApproveAsync(confUsers, "2", It.IsAny<ClaimsPrincipal>());
             // Assert
             var res = Assert.IsType<bool>(result);
@@ -127,8 +131,7 @@ namespace EPlast.XUnitTest.Services.UserArea
             var confUsers = new List<ConfirmedUserDTO> { conUser, conUser, conUser, conUser };
             _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User { Id = "1" });
 
-            var service = new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object, _workService.Object, _educationService.Object);
-            // Act
+            var service = GetService();            // Act
             var result = await service.CanApproveAsync(confUsers, "1", It.IsAny<ClaimsPrincipal>());
             // Assert
             var res = Assert.IsType<bool>(result);
@@ -139,8 +142,7 @@ namespace EPlast.XUnitTest.Services.UserArea
         {
             _userManager.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
 
-            var service = new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object, _workService.Object, _educationService.Object);
-            // Act
+            var service = GetService();            // Act
             var result = await service.CheckOrAddPlastunRoleAsync("1", DateTime.MinValue);
             // Assert
             var res = Assert.IsType<TimeSpan>(result);
@@ -197,8 +199,7 @@ namespace EPlast.XUnitTest.Services.UserArea
             _mapper.Setup(x => x.Map<UserDTO, User>(It.IsAny<UserDTO>())).Returns(user);
             var mockFile = new Mock<IFormFile>();
 
-            var service = new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _hostEnv.Object, _workService.Object, _educationService.Object);
-            // Act
+            var service = GetService();            // Act
             await service.UpdateAsync(userDTO, mockFile.Object, 1, 1, 1, 1);
             // Assert
             _repoWrapper.Verify(r => r.User.Update(It.IsAny<User>()), Times.Once());

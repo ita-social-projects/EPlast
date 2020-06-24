@@ -56,7 +56,7 @@ namespace EPlast.XUnitTest.Services.Events
             var eventGalleryManager = new EventGalleryManager(_repoWrapper.Object, _env.Object);
             var methodResult = await eventGalleryManager.DeletePictureAsync(eventId);
             //Assert
-            Assert.Equal(StatusCodes.Status500InternalServerError, methodResult);
+            Assert.Equal(StatusCodes.Status400BadRequest, methodResult);
         }
 
         [Fact]
@@ -71,7 +71,7 @@ namespace EPlast.XUnitTest.Services.Events
             var eventGalleryManager = new EventGalleryManager(_repoWrapper.Object, _env.Object);
             var methodResult = await eventGalleryManager.AddPicturesAsync(eventId, FakeFiles());
             //Assert
-            Assert.Equal(StatusCodes.Status500InternalServerError, methodResult);
+            Assert.Equal(StatusCodes.Status400BadRequest, methodResult);
         }
 
         public static IList<IFormFile> FakeFiles()

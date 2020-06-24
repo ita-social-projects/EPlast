@@ -1,14 +1,15 @@
-﻿using EPlast.BussinessLayer.DTO;
+﻿using EPlast.BussinessLayer.DTO.AnnualReport;
 using EPlast.BussinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using EPlast.BussinessLayer.Interfaces.Logging;
 
 namespace EPlast.WebApi.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
+    [ApiController, Route("api/[controller]")]
+    [Authorize(Roles = "Admin, Голова Округу")]
     public class AnnualReportController : ControllerBase
     {
         private readonly IAnnualReportService _annualReportService;
@@ -21,14 +22,12 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin, Голова Округу")]
         public async Task<IActionResult> Get()
         {
             return Ok(await _annualReportService.GetAllAsync(User));
         }
 
-        [HttpGet("{id}")]
-        [Authorize(Roles = "Admin, Голова Округу")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
             try
@@ -76,7 +75,6 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "Admin, Голова Округу")]
         public async Task<IActionResult> Edit(AnnualReportDTO annualReport)
         {
             if (ModelState.IsValid)
@@ -108,8 +106,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPut("confirm/{id}")]
-        [Authorize(Roles = "Admin, Голова Округу")]
+        [HttpPut("confirm/{id:int}")]
         public async Task<IActionResult> Confirm(int id)
         {
             try
@@ -129,8 +126,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPut("cancel/{id}")]
-        [Authorize(Roles = "Admin, Голова Округу")]
+        [HttpPut("cancel/{id:int}")]
         public async Task<IActionResult> Cancel(int id)
         {
             try
@@ -150,8 +146,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin, Голова Округу")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
             try

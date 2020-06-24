@@ -1,4 +1,4 @@
-﻿using EPlast.BussinessLayer.DTO;
+﻿using EPlast.BussinessLayer.DTO.AnnualReport;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
