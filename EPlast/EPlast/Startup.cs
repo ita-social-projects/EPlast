@@ -226,7 +226,7 @@ namespace EPlast
             }
             app.UseStatusCodePagesWithReExecute("/Error/HandleError", "?code={0}");
             var supportedCultures = new[]
-{
+            {
                 new CultureInfo("uk-UA"),
                 new CultureInfo("en-US"),
                 new CultureInfo("en"),
@@ -248,9 +248,13 @@ namespace EPlast
 
             //app.UseRequestLocalization();
 
-            app.UseEndpoints(endpoints =>
-               endpoints.MapControllers()
-               );
+            /*app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
+            });*/
             CreateRoles(services).Wait();
         }
     }
