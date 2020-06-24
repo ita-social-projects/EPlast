@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL;
+using EPlast.BLL.Filters;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.AzureStorage.Base;
@@ -24,13 +25,13 @@ using EPlast.BLL.Settings;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.DataAccess.Repositories.Realizations.Base;
 using EPlast.WebApi.Extensions;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,9 +45,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using EPlast.DataAccess.Repositories.Realizations.Base;
-using EPlast.BLL.Filters;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace EPlast.WebApi
 {
