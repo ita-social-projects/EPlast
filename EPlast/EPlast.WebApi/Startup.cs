@@ -40,7 +40,9 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using EPlast.DataAccess.Repositories.Realizations.Base;
 
@@ -74,7 +76,20 @@ namespace EPlast.WebApi
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("V1", new OpenApiInfo { Title = "MyApi", Version = "V1" });
-                //c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+                c.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme.",
+                });
+                c.OperationFilter<AuthOperationFilter>();
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                //c.IncludeXmlComments(xmlPath);
             });
             services.ConfigureSwaggerGen(options =>
             {
@@ -185,7 +200,7 @@ namespace EPlast.WebApi
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
             });
 
-            services.AddCors(options =>
+            /*services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
                     builder => builder.AllowAnyOrigin()
