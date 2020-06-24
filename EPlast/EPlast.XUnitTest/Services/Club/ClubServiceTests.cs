@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using EPlast.BussinessLayer.DTO;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.ClubTests
@@ -47,14 +48,13 @@ namespace EPlast.XUnitTest.Services.ClubTests
             _mapper.Verify(m => m.Map<IEnumerable<Club>, IEnumerable<ClubDTO>>(It.IsAny<IEnumerable<Club>>()));
         }
 
-
         [Fact]
-        public async Task GetClubProfileAsync_ById_ReturnsClubProfileDto()
+        public async Task GetClubProfileAsync_ReturnsClubProfileDto()
         {
             //arrange
             _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Club, bool>>>(),
                     It.IsAny<Func<IQueryable<Club>, IIncludableQueryable<Club, object>>>()))
-                .ReturnsAsync(It.IsAny<Club>());
+                .ReturnsAsync(new Club());
             _mapper.Setup(m => m.Map<Club, ClubDTO>(It.IsAny<Club>()))
                 .Returns(() => new ClubDTO()
                 {
@@ -71,7 +71,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
                     {
                         new ClubAdministrationDTO
                         {
-                            AdminType = new AdminType(),
+                            AdminType = new AdminTypeDTO(),
                             StartDate = It.IsAny<DateTime>(),
                             ClubMembers = new ClubMembersDTO
                             {
@@ -90,7 +90,6 @@ namespace EPlast.XUnitTest.Services.ClubTests
             Assert.IsType<ClubProfileDTO>(result);
         }
 
-
         [Fact]
         public async Task GetClubInfoByIdAsync_ReturnsClubDto()
         {
@@ -107,19 +106,19 @@ namespace EPlast.XUnitTest.Services.ClubTests
         }
 
         [Fact]
-        public async Task GetClubInfoByIdAsync_NotFound_ReturnsNull()
+        public async Task GetClubInfoByIdAsync_NotFound_ReturnsArgumentNullException()
         {
             //arrange
             _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Club, bool>>>(),
                     It.IsAny<Func<IQueryable<Club>, IIncludableQueryable<Club, object>>>()))
                 .ReturnsAsync((Club)null);
-
+           
             //act
-            await _clubService.GetClubInfoByIdAsync(It.IsAny<int>());
-
+            async Task Act() => await _clubService.GetClubInfoByIdAsync(It.IsAny<int>()); 
+            
             //assert
+            await Assert.ThrowsAsync<ArgumentNullException>(Act);
             _mapper.Verify(m => m.Map<Club, ClubDTO>(new Club()), Times.Never);
-            _mapper.Verify(m => m.Map<Club, ClubDTO>(null));
         }
 
         [Fact]

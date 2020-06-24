@@ -141,7 +141,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("edit")]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> Edit(ClubViewModel club)
         {
             try
@@ -202,12 +202,24 @@ namespace EPlast.WebApi.Controllers
         [HttpDelete("administration/{adminId:int}")]
         public async Task<IActionResult> DeleteAdministration(int adminId)
         {
-            if (await _clubAdministrationService.DeleteClubAdminAsync(adminId))
+            try
             {
-                return Ok("Club Administrator with id={adminId} deleted.");
-            }
+                await _clubAdministrationService.DeleteClubAdminAsync(adminId);
 
-            return BadRequest();
+                return Ok($"Club Administrator with id={adminId} deleted.");
+            }
+            catch (ArgumentNullException e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return NotFound();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return BadRequest();
+            }
         }
 
         [HttpPut("{clubId:int}/member/{memberId:int}/change-status")]
@@ -279,14 +291,14 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPost("{clubId:int}/add-follower/{userId:int}")]
+        [HttpPost("{clubId:int}/add-follower/{userId}")]
         public async Task<IActionResult> AddFollower(int clubId, string userId)
         {
             try
             {
                 userId = User.IsInRole("Admin") ? userId : await _userManagerService.GetUserIdAsync(User);
 
-                return Ok(await _clubMembersService.AddFollowerAsync(clubId, userId));
+                return Ok(_mapper.Map<ClubMembersDTO, ClubMembersViewModel>(await _clubMembersService.AddFollowerAsync(clubId, userId)));
             }
             catch (ArgumentNullException e)
             {

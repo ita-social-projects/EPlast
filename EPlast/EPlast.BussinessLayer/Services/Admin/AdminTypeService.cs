@@ -20,10 +20,17 @@ namespace EPlast.BussinessLayer.Services.Admin
 
         public async Task<AdminTypeDTO> GetAdminTypeByNameAsync(string name)
         {
-            return _mapper.Map<AdminType, AdminTypeDTO>(await _repoWrapper.AdminType
-                .GetFirstOrDefaultAsync(i => i.AdminTypeName == name));
+            var adminType = await _repoWrapper.AdminType.GetFirstOrDefaultAsync(i => i.AdminTypeName == name);
+            return adminType != null
+                ? _mapper.Map<AdminType, AdminTypeDTO>(adminType)
+                : await this.CreateByNameAsync(name);
         }
 
+        public async Task<AdminTypeDTO> CreateByNameAsync(string adminTypeName)
+        {
+            return await this.CreateAsync(new AdminTypeDTO() {AdminTypeName = adminTypeName});
+        }
+        
         public async Task<AdminTypeDTO> CreateAsync(AdminTypeDTO adminTypeDto)
         {
             var newAdminType = _mapper.Map<AdminTypeDTO, AdminType>(adminTypeDto);

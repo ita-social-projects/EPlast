@@ -45,7 +45,6 @@ function AddClubAdmin() {
 
     const adminsData = {
         ClubMembersID: ClubMemberId,
-        ClubId: CurrentClub,
         EndDate: EndDate,
         StartDate: StartDate,
         adminTypeName: AdminTypeName
@@ -54,7 +53,7 @@ function AddClubAdmin() {
     console.log(JSON.stringify(adminsData));
 
     $.ajax({
-        url: '/Club/AddToClubAdministration',
+        url: '/Club/AddToClubAdministration?clubId=' + CurrentClub,
         type: 'POST',
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
