@@ -5,6 +5,7 @@ using EPlast.BussinessLayer.Interfaces.City;
 using EPlast.BussinessLayer.Interfaces.Club;
 using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.BussinessLayer.Interfaces.EventUser;
+using EPlast.BussinessLayer.Interfaces.Logging;
 using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.BussinessLayer.Services;
 using EPlast.BussinessLayer.Services.City;
@@ -13,11 +14,13 @@ using EPlast.BussinessLayer.Services.Club;
 using EPlast.BussinessLayer.Services.Events;
 using EPlast.BussinessLayer.Services.EventUser;
 using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.BussinessLayer.Services.Logging;
 using EPlast.BussinessLayer.Services.UserProfiles;
 using EPlast.BussinessLayer.Settings;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.DataAccess.Repositories.Realizations.Base;
 using EPlast.Models.ViewModelInitializations;
 using EPlast.Models.ViewModelInitializations.Interfaces;
 using Microsoft.AspNetCore.Builder;
@@ -33,7 +36,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.DataAccess.Repositories.Realizations.Base;
 
 namespace EPlast
 {

@@ -22,6 +22,7 @@ using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
+using EPlast.BussinessLayer.Interfaces.Logging;
 
 namespace EPlast.Controllers
 {

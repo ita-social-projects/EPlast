@@ -1,7 +1,7 @@
-﻿using EPlast.BussinessLayer.Services.Interfaces;
+﻿using EPlast.BussinessLayer.Interfaces.Logging;
 using Microsoft.Extensions.Logging;
 
-namespace EPlast.BussinessLayer.Services
+namespace EPlast.BussinessLayer.Services.Logging
 {
     public class LoggerService<T> : ILoggerService<T>
     {

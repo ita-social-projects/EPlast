@@ -81,7 +81,7 @@ namespace EPlast.XUnitTest.Services.Events
             var participantManager = new ParticipantManager(_repoWrapper.Object, _eventStatusManager.Object, _participantStatusManager.Object);
             var methodResult = await participantManager.SubscribeOnEventAsync(targetEvent, userId);
             //Assert
-            Assert.Equal(StatusCodes.Status500InternalServerError, methodResult);
+            Assert.Equal(StatusCodes.Status400BadRequest, methodResult);
         }
 
         [Fact]
@@ -149,7 +149,7 @@ namespace EPlast.XUnitTest.Services.Events
             var participantManager = new ParticipantManager(_repoWrapper.Object, _eventStatusManager.Object, _participantStatusManager.Object);
             var methodResult = await participantManager.UnSubscribeOnEventAsync(targetEvent, userId);
             //Assert
-            Assert.Equal(StatusCodes.Status500InternalServerError, methodResult);
+            Assert.Equal(StatusCodes.Status400BadRequest, methodResult);
         }
 
         [Fact]
@@ -187,7 +187,7 @@ namespace EPlast.XUnitTest.Services.Events
             var participantManager = new ParticipantManager(_repoWrapper.Object, _eventStatusManager.Object, _participantStatusManager.Object);
             var methodResult = await participantManager.ChangeStatusToApprovedAsync(participantId);
             //Assert
-            Assert.Equal(StatusCodes.Status500InternalServerError, methodResult);
+            Assert.Equal(StatusCodes.Status400BadRequest, methodResult);
         }
 
         [Fact]
@@ -225,7 +225,7 @@ namespace EPlast.XUnitTest.Services.Events
             var participantManager = new ParticipantManager(_repoWrapper.Object, _eventStatusManager.Object, _participantStatusManager.Object);
             var methodResult = await participantManager.ChangeStatusToUnderReviewAsync(participantId);
             //Assert
-            Assert.Equal(StatusCodes.Status500InternalServerError, methodResult);
+            Assert.Equal(StatusCodes.Status400BadRequest, methodResult);
         }
 
         [Fact]
@@ -263,7 +263,7 @@ namespace EPlast.XUnitTest.Services.Events
             var participantManager = new ParticipantManager(_repoWrapper.Object, _eventStatusManager.Object, _participantStatusManager.Object);
             var methodResult = await participantManager.ChangeStatusToRejectedAsync(participantId);
             //Assert
-            Assert.Equal(StatusCodes.Status500InternalServerError, methodResult);
+            Assert.Equal(StatusCodes.Status400BadRequest, methodResult);
         }
     }
 }
