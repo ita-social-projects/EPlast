@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using EPlast.BusinessLogicLayer.DTO.UserProfiles;
-using EPlast.BusinessLogicLayer.Services.UserProfiles;
+using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Services.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Moq;

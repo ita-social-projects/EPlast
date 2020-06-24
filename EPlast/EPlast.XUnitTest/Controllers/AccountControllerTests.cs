@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using EPlast.BusinessLogicLayer.DTO;
-using EPlast.BusinessLogicLayer.DTO.UserProfiles;
-using EPlast.BusinessLogicLayer.Interfaces;
-using EPlast.BusinessLogicLayer.Interfaces.UserProfiles;
-using EPlast.BusinessLogicLayer.Services.Interfaces;
+using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.Controllers;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using EPlast.BusinessLogicLayer.Interfaces.Logging;
+using EPlast.BLL.Interfaces.Logging;
 using Xunit;
 
 namespace EPlast.XUnitTest

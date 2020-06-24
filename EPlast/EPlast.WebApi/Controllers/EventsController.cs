@@ -1,4 +1,4 @@
-﻿using EPlast.BusinessLogicLayer.Interfaces.Events;
+﻿using EPlast.BLL.Interfaces.Events;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;

@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using EPlast.BusinessLogicLayer.DTO;
-using EPlast.BusinessLogicLayer.DTO.UserProfiles;
-using EPlast.BusinessLogicLayer.Interfaces.AzureStorage;
-using EPlast.BusinessLogicLayer.Interfaces.UserProfiles;
-using EPlast.BusinessLogicLayer.Services.UserProfiles;
+using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Services.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;

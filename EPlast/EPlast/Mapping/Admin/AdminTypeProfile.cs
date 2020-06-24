@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using EPlast.BusinessLogicLayer.DTO;
-using EPlast.BusinessLogicLayer.DTO.Admin;
+using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.Admin;
 using EPlast.DataAccess.Entities;
 
 namespace EPlast.Mapping

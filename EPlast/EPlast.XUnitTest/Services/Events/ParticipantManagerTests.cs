@@ -1,5 +1,5 @@
-﻿using EPlast.BusinessLogicLayer.Interfaces.Events;
-using EPlast.BusinessLogicLayer.Services.Events;
+﻿using EPlast.BLL.Interfaces.Events;
+using EPlast.BLL.Services.Events;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;

@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using EPlast.BusinessLogicLayer.DTO;
-using EPlast.BusinessLogicLayer.DTO.Club;
-using EPlast.BusinessLogicLayer.Interfaces.Club;
-using EPlast.BusinessLogicLayer.Services.Interfaces;
+using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.Club;
+using EPlast.BLL.Interfaces.Club;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.ViewModels;
 using EPlast.ViewModels.Club;
 using Microsoft.AspNetCore.Http;
@@ -10,8 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using EPlast.BusinessLogicLayer.Interfaces.Logging;
-using EPlast.BusinessLogicLayer.DTO.Admin;
+using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.DTO.Admin;
 
 namespace EPlast.Controllers
 {

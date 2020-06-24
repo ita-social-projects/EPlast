@@ -1,5 +1,5 @@
-﻿using EPlast.BusinessLogicLayer.Interfaces.Club;
-using EPlast.BusinessLogicLayer.Services.Club;
+﻿using EPlast.BLL.Interfaces.Club;
+using EPlast.BLL.Services.Club;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Moq;

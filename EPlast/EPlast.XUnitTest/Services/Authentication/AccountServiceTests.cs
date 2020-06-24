@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using EPlast.BusinessLogicLayer.DTO.Account;
-using EPlast.BusinessLogicLayer.DTO.UserProfiles;
-using EPlast.BusinessLogicLayer.Interfaces;
-using EPlast.BusinessLogicLayer.Services;
+using EPlast.BLL.DTO.Account;
+using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces;
+using EPlast.BLL.Services;
 using EPlast.Controllers;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;

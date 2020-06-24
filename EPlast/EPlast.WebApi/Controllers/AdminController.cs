@@ -1,5 +1,5 @@
-﻿using EPlast.BusinessLogicLayer.Interfaces.City;
-using EPlast.BusinessLogicLayer.Services.Interfaces;
+﻿using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.WebApi.Models.Admin;
 using EPlast.WebApi.Models.Role;
 using Microsoft.AspNetCore.Mvc;

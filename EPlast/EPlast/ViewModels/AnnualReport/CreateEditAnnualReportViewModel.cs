@@ -1,4 +1,4 @@
-﻿using EPlast.BusinessLogicLayer.ExtensionMethods;
+﻿using EPlast.BLL.ExtensionMethods;
 using EPlast.Models.Enums;
 using EPlast.ViewModels.City;
 using Microsoft.AspNetCore.Mvc.Rendering;

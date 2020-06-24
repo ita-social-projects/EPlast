@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using EPlast.BusinessLogicLayer.DTO.Events;
-using EPlast.BusinessLogicLayer.DTO.EventUser;
+using EPlast.BLL.DTO.Events;
+using EPlast.BLL.DTO.EventUser;
 using EPlast.ViewModels.EventUser;
 
 namespace EPlast.Mapping.EventUser

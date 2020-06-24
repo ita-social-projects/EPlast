@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using EPlast.BusinessLogicLayer.DTO.AnnualReport;
-using EPlast.BusinessLogicLayer.Services;
-using EPlast.BusinessLogicLayer.Services.Interfaces;
+using EPlast.BLL.DTO.AnnualReport;
+using EPlast.BLL.Services;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
@@ -13,7 +13,7 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
-using CityDTOs = EPlast.BusinessLogicLayer.DTO.City;
+using CityDTOs = EPlast.BLL.DTO.City;
 using DatabaseEntities = EPlast.DataAccess.Entities;
 
 namespace EPlast.XUnitTest.Services.AnnualReport

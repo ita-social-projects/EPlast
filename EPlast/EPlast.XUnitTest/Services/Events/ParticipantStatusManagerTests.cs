@@ -1,4 +1,4 @@
-﻿using EPlast.BusinessLogicLayer.Services.Events;
+﻿using EPlast.BLL.Services.Events;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Moq;
