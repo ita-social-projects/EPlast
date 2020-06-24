@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace EPlast.Bussiness.DTO.AnnualReport
+namespace EPlast.BusinessLogicLayer.DTO.AnnualReport
 {
     public class CityDTO
     {

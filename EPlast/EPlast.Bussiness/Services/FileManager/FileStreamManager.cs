@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace EPlast.Bussiness
+namespace EPlast.BusinessLogicLayer
 {
     public class FileStreamManager : IFileStreamManager, IDisposable
     {

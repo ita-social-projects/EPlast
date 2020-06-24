@@ -1,7 +1,7 @@
 ﻿
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Interfaces.Club
+namespace EPlast.BusinessLogicLayer.Interfaces.Club
 {
     public interface IClubMembersService
     {

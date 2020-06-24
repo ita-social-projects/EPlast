@@ -1,11 +1,11 @@
-﻿using EPlast.Bussiness.DTO.Events;
-using EPlast.Bussiness.Interfaces.Events;
+﻿using EPlast.BusinessLogicLayer.DTO.Events;
+using EPlast.BusinessLogicLayer.Interfaces.Events;
 using EPlast.DataAccess.Repositories;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Services.Events
+namespace EPlast.BusinessLogicLayer.Services.Events
 {
     public class EventCategoryManager : IEventCategoryManager
     {

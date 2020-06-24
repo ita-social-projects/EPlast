@@ -1,4 +1,4 @@
-﻿namespace EPlast.Bussiness
+﻿namespace EPlast.BusinessLogicLayer
 {
     public class PdfSettings : IPdfSettings
     {

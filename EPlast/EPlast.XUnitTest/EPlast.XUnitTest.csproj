@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EPlast.BussinessLayer\EPlast.BussinessLayer.csproj" />
+    <ProjectReference Include="..\EPlast.BusinessLogicLayer\EPlast.BusinessLogicLayerLogicLayer.csproj" />
     <ProjectReference Include="..\EPlast.DataAccess\EPlast.DataAccess.csproj" />
     <ProjectReference Include="..\EPlast.Resources\EPlast.Resources.csproj" />
     <ProjectReference Include="..\EPlast\EPlast.csproj" />

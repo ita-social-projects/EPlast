@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using EPlast.Bussiness.DTO.Events;
+using EPlast.BusinessLogicLayer.DTO.Events;
 using Microsoft.AspNetCore.Http;
 
-namespace EPlast.Bussiness.Interfaces.Events
+namespace EPlast.BusinessLogicLayer.Interfaces.Events
 {
     public interface IActionManager
     {

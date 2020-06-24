@@ -2,10 +2,10 @@
 using EPlast.DataAccess.Repositories;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.Bussiness.Interfaces.Logging;
-using EPlast.Bussiness.Services.Interfaces;
+using EPlast.BusinessLogicLayer.Interfaces.Logging;
+using EPlast.BusinessLogicLayer.Services.Interfaces;
 
-namespace EPlast.Bussiness
+namespace EPlast.BusinessLogicLayer
 {
     public class PdfService : IPdfService
     {

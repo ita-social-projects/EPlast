@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace EPlast.Bussiness.DTO
+namespace EPlast.BusinessLogicLayer.DTO
 {
     public enum DecisionStatusTypeDTO
     {

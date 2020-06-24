@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO.City;
-using EPlast.BussinessLayer.Services;
+using EPlast.BusinessLogicLayer.DTO.City;
+using EPlast.BusinessLogicLayer.Services;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;

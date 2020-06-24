@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 
-namespace EPlast.Bussiness
+namespace EPlast.BusinessLogicLayer
 {
     public interface IDecisionVmInitializer
     {

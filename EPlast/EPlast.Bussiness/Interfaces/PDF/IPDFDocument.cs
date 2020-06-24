@@ -1,6 +1,6 @@
 ﻿using MigraDoc.DocumentObjectModel;
 
-namespace EPlast.Bussiness
+namespace EPlast.BusinessLogicLayer
 {
     internal interface IPdfDocument
     {

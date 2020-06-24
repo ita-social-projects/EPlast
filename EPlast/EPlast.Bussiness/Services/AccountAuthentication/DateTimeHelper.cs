@@ -1,7 +1,7 @@
-﻿using EPlast.Bussiness.Interfaces;
+﻿using EPlast.BusinessLogicLayer.Interfaces;
 using System;
 
-namespace EPlast.Bussiness.Services
+namespace EPlast.BusinessLogicLayer.Services
 {
     public class DateTimeHelper : IDateTimeHelper
     {

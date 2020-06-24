@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using EPlast.Bussiness.DTO.EventUser;
-using EPlast.Bussiness.DTO.UserProfiles;
-using EPlast.Bussiness.Interfaces.Events;
-using EPlast.Bussiness.Interfaces.EventUser;
+using EPlast.BusinessLogicLayer.DTO.EventUser;
+using EPlast.BusinessLogicLayer.DTO.UserProfiles;
+using EPlast.BusinessLogicLayer.Interfaces.Events;
+using EPlast.BusinessLogicLayer.Interfaces.EventUser;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
@@ -14,7 +14,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Services.EventUser
+namespace EPlast.BusinessLogicLayer.Services.EventUser
 {
     public class EventUserManager : IEventUserManager
     {

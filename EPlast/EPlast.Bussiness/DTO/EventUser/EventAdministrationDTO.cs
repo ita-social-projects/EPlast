@@ -1,6 +1,6 @@
-﻿using EPlast.Bussiness.DTO.UserProfiles;
+﻿using EPlast.BusinessLogicLayer.DTO.UserProfiles;
 
-namespace EPlast.Bussiness.DTO.EventUser
+namespace EPlast.BusinessLogicLayer.DTO.EventUser
 {
     public class EventAdministrationDTO
     {

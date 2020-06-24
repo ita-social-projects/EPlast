@@ -1,4 +1,4 @@
-﻿namespace EPlast.Bussiness.Settings
+﻿namespace EPlast.BusinessLogicLayer.Settings
 {
     public class EmailServiceSettings
     {

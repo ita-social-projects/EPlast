@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Interfaces.Events
+namespace EPlast.BusinessLogicLayer.Interfaces.Events
 {
     public interface IParticipantStatusManager
     {

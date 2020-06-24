@@ -3,7 +3,7 @@ using System.Linq;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.DocumentObjectModel.Shapes;
 
-namespace EPlast.Bussiness
+namespace EPlast.BusinessLogicLayer
 {
     public class BlankDocument : PdfDocument
     {

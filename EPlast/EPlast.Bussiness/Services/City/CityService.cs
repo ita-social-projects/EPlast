@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using EPlast.Bussiness.DTO.City;
-using EPlast.Bussiness.Interfaces.City;
+using EPlast.BusinessLogicLayer.DTO.City;
+using EPlast.BusinessLogicLayer.Interfaces.City;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DataAccessCity = EPlast.DataAccess.Entities;
 
-namespace EPlast.Bussiness.Services
+namespace EPlast.BusinessLogicLayer.Services
 {
     public class CityService : ICityService
     {

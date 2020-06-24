@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
-using EPlast.Bussiness.DTO;
-using EPlast.Bussiness.DTO.Club;
-using EPlast.Bussiness.Interfaces.Club;
+using EPlast.BusinessLogicLayer.DTO;
+using EPlast.BusinessLogicLayer.DTO.Club;
+using EPlast.BusinessLogicLayer.Interfaces.Club;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Services.Club
+namespace EPlast.BusinessLogicLayer.Services.Club
 {
     public class ClubAdministrationService : IClubAdministrationService
     {

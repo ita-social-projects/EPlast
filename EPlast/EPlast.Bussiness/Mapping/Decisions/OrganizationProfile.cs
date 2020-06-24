@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using EPlast.Bussiness.DTO;
+using EPlast.BusinessLogicLayer.DTO;
 using EPlast.DataAccess.Entities;
 using System.Collections.Generic;
 
-namespace EPlast.Bussiness.Mapping
+namespace EPlast.BusinessLogicLayer.Mapping
 {
     public class OrganizationProfile : Profile
     {

@@ -1,4 +1,4 @@
-﻿using EPlast.Bussiness.Services.Interfaces;
+﻿using EPlast.BusinessLogicLayer.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -6,7 +6,7 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Services
+namespace EPlast.BusinessLogicLayer.Services
 {
     public class ConfirmedUsersService : IConfirmedUsersService
     {

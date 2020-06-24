@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using EPlast.Bussiness.DTO.UserProfiles;
+using EPlast.BusinessLogicLayer.DTO.UserProfiles;
 
-namespace EPlast.Bussiness.Mapping.UserProfile
+namespace EPlast.BusinessLogicLayer.Mapping.UserProfile
 {
     public class UserProfileProfile : Profile
     {

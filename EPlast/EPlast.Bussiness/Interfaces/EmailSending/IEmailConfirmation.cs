@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Interfaces
+namespace EPlast.BusinessLogicLayer.Interfaces
 {
     public interface IEmailConfirmation
     {

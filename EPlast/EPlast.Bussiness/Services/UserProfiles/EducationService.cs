@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
-using EPlast.Bussiness.DTO.UserProfiles;
-using EPlast.Bussiness.Interfaces.UserProfiles;
+using EPlast.BusinessLogicLayer.DTO.UserProfiles;
+using EPlast.BusinessLogicLayer.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Services.UserProfiles
+namespace EPlast.BusinessLogicLayer.Services.UserProfiles
 {
     public class EducationService : IEducationService
     {

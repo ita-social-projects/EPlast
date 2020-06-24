@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace EPlast.Bussiness
+namespace EPlast.BusinessLogicLayer
 {
     public interface IDirectoryManager
     {

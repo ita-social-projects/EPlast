@@ -1,9 +1,9 @@
-﻿using EPlast.Bussiness.Interfaces.Club;
+﻿using EPlast.BusinessLogicLayer.Interfaces.Club;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Services.Club
+namespace EPlast.BusinessLogicLayer.Services.Club
 {
     public class ClubMembersService : IClubMembersService
     {

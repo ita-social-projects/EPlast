@@ -1,6 +1,6 @@
 ﻿using EPlast.DataAccess.Entities;
 
-namespace EPlast.Bussiness
+namespace EPlast.BusinessLogicLayer
 {
     public class BlankModel
     {

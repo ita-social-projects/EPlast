@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace EPlast.Bussiness
+namespace EPlast.BusinessLogicLayer
 {
     internal class PdfCreator : IPdfCreator
     {

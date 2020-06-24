@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using EPlast.Bussiness.DTO.City;
+using EPlast.BusinessLogicLayer.DTO.City;
 using DatabaseEntities = EPlast.DataAccess.Entities;
 
-namespace EPlast.Bussiness.Mapping.City
+namespace EPlast.BusinessLogicLayer.Mapping.City
 {
     public class CityProfile : Profile
     {

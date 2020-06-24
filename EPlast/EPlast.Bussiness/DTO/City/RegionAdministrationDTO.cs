@@ -1,7 +1,7 @@
 ﻿using System;
-using EPlast.BussinessLayer.DTO.UserProfiles;
+using EPlast.BusinessLogicLayer.DTO.UserProfiles;
 
-namespace EPlast.Bussiness.DTO
+namespace EPlast.BusinessLogicLayer.DTO
 {
     public class RegionAdministrationDTO
     {

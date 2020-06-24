@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 
-namespace EPlast.Bussiness.Interfaces.Events
+namespace EPlast.BusinessLogicLayer.Interfaces.Events
 {
     public interface IParticipantManager
     {

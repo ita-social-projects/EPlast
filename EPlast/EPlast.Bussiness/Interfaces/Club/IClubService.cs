@@ -1,9 +1,9 @@
-﻿using EPlast.Bussiness.DTO.Club;
+﻿using EPlast.BusinessLogicLayer.DTO.Club;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Interfaces.Club
+namespace EPlast.BusinessLogicLayer.Interfaces.Club
 {
     public interface IClubService
     {

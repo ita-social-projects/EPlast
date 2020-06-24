@@ -1,10 +1,10 @@
-﻿using EPlast.Bussiness.DTO.City;
+﻿using EPlast.BusinessLogicLayer.DTO.City;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DataAccessCity = EPlast.DataAccess.Entities;
 
-namespace EPlast.Bussiness.Interfaces.City
+namespace EPlast.BusinessLogicLayer.Interfaces.City
 {
     public interface ICityService
     {

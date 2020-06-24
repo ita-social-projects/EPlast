@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EPlast.Bussiness.Interfaces.Logging
+namespace EPlast.BusinessLogicLayer.Interfaces.Logging
 {
     public interface IGlobalLoggerService
     {

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO.UserProfiles;
+using EPlast.BusinessLogicLayer.DTO.UserProfiles;
 using EPlast.ViewModels.UserInformation.UserProfile;
 
 namespace EPlast.Mapping

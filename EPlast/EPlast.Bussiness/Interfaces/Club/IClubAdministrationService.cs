@@ -1,8 +1,8 @@
-﻿using EPlast.Bussiness.DTO;
-using EPlast.Bussiness.DTO.Club;
+﻿using EPlast.BusinessLogicLayer.DTO;
+using EPlast.BusinessLogicLayer.DTO.Club;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Interfaces.Club
+namespace EPlast.BusinessLogicLayer.Interfaces.Club
 {
     public interface IClubAdministrationService
     {

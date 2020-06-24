@@ -4,16 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using EPlast.Bussiness.DTO;
-using EPlast.Bussiness.Interfaces.Logging;
-using EPlast.Bussiness.Services.Interfaces;
+using EPlast.BusinessLogicLayer.DTO;
+using EPlast.BusinessLogicLayer.Interfaces.Logging;
+using EPlast.BusinessLogicLayer.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
-namespace EPlast.Bussiness
+namespace EPlast.BusinessLogicLayer
 {
     public class DecisionService : IDecisionService
     {

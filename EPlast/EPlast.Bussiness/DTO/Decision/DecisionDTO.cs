@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EPlast.Bussiness.DTO
+namespace EPlast.BusinessLogicLayer.DTO
 {
     public class DecisionDTO
     {

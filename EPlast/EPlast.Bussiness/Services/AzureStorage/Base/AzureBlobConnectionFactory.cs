@@ -1,11 +1,11 @@
-﻿using EPlast.Bussiness.Interfaces.AzureStorage.Base;
+﻿using EPlast.BusinessLogicLayer.Interfaces.AzureStorage.Base;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Services.AzureStorage.Base
+namespace EPlast.BusinessLogicLayer.Services.AzureStorage.Base
 {
     public class AzureBlobConnectionFactory : IAzureBlobConnectionFactory
     {

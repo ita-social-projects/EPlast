@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using EPlast.Bussiness.DTO;
+using EPlast.BusinessLogicLayer.DTO;
 
-namespace EPlast.Bussiness.Mapping.Approver
+namespace EPlast.BusinessLogicLayer.Mapping.Approver
 {
     public class ApproverProfile : Profile
     {

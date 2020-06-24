@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using EPlast.Bussiness.DTO.UserProfiles;
+using EPlast.BusinessLogicLayer.DTO.UserProfiles;
 using EPlast.DataAccess.Entities;
 
-namespace EPlast.Bussiness.Mapping.UserProfile
+namespace EPlast.BusinessLogicLayer.Mapping.UserProfile
 {
     public class EducationProfile : Profile
     {

@@ -1,4 +1,4 @@
-﻿using EPlast.BussinessLayer.Services.Events;
+﻿using EPlast.BusinessLogicLayer.Services.Events;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;

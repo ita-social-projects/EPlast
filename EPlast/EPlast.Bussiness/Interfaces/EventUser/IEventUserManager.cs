@@ -1,8 +1,8 @@
-﻿using EPlast.Bussiness.DTO.EventUser;
+﻿using EPlast.BusinessLogicLayer.DTO.EventUser;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness.Interfaces.EventUser
+namespace EPlast.BusinessLogicLayer.Interfaces.EventUser
 {
     public interface IEventUserManager
     {

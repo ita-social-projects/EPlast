@@ -1,8 +1,8 @@
-﻿using EPlast.Bussiness.DTO;
-using EPlast.Bussiness.Interfaces;
+﻿using EPlast.BusinessLogicLayer.DTO;
+using EPlast.BusinessLogicLayer.Interfaces;
 using System.Threading.Tasks;
 
-namespace EPlast.Bussiness
+namespace EPlast.BusinessLogicLayer
 {
     public class HomeService : IHomeService
     {

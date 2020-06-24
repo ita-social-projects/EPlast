@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DatabaseEntities = EPlast.DataAccess.Entities;
 
-namespace EPlast.Bussiness.Services.City.CityAccess.CityAccessGetters
+namespace EPlast.BusinessLogicLayer.Services.City.CityAccess.CityAccessGetters
 {
     public class CityAccessForCityAdminGetter : ICItyAccessGetter
     {

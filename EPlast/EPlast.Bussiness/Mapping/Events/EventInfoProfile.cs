@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using EPlast.Bussiness.DTO.Events;
+using EPlast.BusinessLogicLayer.DTO.Events;
 using EPlast.DataAccess.Entities.Event;
 using System.Linq;
 
-namespace EPlast.Bussiness.Mapping.Events
+namespace EPlast.BusinessLogicLayer.Mapping.Events
 {
     public class EventInfoProfile : Profile
     {
