@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BussinessLayer.DTO.Club;
 using EPlast.BussinessLayer.Interfaces.Club;
+using EPlast.BussinessLayer.Interfaces.Logging;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.ViewModels;
 using EPlast.ViewModels.Club;

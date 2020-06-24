@@ -32,7 +32,6 @@ namespace EPlast.ViewModels.City
         public ICollection<CityMembersViewModel> CityMembers { get; set; }
         public ICollection<UnconfirmedCityMember> UnconfirmedCityMember { get; set; }
         public ICollection<CityAdministrationViewModel> CityAdministration { get; set; }
-        public ICollection<AnnualReport> AnnualReports { get; set; }
         public ICollection<CityLegalStatus> CityLegalStatuses { get; set; }
     }
 }

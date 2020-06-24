@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BussinessLayer.Interfaces.Logging;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -122,7 +123,22 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest();
             }
         }
+        [HttpPut("editbase64")]
+        public async Task<IActionResult> EditBase64(EditUserViewModel model, string base64)
+        {
+            try
+            {
+                await _userService.UpdateAsync(model.User, base64, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID, model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
+                _loggerService.LogInformation($"User  was edited profile and saved in the database");
 
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _loggerService.LogError($"Exception: { e.Message}");
+                return BadRequest();
+            }
+        }
         // [Authorize]
         [HttpPut("edit")]
         public async Task<IActionResult> Edit(EditUserViewModel model, IFormFile file)
