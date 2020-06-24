@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace EPlast.BussinessLayer.DTO
+namespace EPlast.BussinessLayer.DTO.AnnualReport
 {
     public enum AnnualReportStatusDTO
     {

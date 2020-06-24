@@ -1,15 +1,15 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO;
-using EPlast.DataAccess.Entities;
-using EPlast.ViewModels;
+using EPlast.BussinessLayer.DTO.AnnualReport;
+using EPlast.ViewModels.AnnualReport;
+using DatabaseEntities = EPlast.DataAccess.Entities;
 
-namespace EPlast.Mapping
+namespace EPlast.Mapping.AnnualReport
 {
     public class AnnualReportProfile : Profile
     {
         public AnnualReportProfile()
         {
-            CreateMap<AnnualReport, AnnualReportDTO>().ReverseMap();
+            CreateMap<DatabaseEntities.AnnualReport, AnnualReportDTO>().ReverseMap();
             CreateMap<AnnualReportViewModel, AnnualReportDTO>().ReverseMap();
         }
     }

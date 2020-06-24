@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
 
-namespace EPlast.BussinessLayer.DTO
+namespace EPlast.ViewModels.AnnualReport
 {
-    public enum CityLegalStatusTypeDTO
+    public enum CityLegalStatusTypeViewModel
     {
         [Description("Зареєстрована юридична особа")]
         RegisteredLegalEntity,
