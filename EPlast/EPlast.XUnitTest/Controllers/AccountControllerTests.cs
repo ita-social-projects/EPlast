@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using EPlast.BussinessLayer.Interfaces.Logging;
 using Xunit;
 
 namespace EPlast.XUnitTest
