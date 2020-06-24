@@ -46,6 +46,7 @@ using System.Reflection;
 using System.Text;
 using EPlast.DataAccess.Repositories.Realizations.Base;
 using EPlast.BLL.Filters;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace EPlast.WebApi
 {
@@ -143,8 +144,15 @@ namespace EPlast.WebApi
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddLogging();
 
-            services.AddAuthentication();
-                /*.AddGoogle(options =>
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.Expiration = TimeSpan.FromDays(5);
+                    options.LoginPath = "/Account/Login";
+                    options.LogoutPath = "/Account/Logout";
+                })
+                .AddGoogle(options =>
                 {
                     options.ClientId = Configuration.GetSection("GoogleAuthentication:GoogleClientId").Value;
                     options.ClientSecret = Configuration.GetSection("GoogleAuthentication:GoogleClientSecret").Value;
@@ -153,10 +161,7 @@ namespace EPlast.WebApi
                 {
                     options.AppId = Configuration.GetSection("FacebookAuthentication:FacebookAppId").Value;
                     options.AppSecret = Configuration.GetSection("FacebookAuthentication:FacebookAppSecret").Value;
-                });*/
-
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                })
                 .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -247,7 +252,9 @@ namespace EPlast.WebApi
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
+            app.UseRouting();
             app.UseAuthentication();
+            app.UseAuthorization();
             app.UseCors("CorsPolicy");
         }
     }
