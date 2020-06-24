@@ -1,7 +1,7 @@
-﻿using EPlast.BussinessLayer.DTO.Club;
-using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BussinessLayer.DTO.Club;
+using Microsoft.AspNetCore.Http;
 
 namespace EPlast.BussinessLayer.Interfaces.Club
 {

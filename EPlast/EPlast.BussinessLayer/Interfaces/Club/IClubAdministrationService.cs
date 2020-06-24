@@ -1,14 +1,14 @@
-﻿using EPlast.BussinessLayer.DTO;
-using EPlast.BussinessLayer.DTO.Club;
+﻿using System;
 using System.Threading.Tasks;
+using EPlast.BussinessLayer.DTO.Club;
 
 namespace EPlast.BussinessLayer.Interfaces.Club
 {
     public interface IClubAdministrationService
     {
-        Task<ClubProfileDTO> GetCurrentClubAdministrationByIDAsync(int clubID);
+        Task<ClubProfileDTO> GetClubAdministrationByIdAsync(int clubId);
         Task<bool> DeleteClubAdminAsync(int id);
-        Task SetAdminEndDateAsync(AdminEndDateDTO adminEndDate);
-        Task AddClubAdminAsync(ClubAdministrationDTO createdAdmin);
+        Task<ClubAdministrationDTO> SetAdminEndDateAsync(int clubAdministrationId, DateTime endDate);
+        Task<ClubAdministrationDTO> AddClubAdminAsync(ClubAdministrationDTO createdAdmin);
     }
 }

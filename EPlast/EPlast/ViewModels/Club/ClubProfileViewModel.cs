@@ -7,9 +7,9 @@ namespace EPlast.ViewModels
     {
         public ClubViewModel Club { get; set; }
         public UserInfoViewModel ClubAdmin { get; set; }
-        public List<ClubMembersViewModel> Members { get; set; }
-        public List<ClubMembersViewModel> Followers { get; set; }
-        public ICollection<ClubAdministrationViewModel> ClubAdministration { get; set; }
+        public IEnumerable<ClubMembersViewModel> Members { get; set; }
+        public IEnumerable<ClubMembersViewModel> Followers { get; set; }
+        public IEnumerable<ClubAdministrationViewModel> ClubAdministration { get; set; }
         public bool IsCurrentUserClubAdmin { get; set; }
         public bool IsCurrentUserAdmin { get; set; }
     }
