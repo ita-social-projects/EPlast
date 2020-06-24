@@ -21,8 +21,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                var model = await _actionManager.GetActionCategoriesAsync();
-                return Ok(model);
+                return Ok(await _actionManager.GetActionCategoriesAsync());
             }
             catch
             {

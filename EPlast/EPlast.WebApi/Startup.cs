@@ -1,25 +1,30 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer;
-//using EPlast.BussinessLayer.AccessManagers;
-//using EPlast.BussinessLayer.AccessManagers.Interfaces;
 using EPlast.BussinessLayer.Interfaces;
+using EPlast.BussinessLayer.Interfaces.AzureStorage;
+using EPlast.BussinessLayer.Interfaces.AzureStorage.Base;
 using EPlast.BussinessLayer.Interfaces.City;
 using EPlast.BussinessLayer.Interfaces.Club;
 using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.BussinessLayer.Interfaces.EventUser;
+using EPlast.BussinessLayer.Interfaces.Logging;
 using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.BussinessLayer.Services;
+using EPlast.BussinessLayer.Services.AzureStorage;
+using EPlast.BussinessLayer.Services.AzureStorage.Base;
 using EPlast.BussinessLayer.Services.City;
 using EPlast.BussinessLayer.Services.City.CityAccess;
 using EPlast.BussinessLayer.Services.Club;
 using EPlast.BussinessLayer.Services.Events;
 using EPlast.BussinessLayer.Services.EventUser;
 using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.BussinessLayer.Services.Logging;
 using EPlast.BussinessLayer.Services.UserProfiles;
 using EPlast.BussinessLayer.Settings;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.WebApi.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,6 +41,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using EPlast.DataAccess.Repositories.Realizations.Base;
 using EPlast.BussinessLayer.Interfaces.Admin;
 using EPlast.BussinessLayer.Services.Admin;
 
@@ -73,6 +79,10 @@ namespace EPlast.WebApi
                 c.SwaggerDoc("V1", new OpenApiInfo { Title = "MyApi", Version = "V1" });
                 //c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
             });
+            services.ConfigureSwaggerGen(options =>
+            {
+                options.CustomSchemaIds(x => x.FullName);
+            });
 
             services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IAccountService, AccountService>();
@@ -100,14 +110,12 @@ namespace EPlast.WebApi
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<ICItyAdministrationService, CityAdministrationService>();
             services.AddScoped<ICityService, CityService>();
+            services.AddScoped<IGlobalLoggerService, GlobalLoggerService>();
             services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
             services.AddScoped<IClubService, ClubService>();
             services.AddScoped<IAdminTypeService, AdminTypeService>();
             services.AddScoped<IClubAdministrationService, ClubAdministrationService>();
             services.AddScoped<IClubMembersService, ClubMembersService>();
-            //services.AddScoped<ICreateEventVMInitializer, CreateEventVMInitializer>();
-            //services.AddScoped<IUserAccessManagerSettings, UserAccessManagerSettings>();
-            //services.AddScoped<IUserAccessManager, UserAccessManager>();
             services.AddScoped<IActionManager, ActionManager>();
             services.AddScoped<IEventCategoryManager, EventCategoryManager>();
             services.AddScoped<IEventTypeManager, EventTypeManager>();
@@ -119,6 +127,8 @@ namespace EPlast.WebApi
             services.AddScoped<IEventAdminManager, EventAdminManager>();
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
+            services.AddScoped<IUserBlobStorageRepository, UserBlobStorageRepository>();
+            services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddLogging();
 
             services.AddAuthentication()
@@ -139,15 +149,15 @@ namespace EPlast.WebApi
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                       ValidateIssuer = true,
-                       ValidateAudience = true,
-                       ValidateLifetime = true,
-                       ValidateIssuerSigningKey = true,
-                       ValidIssuer = Configuration["Jwt:Issuer"],
-                       ValidAudience = Configuration["Jwt:Issuer"],
-                       IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
-                };
-              });
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = Configuration["Jwt:Issuer"],
+                        ValidAudience = Configuration["Jwt:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                    };
+                });
 
             services.Configure<RequestLocalizationOptions>(
             opts =>
@@ -221,10 +231,10 @@ namespace EPlast.WebApi
             }
             else
             {
+                app.ConfigureCustomExceptionMiddleware();
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
             app.UseHttpsRedirection();
             app.UseMvc();
             app.UseAuthentication();

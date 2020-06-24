@@ -32,6 +32,7 @@ namespace EPlast.DataAccess
         public DbSet<EventType> EventTypes { get; set; }
         public DbSet<EventStatus> EventStatuses { get; set; }
         public DbSet<EventAdministration> EventAdministration { get; set; }
+        public DbSet<EventAdministrationType> EventAdministrationType { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -50,7 +51,7 @@ namespace EPlast.DataAccess
                 .HasOne(x => x.Event)
                 .WithMany(m => m.EventGallarys)
                 .HasForeignKey(x => x.EventID);
-            
+
             modelBuilder.Entity<EventGallary>()
                 .HasOne(x => x.Gallary)
                 .WithMany(e => e.Events)
@@ -61,12 +62,12 @@ namespace EPlast.DataAccess
 
             modelBuilder.Entity<EventAdmin>()
                 .HasKey(x => new { x.EventID, x.UserID });
-            
+
             modelBuilder.Entity<EventAdmin>()
                 .HasOne(x => x.Event)
                 .WithMany(m => m.EventAdmins)
                 .HasForeignKey(x => x.EventID);
-            
+
             modelBuilder.Entity<EventAdmin>()
                 .HasOne(x => x.User)
                 .WithMany(e => e.Events)

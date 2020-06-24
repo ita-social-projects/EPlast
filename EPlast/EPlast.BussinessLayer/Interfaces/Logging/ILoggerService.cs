@@ -1,4 +1,4 @@
-﻿namespace EPlast.BussinessLayer.Services.Interfaces
+﻿namespace EPlast.BussinessLayer.Interfaces.Logging
 {
     public interface ILoggerService<T>
     {

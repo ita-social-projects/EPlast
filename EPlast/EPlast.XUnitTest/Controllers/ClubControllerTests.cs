@@ -8,6 +8,7 @@ using EPlast.BussinessLayer.DTO;
 using EPlast.BussinessLayer.DTO.Club;
 using EPlast.BussinessLayer.DTO.UserProfiles;
 using EPlast.BussinessLayer.Interfaces.Club;
+using EPlast.BussinessLayer.Interfaces.Logging;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.Controllers;
 using EPlast.DataAccess.Entities;
