@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BussinessLayer.DTO.Club;
 using EPlast.BussinessLayer.Interfaces.Club;
+using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 
@@ -12,12 +13,15 @@ namespace EPlast.BussinessLayer.Services.Club
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
+        private readonly IClubService _clubService;
+        private readonly IUserManagerService _userManagerService;
 
-
-        public ClubMembersService(IRepositoryWrapper repoWrapper, IMapper mapper)
+        public ClubMembersService(IRepositoryWrapper repoWrapper, IMapper mapper, IClubService clubService, IUserManagerService userManagerService)
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
+            _clubService = clubService;
+            _userManagerService = userManagerService;
         }
 
         public async Task<ClubMembersDTO> ToggleIsApprovedInClubMembersAsync(int memberId, int clubId)
@@ -38,6 +42,9 @@ namespace EPlast.BussinessLayer.Services.Club
 
         public async Task<ClubMembersDTO> AddFollowerAsync(int clubId, string userId)
         {
+            var club = await _clubService.GetClubInfoByIdAsync(clubId);
+            var userDto = await _userManagerService.FindByIdAsync(userId)??throw new ArgumentNullException($"User with {userId} id not found");
+            
             var oldMember = await _repoWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(i => i.UserId == userId);
 
@@ -49,9 +56,9 @@ namespace EPlast.BussinessLayer.Services.Club
 
             ClubMembers newMember = new ClubMembers()
             {
-                ClubId = clubId,
+                ClubId = club.ID,
                 IsApproved = false,
-                UserId = userId
+                UserId = userDto.Id
             };
 
             await _repoWrapper.ClubMembers.CreateAsync(newMember);

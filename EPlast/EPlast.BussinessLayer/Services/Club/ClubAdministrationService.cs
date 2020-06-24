@@ -90,13 +90,6 @@ namespace EPlast.BussinessLayer.Services.Club
         public async Task<ClubAdministrationDTO> AddClubAdminAsync(ClubAdministrationDTO createdAdmin)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(createdAdmin.AdminTypeName);
-
-            if (adminType == null)
-            {
-                adminType = await _adminTypeService.CreateAsync(new AdminTypeDTO()
-                    {AdminTypeName = createdAdmin.AdminTypeName});
-            }
-
             createdAdmin.AdminTypeId = adminType.ID;
 
             ClubAdministration newClubAdmin = _mapper.Map<ClubAdministrationDTO, ClubAdministration>(createdAdmin);
