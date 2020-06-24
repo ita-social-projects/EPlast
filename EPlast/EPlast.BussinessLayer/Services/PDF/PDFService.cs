@@ -2,6 +2,7 @@
 using EPlast.DataAccess.Repositories;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BussinessLayer.Interfaces.Logging;
 using EPlast.BussinessLayer.Services.Interfaces;
 
 namespace EPlast.BussinessLayer

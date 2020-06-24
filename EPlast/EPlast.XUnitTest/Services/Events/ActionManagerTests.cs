@@ -134,7 +134,7 @@ namespace EPlast.XUnitTest.Services.Events
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
             var methodResult = await actionManager.DeleteEventAsync(testEventId);
             //Assert
-            Assert.Equal(StatusCodes.Status500InternalServerError, methodResult);
+            Assert.Equal(StatusCodes.Status400BadRequest, methodResult);
         }
 
         [Fact]
@@ -171,7 +171,7 @@ namespace EPlast.XUnitTest.Services.Events
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
             var methodResult = await actionManager.SubscribeOnEventAsync(testEventId, new ClaimsPrincipal());
             //Assert
-            Assert.Equal(StatusCodes.Status500InternalServerError, methodResult);
+            Assert.Equal(StatusCodes.Status400BadRequest, methodResult);
         }
 
         [Fact]
@@ -208,7 +208,7 @@ namespace EPlast.XUnitTest.Services.Events
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
             var methodResult = await actionManager.UnSubscribeOnEventAsync(testEventId, new ClaimsPrincipal());
             //Assert
-            Assert.Equal(StatusCodes.Status500InternalServerError, methodResult);
+            Assert.Equal(StatusCodes.Status400BadRequest, methodResult);
         }
 
         [Fact]
