@@ -564,7 +564,7 @@ namespace EPlast.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("AdministrationType");
+                    b.Property<int>("EventAdministrationTypeID");
 
                     b.Property<int>("EventID");
 
@@ -573,11 +573,27 @@ namespace EPlast.DataAccess.Migrations
 
                     b.HasKey("ID");
 
+                    b.HasIndex("EventAdministrationTypeID");
+
                     b.HasIndex("EventID");
 
                     b.HasIndex("UserID");
 
                     b.ToTable("EventAdministration");
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.Event.EventAdministrationType", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("EventAdministrationTypeName")
+                        .IsRequired();
+
+                    b.HasKey("ID");
+
+                    b.ToTable("EventAdministrationType");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Event.EventCategory", b =>
@@ -1310,6 +1326,11 @@ namespace EPlast.DataAccess.Migrations
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Event.EventAdministration", b =>
                 {
+                    b.HasOne("EPlast.DataAccess.Entities.Event.EventAdministrationType", "EventAdministrationType")
+                        .WithMany("EventAdministrations")
+                        .HasForeignKey("EventAdministrationTypeID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("EPlast.DataAccess.Entities.Event.Event", "Event")
                         .WithMany("EventAdministrations")
                         .HasForeignKey("EventID")

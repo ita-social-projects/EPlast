@@ -47,7 +47,7 @@ namespace EPlast.BussinessLayer.Services.Events
             }
             catch
             {
-                return StatusCodes.Status500InternalServerError;
+                return StatusCodes.Status400BadRequest;
             }
         }
 
@@ -68,7 +68,7 @@ namespace EPlast.BussinessLayer.Services.Events
             }
             catch
             {
-                return StatusCodes.Status500InternalServerError;
+                return StatusCodes.Status400BadRequest;
             }
         }
     }

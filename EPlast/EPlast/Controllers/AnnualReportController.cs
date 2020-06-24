@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO;
-using EPlast.BussinessLayer.DTO.City;
+using EPlast.BussinessLayer.DTO.AnnualReport;
 using EPlast.BussinessLayer.Interfaces.City;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.Models.Enums;
-using EPlast.ViewModels;
-using EPlast.ViewModels.City;
+using EPlast.ViewModels.AnnualReport;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +11,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BussinessLayer.Interfaces.Logging;
+using CityDTOs = EPlast.BussinessLayer.DTO.City;
+using CityVMs = EPlast.ViewModels.City;
 
 namespace EPlast.Controllers
 {
@@ -46,7 +47,7 @@ namespace EPlast.Controllers
                 {
                     await _annualReportService.CheckCanBeCreatedAsync(cityId);
                     var cityDTO = await _cityService.GetByIdAsync(cityId);
-                    var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
+                    var city = _mapper.Map<CityDTOs.CityDTO, CityVMs.CityViewModel>(cityDTO);
                     return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Creating));
                 }
                 else
@@ -74,7 +75,7 @@ namespace EPlast.Controllers
             try
             {
                 var citiesDTO = await _cityAccessService.GetCitiesAsync(User);
-                var city = _mapper.Map<CityDTO, CityViewModel>(citiesDTO.First());
+                var city = _mapper.Map<CityDTOs.CityDTO, CityVMs.CityViewModel>(citiesDTO.First());
                 await _annualReportService.CheckCanBeCreatedAsync(city.ID);
                 return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Creating));
             }
@@ -106,7 +107,7 @@ namespace EPlast.Controllers
                 else
                 {
                     var cityDTO = await _cityService.GetByIdAsync(annualReport.CityId);
-                    var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
+                    var city = _mapper.Map<CityDTOs.CityDTO, CityVMs.CityViewModel>(cityDTO);
                     ViewData["ErrorMessage"] = "Річний звіт заповнений некоректно!";
                     return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Creating, annualReport));
                 }
@@ -135,7 +136,7 @@ namespace EPlast.Controllers
             {
                 var citiesDTO = await _cityAccessService.GetCitiesAsync(User);
                 var annualReportsDTO = await _annualReportService.GetAllAsync(User);
-                var cities = _mapper.Map<IEnumerable<CityDTO>, IEnumerable<CityViewModel>>(citiesDTO);
+                var cities = _mapper.Map<IEnumerable<CityDTOs.CityDTO>, IEnumerable<CityVMs.CityViewModel>>(citiesDTO);
                 var annualReports = _mapper.Map<IEnumerable<AnnualReportDTO>, IEnumerable<AnnualReportViewModel>>(annualReportsDTO);
                 var viewAnnualReportsViewModel = new ViewAnnualReportsViewModel(cities)
                 {
@@ -236,7 +237,7 @@ namespace EPlast.Controllers
                 var annualReportDTO = await _annualReportService.GetByIdAsync(User, id);
                 var annualReport = _mapper.Map<AnnualReportDTO, AnnualReportViewModel>(annualReportDTO);
                 var cityDTO = await _cityService.GetByIdAsync(annualReport.CityId);
-                var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
+                var city = _mapper.Map<CityDTOs.CityDTO, CityVMs.CityViewModel>(cityDTO);
                 return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Editing, annualReport));
             }
             catch (UnauthorizedAccessException e)
@@ -267,7 +268,7 @@ namespace EPlast.Controllers
                 else
                 {
                     var cityDTO = await _cityService.GetByIdAsync(annualReport.CityId);
-                    var city = _mapper.Map<CityDTO, CityViewModel>(cityDTO);
+                    var city = _mapper.Map<CityDTOs.CityDTO, CityVMs.CityViewModel>(cityDTO);
                     ViewData["ErrorMessage"] = "Річний звіт заповнений некоректно!";
                     return View("CreateEditAsync", await GetCreateEditViewModel(city, AnnualReportOperation.Editing, annualReport));
                 }
@@ -289,10 +290,10 @@ namespace EPlast.Controllers
             }
         }
 
-        private async Task<CreateEditAnnualReportViewModel> GetCreateEditViewModel(CityViewModel city, AnnualReportOperation operation)
+        private async Task<CreateEditAnnualReportViewModel> GetCreateEditViewModel(CityVMs.CityViewModel city, AnnualReportOperation operation)
         {
             var cityMemebrsDTO = await _cityMembersService.GetCurrentByCityIdAsync(city.ID);
-            var cityMembers = _mapper.Map<IEnumerable<CityMembersDTO>, IEnumerable<CityMembersViewModel>>(cityMemebrsDTO);
+            var cityMembers = _mapper.Map<IEnumerable<CityDTOs.CityMembersDTO>, IEnumerable<CityVMs.CityMembersViewModel>>(cityMemebrsDTO);
             return new CreateEditAnnualReportViewModel(cityMembers)
             {
                 Operation = operation,
@@ -305,7 +306,7 @@ namespace EPlast.Controllers
             };
         }
 
-        private async Task<CreateEditAnnualReportViewModel> GetCreateEditViewModel(CityViewModel city, AnnualReportOperation operation, AnnualReportViewModel annualReport)
+        private async Task<CreateEditAnnualReportViewModel> GetCreateEditViewModel(CityVMs.CityViewModel city, AnnualReportOperation operation, AnnualReportViewModel annualReport)
         {
             var createEditAnnualReportViewModel = await GetCreateEditViewModel(city, operation);
             createEditAnnualReportViewModel.AnnualReport = annualReport;
