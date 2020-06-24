@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
@@ -221,7 +220,7 @@ namespace EPlast.BLL.Services.UserProfiles
             if (file != null && file.Length > 0)
             {
 
-                using (var img = Image.FromStream(file.OpenReadStream()))
+                using (var img = System.Drawing.Image.FromStream(file.OpenReadStream()))
                 {
                     var uploads = Path.Combine(_env.WebRootPath, "images\\Users");
                     if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default.png"))
