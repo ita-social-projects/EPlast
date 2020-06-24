@@ -45,6 +45,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using EPlast.DataAccess.Repositories.Realizations.Base;
+using EPlast.BLL.Filters;
 
 namespace EPlast.WebApi
 {
@@ -200,7 +201,7 @@ namespace EPlast.WebApi
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
             });
 
-            /*services.AddCors(options =>
+            services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
                     builder => builder.AllowAnyOrigin()

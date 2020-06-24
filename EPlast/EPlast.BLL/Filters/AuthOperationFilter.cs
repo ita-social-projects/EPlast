@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace EPlast.BussinessLayer.Filters
+namespace EPlast.BLL.Filters
 {
     public class AuthOperationFilter : IOperationFilter
     {
