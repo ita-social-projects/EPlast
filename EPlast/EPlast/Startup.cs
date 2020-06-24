@@ -27,6 +27,8 @@ using EPlast.DataAccess.Repositories;
 using EPlast.DataAccess.Repositories.Realizations.Base;
 using EPlast.Models.ViewModelInitializations;
 using EPlast.Models.ViewModelInitializations.Interfaces;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -75,8 +77,6 @@ namespace EPlast
                         authBuilder.RequireRole("Admin");
                     });
             });
-
-            services.AddMvc();
 
             services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IAccountService, AccountService>();
@@ -135,28 +135,27 @@ namespace EPlast
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
             });
             services.AddLogging();
-            services.AddAuthentication();
-                /*.AddGoogle(options =>
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.Expiration = TimeSpan.FromDays(5);
+                    options.LoginPath = "/Account/Login";
+                    options.LogoutPath = "/Account/Logout";
+                })
+                .AddGoogle(options =>
                 {
                     options.ClientId = Configuration.GetSection("GoogleAuthentication:GoogleClientId").Value;
                     options.ClientSecret = Configuration.GetSection("GoogleAuthentication:GoogleClientSecret").Value;
                 })
                 .AddFacebook(options =>
                 {
-                    options.AppId = Configuration.GetSection("FacebookAuthentication:FacebookAppId").Value;
-                    options.AppSecret = Configuration.GetSection("FacebookAuthentication:FacebookAppSecret").Value;
-                });*/
+                options.AppId = Configuration.GetSection("FacebookAuthentication:FacebookAppId").Value;
+                options.AppSecret = Configuration.GetSection("FacebookAuthentication:FacebookAppSecret").Value;
+            });
 
             services.Configure<DataProtectionTokenProviderOptions>(options =>
                 options.TokenLifespan = TimeSpan.FromHours(3));
-
-            services.ConfigureApplicationCookie(options =>
-            {
-                options.Cookie.HttpOnly = true;
-                options.Cookie.Expiration = TimeSpan.FromDays(5);
-                options.LoginPath = "/Account/Login";
-                options.LogoutPath = "/Account/Logout";
-            });
 
             services.Configure<RequestLocalizationOptions>(
              opts =>
@@ -253,9 +252,9 @@ namespace EPlast
             app.UseStaticFiles();
             app.UseDefaultFiles();
             app.UseCookiePolicy();
+            app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
