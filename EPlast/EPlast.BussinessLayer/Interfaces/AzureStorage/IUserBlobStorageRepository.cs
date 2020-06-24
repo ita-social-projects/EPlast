@@ -10,5 +10,6 @@ namespace EPlast.BussinessLayer.Interfaces.AzureStorage
         Task DeleteBlobAsync(string blobName);
         Task UploadBlobAsync(IFormFile blobfile, string fileName);
         Task UploadBlobForBase64Async(string base64, string fileName);
+        Task<string> GetBlobBase64Async(string blobName);
     }
 }

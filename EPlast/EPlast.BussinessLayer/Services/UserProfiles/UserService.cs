@@ -138,6 +138,11 @@ namespace EPlast.BussinessLayer.Services.UserProfiles
             await _repoWrapper.SaveAsync();
         }
 
+        public async Task<string> GetImageBase64Async(string fileName)
+        {
+            return await _userBlobStorage.GetBlobBase64Async(fileName);
+
+        }
         private async Task<int?> CheckEducationFieldsAsync(string firstName, string secondName, int? firstId, int? secondId)
         {
 
