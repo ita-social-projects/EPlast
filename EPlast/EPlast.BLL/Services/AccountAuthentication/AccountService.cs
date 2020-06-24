@@ -275,20 +275,19 @@ namespace EPlast.BLL.Services
             await _signInManager.SignInAsync(user, isPersistent: false);
         }
 
-        private string GenerateJSONWebToken(LoginDto loginDto)
+        public string GenerateJSONWebToken(LoginDto loginDto)
         {
-            /*var claims = new[]
+            var claims = new[]
             {
-                new Claim(ClaimTypes.Email, loginDto.Email),
-                new Claim(ClaimTypes., loginDto.Email),
-                
-            };*/
+                new Claim(ClaimTypes.Email, loginDto.Email)
+               // new Claim(JwtRegisteredClaimNames.Sub, user.Email) 
+            };
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(_config["Jwt:Issuer"],
               _config["Jwt:Issuer"],
-              null,
+              claims,
               expires: DateTime.Now.AddMinutes(120),
               signingCredentials: credentials);
                 
