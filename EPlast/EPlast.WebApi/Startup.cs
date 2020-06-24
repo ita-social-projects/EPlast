@@ -7,6 +7,7 @@ using EPlast.BussinessLayer.Interfaces.City;
 using EPlast.BussinessLayer.Interfaces.Club;
 using EPlast.BussinessLayer.Interfaces.Events;
 using EPlast.BussinessLayer.Interfaces.EventUser;
+using EPlast.BussinessLayer.Interfaces.Logging;
 using EPlast.BussinessLayer.Interfaces.UserProfiles;
 using EPlast.BussinessLayer.Services;
 using EPlast.BussinessLayer.Services.AzureStorage;
@@ -17,11 +18,13 @@ using EPlast.BussinessLayer.Services.Club;
 using EPlast.BussinessLayer.Services.Events;
 using EPlast.BussinessLayer.Services.EventUser;
 using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.BussinessLayer.Services.Logging;
 using EPlast.BussinessLayer.Services.UserProfiles;
 using EPlast.BussinessLayer.Settings;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.WebApi.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -103,6 +106,7 @@ namespace EPlast.WebApi
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<ICItyAdministrationService, CityAdministrationService>();
             services.AddScoped<ICityService, CityService>();
+            services.AddScoped<IGlobalLoggerService, GlobalLoggerService>();
             services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
             services.AddScoped<IClubService, ClubService>();
             services.AddScoped<IClubAdministrationService, ClubAdministrationService>();
@@ -222,10 +226,10 @@ namespace EPlast.WebApi
             }
             else
             {
+                app.ConfigureCustomExceptionMiddleware();
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
             app.UseHttpsRedirection();
             app.UseMvc();
             app.UseAuthentication();
