@@ -1,8 +1,9 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using Swashbuckle.Swagger;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace EPlast.BussinessLayer.Filters
@@ -17,8 +18,8 @@ namespace EPlast.BussinessLayer.Filters
 
             if (!isAuthorized) return;
 
-            operation.Responses.TryAdd("401", new OpenApiResponse { Description = "Unauthorized" });
-            operation.Responses.TryAdd("403", new OpenApiResponse { Description = "Forbidden" });
+            //operation.Responses.TryAdd("401", new OpenApiResponse { Description = "Unauthorized" });
+            //operation.Responses.TryAdd("403", new OpenApiResponse { Description = "Forbidden" });
 
             var jwtbearerScheme = new OpenApiSecurityScheme
             {
