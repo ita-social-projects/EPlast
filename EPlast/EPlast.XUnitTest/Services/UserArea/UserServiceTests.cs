@@ -29,6 +29,7 @@ namespace EPlast.XUnitTest.Services.UserArea
         private Mock<IWorkService> _workService;
         private Mock<IEducationService> _educationService;
         private Mock<IUserBlobStorageRepository> _userBlobStorage;
+        private Mock<IHostingEnvironment> _env;
 
         public UserServiceTests()
         {
@@ -39,11 +40,12 @@ namespace EPlast.XUnitTest.Services.UserArea
             _workService = new Mock<IWorkService>();
             _educationService = new Mock<IEducationService>();
             _userBlobStorage=new Mock<IUserBlobStorageRepository>();
+            _env=new Mock<IHostingEnvironment>();
         }
 
         private UserService GetService()
         {
-            return new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _workService.Object, _educationService.Object, _userBlobStorage.Object);
+            return new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _workService.Object, _educationService.Object, _userBlobStorage.Object,_env.Object);
         }
         [Fact]
         public async Task GetUserProfileTest()

@@ -91,7 +91,7 @@
                             <a asp-action="UserProfile" asp-controller="Account" asp-route-userId="@UserManager.GetUserAsync(User).Result.Id">
                                 @if (@UserManager.GetUserAsync(User).Result != null)
                                 {
-                                    <img src="https://eplaststorage.blob.core.windows.net/userimages/@UserManager.GetUserAsync(User).Result.ImagePath" class="plast-avatar rounded-circle white-border" alt="Cinque Terre">
+                                    <img src="/images/Users/@UserManager.GetUserAsync(User).Result.ImagePath" class="plast-avatar rounded-circle white-border" alt="Cinque Terre">
                                 }
                                 else
                                 {
@@ -112,7 +112,7 @@
                                 This "If" will be deleted in the future*@
                             @if (@UserManager.GetUserAsync(User).Result != null)
                             {
-                                <img src="https://eplaststorage.blob.core.windows.net/userimages/@UserManager.GetUserAsync(User).Result.ImagePath" class="plast-avatar rounded-circle" alt="Cinque Terre">
+                                <img src="/images/Users/@UserManager.GetUserAsync(User).Result.ImagePath" class="plast-avatar rounded-circle" alt="Cinque Terre">
                             }
                             else
                             {
