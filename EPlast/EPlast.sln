@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPlast", "EPlast\EPlast.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPlast.DataAccess", "EPlast.DataAccess\EPlast.DataAccess.csproj", "{4256BF70-E73D-43EF-9C53-D4694584CE8C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPlast.BussinessLayer", "EPlast.BussinessLayer\EPlast.BussinessLayer.csproj", "{7215E9A4-C62F-4E07-AE44-48D2589C6137}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPlast.XUnitTest", "EPlast.XUnitTest\EPlast.XUnitTest.csproj", "{57D7C807-A0BC-480B-A3BD-EE4F69C71A40}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPlast.Resources", "EPlast.Resources\EPlast.Resources.csproj", "{AFC3CC2D-9070-4C26-9268-7E248EC0E2C5}"
@@ -33,10 +31,6 @@ Global
 		{4256BF70-E73D-43EF-9C53-D4694584CE8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4256BF70-E73D-43EF-9C53-D4694584CE8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4256BF70-E73D-43EF-9C53-D4694584CE8C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7215E9A4-C62F-4E07-AE44-48D2589C6137}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7215E9A4-C62F-4E07-AE44-48D2589C6137}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7215E9A4-C62F-4E07-AE44-48D2589C6137}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7215E9A4-C62F-4E07-AE44-48D2589C6137}.Release|Any CPU.Build.0 = Release|Any CPU
 		{57D7C807-A0BC-480B-A3BD-EE4F69C71A40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{57D7C807-A0BC-480B-A3BD-EE4F69C71A40}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57D7C807-A0BC-480B-A3BD-EE4F69C71A40}.Release|Any CPU.ActiveCfg = Release|Any CPU
