@@ -22,14 +22,23 @@ namespace EPlast.BussinessLayer.Services.AzureStorage.Base
 
             return blockBlob;
         }
+        public async Task<string> GetBlobBase64Async(string blobName, string containerName)
+        {
+            var cloudBlobContainer = await _connectionFactory.GetBlobContainer(containerName);
+            CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(blobName);
+
+            blockBlob.FetchAttributes();
+            byte[] arr = new byte[blockBlob.Properties.Length];
+            blockBlob.DownloadToByteArray(arr, 0);
+            var azureBase64 = Convert.ToBase64String(arr);
+            var result = $"data:image/{Path.GetExtension(blobName)};base64," + azureBase64;
+            return result;
+        }
         public async Task DeleteBlobAsync(string blobName, string containerName)
         {
             var cloudBlobContainer = await _connectionFactory.GetBlobContainer(containerName);
             CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(blobName);
-            if (!await blockBlob.DeleteIfExistsAsync())
-            {
-                throw new ArgumentException("Delete was failed");
-            }
+            await blockBlob.DeleteIfExistsAsync();
         }
 
         public async Task UploadBlobAsync(IFormFile blobfile, string fileName, string containerName)
@@ -53,5 +62,6 @@ namespace EPlast.BussinessLayer.Services.AzureStorage.Base
             }
 
         }
+
     }
 }

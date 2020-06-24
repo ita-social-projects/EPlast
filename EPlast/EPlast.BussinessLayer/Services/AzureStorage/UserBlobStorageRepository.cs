@@ -17,6 +17,10 @@ namespace EPlast.BussinessLayer.Services.AzureStorage
         {
             return await this.GetBlobAsync(blobName, CONTAINER);
         }
+        public async Task<string> GetBlobBase64Async(string blobName)
+        {
+            return await this.GetBlobBase64Async(blobName, CONTAINER);
+        }
         public async Task DeleteBlobAsync(string blobName)
         {
             await this.DeleteBlobAsync(blobName, CONTAINER);
