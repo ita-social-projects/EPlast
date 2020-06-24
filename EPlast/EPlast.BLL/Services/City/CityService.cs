@@ -11,7 +11,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 using DataAccessCity = EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Services
