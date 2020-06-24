@@ -206,7 +206,7 @@ namespace EPlast
                 LastName = "Admin",
                 EmailConfirmed = true,
                 ImagePath = "default.png",
-                UserProfile = new DataAccess.Entities.UserProfile(),
+                UserProfile = new UserProfile(),
                 RegistredOn = DateTime.Now
             };
             if (await userManager.FindByEmailAsync(admin["Email"]) == null)
@@ -254,16 +254,16 @@ namespace EPlast
             app.UseDefaultFiles();
             app.UseCookiePolicy();
             app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseRouting();
 
-            //app.UseRequestLocalization();
-
-            /*app.UseEndpoints(endpoints =>
+            app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
-            });*/
+            });
             CreateRoles(services).Wait();
         }
     }
