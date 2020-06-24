@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO;
-using DatabaseEntities = EPlast.DataAccess.Entities;
+using EPlast.BussinessLayer.DTO.AnnualReport;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.BussinessLayer.Mapping.AnnualReport
 {
@@ -8,7 +8,7 @@ namespace EPlast.BussinessLayer.Mapping.AnnualReport
     {
         public MembersStatisticProfile()
         {
-            CreateMap<DatabaseEntities.MembersStatistic, MembersStatisticDTO>().ReverseMap();
+            CreateMap<MembersStatistic, MembersStatisticDTO>().ReverseMap();
         }
     }
 }
