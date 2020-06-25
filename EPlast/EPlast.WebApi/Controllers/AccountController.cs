@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Models.Jwt;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
@@ -14,15 +15,11 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using EPlast.BLL.Interfaces.Logging;
-using EPlast.BLL.Models.Jwt;
-using EPlast.DataAccess.Entities;
 
 namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [EnableCors("CorsPolicy")]
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
@@ -78,7 +75,6 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(response);
         }
-
 
         [HttpGet("signin")]
         [AllowAnonymous]
