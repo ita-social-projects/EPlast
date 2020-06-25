@@ -6,7 +6,6 @@ using EPlast.BussinessLayer.Interfaces.Club;
 using EPlast.BussinessLayer.Interfaces.Logging;
 using EPlast.BussinessLayer.Services.Interfaces;
 using EPlast.WebApi.Models.Club;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
