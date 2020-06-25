@@ -56,11 +56,10 @@ namespace EPlast.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    // проблема з мапінгом
                     var createDto = _mapper.Map<EventCreateViewModel, EventCreateDTO>(createVM);
                     await _eventUserManager.CreateEventAsync(createDto);
 
-                    return RedirectToAction("EventInfo", "Action", new { id = createDto.Event.ID });
+                    return RedirectToAction("EventUser");
                 }
                 var dto = await _eventUserManager.InitializeEventCreateDTOAsync();
                 var model = _mapper.Map<EventCreateDTO, EventCreateViewModel>(dto);
@@ -98,7 +97,7 @@ namespace EPlast.Controllers
                 {
                     await _eventUserManager.EditEventAsync(_mapper.Map<EventCreateViewModel, EventCreateDTO>(createVM));
 
-                    return RedirectToAction("EventInfo", "Action", new { id = createVM.Event.ID });
+                    return RedirectToAction("EventUser");
                 }
                 else
                 {

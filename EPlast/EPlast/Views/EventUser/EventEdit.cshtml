@@ -5,12 +5,13 @@
 @model EPlast.ViewModels.EventUser.EventCreateViewModel;
 <div class="eventCreate">
     <div class="d-xl-flex justify-content-xl-center border shadow card">
+        <input type="hidden" id="eventId" value=@Model.Event.ID>
+        <input type="hidden" asp-for="Event.ID" value="@Model.Event.ID" />
         <div class="col ">
             <div class="row">
                 <div class="col">
                     <div class="text-center d-xl-flex justify-content-xl-center align-items-xl-center">
                         <h1 class="text-center">Редагувати подію</h1>
-                        <input type="hidden" id="eventId" value=@Model.Event.ID>
                     </div>
                 </div>
             </div>
@@ -51,14 +52,14 @@
                         <label class="col-form-label">Комендант</label>
                     </div>
                     <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
-                         @Html.TextBoxFor(x => x.Сommandant.FullName,
-                       new
-                            {
-                                @list = "Users-value",
-                                @id = "autocomplete_input",
-                                @class = "border textBoxInput",
-                                @Value = ""
-                            })
+                        @Html.TextBoxFor(x => x.Сommandant.FullName,
+                      new
+                           {
+                               @list = "Users-value",
+                               @id = "autocomplete_input",
+                               @class = "border textBoxInput",
+                               @Value = ""
+                           })
                         <datalist id="Users-value">
                             <option selected="selected" disabled="disabled" value="@Model.Сommandant.FullName"></option>
                             @foreach (var item in Model.Users)
