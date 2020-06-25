@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO.Events;
-using EPlast.BussinessLayer.Interfaces.Events;
-using EPlast.BussinessLayer.Services.Events;
+using EPlast.BLL.DTO.Events;
+using EPlast.BLL.Interfaces.Events;
+using EPlast.BLL.Services.Events;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;

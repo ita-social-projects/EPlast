@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO.Account;
-using EPlast.BussinessLayer.DTO.UserProfiles;
-using EPlast.BussinessLayer.Interfaces;
-using EPlast.BussinessLayer.Services;
+using AutoMapper.Configuration;
+using EPlast.BLL.DTO.Account;
+using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces;
+using EPlast.BLL.Services;
 using EPlast.Controllers;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -67,7 +68,7 @@ namespace EPlast.XUnitTest.Services
             var _contextAccessor = new Mock<IHttpContextAccessor>();
             var _userPrincipalFactory = new Mock<IUserClaimsPrincipalFactory<User>>();
             var mockSignInManager = new Mock<SignInManager<User>>(mockUserManager.Object,
-                           _contextAccessor.Object, _userPrincipalFactory.Object, null, null, null);
+                           _contextAccessor.Object, _userPrincipalFactory.Object, null, null, null, null);
 
             Mock<IRepositoryWrapper> mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
             Mock<ILogger<AccountController>> mockLogger = new Mock<ILogger<AccountController>>();
