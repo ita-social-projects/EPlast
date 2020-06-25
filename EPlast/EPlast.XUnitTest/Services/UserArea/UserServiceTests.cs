@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO;
-using EPlast.BussinessLayer.DTO.UserProfiles;
-using EPlast.BussinessLayer.Interfaces.AzureStorage;
-using EPlast.BussinessLayer.Interfaces.UserProfiles;
-using EPlast.BussinessLayer.Services.UserProfiles;
+using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Services.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
@@ -24,12 +24,12 @@ namespace EPlast.XUnitTest.Services.UserArea
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IUserStore<User>> _userStoreMock;
         private Mock<UserManager<User>> _userManager;
-        private Mock<IHostingEnvironment> _hostEnv;
+        private Mock<IWebHostEnvironment> _hostEnv;
         private Mock<IMapper> _mapper;
         private Mock<IWorkService> _workService;
         private Mock<IEducationService> _educationService;
         private Mock<IUserBlobStorageRepository> _userBlobStorage;
-        private Mock<IHostingEnvironment> _env;
+        private Mock<IWebHostEnvironment> _env;
 
         public UserServiceTests()
         {
@@ -40,7 +40,7 @@ namespace EPlast.XUnitTest.Services.UserArea
             _workService = new Mock<IWorkService>();
             _educationService = new Mock<IEducationService>();
             _userBlobStorage=new Mock<IUserBlobStorageRepository>();
-            _env=new Mock<IHostingEnvironment>();
+            _env=new Mock<IWebHostEnvironment>();
         }
 
         private UserService GetService()

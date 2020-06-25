@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO.Club;
-using EPlast.BussinessLayer.DTO.UserProfiles;
-using EPlast.BussinessLayer.Interfaces.Club;
-using EPlast.BussinessLayer.Services.Club;
+using EPlast.BLL.DTO.Club;
+using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces.Club;
+using EPlast.BLL.Services.Club;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
@@ -28,7 +28,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
         {
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _mapper = new Mock<IMapper>();
-            var env = new Mock<IHostingEnvironment>();
+            var env = new Mock<IWebHostEnvironment>();
             _clubService = new ClubService(_repoWrapper.Object, _mapper.Object, env.Object);
         }
 
