@@ -39,7 +39,6 @@ namespace EPlast.BLL.Interfaces
         Task SendEmailReseting(string confirmationLink, ForgotPasswordDto forgotPasswordDto);
         Task GoogleAuthentication(string email, ExternalLoginInfo externalLoginInfo);
         Task FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo);
-        Task<AuthenticateResponse> Authenticate(AuthenticateRequest model);
-        string generateJwtToken(User user);
+        string generateJwtToken(AuthenticateRequest user);
     }
 }

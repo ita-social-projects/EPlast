@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Web;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Models.Jwt;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -67,11 +68,10 @@ namespace EPlast.WebApi.Controllers
             _resourceForErrors = resourceForErrors;
         }
 
-        [HttpPost("authenticate")]
-        [AllowAnonymous]
+        [HttpPost("generateJwtToken")]
         public IActionResult Authenticate([FromBody]AuthenticateRequest model)
         {
-            var response = _accountService.Authenticate(model);
+            var response = _accountService.generateJwtToken(model);
 
             if (response == null)
                 return BadRequest(new { message = "Username or password is incorrect" });

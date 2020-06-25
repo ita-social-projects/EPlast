@@ -276,17 +276,7 @@ namespace EPlast.BLL.Services
             await _signInManager.SignInAsync(user, isPersistent: false);
         }
 
-        public async Task<AuthenticateResponse> Authenticate(AuthenticateRequest model)
-        {
-            var user = await _userManager.FindByIdAsync(model.Username);
-            if (user == null) return null;
-
-            var token = generateJwtToken(user);
-
-            return new AuthenticateResponse(user, token);
-        }
-
-        public string generateJwtToken(User user)
+        public string generateJwtToken(AuthenticateRequest user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes("THIS IS USED TO SIGN AND VERIFY JWT TOKENS, REPLACE IT WITH YOUR OWN SECRET, IT CAN BE ANY STRING");
@@ -294,7 +284,7 @@ namespace EPlast.BLL.Services
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, user.Id.ToString())
+                    new Claim(ClaimTypes.Name, user.Username.ToString())
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
