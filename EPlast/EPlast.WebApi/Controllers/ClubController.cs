@@ -1,10 +1,10 @@
 using System;
 using System.Threading.Tasks;
 using AutoMapper;
-using EPlast.BussinessLayer.DTO.Club;
-using EPlast.BussinessLayer.Interfaces.Club;
-using EPlast.BussinessLayer.Interfaces.Logging;
-using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.BLL.DTO.Club;
+using EPlast.BLL.Interfaces.Club;
+using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.WebApi.Models.Club;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

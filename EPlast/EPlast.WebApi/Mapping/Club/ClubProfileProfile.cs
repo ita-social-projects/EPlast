@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO.Club;
+using EPlast.BLL.DTO.Club;
 using EPlast.WebApi.Models.Club;
 
 namespace EPlast.WebApi.Mapping.Club

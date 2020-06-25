@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO.Events;
+using EPlast.BLL.DTO.Events;
 using EPlast.ViewModels.Events;
 
 namespace EPlast.Mapping.Events
