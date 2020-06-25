@@ -2,6 +2,7 @@
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
+using EPlast.BLL.Models.Jwt;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -275,23 +276,31 @@ namespace EPlast.BLL.Services
             await _signInManager.SignInAsync(user, isPersistent: false);
         }
 
-        public string GenerateJSONWebToken(LoginDto loginDto)
+        public async Task<AuthenticateResponse> Authenticate(AuthenticateRequest model)
         {
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.Email, loginDto.Email)
-               // new Claim(JwtRegisteredClaimNames.Sub, user.Email) 
-            };
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var user = await _userManager.FindByIdAsync(model.Username);
+            if (user == null) return null;
 
-            var token = new JwtSecurityToken(_config["Jwt:Issuer"],
-              _config["Jwt:Issuer"],
-              claims,
-              expires: DateTime.Now.AddMinutes(120),
-              signingCredentials: credentials);
-                
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            var token = generateJwtToken(user);
+
+            return new AuthenticateResponse(user, token);
+        }
+
+        public string generateJwtToken(User user)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes("THIS IS USED TO SIGN AND VERIFY JWT TOKENS, REPLACE IT WITH YOUR OWN SECRET, IT CAN BE ANY STRING");
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, user.Id.ToString())
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
     }
 }

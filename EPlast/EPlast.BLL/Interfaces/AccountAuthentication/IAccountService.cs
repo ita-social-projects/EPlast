@@ -1,5 +1,7 @@
 ﻿using EPlast.BLL.DTO.Account;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Models.Jwt;
+using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
@@ -37,6 +39,7 @@ namespace EPlast.BLL.Interfaces
         Task SendEmailReseting(string confirmationLink, ForgotPasswordDto forgotPasswordDto);
         Task GoogleAuthentication(string email, ExternalLoginInfo externalLoginInfo);
         Task FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo);
-        string GenerateJSONWebToken(LoginDto loginDto);
+        Task<AuthenticateResponse> Authenticate(AuthenticateRequest model);
+        string generateJwtToken(User user);
     }
 }

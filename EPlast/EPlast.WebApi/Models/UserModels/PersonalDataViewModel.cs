@@ -1,7 +1,7 @@
 ﻿using EPlast.BLL.DTO.UserProfiles;
 using System;
 
-namespace EPlast.WebApi.Models.User
+namespace EPlast.WebApi.Models.UserModels
 {
     public class PersonalDataViewModel
     {

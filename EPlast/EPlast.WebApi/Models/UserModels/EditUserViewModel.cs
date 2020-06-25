@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 
-namespace EPlast.WebApi.Models.User
+namespace EPlast.WebApi.Models.UserModels
 {
     public class EditUserViewModel
     {
