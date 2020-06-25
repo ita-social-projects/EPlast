@@ -40,9 +40,6 @@ function AddClubAdmin() {
         }
     }
 
-
-
-
     const adminsData = {
         ClubMembersID: ClubMemberId,
         EndDate: EndDate,
