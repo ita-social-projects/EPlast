@@ -1,10 +1,10 @@
-﻿using EPlast.BussinessLayer.DTO.UserProfiles;
-
+﻿
 namespace EPlast.BussinessLayer.DTO.EventUser
 {
     public class EventAdministrationDTO
     {
-        public string UserID { get; set; }
-        public UserDTO User { get; set; }
+        public string UserId { get; set; }
+        public string FullName { get; set; }
+        public string Email { get; set; }
     }
 }
