@@ -11,7 +11,7 @@ namespace EPlast.Mapping.Events
             CreateMap<EventInfoDTO, EventInfoViewModel>()
                 .ForMember(d => d.EventParticipants, s => s.MapFrom(f => f.EventParticipants))
                 .ForMember(d => d.EventGallery, s => s.MapFrom(f => f.EventGallery))
-                .ForMember(d => d.EventAdmins, s => s.MapFrom(f => f.EventAdmins));
+                .ForMember(d => d.EventAdministrations, s => s.MapFrom(f => f.EventAdministrations));
         }
     }
 }

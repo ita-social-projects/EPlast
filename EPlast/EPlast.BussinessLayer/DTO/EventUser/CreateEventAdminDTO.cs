@@ -7,6 +7,8 @@ namespace EPlast.BussinessLayer.DTO.EventUser
     {
         [Required(ErrorMessage = "Вам потрібно обрати Коменданта!")]
         public string UserID { get; set; }
+        public int EventAdministrationTypeID { get; set; }
+
         public UserDTO User { get; set; }
     }
 }

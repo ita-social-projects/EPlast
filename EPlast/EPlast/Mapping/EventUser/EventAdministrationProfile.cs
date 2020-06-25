@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO.EventUser;
-using EPlast.ViewModels.EventUser;
+using EPlast.ViewModels.Events;
 
 namespace EPlast.Mapping.EventUser
 {
@@ -8,7 +8,7 @@ namespace EPlast.Mapping.EventUser
     {
         public EventAdministrationProfile()
         {
-            CreateMap<EventAdministrationDTO, EventAdministrationViewModel>().ReverseMap();
+            CreateMap<EventAdministrationDTO, EventAdministrationViewModel>();
         }
     }
 }
