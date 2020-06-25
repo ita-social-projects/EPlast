@@ -7,11 +7,9 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -164,14 +162,19 @@ namespace EPlast.BLL.Services.EventUser
             var users = _mapper.Map<List<User>, IEnumerable<UserDTO>>((await _repoWrapper.User.GetAllAsync()).ToList());
             var eventTypes = _mapper.Map<List<EventType>, IEnumerable<EventTypeDTO>>((await _repoWrapper.EventType.GetAllAsync()).ToList());
             var eventCategories = await _eventCategoryManager.GetDTOAsync();
+            var comendantTypeId = await _eventAdministrationTypeManager.GetTypeIdAsync("Комендант");
+            var alternateTypeId = await _eventAdministrationTypeManager.GetTypeIdAsync("Заступник коменданта");
+            var bunchuzhnyiTypeID = await _eventAdministrationTypeManager.GetTypeIdAsync("Бунчужний");
+            var pysarTypeId = await _eventAdministrationTypeManager.GetTypeIdAsync("Писар");
+
             var commandant = _mapper.Map<EventAdministration, EventAdministrationDTO>(await _repoWrapper.EventAdministration.
-                GetFirstAsync(predicate: i => i.EventID == editedEvent.ID, include: source => source.Include(q => q.User)));
+                GetFirstAsync(predicate: i => i.EventAdministrationType.ID == comendantTypeId, include: source => source.Include(q => q.User)));
             var alternate = _mapper.Map<EventAdministration, EventAdministrationDTO>(await _repoWrapper.EventAdministration.
-               GetFirstAsync(predicate: i => i.EventID == editedEvent.ID, include: source => source.Include(q => q.User)));
+               GetFirstAsync(predicate: i => i.EventAdministrationType.ID == alternateTypeId, include: source => source.Include(q => q.User)));
             var bunchuzhnyi = _mapper.Map<EventAdministration, EventAdministrationDTO>(await _repoWrapper.EventAdministration.
-               GetFirstAsync(predicate: i => i.EventID == editedEvent.ID, include: source => source.Include(q => q.User)));
+               GetFirstAsync(predicate: i => i.EventAdministrationType.ID == bunchuzhnyiTypeID, include: source => source.Include(q => q.User)));
             var pysar = _mapper.Map<EventAdministration, EventAdministrationDTO>(await _repoWrapper.EventAdministration.
-               GetFirstAsync(predicate: i => i.EventID == editedEvent.ID, include: source => source.Include(q => q.User)));
+               GetFirstAsync(predicate: i => i.EventAdministrationType.ID == pysarTypeId, include: source => source.Include(q => q.User)));
             var model = new EventCreateDTO()
             {
                 Event = _mapper.Map<Event, EventCreationDTO>(editedEvent),

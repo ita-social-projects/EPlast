@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using EPlast.BLL.DTO.EventUser;
+using System.Collections.Generic;
 
 namespace EPlast.BLL.DTO.Events
 {
