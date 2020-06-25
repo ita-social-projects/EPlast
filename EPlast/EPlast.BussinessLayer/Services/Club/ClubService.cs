@@ -115,8 +115,7 @@ namespace EPlast.BussinessLayer.Services.Club
 
         public async Task<ClubDTO> UpdateAsync(ClubDTO club)
         {
-            var clubInfo = await GetClubInfoByIdAsync(club.ID);
-            var oldImageName = clubInfo?.Logo;
+            await GetClubInfoByIdAsync(club.ID);
             var editedClub = _mapper.Map<ClubDTO, DataAccessClub.Club>(club);
             _repoWrapper.Club.Update(editedClub);
             await _repoWrapper.SaveAsync();

@@ -232,6 +232,12 @@ namespace EPlast.Controllers
 
                 return RedirectToAction("Club", new {index = clubIndex});
             }
+            catch (ArgumentNullException e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+                
+                return RedirectToAction("HandleError", "Error", new {code = StatusCodes.Status404NotFound});
+            }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
@@ -274,13 +280,13 @@ namespace EPlast.Controllers
         {
             try
             {
-                var club = await _clubService.GetClubInfoByIdAsync(clubId);
+                await _clubService.GetClubInfoByIdAsync(clubId);
                 createdAdmin.ClubId = clubId;
                 await _clubAdministrationService.AddClubAdminAsync(createdAdmin);
 
                 return Json(true);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return Json(false);
             }

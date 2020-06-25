@@ -16,7 +16,8 @@ namespace EPlast.BussinessLayer.Services.Club
         private readonly IClubService _clubService;
         private readonly IUserManagerService _userManagerService;
 
-        public ClubMembersService(IRepositoryWrapper repoWrapper, IMapper mapper, IClubService clubService, IUserManagerService userManagerService)
+        public ClubMembersService(IRepositoryWrapper repoWrapper, IMapper mapper, IClubService clubService,
+            IUserManagerService userManagerService)
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
@@ -27,24 +28,21 @@ namespace EPlast.BussinessLayer.Services.Club
         public async Task<ClubMembersDTO> ToggleIsApprovedInClubMembersAsync(int memberId, int clubId)
         {
             var person = await _repoWrapper.ClubMembers
-                .GetFirstOrDefaultAsync(u => u.ID == memberId && u.ClubId == clubId);
-
-            if (person == null)
-            {
-                throw new ArgumentNullException(nameof(person));
-            }
-
+                             .GetFirstOrDefaultAsync(u => u.ID == memberId && u.ClubId == clubId) ??
+                         throw new ArgumentNullException($"User with id={memberId} not found");
             person.IsApproved = !person.IsApproved;
             _repoWrapper.ClubMembers.Update(person);
             await _repoWrapper.SaveAsync();
+
             return _mapper.Map<ClubMembers, ClubMembersDTO>(person);
         }
 
         public async Task<ClubMembersDTO> AddFollowerAsync(int clubId, string userId)
         {
             var club = await _clubService.GetClubInfoByIdAsync(clubId);
-            var userDto = await _userManagerService.FindByIdAsync(userId)??throw new ArgumentNullException($"User with {userId} id not found");
-            
+            var userDto = await _userManagerService.FindByIdAsync(userId) ??
+                          throw new ArgumentNullException($"User with {userId} id not found");
+
             var oldMember = await _repoWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(i => i.UserId == userId);
 
