@@ -1,5 +1,5 @@
 using AutoMapper;
-using EPlast.BussinessLayer.DTO.UserProfiles;
+using EPlast.BLL.DTO.UserProfiles;
 using EPlast.WebApi.Models.User;
 
 namespace EPlast.WebApi.Mapping.User

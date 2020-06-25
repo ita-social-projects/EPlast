@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer;
-using EPlast.BussinessLayer.DTO;
+using EPlast.BLL;
+using EPlast.BLL.DTO;
 using EPlast.Controllers;
 using EPlast.Models;
 using EPlast.ViewModels;
-using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Moq;
@@ -12,10 +11,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BussinessLayer.Interfaces.Logging;
-using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Services.Interfaces;
 using Xunit;
 using Organization = EPlast.Models.Organization;
+using Microsoft.AspNetCore.Http;
 
 namespace EPlast.XUnitTest
 {

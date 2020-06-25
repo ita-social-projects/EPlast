@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO.Events;
-using EPlast.BussinessLayer.Interfaces.Events;
+using EPlast.BLL.DTO.Events;
+using EPlast.BLL.Interfaces.Events;
 using EPlast.ViewModels.Events;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

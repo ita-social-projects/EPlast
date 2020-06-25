@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO.Account;
-using EPlast.BussinessLayer.Interfaces;
-using EPlast.BussinessLayer.Interfaces.UserProfiles;
-using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.BLL.DTO.Account;
+using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -14,7 +14,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using EPlast.BussinessLayer.Interfaces.Logging;
+using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Models.Jwt;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -66,6 +68,18 @@ namespace EPlast.WebApi.Controllers
             _resourceForErrors = resourceForErrors;
         }
 
+        [HttpPost("generateJwtToken")]
+        public IActionResult Authenticate([FromBody]AuthenticateRequest model)
+        {
+            var response = _accountService.generateJwtToken(model);
+
+            if (response == null)
+                return BadRequest(new { message = "Username or password is incorrect" });
+
+            return Ok(response);
+        }
+
+
         [HttpGet("signin")]
         [AllowAnonymous]
         public async Task<IActionResult> Login(string returnUrl)
@@ -116,7 +130,9 @@ namespace EPlast.WebApi.Controllers
                     }
                     if (result.Succeeded)
                     {
-                        return RedirectToAction("UserProfile", "Account");
+                        //return RedirectToAction("UserProfile", "Account");
+                        var tokenStr = 6;//_accountService.generateJwtToken(loginDto);
+                        return Ok(new { token = tokenStr });
                     }
                     else
                     {

@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
-using EPlast.BussinessLayer.DTO.Club;
-using EPlast.BussinessLayer.Interfaces.Club;
-using EPlast.BussinessLayer.Interfaces.Logging;
-using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.BLL.DTO.Club;
+using EPlast.BLL.Interfaces.Club;
+using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.ViewModels;
 using EPlast.ViewModels.Club;
 using Microsoft.AspNetCore.Authorization;
@@ -143,13 +143,13 @@ namespace EPlast.Controllers
         {
             try
             {
-                var clubDTO = await _clubService.GetClubInfoByIdAsync(index);
-                if (clubDTO == null)
+                var clubDto = await _clubService.GetClubInfoByIdAsync(index);
+                if (clubDto == null)
                 {
                     return RedirectToAction("HandleError", "Error", new {code = StatusCodes.Status404NotFound});
                 }
 
-                return View(_mapper.Map<ClubDTO, ClubViewModel>(clubDTO));
+                return View(_mapper.Map<ClubDTO, ClubViewModel>(clubDto));
             }
             catch (Exception e)
             {
@@ -235,7 +235,7 @@ namespace EPlast.Controllers
             catch (ArgumentNullException e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                
+
                 return RedirectToAction("HandleError", "Error", new {code = StatusCodes.Status404NotFound});
             }
             catch (Exception e)
@@ -276,7 +276,8 @@ namespace EPlast.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddToClubAdministration(int clubId, [FromBody] ClubAdministrationDTO createdAdmin)
+        public async Task<IActionResult> AddToClubAdministration(int clubId,
+            [FromBody] ClubAdministrationDTO createdAdmin)
         {
             try
             {

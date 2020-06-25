@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO;
+using EPlast.BLL.DTO.Admin;
 using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Models.Admin;
 
