@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO;
-using EPlast.BussinessLayer.DTO.City;
-using EPlast.BussinessLayer.Interfaces.City;
-using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.City;
+using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.ViewModels;
 using EPlast.ViewModels.City;
 using Microsoft.AspNetCore.Authorization;

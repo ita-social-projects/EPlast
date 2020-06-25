@@ -1,40 +1,41 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer;
-using EPlast.BussinessLayer.Interfaces;
-using EPlast.BussinessLayer.Interfaces.AzureStorage;
-using EPlast.BussinessLayer.Interfaces.AzureStorage.Base;
-using EPlast.BussinessLayer.Interfaces.City;
-using EPlast.BussinessLayer.Interfaces.Club;
-using EPlast.BussinessLayer.Interfaces.Events;
-using EPlast.BussinessLayer.Interfaces.EventUser;
-using EPlast.BussinessLayer.Interfaces.Logging;
-using EPlast.BussinessLayer.Interfaces.UserProfiles;
-using EPlast.BussinessLayer.Services;
-using EPlast.BussinessLayer.Services.AzureStorage;
-using EPlast.BussinessLayer.Services.AzureStorage.Base;
-using EPlast.BussinessLayer.Services.City;
-using EPlast.BussinessLayer.Services.City.CityAccess;
-using EPlast.BussinessLayer.Services.Club;
-using EPlast.BussinessLayer.Services.Events;
-using EPlast.BussinessLayer.Services.EventUser;
-using EPlast.BussinessLayer.Services.Interfaces;
-using EPlast.BussinessLayer.Services.Logging;
-using EPlast.BussinessLayer.Services.UserProfiles;
-using EPlast.BussinessLayer.Settings;
+using EPlast.BLL;
+using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Interfaces.AzureStorage.Base;
+using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.Club;
+using EPlast.BLL.Interfaces.Events;
+using EPlast.BLL.Interfaces.EventUser;
+using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Services;
+using EPlast.BLL.Services.AzureStorage;
+using EPlast.BLL.Services.AzureStorage.Base;
+using EPlast.BLL.Services.City;
+using EPlast.BLL.Services.City.CityAccess;
+using EPlast.BLL.Services.Club;
+using EPlast.BLL.Services.Events;
+using EPlast.BLL.Services.EventUser;
+using EPlast.BLL.Services.Interfaces;
+using EPlast.BLL.Services.Logging;
+using EPlast.BLL.Services.UserProfiles;
+using EPlast.BLL.Settings;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.DataAccess.Repositories.Realizations.Base;
 using EPlast.Models.ViewModelInitializations;
 using EPlast.Models.ViewModelInitializations.Interfaces;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -57,7 +58,7 @@ namespace EPlast
         {
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()
                 .Where(x =>
-                    x.FullName.Equals("EPlast.BussinessLayer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null") ||
+                    x.FullName.Equals("EPlast.BLL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null") ||
                     x.FullName.Equals("EPlast, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null")));
             services.AddOptions();
             services.AddDbContextPool<EPlastDBContext>(options =>
@@ -75,8 +76,6 @@ namespace EPlast
                         authBuilder.RequireRole("Admin");
                     });
             });
-
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IAccountService, AccountService>();
@@ -135,7 +134,14 @@ namespace EPlast
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
             });
             services.AddLogging();
-            services.AddAuthentication()
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.Expiration = TimeSpan.FromDays(5);
+                    options.LoginPath = "/Account/Login";
+                    options.LogoutPath = "/Account/Logout";
+                })
                 .AddGoogle(options =>
                 {
                     options.ClientId = Configuration.GetSection("GoogleAuthentication:GoogleClientId").Value;
@@ -143,20 +149,12 @@ namespace EPlast
                 })
                 .AddFacebook(options =>
                 {
-                    options.AppId = Configuration.GetSection("FacebookAuthentication:FacebookAppId").Value;
-                    options.AppSecret = Configuration.GetSection("FacebookAuthentication:FacebookAppSecret").Value;
-                });
+                options.AppId = Configuration.GetSection("FacebookAuthentication:FacebookAppId").Value;
+                options.AppSecret = Configuration.GetSection("FacebookAuthentication:FacebookAppSecret").Value;
+            });
 
             services.Configure<DataProtectionTokenProviderOptions>(options =>
                 options.TokenLifespan = TimeSpan.FromHours(3));
-
-            services.ConfigureApplicationCookie(options =>
-            {
-                options.Cookie.HttpOnly = true;
-                options.Cookie.Expiration = TimeSpan.FromDays(5);
-                options.LoginPath = "/Account/Login";
-                options.LogoutPath = "/Account/Logout";
-            });
 
             services.Configure<RequestLocalizationOptions>(
              opts =>
@@ -206,7 +204,7 @@ namespace EPlast
                 LastName = "Admin",
                 EmailConfirmed = true,
                 ImagePath = "default.png",
-                UserProfile = new DataAccess.Entities.UserProfile(),
+                UserProfile = new UserProfile(),
                 RegistredOn = DateTime.Now
             };
             if (await userManager.FindByEmailAsync(admin["Email"]) == null)
@@ -223,7 +221,7 @@ namespace EPlast
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider services)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider services)
         {
             if (env.IsDevelopment())
             {
@@ -235,7 +233,7 @@ namespace EPlast
             }
             app.UseStatusCodePagesWithReExecute("/Error/HandleError", "?code={0}");
             var supportedCultures = new[]
-{
+            {
                 new CultureInfo("uk-UA"),
                 new CultureInfo("en-US"),
                 new CultureInfo("en"),
@@ -253,15 +251,16 @@ namespace EPlast
             app.UseStaticFiles();
             app.UseDefaultFiles();
             app.UseCookiePolicy();
+            app.UseRouting();
             app.UseAuthentication();
+            app.UseAuthorization();
 
-            //app.UseRequestLocalization();
-
-            app.UseMvc(routes =>
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
+                endpoints.MapControllerRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
             });
             CreateRoles(services).Wait();
         }

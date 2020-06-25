@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO.City;
-using EPlast.BussinessLayer.Services;
+using EPlast.BLL.DTO.City;
+using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
@@ -18,13 +18,13 @@ namespace EPlast.XUnitTest.Services.City
     {
         private readonly Mock<IRepositoryWrapper> _repoWrapper;
         private readonly Mock<IMapper> _mapper;
-        private readonly Mock<IHostingEnvironment> _env;
+        private readonly Mock<IWebHostEnvironment> _env;
 
         public CityServiceTests()
         {
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _mapper = new Mock<IMapper>();
-            _env = new Mock<IHostingEnvironment>();
+            _env = new Mock<IWebHostEnvironment>();
         }
 
         private CityService CreateCityService()

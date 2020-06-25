@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO.City;
-using EPlast.BussinessLayer.Interfaces.City;
-using EPlast.BussinessLayer.Services.City;
+using EPlast.BLL.DTO.City;
+using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Services.City;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
