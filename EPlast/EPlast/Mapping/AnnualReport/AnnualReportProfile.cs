@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO.AnnualReport;
+using EPlast.BLL.DTO.AnnualReport;
 using EPlast.ViewModels.AnnualReport;
 using DatabaseEntities = EPlast.DataAccess.Entities;
 

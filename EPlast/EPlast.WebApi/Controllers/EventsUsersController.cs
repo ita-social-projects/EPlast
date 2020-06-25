@@ -1,7 +1,7 @@
-﻿//using EPlast.BussinessLayer.DTO.EventUser;
-//using EPlast.BussinessLayer.Interfaces.EventUser;
-//using Microsoft.AspNetCore.Mvc;
-//using System.Threading.Tasks;
+﻿using EPlast.BLL.DTO.EventUser;
+using EPlast.BLL.Interfaces.EventUser;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 //namespace EPlast.WebApi.Controllers
 //{

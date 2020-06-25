@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO;
+using EPlast.BLL.DTO;
 using EPlast.DataAccess.Entities;
 using EPlast.ViewModels;
 
