@@ -15,6 +15,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Models.Jwt;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -65,6 +66,19 @@ namespace EPlast.WebApi.Controllers
             _loggerService = loggerService;
             _resourceForErrors = resourceForErrors;
         }
+
+        [HttpPost("authenticate")]
+        [AllowAnonymous]
+        public IActionResult Authenticate([FromBody]AuthenticateRequest model)
+        {
+            var response = _accountService.Authenticate(model);
+
+            if (response == null)
+                return BadRequest(new { message = "Username or password is incorrect" });
+
+            return Ok(response);
+        }
+
 
         [HttpGet("signin")]
         [AllowAnonymous]
@@ -117,7 +131,7 @@ namespace EPlast.WebApi.Controllers
                     if (result.Succeeded)
                     {
                         //return RedirectToAction("UserProfile", "Account");
-                        var tokenStr = _accountService.GenerateJSONWebToken(loginDto);
+                        var tokenStr = 6;//_accountService.generateJwtToken(loginDto);
                         return Ok(new { token = tokenStr });
                     }
                     else
