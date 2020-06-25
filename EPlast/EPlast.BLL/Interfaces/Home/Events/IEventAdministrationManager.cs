@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace EPlast.BussinessLayer.Interfaces.Events
+namespace EPlast.BLL.Interfaces.Events
 {
     public interface IEventAdmininistrationManager
     {

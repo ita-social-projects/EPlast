@@ -1,9 +1,8 @@
-﻿using EPlast.BussinessLayer.Interfaces.Events;
-using EPlast.BussinessLayer.Interfaces.EventUser;
+﻿using EPlast.BLL.Interfaces.EventUser;
 using EPlast.DataAccess.Repositories;
 using System.Threading.Tasks;
 
-namespace EPlast.BussinessLayer.Services.EventUser
+namespace EPlast.BLL.Services.EventUser
 {
     public class EventAdministrationTypeManager : IEventAdministrationTypeManager
     {

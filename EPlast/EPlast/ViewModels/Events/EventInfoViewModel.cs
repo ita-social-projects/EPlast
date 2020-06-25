@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using EPlast.ViewModels.EventUser;
+using System.Collections.Generic;
 
 namespace EPlast.ViewModels.Events
 {

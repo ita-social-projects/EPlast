@@ -51,7 +51,7 @@
                         <label class="col-form-label">Комендант</label>
                     </div>
                     <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
-                         @Html.TextBoxFor(x => x.Сommandant.UserId,
+                         @Html.TextBoxFor(x => x.Сommandant.FullName,
                        new
                             {
                                 @list = "Users-value",
@@ -60,7 +60,7 @@
                                 @Value = ""
                             })
                         <datalist id="Users-value">
-                            <option selected="selected" disabled="disabled" value="">@Model.Сommandant.FullName</option>
+                            <option selected="selected" disabled="disabled" value="@Model.Сommandant.FullName"></option>
                             @foreach (var item in Model.Users)
                             {
                                 <option data-value="@item.Id" value="@item.FirstName @item.LastName">@item.UserName</option>
@@ -75,7 +75,7 @@
                         <label class="col-form-label">Заступник Коменданта</label>
                     </div>
                     <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
-                        @Html.TextBoxFor(x => x.Alternate.UserId,
+                        @Html.TextBoxFor(x => x.Alternate.FullName,
                         new
                              {
                                  @list = "Users-value",
@@ -84,7 +84,7 @@
                                  @Value = ""
                              })
                         <datalist id="Users-value">
-                            <option selected="selected" disabled="disabled" value=""></option>
+                            <option selected="selected" disabled="disabled" value="@Model.Alternate.FullName"></option>
                             @foreach (var item in Model.Users)
                             {
                                 <option data-value="@item.Id" value="@item.FirstName @item.LastName">@item.UserName</option>
@@ -99,7 +99,7 @@
                         <label class="col-form-label">Бунчужний/на</label>
                     </div>
                     <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
-                        @Html.TextBoxFor(x => x.Bunchuzhnyi.UserId,
+                        @Html.TextBoxFor(x => x.Bunchuzhnyi.FullName,
                          new
                               {
                                   @list = "Users-value",
@@ -108,7 +108,7 @@
                                   @Value = ""
                               })
                         <datalist id="Users-value">
-                            <option selected="selected" disabled="disabled" value=""></option>
+                            <option selected="selected" disabled="disabled" value="@Model.Bunchuzhnyi.FullName"></option>
                             @foreach (var item in Model.Users)
                             {
                                 <option data-value="@item.Id" value="@item.FirstName @item.LastName">@item.UserName</option>
@@ -124,7 +124,7 @@
                         <label class="col-form-label">Писар</label>
                     </div>
                     <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
-                        @Html.TextBoxFor(x => x.Pysar.UserId,
+                        @Html.TextBoxFor(x => x.Pysar.FullName,
                          new
                               {
                                   @list = "Users-value",
@@ -133,7 +133,7 @@
                                   @Value = ""
                               })
                         <datalist id="Users-value">
-                            <option selected="selected" disabled="disabled" value=""></option>
+                            <option selected="selected" disabled="disabled" value="@Model.Pysar.FullName"></option>
                             @foreach (var item in Model.Users)
                             {
                                 <option data-value="@item.Id" value="@item.FirstName @item.LastName">@item.UserName</option>

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace EPlast.BussinessLayer.Interfaces.EventUser
+namespace EPlast.BLL.Interfaces.EventUser
 {
     public interface IEventAdministrationTypeManager
     {

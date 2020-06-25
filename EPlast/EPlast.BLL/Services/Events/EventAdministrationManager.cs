@@ -1,4 +1,4 @@
-﻿using EPlast.BussinessLayer.Interfaces.Events;
+﻿using EPlast.BLL.Interfaces.Events;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EPlast.BussinessLayer.Services.Events
+namespace EPlast.BLL.Services.Events
 {
     public class EventAdministrationManager : IEventAdmininistrationManager
     {
