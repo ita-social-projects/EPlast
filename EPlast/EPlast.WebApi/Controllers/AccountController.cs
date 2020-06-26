@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Models.Jwt;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
@@ -14,15 +15,11 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using EPlast.BLL.Interfaces.Logging;
-using EPlast.BLL.Models.Jwt;
-using EPlast.DataAccess.Entities;
 
 namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [EnableCors("CorsPolicy")]
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
@@ -68,17 +65,24 @@ namespace EPlast.WebApi.Controllers
             _resourceForErrors = resourceForErrors;
         }
 
-        [HttpPost("generateJwtToken")]
-        public IActionResult Authenticate([FromBody]AuthenticateRequest model)
+
+        [HttpPost("createToken")]
+        [AllowAnonymous]
+        public IActionResult CreateToken([FromBody]LoginModel login)
         {
-            var response = _accountService.generateJwtToken(model);
-
-            if (response == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
-
-            return Ok(response);
+            if (login == null) return Unauthorized();
+            string tokenString = string.Empty;
+            bool validUser = _accountService.Authenticate(login);
+            if (validUser)
+            {
+                tokenString = _accountService.BuildToken();
+            }
+            else
+            {
+                return Unauthorized();
+            }
+            return Ok(new { Token = tokenString });
         }
-
 
         [HttpGet("signin")]
         [AllowAnonymous]
