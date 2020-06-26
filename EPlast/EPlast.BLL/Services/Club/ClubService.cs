@@ -31,7 +31,8 @@ namespace EPlast.BLL.Services.Club
 
         public async Task<IEnumerable<ClubDTO>> GetAllClubsAsync()
         {
-            return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubDTO>>(await _repoWrapper.Club.GetAllAsync());
+            return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubDTO>>(
+                await _repoWrapper.Club.GetAllAsync());
         }
 
         public async Task<ClubProfileDTO> GetClubProfileAsync(int clubId)
@@ -42,13 +43,19 @@ namespace EPlast.BLL.Services.Club
             var clubAdministration = GetCurrentClubAdministration(club);
             var clubAdmin = GetCurrentClubAdmin(club);
 
-            return new ClubProfileDTO { Club = club, Members = members, Followers = followers, ClubAdmin = clubAdmin, ClubAdministration = clubAdministration };
+            return new ClubProfileDTO
+            {
+                Club = club, Members = members, Followers = followers, ClubAdmin = clubAdmin,
+                ClubAdministration = clubAdministration
+            };
         }
 
         public async Task<ClubDTO> GetClubInfoByIdAsync(int id)
         {
-            return _mapper.Map<DataAccessClub.Club, ClubDTO>(
-                await _repoWrapper.Club.GetFirstOrDefaultAsync(c => c.ID == id));
+            var club = await _repoWrapper.Club.GetFirstOrDefaultAsync(c => c.ID == id);
+            return (club != null)
+                ? _mapper.Map<DataAccessClub.Club, ClubDTO>(club)
+                : throw new ArgumentNullException($"Club with {id} id not found");
         }
 
         private async Task<ClubDTO> GetByIdWithDetailsAsync(int id)
@@ -64,16 +71,17 @@ namespace EPlast.BLL.Services.Club
                             .ThenInclude(us => us.User)
                             .Include(m => m.ClubMembers)
                             .ThenInclude(u => u.User));
-
-            return _mapper.Map<DataAccessClub.Club, ClubDTO>(club);
+            return (club != null)
+                ? _mapper.Map<DataAccessClub.Club, ClubDTO>(club)
+                : throw new ArgumentNullException($"Club with {id} id not found");
         }
 
         private UserDTO GetCurrentClubAdmin(ClubDTO club)
         {
             return club?.ClubAdministration
-                    .Where(a => (a.EndDate >= DateTime.Now || a.EndDate == null) && a.AdminType.AdminTypeName == "Курінний")
-                    .Select(a => a.ClubMembers.User)
-                    .FirstOrDefault();
+                .Where(a => (a.EndDate >= DateTime.Now || a.EndDate == null) && a.AdminType.AdminTypeName == "Курінний")
+                .Select(a => a.ClubMembers.User)
+                .FirstOrDefault();
         }
 
         private IEnumerable<ClubAdministrationDTO> GetCurrentClubAdministration(ClubDTO club)
@@ -83,14 +91,14 @@ namespace EPlast.BLL.Services.Club
                 .ToList();
         }
 
-        private List<ClubMembersDTO> GetClubMembers(ClubDTO club, bool isApproved, int amount)
+        private IEnumerable<ClubMembersDTO> GetClubMembers(ClubDTO club, bool isApproved, int amount)
         {
             return club?.ClubMembers.Where(m => m.IsApproved == isApproved)
                 .Take(amount)
                 .ToList();
         }
 
-        private List<ClubMembersDTO> GetClubMembers(ClubDTO club, bool isApproved)
+        private IEnumerable<ClubMembersDTO> GetClubMembers(ClubDTO club, bool isApproved)
         {
             return club?.ClubMembers.Where(m => m.IsApproved == isApproved)
                 .ToList();
@@ -103,6 +111,15 @@ namespace EPlast.BLL.Services.Club
             UpdateOrCreateAnImage(club, file, oldImageName);
             _repoWrapper.Club.Update(_mapper.Map<ClubDTO, DataAccessClub.Club>(club));
             await _repoWrapper.SaveAsync();
+        }
+
+        public async Task<ClubDTO> UpdateAsync(ClubDTO club)
+        {
+            await GetClubInfoByIdAsync(club.ID);
+            var editedClub = _mapper.Map<ClubDTO, DataAccessClub.Club>(club);
+            _repoWrapper.Club.Update(editedClub);
+            await _repoWrapper.SaveAsync();
+            return _mapper.Map<DataAccessClub.Club, ClubDTO>(editedClub);
         }
 
         private void UpdateOrCreateAnImage(ClubDTO club, IFormFile file, string oldImageName = null)
@@ -143,6 +160,15 @@ namespace EPlast.BLL.Services.Club
             return _mapper.Map<DataAccessClub.Club, ClubDTO>(newClub);
         }
 
+        public async Task<ClubDTO> CreateAsync(ClubDTO club)
+        {
+            var newClub = _mapper.Map<ClubDTO, DataAccessClub.Club>(club);
+            await _repoWrapper.Club.CreateAsync(newClub);
+            await _repoWrapper.SaveAsync();
+
+            return _mapper.Map<DataAccessClub.Club, ClubDTO>(newClub);
+        }
+
         public async Task<ClubProfileDTO> GetClubMembersOrFollowersAsync(int clubId, bool isApproved)
         {
             var club = await GetByIdWithDetailsAsync(clubId);
@@ -150,8 +176,8 @@ namespace EPlast.BLL.Services.Club
             var clubAdmin = GetCurrentClubAdmin(club);
 
             return isApproved
-                ? new ClubProfileDTO { Club = club, ClubAdmin = clubAdmin, Members = members }
-                : new ClubProfileDTO { Club = club, ClubAdmin = clubAdmin, Followers = members };
+                ? new ClubProfileDTO {Club = club, ClubAdmin = clubAdmin, Members = members}
+                : new ClubProfileDTO {Club = club, ClubAdmin = clubAdmin, Followers = members};
         }
     }
 }

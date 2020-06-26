@@ -13,8 +13,5 @@ $(document).ready(function () {
             $("#image").attr("src", URL.createObjectURL(input.files[0])).show();
         }
     });
-    $("#TheVYO").click(function () {
-        window.open(`/Account/CreatePDFAsync?userId=${$("#userId").val()}`, "_blank");
-    });
 });
 //# sourceMappingURL=userProfile.js.map
