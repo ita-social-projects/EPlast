@@ -1,4 +1,4 @@
-﻿using EPlast.DataAccess.Entities;
+﻿using EPlast.ViewModels.Admin;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -8,7 +8,7 @@ namespace EPlast.ViewModels
     {
         public int ID { get; set; }
         public int AdminTypeId { get; set; }
-        public AdminType AdminType { get; set; }
+        public AdminTypeViewModel AdminType { get; set; }
         [Required]
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }

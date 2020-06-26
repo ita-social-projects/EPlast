@@ -41,6 +41,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.Admin;
+using EPlast.BLL.Services.Admin;
 
 namespace EPlast
 {
@@ -105,6 +107,7 @@ namespace EPlast
             services.AddScoped<ICityService, CityService>();
             services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
             services.AddScoped<IClubService, ClubService>();
+            services.AddScoped<IAdminTypeService, AdminTypeService>();
             services.AddScoped<IClubAdministrationService, ClubAdministrationService>();
             services.AddScoped<IClubMembersService, ClubMembersService>();
             services.AddScoped<ICreateEventVMInitializer, CreateEventVMInitializer>();
