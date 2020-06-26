@@ -11,6 +11,6 @@ namespace EPlast.BLL.DTO.Club
         public int ClubId { get; set; }
         public ClubDTO Club { get; set; }
         public bool IsApproved { get; set; }
-        public ICollection<ClubAdministrationDTO> ClubAdministration { get; set; }
+        public IEnumerable<ClubAdministrationDTO> ClubAdministration { get; set; }
     }
 }
