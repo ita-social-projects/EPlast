@@ -1,14 +1,13 @@
 ﻿using AutoMapper;
 using EPlast.BussinessLayer.DTO.City;
 using EPlast.BussinessLayer.Interfaces.City;
-using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.BussinessLayer.Interfaces.Logging;
 using EPlast.ViewModels.City;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using EPlast.BussinessLayer.Interfaces.Logging;
 
 namespace EPlast.Controllers
 {
