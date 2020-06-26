@@ -103,14 +103,14 @@ namespace EPlast.BLL.Services.Events
                         .Include(e => e.Participants)
                         .ThenInclude(p => p.User)
                         .Include(e => e.Participants)
-                        .ThenInclude(p => p.ParticipantStatus)
+                            .ThenInclude(p => p.ParticipantStatus)
                         .Include(e => e.EventStatus)
-                        .Include(e => e.EventAdministrations).
-                        ThenInclude(e => e.User)
+                        .Include(e => e.EventAdministrations)
+                            .ThenInclude(a => a.User)
                         .Include(e => e.EventType)
                         .Include(e => e.EventCategory)
                         .Include(e => e.EventGallarys)
-                        .ThenInclude(eg => eg.Gallary)
+                            .ThenInclude(eg => eg.Gallary)
                     );
 
             var dto = new EventDTO()

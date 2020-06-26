@@ -137,15 +137,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var eventAdmininistration in Model.Event.EventAdministrations)
+                        @foreach (var eventAdmin in Model.Event.EventAdmins)
                         {
                             <tr>
                                 <td>
-                                    <a asp-controller="Account" asp-action="UserProfile" asp-route-userId=@eventAdmininistration.UserId class="title-link">
-                                        @eventAdmininistration.FullName
+                                    <a asp-controller="Account" asp-action="UserProfile" asp-route-userId=@eventAdmin.UserId class="title-link">
+                                        @eventAdmin.FullName
                                     </a>
                                 </td>
-                                <td>@eventAdmininistration.Email</td>
+                                <td>@eventAdmin.Email</td>
                             </tr>
                         }
                     </tbody>
