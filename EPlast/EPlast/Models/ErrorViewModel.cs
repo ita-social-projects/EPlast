@@ -1,5 +1,3 @@
-using System;
-
 namespace EPlast.Models
 {
     public class ErrorViewModel

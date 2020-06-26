@@ -1,5 +1,5 @@
-﻿using EPlast.BussinessLayer.DTO.Events;
-using EPlast.BussinessLayer.Services.Events;
+﻿using EPlast.BLL.DTO.Events;
+using EPlast.BLL.Services.Events;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Moq;
