@@ -1,6 +1,6 @@
 function createDecisionDataTable() {
     $("#dtReadDecision").one("preInit.dt", () => {
-        const button = $(`<button id="createDecisionButton" class="btn btn-sm btn-primary btn-management" data-toggle="modal" data-target="#CreateDecisionModal">Додати нове рішення</button>`);
+        const button = $(`<button id="createDecisionButton" class="btn btn-sm btn-primary btn-management" data-toggle="modal" data-target="#CreateDecisionModal">������ ���� ������</button>`);
         $("#dtReadDecision_filter label").append(button);
     });
     $("#dtReadDecision").DataTable({
@@ -75,7 +75,7 @@ $(() => {
         createDecisionForm.forEach(element => {
             if ($(element).val().toString().length === 0) {
                 console.log($(element).val().toString().replace(" ", "").length);
-                $(element).parent("div").children(".field-validation-valid").text("Це поле має бути заповнене.");
+                $(element).parent("div").children(".field-validation-valid").text("�� ���� �� ���� ���������.");
                 bool = false;
             }
             else
@@ -94,7 +94,7 @@ $(() => {
         const files = input.files;
         const fileMaxSize = 10485760;
         if (files[0] !== undefined && files[0].size >= fileMaxSize) {
-            alert("файл за великий (більше 10 Мб)");
+            alert("���� �� ������� (����� 10 ��)");
             return;
         }
         $("#CreateDecisionForm-submit").prop("disabled", true);
@@ -129,7 +129,7 @@ $(() => {
                     $("#ModalSuccess").modal("show");
                     let file = "";
                     if (response.decision.haveFile) {
-                        file = `<a href="/Decision/Download/${response.decision.id}?filename=${files[0].name}">додаток.${files[0].name.split('.')[1]}</a>`;
+                        file = `<a href="/Decision/Download/${response.decision.id}?filename=${files[0].name}">�������.${files[0].name.split('.')[1]}</a>`;
                     }
                     const table = $("#dtReadDecision").DataTable();
                     $("#dtReadDecision").DataTable().row.add([
@@ -146,7 +146,7 @@ $(() => {
                 }
                 else {
                     $("#CreateDecisionModal").modal("hide");
-                    $("#ModalError.modal-body:first p:first strong:first").html("Не можливо додати звіт!");
+                    $("#ModalError.modal-body:first p:first strong:first").html("�� ������� ������ ���!");
                 }
                 ClearCreateFormData();
                 $("#CreateDecisionFormFile").val("");
@@ -155,7 +155,7 @@ $(() => {
             error() {
                 $("#CreateDecisionForm-submit").prop("disabled", false);
                 $("#CreateDecisionModal").modal("hide");
-                $("#ModalError.modal-body:first p:first strong:first").html("Не можливо додати звіт!");
+                $("#ModalError.modal-body:first p:first strong:first").html("�� ������� ������ ���!");
             }
         });
     });
@@ -169,7 +169,7 @@ $(() => {
         editDecisionForm.forEach(element => {
             if ($(element).val().toString().length === 0) {
                 console.log($(element).val().toString().length);
-                $(element).parent("div").children(".field-validation-valid").text("Це поле має бути заповнене.");
+                $(element).parent("div").children(".field-validation-valid").text("�� ���� �� ���� ���������.");
                 bool = false;
             }
             else
@@ -211,13 +211,13 @@ $(() => {
                 }
                 else {
                     $("#EditDecisionModal").modal("hide");
-                    $("#ModalError.modal-body:first p:first strong:first").html("Не можливо редагувати звіт!");
+                    $("#ModalError.modal-body:first p:first strong:first").html("�� ������� ���������� ���!");
                 }
             },
             error() {
                 $("#EditDecisionForm-submit").prop('disabled', false);
                 $("#EditDecisionModal").modal("hide");
-                $("#ModalError.modal-body:first p:first strong:first").html("Не можливо редагувати звіт!");
+                $("#ModalError.modal-body:first p:first strong:first").html("�� ������� ���������� ���!");
             }
         });
     });
@@ -239,13 +239,13 @@ $(() => {
                 }
                 else {
                     $("#EditDecisionModal").modal("hide");
-                    $("#ModalError.modal-body:first p:first strong:first").html("Не вдалося видалити звіт!");
+                    $("#ModalError.modal-body:first p:first strong:first").html("�� ������� �������� ���!");
                 }
             },
             error() {
                 $("#DeleteDecisionForm-submit").prop('disabled', false);
                 $("#DeleteDecisionModal").modal("hide");
-                $("#ModalError.modal-body:first p:first strong:first").html("Не можливо редагувати звіт!");
+                $("#ModalError.modal-body:first p:first strong:first").html("�� ������� ���������� ���!");
             }
         });
     });
@@ -257,7 +257,7 @@ $(() => {
                 case "edit":
                     $.get(`/Decision/GetDecision?id=${content}`, function (json) {
                         if (!json.success) {
-                            $("#ModalError.modal-body:first p:first strong:first").html("ID рішення немає в базі!");
+                            $("#ModalError.modal-body:first p:first strong:first").html("ID ������ ���� � ���!");
                             return;
                         }
                         $("#Edit-Decision-ID").val(json.decision.id);
@@ -272,7 +272,7 @@ $(() => {
                 case "delete":
                     $.get(`/Decision/GetDecision?id=${content}`, function (json) {
                         if (!json.success) {
-                            $("#ModalError.modal-body:first p:first strong:first").html("ID рішення немає в базі!");
+                            $("#ModalError.modal-body:first p:first strong:first").html("ID ������ ���� � ���!");
                             return;
                         }
                         $("#Delete-Decision-ID").val(json.decision.id);
@@ -282,9 +282,9 @@ $(() => {
             }
         },
         items: {
-            "edit": { name: "Редагувати", icon: "far fa-edit" },
-            "pdf": { name: "Конвертувати до PDF", icon: "far fa-file-pdf" },
-            "delete": { name: "Видалити", icon: "far fa-trash-alt" }
+            "edit": { name: "����������", icon: "far fa-edit" },
+            "pdf": { name: "������������ �� PDF", icon: "far fa-file-pdf" },
+            "delete": { name: "��������", icon: "far fa-trash-alt" }
         }
     });
 });

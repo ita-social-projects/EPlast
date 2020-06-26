@@ -9,7 +9,7 @@ namespace EPlast.BLL.DTO.Club
         public string ClubURL { get; set; }
         public string Description { get; set; }
         public string Logo { get; set; }
-        public ICollection<ClubMembersDTO> ClubMembers { get; set; }
-        public ICollection<ClubAdministrationDTO> ClubAdministration { get; set; }
+        public IEnumerable<ClubMembersDTO> ClubMembers { get; set; }
+        public IEnumerable<ClubAdministrationDTO> ClubAdministration { get; set; }
     }
 }
