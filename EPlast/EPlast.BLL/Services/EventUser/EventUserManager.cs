@@ -23,7 +23,6 @@ namespace EPlast.BLL.Services.EventUser
         private readonly IMapper _mapper;
         private readonly IParticipantStatusManager _participantStatusManager;
         private readonly IParticipantManager _participantManager;
-        private readonly IEventAdminManager _eventAdminManager;
         private readonly IEventCategoryManager _eventCategoryManager;
         private readonly IEventStatusManager _eventStatusManager;
         private readonly IEventAdministrationTypeManager _eventAdministrationTypeManager;
@@ -32,8 +31,8 @@ namespace EPlast.BLL.Services.EventUser
 
         public EventUserManager(IRepositoryWrapper repoWrapper, UserManager<User> userManager,
             IParticipantStatusManager participantStatusManager, IMapper mapper, IParticipantManager participantManager,
-            IEventAdminManager eventAdminManager, IEventCategoryManager eventCategoryManager,
-            IEventStatusManager eventStatusManager, IEventAdministrationTypeManager eventAdministrationTypeManager,
+            IEventCategoryManager eventCategoryManager, IEventStatusManager eventStatusManager, 
+            IEventAdministrationTypeManager eventAdministrationTypeManager,
             IEventAdmininistrationManager eventAdmininistrationManager)
         {
             _repoWrapper = repoWrapper;
@@ -41,7 +40,6 @@ namespace EPlast.BLL.Services.EventUser
             _participantStatusManager = participantStatusManager;
             _mapper = mapper;
             _participantManager = participantManager;
-            _eventAdminManager = eventAdminManager;
             _eventCategoryManager = eventCategoryManager;
             _eventStatusManager = eventStatusManager;
             _eventAdministrationTypeManager = eventAdministrationTypeManager;
