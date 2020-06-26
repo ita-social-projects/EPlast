@@ -1,5 +1,4 @@
-﻿using EPlast.BLL.DTO.EventUser;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace EPlast.BLL.DTO.Events
 {
@@ -16,9 +15,7 @@ namespace EPlast.BLL.DTO.Events
         public string EventStatus { get; set; }
         public string FormOfHolding { get; set; }
         public string ForWhom { get; set; }
-        public int NumberOfParticipants { get; set; }
-        //public List<EventAdminDTO> EventAdmins { get; set; }
-        public List<EventAdministrationDTO> EventAdministrations { get; set; }
+        public List<EventAdminDTO> EventAdmins { get; set; }
         public IEnumerable<EventParticipantDTO> EventParticipants { get; set; }
         public List<EventGalleryDTO> EventGallery { get; set; }
     }

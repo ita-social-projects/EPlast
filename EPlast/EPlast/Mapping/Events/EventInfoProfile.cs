@@ -8,10 +8,7 @@ namespace EPlast.Mapping.Events
     {
         public EventInfoProfile()
         {
-            CreateMap<EventInfoDTO, EventInfoViewModel>()
-                .ForMember(d => d.EventParticipants, s => s.MapFrom(f => f.EventParticipants))
-                .ForMember(d => d.EventGallery, s => s.MapFrom(f => f.EventGallery))
-                .ForMember(d => d.EventAdministrations, s => s.MapFrom(f => f.EventAdministrations));
+            CreateMap<EventInfoDTO, EventInfoViewModel>();
         }
     }
 }
