@@ -487,7 +487,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             }
         }
 
-        public IClubAdministrationRepository GetClubAdministration
+        public IClubAdministrationRepository ClubAdministration
         {
             get
             {
