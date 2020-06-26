@@ -87,7 +87,7 @@
 
                             </div>
                         }
-                        @if (Model.Members.Count == 0)
+                        @if (!Model.Members.Any())
                         {
                             <p class="no-followers-in-club">В цьому курені поки немає проводу!</p>
                         }
@@ -124,7 +124,7 @@
 
                             </div>
                         }
-                        @if (Model.Followers.Count == 0)
+                        @if (!Model.Followers.Any())
                         {
                             <p class="no-followers-in-club">В цьому курені поки немає прихильників!</p>
                         }
