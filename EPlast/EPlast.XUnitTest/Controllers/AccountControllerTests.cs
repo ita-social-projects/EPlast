@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO;
-using EPlast.BussinessLayer.DTO.UserProfiles;
-using EPlast.BussinessLayer.Interfaces;
-using EPlast.BussinessLayer.Interfaces.UserProfiles;
-using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.Controllers;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using EPlast.BussinessLayer.Interfaces.Logging;
+using EPlast.BLL.Interfaces.Logging;
 using Xunit;
 
 namespace EPlast.XUnitTest
@@ -35,7 +35,7 @@ namespace EPlast.XUnitTest
         private Mock<SignInManager<User>> _signInManager;
         private Mock<ILogger<AccountController>> _logger;
         private Mock<IEmailConfirmation> _emailConfirm;
-        private Mock<IHostingEnvironment> _hostEnv;
+        private Mock<IWebHostEnvironment> _hostEnv;
         private Mock<IUserService> _userService;
         private Mock<INationalityService> _nationalityService;
         private Mock<IEducationService> _educationService;
@@ -59,7 +59,7 @@ namespace EPlast.XUnitTest
             _signInManager = new Mock<SignInManager<User>>(_userManager.Object, _contextAccessor.Object, _userPrincipalFactory.Object, null, null, null);
             _logger = new Mock<ILogger<AccountController>>();
             _emailConfirm = new Mock<IEmailConfirmation>();
-            _hostEnv = new Mock<IHostingEnvironment>();
+            _hostEnv = new Mock<IWebHostEnvironment>();
             _userService = new Mock<IUserService>();
             _nationalityService = new Mock<INationalityService>();
             _educationService = new Mock<IEducationService>();

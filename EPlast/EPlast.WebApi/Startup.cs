@@ -1,39 +1,40 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer;
-using EPlast.BussinessLayer.Interfaces;
-using EPlast.BussinessLayer.Interfaces.AzureStorage;
-using EPlast.BussinessLayer.Interfaces.AzureStorage.Base;
-using EPlast.BussinessLayer.Interfaces.City;
-using EPlast.BussinessLayer.Interfaces.Club;
-using EPlast.BussinessLayer.Interfaces.Events;
-using EPlast.BussinessLayer.Interfaces.EventUser;
-using EPlast.BussinessLayer.Interfaces.Logging;
-using EPlast.BussinessLayer.Interfaces.UserProfiles;
-using EPlast.BussinessLayer.Services;
-using EPlast.BussinessLayer.Services.AzureStorage;
-using EPlast.BussinessLayer.Services.AzureStorage.Base;
-using EPlast.BussinessLayer.Services.City;
-using EPlast.BussinessLayer.Services.City.CityAccess;
-using EPlast.BussinessLayer.Services.Club;
-using EPlast.BussinessLayer.Services.Events;
-using EPlast.BussinessLayer.Services.EventUser;
-using EPlast.BussinessLayer.Services.Interfaces;
-using EPlast.BussinessLayer.Services.Logging;
-using EPlast.BussinessLayer.Services.UserProfiles;
-using EPlast.BussinessLayer.Settings;
+using EPlast.BLL;
+using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Interfaces.AzureStorage.Base;
+using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.Club;
+using EPlast.BLL.Interfaces.Events;
+using EPlast.BLL.Interfaces.EventUser;
+using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Services;
+using EPlast.BLL.Services.AzureStorage;
+using EPlast.BLL.Services.AzureStorage.Base;
+using EPlast.BLL.Services.City;
+using EPlast.BLL.Services.City.CityAccess;
+using EPlast.BLL.Services.Club;
+using EPlast.BLL.Services.Events;
+using EPlast.BLL.Services.EventUser;
+using EPlast.BLL.Services.Interfaces;
+using EPlast.BLL.Services.Logging;
+using EPlast.BLL.Services.UserProfiles;
+using EPlast.BLL.Settings;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.DataAccess.Repositories.Realizations.Base;
 using EPlast.WebApi.Extensions;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
@@ -41,7 +42,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using EPlast.DataAccess.Repositories.Realizations.Base;
 
 namespace EPlast.WebApi
 {
@@ -56,10 +56,10 @@ namespace EPlast.WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()
                 .Where(x =>
-                    x.FullName.Equals("EPlast.BussinessLayer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null")));
+                    x.FullName.Equals("EPlast.BLL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null")));
 
             services.AddDbContextPool<EPlastDBContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("EPlastDBConnection")));
@@ -73,13 +73,37 @@ namespace EPlast.WebApi
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("V1", new OpenApiInfo { Title = "MyApi", Version = "V1" });
-                //c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme."
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                          new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "Bearer"
+                                }
+                            },
+                            new string[] {}
+                    }
+                });
             });
+
             services.ConfigureSwaggerGen(options =>
             {
                 options.CustomSchemaIds(x => x.FullName);
             });
-
+            services.AddControllers();
             services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
@@ -126,7 +150,14 @@ namespace EPlast.WebApi
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddLogging();
 
-            services.AddAuthentication()
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.Expiration = TimeSpan.FromDays(5);
+                    options.LoginPath = "/Account/Login";
+                    options.LogoutPath = "/Account/Logout";
+                })
                 .AddGoogle(options =>
                 {
                     options.ClientId = Configuration.GetSection("GoogleAuthentication:GoogleClientId").Value;
@@ -136,17 +167,14 @@ namespace EPlast.WebApi
                 {
                     options.AppId = Configuration.GetSection("FacebookAuthentication:FacebookAppId").Value;
                     options.AppSecret = Configuration.GetSection("FacebookAuthentication:FacebookAppSecret").Value;
-                });
-
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                })
                 .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
                         ValidateAudience = true,
-                        ValidateLifetime = true,
+                        ValidateLifetime = false,
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = Configuration["Jwt:Issuer"],
                         ValidAudience = Configuration["Jwt:Issuer"],
@@ -184,18 +212,17 @@ namespace EPlast.WebApi
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
             });
 
-            services.AddCors(options =>
+            /*services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
                     builder => builder.AllowAnyOrigin()
                     .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials());
-            });
+                    .AllowAnyHeader());
+            });*/
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseSwagger();
             app.UseSwaggerUI(c =>
@@ -230,10 +257,15 @@ namespace EPlast.WebApi
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            //app.UseCors("CorsPolicy");
             app.UseHttpsRedirection();
-            app.UseMvc();
+            app.UseRouting();
+            app.UseAuthorization();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
             app.UseAuthentication();
-            app.UseCors("CorsPolicy");
         }
     }
 }

@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO.Account;
-using EPlast.BussinessLayer.Interfaces;
-using EPlast.BussinessLayer.Interfaces.UserProfiles;
-using EPlast.BussinessLayer.Services.Interfaces;
+using EPlast.BLL.DTO.Account;
+using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Models.Jwt;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
@@ -14,13 +15,11 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using EPlast.BussinessLayer.Interfaces.Logging;
 
 namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [EnableCors("CorsPolicy")]
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
@@ -64,6 +63,25 @@ namespace EPlast.WebApi.Controllers
             _userManagerService = userManagerService;
             _loggerService = loggerService;
             _resourceForErrors = resourceForErrors;
+        }
+
+
+        [HttpPost("createToken")]
+        [AllowAnonymous]
+        public IActionResult CreateToken([FromBody]LoginModel login)
+        {
+            if (login == null) return Unauthorized();
+            string tokenString = string.Empty;
+            bool validUser = _accountService.Authenticate(login);
+            if (validUser)
+            {
+                tokenString = _accountService.BuildToken();
+            }
+            else
+            {
+                return Unauthorized();
+            }
+            return Ok(new { Token = tokenString });
         }
 
         [HttpGet("signin")]
@@ -116,7 +134,9 @@ namespace EPlast.WebApi.Controllers
                     }
                     if (result.Succeeded)
                     {
-                        return RedirectToAction("UserProfile", "Account");
+                        //return RedirectToAction("UserProfile", "Account");
+                        var tokenStr = 6;//_accountService.generateJwtToken(loginDto);
+                        return Ok(new { token = tokenStr });
                     }
                     else
                     {

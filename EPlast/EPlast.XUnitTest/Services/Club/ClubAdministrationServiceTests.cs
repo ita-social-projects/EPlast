@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
-using EPlast.BussinessLayer.DTO;
-using EPlast.BussinessLayer.DTO.Club;
-using EPlast.BussinessLayer.DTO.UserProfiles;
-using EPlast.BussinessLayer.Interfaces.Club;
-using EPlast.BussinessLayer.Services.Club;
+using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.Admin;
+using EPlast.BLL.DTO.Club;
+using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces.Club;
+using EPlast.BLL.Services.Club;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
