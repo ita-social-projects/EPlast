@@ -262,7 +262,7 @@ namespace EPlast.WebApi
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader();
-            });
+        });
 
             app.UseHttpsRedirection();
             app.UseRouting();
