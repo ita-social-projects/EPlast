@@ -1,14 +1,13 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces.City;
-using EPlast.BLL.Services.Interfaces;
+using EPlast.BLL.Interfaces.Logging;
 using EPlast.ViewModels.City;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using EPlast.BLL.Interfaces.Logging;
 
 namespace EPlast.Controllers
 {
@@ -41,7 +40,6 @@ namespace EPlast.Controllers
                 }
 
                 return View(_mapper.Map<CityProfileDTO, CityProfileViewModel>(await _cityService.GetCityProfileAsync(cityId)));
-
             }
             catch (Exception e)
             {
@@ -141,16 +139,17 @@ namespace EPlast.Controllers
                 {
                     return View("Edit", model.City.ID);
                 }
+
                 await _cityService.EditAsync(_mapper.Map<CityProfileViewModel, CityProfileDTO>(model), file);
                 _logger.LogInformation($"City {model.City.Name} was edited profile and saved in the database");
-                
+
                 return RedirectToAction("CityProfile", "City", new { cityid = model.City.ID });
 
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                
+
                 return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
 
@@ -166,7 +165,7 @@ namespace EPlast.Controllers
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                
+
                 return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
@@ -180,15 +179,16 @@ namespace EPlast.Controllers
                 {
                     return View("Create", model);
                 }
+
                 int cityId = await _cityService.CreateAsync(_mapper.Map<CityProfileViewModel, CityProfileDTO>(model), file);
-                
+
                 return RedirectToAction("CityProfile", "City", new { cityid = cityId });
 
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                
+
                 return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
@@ -202,13 +202,13 @@ namespace EPlast.Controllers
                 {
                     return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
                 }
-                
+
                 return View(_mapper.Map<CityDTO, CityViewModel>(cityDto));
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                
+
                 return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
@@ -222,16 +222,15 @@ namespace EPlast.Controllers
                 {
                     return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
                 }
-                
+
                 return View(_mapper.Map<CityProfileDTO, CityProfileViewModel>(cityProfileDto));
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                
+
                 return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
-
     }
 }
