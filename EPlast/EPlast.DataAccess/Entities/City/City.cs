@@ -8,7 +8,7 @@ namespace EPlast.DataAccess.Entities
         public int ID { get; set; }
         [Required, MaxLength(50, ErrorMessage = "Назва станиці не має перевищувати 50 символів")]
         public string Name { get; set; }
-        [StringLength(18, ErrorMessage = "Контактний номер станиці повинен містити 12 цифр")]
+        [MaxLength(16, ErrorMessage = "Контактний номер станиці не має перевищувати 16 символів")]
         public string PhoneNumber { get; set; }
         [MaxLength(50, ErrorMessage = "Email станиці не має перевищувати 50 символів")]
         public string Email { get; set; }
