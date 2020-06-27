@@ -139,42 +139,21 @@ namespace EPlast.BLL.Services
 
         public async Task EditAsync(CityProfileDTO model, IFormFile file)
         {
-            var city = await CreateCityAsync(model, file);
-
-            _repoWrapper.City.Update(city);
+            var city = model.City;
+            await UploadPhotoAsync(city, file);
+            _repoWrapper.City.Update(_mapper.Map<CityDTO, DataAccessCity.City>(model.City));
             await _repoWrapper.SaveAsync();
         }
 
         public async Task<int> CreateAsync(CityProfileDTO model, IFormFile file)
         {
-            var city = await CreateCityAsync(model, file);
-
-            await _repoWrapper.City.CreateAsync(city);
+            var city = model.City;
+            await UploadPhotoAsync(city, file);
+            var modelToCreate = _mapper.Map<CityDTO, DataAccessCity.City>(model.City);
+            await _repoWrapper.City.CreateAsync(modelToCreate);
             await _repoWrapper.SaveAsync();
 
-            return city.ID;
-        }
-
-        private async Task<DataAccessCity.City> CreateCityAsync(CityProfileDTO model, IFormFile file)
-        {
-            var cityDto = model.City;
-            await UploadPhotoAsync(cityDto, file);
-
-            var city = _mapper.Map<CityDTO, DataAccessCity.City>(cityDto);
-            var region = await _repoWrapper.Region.GetFirstOrDefaultAsync(r => r.RegionName == city.Region.RegionName);
-
-            if (region == null)
-            {
-                region = new DataAccessCity.Region();
-                region.RegionName = city.Region.RegionName;
-
-                await _repoWrapper.Region.CreateAsync(region);
-                await _repoWrapper.SaveAsync();
-            }
-
-            city.RegionId = region.ID;
-
-            return city;
+            return modelToCreate.ID;
         }
 
         private async Task UploadPhotoAsync(CityDTO city, IFormFile file)
