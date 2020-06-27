@@ -136,7 +136,7 @@ namespace EPlast.DataAccess.Migrations
                         .HasMaxLength(10);
 
                     b.Property<string>("PhoneNumber")
-                        .HasMaxLength(18);
+                        .HasMaxLength(16);
 
                     b.Property<string>("PostIndex")
                         .HasMaxLength(7);
