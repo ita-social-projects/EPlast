@@ -144,7 +144,6 @@ namespace EPlast.Controllers
                 _logger.LogInformation($"City {model.City.Name} was edited profile and saved in the database");
 
                 return RedirectToAction("CityProfile", "City", new { cityid = model.City.ID });
-
             }
             catch (Exception e)
             {
@@ -152,7 +151,6 @@ namespace EPlast.Controllers
 
                 return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
-
         }
 
         [HttpGet]
@@ -183,7 +181,6 @@ namespace EPlast.Controllers
                 int cityId = await _cityService.CreateAsync(_mapper.Map<CityProfileViewModel, CityProfileDTO>(model), file);
 
                 return RedirectToAction("CityProfile", "City", new { cityid = cityId });
-
             }
             catch (Exception e)
             {
