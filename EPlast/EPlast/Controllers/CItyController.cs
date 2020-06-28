@@ -137,7 +137,7 @@ namespace EPlast.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return View("Edit", model.City.ID);
+                    return View("Edit", model);
                 }
 
                 await _cityService.EditAsync(_mapper.Map<CityProfileViewModel, CityProfileDTO>(model), file);
