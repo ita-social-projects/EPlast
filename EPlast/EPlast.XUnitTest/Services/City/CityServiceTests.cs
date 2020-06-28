@@ -41,8 +41,6 @@ namespace EPlast.XUnitTest.Services.City
             _repoWrapper.Setup(r => r.City.FindByCondition(It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>()))
                 .Returns((Expression<Func<DataAccess.Entities.City, bool>> condition) =>
                     CreateFakeCities(10).Where(condition));
-            _repoWrapper.Setup(r => r.Region.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Region, bool>>>(), null))
-                .ReturnsAsync(GetTestRegion());
             _repoWrapper.Setup(r => r.City.Update(It.IsAny<DataAccess.Entities.City>()))
                 .Verifiable();
             _repoWrapper.Setup(r => r.City.Create(It.IsAny<DataAccess.Entities.City>()))
@@ -178,18 +176,6 @@ namespace EPlast.XUnitTest.Services.City
             }
 
             return cities.AsQueryable();
-        }
-
-        public Region GetTestRegion()
-        {
-            var region = new Region()
-            {
-                ID = 1,
-                RegionName = "Lviv",
-                Description = "Lviv region"
-            };
-
-            return region;
         }
 
         public IQueryable<CityDTO> CreateFakeCityDto(int count)
