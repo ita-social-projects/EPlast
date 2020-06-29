@@ -59,7 +59,7 @@ namespace EPlast.WebApi.Controllers
             return Ok(decisionViewModel);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
             try
@@ -151,7 +151,7 @@ namespace EPlast.WebApi.Controllers
             return Ok(Tuple.Create(await Create(), decisions));
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
 
