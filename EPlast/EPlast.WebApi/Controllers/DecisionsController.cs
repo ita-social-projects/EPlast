@@ -31,7 +31,7 @@ namespace EPlast.WebApi.Controllers
             _loggerService = loggerService;
         }
 
-        [HttpPost("NewDecision")]
+        [HttpGet("NewDecision")]
         public async Task<ActionResult<DecisionViewModel>> Create()
         {
             DecisionViewModel decisionViewModel = null;
@@ -56,7 +56,7 @@ namespace EPlast.WebApi.Controllers
                 _loggerService.LogError($"{e.Message}");
             }
 
-            return Created("Decisions/NewDecision", decisionViewModel);
+            return Ok(decisionViewModel);
         }
 
         [HttpGet("{id}")]
