@@ -14,6 +14,6 @@ namespace EPlast.BLL.DTO.EventUser
         public EventAdministrationDTO Pysar { get; set; }
         public IEnumerable<EventCategoryDTO> EventCategories { get; set; }
         public IEnumerable<EventTypeDTO> EventTypes { get; set; }
-        public IEnumerable<UserDTO> Users { get; set; }
+        public IEnumerable<UserInfoDTO> Users { get; set; }
     }
 }
