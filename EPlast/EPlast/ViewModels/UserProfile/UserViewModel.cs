@@ -38,7 +38,7 @@ namespace EPlast.ViewModels.UserInformation.UserProfile
         public UserProfileViewModel UserProfile { get; set; }
         public IEnumerable<ConfirmedUserViewModel> ConfirmedUsers { get; set; }
         public IEnumerable<ApproverViewModel> Approvers { get; set; }
-        public IEnumerable<EventAdmin> Events { get; set; }
+        public IEnumerable<EventAdministration> EventAdministrations { get; set; }
         public IEnumerable<Participant> Participants { get; set; }
         public IEnumerable<CityMembers> CityMembers { get; set; }
         public IEnumerable<CityAdministration> CityAdministrations { get; set; }
