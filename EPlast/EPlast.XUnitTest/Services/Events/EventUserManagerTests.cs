@@ -169,9 +169,9 @@ namespace EPlast.XUnitTest.Services.Events
                 {
                     new EventTypeDTO { }
                 },
-                Users = new List<UserDTO>
+                Users = new List<UserInfoDTO>
                 {
-                    new UserDTO { }
+                    new UserInfoDTO { }
                 }
 
             };
