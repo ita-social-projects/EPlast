@@ -53,7 +53,7 @@ namespace EPlast.WebApi.Controllers
             {
                 await _eventUserManager.CreateEventAsync(createDTO);
 
-                return CreatedAtAction(nameof(GetEventUserByUserId), new { id = createDTO.Event.ID }, createDTO);
+                return Created(nameof(GetEventUserByUserId), createDTO);
             }
             catch
             {
@@ -83,7 +83,7 @@ namespace EPlast.WebApi.Controllers
             {
                 await _eventUserManager.EditEventAsync((createDTO));
 
-                return CreatedAtAction(nameof(GetEventUserByUserId), new { id = createDTO.Event.ID }, createDTO);
+                return Created(nameof(GetEventUserByUserId), createDTO);
             }
             catch
             {

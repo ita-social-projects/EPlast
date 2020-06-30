@@ -14,7 +14,7 @@ namespace EPlast.ViewModels.EventUser
         public EventAdministrationViewModel Pysar { get; set; }
         public IEnumerable<EventCategoryViewModel> EventCategories { get; set; }
         public IEnumerable<EventTypeViewModel> EventTypes { get; set; }
-        public IEnumerable<UserViewModel> Users { get; set; }
+        public IEnumerable<UserInfoViewModel> Users { get; set; }
     }
 }
 

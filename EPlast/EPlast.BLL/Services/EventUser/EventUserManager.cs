@@ -89,7 +89,7 @@ namespace EPlast.BLL.Services.EventUser
         public async Task<EventCreateDTO> InitializeEventCreateDTOAsync()
         {
             var eventCategories = await _eventCategoryManager.GetDTOAsync();
-            var users = _mapper.Map<List<User>, IEnumerable<UserDTO>>((await _repoWrapper.User.GetAllAsync()).ToList());
+            var users = _mapper.Map<List<User>, IEnumerable<UserInfoDTO>>((await _repoWrapper.User.GetAllAsync()).ToList());
             var eventTypes = _mapper.Map<List<EventType>, IEnumerable<EventTypeDTO>>((await _repoWrapper.EventType.GetAllAsync())
                 .ToList());
             var model = new EventCreateDTO()
@@ -157,7 +157,7 @@ namespace EPlast.BLL.Services.EventUser
                 Include(q => q.EventStatus).
                 Include(q => q.Participants));
 
-            var users = _mapper.Map<List<User>, IEnumerable<UserDTO>>((await _repoWrapper.User.GetAllAsync()).ToList());
+            var users = _mapper.Map<List<User>, IEnumerable<UserInfoDTO>>((await _repoWrapper.User.GetAllAsync()).ToList());
             var eventTypes = _mapper.Map<List<EventType>, IEnumerable<EventTypeDTO>>((await _repoWrapper.EventType.GetAllAsync()).ToList());
             var eventCategories = await _eventCategoryManager.GetDTOAsync();
             var comendantTypeId = await _eventAdministrationTypeManager.GetTypeIdAsync("Комендант");
