@@ -244,7 +244,7 @@ namespace EPlast.XUnitTest.Controllers
                 Сommandant = new EventAdministrationViewModel
                 {
                     UserId = "2",
-                    User = new UserViewModel { },
+                    User = new UserInfoViewModel { },
                     Email = "example@.com",
                     FullName = "Ostap Shutiak"
                 },
@@ -264,7 +264,7 @@ namespace EPlast.XUnitTest.Controllers
                         EventTypeName = "подія"
                     }
                 },
-                Users = new List<UserViewModel> { }
+                Users = new List<UserInfoViewModel> { }
             };
 
             return model;
