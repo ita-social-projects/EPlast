@@ -53,37 +53,7 @@ namespace EPlast.WebApi.Controllers
             {
                 await _eventUserManager.CreateEventAsync(createDTO);
 
-                return CreatedAtAction(nameof(SetAdministrationByEventId), new { id = createDTO.Event.ID }, createDTO);
-            }
-            catch
-            {
-                return BadRequest();
-            }
-        }
-
-        [HttpGet("newAdministration/{eventId:int}")]
-        public async Task<IActionResult> SetAdministrationByEventId(int eventId)
-        {
-            try
-            {
-                var eventCreateModel = await _eventUserManager.InitializeEventCreateDTOAsync(eventId);
-
-                return Ok(eventCreateModel);
-            }
-            catch
-            {
-                return BadRequest();
-            }
-        }
-
-        [HttpPost("newAdministration")]
-        public async Task<IActionResult> SetAdministration(EventCreateDTO createDTO)
-        {
-            try
-            {
-                    await _eventUserManager.SetAdministrationAsync(createDTO);
-
-                    return CreatedAtAction("EventInfo", "Action", new { id = createDTO.Event.ID }, createDTO);
+                return Created(nameof(GetEventUserByUserId), createDTO);
             }
             catch
             {
@@ -111,9 +81,9 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                    await _eventUserManager.EditEventAsync((createDTO));
+                await _eventUserManager.EditEventAsync((createDTO));
 
-                    return CreatedAtAction(nameof(GetEventUserByUserId), new { id = createDTO.Event.ID }, createDTO);
+                return Created(nameof(GetEventUserByUserId), createDTO);
             }
             catch
             {
