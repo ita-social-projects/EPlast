@@ -3,6 +3,7 @@ using EPlast.BLL.DTO.Events;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.Events;
+using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Services.EventUser;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
@@ -25,12 +26,12 @@ namespace EPlast.XUnitTest.Services.Events
         private readonly Mock<IRepositoryWrapper> _repoWrapper;
         private readonly Mock<UserManager<User>> _userManager;
         private readonly Mock<IMapper> _mapper;
-        private readonly Mock<IEventAdminManager> _eventAdminManager;
         private readonly Mock<IParticipantManager> _participantManager;
         private readonly Mock<IParticipantStatusManager> _participantStatusManager;
         private readonly Mock<IEventCategoryManager> _eventCategoryManager;
         private readonly Mock<IEventStatusManager> _eventStatusManager;
-
+        private readonly Mock<IEventAdmininistrationManager> _eventAdministrationManager;
+        private readonly Mock<IEventAdministrationTypeManager> _eventAdministrationTypeManager;
 
         public EventUserManagerTests()
         {
@@ -41,14 +42,15 @@ namespace EPlast.XUnitTest.Services.Events
             _participantStatusManager = new Mock<IParticipantStatusManager>();
             _mapper = new Mock<IMapper>();
             _participantManager = new Mock<IParticipantManager>();
-            _eventAdminManager = new Mock<IEventAdminManager>();
             _eventCategoryManager = new Mock<IEventCategoryManager>();
             _eventStatusManager = new Mock<IEventStatusManager>();
+            _eventAdministrationManager = new Mock<IEventAdmininistrationManager>();
+            _eventAdministrationTypeManager = new Mock<IEventAdministrationTypeManager>();
 
         }
 
         [Fact]
-        public async Task EventUserSuccessTest()
+        public async Task EventUserTest()
         {
             //Arrange
             string expectedID = "abc-1";
@@ -57,14 +59,14 @@ namespace EPlast.XUnitTest.Services.Events
             _repoWrapper.Setup(x => x.User.GetFirstAsync(It.IsAny<Expression<Func<User, bool>>>(), null))
                 .ReturnsAsync(new User());
             _mapper.Setup(m => m.Map<User, UserDTO>(It.IsAny<User>())).Returns(new UserDTO());
-            _eventAdminManager.Setup(x => x.GetEventAdminsByUserIdAsync(eventUserId));
+            _eventAdministrationTypeManager.Setup(x => x.GetTypeIdAsync("Комендант"));
             _participantManager.Setup(x => x.GetParticipantsByUserIdAsync(eventUserId));
 
             //Act
             var eventUserManager = new EventUserManager(_repoWrapper.Object, _userManager.Object,
                 _participantStatusManager.Object,
-                _mapper.Object, _participantManager.Object, _eventAdminManager.Object, _eventCategoryManager.Object,
-                _eventStatusManager.Object);
+                _mapper.Object, _participantManager.Object, _eventCategoryManager.Object,_eventStatusManager.Object,
+                _eventAdministrationTypeManager.Object, _eventAdministrationManager.Object);
             var methodResult = await eventUserManager.EventUserAsync(eventUserId, new ClaimsPrincipal());
             //Assert
             Assert.NotNull(methodResult);
@@ -87,44 +89,10 @@ namespace EPlast.XUnitTest.Services.Events
 
             //Act
             var eventUserManager = new EventUserManager(_repoWrapper.Object, _userManager.Object,
-                _participantStatusManager.Object,
-                _mapper.Object, _participantManager.Object, _eventAdminManager.Object, _eventCategoryManager.Object,
-                _eventStatusManager.Object);
+                  _participantStatusManager.Object,
+                  _mapper.Object, _participantManager.Object, _eventCategoryManager.Object, _eventStatusManager.Object,
+                  _eventAdministrationTypeManager.Object, _eventAdministrationManager.Object);
             var methodResult = await eventUserManager.InitializeEventCreateDTOAsync();
-
-            //Assert
-            Assert.NotNull(methodResult);
-            Assert.IsType<EventCreateDTO>(methodResult);
-        }
-
-        [Fact]
-        public async Task InitializeEventCreateDTOTSetAdministrationTest()
-        {
-            //Assert
-            _mapper.Setup(m => m.Map<List<User>, IEnumerable<UserDTO>>(It.IsAny<List<User>>()))
-                .Returns(new List<UserDTO>());
-            _mapper.Setup(m => m.Map<Event, EventCreationDTO>(It.IsAny<Event>()))
-                .Returns(new EventCreationDTO());
-
-            _repoWrapper.Setup(r => r.Event.GetFirstAsync(It.IsAny<Expression<Func<Event, bool>>>(), It
-                .IsAny<Func<IQueryable<Event>,
-                    IIncludableQueryable<Event, object>>>())).ReturnsAsync(
-                new Event()
-                {
-                    EventAdmins = new List<EventAdmin>() { GetEventAdmins() }
-                }
-                );
-            _repoWrapper.Setup(x => x.User.GetFirstAsync(It.IsAny<Expression<Func<User, bool>>>(), null))
-                .ReturnsAsync(new User());
-
-            int eventId = 1;
-
-            //Act
-            var eventUserManager = new EventUserManager(_repoWrapper.Object, _userManager.Object,
-                _participantStatusManager.Object,
-                _mapper.Object, _participantManager.Object, _eventAdminManager.Object, _eventCategoryManager.Object,
-                _eventStatusManager.Object);
-            var methodResult = await eventUserManager.InitializeEventCreateDTOAsync(eventId);
 
             //Assert
             Assert.NotNull(methodResult);
@@ -145,30 +113,14 @@ namespace EPlast.XUnitTest.Services.Events
 
             //Act
             var eventUserManager = new EventUserManager(_repoWrapper.Object, _userManager.Object,
-                _participantStatusManager.Object,
-                _mapper.Object, _participantManager.Object, _eventAdminManager.Object, _eventCategoryManager.Object,
-                _eventStatusManager.Object);
+                  _participantStatusManager.Object,
+                  _mapper.Object, _participantManager.Object, _eventCategoryManager.Object, _eventStatusManager.Object,
+                  _eventAdministrationTypeManager.Object, _eventAdministrationManager.Object);
             var methodResult = await eventUserManager.CreateEventAsync(GetEventCreateDTO());
 
             //Assert
             Assert.IsType<int>(methodResult);
 
-        }
-
-        [Fact]
-        public async Task SetAdministrationTest()
-        {
-            //Assert
-            _repoWrapper.Setup(r => r.EventAdmin.CreateAsync(It.IsAny<EventAdmin>()));
-            _repoWrapper.Setup(r => r.EventAdministration.CreateAsync(It.IsAny<EventAdministration>()));
-
-            //Act
-            var eventUserManager = new EventUserManager(_repoWrapper.Object, _userManager.Object,
-                _participantStatusManager.Object,
-                _mapper.Object, _participantManager.Object, _eventAdminManager.Object, _eventCategoryManager.Object,
-                _eventStatusManager.Object);
-            await eventUserManager.SetAdministrationAsync(GetEventCreateDTO());
-            //Assert
         }
 
         [Fact]
@@ -184,11 +136,13 @@ namespace EPlast.XUnitTest.Services.Events
             _repoWrapper.Setup(x => x.User.GetFirstAsync(It.IsAny<Expression<Func<User, bool>>>(), null))
                 .ReturnsAsync(new User());
             _eventCategoryManager.Setup(x => x.GetDTOAsync());
+            _repoWrapper.Setup(x => x.EventAdministration.GetFirstAsync(It.IsAny<Expression<Func<EventAdministration, bool>>>(), null))
+                .ReturnsAsync(new EventAdministration());
 
             var eventUserManager = new EventUserManager(_repoWrapper.Object, _userManager.Object,
-                _participantStatusManager.Object,
-                _mapper.Object, _participantManager.Object, _eventAdminManager.Object, _eventCategoryManager.Object,
-                _eventStatusManager.Object);
+                 _participantStatusManager.Object,
+                 _mapper.Object, _participantManager.Object, _eventCategoryManager.Object, _eventStatusManager.Object,
+                 _eventAdministrationTypeManager.Object, _eventAdministrationManager.Object);
             var methodResult = await eventUserManager.InitializeEventEditDTOAsync(eventId);
 
             //Assert
@@ -203,8 +157,10 @@ namespace EPlast.XUnitTest.Services.Events
             {
 
                 Event = new EventCreationDTO { },
-                EventAdmin = new CreateEventAdminDTO { },
-                EventAdministration = new EventAdministrationDTO { },
+                Сommandant = new EventAdministrationDTO { },
+                Alternate = new EventAdministrationDTO { },
+                Bunchuzhnyi = new EventAdministrationDTO { },
+                Pysar = new EventAdministrationDTO { },
                 EventCategories = new List<EventCategoryDTO>
                 {
                     new EventCategoryDTO { }
@@ -213,26 +169,14 @@ namespace EPlast.XUnitTest.Services.Events
                 {
                     new EventTypeDTO { }
                 },
-                Users = new List<UserDTO>
+                Users = new List<UserInfoDTO>
                 {
-                    new UserDTO { }
+                    new UserInfoDTO { }
                 }
 
             };
 
             return eventCreate;
-        }
-
-        public EventAdmin GetEventAdmins()
-        {
-
-            return new EventAdmin
-            {
-                Event = new Event { },
-                EventID = 1,
-                User = new User { },
-                UserID = "1",
-            };
         }
     }
 }

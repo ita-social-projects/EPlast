@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.Events
     {
         public EventAdminProfile()
         {
-            CreateMap<EventAdmin, EventAdminDTO>()
+            CreateMap<EventAdministration, EventAdminDTO>()
                 .ForMember(d => d.UserId, s => s.MapFrom(f => f.UserID))
                 .ForMember(d => d.Email, s => s.MapFrom(f => f.User.UserName))
                 .ForMember(d => d.FullName, s => s.MapFrom(f => $"{f.User.FirstName} {f.User.LastName}"));
