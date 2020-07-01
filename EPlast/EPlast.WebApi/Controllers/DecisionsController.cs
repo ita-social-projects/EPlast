@@ -1,6 +1,5 @@
 ﻿using EPlast.BLL;
 using EPlast.BLL.DTO;
-using EPlast.BLL.Services.Interfaces;
 using EPlast.WebApi.Models.Decision;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +33,11 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("NewDecision")]
         public async Task<ActionResult<DecisionViewModel>> Create()
         {
+            return Ok(await MetaData());   
+        }
+
+        private async Task<DecisionViewModel> MetaData()
+        {
             DecisionViewModel decisionViewModel = null;
             try
             {
@@ -56,7 +60,7 @@ namespace EPlast.WebApi.Controllers
                 _loggerService.LogError($"{e.Message}");
             }
 
-            return Ok(decisionViewModel);
+            return decisionViewModel;
         }
 
         [HttpGet("{id:int}")]
@@ -94,7 +98,6 @@ namespace EPlast.WebApi.Controllers
 
         }
 
-
         [HttpPost]
         public async Task<IActionResult> Save(DecisionWrapperDTO decisionWrapper)
         {
@@ -116,6 +119,7 @@ namespace EPlast.WebApi.Controllers
                 var decisionOrganizations = (await _decisionService
                             .GetDecisionOrganizationAsync(decisionWrapper.Decision.Organization))
                             .OrganizationName;
+
                 return Created("decisions", new
                 {
                     decision = decisionWrapper.Decision,
@@ -148,7 +152,7 @@ namespace EPlast.WebApi.Controllers
                 _loggerService.LogError($"{e.Message}");
             }
 
-            return Ok(Tuple.Create(await Create(), decisions));
+            return Ok(Tuple.Create(await MetaData(), decisions));
         }
 
         [HttpDelete("{id:int}")]
@@ -169,7 +173,6 @@ namespace EPlast.WebApi.Controllers
             byte[] fileBytes;
             try
             {
-
                 fileBytes = await _decisionService.DownloadDecisionFileAsync(id);
             }
             catch (Exception e)
