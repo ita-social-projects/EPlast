@@ -22,6 +22,19 @@ namespace EPlast.WebApi.Controllers
             _cityService = cityService;
         }
 
+        [HttpGet("Profiles")]
+        public async Task<IActionResult> Index()
+        {
+            var cities = await _cityService.GetAllDTOAsync();
+
+            if (cities == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(cities);
+        }
+
         [HttpGet("Profile/{cityId}")]
         public async Task<IActionResult> GetProfile(int cityId)
         {
