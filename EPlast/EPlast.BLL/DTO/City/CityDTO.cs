@@ -34,7 +34,7 @@ namespace EPlast.BLL.DTO.City
 
         [MaxLength(7, ErrorMessage = "Поштовий індекс станиці не має перевищувати 7 символів")]
         public string PostIndex { get; set; }
-        public Region Region { get; set; }
+        public RegionDTO Region { get; set; }
 
         [StringLength(int.MaxValue, MinimumLength = 3)]
         public string Logo { get; set; }
