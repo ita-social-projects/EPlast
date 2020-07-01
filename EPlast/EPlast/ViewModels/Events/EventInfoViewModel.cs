@@ -15,7 +15,6 @@ namespace EPlast.ViewModels.Events
         public string EventStatus { get; set; }
         public string FormOfHolding { get; set; }
         public string ForWhom { get; set; }
-        public int NumberOfParticipants { get; set; }
         public List<EventAdminViewModel> EventAdmins { get; set; }
         public IEnumerable<EventParticipantViewModel> EventParticipants { get; set; }
         public List<EventGalleryViewModel> EventGallery { get; set; }
