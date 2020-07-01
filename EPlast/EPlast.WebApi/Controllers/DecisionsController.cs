@@ -167,7 +167,7 @@ namespace EPlast.WebApi.Controllers
             return NotFound();
         }
 
-        [HttpPost("downloadfile")]
+        [HttpPost("downloadfile/{id:int}/{filename}")]
         public async Task<IActionResult> Download(int id, string filename)
         {
             byte[] fileBytes;
@@ -185,7 +185,7 @@ namespace EPlast.WebApi.Controllers
             return File(fileBytes, _decisionService.GetContentType(id, filename), filename);
         }
 
-        [HttpPost("createpdf")]
+        [HttpPost("createpdf/{objId:int}")]
         public async Task<IActionResult> CreatePdf(int objId)
         {
             try
