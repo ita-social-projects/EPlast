@@ -15,7 +15,6 @@
                             <input asp-for="City.Name" class="form-control">
                             <span asp-validation-for="City.Name" class="text-danger"></span>
                         </div>
-
                         <div class="form-group">
                             <label asp-for="City.Description" class="control-label">Опис</label>
                             <input asp-for="City.Description" class="form-control">
@@ -26,7 +25,6 @@
                             <input asp-for="City.CityURL" type="url" class="form-control">
                             <span asp-validation-for="City.CityURL" class="text-danger"></span>
                         </div>
-
                         <div class="form-group">
                             <label asp-for="City.PhoneNumber" class="control-label">Номер телефону</label>
                             <input asp-for="City.PhoneNumber" id="phoneNumber" class="form-control" />
@@ -36,6 +34,11 @@
                             <label asp-for="City.Email" class="control-label">Електронна пошта</label>
                             <input asp-for="City.Email" type="email" class="form-control" />
                             <span asp-validation-for="City.Email" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="City.Region.RegionName" class="control-label">Округ</label>
+                            <input asp-for="City.Region.RegionName" class="form-control" />
+                            <span asp-validation-for="City.Region.RegionName" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="City.Street" class="control-label">Вулиця</label>
@@ -82,4 +85,3 @@
         </div>
     </div>
 </div>
-
