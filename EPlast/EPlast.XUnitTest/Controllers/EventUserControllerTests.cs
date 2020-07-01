@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.Controllers;
@@ -10,7 +6,12 @@ using EPlast.ViewModels.Events;
 using EPlast.ViewModels.EventUser;
 using EPlast.ViewModels.UserInformation.UserProfile;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest.Controllers
@@ -104,7 +105,7 @@ namespace EPlast.XUnitTest.Controllers
             var actionResult = await eventUserController.EventCreate(GetEventCreateViewModel());
             // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(actionResult);
-            Assert.Equal("SetAdministration", viewResult.ActionName);
+            Assert.Equal("EventUser", viewResult.ActionName);
             Assert.NotNull(viewResult);
         }
 
@@ -119,71 +120,10 @@ namespace EPlast.XUnitTest.Controllers
             eventUserController.ModelState.AddModelError("NameError", "Required");
             // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(actionResult);
-            Assert.Equal("SetAdministration", viewResult.ActionName);
+            Assert.Equal("EventUser", viewResult.ActionName);
             Assert.NotNull(viewResult);
         }
 
-        [Fact]
-        public async Task SetAdministrationGetSuccessTest()
-        {
-            _eventUserManager.Setup(am => am.InitializeEventCreateDTOAsync(It.IsAny<int>()))
-             .ReturnsAsync(new EventCreateDTO());
-            _mapper.Setup(m => m.Map<EventCreateDTO, EventCreateViewModel>(It.IsAny<EventCreateDTO>())).Returns(GetEventCreateViewModel());
-            int id = 1;
-            //Act  
-            var eventUserController = new EventUserController(_eventUserManager.Object, _mapper.Object);
-            var actionResult = await eventUserController.SetAdministration(id);
-            //Arrange
-            var viewResult = Assert.IsType<ViewResult>(actionResult);
-            var viewModel = Assert.IsType<EventCreateViewModel>(viewResult.Model);
-            Assert.NotNull(actionResult);
-        }
-
-        [Fact]
-        public async Task SetAdministrationGetFailureTest()
-        {
-            _eventUserManager.Setup(am => am.InitializeEventCreateDTOAsync(It.IsAny<int>()))
-              .ReturnsAsync(new EventCreateDTO());
-            _mapper.Setup(m => m.Map<EventCreateDTO, EventCreateViewModel>(It.IsAny<EventCreateDTO>())).Returns(new EventCreateViewModel());
-            int id = 1;
-            //Act  
-            var eventUserController = new EventUserController(_eventUserManager.Object, _mapper.Object);
-            var actionResult = await eventUserController.SetAdministration(id);
-            //Arrange
-            var viewResult = Assert.IsType<ViewResult>(actionResult);
-            var viewModel = Assert.IsType<EventCreateViewModel>(viewResult.Model);
-            Assert.NotNull(actionResult);
-        }
-
-        [Fact]
-        public async Task SetAdministrationPostSuccessTest()
-        {
-            _mapper.Setup(x => x.Map<EventCreateViewModel, EventCreateDTO>(It.IsAny<EventCreateViewModel>())).Returns(new EventCreateDTO());
-            _eventUserManager.Setup(x => x.SetAdministrationAsync(new EventCreateDTO()));
-            // Act
-            var eventUserController = new EventUserController(_eventUserManager.Object, _mapper.Object);
-            var actionResult = await eventUserController.SetAdministration(GetEventCreateViewModel());
-            // Assert
-            var viewResult = Assert.IsType<RedirectToActionResult>(actionResult);
-            Assert.Equal("EventInfo", viewResult.ActionName);
-            Assert.NotNull(viewResult);
-        }
-
-        [Fact]
-        public async Task SetAdministrationPostFailureTest()
-        {
-            //Arrange
-            _mapper.Setup(x => x.Map<EventCreateViewModel, EventCreateDTO>(It.IsAny<EventCreateViewModel>())).Returns(new EventCreateDTO());
-            _eventUserManager.Setup(x => x.SetAdministrationAsync(new EventCreateDTO()));
-            // Act
-            var eventUserController = new EventUserController(_eventUserManager.Object, _mapper.Object);
-            var actionResult = await eventUserController.SetAdministration(GetEventCreateViewModel());
-            eventUserController.ModelState.AddModelError("NameError", "Required");
-            // Assert
-            var viewResult = Assert.IsType<RedirectToActionResult>(actionResult);
-            Assert.Equal("EventInfo", viewResult.ActionName);
-            Assert.NotNull(viewResult);
-        }
 
         [Fact]
         public async Task EventEditGetSuccessTest()
@@ -300,15 +240,13 @@ namespace EPlast.XUnitTest.Controllers
                     ForWhom = "дітей",
                     NumberOfPartisipants = 1
                 },
-                EventAdmin = new CreateEventAdminViewModel
+
+                Сommandant = new EventAdministrationViewModel
                 {
-                    UserID = "1",
-                    User = new UserViewModel { }
-                },
-                EventAdministration = new EventAdministrationViewModel
-                {
-                    UserID = "2",
-                    User = new UserViewModel { }
+                    UserId = "2",
+                    User = new UserInfoViewModel { },
+                    Email = "example@.com",
+                    FullName = "Ostap Shutiak"
                 },
                 EventCategories = new List<EventCategoryViewModel>
                 {
@@ -326,19 +264,11 @@ namespace EPlast.XUnitTest.Controllers
                         EventTypeName = "подія"
                     }
                 },
-                Users = new List<UserViewModel> { }
+                Users = new List<UserInfoViewModel> { }
             };
+
             return model;
         }
-
-
-
-
-
-
-
-
-
     }
 }
 

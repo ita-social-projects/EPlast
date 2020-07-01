@@ -64,7 +64,7 @@ namespace EPlast.BLL.Services.Events
                 .GetAllAsync(
                     e => e.EventCategoryID == id && e.EventTypeID == actionId,
                     source => source
-                        .Include(e => e.EventAdmins)
+                        .Include(e => e.EventAdministrations)
                         .Include(e => e.Participants)
                 );
 
@@ -73,7 +73,7 @@ namespace EPlast.BLL.Services.Events
                 {
                     EventId = ev.ID,
                     EventName = ev.EventName,
-                    IsUserEventAdmin = (ev.EventAdmins.Any(e => e.UserID == _userManager.GetUserId(user))) || user.IsInRole("Адміністратор подій"),
+                    IsUserEventAdmin = (ev.EventAdministrations.Any(e => e.UserID == _userManager.GetUserId(user))) || user.IsInRole("Адміністратор подій"),
                     IsUserParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(user)),
                     IsUserApprovedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(user) && p.ParticipantStatusId == approvedStatus),
                     IsUserUndeterminedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(user) && p.ParticipantStatusId == undeterminedStatus),
@@ -103,21 +103,20 @@ namespace EPlast.BLL.Services.Events
                         .Include(e => e.Participants)
                         .ThenInclude(p => p.User)
                         .Include(e => e.Participants)
-                        .ThenInclude(p => p.ParticipantStatus)
-                        .Include(e => e.EventAdmins)
-                        .ThenInclude(evAdm => evAdm.User)
+                            .ThenInclude(p => p.ParticipantStatus)
                         .Include(e => e.EventStatus)
                         .Include(e => e.EventAdministrations)
+                            .ThenInclude(a => a.User)
                         .Include(e => e.EventType)
                         .Include(e => e.EventCategory)
                         .Include(e => e.EventGallarys)
-                        .ThenInclude(eg => eg.Gallary)
+                            .ThenInclude(eg => eg.Gallary)
                     );
 
             var dto = new EventDTO()
             {
                 Event = _mapper.Map<Event, EventInfoDTO>(targetEvent),
-                IsUserEventAdmin = (targetEvent.EventAdmins.Any(evAdm => evAdm.UserID == _userManager.GetUserId(user))) || isUserGlobalEventAdmin,
+                IsUserEventAdmin = (targetEvent.EventAdministrations.Any(evAdm => evAdm.UserID == _userManager.GetUserId(user))) || isUserGlobalEventAdmin,
                 IsUserParticipant = targetEvent.Participants.Any(p => p.UserId == _userManager.GetUserId(user)),
                 IsUserApprovedParticipant = targetEvent.Participants.Any(p => p.UserId == _userManager.GetUserId(user) && p.ParticipantStatusId == approvedStatus),
                 IsUserUndeterminedParticipant = targetEvent.Participants.Any(p => p.UserId == _userManager.GetUserId(user) && p.ParticipantStatusId == undeterminedStatus),
