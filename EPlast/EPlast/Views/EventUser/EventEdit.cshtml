@@ -5,7 +5,6 @@
 @model EPlast.ViewModels.EventUser.EventCreateViewModel;
 <div class="eventCreate">
     <div class="d-xl-flex justify-content-xl-center border shadow card">
-        <input type="hidden" asp-for="Event.ID" value="@Model.Event.ID" />
         <div class="col ">
             <div class="row">
                 <div class="col">
@@ -15,6 +14,7 @@
                 </div>
             </div>
             <form method="post" asp-action="EventEdit" asp-controller="EventUser">
+                <input type="hidden"     asp-for="Event.ID" value="@Model.Event.ID" />
                 <div class="row border shadow text-center justify-content-xl-center align-items-xl-center">
                     @foreach (var item in Model.EventTypes)
                     {
