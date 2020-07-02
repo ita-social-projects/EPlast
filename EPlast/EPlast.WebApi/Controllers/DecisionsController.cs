@@ -59,9 +59,13 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPut]
-        public async Task<IActionResult> Update(DecisionDTO decision)
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Update(int id, DecisionDTO decision)
         {
+            if (id != decision.ID)
+            {
+                return BadRequest();
+            }
             try
             {
                 await _decisionService.ChangeDecisionAsync(decision);
