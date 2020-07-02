@@ -1,14 +1,11 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.AnnualReport;
-using CityDTOs = EPlast.BLL.DTO.City;
-using UserDTOs = EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.Controllers;
 using EPlast.Models.Enums;
 using EPlast.ViewModels.AnnualReport;
-using CityVMs = EPlast.ViewModels.City;
-using UserVMs = EPlast.ViewModels.UserInformation.UserProfile;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -19,8 +16,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using EPlast.BLL.Interfaces.Logging;
 using Xunit;
+using CityDTOs = EPlast.BLL.DTO.City;
+using CityVMs = EPlast.ViewModels.City;
+using UserDTOs = EPlast.BLL.DTO.City;
 
 namespace EPlast.XUnitTest
 {
