@@ -190,6 +190,7 @@ namespace EPlast.BLL.Services
         {
             var city = await CreateCityAsync(model, file);
 
+            _repoWrapper.City.Attach(city);
             await _repoWrapper.City.CreateAsync(city);
             await _repoWrapper.SaveAsync();
 
