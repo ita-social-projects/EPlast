@@ -33,34 +33,9 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("NewDecision")]
         public async Task<ActionResult<DecisionViewModel>> Create()
         {
-            return Ok(await MetaData());   
-        }
+            DecisionViewModel decisionViewModel = await DecisionViewModel.GetNewDecisionViewModel(_decisionService);
 
-        private async Task<DecisionViewModel> MetaData()
-        {
-            DecisionViewModel decisionViewModel = null;
-            try
-            {
-                var organizations = await _decisionService.GetOrganizationListAsync();
-                decisionViewModel = new DecisionViewModel
-                {
-                    DecisionWrapper = await _decisionService.CreateDecisionAsync(),
-                    OrganizationListItems = from item in organizations
-                                            select new SelectListItem
-                                            {
-                                                Text = item.OrganizationName,
-                                                Value = item.ID.ToString()
-                                            },
-                    DecisionTargets = await _decisionService.GetDecisionTargetListAsync(),
-                    DecisionStatusTypeListItems = _decisionService.GetDecisionStatusTypes()
-                };
-            }
-            catch (Exception e)
-            {
-                _loggerService.LogError($"{e.Message}");
-            }
-
-            return decisionViewModel;
+            return Ok(decisionViewModel);
         }
 
         [HttpGet("{id:int}")]
@@ -151,8 +126,9 @@ namespace EPlast.WebApi.Controllers
             {
                 _loggerService.LogError($"{e.Message}");
             }
+            DecisionViewModel decisionViewModel = await DecisionViewModel.GetNewDecisionViewModel(_decisionService);
 
-            return Ok(Tuple.Create(await MetaData(), decisions));
+            return Ok(Tuple.Create(decisionViewModel, decisions));
         }
 
         [HttpDelete("{id:int}")]
