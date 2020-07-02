@@ -3,7 +3,6 @@ using EPlast.BLL.DTO;
 using EPlast.WebApi.Models.Decision;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,30 +32,19 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("NewDecision")]
         public async Task<ActionResult<DecisionViewModel>> GetMetaData()
         {
-            DecisionViewModel decisionViewModel = await DecisionViewModel.GetNewDecisionViewModel(_decisionService);
-
-            return Ok(decisionViewModel);
+            return Ok(await DecisionViewModel.GetNewDecisionViewModel(_decisionService));
         }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
-            try
+            DecisionDTO decisionDto = await _decisionService.GetDecisionAsync(id);
+            if (decisionDto == null)
             {
-                DecisionDTO decisionDto = await _decisionService.GetDecisionAsync(id);
-                if(decisionDto == null)
-                {
-                    return NotFound();
-                }
-
-                return Ok(decisionDto);
+                return NotFound();
             }
-            catch (Exception e)
-            {
-                _loggerService.LogError($"{e.Message}");
 
-                return BadRequest();
-            }
+            return Ok(decisionDto);
         }
 
         [HttpPut("{id:int}")]
@@ -66,16 +54,7 @@ namespace EPlast.WebApi.Controllers
             {
                 return BadRequest();
             }
-            try
-            {
-                await _decisionService.ChangeDecisionAsync(decision);
-            }
-            catch (Exception e)
-            {
-                _loggerService.LogError($"{e.Message}");
-
-                return BadRequest();
-            }
+            await _decisionService.ChangeDecisionAsync(decision);
 
             return NoContent();
 
@@ -84,59 +63,42 @@ namespace EPlast.WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Save(DecisionWrapperDTO decisionWrapper)
         {
-            try
+
+            if (decisionWrapper.Decision.DecisionTarget.ID != 0 || decisionWrapper == null)
             {
-
-                if (decisionWrapper.Decision.DecisionTarget.ID != 0 || decisionWrapper == null)
-                {
-                    return BadRequest("Дані введені неправильно");
-                }
-
-                if (decisionWrapper.File != null && decisionWrapper.File.Length > 10485760)
-                {
-                    return BadRequest("файл за великий (більше 10 Мб)");
-                }
-
-                decisionWrapper.Decision.HaveFile = decisionWrapper.File != null;
-                decisionWrapper.Decision.ID = await _decisionService.SaveDecisionAsync(decisionWrapper);
-                var decisionOrganizations = (await _decisionService
-                            .GetDecisionOrganizationAsync(decisionWrapper.Decision.Organization))
-                            .OrganizationName;
-
-                return Created("decisions", new
-                {
-                    decision = decisionWrapper.Decision,
-                    decisionOrganization = decisionOrganizations
-                });
+                return BadRequest("Дані введені неправильно");
             }
-            catch (Exception e)
+
+            if (decisionWrapper.File != null && decisionWrapper.File.Length > 10485760)
             {
-                _loggerService.LogError($"{e.Message}");
-
-                return BadRequest(e.Message);
+                return BadRequest("файл за великий (більше 10 Мб)");
             }
+
+            decisionWrapper.Decision.HaveFile = decisionWrapper.File != null;
+            decisionWrapper.Decision.ID = await _decisionService.SaveDecisionAsync(decisionWrapper);
+            var decisionOrganizations = (await _decisionService
+                        .GetDecisionOrganizationAsync(decisionWrapper.Decision.Organization))
+                        .OrganizationName;
+
+            return Created("Decisions", new
+            {
+                decision = decisionWrapper.Decision,
+                decisionOrganization = decisionOrganizations
+            });
+
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            List<DecisionViewModel> decisions = null;
-            try
-            {
-                decisions = new List<DecisionViewModel>
+            List<DecisionViewModel> decisions = new List<DecisionViewModel>
                 (
                     (await _decisionService.GetDecisionListAsync())
                         .Select(decesion => new DecisionViewModel { DecisionWrapper = decesion })
                         .ToList()
                 );
-            }
-            catch (Exception e)
-            {
-                _loggerService.LogError($"{e.Message}");
-            }
-            DecisionViewModel decisionViewModel = await DecisionViewModel.GetNewDecisionViewModel(_decisionService);
 
-            return Ok(Tuple.Create(decisionViewModel, decisions));
+            return Ok(Tuple.Create(await DecisionViewModel.GetNewDecisionViewModel(_decisionService), decisions));
         }
 
         [HttpDelete("{id:int}")]
@@ -151,20 +113,10 @@ namespace EPlast.WebApi.Controllers
             return NotFound();
         }
 
-        [HttpPost("downloadfile/{id:int}/{filename}")]
+        [HttpPost("downloadfile/{id:int}")]
         public async Task<IActionResult> Download(int id, string filename)
         {
-            byte[] fileBytes;
-            try
-            {
-                fileBytes = await _decisionService.DownloadDecisionFileAsync(id);
-            }
-            catch (Exception e)
-            {
-                _loggerService.LogError($"{e.Message}");
-
-                return BadRequest();
-            }
+            byte[] fileBytes = await _decisionService.DownloadDecisionFileAsync(id);
 
             return File(fileBytes, _decisionService.GetContentType(id, filename), filename);
         }
@@ -172,18 +124,9 @@ namespace EPlast.WebApi.Controllers
         [HttpPost("createpdf/{objId:int}")]
         public async Task<IActionResult> CreatePdf(int objId)
         {
-            try
-            {
-                var arr = await _pdfService.DecisionCreatePDFAsync(objId);
+            byte[] fileBytes = await _pdfService.DecisionCreatePDFAsync(objId);
 
-                return File(arr, "application/pdf");
-            }
-            catch (Exception e)
-            {
-                _loggerService.LogError($"{e.Message}");
-
-                return BadRequest();
-            }
+            return File(fileBytes, "application/pdf");
         }
     }
 }
