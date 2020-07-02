@@ -90,11 +90,11 @@ namespace EPlast.XUnitTest
                 .Returns(cityMembers);
 
             // Act
-            var result = await controller.CreateAsync();
+            var result = await controller.Create();
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAsync", viewResult.ViewName);
+            Assert.Equal("CreateEdit", viewResult.ViewName);
             Assert.Null(viewResult.ViewData["ErrorMessage"]);
             var actualViewModel = Assert.IsType<CreateEditAnnualReportViewModel>(viewResult.Model);
             Assert.Equal(JsonConvert.SerializeObject(expectedViewModel), JsonConvert.SerializeObject(actualViewModel));
@@ -117,11 +117,11 @@ namespace EPlast.XUnitTest
                 .Throws(new InvalidOperationException("Станиця має непідтверджені звіти!"));
 
             // Act
-            var result = await controller.CreateAsync();
+            var result = await controller.Create();
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAsync", viewResult.ViewName);
+            Assert.Equal("CreateEdit", viewResult.ViewName);
             Assert.Equal("Станиця має непідтверджені звіти!", viewResult.ViewData["ErrorMessage"]);
         }
 
@@ -133,7 +133,7 @@ namespace EPlast.XUnitTest
                .ReturnsAsync(default(IEnumerable<CityDTOs.CityDTO>));
 
             // Act
-            var result = await controller.CreateAsync();
+            var result = await controller.Create();
 
             // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
@@ -192,11 +192,11 @@ namespace EPlast.XUnitTest
                 .Returns(cityMembers);
 
             // Act
-            var result = await controller.CreateAsAdminAsync(city.ID);
+            var result = await controller.CreateAsAdmin(city.ID);
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAsync", viewResult.ViewName);
+            Assert.Equal("CreateEdit", viewResult.ViewName);
             Assert.Null(viewResult.ViewData["ErrorMessage"]);
             var actualViewModel = Assert.IsType<CreateEditAnnualReportViewModel>(viewResult.Model);
             Assert.Equal(JsonConvert.SerializeObject(expectedViewModel), JsonConvert.SerializeObject(actualViewModel));
@@ -212,11 +212,11 @@ namespace EPlast.XUnitTest
                 .Throws(new InvalidOperationException("Станиця має непідтверджені звіти!"));
 
             // Act
-            var result = await controller.CreateAsAdminAsync(It.IsAny<int>());
+            var result = await controller.CreateAsAdmin(It.IsAny<int>());
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAsync", viewResult.ViewName);
+            Assert.Equal("CreateEdit", viewResult.ViewName);
             Assert.Equal("Станиця має непідтверджені звіти!", viewResult.ViewData["ErrorMessage"]);
         }
 
@@ -232,7 +232,7 @@ namespace EPlast.XUnitTest
                 .Returns(default(CityVMs.CityViewModel));
 
             // Act
-            var result = await controller.CreateAsAdminAsync(It.IsAny<int>());
+            var result = await controller.CreateAsAdmin(It.IsAny<int>());
 
             // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
@@ -251,7 +251,7 @@ namespace EPlast.XUnitTest
                 .ReturnsAsync(false);
 
             // Act
-            var result = await controller.CreateAsAdminAsync(It.IsAny<int>());
+            var result = await controller.CreateAsAdmin(It.IsAny<int>());
 
             // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
@@ -269,11 +269,11 @@ namespace EPlast.XUnitTest
                 .Returns(default(AnnualReportDTO));
 
             // Act
-            var result = await controller.CreateAsync(It.IsAny<AnnualReportViewModel>());
+            var result = await controller.Create(It.IsAny<AnnualReportViewModel>());
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAsync", viewResult.ViewName);
+            Assert.Equal("CreateEdit", viewResult.ViewName);
             Assert.Equal("Річний звіт станиці успішно створено!", viewResult.ViewData["Message"]);
             Assert.Null(viewResult.Model);
         }
@@ -326,11 +326,11 @@ namespace EPlast.XUnitTest
                 .Returns(cityMembers);
 
             // Act
-            var result = await controller.CreateAsync(expectedViewModel.AnnualReport);
+            var result = await controller.Create(expectedViewModel.AnnualReport);
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAsync", viewResult.ViewName);
+            Assert.Equal("CreateEdit", viewResult.ViewName);
             Assert.Equal("Річний звіт заповнений некоректно!", viewResult.ViewData["ErrorMessage"]);
             var actualViewModel = Assert.IsType<CreateEditAnnualReportViewModel>(viewResult.Model);
             Assert.Equal(JsonConvert.SerializeObject(expectedViewModel), JsonConvert.SerializeObject(actualViewModel));
@@ -346,11 +346,11 @@ namespace EPlast.XUnitTest
                 .Throws(new InvalidOperationException(string.Empty));
 
             // Act
-            var result = await controller.CreateAsync(It.IsAny<AnnualReportViewModel>());
+            var result = await controller.Create(It.IsAny<AnnualReportViewModel>());
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAsync", viewResult.ViewName);
+            Assert.Equal("CreateEdit", viewResult.ViewName);
             Assert.Null(viewResult.Model);
             Assert.Equal(string.Empty, viewResult.ViewData["ErrorMessage"]);
         }
@@ -365,11 +365,11 @@ namespace EPlast.XUnitTest
                 .Throws(new UnauthorizedAccessException(string.Empty));
 
             // Act
-            var result = await controller.CreateAsync(It.IsAny<AnnualReportViewModel>());
+            var result = await controller.Create(It.IsAny<AnnualReportViewModel>());
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAsync", viewResult.ViewName);
+            Assert.Equal("CreateEdit", viewResult.ViewName);
             Assert.Null(viewResult.Model);
             Assert.Equal(string.Empty, viewResult.ViewData["ErrorMessage"]);
         }
@@ -385,7 +385,7 @@ namespace EPlast.XUnitTest
                 .Returns(default(CityVMs.CityViewModel));
 
             // Act
-            var result = await controller.CreateAsync(new AnnualReportViewModel());
+            var result = await controller.Create(new AnnualReportViewModel());
 
             // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
@@ -424,7 +424,7 @@ namespace EPlast.XUnitTest
                 .Returns(annualReports);
 
             // Act
-            var result = await controller.GetAllAsync();
+            var result = await controller.GetAll();
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
@@ -440,7 +440,7 @@ namespace EPlast.XUnitTest
                 .Throws(default);
 
             // Act
-            var result = await controller.GetAllAsync();
+            var result = await controller.GetAll();
 
             // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
@@ -458,7 +458,7 @@ namespace EPlast.XUnitTest
                 .Returns(annualReportViewModel);
 
             // Act
-            var result = await controller.GetAsync(It.IsAny<int>());
+            var result = await controller.Get(It.IsAny<int>());
 
             // Assert
             var viewResult = Assert.IsType<PartialViewResult>(result);
@@ -475,7 +475,7 @@ namespace EPlast.XUnitTest
                 .Throws(default(UnauthorizedAccessException));
 
             // Act
-            var result = await controller.GetAsync(It.IsAny<int>());
+            var result = await controller.Get(It.IsAny<int>());
 
             // Assert
             var objectResult = Assert.IsType<NotFoundObjectResult>(result);
@@ -490,7 +490,7 @@ namespace EPlast.XUnitTest
                 .Throws(default);
 
             // Act
-            var result = await controller.GetAsync(It.IsAny<int>());
+            var result = await controller.Get(It.IsAny<int>());
 
             // Assert
             var objectResult = Assert.IsType<NotFoundObjectResult>(result);
@@ -502,7 +502,7 @@ namespace EPlast.XUnitTest
         public async Task ConfirmAsyncCorrect()
         {
             // Act
-            var result = await controller.ConfirmAsync(It.IsAny<int>());
+            var result = await controller.Confirm(It.IsAny<int>());
 
             // Assert
             var objectResult = Assert.IsType<OkObjectResult>(result);
@@ -517,7 +517,7 @@ namespace EPlast.XUnitTest
                 .Throws(default(UnauthorizedAccessException));
 
             // Act
-            var result = await controller.ConfirmAsync(It.IsAny<int>());
+            var result = await controller.Confirm(It.IsAny<int>());
 
             // Assert
             var objectResult = Assert.IsType<NotFoundObjectResult>(result);
@@ -532,7 +532,7 @@ namespace EPlast.XUnitTest
                 .Throws(default);
 
             // Act
-            var result = await controller.ConfirmAsync(It.IsAny<int>());
+            var result = await controller.Confirm(It.IsAny<int>());
 
             // Assert
             var objectResult = Assert.IsType<NotFoundObjectResult>(result);
@@ -544,7 +544,7 @@ namespace EPlast.XUnitTest
         public async Task CancelAsyncCorrect()
         {
             // Act
-            var result = await controller.CancelAsync(It.IsAny<int>());
+            var result = await controller.Cancel(It.IsAny<int>());
 
             // Assert
             var objectResult = Assert.IsType<OkObjectResult>(result);
@@ -559,7 +559,7 @@ namespace EPlast.XUnitTest
                 .Throws(default(UnauthorizedAccessException));
 
             // Act
-            var result = await controller.CancelAsync(It.IsAny<int>());
+            var result = await controller.Cancel(It.IsAny<int>());
 
             // Assert
             var objectResult = Assert.IsType<NotFoundObjectResult>(result);
@@ -574,7 +574,7 @@ namespace EPlast.XUnitTest
                 .Throws(default);
 
             // Act
-            var result = await controller.CancelAsync(It.IsAny<int>());
+            var result = await controller.Cancel(It.IsAny<int>());
 
             // Assert
             var objectResult = Assert.IsType<NotFoundObjectResult>(result);
@@ -586,7 +586,7 @@ namespace EPlast.XUnitTest
         public async Task DeleteAsyncCorrect()
         {
             // Act
-            var result = await controller.DeleteAsync(It.IsAny<int>());
+            var result = await controller.Delete(It.IsAny<int>());
 
             // Assert
             var objectResult = Assert.IsType<OkObjectResult>(result);
@@ -601,7 +601,7 @@ namespace EPlast.XUnitTest
                 .Throws(default(UnauthorizedAccessException));
 
             // Act
-            var result = await controller.DeleteAsync(It.IsAny<int>());
+            var result = await controller.Delete(It.IsAny<int>());
 
             // Assert
             var objectResult = Assert.IsType<NotFoundObjectResult>(result);
@@ -616,7 +616,7 @@ namespace EPlast.XUnitTest
                 .Throws(default);
 
             // Act
-            var result = await controller.DeleteAsync(It.IsAny<int>());
+            var result = await controller.Delete(It.IsAny<int>());
 
             // Assert
             var objectResult = Assert.IsType<NotFoundObjectResult>(result);
@@ -676,11 +676,11 @@ namespace EPlast.XUnitTest
                 .Returns(cityMembers);
 
             // Act
-            var result = await controller.EditAsync(It.IsAny<int>());
+            var result = await controller.Edit(It.IsAny<int>());
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAsync", viewResult.ViewName);
+            Assert.Equal("CreateEdit", viewResult.ViewName);
             Assert.Null(viewResult.ViewData["ErrorMessage"]);
             var actualViewModel = Assert.IsType<CreateEditAnnualReportViewModel>(viewResult.Model);
             Assert.Equal(JsonConvert.SerializeObject(expectedViewModel), JsonConvert.SerializeObject(actualViewModel));
@@ -694,11 +694,11 @@ namespace EPlast.XUnitTest
                 .Throws(new UnauthorizedAccessException("Станиця має непідтверджені звіти!"));
 
             // Act
-            var result = await controller.EditAsync(It.IsAny<int>());
+            var result = await controller.Edit(It.IsAny<int>());
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAsync", viewResult.ViewName);
+            Assert.Equal("CreateEdit", viewResult.ViewName);
             Assert.Equal("Станиця має непідтверджені звіти!", viewResult.ViewData["ErrorMessage"]);
             _annualReportService.Verify(a => a.GetByIdAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()));
             _mapper.Verify(m => m.Map<AnnualReportDTO, AnnualReportViewModel>(It.IsAny<AnnualReportDTO>()), Times.Never);
@@ -712,7 +712,7 @@ namespace EPlast.XUnitTest
                 .Throws(default);
 
             // Act
-            var result = await controller.EditAsync(It.IsAny<int>());
+            var result = await controller.Edit(It.IsAny<int>());
 
             // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
@@ -727,11 +727,11 @@ namespace EPlast.XUnitTest
         public async Task EditAsyncPostCorrect()
         {
             // Act
-            var result = await controller.EditAsync(It.IsAny<AnnualReportViewModel>());
+            var result = await controller.Edit(It.IsAny<AnnualReportViewModel>());
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAsync", viewResult.ViewName);
+            Assert.Equal("CreateEdit", viewResult.ViewName);
             Assert.Equal("Річний звіт станиці успішно відредаговано!", viewResult.ViewData["Message"]);
             Assert.Null(viewResult.Model);
         }
@@ -791,11 +791,11 @@ namespace EPlast.XUnitTest
             controller.ModelState.AddModelError(string.Empty, string.Empty);
 
             // Act
-            var result = await controller.EditAsync(annualReport);
+            var result = await controller.Edit(annualReport);
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAsync", viewResult.ViewName);
+            Assert.Equal("CreateEdit", viewResult.ViewName);
             Assert.Equal("Річний звіт заповнений некоректно!", viewResult.ViewData["ErrorMessage"]);
             var actualViewModel = Assert.IsType<CreateEditAnnualReportViewModel>(viewResult.Model);
             Assert.Equal(JsonConvert.SerializeObject(expectedViewModel), JsonConvert.SerializeObject(actualViewModel));
@@ -809,11 +809,11 @@ namespace EPlast.XUnitTest
                 .Throws(new UnauthorizedAccessException(string.Empty));
 
             // Act
-            var result = await controller.EditAsync(It.IsAny<AnnualReportViewModel>());
+            var result = await controller.Edit(It.IsAny<AnnualReportViewModel>());
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAsync", viewResult.ViewName);
+            Assert.Equal("CreateEdit", viewResult.ViewName);
             Assert.Null(viewResult.Model);
             Assert.Equal(string.Empty, viewResult.ViewData["ErrorMessage"]);
         }
@@ -826,11 +826,11 @@ namespace EPlast.XUnitTest
                 .Throws(new InvalidOperationException(string.Empty));
 
             // Act
-            var result = await controller.EditAsync(It.IsAny<AnnualReportViewModel>());
+            var result = await controller.Edit(It.IsAny<AnnualReportViewModel>());
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEditAsync", viewResult.ViewName);
+            Assert.Equal("CreateEdit", viewResult.ViewName);
             Assert.Null(viewResult.Model);
             Assert.Equal(string.Empty, viewResult.ViewData["ErrorMessage"]);
         }
@@ -843,7 +843,7 @@ namespace EPlast.XUnitTest
                 .Throws(default);
 
             // Act
-            var result = await controller.EditAsync(It.IsAny<AnnualReportViewModel>());
+            var result = await controller.Edit(It.IsAny<AnnualReportViewModel>());
 
             // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);

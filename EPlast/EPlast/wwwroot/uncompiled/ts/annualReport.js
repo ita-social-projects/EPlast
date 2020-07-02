@@ -28,7 +28,7 @@ $('#view-annual-reports-form').ready(function () {
                     viewAnnualReport(annualReportId);
                     break;
                 case 'edit':
-                    var strURL = '/AnnualReport/EditAsync?id=' + annualReportId;
+                    var strURL = '/AnnualReport/Edit?id=' + annualReportId;
                     window.open(strURL, '_self');
                     break;
                 case 'confirm':
@@ -89,7 +89,7 @@ $('#view-annual-reports-form').ready(function () {
     });
     function viewAnnualReport(annualReportId) {
         $.ajax({
-            url: '/AnnualReport/GetAsync',
+            url: '/AnnualReport/Get',
             type: 'GET',
             cache: false,
             data: { id: annualReportId },
@@ -112,7 +112,7 @@ $('#view-annual-reports-form').ready(function () {
         $('#Yes').modal('hide');
         $('#Yes').unbind();
         $.ajax({
-            url: '/AnnualReport/ConfirmAsync',
+            url: '/AnnualReport/Confirm',
             type: 'GET',
             cache: false,
             data: { id: annualReportId },
@@ -146,7 +146,7 @@ $('#view-annual-reports-form').ready(function () {
         $('#Yes').modal('hide');
         $('#Yes').unbind();
         $.ajax({
-            url: '/AnnualReport/CancelAsync',
+            url: '/AnnualReport/Cancel',
             type: 'GET',
             cache: false,
             data: { id: annualReportId },
@@ -171,7 +171,7 @@ $('#view-annual-reports-form').ready(function () {
         $('#Yes').modal('hide');
         $('#Yes').unbind();
         $.ajax({
-            url: '/AnnualReport/DeleteAsync',
+            url: '/AnnualReport/Delete',
             type: 'GET',
             cache: false,
             data: { id: annualReportId },
@@ -194,7 +194,7 @@ $('#view-annual-reports-form').ready(function () {
         e.preventDefault();
         e.stopPropagation();
         var cityId = $('#CitiesList option').filter(':selected').val();
-        var strURL = '/AnnualReport/CreateAsAdminAsync?cityId=' + cityId;
+        var strURL = '/AnnualReport/CreateAsAdmin?cityId=' + cityId;
         window.open(strURL, '_self');
     });
     function showYesNoModal(row, actionStr) {
