@@ -31,7 +31,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("NewDecision")]
-        public async Task<ActionResult<DecisionViewModel>> Create()
+        public async Task<ActionResult<DecisionViewModel>> GetMetaData()
         {
             DecisionViewModel decisionViewModel = await DecisionViewModel.GetNewDecisionViewModel(_decisionService);
 
@@ -110,7 +110,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ReadDecision()
+        public async Task<IActionResult> Get()
         {
             List<DecisionViewModel> decisions = null;
             try
