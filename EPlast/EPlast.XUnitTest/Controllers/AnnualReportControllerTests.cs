@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.AnnualReport;
 using CityDTOs = EPlast.BLL.DTO.City;
-using UserDTOs = EPlast.BLL.DTO.UserProfiles;
+using UserDTOs = EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.Controllers;
@@ -51,14 +51,14 @@ namespace EPlast.XUnitTest
             var city = new CityVMs.CityViewModel { ID = cities.First().ID, Name = cities.First().Name };
             IEnumerable<CityDTOs.CityMembersDTO> cityMembersDTOs = new List<CityDTOs.CityMembersDTO>
             {
-                new CityDTOs.CityMembersDTO { UserId = "1", User = new UserDTOs.UserDTO { FirstName = "Петро", LastName = "Петренко" } }
+                new CityDTOs.CityMembersDTO { UserId = "1", User = new UserDTOs.CityUserDTO { FirstName = "Петро", LastName = "Петренко" } }
             };
             var cityMembers = new List<CityVMs.CityMembersViewModel>
             {
                 new CityVMs.CityMembersViewModel
                 {
                     UserId = cityMembersDTOs.First().UserId,
-                    User = new UserVMs.UserViewModel { FirstName = cityMembersDTOs.First().User.FirstName, LastName = cityMembersDTOs.First().User.LastName }
+                    User = new CityVMs.CityUserViewModel { FirstName = cityMembersDTOs.First().User.FirstName, LastName = cityMembersDTOs.First().User.LastName }
                 }
             };
             var expectedViewModel = new CreateEditAnnualReportViewModel(cityMembers)
@@ -151,14 +151,14 @@ namespace EPlast.XUnitTest
             var city = new CityVMs.CityViewModel { ID = cityDTO.ID, Name = cityDTO.Name };
             IEnumerable<CityDTOs.CityMembersDTO> cityMembersDTOs = new List<CityDTOs.CityMembersDTO>
             {
-                new CityDTOs.CityMembersDTO { UserId = "1", User = new UserDTOs.UserDTO { FirstName = "Петро", LastName = "Петренко" } }
+                new CityDTOs.CityMembersDTO { UserId = "1", User = new UserDTOs.CityUserDTO { FirstName = "Петро", LastName = "Петренко" } }
             };
             var cityMembers = new List<CityVMs.CityMembersViewModel>
             {
                 new CityVMs.CityMembersViewModel
                 {
                     UserId = cityMembersDTOs.First().UserId,
-                    User = new UserVMs.UserViewModel { FirstName = cityMembersDTOs.First().User.FirstName, LastName = cityMembersDTOs.First().User.LastName }
+                    User = new CityVMs.CityUserViewModel { FirstName = cityMembersDTOs.First().User.FirstName, LastName = cityMembersDTOs.First().User.LastName }
                 }
             };
             var expectedViewModel = new CreateEditAnnualReportViewModel(cityMembers)
@@ -286,14 +286,14 @@ namespace EPlast.XUnitTest
             var city = new CityVMs.CityViewModel { ID = cityDTO.ID, Name = cityDTO.Name };
             IEnumerable<CityDTOs.CityMembersDTO> cityMembersDTOs = new List<CityDTOs.CityMembersDTO>
             {
-                new CityDTOs.CityMembersDTO { UserId = "1", User = new UserDTOs.UserDTO { FirstName = "Петро", LastName = "Петренко" } }
+                new CityDTOs.CityMembersDTO { UserId = "1", User = new UserDTOs.CityUserDTO { FirstName = "Петро", LastName = "Петренко" } }
             };
             var cityMembers = new List<CityVMs.CityMembersViewModel>
             {
                 new CityVMs.CityMembersViewModel
                 {
                     UserId = cityMembersDTOs.First().UserId,
-                    User = new UserVMs.UserViewModel { FirstName = cityMembersDTOs.First().User.FirstName, LastName = cityMembersDTOs.First().User.LastName }
+                    User = new CityVMs.CityUserViewModel { FirstName = cityMembersDTOs.First().User.FirstName, LastName = cityMembersDTOs.First().User.LastName }
                 }
             };
             var expectedViewModel = new CreateEditAnnualReportViewModel(cityMembers)
@@ -646,7 +646,7 @@ namespace EPlast.XUnitTest
                 new CityVMs.CityMembersViewModel
                 {
                     UserId = "1",
-                    User = new UserVMs.UserViewModel { FirstName = "Петро", LastName = "Петренко" }
+                    User = new CityVMs.CityUserViewModel { FirstName = "Петро", LastName = "Петренко" }
                 }
             };
             var expectedViewModel = new CreateEditAnnualReportViewModel(cityMembers)
@@ -762,7 +762,7 @@ namespace EPlast.XUnitTest
                 new CityVMs.CityMembersViewModel
                 {
                     UserId = "1",
-                    User = new UserVMs.UserViewModel { FirstName = "Петро", LastName = "Петренко" }
+                    User = new CityVMs.CityUserViewModel { FirstName = "Петро", LastName = "Петренко" }
                 }
             };
             var expectedViewModel = new CreateEditAnnualReportViewModel(cityMembers)

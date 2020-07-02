@@ -35,7 +35,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                CityProfileDTO cityProfileDto = await _cityService.GetCityProfileAsync(cityId);
+                var cityProfileDto = await _cityService.GetCityProfileAsync(cityId);
                 if (cityProfileDto == null)
                 {
                     return NotFound();
@@ -56,13 +56,13 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                CityProfileDTO cityProfileDto = await _cityService.GetCityMembersAsync(cityId);
+                var cityProfileDto = await _cityService.GetCityMembersAsync(cityId);
                 if (cityProfileDto == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(cityProfileDto);
+                return Ok(cityProfileDto.Members);
             }
             catch (Exception e)
             {
@@ -77,13 +77,13 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                CityProfileDTO cityProfile = await _cityService.GetCityFollowersAsync(cityId);
+                var cityProfile = await _cityService.GetCityFollowersAsync(cityId);
                 if (cityProfile == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(cityProfile);
+                return Ok(cityProfile.Followers);
             }
             catch (Exception e)
             {
@@ -104,7 +104,7 @@ namespace EPlast.WebApi.Controllers
                     return NotFound();
                 }
 
-                return Ok(cityProfileDto);
+                return Ok(cityProfileDto.CityAdmins);
             }
             catch (Exception e)
             {
