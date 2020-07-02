@@ -54,16 +54,16 @@ namespace EPlast.BLL.Services
         {
             var city = await _repoWrapper.City.GetFirstOrDefaultAsync(
                     predicate: c => c.ID == cityId,
-                    include : source => source
-                        .Include(c => c.CityAdministration)
-                            .ThenInclude(t => t.AdminType)
-                        .Include(k => k.CityAdministration)
-                            .ThenInclude(a => a.User)
-                        .Include(m => m.CityMembers)
-                            .ThenInclude(u => u.User)
-                        .Include(l => l.CityDocuments)
-                            .ThenInclude(d => d.CityDocumentType)
-                        .Include(r => r.Region));
+                    include: source => source
+                       .Include(c => c.CityAdministration)
+                           .ThenInclude(t => t.AdminType)
+                       .Include(k => k.CityAdministration)
+                           .ThenInclude(a => a.User)
+                       .Include(m => m.CityMembers)
+                           .ThenInclude(u => u.User)
+                       .Include(l => l.CityDocuments)
+                           .ThenInclude(d => d.CityDocumentType)
+                       .Include(r => r.Region));
 
             return _mapper.Map<DataAccessCity.City, CityDTO>(city);
         }
@@ -90,7 +90,17 @@ namespace EPlast.BLL.Services
                 .ToList();
             var cityDoc = city.CityDocuments.Take(4).ToList();
 
-            return new CityProfileDTO { City = city, CityHead = cityHead, Members = members, Followers = followers, CityAdmins = cityAdmins, CityDoc = cityDoc };
+            var cityProfileDto = new CityProfileDTO
+            {
+                City = city,
+                CityHead = cityHead,
+                Members = members,
+                Followers = followers,
+                CityAdmins = cityAdmins,
+                CityDoc = cityDoc
+            };
+
+            return cityProfileDto;
         }
 
         public async Task<CityProfileDTO> GetCityMembersAsync(int cityId)
