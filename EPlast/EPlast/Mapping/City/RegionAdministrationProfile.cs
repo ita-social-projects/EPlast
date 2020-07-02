@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.Region;
 using EPlast.DataAccess.Entities;
 
 namespace EPlast.Mapping

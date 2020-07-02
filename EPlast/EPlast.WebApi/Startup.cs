@@ -149,6 +149,8 @@ namespace EPlast.WebApi
             services.AddScoped<IEventGalleryManager, EventGalleryManager>();
             services.AddScoped<IEventUserManager, EventUserManager>();
             services.AddScoped<IEventAdminManager, EventAdminManager>();
+            services.AddScoped<IEventAdmininistrationManager, EventAdministrationManager>();
+            services.AddScoped<IEventAdministrationTypeManager, EventAdministrationTypeManager>();
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
             services.AddScoped<IUserBlobStorageRepository, UserBlobStorageRepository>();
@@ -247,7 +249,7 @@ namespace EPlast.WebApi
             });
 
             if (env.IsDevelopment())
-            {
+            {   
                 app.UseDeveloperExceptionPage();
             }
             else
