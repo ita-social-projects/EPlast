@@ -2,7 +2,7 @@
 
 namespace EPlast.DataAccess.Repositories.Interfaces.Events
 {
-    public interface IEventAdminRepository : IRepositoryBase<EventAdmin>
+    public interface IEventCategoryTypeRepository : IRepositoryBase<EventCategoryType>
     {
     }
 }
