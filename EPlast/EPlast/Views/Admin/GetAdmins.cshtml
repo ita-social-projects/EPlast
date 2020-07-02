@@ -9,7 +9,7 @@
                 <h5 class="card-title"> @item.User.FirstName @item.User.LastName</h5>
                 <p class="card-text"> @item.AdminType.AdminTypeName<br /> @item.User.Email</p>
             </div>
-            <a class="stretched-link" asp-action="UserProfile" asp-controller="Account" asp-route-userId="@item.User.Id"></a>
+            <a class="stretched-link" asp-action="UserProfile" asp-controller="Account" asp-route-userId="@item.User.ID"></a>
         </div>
     </div>
 }

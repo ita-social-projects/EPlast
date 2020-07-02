@@ -1,9 +1,9 @@
-﻿using EPlast.Models.Enums;
+﻿using EPlast.DataAccess.Entities;
 using System;
 
-namespace EPlast.ViewModels.City
+namespace EPlast.BLL.DTO.City
 {
-    public class CityLegalStatusViewModel
+    public class CityLegalStatusDTO
     {
         public int Id { get; set; }
         public DateTime DateStart { get; set; }

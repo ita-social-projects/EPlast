@@ -10,6 +10,5 @@ namespace EPlast.ViewModels.City
         [Required, MaxLength(256, ErrorMessage = "Document url cannot exceed 256 characters")]
         public string DocumentURL { get; set; }
         public CityDocumentTypeViewModel CityDocumentType { get; set; }
-        public CityViewModel City { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
@@ -205,7 +206,7 @@ namespace EPlast.XUnitTest.Services.City
                         new CityAdministrationDTO
                         {
 
-                           AdminType = new AdminType
+                           AdminType = new AdminTypeDTO
                            {
                                AdminTypeName = "Голова Станиці"
                            }
@@ -213,21 +214,21 @@ namespace EPlast.XUnitTest.Services.City
                         },
                         new CityAdministrationDTO
                         {
-                            AdminType = new AdminType
+                            AdminType = new AdminTypeDTO
                             {
                                 AdminTypeName = "----------"
                             }
                         },
                         new CityAdministrationDTO
                         {
-                            AdminType = new AdminType
+                            AdminType = new AdminTypeDTO
                             {
                                 AdminTypeName = "Голова Станиці"
                             }
                         },
                         new CityAdministrationDTO
                         {
-                            AdminType = new AdminType
+                            AdminType = new AdminTypeDTO
                             {
                                 AdminTypeName = "----------"
                             }
