@@ -87,7 +87,7 @@ namespace EPlast.BLL.Services
 
                 userTable.Add(new UserTableDTO
                 {
-                    User = _mapper.Map<User, UserDTO>(user),
+                    User = _mapper.Map<User, ShortUserInformationDTO>(user),
                     ClubName = clubMembers.Where(x => x.UserId.Equals(user.Id) && x.IsApproved)
                                           .Select(x => x.Club.ClubName).LastOrDefault() ?? string.Empty,
                     CityName = cityName,
