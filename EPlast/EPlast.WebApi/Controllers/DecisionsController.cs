@@ -18,15 +18,11 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly IDecisionService _decisionService;
         private readonly IPdfService _pdfService;
-        private readonly ILoggerService<DecisionsController> _loggerService;
 
-        public DecisionsController(IPdfService pdfService,
-                                  IDecisionService decisionService,
-                                  ILoggerService<DecisionsController> loggerService)
+        public DecisionsController(IPdfService pdfService, IDecisionService decisionService)
         {
             _pdfService = pdfService;
             _decisionService = decisionService;
-            _loggerService = loggerService;
         }
 
         [HttpGet("NewDecision")]
