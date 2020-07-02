@@ -1,19 +1,16 @@
 ﻿using EPlast.BLL;
 using EPlast.BLL.DTO;
 using EPlast.WebApi.Models.Decision;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BLL.Interfaces.Logging;
 
 namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = "Admin")]
     public class DecisionsController : ControllerBase
     {
         private readonly IDecisionService _decisionService;
