@@ -39,7 +39,7 @@ namespace EPlast.Controllers
                     return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
                 }
 
-                return View(_mapper.Map<CityProfileDTO, CityProfileViewModel>(await _cityService.GetCityProfileAsync(cityId)));
+                return View(_mapper.Map<CityProfileDTO, CityProfileViewModel>(cityProfileDto));
             }
             catch (Exception e)
             {

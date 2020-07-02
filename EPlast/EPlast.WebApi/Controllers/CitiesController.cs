@@ -1,11 +1,10 @@
 ﻿using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces.City;
-using EPlast.BLL.Services.Interfaces;
+using EPlast.BLL.Interfaces.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
-using EPlast.BLL.Interfaces.Logging;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -15,11 +14,19 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly ILoggerService<CitiesController> _logger;
         private readonly ICityService _cityService;
-       
+
         public CitiesController(ILoggerService<CitiesController> logger, ICityService cityService)
         {
             _logger = logger;
             _cityService = cityService;
+        }
+
+        [HttpGet("Profiles")]
+        public async Task<IActionResult> Index()
+        {
+            var cities = await _cityService.GetAllDTOAsync();
+
+            return Ok(cities);
         }
 
         [HttpGet("Profile/{cityId}")]
@@ -27,7 +34,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                CityProfileDTO cityProfileDto = await _cityService.GetCityProfileAsync(cityId);
+                var cityProfileDto = await _cityService.GetCityProfileAsync(cityId);
                 if (cityProfileDto == null)
                 {
                     return NotFound();
@@ -43,18 +50,19 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest();
             }
         }
+
         [HttpGet("Members/{cityId}")]
         public async Task<IActionResult> GetMembers(int cityId)
         {
             try
             {
-                CityProfileDTO cityProfileDto = await _cityService.GetCityMembersAsync(cityId);
+                var cityProfileDto = await _cityService.GetCityMembersAsync(cityId);
                 if (cityProfileDto == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(cityProfileDto);
+                return Ok(cityProfileDto.Members);
             }
             catch (Exception e)
             {
@@ -69,13 +77,13 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                CityProfileDTO cityProfile = await _cityService.GetCityFollowersAsync(cityId);
+                var cityProfile = await _cityService.GetCityFollowersAsync(cityId);
                 if (cityProfile == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(cityProfile);
+                return Ok(cityProfile.Followers);
             }
             catch (Exception e)
             {
@@ -96,7 +104,7 @@ namespace EPlast.WebApi.Controllers
                     return NotFound();
                 }
 
-                return Ok(cityProfileDto);
+                return Ok(cityProfileDto.CityAdmins);
             }
             catch (Exception e)
             {
@@ -106,8 +114,8 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpGet("{cityId}")]
-        public async Task<IActionResult> Get(int cityId)
+        [HttpGet("EditCity/{cityId}")]
+        public async Task<IActionResult> Edit(int cityId)
         {
             try
             {
@@ -151,7 +159,7 @@ namespace EPlast.WebApi.Controllers
 
         }
 
-        [HttpGet("NewCity")]
+        [HttpGet("CreateCity")]
         public IActionResult Create()
         {
             try
