@@ -50,7 +50,8 @@ namespace EPlast.BLL.Services
                         .Include(m => m.CityMembers)
                             .ThenInclude(u => u.User)
                         .Include(l => l.CityDocuments)
-                            .ThenInclude(d => d.CityDocumentType));
+                            .ThenInclude(d => d.CityDocumentType)
+                        .Include(r => r.Region));
 
             return _mapper.Map<DataAccessCity.City, CityDTO>(city);
         }
@@ -62,13 +63,13 @@ namespace EPlast.BLL.Services
             {
                 return null;
             }
-            var cityHead = city?.CityAdministration?.FirstOrDefault(a => a.EndDate == null && a.AdminType.AdminTypeName == "Голова Станиці");
-            var cityAdmins = city?.CityAdministration
+            var cityHead = city.CityAdministration?.FirstOrDefault(a => a.EndDate == null && a.AdminType.AdminTypeName == "Голова Станиці");
+            var cityAdmins = city.CityAdministration
                 .Where(a => a.EndDate == null && a.AdminType.AdminTypeName != "Голова Станиці")
                 .ToList();
-            var members = city?.CityMembers.Where(m => m.EndDate == null && m.StartDate != null).Take(6).ToList();
-            var followers = city?.CityMembers.Where(m => m.EndDate == null && m.StartDate == null).Take(6).ToList();
-            var cityDoc = city?.CityDocuments.Take(4).ToList();
+            var members = city.CityMembers.Where(m => m.EndDate == null && m.StartDate != null).Take(6).ToList();
+            var followers = city.CityMembers.Where(m => m.EndDate == null && m.StartDate == null).Take(6).ToList();
+            var cityDoc = city.CityDocuments.Take(4).ToList();
 
             return new CityProfileDTO { City = city, CityHead = cityHead, Members = members, Followers = followers, CityAdmins = cityAdmins, CityDoc = cityDoc };
         }
@@ -173,6 +174,7 @@ namespace EPlast.BLL.Services
             }
 
             city.RegionId = region.ID;
+            city.Region = region;
 
             return city;
         }
