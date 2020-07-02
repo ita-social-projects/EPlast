@@ -114,8 +114,8 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpGet("{cityId}")]
-        public async Task<IActionResult> Get(int cityId)
+        [HttpGet("EditCity/{cityId}")]
+        public async Task<IActionResult> Edit(int cityId)
         {
             try
             {
@@ -159,7 +159,7 @@ namespace EPlast.WebApi.Controllers
 
         }
 
-        [HttpGet("NewCity")]
+        [HttpGet("CreateCity")]
         public IActionResult Create()
         {
             try

@@ -31,8 +31,7 @@ namespace EPlast.ViewModels.City
         public string Logo { get; set; }
         public ICollection<CityDocumentViewModel> CityDocuments { get; set; }
         public ICollection<CityMembersViewModel> CityMembers { get; set; }
-        public ICollection<UnconfirmedCityMember> UnconfirmedCityMember { get; set; }
         public ICollection<CityAdministrationViewModel> CityAdministration { get; set; }
-        public ICollection<CityLegalStatus> CityLegalStatuses { get; set; }
+        public ICollection<CityLegalStatusViewModel> CityLegalStatuses { get; set; }
     }
 }
