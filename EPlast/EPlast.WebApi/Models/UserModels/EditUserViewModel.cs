@@ -6,7 +6,7 @@ namespace EPlast.WebApi.Models.UserModels
 {
     public class EditUserViewModel
     {
-        public UserDTO User { get; set; }
+        public UserViewModel User { get; set; }
         public UserEducationViewModel EducationView { get; set; }
         public UserWorkViewModel WorkView { get; set; }
         public IEnumerable<NationalityDTO> Nationalities { get; set; }

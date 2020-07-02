@@ -8,7 +8,13 @@ namespace EPlast.BLL.Mapping.EventUser
     {
         public EventAdministrationEditProfile()
         {
-            CreateMap<EventAdministration, EventAdministrationDTO>().ReverseMap();
+            CreateMap<EventAdministration, EventAdministrationDTO>()
+                .ForMember(d => d.UserId, s => s.MapFrom(f => f.User.Id))
+                .ForMember(d => d.Email, s => s.MapFrom(f => f.User.UserName))
+                .ForMember(d => d.FullName, s => s.MapFrom(f => $"{f.User.FirstName} {f.User.LastName}"));
+            //.ForMember(d => d.UserId, s => s.MapFrom(f => f.UserID))
+            //.ForMember(d => d.Email, s => s.MapFrom(f => f.User.UserName))
+            //.ForMember(d => d.FullName, s => s.MapFrom(f => $"{f.User.FirstName} {f.User.LastName}"));
         }
     }
 }

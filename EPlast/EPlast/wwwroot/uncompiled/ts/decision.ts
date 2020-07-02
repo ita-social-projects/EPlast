@@ -275,7 +275,7 @@ $(() => {
                     $("#EditDecisionModal").modal("show");
                     break;
                 case "pdf":
-                    window.open(`/Decision/CreatePDFAsync?objId=${content}`, "_blank");
+                    window.open(`/Decision/GetPdf?objId=${content}`, "_blank");
                     break;
                 case "delete":
                     $.get(`/Decision/GetDecision?id=${content}`, function (json) {

@@ -216,7 +216,7 @@ namespace EPlast.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        public async Task<ActionResult> CreatePDFAsync(int objId)
+        public async Task<IActionResult> GetPdf(int objId)
         {
             try
             {
