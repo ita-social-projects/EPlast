@@ -44,6 +44,10 @@ namespace EPlast.WebApi.Controllers
             try
             {
                 DecisionDTO decisionDto = await _decisionService.GetDecisionAsync(id);
+                if(decisionDto == null)
+                {
+                    return NotFound();
+                }
 
                 return Ok(decisionDto);
             }
