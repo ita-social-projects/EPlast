@@ -230,10 +230,10 @@
             @switch (Model?.Operation)
             {
                 case AnnualReportOperation.Creating:
-                    <button id="CreateAnnualReport" asp-action="CreateAsync" class="btn btn-block text-light btn-lg" type="submit">Створити</button>
+                    <button id="CreateAnnualReport" asp-action="Create" class="btn btn-block text-light btn-lg" type="submit">Створити</button>
                     break;
                 case AnnualReportOperation.Editing:
-                    <button asp-action="EditAsync" class="btn btn-block text-light btn-lg" type="submit">Редагувати</button>
+                    <button asp-action="Edit" class="btn btn-block text-light btn-lg" type="submit">Редагувати</button>
                     break;
             }
         </div>
