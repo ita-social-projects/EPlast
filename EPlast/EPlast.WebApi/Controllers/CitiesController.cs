@@ -1,11 +1,10 @@
 ﻿using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces.City;
-using EPlast.BLL.Services.Interfaces;
+using EPlast.BLL.Interfaces.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
-using EPlast.BLL.Interfaces.Logging;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -15,7 +14,7 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly ILoggerService<CitiesController> _logger;
         private readonly ICityService _cityService;
-       
+
         public CitiesController(ILoggerService<CitiesController> logger, ICityService cityService)
         {
             _logger = logger;
@@ -51,6 +50,7 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest();
             }
         }
+
         [HttpGet("Members/{cityId}")]
         public async Task<IActionResult> GetMembers(int cityId)
         {
