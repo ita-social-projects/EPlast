@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using AutoMapper;
 using EPlast.BLL;
+using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.AzureStorage;
@@ -78,6 +79,10 @@ namespace EPlast.WebApi
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("V1", new OpenApiInfo { Title = "MyApi", Version = "V1" });
+                var security = new Dictionary<string, IEnumerable<string>>
+                {
+                    {"Bearer", new string[] { }},
+                };
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -87,21 +92,7 @@ namespace EPlast.WebApi
                     In = ParameterLocation.Header,
                     Description = "JWT Authorization header using the Bearer scheme."
                 });
-
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                          new OpenApiSecurityScheme
-                            {
-                                Reference = new OpenApiReference
-                                {
-                                    Type = ReferenceType.SecurityScheme,
-                                    Id = "Bearer"
-                                }
-                            },
-                            new string[] {}
-                    }
-                });
+                //c.AddSecurityRequirement(security);
             });
 
             services.ConfigureSwaggerGen(options =>
@@ -109,6 +100,7 @@ namespace EPlast.WebApi
                 options.CustomSchemaIds(x => x.FullName);
             });
             services.AddControllers();
+            services.AddTokenAuthentication(Configuration);
             services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
@@ -173,19 +165,6 @@ namespace EPlast.WebApi
                 {
                     options.AppId = Configuration.GetSection("FacebookAuthentication:FacebookAppId").Value;
                     options.AppSecret = Configuration.GetSection("FacebookAuthentication:FacebookAppSecret").Value;
-                })
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = false,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = Configuration["Jwt:Issuer"],
-                        ValidAudience = Configuration["Jwt:Issuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
-                    };
                 });
 
             services.Configure<RequestLocalizationOptions>(
