@@ -1,13 +1,15 @@
-﻿using EPlast.BLL.Interfaces.UserProfiles;
+﻿using AutoMapper;
+using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
+using EPlast.WebApi.Models.UserModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BLL.Interfaces.Logging;
-using EPlast.WebApi.Models.UserModels;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -25,6 +27,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IUserManagerService _userManagerService;
         private readonly IConfirmedUsersService _confirmedUserService;
         private readonly ILoggerService<AccountController> _loggerService;
+        private readonly IMapper _mapper;
 
         public UserController(IUserService userService,
             INationalityService nationalityService,
@@ -35,7 +38,8 @@ namespace EPlast.WebApi.Controllers
             IDegreeService degreeService,
             IConfirmedUsersService confirmedUserService,
             IUserManagerService userManagerService,
-            ILoggerService<AccountController> loggerService)
+            ILoggerService<AccountController> loggerService,
+            IMapper mapper)
         {
             _userService = userService;
             _nationalityService = nationalityService;
@@ -47,6 +51,7 @@ namespace EPlast.WebApi.Controllers
             _confirmedUserService = confirmedUserService;
             _userManagerService = userManagerService;
             _loggerService = loggerService;
+            _mapper = mapper;
         }
 
         [HttpGet("{userId}")]
@@ -67,7 +72,7 @@ namespace EPlast.WebApi.Controllers
 
                 var model = new PersonalDataViewModel
                 {
-                    User = user,
+                    User = _mapper.Map<UserDTO, UserViewModel>(user),
                     TimeToJoinPlast = time,
                     IsUserPlastun = isUserPlastun
                 };
@@ -90,45 +95,36 @@ namespace EPlast.WebApi.Controllers
                 _loggerService.LogError("User id is null");
                 return BadRequest();
             }
+            var user = await _userService.GetUserAsync(userId);
 
-            try
+            var genders = (from item in await _genderService.GetAllAsync() select new SelectListItem { Text = item.Name, Value = item.ID.ToString() });
+
+            var placeOfStudyUnique = await _educationService.GetAllGroupByPlaceAsync();
+            var specialityUnique = await _educationService.GetAllGroupBySpecialityAsync();
+            var placeOfWorkUnique = await _workService.GetAllGroupByPlaceAsync();
+            var positionUnique = await _workService.GetAllGroupByPositionAsync();
+
+            var educView = new UserEducationViewModel { PlaceOfStudyID = user.UserProfile.EducationId, SpecialityID = user.UserProfile.EducationId, PlaceOfStudyList = placeOfStudyUnique, SpecialityList = specialityUnique };
+            var workView = new UserWorkViewModel { PlaceOfWorkID = user.UserProfile.WorkId, PositionID = user.UserProfile.WorkId, PlaceOfWorkList = placeOfWorkUnique, PositionList = positionUnique };
+            var model = new EditUserViewModel()
             {
-                var user = await _userService.GetUserAsync(userId);
+                User = _mapper.Map<UserDTO, UserViewModel>(user),
+                Nationalities = await _nationalityService.GetAllAsync(),
+                Religions = await _religionService.GetAllAsync(),
+                EducationView = educView,
+                WorkView = workView,
+                Degrees = await _degreeService.GetAllAsync(),
+                Genders = genders
+            };
 
-                var genders = (from item in await _genderService.GetAllAsync() select new SelectListItem { Text = item.Name, Value = item.ID.ToString() });
-
-                var placeOfStudyUnique = await _educationService.GetAllGroupByPlaceAsync();
-                var specialityUnique = await _educationService.GetAllGroupBySpecialityAsync();
-                var placeOfWorkUnique = await _workService.GetAllGroupByPlaceAsync();
-                var positionUnique = await _workService.GetAllGroupByPositionAsync();
-
-                var educView = new UserEducationViewModel { PlaceOfStudyID = user.UserProfile.EducationId, SpecialityID = user.UserProfile.EducationId, PlaceOfStudyList = placeOfStudyUnique, SpecialityList = specialityUnique };
-                var workView = new UserWorkViewModel { PlaceOfWorkID = user.UserProfile.WorkId, PositionID = user.UserProfile.WorkId, PlaceOfWorkList = placeOfWorkUnique, PositionList = positionUnique };
-                var model = new EditUserViewModel()
-                {
-                    User = user,
-                    Nationalities = await _nationalityService.GetAllAsync(),
-                    Religions = await _religionService.GetAllAsync(),
-                    EducationView = educView,
-                    WorkView = workView,
-                    Degrees = await _degreeService.GetAllAsync(),
-                    Genders = genders
-                };
-
-                return Ok(model);
-            }
-            catch (Exception e)
-            {
-                _loggerService.LogError($"Exception: { e.Message}");
-                return BadRequest();
-            }
+            return Ok(model);
         }
         [HttpPut("editbase64")]
         public async Task<IActionResult> EditBase64(EditUserViewModel model, string base64)
         {
             try
             {
-                await _userService.UpdateAsync(model.User, base64, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID, model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
+                await _userService.UpdateAsync(_mapper.Map<UserViewModel, UserDTO>(model.User), base64, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID, model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
                 _loggerService.LogInformation($"User  was edited profile and saved in the database");
 
                 return Ok();
@@ -145,8 +141,8 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                await _userService.UpdateAsync(model.User, file, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID, model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
-                _loggerService.LogInformation($"User {model.User.Email} was edited profile and saved in the database");
+                await _userService.UpdateAsync(_mapper.Map<UserViewModel, UserDTO>(model.User), file, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID, model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
+                _loggerService.LogInformation($"User {model.User.FirstName}{model.User.LastName} was edited profile and saved in the database");
 
                 return Ok();
             }

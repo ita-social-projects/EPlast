@@ -115,6 +115,8 @@ namespace EPlast
             services.AddScoped<IEventCategoryManager, EventCategoryManager>();
             services.AddScoped<IEventTypeManager, EventTypeManager>();
             services.AddScoped<IEventStatusManager, EventStatusManager>();
+            services.AddScoped<IEventAdministrationTypeManager, EventAdministrationTypeManager>();
+            services.AddScoped<IEventAdmininistrationManager, EventAdministrationManager>();
             services.AddScoped<IParticipantStatusManager, ParticipantStatusManager>();
             services.AddScoped<IParticipantManager, ParticipantManager>();
             services.AddScoped<IEventGalleryManager, EventGalleryManager>();
