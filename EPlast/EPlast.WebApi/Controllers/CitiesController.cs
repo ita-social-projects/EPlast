@@ -27,11 +27,6 @@ namespace EPlast.WebApi.Controllers
         {
             var cities = await _cityService.GetAllDTOAsync();
 
-            if (cities == null)
-            {
-                return NotFound();
-            }
-
             return Ok(cities);
         }
 

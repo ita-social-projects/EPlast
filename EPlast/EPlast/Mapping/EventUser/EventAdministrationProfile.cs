@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.EventUser;
-using EPlast.ViewModels.EventUser;
+using EPlast.ViewModels.Events;
 
 namespace EPlast.Mapping.EventUser
 {

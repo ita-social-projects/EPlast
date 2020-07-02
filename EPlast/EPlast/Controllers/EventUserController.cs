@@ -3,6 +3,7 @@ using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.ViewModels.EventUser;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace EPlast.Controllers
@@ -24,6 +25,7 @@ namespace EPlast.Controllers
             {
                 var dto = await _eventUserManager.EventUserAsync(userId, User);
                 var model = _mapper.Map<EventUserDTO, EventUserViewModel>(dto);
+
                 return View(model);
             }
             catch
@@ -39,6 +41,7 @@ namespace EPlast.Controllers
             {
                 var dto = await _eventUserManager.InitializeEventCreateDTOAsync();
                 var model = _mapper.Map<EventCreateDTO, EventCreateViewModel>(dto);
+
                 return View(model);
             }
             catch
@@ -54,39 +57,19 @@ namespace EPlast.Controllers
                 if (ModelState.IsValid)
                 {
                     var createDto = _mapper.Map<EventCreateViewModel, EventCreateDTO>(createVM);
-                    var eventId = await _eventUserManager.CreateEventAsync(createDto);
-                    return RedirectToAction("SetAdministration", new { id = eventId });
+                    await _eventUserManager.CreateEventAsync(createDto);
+
+                    return RedirectToAction("EventUser");
                 }
                 var dto = await _eventUserManager.InitializeEventCreateDTOAsync();
                 var model = _mapper.Map<EventCreateDTO, EventCreateViewModel>(dto);
+
                 return View(model);
             }
-            catch
+            catch(Exception e)
             {
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> SetAdministration(int eventId)
-        {
-            var dto = await _eventUserManager.InitializeEventCreateDTOAsync(eventId);
-            var model = _mapper.Map<EventCreateDTO, EventCreateViewModel>(dto);
-            return View(model);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> SetAdministration(EventCreateViewModel createVM)
-        {
-            if (ModelState.IsValid)
-            {
-                var dto1 = _mapper.Map<EventCreateViewModel, EventCreateDTO>(createVM);
-                await _eventUserManager.SetAdministrationAsync(dto1);
-                return RedirectToAction("EventInfo", "Action", new { id = createVM.Event.ID });
-            }
-            var dto2 = await _eventUserManager.InitializeEventCreateDTOAsync(createVM.Event.ID);
-            var model = _mapper.Map<EventCreateDTO, EventCreateViewModel>(dto2);
-            return View(model);
         }
 
         [HttpGet]
@@ -96,9 +79,10 @@ namespace EPlast.Controllers
             {
                 var dto = await _eventUserManager.InitializeEventEditDTOAsync(eventId);
                 var model = _mapper.Map<EventCreateDTO, EventCreateViewModel>(dto);
+
                 return View(model);
             }
-            catch
+            catch(Exception e)
             {
                 return RedirectToAction("HandleError", "Error", new { code = 500 });
             }
@@ -112,12 +96,14 @@ namespace EPlast.Controllers
                 if (ModelState.IsValid)
                 {
                     await _eventUserManager.EditEventAsync(_mapper.Map<EventCreateViewModel, EventCreateDTO>(createVM));
-                    return RedirectToAction("EventUser", new { id = createVM.Event.ID });
+
+                    return RedirectToAction("EventUser");
                 }
                 else
                 {
                     var dto = await _eventUserManager.InitializeEventEditDTOAsync(createVM.Event.ID);
                     var model = _mapper.Map<EventCreateDTO, EventCreateViewModel>(dto);
+
                     return View(model);
                 }
             }
