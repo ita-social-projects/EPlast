@@ -62,20 +62,19 @@ namespace EPlast.BLL.Services.Events
             return dto;
         }
 
-        public async Task<List<GeneralEventDTO>> GetEventsAsync(int id, ClaimsPrincipal user)
+        public async Task<List<GeneralEventDTO>> GetEventsAsync(int categoryId, int eventTypeId, ClaimsPrincipal user)
         {
-            int actionId = await _eventTypeManager.GetTypeIdAsync("Акція");
             int approvedStatus = await _participantStatusManager.GetStatusIdAsync("Учасник");
             int undeterminedStatus = await _participantStatusManager.GetStatusIdAsync("Розглядається");
             int rejectedStatus = await _participantStatusManager.GetStatusIdAsync("Відмовлено");
             int approvedEvent = await _eventStatusManager.GetStatusIdAsync("Затверджений(-на)");
             int finishedEvent = await _eventStatusManager.GetStatusIdAsync("Завершений(-на)");
             int notApprovedEvent = await _eventStatusManager.GetStatusIdAsync("Не затверджені");
-            await CheckEventsStatusesAsync(id, actionId, finishedEvent);
+            await CheckEventsStatusesAsync(categoryId, eventTypeId, finishedEvent);
 
             var events = await _repoWrapper.Event
                 .GetAllAsync(
-                    e => e.EventCategoryID == id && e.EventTypeID == actionId,
+                    e => e.EventCategoryID == categoryId && e.EventTypeID == eventTypeId,
                     source => source
                         .Include(e => e.EventAdministrations)
                         .Include(e => e.Participants)

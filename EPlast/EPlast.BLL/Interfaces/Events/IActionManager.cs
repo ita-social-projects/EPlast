@@ -12,7 +12,7 @@ namespace EPlast.BLL.Interfaces.Events
         Task<IEnumerable<EventTypeDTO>> GetEventTypesAsync();
         Task<IEnumerable<EventCategoryDTO>> GetActionCategoriesAsync();
         Task<IEnumerable<EventCategoryDTO>> GetCategoriesByTypeIdAsync(int eventTypeId);
-        Task<List<GeneralEventDTO>> GetEventsAsync(int id, ClaimsPrincipal user);
+        Task<List<GeneralEventDTO>> GetEventsAsync(int categoryId, int eventTypeId, ClaimsPrincipal user);
         Task<EventDTO> GetEventInfoAsync(int id, ClaimsPrincipal user);
         Task<int> DeleteEventAsync(int id);
         Task<int> SubscribeOnEventAsync(int id, ClaimsPrincipal user);

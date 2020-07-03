@@ -37,11 +37,11 @@ namespace EPlast.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Events(int id)
+        public async Task<IActionResult> Events(int categoryId, int typeId = 1)
         {
             try
             {
-                var dto = await _actionManager.GetEventsAsync(id, User);
+                var dto = await _actionManager.GetEventsAsync(categoryId, typeId, User);
                 var model = _mapper.Map<List<GeneralEventDTO>, List<GeneralEventViewModel>>(dto);
                 return View(model);
             }
@@ -176,7 +176,7 @@ namespace EPlast.Controllers
         {
             try
             {
-                var code =await _actionManager.FillEventGalleryAsync(id, files);
+                var code = await _actionManager.FillEventGalleryAsync(id, files);
                 return StatusCode(code);
             }
             catch
