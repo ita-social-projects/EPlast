@@ -30,7 +30,19 @@ namespace EPlast.BLL.Services
 
         public async Task<IEnumerable<DataAccessCity.City>> GetAllAsync()
         {
-            return await _repoWrapper.City.GetAllAsync();
+            var cities = await _repoWrapper.City.GetAllAsync(
+                    include: source => source
+                       .Include(c => c.CityAdministration)
+                           .ThenInclude(t => t.AdminType)
+                       .Include(k => k.CityAdministration)
+                           .ThenInclude(a => a.User)
+                       .Include(m => m.CityMembers)
+                           .ThenInclude(u => u.User)
+                       .Include(l => l.CityDocuments)
+                           .ThenInclude(d => d.CityDocumentType)
+                       .Include(r => r.Region));
+
+            return cities;
         }
 
         public async Task<IEnumerable<CityDTO>> GetAllDTOAsync()
@@ -42,15 +54,16 @@ namespace EPlast.BLL.Services
         {
             var city = await _repoWrapper.City.GetFirstOrDefaultAsync(
                     predicate: c => c.ID == cityId,
-                    include : source => source
-                        .Include(c => c.CityAdministration)
-                            .ThenInclude(t => t.AdminType)
-                        .Include(k => k.CityAdministration)
-                            .ThenInclude(a => a.User)
-                        .Include(m => m.CityMembers)
-                            .ThenInclude(u => u.User)
-                        .Include(l => l.CityDocuments)
-                            .ThenInclude(d => d.CityDocumentType));
+                    include: source => source
+                       .Include(c => c.CityAdministration)
+                           .ThenInclude(t => t.AdminType)
+                       .Include(k => k.CityAdministration)
+                           .ThenInclude(a => a.User)
+                       .Include(m => m.CityMembers)
+                           .ThenInclude(u => u.User)
+                       .Include(l => l.CityDocuments)
+                           .ThenInclude(d => d.CityDocumentType)
+                       .Include(r => r.Region));
 
             return _mapper.Map<DataAccessCity.City, CityDTO>(city);
         }
@@ -62,15 +75,32 @@ namespace EPlast.BLL.Services
             {
                 return null;
             }
-            var cityHead = city?.CityAdministration?.FirstOrDefault(a => a.EndDate == null && a.AdminType.AdminTypeName == "Голова Станиці");
-            var cityAdmins = city?.CityAdministration
+            var cityHead = city.CityAdministration?
+                .FirstOrDefault(a => a.EndDate == null && a.AdminType.AdminTypeName == "Голова Станиці");
+            var cityAdmins = city.CityAdministration
                 .Where(a => a.EndDate == null && a.AdminType.AdminTypeName != "Голова Станиці")
                 .ToList();
-            var members = city?.CityMembers.Where(m => m.EndDate == null && m.StartDate != null).Take(6).ToList();
-            var followers = city?.CityMembers.Where(m => m.EndDate == null && m.StartDate == null).Take(6).ToList();
-            var cityDoc = city?.CityDocuments.Take(4).ToList();
+            var members = city.CityMembers
+                .Where(m => m.EndDate == null && m.StartDate != null)
+                .Take(6)
+                .ToList();
+            var followers = city.CityMembers
+                .Where(m => m.EndDate == null && m.StartDate == null)
+                .Take(6)
+                .ToList();
+            var cityDoc = city.CityDocuments.Take(4).ToList();
 
-            return new CityProfileDTO { City = city, CityHead = cityHead, Members = members, Followers = followers, CityAdmins = cityAdmins, CityDoc = cityDoc };
+            var cityProfileDto = new CityProfileDTO
+            {
+                City = city,
+                CityHead = cityHead,
+                Members = members,
+                Followers = followers,
+                CityAdmins = cityAdmins,
+                CityDoc = cityDoc
+            };
+
+            return cityProfileDto;
         }
 
         public async Task<CityProfileDTO> GetCityMembersAsync(int cityId)
@@ -80,7 +110,9 @@ namespace EPlast.BLL.Services
             {
                 return null;
             }
-            var members = city.CityMembers.Where(m => m.EndDate == null && m.StartDate != null).ToList();
+            var members = city.CityMembers
+                .Where(m => m.EndDate == null && m.StartDate != null)
+                .ToList();
 
             return new CityProfileDTO { City = city, Members = members };
         }
@@ -92,7 +124,9 @@ namespace EPlast.BLL.Services
             {
                 return null;
             }
-            var followers = city.CityMembers.Where(m => m.EndDate == null && m.StartDate == null).ToList();
+            var followers = city.CityMembers
+                .Where(m => m.EndDate == null && m.StartDate == null)
+                .ToList();
 
             return new CityProfileDTO { City = city, Followers = followers };
         }
@@ -130,9 +164,16 @@ namespace EPlast.BLL.Services
             {
                 return null;
             }
-            var cityAdmins = city.CityAdministration.Where(a => a.EndDate == null).ToList();
-            var members = city.CityMembers.Where(p => cityAdmins.All(a => a.UserId != p.UserId)).Where(m => m.EndDate == null && m.StartDate != null).ToList();
-            var followers = city.CityMembers.Where(m => m.EndDate == null && m.StartDate == null).ToList();
+            var cityAdmins = city.CityAdministration
+                .Where(a => a.EndDate == null)
+                .ToList();
+            var members = city.CityMembers
+                .Where(p => cityAdmins.All(a => a.UserId != p.UserId))
+                .Where(m => m.EndDate == null && m.StartDate != null)
+                .ToList();
+            var followers = city.CityMembers
+                .Where(m => m.EndDate == null && m.StartDate == null)
+                .ToList();
 
             return new CityProfileDTO { City = city, CityAdmins = cityAdmins, Members = members, Followers = followers };
         }
@@ -149,6 +190,7 @@ namespace EPlast.BLL.Services
         {
             var city = await CreateCityAsync(model, file);
 
+            _repoWrapper.City.Attach(city);
             await _repoWrapper.City.CreateAsync(city);
             await _repoWrapper.SaveAsync();
 
@@ -173,6 +215,7 @@ namespace EPlast.BLL.Services
             }
 
             city.RegionId = region.ID;
+            city.Region = region;
 
             return city;
         }
