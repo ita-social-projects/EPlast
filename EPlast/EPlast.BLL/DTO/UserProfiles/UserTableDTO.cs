@@ -4,7 +4,7 @@ namespace EPlast.BLL.DTO
 {
     public class UserTableDTO
     {
-        public UserDTO User { get; set; }
+        public ShortUserInformationDTO User { get; set; }
         public string RegionName { get; set; }
         public string CityName { get; set; }
         public string ClubName { get; set; }
