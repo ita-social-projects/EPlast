@@ -16,12 +16,25 @@ namespace EPlast.WebApi.Controllers
             _actionManager = actionManager;
         }
 
-        [HttpGet("categories")]
-        public async Task<IActionResult> GetCategories()
+        [HttpGet("types")]
+        public async Task<IActionResult> GetTypes()
         {
             try
             {
-                return Ok(await _actionManager.GetActionCategoriesAsync());
+                return Ok(await _actionManager.GetEventTypesAsync());
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("types/{eventTypeId:int}/categories")]
+        public async Task<IActionResult> GetCategories(int eventTypeId)
+        {
+            try
+            {
+                return Ok(await _actionManager.GetCategoriesByTypeIdAsync(eventTypeId));
             }
             catch
             {
