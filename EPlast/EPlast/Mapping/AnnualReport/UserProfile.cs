@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.AnnualReport;
 using EPlast.ViewModels.AnnualReport;
-using EPlast.DataAccess.Entities;
 
 namespace EPlast.Mapping.AnnualReport
 {
@@ -9,7 +8,7 @@ namespace EPlast.Mapping.AnnualReport
     {
         public UserProfile()
         {
-            CreateMap<User, UserDTO>().ReverseMap();
+            CreateMap<DataAccess.Entities.User, UserDTO>().ReverseMap();
             CreateMap<UserViewModel, UserDTO>().ReverseMap();
         }
     }
