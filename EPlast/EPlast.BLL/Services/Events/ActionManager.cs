@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Events;
+using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
@@ -43,9 +44,21 @@ namespace EPlast.BLL.Services.Events
             _eventGalleryManager = eventGalleryManager;
         }
 
+        public async Task<IEnumerable<EventTypeDTO>> GetEventTypesAsync()
+        {
+            var dto = await _eventTypeManager.GetDTOAsync();
+            return dto;
+        }
+
         public async Task<IEnumerable<EventCategoryDTO>> GetActionCategoriesAsync()
         {
             var dto = await _eventCategoryManager.GetDTOAsync();
+            return dto;
+        }
+
+        public async Task<IEnumerable<EventCategoryDTO>> GetCategoriesByTypeIdAsync(int eventTypeId)
+        {
+            var dto = await _eventCategoryManager.GetDTOByEventTypeIdAsync(eventTypeId);
             return dto;
         }
 
