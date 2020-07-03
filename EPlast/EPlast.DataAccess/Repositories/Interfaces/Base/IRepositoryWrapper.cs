@@ -50,6 +50,8 @@ namespace EPlast.DataAccess.Repositories
         IUserPlastDegreesRepository UserPlastDegrees { get; }
         ICityManagementsRepository CityManagements { get; }
         IEventAdministrationRepository EventAdministration { get; }
+        IEventCategoryTypeRepository EventCategoryType { get; }
+
 
         void Save();
         Task SaveAsync();
