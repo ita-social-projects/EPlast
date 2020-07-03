@@ -245,7 +245,7 @@ namespace EPlast.WebApi
                 .AllowAnyMethod()
                 .AllowAnyHeader();
         });
-            app.UseAntiforgeryTokens();
+         //   app.UseAntiforgeryTokens();
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();
