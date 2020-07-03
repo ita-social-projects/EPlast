@@ -43,7 +43,7 @@ namespace EPlast.BLL.Services.Events
             _eventGalleryManager = eventGalleryManager;
         }
 
-        public async Task<List<EventCategoryDTO>> GetActionCategoriesAsync()
+        public async Task<IEnumerable<EventCategoryDTO>> GetActionCategoriesAsync()
         {
             var dto = await _eventCategoryManager.GetDTOAsync();
             return dto;
