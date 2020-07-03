@@ -27,7 +27,7 @@ namespace EPlast.Controllers
             try
             {
                 var dto = await _actionManager.GetActionCategoriesAsync();
-                var model = _mapper.Map<List<EventCategoryDTO>, List<EventCategoryViewModel>>(dto);
+                var model = _mapper.Map<IEnumerable<EventCategoryDTO>, IEnumerable<EventCategoryViewModel>>(dto);
                 return View(model);
             }
             catch

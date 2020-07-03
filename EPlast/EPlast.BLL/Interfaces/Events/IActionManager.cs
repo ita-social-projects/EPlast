@@ -8,7 +8,7 @@ namespace EPlast.BLL.Interfaces.Events
 {
     public interface IActionManager
     {
-        Task<List<EventCategoryDTO>> GetActionCategoriesAsync();
+        Task<IEnumerable<EventCategoryDTO>> GetActionCategoriesAsync();
         Task<List<GeneralEventDTO>> GetEventsAsync(int id, ClaimsPrincipal user);
         Task<EventDTO> GetEventInfoAsync(int id, ClaimsPrincipal user);
         Task<int> DeleteEventAsync(int id);
