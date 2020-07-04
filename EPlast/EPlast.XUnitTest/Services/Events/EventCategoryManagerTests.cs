@@ -1,4 +1,5 @@
 ﻿using EPlast.BLL.DTO.Events;
+using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Services.Events;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
@@ -6,17 +7,19 @@ using Moq;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
-using System.Threading.Tasks;
 
 namespace EPlast.XUnitTest.Services.Events
 {
     public class EventCategoryManagerTests
     {
         private readonly Mock<IRepositoryWrapper> _repoWrapper;
+        private readonly Mock<IEventTypeManager> _eventTypeManager;
+
 
         public EventCategoryManagerTests()
         {
             _repoWrapper = new Mock<IRepositoryWrapper>();
+            _eventTypeManager = new Mock<IEventTypeManager>();
         }
 
         [Fact]
@@ -26,12 +29,12 @@ namespace EPlast.XUnitTest.Services.Events
             _repoWrapper.Setup(x => x.EventCategory.GetAllAsync(null, null))
                 .ReturnsAsync(GetEventCategories());
             //Act
-            var eventCategoryManager = new EventCategoryManager(_repoWrapper.Object);
+            var eventCategoryManager = new EventCategoryManager(_repoWrapper.Object, _eventTypeManager.Object);
             var methodResult = await eventCategoryManager.GetDTOAsync();
             //Assert
             Assert.NotNull(methodResult);
-            Assert.IsType<List<EventCategoryDTO>>(methodResult);
-            Assert.Equal(GetEventCategories().Count(), methodResult.Count);
+            Assert.IsAssignableFrom<IEnumerable<EventCategoryDTO>>(methodResult);
+            Assert.Equal(GetEventCategories().Count(), methodResult.ToList().Count);
         }
         public IQueryable<EventCategory> GetEventCategories()
         {
