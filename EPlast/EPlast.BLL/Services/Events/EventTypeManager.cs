@@ -34,7 +34,7 @@ namespace EPlast.BLL.Services.Events
                 {
                     ID = eventType.ID,
                     EventTypeName = eventType.EventTypeName
-                });
+                });     
 
             return dto;
         }
