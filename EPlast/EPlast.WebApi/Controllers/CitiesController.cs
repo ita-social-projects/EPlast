@@ -164,7 +164,7 @@ namespace EPlast.WebApi.Controllers
                     return NotFound();
                 }
 
-                return Ok(cityDto);
+                return Ok(_mapper.Map<CityDTO, CityViewModel>(cityDto));
             }
             catch (Exception e)
             {
