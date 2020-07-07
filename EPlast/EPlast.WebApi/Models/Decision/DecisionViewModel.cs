@@ -1,6 +1,7 @@
 ﻿using EPlast.BLL;
 using EPlast.BLL.DTO;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +10,21 @@ namespace EPlast.WebApi.Models.Decision
 {
     public class DecisionViewModel
     {
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+        
+        public string DecisionStatusType { get; set; }
+
+        public string Organization { get; set; }
+
+        public string DecisionTarget { get; set; }
+
+        public string Description { get; set; }
+
+        public DateTime Date { get; set; }
+
+        public bool HaveFile { get; set; }
         public DecisionWrapperDTO DecisionWrapper { get; set; }
         public IEnumerable<SelectListItem> OrganizationListItems { get; set; }
         public IEnumerable<SelectListItem> DecisionStatusTypeListItems { get; set; }
