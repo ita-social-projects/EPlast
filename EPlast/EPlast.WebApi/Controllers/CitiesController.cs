@@ -153,51 +153,6 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPut("EditCity/{cityId}")]
-        public async Task<IActionResult> Edit(CityProfileDTO cityProfileDTO, IFormFile file)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                await _cityService.EditAsync(cityProfileDTO, file);
-                _logger.LogInformation($"City {cityProfileDTO.City.Name} was edited profile and saved in the database");
-
-                return NoContent();
-
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Exception :{e.Message}");
-
-                return BadRequest();
-            }
-        }
-
-        [HttpPost("CreateCity")]
-        public async Task<IActionResult> Create(CityProfileDTO cityProfileDto, IFormFile file)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                int cityId = await _cityService.CreateAsync(cityProfileDto, file);
-
-                return CreatedAtAction(nameof(Create), cityProfileDto);
-
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Exception :{e.Message}");
-
-                return BadRequest();
-            }
-        }
-
         [HttpGet("Details/{cityId}")]
         public async Task<IActionResult> Details(int cityId)
         {
@@ -210,6 +165,62 @@ namespace EPlast.WebApi.Controllers
                 }
 
                 return Ok(cityDto);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return BadRequest();
+            }
+        }
+
+        [HttpPut("EditCity/{cityId}")]
+        public async Task<IActionResult> Edit(CityViewModel city, IFormFile file)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var cityProfileDTO = new CityProfileDTO
+                {
+                    City = _mapper.Map<CityViewModel, CityDTO>(city)
+                };
+
+                await _cityService.EditAsync(cityProfileDTO, file);
+                _logger.LogInformation($"City {cityProfileDTO.City.Name} was edited profile and saved in the database");
+
+                return Ok(_mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDTO));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return BadRequest();
+            }
+        }
+
+        [HttpPost("CreateCity")]
+        public async Task<IActionResult> Create(CityViewModel city, IFormFile file)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var cityProfileDTO = new CityProfileDTO
+                {
+                    City = _mapper.Map<CityViewModel, CityDTO>(city)
+                };
+
+                await _cityService.CreateAsync(cityProfileDTO, file);
+                _logger.LogInformation($"City {cityProfileDTO.City.Name} was created profile and saved in the database");
+
+                return Ok(_mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDTO));
             }
             catch (Exception e)
             {
