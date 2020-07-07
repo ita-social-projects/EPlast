@@ -13,7 +13,6 @@ namespace EPlast.WebApi.Models.Decision
         public int Id { get; set; }
 
         public string Name { get; set; }
-        
         public string DecisionStatusType { get; set; }
 
         public string Organization { get; set; }
@@ -24,7 +23,7 @@ namespace EPlast.WebApi.Models.Decision
 
         public DateTime Date { get; set; }
 
-        public bool HaveFile { get; set; }
+        public string FileName { get; set; }
         public DecisionWrapperDTO DecisionWrapper { get; set; }
         public IEnumerable<SelectListItem> OrganizationListItems { get; set; }
         public IEnumerable<SelectListItem> DecisionStatusTypeListItems { get; set; }

@@ -1,4 +1,5 @@
-﻿using EPlast.BLL;
+﻿using AutoMapper;
+using EPlast.BLL;
 using EPlast.BLL.DTO;
 using EPlast.WebApi.Models.Decision;
 using Microsoft.AspNetCore.Mvc;
@@ -15,11 +16,12 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly IDecisionService _decisionService;
         private readonly IPdfService _pdfService;
-
-        public DecisionsController(IPdfService pdfService, IDecisionService decisionService)
+        private readonly IMapper _mapper;
+        public DecisionsController(IPdfService pdfService, IDecisionService decisionService, IMapper mapper)
         {
             _pdfService = pdfService;
             _decisionService = decisionService;
+            _mapper = mapper;
         }
 
         [HttpGet("NewDecision")]
@@ -84,14 +86,18 @@ namespace EPlast.WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            List<DecisionViewModel> decisions = new List<DecisionViewModel>
-                (
-                    (await _decisionService.GetDecisionListAsync())
-                        .Select(decesion => new DecisionViewModel { DecisionWrapper = decesion })
-                        .ToList()
-                );
+            List<DecisionViewModel> decisions = (await _decisionService.GetDecisionListAsync())
+                        .Select(decesion => {
+                            var dvm = _mapper.Map<DecisionViewModel>(decesion.Decision);
 
-            return Ok(Tuple.Create(await DecisionViewModel.GetNewDecisionViewModel(_decisionService), decisions));
+                            dvm.DecisionStatusType = _decisionService.GetDecisionStatusTypes()
+                            .FirstOrDefault(dst => dst.Value == decesion.Decision.DecisionStatusType.ToString()).Text;
+                            dvm.FileName = decesion.Filename;
+                            return dvm;
+                        })
+                        .ToList();
+
+            return Ok(decisions);
         }
 
         [HttpDelete("{id:int}")]
