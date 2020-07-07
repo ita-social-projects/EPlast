@@ -25,9 +25,16 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("NewDecision")]
-        public async Task<ActionResult<DecisionViewModel>> GetMetaData()
+        public async Task<ActionResult<DecisionCreateViewModel>> GetMetaData()
         {
-            return Ok(await DecisionViewModel.GetNewDecisionViewModel(_decisionService));
+            DecisionCreateViewModel decisionViewModel = new DecisionCreateViewModel
+            {
+                Organizations = await _decisionService.GetOrganizationListAsync(),
+                DecisionTargets = await _decisionService.GetDecisionTargetListAsync(),
+                DecisionStatusTypeListItems = _decisionService.GetDecisionStatusTypes()
+            };
+
+            return Ok(decisionViewModel);
         }
 
         [HttpGet("{id:int}")]
