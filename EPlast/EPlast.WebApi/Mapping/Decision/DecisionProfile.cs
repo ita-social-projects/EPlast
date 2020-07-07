@@ -15,7 +15,8 @@ namespace EPlast.WebApi.Mapping.Decision
             CreateMap<DecisionDTO, DecisionViewModel>()
                 .ForMember(dvw => dvw.Organization, dd => dd.MapFrom(f => f.Organization.OrganizationName))
                 .ForMember(dvw => dvw.DecisionTarget, dd => dd.MapFrom(f => f.DecisionTarget.TargetName))
-                .ForMember(dvw => dvw.DecisionStatusType, dd => dd.MapFrom(f => f.DecisionTarget.TargetName));
+                .ForMember(dvw => dvw.DecisionStatusType, dd => dd.MapFrom(f => f.DecisionTarget.TargetName))
+                .ReverseMap();
         }
     }
 }
