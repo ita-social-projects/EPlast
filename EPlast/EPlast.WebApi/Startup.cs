@@ -46,6 +46,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 
 namespace EPlast.WebApi
 {
@@ -99,7 +100,7 @@ namespace EPlast.WebApi
             {
                 options.CustomSchemaIds(x => x.FullName);
             });
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
             services.AddTokenAuthentication(Configuration);
             services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IAccountService, AccountService>();

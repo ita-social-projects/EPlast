@@ -155,7 +155,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("signup")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(RegisterDto registerDto)
+        public async Task<IActionResult> Register([FromBody]RegisterDto registerDto)
         {
             try
             {
