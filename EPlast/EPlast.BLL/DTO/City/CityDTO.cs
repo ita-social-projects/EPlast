@@ -1,5 +1,4 @@
 ﻿using EPlast.BLL.DTO.Region;
-using EPlast.DataAccess.Entities;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
