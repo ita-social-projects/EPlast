@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using EPlast.BLL.DTO.City;
-using EPlast.WebApi.Models.Region;
+﻿using EPlast.WebApi.Models.Region;
 using System.Collections.Generic;
 
 namespace EPlast.WebApi.Models.City
