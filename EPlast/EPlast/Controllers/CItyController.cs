@@ -59,7 +59,7 @@ namespace EPlast.Controllers
                     return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
                 }
 
-                return View(_mapper.Map<CityProfileDTO, CityProfileViewModel>(await _cityService.GetCityMembersAsync(cityId)));
+                return View(_mapper.Map<CityProfileDTO, CityProfileViewModel>(cityProfileDto));
             }
             catch (Exception e)
             {
@@ -99,7 +99,7 @@ namespace EPlast.Controllers
                     return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
                 }
 
-                return View(_mapper.Map<CityProfileDTO, CityProfileViewModel>(await _cityService.GetCityAdminsAsync(cityId)));
+                return View(_mapper.Map<CityProfileDTO, CityProfileViewModel>(cityProfileDto));
             }
             catch (Exception e)
             {
@@ -120,7 +120,7 @@ namespace EPlast.Controllers
                     return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
                 }
 
-                return View(_mapper.Map<CityProfileDTO, CityProfileViewModel>(await _cityService.EditAsync(cityId)));
+                return View(_mapper.Map<CityProfileDTO, CityProfileViewModel>(cityProfileDto));
             }
             catch (Exception e)
             {
@@ -179,6 +179,7 @@ namespace EPlast.Controllers
                 }
 
                 int cityId = await _cityService.CreateAsync(_mapper.Map<CityProfileViewModel, CityProfileDTO>(model), file);
+                _logger.LogInformation($"City {model.City.Name} was created profile and saved in the database");
 
                 return RedirectToAction("CityProfile", "City", new { cityid = cityId });
             }
