@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.City;
+using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.City;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
@@ -20,12 +21,17 @@ namespace EPlast.BLL.Services
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _env;
+        private readonly ICityBlobStorageRepository _cityBlobStorage;
 
-        public CityService(IRepositoryWrapper repoWrapper, IMapper mapper, IWebHostEnvironment env)
+        public CityService(IRepositoryWrapper repoWrapper,
+            IMapper mapper,
+            IWebHostEnvironment env,
+            ICityBlobStorageRepository cityBlobStorage)
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
             _env = env;
+            _cityBlobStorage = cityBlobStorage;
         }
 
         public async Task<IEnumerable<DataAccessCity.City>> GetAllAsync()
@@ -188,8 +194,18 @@ namespace EPlast.BLL.Services
 
         public async Task EditAsync(CityProfileDTO model, IFormFile file)
         {
-            var city = await CreateCityAsync(model);
             await UploadPhotoAsync(model.City, file);
+            var city = await CreateCityAsync(model);
+            
+            _repoWrapper.City.Attach(city);
+            _repoWrapper.City.Update(city);
+            await _repoWrapper.SaveAsync();
+        }
+
+        public async Task EditAsync(CityProfileDTO model)
+        {
+            await UploadPhotoAsync(model.City);
+            var city = await CreateCityAsync(model);
 
             _repoWrapper.City.Attach(city);
             _repoWrapper.City.Update(city);
@@ -198,8 +214,8 @@ namespace EPlast.BLL.Services
 
         public async Task<int> CreateAsync(CityProfileDTO model, IFormFile file)
         {
-            var city = await CreateCityAsync(model);
             await UploadPhotoAsync(model.City, file);
+            var city = await CreateCityAsync(model);
 
             _repoWrapper.City.Attach(city);
             await _repoWrapper.City.CreateAsync(city);
@@ -210,6 +226,7 @@ namespace EPlast.BLL.Services
 
         public async Task<int> CreateAsync(CityProfileDTO model)
         {
+            await UploadPhotoAsync(model.City);
             var city = await CreateCityAsync(model);
 
             _repoWrapper.City.Attach(city);
@@ -270,6 +287,27 @@ namespace EPlast.BLL.Services
             else
             {
                 city.Logo = oldImageName ?? "333493fe-9c81-489f-bce3-5d1ba35a8c36.jpg";
+            }
+        }
+
+        private async Task UploadPhotoAsync(CityDTO city)
+        {
+            var oldImageName = (await _repoWrapper.City.GetFirstOrDefaultAsync(i => i.ID == city.ID))?.Logo;
+            var logoBase64 = city.Logo;
+
+            if (!string.IsNullOrWhiteSpace(logoBase64) && logoBase64.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default_city_image.jpg"))
+                {
+                    await _cityBlobStorage.DeleteBlobAsync(oldImageName);
+                }
+                
+                var fileName = Guid.NewGuid().ToString();
+                await _cityBlobStorage.UploadBlobForBase64Async(logoBase64, fileName);
+            }
+            else
+            {
+                city.Logo = oldImageName ?? "default_city_image.jpg";
             }
         }
     }

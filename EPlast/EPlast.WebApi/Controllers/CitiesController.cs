@@ -188,7 +188,7 @@ namespace EPlast.WebApi.Controllers
                     City = _mapper.Map<CityViewModel, CityDTO>(city)
                 };
 
-                await _cityService.EditAsync(cityProfileDTO, city.LogoPicture);
+                await _cityService.EditAsync(cityProfileDTO);
                 _logger.LogInformation($"City {cityProfileDTO.City.Name} was edited profile and saved in the database");
 
                 return Ok(_mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDTO));
