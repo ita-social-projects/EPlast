@@ -1,10 +1,10 @@
-﻿using EPlast.BLL.DTO.UserProfiles;
-
-namespace EPlast.BLL.DTO.EventUser
+﻿namespace EPlast.BLL.DTO.EventUser
 {
     public class EventAdministrationDTO
     {
-        public string UserID { get; set; }
-        public UserDTO User { get; set; }
+        public string UserId { get; set; }
+        public string FullName { get; set; }
+        public string Email { get; set; } 
+        public UserInfoDTO User { get; set; }
     }
 }

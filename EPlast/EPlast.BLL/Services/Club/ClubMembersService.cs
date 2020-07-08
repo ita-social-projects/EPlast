@@ -1,33 +1,48 @@
-﻿using EPlast.BLL.Interfaces.Club;
+using System;
+using System.Threading.Tasks;
+using AutoMapper;
+using EPlast.BLL.DTO.Club;
+using EPlast.BLL.Interfaces.Club;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Club
 {
     public class ClubMembersService : IClubMembersService
     {
         private readonly IRepositoryWrapper _repoWrapper;
+        private readonly IMapper _mapper;
+        private readonly IClubService _clubService;
+        private readonly IUserManagerService _userManagerService;
 
-        public ClubMembersService(IRepositoryWrapper repoWrapper)
+        public ClubMembersService(IRepositoryWrapper repoWrapper, IMapper mapper, IClubService clubService,
+            IUserManagerService userManagerService)
         {
             _repoWrapper = repoWrapper;
+            _mapper = mapper;
+            _clubService = clubService;
+            _userManagerService = userManagerService;
         }
 
-        public async Task ToggleIsApprovedInClubMembersAsync(int memberId, int clubId)
+        public async Task<ClubMembersDTO> ToggleIsApprovedInClubMembersAsync(int memberId, int clubId)
         {
             var person = await _repoWrapper.ClubMembers
-                .GetFirstOrDefaultAsync(u => u.ID == memberId && u.ClubId == clubId);
-
-            if (person != null)
-                person.IsApproved = !person.IsApproved;
-            
+                             .GetFirstOrDefaultAsync(u => u.ID == memberId && u.ClubId == clubId) ??
+                         throw new ArgumentNullException($"User with id={memberId} not found");
+            person.IsApproved = !person.IsApproved;
             _repoWrapper.ClubMembers.Update(person);
             await _repoWrapper.SaveAsync();
+
+            return _mapper.Map<ClubMembers, ClubMembersDTO>(person);
         }
 
-        public async Task AddFollowerAsync(int index, string userId)
+        public async Task<ClubMembersDTO> AddFollowerAsync(int clubId, string userId)
         {
+            var club = await _clubService.GetClubInfoByIdAsync(clubId);
+            var userDto = await _userManagerService.FindByIdAsync(userId) ??
+                          throw new ArgumentNullException($"User with {userId} id not found");
+
             var oldMember = await _repoWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(i => i.UserId == userId);
 
@@ -39,13 +54,15 @@ namespace EPlast.BLL.Services.Club
 
             ClubMembers newMember = new ClubMembers()
             {
-                ClubId = index,
+                ClubId = club.ID,
                 IsApproved = false,
-                UserId = userId
+                UserId = userDto.Id
             };
 
             await _repoWrapper.ClubMembers.CreateAsync(newMember);
             await _repoWrapper.SaveAsync();
+
+            return _mapper.Map<ClubMembers, ClubMembersDTO>(newMember);
         }
     }
 }

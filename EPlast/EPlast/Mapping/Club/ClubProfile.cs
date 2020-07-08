@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Club;
-using EPlast.DataAccess.Entities;
 using EPlast.ViewModels;
 
 namespace EPlast.Mapping
@@ -9,7 +8,7 @@ namespace EPlast.Mapping
     {
         public ClubProfile()
         {
-            CreateMap<Club, ClubDTO>().ReverseMap();
+            CreateMap<DataAccess.Entities.Club, ClubDTO>().ReverseMap();
             CreateMap<ClubViewModel, ClubDTO>().ReverseMap();
         }
     }

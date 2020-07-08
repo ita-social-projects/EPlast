@@ -1,4 +1,4 @@
-﻿using EPlast.DataAccess.Entities;
+﻿using EPlast.BLL.DTO.Region;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -11,7 +11,7 @@ namespace EPlast.BLL.DTO.City
         [Required, MaxLength(50, ErrorMessage = "Назва станиці не має перевищувати 50 символів")]
         public string Name { get; set; }
 
-        [MaxLength(16, ErrorMessage = "Контактний номер станиці не має перевищувати 16 символів")]
+        [StringLength(18, ErrorMessage = "Контактний номер станиці повинен містити 12 цифр")]
         public string PhoneNumber { get; set; }
 
         [MaxLength(50, ErrorMessage = "Email станиці не має перевищувати 50 символів")]
@@ -34,14 +34,16 @@ namespace EPlast.BLL.DTO.City
 
         [MaxLength(7, ErrorMessage = "Поштовий індекс станиці не має перевищувати 7 символів")]
         public string PostIndex { get; set; }
-        public Region Region { get; set; }
 
         [StringLength(int.MaxValue, MinimumLength = 3)]
         public string Logo { get; set; }
+
+        public int RegionId { get; set; }
+        public RegionDTO Region { get; set; }
+
         public IEnumerable<CityDocumentsDTO> CityDocuments { get; set; }
         public IEnumerable<CityMembersDTO> CityMembers { get; set; }
-        public IEnumerable<UnconfirmedCityMember> UnconfirmedCityMember { get; set; }
         public IEnumerable<CityAdministrationDTO> CityAdministration { get; set; }
-        public IEnumerable<CityLegalStatus> CityLegalStatuses { get; set; }
+        public IEnumerable<CityLegalStatusDTO> CityLegalStatuses { get; set; }
     }
 }

@@ -9,7 +9,6 @@ namespace EPlast.Mapping.City
     {
         public CityProfile()
         {
-            CreateMap<CityDTO, DataAccessCity.City>().ReverseMap();
             CreateMap<CityViewModel, CityDTO>().ReverseMap();
         }
     }

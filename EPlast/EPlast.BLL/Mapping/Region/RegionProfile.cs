@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.Region;
 using DatabaseEntities = EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Mapping.Region
@@ -9,6 +9,7 @@ namespace EPlast.BLL.Mapping.Region
         public RegionProfile()
         {
             CreateMap<DatabaseEntities.Region, RegionDTO>().ReverseMap();
+            CreateMap<DatabaseEntities.RegionAdministration, RegionAdministrationDTO>().ReverseMap();
         }
     }
 }
