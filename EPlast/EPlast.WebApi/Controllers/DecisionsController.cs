@@ -66,7 +66,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> Save(DecisionWrapperDTO decisionWrapper)
         {
 
-            if (decisionWrapper.Decision.DecisionTarget.ID != 0 || decisionWrapper == null)
+            if (decisionWrapper == null)
             {
                 return BadRequest("Дані введені неправильно");
             }
