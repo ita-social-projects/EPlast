@@ -1,7 +1,6 @@
-﻿using EPlast.DataAccess.Entities;
-using EPlast.DataAccess.Entities.Event;
+﻿using EPlast.DataAccess.Entities.Event;
 
-namespace EPlast.DataAccess.Repositories
+namespace EPlast.DataAccess.Repositories.Interfaces.Events
 {
     public interface IEventAdminRepository : IRepositoryBase<EventAdmin>
     {

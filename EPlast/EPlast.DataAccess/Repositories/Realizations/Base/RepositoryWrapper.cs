@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using EPlast.DataAccess.Repositories.Contracts;
 using EPlast.DataAccess.Repositories.Interfaces.Events;
+using EPlast.DataAccess.Repositories.Realizations.Events;
 
 namespace EPlast.DataAccess.Repositories.Realizations.Base
 {
@@ -49,6 +50,8 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private ICityManagementsRepository _cityManagements;
         private IEventAdministrationRepository _eventAdministration;
         private IEventAdministrationTypeRepository _eventAdministrationType;
+        private IEventCategoryTypeRepository _eventCategoryTypeRepository;
+
 
         public IDecesionRepository Decesion
         {
@@ -250,6 +253,19 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 }
 
                 return _eventType;
+            }
+        }
+
+        public IEventCategoryTypeRepository EventCategoryType
+        {
+            get
+            {
+                if (_eventCategoryTypeRepository == null)
+                {
+                    _eventCategoryTypeRepository = new EventCategoryTypeRepository(_dbContext);
+                }
+
+                return _eventCategoryTypeRepository;
             }
         }
 
@@ -487,7 +503,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             }
         }
 
-        public IClubAdministrationRepository GetClubAdministration
+        public IClubAdministrationRepository ClubAdministration
         {
             get
             {

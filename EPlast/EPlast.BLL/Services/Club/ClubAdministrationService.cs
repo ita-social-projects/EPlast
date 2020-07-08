@@ -1,11 +1,12 @@
-﻿using AutoMapper;
-using EPlast.BLL.DTO.Admin;
+using System;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Club;
+using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Club
 {
@@ -13,97 +14,88 @@ namespace EPlast.BLL.Services.Club
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
+        private readonly IAdminTypeService _adminTypeService;
 
-        public ClubAdministrationService(IRepositoryWrapper repoWrapper, IMapper mapper)
+        public ClubAdministrationService(IRepositoryWrapper repoWrapper, IMapper mapper,
+            IAdminTypeService adminTypeService)
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
+            _adminTypeService = adminTypeService;
         }
 
-        private async Task<ClubDTO> GetClubAdministrationAsync(int clubID)
+        private async Task<ClubDTO> GetClubAdministrationAsync(int clubId)
         {
             var club = await _repoWrapper.Club
                 .GetFirstOrDefaultAsync(
-                    i => i.ID == clubID,
+                    i => i.ID == clubId,
                     i => i
                         .Include(c => c.ClubAdministration)
-                            .ThenInclude(t => t.AdminType)
+                        .ThenInclude(t => t.AdminType)
                         .Include(n => n.ClubAdministration)
-                            .ThenInclude(t => t.ClubMembers)
-                            .ThenInclude(us => us.User));
+                        .ThenInclude(t => t.ClubMembers)
+                        .ThenInclude(us => us.User));
 
-            return _mapper.Map<DataAccess.Entities.Club, ClubDTO>(club);
+            return (club != null)
+                ? _mapper.Map<DataAccess.Entities.Club, ClubDTO>(club)
+                : throw new ArgumentNullException($"Club with {clubId} id not found");
         }
 
-        public async Task<ClubProfileDTO> GetCurrentClubAdministrationByIDAsync(int clubID)
+        public async Task<ClubProfileDTO> GetClubAdministrationByIdAsync(int clubId)
         {
-            var club = await GetClubAdministrationAsync(clubID);
-            
-            var clubProfileDTO = new ClubProfileDTO
-            {
-                Club = club,
-                ClubAdministration = club.ClubAdministration
-            };
+            var clubDto = await GetClubAdministrationAsync(clubId);
 
-            return clubProfileDTO;
+            return new ClubProfileDTO
+            {
+                Club = clubDto,
+                ClubAdministration = clubDto.ClubAdministration
+            };
         }
 
         public async Task<bool> DeleteClubAdminAsync(int id)
         {
-            var admin = await _repoWrapper.GetClubAdministration
+            var clubAdministration = await _repoWrapper.ClubAdministration
                 .GetFirstOrDefaultAsync(i => i.ID == id);
 
-            if (admin != null)
+            if (clubAdministration == null)
             {
-                _repoWrapper.GetClubAdministration.Delete(admin);
-                await _repoWrapper.SaveAsync();
-              
-                return true;
+                throw new ArgumentNullException($"ClubAdministration with {id} ID not found");
             }
-            
-            return false;
+
+            _repoWrapper.ClubAdministration.Delete(clubAdministration);
+            await _repoWrapper.SaveAsync();
+
+            return true;
         }
 
-        public async Task SetAdminEndDateAsync(AdminEndDateDTO adminEndDate)
+        public async Task<ClubAdministrationDTO> SetAdminEndDateAsync(int clubAdministrationId, DateTime endDate)
         {
-            var admin = await _repoWrapper.GetClubAdministration
-                .GetFirstOrDefaultAsync(i => i.ID == adminEndDate.AdminId);
-
-            admin.EndDate = adminEndDate.EndDate;
-            _repoWrapper.GetClubAdministration.Update(admin);
+            var clubAdministration = await _repoWrapper.ClubAdministration
+                .GetFirstOrDefaultAsync(i => i.ID == clubAdministrationId);
             
+            if (clubAdministration == null)
+            {
+                throw new ArgumentNullException($"ClubAdministration with {clubAdministrationId} ID not found");
+            }
+
+            clubAdministration.EndDate = endDate;
+            
+            _repoWrapper.ClubAdministration.Update(clubAdministration);
             await _repoWrapper.SaveAsync();
+
+            return _mapper.Map<ClubAdministration, ClubAdministrationDTO>(clubAdministration);
         }
 
-        public async Task AddClubAdminAsync(ClubAdministrationDTO createdAdmin)
+        public async Task<ClubAdministrationDTO> AddClubAdminAsync(ClubAdministrationDTO createdAdmin)
         {
-            var adminType = await _repoWrapper.AdminType
-                .GetFirstOrDefaultAsync(i => i.AdminTypeName == createdAdmin.AdminTypeName);
+            var adminType = await _adminTypeService.GetAdminTypeByNameAsync(createdAdmin.AdminTypeName);
+            createdAdmin.AdminTypeId = adminType.ID;
 
-            int adminTypeId;
-
-            if (adminType == null)
-            {
-                var newAdminType = new AdminType() { AdminTypeName = createdAdmin.AdminTypeName };
-                adminTypeId = newAdminType.ID;
-                
-                await _repoWrapper.AdminType.CreateAsync(newAdminType);
-                await _repoWrapper.SaveAsync();
-            }
-            else
-                adminTypeId = adminType.ID;
-            
-            ClubAdministration newClubAdmin = new ClubAdministration()
-            {
-                ClubMembersID = createdAdmin.ClubMembersID,
-                StartDate = createdAdmin.StartDate,
-                EndDate = createdAdmin.EndDate,
-                ClubId = createdAdmin.ClubId,
-                AdminTypeId = adminTypeId
-            };
-
-            await _repoWrapper.GetClubAdministration.CreateAsync(newClubAdmin);
+            ClubAdministration newClubAdmin = _mapper.Map<ClubAdministrationDTO, ClubAdministration>(createdAdmin);
+            await _repoWrapper.ClubAdministration.CreateAsync(newClubAdmin);
             await _repoWrapper.SaveAsync();
+
+            return _mapper.Map<ClubAdministration, ClubAdministrationDTO>(newClubAdmin);
         }
     }
 }

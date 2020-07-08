@@ -1,19 +1,17 @@
-﻿using AutoMapper;
-using EPlast.BLL.DTO;
+using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.Club;
-using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Services.Club;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.ClubTests
@@ -22,31 +20,34 @@ namespace EPlast.XUnitTest.Services.ClubTests
     {
         private readonly Mock<IRepositoryWrapper> _repoWrapper;
         private readonly Mock<IMapper> _mapper;
+        private readonly Mock<IAdminTypeService> _adminTypeService;
         private readonly IClubAdministrationService _clubAdministrationService;
 
         public ClubAdministrationServiceTests()
         {
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _mapper = new Mock<IMapper>();
-            _clubAdministrationService = new ClubAdministrationService(_repoWrapper.Object, _mapper.Object);
+            _adminTypeService = new Mock<IAdminTypeService>();
+            _clubAdministrationService =
+                new ClubAdministrationService(_repoWrapper.Object, _mapper.Object, _adminTypeService.Object);
         }
 
         [Fact]
-        public async Task GetCurrentClubAdministrationByIDAsyncTest()
+        public async Task GetClubAdministrationByIdAsyncTest()
         {
             //Arrange
             _repoWrapper
                 .Setup(s => s.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Club, bool>>>(),
                     It.IsAny<Func<IQueryable<Club>,
-                    IIncludableQueryable<Club, object>>>()))
-                .ReturnsAsync(GetTestClub());
+                        IIncludableQueryable<Club, object>>>()))
+                .ReturnsAsync(new Club());
 
             _mapper
                 .Setup(s => s.Map<Club, ClubDTO>(It.IsAny<Club>()))
-                .Returns(GetTestClubDTO());
+                .Returns(new ClubDTO());
 
             //Act
-            var result = await _clubAdministrationService.GetCurrentClubAdministrationByIDAsync(1);
+            var result = await _clubAdministrationService.GetClubAdministrationByIdAsync(It.IsAny<int>());
 
             //Assert
             Assert.NotNull(result);
@@ -54,176 +55,117 @@ namespace EPlast.XUnitTest.Services.ClubTests
         }
 
         [Fact]
-        public async Task DeleteClubAdminAsyncTestReturnTrue()
+        public async Task GetClubAdministrationByIdAsync_NotFound_ReturnsArgumentNullException()
         {
             //Arrange
             _repoWrapper
-                .Setup(s => s.GetClubAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAdministration, bool>>>(), null))
-                .ReturnsAsync(GetTestClubAdministration());
+                .Setup(s => s.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Club, bool>>>(),
+                    null))
+                .ReturnsAsync((Club) null);
+            _mapper
+                .Setup(s => s.Map<Club, ClubDTO>(It.IsAny<Club>()))
+                .Returns(new ClubDTO());
 
             //Act
-            var result = await _clubAdministrationService.DeleteClubAdminAsync(1);
+            async Task Act() => await _clubAdministrationService.GetClubAdministrationByIdAsync(It.IsAny<int>());
+
+            //Assert
+            await Assert.ThrowsAsync<ArgumentNullException>(Act);
+            _mapper.Verify(m => m.Map<Club, ClubDTO>(new Club()), Times.Never);
+        }
+
+        [Fact]
+        public async Task DeleteClubAdminAsyncTest_ReturnsTrue()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(s => s.ClubAdministration.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<ClubAdministration, bool>>>(), null))
+                .ReturnsAsync(new ClubAdministration());
+
+            //Act
+            var result = await _clubAdministrationService.DeleteClubAdminAsync(It.IsAny<int>());
 
             //Assert
             Assert.True(result);
+            _repoWrapper.Verify(i => i.ClubAdministration.Delete(It.IsAny<ClubAdministration>()), Times.Once);
+            _repoWrapper.Verify(r => r.SaveAsync());
         }
 
         [Fact]
-        public async Task DeleteClubAdminAsyncTestReturnFalse()
+        public async Task DeleteClubAdminAsync_NotFound_ReturnsArgumentNullException()
         {
             //Arrange
             _repoWrapper
-                .Setup(s => s.GetClubAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAdministration, bool>>>(), null))
-                .ReturnsAsync((ClubAdministration)null);
+                .Setup(s => s.ClubAdministration.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<ClubAdministration, bool>>>(), null))
+                .ReturnsAsync((ClubAdministration) null);
 
             //Act
-            var result = await _clubAdministrationService.DeleteClubAdminAsync(1);
+            async Task Act() => await _clubAdministrationService.DeleteClubAdminAsync(It.IsAny<int>());
 
             //Assert
-            Assert.False(result);
+            await Assert.ThrowsAsync<ArgumentNullException>(Act);
+            _repoWrapper.Verify(i => i.ClubAdministration.Delete(It.IsAny<ClubAdministration>()), Times.Never);
         }
 
         [Fact]
-        public async Task SetAdminEndDateAsyncTest()
+        public async Task SetAdminEndDateAsyncTest_ReturnsClubAdministrationDto()
         {
             //Arrange
             _repoWrapper
-                .Setup(s => s.GetClubAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAdministration, bool>>>(), null))
-                .ReturnsAsync(GetTestClubAdministration());
+                .Setup(s => s.ClubAdministration.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<ClubAdministration, bool>>>(), null))
+                .ReturnsAsync(new ClubAdministration());
+            _mapper
+                .Setup(s => s.Map<ClubAdministration, ClubAdministrationDTO>(It.IsAny<ClubAdministration>()))
+                .Returns(new ClubAdministrationDTO());
 
             //Act
-            await _clubAdministrationService.SetAdminEndDateAsync(GetTestAdminEndDate());
+            var result = await _clubAdministrationService.SetAdminEndDateAsync(It.IsAny<int>(), It.IsAny<DateTime>());
 
             //Assert
-            _repoWrapper.Verify(i => i.GetClubAdministration.Update(It.IsAny<ClubAdministration>()), Times.Once());
+            _repoWrapper.Verify(i => i.ClubAdministration.Update(It.IsAny<ClubAdministration>()), Times.Once());
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once());
+            Assert.IsType<ClubAdministrationDTO>(result);
+        }
+
+        [Fact]
+        public async Task SetAdminEndDateAsync_NotFound_ReturnsArgumentNullException()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(s => s.ClubAdministration.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<ClubAdministration, bool>>>(), null))
+                .ReturnsAsync((ClubAdministration) null);
+
+            //Act
+            async Task Act() =>
+                await _clubAdministrationService.SetAdminEndDateAsync(It.IsAny<int>(), It.IsAny<DateTime>());
+
+            //Assert
+            await Assert.ThrowsAsync<ArgumentNullException>(Act);
+            _repoWrapper.Verify(i => i.ClubAdministration.Update(It.IsAny<ClubAdministration>()), Times.Never);
         }
 
         [Fact]
         public async Task AddClubAdminAsync()
         {
             //Arrange
+            _adminTypeService
+                .Setup(s => s.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AdminTypeDTO());
             _repoWrapper
-               .Setup(s => s.AdminType.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<AdminType, bool>>>(), null))
-               .ReturnsAsync(GetTestAdminType());
-
-            _repoWrapper
-                .Setup(s => s.GetClubAdministration.CreateAsync(It.IsAny<ClubAdministration>()));
+                .Setup(s => s.ClubAdministration.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<ClubAdministration, bool>>>(), null))
+                .ReturnsAsync(new ClubAdministration());
 
             //Act
-            await _clubAdministrationService.AddClubAdminAsync(GetTestClubAdministrationDTO());
+            await _clubAdministrationService.AddClubAdminAsync(new ClubAdministrationDTO());
 
             //Assert
-            _repoWrapper.Verify(i => i.GetClubAdministration.CreateAsync(It.IsAny<ClubAdministration>()), Times.Once());
+            _repoWrapper.Verify(i => i.ClubAdministration.CreateAsync(It.IsAny<ClubAdministration>()), Times.Once());
             _repoWrapper.Verify(i => i.SaveAsync(), Times.Once());
-        }
-
-        private ClubAdministration GetTestClubAdministration()
-        {
-            return new ClubAdministration()
-            {
-                AdminTypeId = 1,
-                ClubId = 1,
-            };
-        }
-
-        private ClubMembers GetTestClubMembers()
-        {
-            return new ClubMembers()
-            {
-                ID = 1,
-                IsApproved = true,
-                User = new User
-                {
-                    LastName = "Andrii",
-                    FirstName = "Ivanenko"
-                },
-            };
-        }
-
-        private Club GetTestClub()
-        {
-            return new Club()
-            {
-                ClubName = "Club",
-                Description = "Club",
-                ID = 1,
-                ClubAdministration = new List<ClubAdministration>()
-                {
-                    GetTestClubAdministration()
-                },
-                ClubMembers = new List<ClubMembers>()
-                {
-                    GetTestClubMembers()
-                },
-            };
-        }
-
-        private ClubAdministrationDTO GetTestClubAdministrationDTO()
-        {
-            return new ClubAdministrationDTO()
-            {
-                AdminTypeName = "Admin",
-                AdminTypeId = 1,
-                ClubId = 1,
-                ClubMembersID = 1,
-                StartDate = new DateTime(2020, 5, 10),
-                EndDate = new DateTime(2020, 10, 20),
-            };
-        }
-
-        private AdminType GetTestAdminType()
-        {
-            return new AdminType()
-            {
-                ID = 1,
-                AdminTypeName = "Admin",
-                ClubAdministration = new List<ClubAdministration>()
-                {
-                    GetTestClubAdministration()
-                },
-            };
-        }
-
-        private ClubMembersDTO GetTestClubMembersDTO()
-        {
-            return new ClubMembersDTO()
-            {
-                ID = 1,
-                IsApproved = true,
-                User = new UserDTO
-                {
-                    LastName = "Andrii",
-                    FirstName = "Ivanenko"
-                },
-            };
-        }
-
-        private AdminEndDateDTO GetTestAdminEndDate()
-        {
-            return new AdminEndDateDTO()
-            {
-                AdminId = 1,
-                ClubIndex = 1,
-                EndDate = new DateTime(2021, 12, 10)
-            };
-        }
-
-        private ClubDTO GetTestClubDTO()
-        {
-            return new ClubDTO()
-            {
-                ClubName = "Club",
-                Description = "Club",
-                ID = 1,
-                ClubAdministration = new List<ClubAdministrationDTO>()
-                {
-                    GetTestClubAdministrationDTO()
-                },
-                ClubMembers = new List<ClubMembersDTO>()
-                {
-                    GetTestClubMembersDTO()
-                },
-            };
         }
     }
 }

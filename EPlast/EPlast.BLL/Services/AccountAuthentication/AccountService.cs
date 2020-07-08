@@ -276,21 +276,28 @@ namespace EPlast.BLL.Services
             await _signInManager.SignInAsync(user, isPersistent: false);
         }
 
-        public string generateJwtToken(AuthenticateRequest user)
+        public string BuildToken()
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes("THIS IS USED TO SIGN AND VERIFY JWT TOKENS, REPLACE IT WITH YOUR OWN SECRET, IT CAN BE ANY STRING");
-            var tokenDescriptor = new SecurityTokenDescriptor
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtToken:SecretKey"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(_config["JwtToken:Issuer"],
+              _config["JwtToken:Issuer"],
+              expires: DateTime.Now.AddMinutes(30),
+              signingCredentials: creds);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public bool Authenticate(LoginModel login)
+        {
+            bool validUser = false;
+
+            if ((login.Username == "admin") && (login.Password == "admin123"))
             {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, user.Username.ToString())
-                }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
+                validUser = true;
+            }
+            return validUser;
         }
     }
 }

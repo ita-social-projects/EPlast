@@ -4,15 +4,12 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using AutoMapper;
-using EPlast.BLL.DTO;
-using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.Controllers;
-using EPlast.DataAccess.Entities;
 using EPlast.ViewModels;
 using EPlast.ViewModels.Club;
 using Microsoft.AspNetCore.Http;
@@ -117,10 +114,10 @@ namespace EPlast.XUnitTest.Controllers
             //Arrange
             _mapper
                 .Setup(s => s.Map<ClubProfileDTO>(It.IsAny<ClubProfileViewModel>()))
-                .Returns(GetTestClubProfileDTO());
+                .Returns(new ClubProfileDTO());
 
             //Act
-            var result = await controller.ClubAdmins(1);
+            var result = await controller.ClubAdmins(It.IsAny<int>());
 
             //Assert
             Assert.NotNull(result);
@@ -340,7 +337,7 @@ namespace EPlast.XUnitTest.Controllers
             //Arrange
             _clubMembersService
                 .Setup(s => s.ToggleIsApprovedInClubMembersAsync(1, 1))
-                .Returns((Task) null);
+                .Throws<ArgumentNullException>();
 
             //Act
             var result = await controller.ChangeIsApprovedStatusClub(1, 1);
@@ -389,7 +386,7 @@ namespace EPlast.XUnitTest.Controllers
         public async Task AddEndDateReturns1()
         {
             //Act
-            var result = await controller.AddEndDate(GetTestAdminEndDateDTO());
+            var result = await controller.AddEndDate(1, DateTime.Now);
 
             //Assert
             Assert.Equal(1, result);
@@ -400,11 +397,11 @@ namespace EPlast.XUnitTest.Controllers
         {
             //Arrange
             _clubAdministrationService
-                .Setup(s => s.SetAdminEndDateAsync(It.IsAny<AdminEndDateDTO>()))
-                .Returns((Task) null);
+                .Setup(s => s.SetAdminEndDateAsync(It.IsAny<int>(), It.IsAny<DateTime>()))
+                .Throws<ArgumentNullException>();
 
             //Act
-            var result = await controller.AddEndDate(GetTestAdminEndDateDTO());
+            var result = await controller.AddEndDate(It.IsAny<int>(), It.IsAny<DateTime>());
 
             //Assert
             Assert.Equal(0, result);
@@ -414,7 +411,7 @@ namespace EPlast.XUnitTest.Controllers
         public async Task AddToClubAdministrationReturnJsonTrue()
         {
             //Act
-            var result = await controller.AddToClubAdministration(GetTestClubAdministrationDTO());
+            var result = await controller.AddToClubAdministration(It.IsAny<int>(), new ClubAdministrationDTO());
 
             //Assert
             var jsonResult = Assert.IsType<JsonResult>(result);
@@ -427,10 +424,10 @@ namespace EPlast.XUnitTest.Controllers
             //Arrange
             _clubAdministrationService
                 .Setup(s => s.AddClubAdminAsync(It.IsAny<ClubAdministrationDTO>()))
-                .Returns((Task) null);
+                .Throws<ArgumentNullException>();
 
             //Act
-            var result = await controller.AddToClubAdministration(GetTestClubAdministrationDTO());
+            var result = await controller.AddToClubAdministration(It.IsAny<int>(), new ClubAdministrationDTO());
 
             //Assert
             var jsonResult = Assert.IsType<JsonResult>(result);
@@ -530,46 +527,6 @@ namespace EPlast.XUnitTest.Controllers
             Assert.NotNull(viewResult);
             Assert.Equal("HandleError", viewResult.ActionName);
             Assert.Equal("Error", viewResult.ControllerName);
-        }
-
-        private static ClubProfileDTO GetTestClubProfileDTO()
-        {
-            return new ClubProfileDTO
-            {
-                Club = new ClubDTO()
-                {
-                    ClubName = "Club",
-                    Description = "New club",
-                    ID = 1
-                }
-            };
-        }
-
-        private static AdminEndDateDTO GetTestAdminEndDateDTO()
-        {
-            return new AdminEndDateDTO
-            {
-                AdminId = 1,
-                ClubIndex = 1,
-                EndDate = new DateTime(2030, 10, 5)
-            };
-        }
-
-        private static ClubAdministrationDTO GetTestClubAdministrationDTO()
-        {
-            return new ClubAdministrationDTO
-            {
-                AdminType = new AdminType()
-                {
-                    AdminTypeName = "Admin",
-                },
-                AdminTypeName = "Admin",
-                AdminTypeId = 1,
-                ClubId = 1,
-                ID = 1,
-                StartDate = new DateTime(2020, 5, 10),
-                EndDate = new DateTime(2030, 10, 5)
-            };
         }
     }
 }

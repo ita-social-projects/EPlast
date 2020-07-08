@@ -18,13 +18,12 @@ function ChooseEndDate() {
     const longDate = date + ' 00:00:00';
     const adminsData = {
         adminId: ClubAdminId,
-        clubIndex: CurrentClub,
         enddate: longDate,
     };
     $.ajax({
-        url: '/Club/AddEndDate',
+        url: '/Club/AddEndDate?clubAdministrationId=' + ClubAdminId,
         type: 'POST',
-        data: JSON.stringify(adminsData),
+        data: JSON.stringify(longDate),
         contentType: 'application/json; charset=utf-8',
         timeout: 5000
     }).done((result) => {
