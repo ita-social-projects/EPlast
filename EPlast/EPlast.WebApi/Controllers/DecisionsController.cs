@@ -120,11 +120,12 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("downloadfile/{id:int}")]
-        public async Task<IActionResult> Download(int id, string filename)
+        public async Task<IActionResult> Download(string filename)
         {
-            byte[] fileBytes = await _decisionService.DownloadDecisionFileAsync(id);
+            var blob = await _decisionService.DownloadDecisionFileFromBlobAsync(filename);
+            var blobStream = blob.OpenRead();
 
-            return File(fileBytes, _decisionService.GetContentType(id, filename), filename);
+            return File(blobStream, blob.Properties.ContentType, filename);
         }
 
         [HttpPost("createpdf/{objId:int}")]
