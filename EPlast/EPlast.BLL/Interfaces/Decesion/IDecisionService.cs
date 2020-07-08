@@ -1,5 +1,6 @@
 ﻿using EPlast.BLL.DTO;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Azure.Storage.Blob;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -30,5 +31,6 @@ namespace EPlast.BLL
         IEnumerable<SelectListItem> GetDecisionStatusTypes();
 
         string GetContentType(int decisionId, string filename);
+         Task<CloudBlockBlob> DownloadDecisionFileFromBlobAsync(string fileName);
     }
 }
