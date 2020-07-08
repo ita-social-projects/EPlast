@@ -52,7 +52,8 @@ namespace EPlast.BLL
             DecisionDTO decision = null;
             try
             {
-                decision = _mapper.Map<DecisionDTO>(await _repoWrapper.Decesion.GetFirstAsync(x => x.ID == decisionId));
+                decision = _mapper.Map<DecisionDTO>(await _repoWrapper.Decesion.GetFirstAsync(x => x.ID == decisionId, include: dec =>
+                dec.Include(d => d.DecesionTarget).Include(d => d.Organization)));
             }
             catch (Exception e)
             {
