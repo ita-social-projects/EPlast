@@ -147,6 +147,7 @@ namespace EPlast.WebApi
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
             services.AddScoped<IUserBlobStorageRepository, UserBlobStorageRepository>();
+            services.AddScoped<IDecisionBlobStorageRepository, DecisionBlobStorageRepository>();
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddLogging();
 
@@ -245,7 +246,7 @@ namespace EPlast.WebApi
                 .AllowAnyMethod()
                 .AllowAnyHeader();
         });
-         //   app.UseAntiforgeryTokens();
+            // app.UseAntiforgeryTokens();
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();
