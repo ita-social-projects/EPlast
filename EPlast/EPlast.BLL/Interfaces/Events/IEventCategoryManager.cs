@@ -6,6 +6,7 @@ namespace EPlast.BLL.Interfaces.Events
 {
     public interface IEventCategoryManager
     {
-        Task<List<EventCategoryDTO>> GetDTOAsync();
+        Task<IEnumerable<EventCategoryDTO>> GetDTOAsync();
+        Task<IEnumerable<EventCategoryDTO>> GetDTOByEventTypeIdAsync(int eventTypeId);
     }
 }
