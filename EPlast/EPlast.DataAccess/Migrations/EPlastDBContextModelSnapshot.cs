@@ -739,6 +739,21 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("EventCategories");
                 });
 
+            modelBuilder.Entity("EPlast.DataAccess.Entities.Event.EventCategoryType", b =>
+                {
+                    b.Property<int>("EventTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EventCategoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("EventTypeId", "EventCategoryId");
+
+                    b.HasIndex("EventCategoryId");
+
+                    b.ToTable("EventCategoryTypes");
+                });
+
             modelBuilder.Entity("EPlast.DataAccess.Entities.Event.EventGallary", b =>
                 {
                     b.Property<int>("EventID")
@@ -1599,6 +1614,21 @@ namespace EPlast.DataAccess.Migrations
                     b.HasOne("EPlast.DataAccess.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.Event.EventCategoryType", b =>
+                {
+                    b.HasOne("EPlast.DataAccess.Entities.Event.EventCategory", "EventCategory")
+                        .WithMany("EventTypes")
+                        .HasForeignKey("EventCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EPlast.DataAccess.Entities.Event.EventType", "EventType")
+                        .WithMany("EventCategories")
+                        .HasForeignKey("EventTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

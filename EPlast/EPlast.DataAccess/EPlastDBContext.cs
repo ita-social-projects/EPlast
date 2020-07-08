@@ -29,6 +29,7 @@ namespace EPlast.DataAccess
         public DbSet<Participant> Participants { get; set; }
         public DbSet<EventCategory> EventCategories { get; set; }
         public DbSet<EventType> EventTypes { get; set; }
+        public DbSet<EventCategoryType> EventCategoryTypes { get; set; }
         public DbSet<EventStatus> EventStatuses { get; set; }
         public DbSet<EventAdministration> EventAdministration { get; set; }
         public DbSet<EventAdministrationType> EventAdministrationType { get; set; }
@@ -71,6 +72,19 @@ namespace EPlast.DataAccess
                 .HasOne(x => x.User)
                 .WithMany(e => e.Events)
                 .HasForeignKey(x => x.UserID);
+
+            modelBuilder.Entity<EventCategoryType>()
+                .HasKey(ct => new { ct.EventTypeId, ct.EventCategoryId });
+
+            modelBuilder.Entity<EventCategoryType>()
+                .HasOne(ct => ct.EventType)
+                .WithMany(t => t.EventCategories)
+                .HasForeignKey(ct => ct.EventTypeId);
+
+            modelBuilder.Entity<EventCategoryType>()
+                .HasOne(ct => ct.EventCategory)
+                .WithMany(c => c.EventTypes)
+                .HasForeignKey(ct => ct.EventCategoryId);
 
             modelBuilder.Entity<User>()
                 .HasOne(x => x.UserProfile)
