@@ -294,10 +294,11 @@ namespace EPlast.BLL.Services
         {
             var oldImageName = (await _repoWrapper.City.GetFirstOrDefaultAsync(i => i.ID == city.ID))?.Logo;
             var logoBase64 = city.Logo;
+            var defaultCityImage = "default_city_image.jpg";
 
             if (!string.IsNullOrWhiteSpace(logoBase64) && logoBase64.Length > 0)
             {
-                if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default_city_image.jpg"))
+                if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, defaultCityImage))
                 {
                     await _cityBlobStorage.DeleteBlobAsync(oldImageName);
                 }
@@ -307,7 +308,7 @@ namespace EPlast.BLL.Services
             }
             else
             {
-                city.Logo = oldImageName ?? "default_city_image.jpg";
+                city.Logo = oldImageName ?? defaultCityImage;
             }
         }
     }
