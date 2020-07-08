@@ -3,7 +3,6 @@ using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.WebApi.Models.City;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -189,7 +188,7 @@ namespace EPlast.WebApi.Controllers
                     City = _mapper.Map<CityViewModel, CityDTO>(city)
                 };
 
-                await _cityService.EditAsync(cityProfileDTO, city.File);
+                await _cityService.EditAsync(cityProfileDTO, city.LogoPicture);
                 _logger.LogInformation($"City {cityProfileDTO.City.Name} was edited profile and saved in the database");
 
                 return Ok(_mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDTO));
@@ -217,7 +216,7 @@ namespace EPlast.WebApi.Controllers
                     City = _mapper.Map<CityViewModel, CityDTO>(city)
                 };
 
-                await _cityService.CreateAsync(cityProfileDTO, city.File);
+                await _cityService.CreateAsync(cityProfileDTO);
                 _logger.LogInformation($"City {cityProfileDTO.City.Name} was created profile and saved in the database");
 
                 return Ok(_mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDTO));

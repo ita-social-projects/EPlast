@@ -17,7 +17,6 @@ namespace EPlast.WebApi.Models.City
         public string OfficeNumber { get; set; }
         public string PostIndex { get; set; }
         public string Logo { get; set; }
-        public IFormFile File { get; set; }
         public int RegionId { get; set; }
         public RegionViewModel Region { get; set; }
         public CityAdministrationViewModel Head { get; set; }
