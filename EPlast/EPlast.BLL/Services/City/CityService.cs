@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.City;
+using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.City;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
@@ -20,12 +21,17 @@ namespace EPlast.BLL.Services
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _env;
+        private readonly ICityBlobStorageRepository _cityBlobStorage;
 
-        public CityService(IRepositoryWrapper repoWrapper, IMapper mapper, IWebHostEnvironment env)
+        public CityService(IRepositoryWrapper repoWrapper,
+            IMapper mapper,
+            IWebHostEnvironment env,
+            ICityBlobStorageRepository cityBlobStorage)
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
             _env = env;
+            _cityBlobStorage = cityBlobStorage;
         }
 
         public async Task<IEnumerable<DataAccessCity.City>> GetAllAsync()
@@ -188,7 +194,18 @@ namespace EPlast.BLL.Services
 
         public async Task EditAsync(CityProfileDTO model, IFormFile file)
         {
-            var city = await CreateCityAsync(model, file);
+            await UploadPhotoAsync(model.City, file);
+            var city = await CreateCityAsync(model);
+            
+            _repoWrapper.City.Attach(city);
+            _repoWrapper.City.Update(city);
+            await _repoWrapper.SaveAsync();
+        }
+
+        public async Task EditAsync(CityProfileDTO model)
+        {
+            await UploadPhotoAsync(model.City);
+            var city = await CreateCityAsync(model);
 
             _repoWrapper.City.Attach(city);
             _repoWrapper.City.Update(city);
@@ -197,7 +214,8 @@ namespace EPlast.BLL.Services
 
         public async Task<int> CreateAsync(CityProfileDTO model, IFormFile file)
         {
-            var city = await CreateCityAsync(model, file);
+            await UploadPhotoAsync(model.City, file);
+            var city = await CreateCityAsync(model);
 
             _repoWrapper.City.Attach(city);
             await _repoWrapper.City.CreateAsync(city);
@@ -206,11 +224,22 @@ namespace EPlast.BLL.Services
             return city.ID;
         }
 
-        private async Task<DataAccessCity.City> CreateCityAsync(CityProfileDTO model, IFormFile file)
+        public async Task<int> CreateAsync(CityProfileDTO model)
+        {
+            await UploadPhotoAsync(model.City);
+            var city = await CreateCityAsync(model);
+
+            _repoWrapper.City.Attach(city);
+            await _repoWrapper.City.CreateAsync(city);
+            await _repoWrapper.SaveAsync();
+
+            return city.ID;
+        }
+
+        private async Task<DataAccessCity.City> CreateCityAsync(CityProfileDTO model)
         {
             var cityDto = model.City;
-            await UploadPhotoAsync(cityDto, file);
-
+            
             var city = _mapper.Map<CityDTO, DataAccessCity.City>(cityDto);
             var region = await _repoWrapper.Region.GetFirstOrDefaultAsync(r => r.RegionName == city.Region.RegionName);
 
@@ -258,6 +287,28 @@ namespace EPlast.BLL.Services
             else
             {
                 city.Logo = oldImageName ?? "333493fe-9c81-489f-bce3-5d1ba35a8c36.jpg";
+            }
+        }
+
+        private async Task UploadPhotoAsync(CityDTO city)
+        {
+            var oldImageName = (await _repoWrapper.City.GetFirstOrDefaultAsync(i => i.ID == city.ID))?.Logo;
+            var logoBase64 = city.Logo;
+            var defaultCityImage = "default_city_image.jpg";
+
+            if (!string.IsNullOrWhiteSpace(logoBase64) && logoBase64.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, defaultCityImage))
+                {
+                    await _cityBlobStorage.DeleteBlobAsync(oldImageName);
+                }
+                
+                var fileName = Guid.NewGuid().ToString();
+                await _cityBlobStorage.UploadBlobForBase64Async(logoBase64, fileName);
+            }
+            else
+            {
+                city.Logo = oldImageName ?? defaultCityImage;
             }
         }
     }
