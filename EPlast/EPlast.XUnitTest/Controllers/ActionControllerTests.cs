@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -334,7 +335,7 @@ namespace EPlast.XUnitTest.Controllers
             //Assert
             Assert.NotNull(actionResult);
             Assert.NotNull(actionResult.Model);
-            var viewModel = actionResult.Model as List<EventCategoryViewModel>;
+            var viewModel = actionResult.Model as IEnumerable<EventCategoryViewModel>;
             Assert.NotNull(viewModel);
             Assert.Empty(viewModel);
         }
@@ -343,7 +344,7 @@ namespace EPlast.XUnitTest.Controllers
         public async void GetEventsFailureTest()
         {
             //Arrange
-            _actionManager.Setup(am => am.GetEventsAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+            _actionManager.Setup(am => am.GetEventsAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
                 .ThrowsAsync(new Exception());
             _mapper.Setup(m => m.Map<List<GeneralEventDTO>, List<GeneralEventViewModel>>(It.IsAny<List<GeneralEventDTO>>())).Returns(new List<GeneralEventViewModel>());
             int id = 3;
@@ -361,7 +362,7 @@ namespace EPlast.XUnitTest.Controllers
         public async void GetEventsEmptyTest()
         {
             //Arrange
-            _actionManager.Setup(am => am.GetEventsAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+            _actionManager.Setup(am => am.GetEventsAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(new List<GeneralEventDTO>());
             _mapper.Setup(m => m.Map<List<GeneralEventDTO>, List<GeneralEventViewModel>>(It.IsAny<List<GeneralEventDTO>>())).Returns(new List<GeneralEventViewModel>());
             int id = 3;

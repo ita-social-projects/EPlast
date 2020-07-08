@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Events;
+using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Services.Events;
 using EPlast.DataAccess.Entities;
@@ -45,6 +46,20 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
+        public async void GetEventTypesTest()
+        {
+            //Arrange
+            _eventTypeManager.Setup(x => x.GetDTOAsync())
+                .ReturnsAsync(new List<EventTypeDTO>());
+            //Act
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
+            var methodResult = await actionManager.GetEventTypesAsync();
+            //Assert
+            Assert.NotNull(methodResult);
+            Assert.IsAssignableFrom<IEnumerable<EventTypeDTO>>(methodResult);
+        }
+
+        [Fact]
         public async void GetActionCategoriesTest()
         {
             //Arrange
@@ -58,54 +73,70 @@ namespace EPlast.XUnitTest.Services.Events
             Assert.IsType<List<EventCategoryDTO>>(methodResult);
         }
 
-        //[Fact]
-        //public async void GetEventsTest()
-        //{
-        //    //Arrange
-        //    string expectedID = "abc-1";
-        //    int actionId = 3;
-        //    int fakeId = 3;
-        //    _eventStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
-        //        .ReturnsAsync(fakeId);
-        //    _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
-        //        .ReturnsAsync(fakeId);
-        //    _eventTypeManager.Setup(x => x.GetTypeIdAsync(It.IsAny<string>()))
-        //        .ReturnsAsync(fakeId);
-        //    _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()))
-        //        .Returns(expectedID);
-        //    _repoWrapper.Setup(x => x.Event.GetAllAsync(It.IsAny<Expression<Func<Event, bool>>>(), It.IsAny<Func<IQueryable<Event>, IIncludableQueryable<Event, object>>>()))
-        //        .ReturnsAsync(GetEvents());
-        //    //Act
-        //    var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
-        //    var methodResult = await actionManager.GetEventsAsync(actionId, new ClaimsPrincipal());
-        //    //Assert
-        //    Assert.NotNull(methodResult);
-        //    Assert.IsType<List<GeneralEventDTO>>(methodResult);
-        //    Assert.Equal(GetEvents().Count(), methodResult.Count);
-        //}
-        //[Fact]
-        //public async void GetEventInfoTest()
-        //{
-        //    //Arrange
-        //    string expectedID = "abc-1";
-        //    int eventId = 3;
-        //    int fakeId = 3;
-        //    _eventStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
-        //        .ReturnsAsync(fakeId);
-        //    _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
-        //        .ReturnsAsync(fakeId);
-        //    _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()))
-        //        .Returns(expectedID);
-        //    _mapper.Setup(m => m.Map<Event, EventInfoDTO>(It.IsAny<Event>())).Returns(new EventInfoDTO());
-        //    _repoWrapper.Setup(x => x.Event.GetFirstAsync(It.IsAny<Expression<Func<Event, bool>>>(), It.IsAny<Func<IQueryable<Event>, IIncludableQueryable<Event, object>>>()))
-        //        .ReturnsAsync(GetEvents().First());
-        //    //Act
-        //    var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
-        //    var methodResult = await actionManager.GetEventInfoAsync(eventId, new ClaimsPrincipal());
-        //    //Assert
-        //    Assert.NotNull(methodResult);
-        //    Assert.IsType<EventDTO>(methodResult);
-        //}
+        [Fact]
+        public async void GetCategoriesByTypeIdTest()
+        {
+            //Arrange
+            var eventTypeId = 1;
+            _eventCategoryManager.Setup(x => x.GetDTOByEventTypeIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new List<EventCategoryDTO>());
+            //Act
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
+            var methodResult = await actionManager.GetCategoriesByTypeIdAsync(eventTypeId);
+            //Assert
+            Assert.NotNull(methodResult);
+            Assert.IsAssignableFrom<IEnumerable<EventCategoryDTO>>(methodResult);
+        }
+
+        [Fact]
+        public async void GetEventsTest()
+        {
+            //Arrange
+            string expectedID = "abc-1";
+            int typeId = 3;
+            int categoryId = 3;
+            int fakeId = 3;
+            _eventStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(fakeId);
+            _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(fakeId);
+            _eventTypeManager.Setup(x => x.GetTypeIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(fakeId);
+            _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()))
+                .Returns(expectedID);
+            _repoWrapper.Setup(x => x.Event.GetAllAsync(It.IsAny<Expression<Func<Event, bool>>>(), It.IsAny<Func<IQueryable<Event>, IIncludableQueryable<Event, object>>>()))
+                .ReturnsAsync(GetEvents());
+            //Act
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
+            var methodResult = await actionManager.GetEventsAsync(categoryId, typeId, new ClaimsPrincipal());
+            //Assert
+            Assert.NotNull(methodResult);
+            Assert.IsType<List<GeneralEventDTO>>(methodResult);
+            Assert.Equal(GetEvents().Count(), methodResult.Count);
+        }
+        [Fact]
+        public async void GetEventInfoTest()
+        {
+            //Arrange
+            string expectedID = "abc-1";
+            int eventId = 3;
+            int fakeId = 3;
+            _eventStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(fakeId);
+            _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(fakeId);
+            _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()))
+                .Returns(expectedID);
+            _mapper.Setup(m => m.Map<Event, EventInfoDTO>(It.IsAny<Event>())).Returns(new EventInfoDTO());
+            _repoWrapper.Setup(x => x.Event.GetFirstAsync(It.IsAny<Expression<Func<Event, bool>>>(), It.IsAny<Func<IQueryable<Event>, IIncludableQueryable<Event, object>>>()))
+                .ReturnsAsync(GetEvents().First());
+            //Act
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
+            var methodResult = await actionManager.GetEventInfoAsync(eventId, new ClaimsPrincipal());
+            //Assert
+            Assert.NotNull(methodResult);
+            Assert.IsType<EventDTO>(methodResult);
+        }
 
         [Fact]
         public async void DeleteEventSuccessTest()
@@ -296,9 +327,9 @@ namespace EPlast.XUnitTest.Services.Events
                       new Participant{ID=2,ParticipantStatusId=3,EventId=1,UserId="abc-2"},
                       new Participant{ID=3,ParticipantStatusId=1,EventId=1,UserId="abc-3"}
                     },
-                    EventAdmins=  new List<EventAdmin>
+                    EventAdministrations = new List<EventAdministration>()
                     {
-                        new EventAdmin{EventID=1,UserID="abc-1"}
+                        new EventAdministration(){EventID = 1,UserID ="abc-1",EventAdministrationTypeID = 1}
                     }
                 },
                  new Event{
@@ -317,9 +348,9 @@ namespace EPlast.XUnitTest.Services.Events
                       new Participant{ID=2,ParticipantStatusId=3,EventId=2,UserId="abc-2"},
                       new Participant{ID=3,ParticipantStatusId=1,EventId=2,UserId="abc-3"}
                     },
-                     EventAdmins=  new List<EventAdmin>
+                    EventAdministrations = new List<EventAdministration>()
                     {
-                        new EventAdmin{EventID=2,UserID="abc-1"}
+                        new EventAdministration(){EventID = 2,UserID ="abc-1",EventAdministrationTypeID = 1}
                     }
                  }
             }.AsQueryable();
