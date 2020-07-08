@@ -1,11 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.EventUser;
-using EPlast.DataAccess.Entities;
 using EPlast.ViewModels.EventUser;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.Mapping.EventUser
 {
@@ -13,7 +8,7 @@ namespace EPlast.Mapping.EventUser
     {
         public UserInfoProfile()
         {
-            CreateMap<User, UserInfoDTO>().ReverseMap();
+            CreateMap<DataAccess.Entities.User, UserInfoDTO>().ReverseMap();
             CreateMap<UserInfoViewModel, UserInfoDTO>().ReverseMap();
         }
 
