@@ -3,7 +3,6 @@ using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.WebApi.Models.City;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -175,7 +174,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPut("EditCity/{cityId}")]
-        public async Task<IActionResult> Edit(CityViewModel city, IFormFile file)
+        public async Task<IActionResult> Edit(CityViewModel city)
         {
             try
             {
@@ -189,7 +188,7 @@ namespace EPlast.WebApi.Controllers
                     City = _mapper.Map<CityViewModel, CityDTO>(city)
                 };
 
-                await _cityService.EditAsync(cityProfileDTO, file);
+                await _cityService.EditAsync(cityProfileDTO);
                 _logger.LogInformation($"City {cityProfileDTO.City.Name} was edited profile and saved in the database");
 
                 return Ok(_mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDTO));
@@ -203,7 +202,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("CreateCity")]
-        public async Task<IActionResult> Create(CityViewModel city, IFormFile file)
+        public async Task<IActionResult> Create(CityViewModel city)
         {
             try
             {
@@ -217,7 +216,7 @@ namespace EPlast.WebApi.Controllers
                     City = _mapper.Map<CityViewModel, CityDTO>(city)
                 };
 
-                await _cityService.CreateAsync(cityProfileDTO, file);
+                await _cityService.CreateAsync(cityProfileDTO);
                 _logger.LogInformation($"City {cityProfileDTO.City.Name} was created profile and saved in the database");
 
                 return Ok(_mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDTO));
