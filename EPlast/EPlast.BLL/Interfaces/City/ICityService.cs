@@ -19,6 +19,6 @@ namespace EPlast.BLL.Interfaces.City
         Task<CityProfileDTO> EditAsync(int cityId);
         Task EditAsync(CityProfileDTO model, IFormFile file);
         Task<int> CreateAsync(CityProfileDTO model, IFormFile file);
-
+        Task<int> CreateAsync(CityProfileDTO model);
     }
 }
