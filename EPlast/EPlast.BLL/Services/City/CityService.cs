@@ -175,13 +175,22 @@ namespace EPlast.BLL.Services
                 .Where(m => m.EndDate == null && m.StartDate == null)
                 .ToList();
 
-            return new CityProfileDTO { City = city, CityAdmins = cityAdmins, Members = members, Followers = followers };
+            var cityProfileDto = new CityProfileDTO
+            {
+                City = city,
+                CityAdmins = cityAdmins,
+                Members = members,
+                Followers = followers
+            };
+
+            return cityProfileDto;
         }
 
         public async Task EditAsync(CityProfileDTO model, IFormFile file)
         {
             var city = await CreateCityAsync(model, file);
 
+            _repoWrapper.City.Attach(city);
             _repoWrapper.City.Update(city);
             await _repoWrapper.SaveAsync();
         }
