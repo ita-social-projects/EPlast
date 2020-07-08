@@ -143,11 +143,22 @@
                             }
                         </div>
                     </div>
-                    <div style="margin-top: 9px; margin-bottom: 5px; @(User.IsInRole("Голова Станиці") || User.IsInRole("Admin") ? "" : "visibility: hidden;")">
-                        <a asp-action="CreateAsAdmin" asp-controller="AnnualReport" asp-route-cityId="@Model.City.ID">
-                            <button class="btn btn-primary btn-block btn-lg text-center border-dark shadow-sm mx-auto" type="button" style="height: 40px;width: 60%;padding: 0px;background-color: #3c5438;">Подати звіт</button>
-                        </a>
-                    </div>
+                    @if (User.IsInRole("Голова Округу") || User.IsInRole("Admin"))
+                    {
+                        <div style="margin-top: 9px; margin-bottom: 5px;">
+                            <a asp-action="CreateAsAdmin" asp-controller="AnnualReport" asp-route-cityId="@Model.City.ID">
+                                <button class="btn btn-primary btn-block btn-lg text-center border-dark shadow-sm mx-auto" type="button" style="height: 40px;width: 60%;padding: 0px;background-color: #3c5438;">Подати звіт</button>
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="margin-top: 9px; margin-bottom: 5px; @(User.IsInRole("Голова Станиці") ? "" : "visibility: hidden;")">
+                            <a asp-action="Create" asp-controller="AnnualReport">
+                                <button class="btn btn-primary btn-block btn-lg text-center border-dark shadow-sm mx-auto" type="button" style="height: 40px;width: 60%;padding: 0px;background-color: #3c5438;">Подати звіт</button>
+                            </a>
+                        </div>
+                    }
                     <div>
                         <a asp-action="CityDocuments" asp-controller="City" asp-route-cityId="@Model.City.ID">
                             <button class="btn btn-primary btn-block btn-lg text-center border-dark shadow-sm mx-auto" type="button" style="height: 40px;width: 60%;padding: 0px;background-color: #3c5438;">Деталі</button>
