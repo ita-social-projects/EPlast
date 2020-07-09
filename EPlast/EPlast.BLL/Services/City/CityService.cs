@@ -163,6 +163,13 @@ namespace EPlast.BLL.Services
             return new CityProfileDTO { City = city, CityDoc = cityDoc };
         }
 
+        public async Task<string> GetLogoBase64(string logoName)
+        {
+            var logoBase64 = await _cityBlobStorage.GetBlobBase64Async(logoName);
+
+            return logoBase64;
+        }
+
         public async Task<CityProfileDTO> EditAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
@@ -264,6 +271,8 @@ namespace EPlast.BLL.Services
             var oldImageName = (await _repoWrapper.City.GetFirstOrDefaultAsync(
                 predicate: i => i.ID == cityId))
                 ?.Logo;
+            var defaultCityImage = "333493fe-9c81-489f-bce3-5d1ba35a8c36.jpg";
+
             if (file != null && file.Length > 0)
             {
                 using (var img = Image.FromStream(file.OpenReadStream()))
@@ -286,7 +295,7 @@ namespace EPlast.BLL.Services
             }
             else
             {
-                city.Logo = oldImageName ?? "333493fe-9c81-489f-bce3-5d1ba35a8c36.jpg";
+                city.Logo = oldImageName ?? defaultCityImage;
             }
         }
 

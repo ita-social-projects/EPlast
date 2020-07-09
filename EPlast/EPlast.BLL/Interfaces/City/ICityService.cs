@@ -21,5 +21,6 @@ namespace EPlast.BLL.Interfaces.City
         Task EditAsync(CityProfileDTO model);
         Task<int> CreateAsync(CityProfileDTO model, IFormFile file);
         Task<int> CreateAsync(CityProfileDTO model);
+        Task<string> GetLogoBase64(string logoName);
     }
 }

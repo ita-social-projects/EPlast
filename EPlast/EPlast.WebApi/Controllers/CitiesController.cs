@@ -32,6 +32,14 @@ namespace EPlast.WebApi.Controllers
             return Ok(cities);
         }
 
+        [HttpGet("LogoBase64")]
+        public async Task<string> GetPhotoBase64(string logoName)
+        {
+            var logoBase64 = await _cityService.GetLogoBase64(logoName);
+
+            return logoBase64;
+        }
+
         [HttpGet("Profile/{cityId}")]
         public async Task<IActionResult> GetProfile(int cityId)
         {
@@ -191,7 +199,7 @@ namespace EPlast.WebApi.Controllers
                 await _cityService.EditAsync(cityProfileDTO);
                 _logger.LogInformation($"City {cityProfileDTO.City.Name} was edited profile and saved in the database");
 
-                return Ok(_mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDTO));
+                return Ok(_mapper.Map<CityDTO, CityViewModel>(cityProfileDTO.City));
             }
             catch (Exception e)
             {
@@ -219,7 +227,7 @@ namespace EPlast.WebApi.Controllers
                 await _cityService.CreateAsync(cityProfileDTO);
                 _logger.LogInformation($"City {cityProfileDTO.City.Name} was created profile and saved in the database");
 
-                return Ok(_mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDTO));
+                return Ok(_mapper.Map<CityDTO, CityViewModel>(cityProfileDTO.City));
             }
             catch (Exception e)
             {
