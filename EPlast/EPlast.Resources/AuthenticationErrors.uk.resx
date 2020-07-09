@@ -120,6 +120,9 @@
   <data name="Change-PasswordProblems" xml:space="preserve">
     <value>Проблема зі зміною пароля, можливо неправильно введений старий пароль</value>
   </data>
+  <data name="Confirm-Registration" xml:space="preserve">
+    <value>Перегляньте електронну адресу та підтвердьте реєстрацію у системі.</value>
+  </data>
   <data name="Error-ExternalLoginInfo" xml:space="preserve">
     <value>Error loading external login information</value>
   </data>
