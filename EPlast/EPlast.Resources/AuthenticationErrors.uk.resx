@@ -129,6 +129,9 @@
   <data name="Error-ExternalLoginProvider" xml:space="preserve">
     <value>Error from external provider</value>
   </data>
+  <data name="Feedback-Sended" xml:space="preserve">
+    <value>Ваше питання успішно надіслано</value>
+  </data>
   <data name="Forgot-NotRegisteredUser" xml:space="preserve">
     <value>Користувача із заданою електронною поштою немає в системі або він не підтвердив свою реєстрацію</value>
   </data>
