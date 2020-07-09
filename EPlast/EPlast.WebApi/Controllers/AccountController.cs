@@ -186,7 +186,7 @@ namespace EPlast.WebApi.Controllers
                               protocol: HttpContext.Request.Scheme);
                         await _accountService.SendEmailRegistr(confirmationLink, userDto);
             
-                        return Ok("AcceptingEmail");
+                        return Ok(_resourceForErrors["Confirm-Registration"]); //треба записати в ресурс файл повідомлення шо все відбулось ок
                     }
                 }
             }
