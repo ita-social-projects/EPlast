@@ -120,6 +120,9 @@
   <data name="Change-PasswordProblems" xml:space="preserve">
     <value>Проблема зі зміною пароля, можливо неправильно введений старий пароль</value>
   </data>
+  <data name="ChangePasswordConfirmation" xml:space="preserve">
+    <value>Ваш пароль успішно змінено.</value>
+  </data>
   <data name="Confirm-Registration" xml:space="preserve">
     <value>Перегляньте електронну адресу та підтвердьте реєстрацію у системі.</value>
   </data>
@@ -135,6 +138,9 @@
   <data name="Forgot-NotRegisteredUser" xml:space="preserve">
     <value>Користувача із заданою електронною поштою немає в системі або він не підтвердив свою реєстрацію</value>
   </data>
+  <data name="ForgotPasswordConfirmation" xml:space="preserve">
+    <value>Для скидування пароля, перейдіть за посиланням в листі, яке відправлене на вашу електронну пошту.</value>
+  </data>
   <data name="Login-InCorrectPassword" xml:space="preserve">
     <value>Ви ввели неправильний пароль, спробуйте ще раз</value>
   </data>
@@ -143,6 +149,9 @@
   </data>
   <data name="Login-NotRegistered" xml:space="preserve">
     <value>Ви не зареєстровані в системі, або не підтвердили свою електронну пошту</value>
+  </data>
+  <data name="ModelIsNotValid" xml:space="preserve">
+    <value>Введені дані є неправильними</value>
   </data>
   <data name="Register-InCorrectData" xml:space="preserve">
     <value>Дані введені неправильно</value>
@@ -158,5 +167,8 @@
   </data>
   <data name="Reset-PasswordProblems" xml:space="preserve">
     <value>Проблеми зі скидуванням пароля або введений новий пароль повинен вміщати 8символів, включаючи літери та цифри</value>
+  </data>
+  <data name="ResetPasswordConfirmation" xml:space="preserve">
+    <value>Ваш пароль скинутий. Для входу в систему натисніть Увійти/Зареєструватись.</value>
   </data>
 </root>

@@ -7,7 +7,6 @@ using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.Jwt;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -146,16 +145,9 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpGet("signup")]
-        [AllowAnonymous]
-        public IActionResult Register()
-        {
-            return Ok("signup");
-        }
-
         [HttpPost("signup")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody]RegisterDto registerDto)
+        public async Task<IActionResult> Register([FromBody]RegisterDto registerDto) //+
         {
             try
             {
@@ -265,7 +257,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("logout")]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         [Authorize]
         public IActionResult Logout()
         {
@@ -273,17 +265,17 @@ namespace EPlast.WebApi.Controllers
             return Ok("HomePage");
         }
 
-        [HttpGet("forgotPassword")]
+        /*[HttpGet("forgotPassword")]
         [AllowAnonymous]
         public IActionResult ForgotPassword()
         {
             return Ok("ForgotPassword");
-        }
+        }*/
 
         [HttpPost("forgotPassword")]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto forgotpasswordDto)
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotpasswordDto)//+
         {
             try
             {
@@ -301,9 +293,9 @@ namespace EPlast.WebApi.Controllers
                         new { userId = userDto.Id, code = HttpUtility.UrlEncode(code) },
                         protocol: HttpContext.Request.Scheme);
                     await _accountService.SendEmailReseting(confirmationLink, forgotpasswordDto);
-                    return Ok("ForgotPasswordConfirmation");
+                    return Ok(_resourceForErrors["ForgotPasswordConfirmation"]);
                 }
-                return Ok("ForgotPassword");
+                return Ok("ForgotPassword"); //тут ше подивитись шо іменно вертати
             }
             catch (Exception e)
             {
@@ -342,14 +334,14 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("resetPassword")]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPassword(ResetPasswordDto resetpasswordDto)
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetpasswordDto) //+
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
-                    return Ok("ResetPassword");
+                    return BadRequest(_resourceForErrors["ModelIsNotValid"]);
                 }
                 var userDto = await _accountService.FindByEmailAsync(resetpasswordDto.Email);
                 if (userDto == null)
@@ -360,12 +352,11 @@ namespace EPlast.WebApi.Controllers
                 if (result.Succeeded)
                 {
                     await _accountService.CheckingForLocking(userDto);
-                    return Ok("ResetPasswordConfirmation");
+                    return Ok(_resourceForErrors["ResetPasswordConfirmation"]);
                 }
                 else
                 {
-                    ModelState.AddModelError("", _resourceForErrors["Reset-PasswordProblems"]);
-                    return Ok("ResetPassword");
+                    return BadRequest(_resourceForErrors["Reset-PasswordProblems"]);
                 }
             }
             catch (Exception e)
@@ -376,7 +367,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("changePassword")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        //[Authorize]
         public async Task<IActionResult> ChangePassword()
         {
             var userDto = await _accountService.GetUserAsync(User);
@@ -392,18 +383,17 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("changePassword")]
-        [Authorize]
-        public async Task<IActionResult> ChangePassword(ChangePasswordDto changepasswordDto)
+        //[Authorize]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changepasswordDto)//+ приходить все норм
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var userDto = await _accountService.GetUserAsync(User);
+                    var userDto = await _accountService.GetUserAsync(User);  // перше треба зробити логін
                     if (userDto == null)
                     {
-                        //return RedirectToAction("Login");
-                        return Ok();
+                        return BadRequest(); // тут просто вийдіть з сайту
                     }
                     var result = await _accountService.ChangePasswordAsync(userDto.Id, changepasswordDto);
                     if (!result.Succeeded)
@@ -411,11 +401,11 @@ namespace EPlast.WebApi.Controllers
                         return BadRequest(_resourceForErrors["Change-PasswordProblems"]);
                     }
                     _accountService.RefreshSignInAsync(userDto);
-                    return Ok("ChangePasswordConfirmation");
+                    return Ok(_resourceForErrors["ChangePasswordConfirmation"]);
                 }
                 else
                 {
-                    return Ok("ChangePassword");
+                    return BadRequest();
                 }
             }
             catch (Exception e)
