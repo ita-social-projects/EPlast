@@ -163,6 +163,13 @@ namespace EPlast.BLL.Services
             return new CityProfileDTO { City = city, CityDoc = cityDoc };
         }
 
+        public async Task<string> GetLogoBase64(string logoName)
+        {
+            var logoBase64 = await _cityBlobStorage.GetBlobBase64Async(logoName);
+
+            return logoBase64;
+        }
+
         public async Task<CityProfileDTO> EditAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
@@ -264,6 +271,8 @@ namespace EPlast.BLL.Services
             var oldImageName = (await _repoWrapper.City.GetFirstOrDefaultAsync(
                 predicate: i => i.ID == cityId))
                 ?.Logo;
+            var defaultCityImage = "333493fe-9c81-489f-bce3-5d1ba35a8c36.jpg";
+
             if (file != null && file.Length > 0)
             {
                 using (var img = Image.FromStream(file.OpenReadStream()))
@@ -286,7 +295,7 @@ namespace EPlast.BLL.Services
             }
             else
             {
-                city.Logo = oldImageName ?? "333493fe-9c81-489f-bce3-5d1ba35a8c36.jpg";
+                city.Logo = oldImageName ?? defaultCityImage;
             }
         }
 
@@ -294,6 +303,7 @@ namespace EPlast.BLL.Services
         {
             var oldImageName = (await _repoWrapper.City.GetFirstOrDefaultAsync(i => i.ID == city.ID))?.Logo;
             var logoBase64 = city.Logo;
+
             var defaultCityImage = "default_city_image.jpg";
 
             if (!string.IsNullOrWhiteSpace(logoBase64) && logoBase64.Length > 0)
@@ -302,9 +312,13 @@ namespace EPlast.BLL.Services
                 {
                     await _cityBlobStorage.DeleteBlobAsync(oldImageName);
                 }
+
+                var logoBase64Parts = logoBase64.Split(',');
+                var extension = logoBase64Parts[0].Split(new[] { '/', ';' }, 3)[1];
+                var fileName = Guid.NewGuid().ToString() + extension;
                 
-                var fileName = Guid.NewGuid().ToString();
-                await _cityBlobStorage.UploadBlobForBase64Async(logoBase64, fileName);
+                await _cityBlobStorage.UploadBlobForBase64Async(logoBase64Parts[1], fileName);
+                city.Logo = fileName;
             }
             else
             {
