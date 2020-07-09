@@ -32,14 +32,6 @@ namespace EPlast.WebApi.Controllers
             return Ok(cities);
         }
 
-        [HttpGet("LogoBase64")]
-        public async Task<string> GetPhotoBase64(string logoName)
-        {
-            var logoBase64 = await _cityService.GetLogoBase64(logoName);
-
-            return logoBase64;
-        }
-
         [HttpGet("Profile/{cityId}")]
         public async Task<IActionResult> GetProfile(int cityId)
         {
@@ -179,6 +171,14 @@ namespace EPlast.WebApi.Controllers
 
                 return BadRequest();
             }
+        }
+
+        [HttpGet("LogoBase64")]
+        public async Task<IActionResult> GetPhotoBase64(string logoName)
+        {
+            var logoBase64 = await _cityService.GetLogoBase64(logoName);
+
+            return Ok(logoBase64);
         }
 
         [HttpPut("EditCity/{cityId}")]
