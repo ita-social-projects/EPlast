@@ -130,6 +130,8 @@ namespace EPlast.WebApi.Controllers
                     {
                         var claims = new[] {
                              new Claim(ClaimTypes.Name, user.Email),
+                             new Claim(JwtRegisteredClaimNames.NameId, user.Id),
+                             new Claim(JwtRegisteredClaimNames.FamilyName, user.Id),
                              new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                              new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                          };
@@ -141,7 +143,7 @@ namespace EPlast.WebApi.Controllers
                           issuer: _jwtOptions.issuer,
                           audience: _jwtOptions.issuer,
                           claims: claims,
-                          expires: DateTime.Now.AddMinutes(30),
+                          expires: DateTime.Now.AddMinutes(30),  //тут добавити 2 години
                           signingCredentials: creds);
 
                         return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
