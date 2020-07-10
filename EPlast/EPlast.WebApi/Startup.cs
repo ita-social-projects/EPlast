@@ -20,6 +20,7 @@ using EPlast.BLL.Services.Club;
 using EPlast.BLL.Services.Events;
 using EPlast.BLL.Services.EventUser;
 using EPlast.BLL.Services.Interfaces;
+using EPlast.BLL.Services.Jwt;
 using EPlast.BLL.Services.Logging;
 using EPlast.BLL.Services.UserProfiles;
 using EPlast.BLL.Settings;
@@ -28,7 +29,6 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.DataAccess.Repositories.Realizations.Base;
 using EPlast.WebApi.Extensions;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -78,7 +78,7 @@ namespace EPlast.WebApi
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("V1", new OpenApiInfo { Title = "MyApi", Version = "V1" });
-                var security = new Dictionary<string, IEnumerable<string>>
+                /*var security = new Dictionary<string, IEnumerable<string>>
                 {
                     {"Bearer", new string[] { }},
                 };
@@ -90,7 +90,7 @@ namespace EPlast.WebApi
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
                     Description = "JWT Authorization header using the Bearer scheme."
-                });
+                });*/
                 //c.AddSecurityRequirement(security);
             });
 
@@ -212,8 +212,7 @@ namespace EPlast.WebApi
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
             });
-
-     
+            services.Configure<JwtOptions>(Configuration.GetSection("jwt"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
