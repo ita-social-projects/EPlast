@@ -10,10 +10,14 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -36,7 +40,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IConfirmedUsersService _confirmedUserService;
         private readonly ILoggerService<AccountController> _loggerService;
         private readonly IStringLocalizer<AuthenticationErrors> _resourceForErrors;
-        private readonly IConfiguration _configuration;
+        private readonly JwtOptions _jwtOptions;
 
         public AccountController(IUserService userService,
             INationalityService nationalityService,
@@ -51,7 +55,7 @@ namespace EPlast.WebApi.Controllers
             ILoggerService<AccountController> loggerService,
             IAccountService accountService,
             IStringLocalizer<AuthenticationErrors> resourceForErrors,
-            IConfiguration configuration)
+            IOptions<JwtOptions> jwtOptions)
         {
             _accountService = accountService;
             _userService = userService;
@@ -66,18 +70,18 @@ namespace EPlast.WebApi.Controllers
             _userManagerService = userManagerService;
             _loggerService = loggerService;
             _resourceForErrors = resourceForErrors;
-            _configuration = configuration;
+            _jwtOptions = jwtOptions.Value;
         }
 
-        [HttpGet("generateToken")]
+        /*[HttpGet("generateToken")]
         public string GetRandomToken()
         {
             var jwt = new JwtService(_configuration);
             var token = jwt.GenerateSecurityToken("fake@email.com");
             return token;
-        }
+        }*/
 
-        [HttpGet("signin")]
+        /*[HttpGet("signin")]
         [AllowAnonymous]
         public async Task<IActionResult> Login(string returnUrl)
         {
@@ -95,17 +99,14 @@ namespace EPlast.WebApi.Controllers
                 _loggerService.LogError($"Exception: {e.Message}");
                 return BadRequest();
             }
-        }
+        }*/
 
         [HttpPost("signin")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginDto loginDto, string returnUrl)
+        public async Task<IActionResult> Login(LoginDto loginDto)
         {
             try
             {
-                loginDto.ReturnUrl = returnUrl;
-                loginDto.ExternalLogins = (await _accountService.GetAuthSchemesAsync()).ToList();
-
                 if (ModelState.IsValid)
                 {
                     var user = await _accountService.FindByEmailAsync(loginDto.Email);
@@ -123,13 +124,27 @@ namespace EPlast.WebApi.Controllers
                     var result = await _accountService.SignInAsync(loginDto);
                     if (result.IsLockedOut)
                     {
-                        return RedirectToAction("AccountLocked", "Account");
+                        return BadRequest(_resourceForErrors["Account-Locked"]);
                     }
                     if (result.Succeeded)
                     {
-                        //return RedirectToAction("UserProfile", "Account");
-                        var tokenStr = 6;//_accountService.generateJwtToken(loginDto);
-                        return Ok(new { token = tokenStr });
+                        var claims = new[] {
+                             new Claim(ClaimTypes.Name, user.Email),
+                             new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                         };
+
+                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.key));
+                        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+                        var token = new JwtSecurityToken(
+                          issuer: _jwtOptions.issuer,
+                          audience: _jwtOptions.issuer,
+                          claims: claims,
+                          expires: DateTime.Now.AddMinutes(30),
+                          signingCredentials: creds);
+
+                        return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
                     }
                     else
                     {
@@ -426,7 +441,7 @@ namespace EPlast.WebApi.Controllers
             return new ChallengeResult(provider, properties);
         }
 
-        [HttpGet("externalLoginCallBack")]
+        /*[HttpGet("externalLoginCallBack")]
         [AllowAnonymous]
         public async Task<IActionResult> ExternalLoginCallBack(string returnUrl = null, string remoteError = null)
         {
@@ -479,6 +494,6 @@ namespace EPlast.WebApi.Controllers
                 _loggerService.LogError($"Exception: {e.Message}");
                 return BadRequest();
             }
-        }
+        }*/
     }
 }

@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BLL;
-using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.AzureStorage;
@@ -16,7 +10,6 @@ using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
-using EPlast.BLL.Middlewares;
 using EPlast.BLL.Services;
 using EPlast.BLL.Services.Admin;
 using EPlast.BLL.Services.AzureStorage;
@@ -36,6 +29,7 @@ using EPlast.DataAccess.Repositories;
 using EPlast.DataAccess.Repositories.Realizations.Base;
 using EPlast.WebApi.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -46,7 +40,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text;
 
 namespace EPlast.WebApi
 {
@@ -101,7 +99,6 @@ namespace EPlast.WebApi
                 options.CustomSchemaIds(x => x.FullName);
             });
             services.AddControllers().AddNewtonsoftJson();
-            services.AddTokenAuthentication(Configuration);
             services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
@@ -151,14 +148,18 @@ namespace EPlast.WebApi
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddLogging();
 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options =>
+            services.AddAuthentication(options =>
+                {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                /*.AddCookie(options =>
                 {
                     options.Cookie.HttpOnly = true;
                     options.Cookie.Expiration = TimeSpan.FromDays(5);
                     options.LoginPath = "/Account/Login";
                     options.LogoutPath = "/Account/Logout";
-                })
+                })*/
                 .AddGoogle(options =>
                 {
                     options.ClientId = Configuration.GetSection("GoogleAuthentication:GoogleClientId").Value;
@@ -168,7 +169,19 @@ namespace EPlast.WebApi
                 {
                     options.AppId = Configuration.GetSection("FacebookAuthentication:FacebookAppId").Value;
                     options.AppSecret = Configuration.GetSection("FacebookAuthentication:FacebookAppSecret").Value;
-                });
+                })
+                .AddJwtBearer(config =>
+                 {
+                 config.RequireHttpsMetadata = false;
+                 config.SaveToken = true;
+
+                 config.TokenValidationParameters = new TokenValidationParameters()
+                  {
+                     ValidIssuer = Configuration["jwt:issuer"],
+                     ValidAudience = Configuration["jwt:issuer"],
+                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["jwt:key"]))
+                  };
+               });
 
             services.Configure<RequestLocalizationOptions>(
             opts =>
