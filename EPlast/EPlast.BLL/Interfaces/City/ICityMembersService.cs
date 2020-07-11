@@ -9,5 +9,6 @@ namespace EPlast.BLL.Services.Interfaces
         Task<IEnumerable<CityMembersDTO>> GetCurrentByCityIdAsync(int cityId);
         Task<CityMembersDTO> AddCityFollower(int cityId, string userId);
         Task<CityMembersDTO> ToggleMemberStatus(int cityId, string userId);
+        Task RemoveMember(string userId);
     }
 }

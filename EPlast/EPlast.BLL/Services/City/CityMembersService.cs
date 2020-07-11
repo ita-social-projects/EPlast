@@ -45,7 +45,7 @@ namespace EPlast.BLL.Services.City
             var oldCityMember = await _repositoryWrapper.CityMembers
                 .GetFirstOrDefaultAsync(i => i.UserId == userId);
 
-            if (oldCityMember == null)
+            if (oldCityMember != null)
             {
                 _repositoryWrapper.CityMembers.Delete(oldCityMember);
                 await _repositoryWrapper.SaveAsync();
@@ -75,6 +75,15 @@ namespace EPlast.BLL.Services.City
             await _repositoryWrapper.SaveAsync();
 
             return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
+        }
+
+        public async Task RemoveMember(string userId)
+        {
+            var cityMember = await _repositoryWrapper.CityMembers
+                .GetFirstOrDefaultAsync(u => u.UserId == userId);
+
+            _repositoryWrapper.CityMembers.Delete(cityMember);
+            await _repositoryWrapper.SaveAsync();
         }
     }
 }

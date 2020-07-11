@@ -254,14 +254,31 @@ namespace EPlast.Controllers
             }
         }
 
-        public async Task<IActionResult> ChangeApproveMemberStatus(int cityId, string userId)
+        public async Task<IActionResult> ToggleCityMember(int cityId, string userId)
         {
             try
             {
                 await _cityMembersService.ToggleMemberStatus(cityId, userId);
                 _logger.LogInformation($"Status of user {userId} was changed in city with id {cityId}.");
 
-                return RedirectToAction("CityProfile", "City", new { cityid = cityId });
+                return RedirectToAction("CityMembers", "City", new { cityid = cityId });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
+            }
+        }
+
+        public async Task<IActionResult> RemoveCityFollower(int cityId, string userId)
+        {
+            try
+            {
+                await _cityMembersService.RemoveMember(userId);
+                _logger.LogInformation($"Follower with id {userId} was removed.");
+
+                return RedirectToAction("CityFollowers", "City", new { cityid = cityId });
             }
             catch (Exception e)
             {
