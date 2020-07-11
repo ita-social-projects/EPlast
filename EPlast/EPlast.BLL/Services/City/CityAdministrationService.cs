@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.City
 {
-    public class CityAdministrationService : ICItyAdministrationService
+    public class CityAdministrationService : ICityAdministrationService
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;

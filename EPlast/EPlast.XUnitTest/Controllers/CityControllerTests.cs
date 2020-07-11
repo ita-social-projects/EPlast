@@ -19,10 +19,14 @@ namespace EPlast.XUnitTest
     public class CityControllerTests
     {
         private readonly Mock<ICityService> _cityService;
+        private readonly Mock<ICityMembersService> _cityMembersService;
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<ILoggerService<CityController>> _logger;
 
-        private CityController CreateCityController => new CityController(_logger.Object, _cityService.Object, _mapper.Object);
+        private CityController CreateCityController => new CityController(_logger.Object,
+            _cityService.Object,
+            _cityMembersService.Object,
+            _mapper.Object);
 
         public CityControllerTests()
         {

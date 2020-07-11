@@ -22,14 +22,14 @@ namespace EPlast.Controllers
         private readonly IAdminService _adminService;
         private readonly IMapper _mapper;
         private readonly ICityService _cityService;
-        private readonly ICItyAdministrationService _cityAdministrationService;
+        private readonly ICityAdministrationService _cityAdministrationService;
 
         public AdminController(ILogger<AdminController> logger,
             IUserManagerService userManagerService,
             IAdminService adminService,
             IMapper mapper,
             ICityService cityService,
-            ICItyAdministrationService cityAdministrationService)
+            ICityAdministrationService cityAdministrationService)
         {
             _logger = logger;
             _userManagerService = userManagerService;

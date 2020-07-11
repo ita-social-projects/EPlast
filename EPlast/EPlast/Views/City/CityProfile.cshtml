@@ -56,21 +56,24 @@
                         <div class="d-flex mx-auto" style="height: 50%;min-height: 140px;">
                             @foreach (var membrCity in Model.Members.Take(3))
                             {
-                                <div class="mx-auto" style="width: 80px;">
-                                    <img class="border rounded-circle align-items-center" style="width: 80px;height: 80px;" src="/images/Users/@membrCity.User.ImagePath" />
-                                    <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px; font-size:0.9rem;">@membrCity.User.FirstName.ToString()</p>
-                                    <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px; font-size:0.9rem;">@membrCity.User.LastName.ToString()</p>
+                                <div class="mx-auto" style="width: 80px; font-size:0.85rem;">
+                                    <a asp-action="UserProfile" asp-controller="Account" asp-route-userId="@membrCity.User.ID" style="color:black">
+                                        <img class="border rounded-circle align-items-center" style="width: 80px;height: 80px;" src="/images/Users/@membrCity.User.ImagePath" />
+                                        <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px;">@membrCity.User.FirstName.ToString()</p>
+                                        <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px;">@membrCity.User.LastName.ToString()</p>
+                                    </a>
                                 </div>
                             }
                         </div>
                         <div class="d-flex mx-auto" style="height: 50%;min-height: 140px;">
-
                             @foreach (var membrCity in Model.Members.Skip(3).Take(3))
                             {
-                                <div class="mx-auto" style="width: 80px;">
-                                    <img class="border rounded-circle align-items-center" style="width: 80px;height: 80px;" src="/images/Users/@membrCity.User.ImagePath" />
-                                    <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px; font-size:0.9rem;">@membrCity.User.FirstName.ToString()</p>
-                                    <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px; font-size:0.9rem;">@membrCity.User.LastName.ToString()</p>
+                                <div class="mx-auto" style="width: 80px; font-size:0.85rem;">
+                                    <a asp-action="UserProfile" asp-controller="Account" asp-route-userId="@membrCity.User.ID" style="color:black">
+                                        <img class="border rounded-circle align-items-center" style="width: 80px;height: 80px;" src="/images/Users/@membrCity.User.ImagePath" />
+                                        <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px;">@membrCity.User.FirstName.ToString()</p>
+                                        <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px;">@membrCity.User.LastName.ToString()</p>
+                                    </a>
                                 </div>
                             }
                         </div>
@@ -92,10 +95,12 @@
                             @foreach (var adminCity in Model.CityAdmins.Take(3))
                             {
                                 var fullName = adminCity.User.FirstName + " " + adminCity.User.LastName;
-                                <div class="mx-auto" style="width: 80px;">
-                                    <img class="border rounded-circle align-items-center" style="width: 80px;height: 80px;" src="/images/Users/@adminCity.User.ImagePath" />
-                                    <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px; font-size:0.9rem;">@adminCity.AdminType.AdminTypeName</p>
-                                    <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px; font-size:0.9rem;">@fullName</p>
+                                <div class="mx-auto" style="width: 80px; font-size:0.85rem;">
+                                    <a asp-action="UserProfile" asp-controller="Account" asp-route-userId="@adminCity.User.ID" style="color:black">
+                                        <img class="border rounded-circle align-items-center" style="width: 80px;height: 80px;" src="/images/Users/@adminCity.User.ImagePath" />
+                                        <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px;">@adminCity.AdminType.AdminTypeName</p>
+                                        <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px;">@fullName</p>
+                                    </a>
                                 </div>
                             }
                         </div>
@@ -103,10 +108,12 @@
                             @foreach (var adminCity in Model.CityAdmins.Skip(3).Take(3))
                             {
                                 var fullName = adminCity.User.FirstName + " " + adminCity.User.LastName;
-                                <div class="mx-auto" style="width: 80px;">
-                                    <img class="border rounded-circle align-items-center" style="width: 80px;height: 80px;" src="/images/Users/@adminCity.User.ImagePath" />
-                                    <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px; font-size:0.9rem;">@adminCity.AdminType.AdminTypeName</p>
-                                    <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px; font-size:0.9rem;">@fullName</p>
+                                <div class="mx-auto" style="width: 80px; font-size:0.85rem;">
+                                    <a asp-action="UserProfile" asp-controller="Account" asp-route-userId="@adminCity.User.ID" style="color:black">
+                                        <img class="border rounded-circle align-items-center" style="width: 80px;height: 80px;" src="/images/Users/@adminCity.User.ImagePath" />
+                                        <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px;">@adminCity.AdminType.AdminTypeName</p>
+                                        <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px;">@fullName</p>
+                                    </a>
                                 </div>
                             }
                         </div>
@@ -125,20 +132,20 @@
                         <div class="d-flex mx-auto" style="height: 50%; min-height: 100px;">
                             @foreach (var doc in Model.CityDoc.Take(2))
                             {
-                                <div class="mx-auto" style="width: 120px;">
+                                <div class="mx-auto" style="width: 120px; font-size:0.85rem;">
                                     <div class="d-flex justify-content-center align-items-center"><img class="align-items-center" style="width: 65px;height: 70px;" src="https://icons.iconarchive.com/icons/custom-icon-design/mono-general-2/512/document-icon.png" /></div>
-                                    <p class="text-truncate" style="margin: 0px;margin-bottom: 0px; font-size:0.85rem;">@doc.CityDocumentType.Name</p>
-                                    <p class="text-truncate text-center d-xl-flex justify-content-xl-center" style="margin: 0px;margin-bottom: 0px; font-size:0.85rem;">@doc.SubmitDate.Value.ToString()</p>
+                                    <p class="text-truncate" style="margin: 0px;margin-bottom: 0px;">@doc.CityDocumentType.Name</p>
+                                    <p class="text-truncate text-center d-xl-flex justify-content-xl-center" style="margin: 0px;margin-bottom: 0px;">@doc.SubmitDate.Value.ToString()</p>
                                 </div>
                             }
                         </div>
                         <div class="d-flex mx-auto" style="height: 50%; min-height: 100px;">
                             @foreach (var doc in Model.CityDoc.Skip(2).Take(2))
                             {
-                                <div class="mx-auto" style="width: 120px;">
+                                <div class="mx-auto" style="width: 120px; font-size:0.85rem;">
                                     <div class="d-flex justify-content-center align-items-center"><img class="align-items-center" style="width: 65px;height: 70px;" src="https://icons.iconarchive.com/icons/custom-icon-design/mono-general-2/512/document-icon.png" /></div>
-                                    <p class="text-truncate" style="margin: 0px;margin-bottom: 0px; font-size:0.85rem;">@doc.CityDocumentType.Name</p>
-                                    <p class="text-truncate text-center d-xl-flex justify-content-xl-center" style="margin: 0px;margin-bottom: 0px; font-size:0.85rem;">@doc.SubmitDate.Value.ToString()</p>
+                                    <p class="text-truncate" style="margin: 0px;margin-bottom: 0px;">@doc.CityDocumentType.Name</p>
+                                    <p class="text-truncate text-center d-xl-flex justify-content-xl-center" style="margin: 0px;margin-bottom: 0px;">@doc.SubmitDate.Value.ToString()</p>
                                 </div>
                             }
                         </div>
@@ -170,26 +177,68 @@
                 <div class="border rounded">
                     <p class="text-center d-xl-flex justify-content-xl-center align-items-xl-center">Прихильники станиці</p>
                     <div style="height: 75%;">
-                        <div class="d-flex mx-auto" style="height: 50%;min-height: 140px;">
-                            @foreach (var membrCity in Model.Followers.Take(3))
-                            {
-                                <div class="mx-auto" style="width: 80px;">
-                                    <img class="border rounded-circle align-items-center" style="width: 80px;height: 80px;" src="/images/Users/@membrCity.User.ImagePath" />
-                                    <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px;">@membrCity.User.FirstName.ToString()</p>
-                                    <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px;">@membrCity.User.LastName.ToString()</p>
+
+                        @if (Model.City.CityMembers.FirstOrDefault(c => c.User.Email == User.Identity.Name) == null)
+                        {
+                            <div class="d-flex mx-auto" style="height: 50%;min-height: 140px;">
+                                <div class="mx-auto" style="width: 80px; font-size:0.85rem;">
+                                    <a asp-action="AddCityFollower" asp-controller="City" asp-route-cityId="@Model.City.ID" asp-route-userId="@User.Claims.FirstOrDefault(c => c.Type.EndsWith("nameidentifier")).Value" style="color:black">
+                                        <img class="border rounded-rounded align-items-center" style="width: 80px;height: 80px;" src="~/images/add.png" />
+                                        <p class="text-center" style="margin: 0px;margin-bottom: 5px;">Стати</p>
+                                        <p class="text-center" style="margin: 0px;margin-bottom: 5px;">Прихильником</p>
+                                    </a>
                                 </div>
-                            }
-                        </div>
-                        <div class="d-flex mx-auto" style="height: 50%;min-height: 140px;">
-                            @foreach (var membrCity in Model.Followers.Skip(3).Take(3))
-                            {
-                                <div class="mx-auto" style="width: 80px;">
-                                    <img class="border rounded-circle align-items-center" style="width: 80px;height: 80px;" src="/images/Users/@membrCity.User.ImagePath" />
-                                    <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px;">@membrCity.User.FirstName.ToString()</p>
-                                    <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px;">@membrCity.User.LastName.ToString()</p>
-                                </div>
-                            }
-                        </div>
+                                @foreach (var membrCity in Model.Followers.Take(2))
+                                {
+                                    <div class="mx-auto" style="width: 80px; font-size:0.85rem;">
+                                        <a asp-action="UserProfile" asp-controller="Account" asp-route-userId="@membrCity.User.ID" style="color:black">
+                                            <img class="border rounded-circle align-items-center" style="width: 80px;height: 80px;" src="/images/Users/@membrCity.User.ImagePath" />
+                                            <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px;">@membrCity.User.FirstName.ToString()</p>
+                                            <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px;">@membrCity.User.LastName.ToString()</p>
+                                        </a>
+                                    </div>
+                                }
+                            </div>
+                            <div class="d-flex mx-auto" style="height: 50%;min-height: 140px;">
+                                @foreach (var membrCity in Model.Followers.Skip(2).Take(3))
+                                {
+                                    <div class="mx-auto" style="width: 80px; font-size:0.85rem;">
+                                        <a asp-action="UserProfile" asp-controller="Account" asp-route-userId="@membrCity.User.ID" style="color:black">
+                                            <img class="border rounded-circle align-items-center" style="width: 80px;height: 80px;" src="/images/Users/@membrCity.User.ImagePath" />
+                                            <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px;">@membrCity.User.FirstName.ToString()</p>
+                                            <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px;">@membrCity.User.LastName.ToString()</p>
+                                        </a>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="d-flex mx-auto" style="height: 50%;min-height: 140px;">
+                                @foreach (var membrCity in Model.Followers.Take(3))
+                                {
+                                    <div class="mx-auto" style="width: 80px; font-size:0.85rem;">
+                                        <a asp-action="UserProfile" asp-controller="Account" asp-route-userId="@membrCity.User.ID" style="color:black">
+                                            <img class="border rounded-circle align-items-center" style="width: 80px;height: 80px;" src="/images/Users/@membrCity.User.ImagePath" />
+                                            <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px;">@membrCity.User.FirstName.ToString()</p>
+                                            <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px;">@membrCity.User.LastName.ToString()</p>
+                                        </a>
+                                    </div>
+                                }
+                            </div>
+                            <div class="d-flex mx-auto" style="height: 50%;min-height: 140px;">
+                                @foreach (var membrCity in Model.Followers.Skip(3).Take(3))
+                                {
+                                    <div class="mx-auto" style="width: 80px; font-size:0.85rem;">
+                                        <a asp-action="UserProfile" asp-controller="Account" asp-route-userId="@membrCity.User.ID" style="color:black">
+                                            <img class="border rounded-circle align-items-center" style="width: 80px;height: 80px;" src="/images/Users/@membrCity.User.ImagePath" />
+                                            <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px;">@membrCity.User.FirstName.ToString()</p>
+                                            <p class="text-truncate text-center" style="margin: 0px;margin-bottom: 5px;">@membrCity.User.LastName.ToString()</p>
+                                        </a>
+                                    </div>
+                                }
+                            </div>
+                        }
                     </div>
                     <div>
                         <a asp-action="CityFollowers" asp-controller="City" asp-route-cityId="@Model.City.ID">

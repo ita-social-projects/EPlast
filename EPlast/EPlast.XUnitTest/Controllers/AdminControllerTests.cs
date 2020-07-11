@@ -28,7 +28,7 @@ namespace EPlast.XUnitTest
         private Mock<IUserManagerService> _userManagerService;
         private Mock<IAdminService> _adminService;
         private Mock<ICityService> _cityService;
-        private Mock<ICItyAdministrationService> _cityAdministrationService;
+        private Mock<ICityAdministrationService> _cityAdministrationService;
         private Mock<IMapper> _mapper;
         public AdminControllerTests()
         {
@@ -44,7 +44,7 @@ namespace EPlast.XUnitTest
             _adminService = new Mock<IAdminService>();
             _mapper = new Mock<IMapper>();
             _cityService = new Mock<ICityService>();
-            _cityAdministrationService = new Mock<ICItyAdministrationService>();
+            _cityAdministrationService = new Mock<ICityAdministrationService>();
         }
 
         [Fact]
