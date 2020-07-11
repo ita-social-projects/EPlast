@@ -1,20 +1,17 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.Jwt;
 using EPlast.Resources;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -37,7 +34,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IConfirmedUsersService _confirmedUserService;
         private readonly ILoggerService<AccountController> _loggerService;
         private readonly IStringLocalizer<AuthenticationErrors> _resourceForErrors;
-        private readonly IConfiguration _configuration;
+        private readonly IJwtService _jwtService;
 
         public AccountController(IUserService userService,
             INationalityService nationalityService,
@@ -52,7 +49,7 @@ namespace EPlast.WebApi.Controllers
             ILoggerService<AccountController> loggerService,
             IAccountService accountService,
             IStringLocalizer<AuthenticationErrors> resourceForErrors,
-            IConfiguration configuration)
+            IJwtService jwtService)
         {
             _accountService = accountService;
             _userService = userService;
@@ -67,46 +64,15 @@ namespace EPlast.WebApi.Controllers
             _userManagerService = userManagerService;
             _loggerService = loggerService;
             _resourceForErrors = resourceForErrors;
-            _configuration = configuration;
-        }
-
-        [HttpGet("generateToken")]
-        public string GetRandomToken()
-        {
-            var jwt = new JwtService(_configuration);
-            var token = jwt.GenerateSecurityToken("fake@email.com");
-            return token;
-        }
-
-        [HttpGet("signin")]
-        [AllowAnonymous]
-        public async Task<IActionResult> Login(string returnUrl)
-        {
-            try
-            {
-                LoginDto loginDto = new LoginDto
-                {
-                    ReturnUrl = returnUrl,
-                    ExternalLogins = (await _accountService.GetAuthSchemesAsync()).ToList()
-                };
-                return Ok(loginDto);
-            }
-            catch (Exception e)
-            {
-                _loggerService.LogError($"Exception: {e.Message}");
-                return BadRequest();
-            }
+            _jwtService = jwtService;
         }
 
         [HttpPost("signin")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginDto loginDto, string returnUrl)
+        public async Task<IActionResult> Login(LoginDto loginDto) //+
         {
             try
             {
-                loginDto.ReturnUrl = returnUrl;
-                loginDto.ExternalLogins = (await _accountService.GetAuthSchemesAsync()).ToList();
-
                 if (ModelState.IsValid)
                 {
                     var user = await _accountService.FindByEmailAsync(loginDto.Email);
@@ -124,20 +90,19 @@ namespace EPlast.WebApi.Controllers
                     var result = await _accountService.SignInAsync(loginDto);
                     if (result.IsLockedOut)
                     {
-                        return RedirectToAction("AccountLocked", "Account");
+                        return BadRequest(_resourceForErrors["Account-Locked"]);
                     }
                     if (result.Succeeded)
                     {
-                        //return RedirectToAction("UserProfile", "Account");
-                        var tokenStr = 6;//_accountService.generateJwtToken(loginDto);
-                        return Ok(new { token = tokenStr });
+                        var generatedToken = _jwtService.GenerateJWTToken(user);
+                        return Ok(new { token = generatedToken });
                     }
                     else
                     {
                         return BadRequest(_resourceForErrors["Login-InCorrectPassword"]);
                     }
                 }
-                return Ok();
+                return Ok(_resourceForErrors["ModelIsNotValid"]);
             }
             catch (Exception e)
             {
@@ -146,16 +111,9 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpGet("signup")]
-        [AllowAnonymous]
-        public IActionResult Register()
-        {
-            return Ok("signup");
-        }
-
         [HttpPost("signup")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(RegisterDto registerDto)
+        public async Task<IActionResult> Register([FromBody]RegisterDto registerDto)//+
         {
             try
             {
@@ -177,16 +135,16 @@ namespace EPlast.WebApi.Controllers
                     }
                     else
                     {
-                        string code = await _accountService.AddRoleAndTokenAsync(registerDto);
+                        string token = await _accountService.AddRoleAndTokenAsync(registerDto);
                         var userDto = await _accountService.FindByEmailAsync(registerDto.Email);
                         string confirmationLink = Url.Action(
                             nameof(ConfirmingEmail),
                             "Account",
-                            new { code = code, userId = userDto.Id },
+                            new { token = token, userId = userDto.Id },
                               protocol: HttpContext.Request.Scheme);
                         await _accountService.SendEmailRegistr(confirmationLink, userDto);
             
-                        return Ok("AcceptingEmail");
+                        return Ok(_resourceForErrors["Confirm-Registration"]);
                     }
                 }
             }
@@ -199,7 +157,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpGet("confirmingEmail")]
         [AllowAnonymous]
-        public async Task<IActionResult> ConfirmingEmail(string userId, string code)
+        public async Task<IActionResult> ConfirmingEmail(string userId, string token) //+
         {
             var userDto = await _accountService.FindByIdAsync(userId);
             if (userDto == null)
@@ -209,15 +167,15 @@ namespace EPlast.WebApi.Controllers
             int totalTime = _accountService.GetTimeAfterRegistr(userDto);
             if (totalTime < 180)
             {
-                if (string.IsNullOrWhiteSpace(userId) && string.IsNullOrWhiteSpace(code))
+                if (string.IsNullOrWhiteSpace(userId) && string.IsNullOrWhiteSpace(token))
                 {
                     return BadRequest();
                 }
-                var result = await _accountService.ConfirmEmailAsync(userDto.Id, code);
+                var result = await _accountService.ConfirmEmailAsync(userDto.Id, token);
            
                 if (result.Succeeded) 
                 {
-                    return Ok("ConfirmedEmail");
+                    return Ok(_resourceForErrors["Confirmed-Registration"]);
                 }
                 else
                 {
@@ -229,12 +187,6 @@ namespace EPlast.WebApi.Controllers
                 //return View("ConfirmEmailNotAllowed", userDto);
                 return Ok("ConfirmedEmailNotAllowed");
             }
-        }
-
-        [HttpGet("confirmedEmail")]
-        public IActionResult ConfirmedEmail()
-        {
-            return Ok("ConfirmedEmail");
         }
 
         [HttpGet("resendEmailForRegistering")]
@@ -257,33 +209,19 @@ namespace EPlast.WebApi.Controllers
             return Ok("ResendEmailConfirmation");
         }
 
-        [HttpGet("accountLocked")]
-        [AllowAnonymous]
-        public IActionResult AccountLocked()
-        {
-            return Ok("AccountLocked");
-        }
-
-        [HttpPost("logout")]
-        [ValidateAntiForgeryToken]
+        [HttpGet("logout")] //+
+        //[ValidateAntiForgeryToken]
         [Authorize]
         public IActionResult Logout()
         {
             _accountService.SignOutAsync();
-            return Ok("HomePage");
-        }
-
-        [HttpGet("forgotPassword")]
-        [AllowAnonymous]
-        public IActionResult ForgotPassword()
-        {
-            return Ok("ForgotPassword");
+            return Ok();
         }
 
         [HttpPost("forgotPassword")]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto forgotpasswordDto)
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotpasswordDto)//+
         {
             try
             {
@@ -301,9 +239,9 @@ namespace EPlast.WebApi.Controllers
                         new { userId = userDto.Id, code = HttpUtility.UrlEncode(code) },
                         protocol: HttpContext.Request.Scheme);
                     await _accountService.SendEmailReseting(confirmationLink, forgotpasswordDto);
-                    return Ok("ForgotPasswordConfirmation");
+                    return Ok(_resourceForErrors["ForgotPasswordConfirmation"]);
                 }
-                return Ok("ForgotPassword");
+                return BadRequest(_resourceForErrors["ModelIsNotValid"]);
             }
             catch (Exception e)
             {
@@ -335,21 +273,20 @@ namespace EPlast.WebApi.Controllers
             }
             else
             {
-                //return View("ResetPasswordNotAllowed", userDto);
-                return Ok("ResetPasswordNotAllowed");
+                return Ok(_resourceForErrors["ResetPasswordNotAllowed"]);
             }
         }
 
         [HttpPost("resetPassword")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPassword(ResetPasswordDto resetpasswordDto)
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetpasswordDto) //+
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
-                    return Ok("ResetPassword");
+                    return BadRequest(_resourceForErrors["ModelIsNotValid"]);
                 }
                 var userDto = await _accountService.FindByEmailAsync(resetpasswordDto.Email);
                 if (userDto == null)
@@ -360,12 +297,11 @@ namespace EPlast.WebApi.Controllers
                 if (result.Succeeded)
                 {
                     await _accountService.CheckingForLocking(userDto);
-                    return Ok("ResetPasswordConfirmation");
+                    return Ok(_resourceForErrors["ResetPasswordConfirmation"]);
                 }
                 else
                 {
-                    ModelState.AddModelError("", _resourceForErrors["Reset-PasswordProblems"]);
-                    return Ok("ResetPassword");
+                    return BadRequest(_resourceForErrors["Reset-PasswordProblems"]);
                 }
             }
             catch (Exception e)
@@ -376,34 +312,33 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("changePassword")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize]
         public async Task<IActionResult> ChangePassword()
         {
             var userDto = await _accountService.GetUserAsync(User);
             var result = userDto.SocialNetworking;
             if (result != true)
             {
-                return Ok("ChangePassword");
+                return Ok("changePassword");
             }
             else
             {
-                return Ok("ChangePasswordNotAllowed");
+                return Ok(_resourceForErrors["ChangePasswordNotAllowed"]);
             }
         }
 
         [HttpPost("changePassword")]
         [Authorize]
-        public async Task<IActionResult> ChangePassword(ChangePasswordDto changepasswordDto)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changepasswordDto)//+ приходить все норм
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var userDto = await _accountService.GetUserAsync(User);
+                    var userDto = await _accountService.GetUserAsync(User);  // перше треба зробити логін
                     if (userDto == null)
                     {
-                        //return RedirectToAction("Login");
-                        return Ok();
+                        return BadRequest(); // тут просто вийдіть з сайту
                     }
                     var result = await _accountService.ChangePasswordAsync(userDto.Id, changepasswordDto);
                     if (!result.Succeeded)
@@ -411,11 +346,11 @@ namespace EPlast.WebApi.Controllers
                         return BadRequest(_resourceForErrors["Change-PasswordProblems"]);
                     }
                     _accountService.RefreshSignInAsync(userDto);
-                    return Ok("ChangePasswordConfirmation");
+                    return Ok(_resourceForErrors["ChangePasswordConfirmation"]);
                 }
                 else
                 {
-                    return Ok("ChangePassword");
+                    return BadRequest(_resourceForErrors["ModelIsNotValid"]);
                 }
             }
             catch (Exception e)
@@ -425,7 +360,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPost("externalLogin")]
+        /*[HttpPost("externalLogin")]
         [AllowAnonymous]
         public IActionResult ExternalLogin(string provider, string returnUrl)
         {
@@ -434,9 +369,9 @@ namespace EPlast.WebApi.Controllers
                 new { ReturnUrl = returnUrl });
             AuthenticationProperties properties = _accountService.GetAuthProperties(provider, redirectUrl);
             return new ChallengeResult(provider, properties);
-        }
+        }*/
 
-        [HttpGet("externalLoginCallBack")]
+        /*[HttpGet("externalLoginCallBack")]
         [AllowAnonymous]
         public async Task<IActionResult> ExternalLoginCallBack(string returnUrl = null, string remoteError = null)
         {
@@ -489,6 +424,6 @@ namespace EPlast.WebApi.Controllers
                 _loggerService.LogError($"Exception: {e.Message}");
                 return BadRequest();
             }
-        }
+        }*/
     }
 }
