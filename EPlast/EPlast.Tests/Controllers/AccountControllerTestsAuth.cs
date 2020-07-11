@@ -33,11 +33,11 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
-            
+
             mockAccountService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync((UserDTO)null);
-            
+
             mockStringLocalizer
                 .Setup(s => s["Login-NotRegistered"])
                 .Returns(GetLoginNotRegistered());
@@ -51,6 +51,11 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
         }
 
+
+
+
+
+        //Fakes
         private LocalizedString GetLoginNotRegistered()
         {
             var localizedString = new LocalizedString("Login-NotRegistered", 
@@ -72,21 +77,48 @@ namespace EPlast.Tests.Controllers
             return localizedString;
         }
 
-        private LocalizedString GetLoginNotConfirmed()
+        private LocalizedString GetAccountLocked()
         {
-            var localizedString = new LocalizedString("Login-NotConfirmed",
-                "Ваш акаунт не підтверджений, будь ласка увійдіть та зробіть підтвердження");
+            var localizedString = new LocalizedString("Account-Locked",
+                "Ваш акаунт заблоковано. Повторіть цю дію пізніше, або скиньте свій пароль.");
             return localizedString;
         }
 
+        private LocalizedString GetModelIsNotValid()
+        {
+            var localizedString = new LocalizedString("ModelIsNotValid",
+                "Введені дані є неправильними");
+            return localizedString;
+        }
 
+        private LocalizedString GetRegisterInCorrectData()
+        {
+            var localizedString = new LocalizedString("Register-InCorrectData",
+                "Дані введені неправильно");
+            return localizedString;
+        }
 
+        private LocalizedString GetRegisterRegisteredUser()
+        {
+            var localizedString = new LocalizedString("Register-RegisteredUser",
+                "Користувач з введеною електронною поштою вже зареєстрований в системі, " +
+                "можливо він не підтвердив свою реєстрацію");
+            return localizedString;
+        }
 
+        private LocalizedString GetRegisterInCorrectPassword()
+        {
+            var localizedString = new LocalizedString("Register-InCorrectPassword",
+                "Пароль має містити цифри та літери, мінімальна довжина повинна складати 8");
+            return localizedString;
+        }
 
-
-
-
-        Login-NotConfirmed
+        private LocalizedString GetConfirmRegistration()
+        {
+            var localizedString = new LocalizedString("Confirm-Registration",
+                "Перегляньте електронну адресу та підтвердьте реєстрацію у системі.");
+            return localizedString;
+        }
 
         private LoginDto GetTestLoginDto()
         {
@@ -99,7 +131,17 @@ namespace EPlast.Tests.Controllers
             return loginDto;
         }
 
-
-
+        private RegisterDto GetTestRegisterDto()
+        {
+            var registerDto = new RegisterDto
+            {
+                Email = "andriishainoha@gmail.com",
+                Name = "Andrii",
+                SurName = "Shainoha",
+                Password = "andrii123",
+                ConfirmPassword = "andrii123"
+            };
+            return registerDto;
+        }
     }
 }
