@@ -51,6 +51,164 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
         }
 
+        [Test]
+        public async Task Test_LoginPost_EmailNotConfirmed()
+        {
+            //Arrange
+            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+
+            mockAccountService
+                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
+
+            mockAccountService
+                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(false);
+
+            mockStringLocalizer
+                .Setup(s => s["Login-NotConfirmed"])
+                .Returns(GetLoginNotConfirmed());
+
+            //Act
+            var result = await accountController.Login(GetTestLoginDto()) as BadRequestObjectResult;
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.AreEqual(GetLoginNotConfirmed().ToString(), result.Value.ToString());
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task Test_LoginPost_AccountLocked()
+        {
+            //Arrange
+            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+
+            mockAccountService
+                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
+
+            mockAccountService
+                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(true);
+
+            mockAccountService
+                .Setup(s => s.SignInAsync(It.IsAny<LoginDto>()))
+                .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.LockedOut);
+
+            mockStringLocalizer
+                .Setup(s => s["Account-Locked"])
+                .Returns(GetAccountLocked());
+
+            //Act
+            var result = await accountController.Login(GetTestLoginDto()) as BadRequestObjectResult;
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.AreEqual(GetAccountLocked().ToString(), result.Value.ToString());
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task Test_LoginPost_LoginInCorrectPassword()
+        {
+            //Arrange
+            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+
+            mockAccountService
+                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
+
+            mockAccountService
+                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(true);
+
+            mockAccountService
+                .Setup(s => s.SignInAsync(It.IsAny<LoginDto>()))
+                .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Failed);
+
+            mockStringLocalizer
+                .Setup(s => s["Login-InCorrectPassword"])
+                .Returns(GetLoginInCorrectPassword());
+
+            //Act
+            var result = await accountController.Login(GetTestLoginDto()) as BadRequestObjectResult;
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.AreEqual(GetLoginInCorrectPassword().ToString(), result.Value.ToString());
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task Test_LoginPost_ModelIsNotValid()
+        {
+            //Arrange
+            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+            accountController.ModelState.AddModelError("NameError", "Required");
+
+            mockStringLocalizer
+                .Setup(s => s["ModelIsNotValid"])
+                .Returns(GetModelIsNotValid());
+
+            //Act
+            var result = await accountController.Login(GetTestLoginDto()) as ObjectResult;
+
+            //Assert
+            Assert.IsInstanceOf<ObjectResult>(result);
+            Assert.AreEqual(GetModelIsNotValid().ToString(), result.Value.ToString());
+            Assert.NotNull(result);
+        }
+
+        //Register
+        [Test]
+        public async Task Test_RegisterPost_ModelIsNotValid()
+        {
+            //Arrange
+            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+            accountController.ModelState.AddModelError("NameError", "Required");
+
+            mockStringLocalizer
+                .Setup(s => s["Register-InCorrectData"])
+                .Returns(GetRegisterInCorrectData());
+
+            //Act
+            var result = await accountController.Register(GetTestRegisterDto()) as BadRequestObjectResult;
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.AreEqual(GetRegisterInCorrectData().ToString(), result.Value.ToString());
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task Test_RegisterPost_RegisterRegisteredUser()
+        {
+            //Arrange
+            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+
+            mockAccountService
+                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
+
+            mockStringLocalizer
+                .Setup(s => s["Register-RegisteredUser"])
+                .Returns(GetRegisterRegisteredUser());
+
+            //Act
+            var result = await accountController.Register(GetTestRegisterDto()) as BadRequestObjectResult;
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.AreEqual(GetRegisterRegisteredUser().ToString(), result.Value.ToString());
+            Assert.NotNull(result);
+        }
+
+
+
+
+
+
 
 
 
@@ -142,6 +300,18 @@ namespace EPlast.Tests.Controllers
                 ConfirmPassword = "andrii123"
             };
             return registerDto;
+        }
+
+        private UserDTO GetTestUserDtoWithAllFields()
+        {
+            return new UserDTO()
+            {
+                UserName = "andriishainoha@gmail.com",
+                FirstName = "Andrii",
+                LastName = "Shainoha",
+                EmailConfirmed = true,
+                SocialNetworking = true
+            };
         }
     }
 }
