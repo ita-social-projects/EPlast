@@ -375,9 +375,106 @@ namespace EPlast.Tests.Controllers
         }
 
         //ResetPassword
+        [Test]
+        public async Task Test_ResetPost_ResetNotRegisteredUser()
+        {
+            //Arrange
+            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
 
+            mockAccountService
+                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync((UserDTO)null);
 
+            mockStringLocalizer
+                .Setup(s => s["Reset-NotRegisteredUser"])
+                .Returns(GetResetNotRegisteredUser());
 
+            //Act
+            var result = await accountController.ResetPassword(GetTestResetPasswordDto()) as BadRequestObjectResult;
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.AreEqual(GetResetNotRegisteredUser().ToString(), result.Value.ToString());
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task Test_ResetPost_ResetPasswordConfirmation()
+        {
+            //Arrange
+            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+
+            mockAccountService
+               .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
+               .ReturnsAsync(GetTestUserDtoWithAllFields());
+
+            mockAccountService
+                .Setup(s => s.ResetPasswordAsync(It.IsAny<string>(), It.IsAny<ResetPasswordDto>()))
+                .Returns(Task.FromResult(IdentityResult.Success));
+
+            mockAccountService
+                .Setup(s => s.CheckingForLocking(It.IsAny<UserDTO>()))
+                .Verifiable();
+
+            mockStringLocalizer
+                .Setup(s => s["ResetPasswordConfirmation"])
+                .Returns(GetResetPasswordConfirmation());
+
+            //Act
+            var result = await accountController.ResetPassword(GetTestResetPasswordDto()) as ObjectResult;
+
+            //Assert
+            Assert.IsInstanceOf<ObjectResult>(result);
+            Assert.AreEqual(GetResetPasswordConfirmation().ToString(), result.Value.ToString());
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task Test_ResetPost_ResetPasswordProblems()
+        {
+            //Arrange
+            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+
+            mockAccountService
+                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
+
+            mockAccountService
+                .Setup(s => s.ResetPasswordAsync(It.IsAny<string>(), It.IsAny<ResetPasswordDto>()))
+                .Returns(Task.FromResult(IdentityResult.Failed(null)));
+
+            mockStringLocalizer
+                .Setup(s => s["Reset-PasswordProblems"])
+                .Returns(GetResetPasswordProblems());
+
+            //Act
+            var result = await accountController.ResetPassword(GetTestResetPasswordDto()) as BadRequestObjectResult;
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.AreEqual(GetResetPasswordProblems().ToString(), result.Value.ToString());
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task Test_ResetPost_ModelIsNotValid()
+        {
+            //Arrange
+            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+            accountController.ModelState.AddModelError("NameError", "Required");
+
+            mockStringLocalizer
+                .Setup(s => s["ModelIsNotValid"])
+                .Returns(GetModelIsNotValid());
+
+            //Act
+            var result = await accountController.ResetPassword(GetTestResetPasswordDto()) as BadRequestObjectResult;
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.AreEqual(GetModelIsNotValid().ToString(), result.Value.ToString());
+            Assert.NotNull(result);
+        }
 
 
 
@@ -542,6 +639,17 @@ namespace EPlast.Tests.Controllers
             {
                 EmailConfirmed = true
             };
+        }
+
+        private ResetPasswordDto GetTestResetPasswordDto()
+        {
+            var resetPasswordDto = new ResetPasswordDto
+            {
+                Email = "andriishainoha@gmail.com",
+                Password = "andrii123",
+                ConfirmPassword = "andrii123"
+            };
+            return resetPasswordDto;
         }
     }
 }
