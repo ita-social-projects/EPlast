@@ -5,7 +5,10 @@ using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.Resources;
 using EPlast.WebApi.Controllers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Localization;
 using Moq;
 using NUnit.Framework;
@@ -204,6 +207,176 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
         }
 
+        [Test]
+        public async Task Test_RegisterPost_RegisterInCorrectPassword()
+        {
+            //Arrange
+            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+
+            mockAccountService
+                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync((UserDTO)null);
+
+            mockAccountService
+                .Setup(s => s.CreateUserAsync(It.IsAny<RegisterDto>()))
+                .ReturnsAsync(IdentityResult.Failed(null));
+
+            mockStringLocalizer
+                .Setup(s => s["Register-InCorrectPassword"])
+                .Returns(GetRegisterInCorrectPassword());
+
+            //Act
+            var result = await accountController.Register(GetTestRegisterDto()) as BadRequestObjectResult;
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.AreEqual(GetRegisterInCorrectPassword().ToString(), result.Value.ToString());
+            Assert.NotNull(result);
+        }
+
+        /*[Test]
+        public async Task Test_RegisterPost_ConfirmRegistration()
+        {
+            //Arrange
+            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+
+            mockAccountService
+                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync((UserDTO)null);
+
+            mockAccountService
+                .Setup(s => s.CreateUserAsync(It.IsAny<RegisterDto>()))
+                .ReturnsAsync(IdentityResult.Success);
+
+            mockAccountService
+                .Setup(s => s.AddRoleAndTokenAsync(It.IsAny<RegisterDto>()))
+                .ReturnsAsync(GetTestCodeForResetPasswordAndConfirmEmail());
+
+            var mockUrlHelper = new Mock<IUrlHelper>(MockBehavior.Strict);
+            mockUrlHelper
+                .Setup(
+                    x => x.Action(
+                        It.IsAny<UrlActionContext>()
+                    )
+                )
+                .Returns("callbackUrl")
+                .Verifiable();
+
+            accountController.Url = mockUrlHelper.Object;
+            accountController.ControllerContext.HttpContext = new DefaultHttpContext();
+
+            mockAccountService
+                .Setup(s => s.SendEmailRegistr(It.IsAny<string>(), It.IsAny<RegisterDto>()))
+                .Verifiable();
+
+            mockStringLocalizer
+                .Setup(s => s["Confirm-Registration"])
+                .Returns(GetConfirmRegistration());
+
+            //Act
+            var result = await accountController.Register(GetTestRegisterDto()) as ObjectResult;
+
+            //Assert
+            Assert.IsInstanceOf<ObjectResult>(result);
+            Assert.AreEqual(GetConfirmRegistration().ToString(), result.Value.ToString());
+            Assert.NotNull(result);
+        }*/
+
+        //ForgotPassword
+        [Test]
+        public async Task Test_ForgotPost_ModelIsNotValid()
+        {
+            //Arrange
+            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+            accountController.ModelState.AddModelError("NameError", "Required");
+
+            mockStringLocalizer
+                .Setup(s => s["ModelIsNotValid"])
+                .Returns(GetModelIsNotValid());
+
+            //Act
+            var result = await accountController.ForgotPassword(GetTestForgotPasswordDto()) as BadRequestObjectResult;
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.AreEqual(GetModelIsNotValid().ToString(), result.Value.ToString());
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task Test_ForgotPost_ForgotNotRegisteredUser()
+        {
+            //Arrange
+            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+
+            mockAccountService
+                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync((UserDTO)null);
+
+            mockAccountService
+                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields().EmailConfirmed);
+
+            mockStringLocalizer
+                .Setup(s => s["Forgot-NotRegisteredUser"])
+                .Returns(GetForgotNotRegisteredUser());
+
+            //Act
+            var result = await accountController.ForgotPassword(GetTestForgotPasswordDto()) as BadRequestObjectResult;
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.AreEqual(GetForgotNotRegisteredUser().ToString(), result.Value.ToString());
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task Test_ForgotPost_ForgotPasswordConfirmation()
+        {
+            //Arrange
+            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+
+            mockAccountService
+                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
+
+            mockAccountService
+                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(GetTestUserWithEmailConfirmed().EmailConfirmed);
+
+            mockAccountService
+                .Setup(i => i.GenerateResetTokenAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(GetTestCodeForResetPasswordAndConfirmEmail());
+
+            var mockUrlHelper = new Mock<IUrlHelper>(MockBehavior.Strict);
+            mockUrlHelper
+                .Setup(
+                    x => x.Action(
+                        It.IsAny<UrlActionContext>()
+                    )
+                )
+                .Returns("callbackUrl")
+                .Verifiable();
+
+            accountController.Url = mockUrlHelper.Object;
+            accountController.ControllerContext.HttpContext = new DefaultHttpContext();
+
+            mockStringLocalizer
+                .Setup(s => s["ForgotPasswordConfirmation"])
+                .Returns(GetForgotPasswordConfirmation());
+
+            //Act
+            var result = await accountController.ForgotPassword(GetTestForgotPasswordDto()) as ObjectResult;
+
+            //Assert
+            Assert.IsInstanceOf<ObjectResult>(result);
+            Assert.AreEqual(GetForgotPasswordConfirmation().ToString(), result.Value.ToString());
+            Assert.NotNull(result);
+        }
+
+        //ResetPassword
+
+
 
 
 
@@ -278,6 +451,42 @@ namespace EPlast.Tests.Controllers
             return localizedString;
         }
 
+        private LocalizedString GetForgotNotRegisteredUser()
+        {
+            var localizedString = new LocalizedString("Forgot-NotRegisteredUser",
+                "Користувача із заданою електронною поштою немає в системі або він не підтвердив свою реєстрацію.");
+            return localizedString;
+        }
+
+        private LocalizedString GetForgotPasswordConfirmation()
+        {
+            var localizedString = new LocalizedString("ForgotPasswordConfirmation",
+                "Для скидування пароля, перейдіть за посиланням в листі, яке відправлене на вашу електронну пошту.");
+            return localizedString;
+        }
+
+        private LocalizedString GetResetNotRegisteredUser()
+        {
+            var localizedString = new LocalizedString("Reset-NotRegisteredUser",
+                "Користувача із заданою електронною поштою немає в системі або він не підтвердив свою реєстрацію");
+            return localizedString;
+        }
+
+        private LocalizedString GetResetPasswordConfirmation()
+        {
+            var localizedString = new LocalizedString("ResetPasswordConfirmation",
+                "Ваш пароль скинутий. Для входу в систему натисніть Увійти/Зареєструватись.");
+            return localizedString;
+        }
+
+        private LocalizedString GetResetPasswordProblems()
+        {
+            var localizedString = new LocalizedString("Reset-PasswordProblems",
+                "Проблеми зі скидуванням пароля або введений новий пароль повинен вміщати 8символів, " +
+                "включаючи літери та цифри");
+            return localizedString;
+        }
+
         private LoginDto GetTestLoginDto()
         {
             var loginDto = new LoginDto
@@ -302,6 +511,15 @@ namespace EPlast.Tests.Controllers
             return registerDto;
         }
 
+        private ForgotPasswordDto GetTestForgotPasswordDto()
+        {
+            var forgotpasswordDto = new ForgotPasswordDto
+            {
+                Email = "andriishainoha@gmail.com"
+            };
+            return forgotpasswordDto;
+        }
+
         private UserDTO GetTestUserDtoWithAllFields()
         {
             return new UserDTO()
@@ -311,6 +529,18 @@ namespace EPlast.Tests.Controllers
                 LastName = "Shainoha",
                 EmailConfirmed = true,
                 SocialNetworking = true
+            };
+        }
+
+        private string GetTestCodeForResetPasswordAndConfirmEmail()
+        {
+            return new string("500");
+        }
+        private UserDTO GetTestUserWithEmailConfirmed()
+        {
+            return new UserDTO()
+            {
+                EmailConfirmed = true
             };
         }
     }
