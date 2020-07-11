@@ -1,22 +1,17 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.Jwt;
 using EPlast.Resources;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -39,7 +34,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IConfirmedUsersService _confirmedUserService;
         private readonly ILoggerService<AccountController> _loggerService;
         private readonly IStringLocalizer<AuthenticationErrors> _resourceForErrors;
-        private readonly JwtOptions _jwtOptions;
+        private readonly IJwtService _jwtService;
 
         public AccountController(IUserService userService,
             INationalityService nationalityService,
@@ -54,7 +49,7 @@ namespace EPlast.WebApi.Controllers
             ILoggerService<AccountController> loggerService,
             IAccountService accountService,
             IStringLocalizer<AuthenticationErrors> resourceForErrors,
-            IOptions<JwtOptions> jwtOptions)
+            IJwtService jwtService)
         {
             _accountService = accountService;
             _userService = userService;
@@ -69,7 +64,7 @@ namespace EPlast.WebApi.Controllers
             _userManagerService = userManagerService;
             _loggerService = loggerService;
             _resourceForErrors = resourceForErrors;
-            _jwtOptions = jwtOptions.Value;
+            _jwtService = jwtService;
         }
 
         [HttpPost("signin")]
@@ -97,27 +92,10 @@ namespace EPlast.WebApi.Controllers
                     {
                         return BadRequest(_resourceForErrors["Account-Locked"]);
                     }
-                    if (result.Succeeded)                                //винести в сервіс
+                    if (result.Succeeded)
                     {
-                        var claims = new[] {
-                             new Claim(ClaimTypes.Name, user.Email),
-                             new Claim(JwtRegisteredClaimNames.NameId, user.Id),
-                             new Claim(JwtRegisteredClaimNames.FamilyName, user.Id),
-                             new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                         };
-
-                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.key));
-                        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-                        var token = new JwtSecurityToken(
-                          issuer: _jwtOptions.issuer,
-                          audience: _jwtOptions.issuer,
-                          claims: claims,
-                          expires: DateTime.Now.AddMinutes(30),  //тут добавити 2 години
-                          signingCredentials: creds);
-
-                        return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
+                        var generatedToken = _jwtService.GenerateJWTToken(user);
+                        return Ok(new { token = generatedToken });
                     }
                     else
                     {
@@ -135,7 +113,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("signup")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody]RegisterDto registerDto) //+
+        public async Task<IActionResult> Register([FromBody]RegisterDto registerDto)
         {
             try
             {
@@ -197,7 +175,7 @@ namespace EPlast.WebApi.Controllers
            
                 if (result.Succeeded) 
                 {
-                    return Ok("ConfirmedEmail");
+                    return Ok(_resourceForErrors["Confirmed-Registration"]);
                 }
                 else
                 {
@@ -210,12 +188,6 @@ namespace EPlast.WebApi.Controllers
                 return Ok("ConfirmedEmailNotAllowed");
             }
         }
-
-        /*[HttpGet("confirmedEmail")]   тут будемо просто слати повідомлення що підтвердив
-        public IActionResult ConfirmedEmail()
-        {
-            return Ok("ConfirmedEmail");
-        }*/
 
         [HttpGet("resendEmailForRegistering")]
         [AllowAnonymous]
@@ -237,13 +209,6 @@ namespace EPlast.WebApi.Controllers
             return Ok("ResendEmailConfirmation");
         }
 
-        /*[HttpGet("accountLocked")]     тут також будемо слати повідомлення що підтвердив
-        [AllowAnonymous]
-        public IActionResult AccountLocked()
-        {
-            return Ok("AccountLocked");
-        }*/
-
         [HttpGet("logout")]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -255,8 +220,8 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("forgotPassword")]
         [AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotpasswordDto)//+
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotpasswordDto)
         {
             try
             {
@@ -276,7 +241,7 @@ namespace EPlast.WebApi.Controllers
                     await _accountService.SendEmailReseting(confirmationLink, forgotpasswordDto);
                     return Ok(_resourceForErrors["ForgotPasswordConfirmation"]);
                 }
-                return Ok("ForgotPassword"); //тут ше подивитись шо іменно вертати
+                return BadRequest(_resourceForErrors["ModelIsNotValid"]);
             }
             catch (Exception e)
             {
@@ -315,7 +280,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("resetPassword")]
         [AllowAnonymous]
-        //[ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetpasswordDto) //+
         {
             try
@@ -348,7 +313,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("changePassword")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> ChangePassword()
         {
             var userDto = await _accountService.GetUserAsync(User);
@@ -364,7 +329,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("changePassword")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changepasswordDto)//+ приходить все норм
         {
             try

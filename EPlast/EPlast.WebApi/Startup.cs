@@ -8,6 +8,7 @@ using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
+using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services;
@@ -78,7 +79,7 @@ namespace EPlast.WebApi
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("V1", new OpenApiInfo { Title = "MyApi", Version = "V1" });
-                /*var security = new Dictionary<string, IEnumerable<string>>
+                var security = new Dictionary<string, IEnumerable<string>>
                 {
                     {"Bearer", new string[] { }},
                 };
@@ -90,7 +91,7 @@ namespace EPlast.WebApi
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
                     Description = "JWT Authorization header using the Bearer scheme."
-                });*/
+                });
                 //c.AddSecurityRequirement(security);
             });
 
@@ -144,6 +145,8 @@ namespace EPlast.WebApi
             services.AddScoped<IEventAdministrationTypeManager, EventAdministrationTypeManager>();
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
+            services.Configure<JwtOptions>(Configuration.GetSection("Jwt"));
+            services.AddTransient<IJwtService, JwtService>();
             services.AddScoped<IUserBlobStorageRepository, UserBlobStorageRepository>();
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddLogging();
@@ -177,9 +180,9 @@ namespace EPlast.WebApi
 
                  config.TokenValidationParameters = new TokenValidationParameters()
                   {
-                     ValidIssuer = Configuration["jwt:issuer"],
-                     ValidAudience = Configuration["jwt:issuer"],
-                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["jwt:key"]))
+                     ValidIssuer = Configuration["Jwt:Issuer"],
+                     ValidAudience = Configuration["Jwt:Issuer"],
+                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
                   };
                });
 
@@ -212,7 +215,7 @@ namespace EPlast.WebApi
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
             });
-            services.Configure<JwtOptions>(Configuration.GetSection("jwt"));
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -258,15 +261,16 @@ namespace EPlast.WebApi
                 .AllowAnyMethod()
                 .AllowAnyHeader();
         });
-         //   app.UseAntiforgeryTokens();
+            //app.UseAntiforgeryTokens();
+            app.UseStatusCodePages();
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-            app.UseAuthentication();
         }
     }
 }
