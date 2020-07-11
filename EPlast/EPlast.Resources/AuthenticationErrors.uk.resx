@@ -129,6 +129,9 @@
   <data name="Confirm-Registration" xml:space="preserve">
     <value>Перегляньте електронну адресу та підтвердьте реєстрацію у системі.</value>
   </data>
+  <data name="Confirmed-Registration" xml:space="preserve">
+    <value>Ви підтвердили свій вхід. Для того щоб увійти в профіль натисніть Увійти/Зареєструватись.</value>
+  </data>
   <data name="Error-ExternalLoginInfo" xml:space="preserve">
     <value>Error loading external login information</value>
   </data>
