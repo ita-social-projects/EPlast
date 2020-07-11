@@ -69,7 +69,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("signin")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginDto loginDto)
+        public async Task<IActionResult> Login(LoginDto loginDto) //+
         {
             try
             {
@@ -113,7 +113,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("signup")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody]RegisterDto registerDto)
+        public async Task<IActionResult> Register([FromBody]RegisterDto registerDto)//+
         {
             try
             {
@@ -135,12 +135,12 @@ namespace EPlast.WebApi.Controllers
                     }
                     else
                     {
-                        string code = await _accountService.AddRoleAndTokenAsync(registerDto);
+                        string token = await _accountService.AddRoleAndTokenAsync(registerDto);
                         var userDto = await _accountService.FindByEmailAsync(registerDto.Email);
                         string confirmationLink = Url.Action(
                             nameof(ConfirmingEmail),
                             "Account",
-                            new { code = code, userId = userDto.Id },
+                            new { token = token, userId = userDto.Id },
                               protocol: HttpContext.Request.Scheme);
                         await _accountService.SendEmailRegistr(confirmationLink, userDto);
             
@@ -157,7 +157,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpGet("confirmingEmail")]
         [AllowAnonymous]
-        public async Task<IActionResult> ConfirmingEmail(string userId, string code)
+        public async Task<IActionResult> ConfirmingEmail(string userId, string token) //+
         {
             var userDto = await _accountService.FindByIdAsync(userId);
             if (userDto == null)
@@ -167,11 +167,11 @@ namespace EPlast.WebApi.Controllers
             int totalTime = _accountService.GetTimeAfterRegistr(userDto);
             if (totalTime < 180)
             {
-                if (string.IsNullOrWhiteSpace(userId) && string.IsNullOrWhiteSpace(code))
+                if (string.IsNullOrWhiteSpace(userId) && string.IsNullOrWhiteSpace(token))
                 {
                     return BadRequest();
                 }
-                var result = await _accountService.ConfirmEmailAsync(userDto.Id, code);
+                var result = await _accountService.ConfirmEmailAsync(userDto.Id, token);
            
                 if (result.Succeeded) 
                 {
@@ -209,8 +209,8 @@ namespace EPlast.WebApi.Controllers
             return Ok("ResendEmailConfirmation");
         }
 
-        [HttpGet("logout")]
-        [ValidateAntiForgeryToken]
+        [HttpGet("logout")] //+
+        //[ValidateAntiForgeryToken]
         [Authorize]
         public IActionResult Logout()
         {
@@ -220,8 +220,8 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("forgotPassword")]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotpasswordDto)
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotpasswordDto)//+
         {
             try
             {
@@ -273,8 +273,7 @@ namespace EPlast.WebApi.Controllers
             }
             else
             {
-                //return View("ResetPasswordNotAllowed", userDto);
-                return Ok("ResetPasswordNotAllowed");
+                return Ok(_resourceForErrors["ResetPasswordNotAllowed"]);
             }
         }
 
@@ -320,11 +319,11 @@ namespace EPlast.WebApi.Controllers
             var result = userDto.SocialNetworking;
             if (result != true)
             {
-                return Ok("ChangePassword");
+                return Ok("changePassword");
             }
             else
             {
-                return Ok("ChangePasswordNotAllowed");
+                return Ok(_resourceForErrors["ChangePasswordNotAllowed"]);
             }
         }
 

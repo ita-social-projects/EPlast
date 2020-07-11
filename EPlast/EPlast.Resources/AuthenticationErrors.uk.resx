@@ -126,6 +126,9 @@
   <data name="ChangePasswordConfirmation" xml:space="preserve">
     <value>Ваш пароль успішно змінено.</value>
   </data>
+  <data name="ChangePasswordNotAllowed" xml:space="preserve">
+    <value>Зміна пароля для користувачів, які увійшли використовуючи Google/Facebook не доступна.</value>
+  </data>
   <data name="Confirm-Registration" xml:space="preserve">
     <value>Перегляньте електронну адресу та підтвердьте реєстрацію у системі.</value>
   </data>
@@ -176,5 +179,9 @@
   </data>
   <data name="ResetPasswordConfirmation" xml:space="preserve">
     <value>Ваш пароль скинутий. Для входу в систему натисніть Увійти/Зареєструватись.</value>
+  </data>
+  <data name="ResetPasswordNotAllowed" xml:space="preserve">
+    <value>Час для скидування пароля акаунта вичерпаний. Для того, щоб скинути пароль, повторно відвідайте сторінку
+                Забули Пароль та повторіть дану операцію.</value>
   </data>
 </root>
