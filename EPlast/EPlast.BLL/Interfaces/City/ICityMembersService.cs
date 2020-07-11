@@ -7,5 +7,6 @@ namespace EPlast.BLL.Services.Interfaces
     public interface ICityMembersService
     {
         Task<IEnumerable<CityMembersDTO>> GetCurrentByCityIdAsync(int cityId);
+        Task<CityMembersDTO> AddCityFollower(int cityId, string userId);
     }
 }

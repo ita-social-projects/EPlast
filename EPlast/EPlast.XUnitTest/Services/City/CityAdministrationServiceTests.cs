@@ -19,7 +19,7 @@ namespace EPlast.XUnitTest.Services.City
     {
         private readonly Mock<IRepositoryWrapper> _repositoryWrapper = new Mock<IRepositoryWrapper>();
         private readonly Mock<IMapper> _mapper = new Mock<IMapper>();
-        private readonly ICItyAdministrationService _cityAdministrationService;
+        private readonly ICityAdministrationService _cityAdministrationService;
 
         public CityAdministrationServiceTests()
         {

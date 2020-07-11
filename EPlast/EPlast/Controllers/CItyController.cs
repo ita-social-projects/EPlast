@@ -2,6 +2,7 @@
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.ViewModels.City;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,13 +16,18 @@ namespace EPlast.Controllers
     {
         private readonly ILoggerService<CityController> _logger;
         private readonly ICityService _cityService;
+        private readonly ICityMembersService _cityMembersService;
         private readonly IMapper _mapper;
 
-        public CityController(ILoggerService<CityController> logger, ICityService cityService, IMapper mapper)
+        public CityController(ILoggerService<CityController> logger,
+            ICityService cityService,
+            ICityMembersService cityMembersService,
+            IMapper mapper)
         {
-            _cityService = cityService;
-            _mapper = mapper;
             _logger = logger;
+            _cityService = cityService;
+            _cityMembersService = cityMembersService;
+            _mapper = mapper;
         }
 
         public async Task<IActionResult> Index()
@@ -222,6 +228,40 @@ namespace EPlast.Controllers
                 }
 
                 return View(_mapper.Map<CityProfileDTO, CityProfileViewModel>(cityProfileDto));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
+            }
+        }
+
+        public async Task<IActionResult> AddCityFollower(int cityId, string userId)
+        {
+            try
+            {
+                await _cityMembersService.AddCityFollower(cityId, userId);
+                _logger.LogInformation($"User {userId} became a follower of city with id {cityId}.");
+
+                return RedirectToAction("CityProfile", "City", new { cityid = cityId });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
+            }
+        }
+
+        public async Task<IActionResult> ChangeApproveMemberStatus(int cityId, string userId)
+        {
+            try
+            {
+
+                _logger.LogInformation($"Status of user {userId} was changed in city with id {cityId}.");
+
+                return RedirectToAction("CityProfile", "City", new { cityid = cityId });
             }
             catch (Exception e)
             {
