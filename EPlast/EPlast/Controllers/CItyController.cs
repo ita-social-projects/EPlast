@@ -258,7 +258,7 @@ namespace EPlast.Controllers
         {
             try
             {
-
+                await _cityMembersService.ToggleMemberStatus(cityId, userId);
                 _logger.LogInformation($"Status of user {userId} was changed in city with id {cityId}.");
 
                 return RedirectToAction("CityProfile", "City", new { cityid = cityId });

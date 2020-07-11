@@ -14,19 +14,16 @@ namespace EPlast.BLL.Services.City
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly ICityService _cityService;
-        private readonly ICityAdministrationService _cityAdministrationService;
         private readonly IMapper _mapper;
         private readonly IUserManagerService _userManagerService;
 
         public CityMembersService(IRepositoryWrapper repositoryWrapper,
             ICityService cityService,
-            ICityAdministrationService cityAdministrationService,
             IMapper mapper,
             IUserManagerService userManagerService)
         {
             _repositoryWrapper = repositoryWrapper;
             _cityService = cityService;
-            _cityAdministrationService = cityAdministrationService;
             _mapper = mapper;
             _userManagerService = userManagerService;
         }
@@ -62,6 +59,19 @@ namespace EPlast.BLL.Services.City
             };
 
             await _repositoryWrapper.CityMembers.CreateAsync(cityMember);
+            await _repositoryWrapper.SaveAsync();
+
+            return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
+        }
+
+        public async Task<CityMembersDTO> ToggleMemberStatus(int cityId, string userId)
+        {
+            var cityMember = await _repositoryWrapper.CityMembers
+                .GetFirstOrDefaultAsync(u => u.UserId == userId);
+
+            cityMember.IsApproved = !cityMember.IsApproved;
+
+            _repositoryWrapper.CityMembers.Update(cityMember);
             await _repositoryWrapper.SaveAsync();
 
             return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
