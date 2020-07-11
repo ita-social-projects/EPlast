@@ -15,7 +15,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -73,34 +72,6 @@ namespace EPlast.WebApi.Controllers
             _jwtOptions = jwtOptions.Value;
         }
 
-        /*[HttpGet("generateToken")]
-        public string GetRandomToken()
-        {
-            var jwt = new JwtService(_configuration);
-            var token = jwt.GenerateSecurityToken("fake@email.com");
-            return token;
-        }*/
-
-        /*[HttpGet("signin")]
-        [AllowAnonymous]
-        public async Task<IActionResult> Login(string returnUrl)
-        {
-            try
-            {
-                LoginDto loginDto = new LoginDto
-                {
-                    ReturnUrl = returnUrl,
-                    ExternalLogins = (await _accountService.GetAuthSchemesAsync()).ToList()
-                };
-                return Ok(loginDto);
-            }
-            catch (Exception e)
-            {
-                _loggerService.LogError($"Exception: {e.Message}");
-                return BadRequest();
-            }
-        }*/
-
         [HttpPost("signin")]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginDto loginDto)
@@ -126,7 +97,7 @@ namespace EPlast.WebApi.Controllers
                     {
                         return BadRequest(_resourceForErrors["Account-Locked"]);
                     }
-                    if (result.Succeeded)
+                    if (result.Succeeded)                                //винести в сервіс
                     {
                         var claims = new[] {
                              new Claim(ClaimTypes.Name, user.Email),
@@ -240,11 +211,11 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpGet("confirmedEmail")]
+        /*[HttpGet("confirmedEmail")]   тут будемо просто слати повідомлення що підтвердив
         public IActionResult ConfirmedEmail()
         {
             return Ok("ConfirmedEmail");
-        }
+        }*/
 
         [HttpGet("resendEmailForRegistering")]
         [AllowAnonymous]
@@ -266,28 +237,21 @@ namespace EPlast.WebApi.Controllers
             return Ok("ResendEmailConfirmation");
         }
 
-        [HttpGet("accountLocked")]
+        /*[HttpGet("accountLocked")]     тут також будемо слати повідомлення що підтвердив
         [AllowAnonymous]
         public IActionResult AccountLocked()
         {
             return Ok("AccountLocked");
-        }
+        }*/
 
-        [HttpPost("logout")]
-        //[ValidateAntiForgeryToken]
+        [HttpGet("logout")]
+        [ValidateAntiForgeryToken]
         [Authorize]
         public IActionResult Logout()
         {
             _accountService.SignOutAsync();
-            return Ok("HomePage");
+            return Ok();
         }
-
-        /*[HttpGet("forgotPassword")]
-        [AllowAnonymous]
-        public IActionResult ForgotPassword()
-        {
-            return Ok("ForgotPassword");
-        }*/
 
         [HttpPost("forgotPassword")]
         [AllowAnonymous]
@@ -432,7 +396,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPost("externalLogin")]
+        /*[HttpPost("externalLogin")]
         [AllowAnonymous]
         public IActionResult ExternalLogin(string provider, string returnUrl)
         {
@@ -441,7 +405,7 @@ namespace EPlast.WebApi.Controllers
                 new { ReturnUrl = returnUrl });
             AuthenticationProperties properties = _accountService.GetAuthProperties(provider, redirectUrl);
             return new ChallengeResult(provider, properties);
-        }
+        }*/
 
         /*[HttpGet("externalLoginCallBack")]
         [AllowAnonymous]
