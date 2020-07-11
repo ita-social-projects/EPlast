@@ -1160,8 +1160,7 @@ namespace EPlast.XUnitTest
             {
                 Email = "andriishainoha@gmail.com",
                 Password = "andrii123",
-                RememberMe = true,
-                ReturnUrl = "/google.com/"
+                RememberMe = true
             };
             return loginDto;
         }
