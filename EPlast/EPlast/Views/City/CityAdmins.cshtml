@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Члени Станиці";
 }
-<div class="cityUserWrapper">
+<div class="cityMembesWrapper">
     <div class="d-flex flex-shrink-0 justify-content-center flex-wrap">
         @foreach (var adminCity in Model.CityAdmins)
         {
@@ -20,5 +20,11 @@
             </div>
         }
         <input value="@Model.City.ID" type="hidden" name="cityId" id="cityId" />
+    </div>
+    <div class="row">
+        <a asp-action="CityProfile" asp-controller="City" asp-route-cityId="@Model.City.ID"
+           class="city-detail-btn btn btn-primary btn-block btn-lg text-center border-dark shadow-sm mx-auto" role="button">
+            Назад
+        </a>
     </div>
 </div>

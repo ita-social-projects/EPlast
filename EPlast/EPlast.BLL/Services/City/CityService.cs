@@ -81,6 +81,7 @@ namespace EPlast.BLL.Services
             {
                 return null;
             }
+            
             var cityHead = city.CityAdministration?
                 .FirstOrDefault(a => a.EndDate == null && a.AdminType.AdminTypeName == "Голова Станиці");
             var cityAdmins = city.CityAdministration
@@ -116,11 +117,14 @@ namespace EPlast.BLL.Services
             {
                 return null;
             }
+            
+            var cityHead = city.CityAdministration?
+                .FirstOrDefault(a => a.EndDate == null && a.AdminType.AdminTypeName == "Голова Станиці");
             var members = city.CityMembers
                 .Where(m => m.IsApproved)
                 .ToList();
 
-            return new CityProfileDTO { City = city, Members = members };
+            return new CityProfileDTO { City = city, Members = members, CityHead= cityHead };
         }
 
         public async Task<CityProfileDTO> GetCityFollowersAsync(int cityId)
@@ -130,11 +134,14 @@ namespace EPlast.BLL.Services
             {
                 return null;
             }
+
+            var cityHead = city.CityAdministration?
+                   .FirstOrDefault(a => a.EndDate == null && a.AdminType.AdminTypeName == "Голова Станиці");
             var followers = city.CityMembers
                 .Where(m => !m.IsApproved)
                 .ToList();
 
-            return new CityProfileDTO { City = city, Followers = followers };
+            return new CityProfileDTO { City = city, Followers = followers, CityHead = cityHead };
         }
 
         public async Task<CityProfileDTO> GetCityAdminsAsync(int cityId)
@@ -144,11 +151,14 @@ namespace EPlast.BLL.Services
             {
                 return null;
             }
+
+            var cityHead = city.CityAdministration?
+                .FirstOrDefault(a => a.EndDate == null && a.AdminType.AdminTypeName == "Голова Станиці");
             var cityAdmins = city.CityAdministration
                 .Where(a => a.EndDate == null && a.AdminType.AdminTypeName != "Голова Станиці")
                 .ToList();
 
-            return new CityProfileDTO { City = city, CityAdmins = cityAdmins };
+            return new CityProfileDTO { City = city, CityAdmins = cityAdmins, CityHead = cityHead };
         }
 
         public async Task<CityProfileDTO> GetCityDocumentsAsync(int cityId)
@@ -158,9 +168,12 @@ namespace EPlast.BLL.Services
             {
                 return null;
             }
+
+            var cityHead = city.CityAdministration?
+                .FirstOrDefault(a => a.EndDate == null && a.AdminType.AdminTypeName == "Голова Станиці");
             var cityDoc = city.CityDocuments.ToList();
 
-            return new CityProfileDTO { City = city, CityDoc = cityDoc };
+            return new CityProfileDTO { City = city, CityDoc = cityDoc, CityHead = cityHead };
         }
 
         public async Task<string> GetLogoBase64(string logoName)

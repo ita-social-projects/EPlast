@@ -75,6 +75,47 @@ namespace EPlast.Controllers
             }
         }
 
+        public async Task<IActionResult> CityAdmins(int cityId)
+        {
+            try
+            {
+                CityProfileDTO cityProfileDto = await _cityService.GetCityAdminsAsync(cityId);
+                if (cityProfileDto == null)
+                {
+                    return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
+                }
+
+                return View(_mapper.Map<CityProfileDTO, CityProfileViewModel>(cityProfileDto));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
+            }
+        }
+
+        public async Task<IActionResult> CityDocuments(int cityId)
+        {
+            try
+            {
+                CityProfileDTO cityProfileDto = await _cityService.GetCityDocumentsAsync(cityId);
+                if (cityProfileDto == null)
+                {
+                    return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
+                }
+
+                return View(_mapper.Map<CityProfileDTO, CityProfileViewModel>(cityProfileDto));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
+            }
+        }
+
+
         public async Task<IActionResult> CityFollowers(int cityId)
         {
             try
@@ -95,17 +136,17 @@ namespace EPlast.Controllers
             }
         }
 
-        public async Task<IActionResult> CityAdmins(int cityId)
+        public async Task<IActionResult> Details(int cityId)
         {
             try
             {
-                CityProfileDTO cityProfileDto = await _cityService.GetCityAdminsAsync(cityId);
-                if (cityProfileDto == null)
+                CityDTO cityDto = await _cityService.GetByIdAsync(cityId);
+                if (cityDto == null)
                 {
                     return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
                 }
 
-                return View(_mapper.Map<CityProfileDTO, CityProfileViewModel>(cityProfileDto));
+                return View(_mapper.Map<CityDTO, CityViewModel>(cityDto));
             }
             catch (Exception e)
             {
@@ -197,46 +238,6 @@ namespace EPlast.Controllers
             }
         }
 
-        public async Task<IActionResult> Details(int cityId)
-        {
-            try
-            {
-                CityDTO cityDto = await _cityService.GetByIdAsync(cityId);
-                if (cityDto == null)
-                {
-                    return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
-                }
-
-                return View(_mapper.Map<CityDTO, CityViewModel>(cityDto));
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Exception :{e.Message}");
-
-                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
-            }
-        }
-
-        public async Task<IActionResult> CityDocuments(int cityId)
-        {
-            try
-            {
-                CityProfileDTO cityProfileDto = await _cityService.GetCityDocumentsAsync(cityId);
-                if (cityProfileDto == null)
-                {
-                    return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
-                }
-
-                return View(_mapper.Map<CityProfileDTO, CityProfileViewModel>(cityProfileDto));
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Exception :{e.Message}");
-
-                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
-            }
-        }
-
         public async Task<IActionResult> AddCityFollower(int cityId, string userId)
         {
             try
@@ -254,14 +255,14 @@ namespace EPlast.Controllers
             }
         }
 
-        public async Task<IActionResult> ToggleCityMember(int cityId, string userId)
+        public async Task<IActionResult> RemoveCityFollower(int cityId, string userId)
         {
             try
             {
-                await _cityMembersService.ToggleMemberStatus(cityId, userId);
-                _logger.LogInformation($"Status of user {userId} was changed in city with id {cityId}.");
+                await _cityMembersService.RemoveMember(userId);
+                _logger.LogInformation($"Follower with id {userId} was removed.");
 
-                return RedirectToAction("CityMembers", "City", new { cityid = cityId });
+                return RedirectToAction("CityFollowers", "City", new { cityid = cityId });
             }
             catch (Exception e)
             {
@@ -271,14 +272,31 @@ namespace EPlast.Controllers
             }
         }
 
-        public async Task<IActionResult> RemoveCityFollower(int cityId, string userId)
+        public async Task<IActionResult> AddCityMember(int cityId, string userId)
         {
             try
             {
-                await _cityMembersService.RemoveMember(userId);
-                _logger.LogInformation($"Follower with id {userId} was removed.");
+                await _cityMembersService.ToggleMemberStatus(cityId, userId);
+                _logger.LogInformation($"Status of user {userId} was changed in city with id {cityId}.");
 
                 return RedirectToAction("CityFollowers", "City", new { cityid = cityId });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
+            }
+        }
+
+        public async Task<IActionResult> RemoveCityMember(int cityId, string userId)
+        {
+            try
+            {
+                await _cityMembersService.ToggleMemberStatus(cityId, userId);
+                _logger.LogInformation($"Status of user {userId} was changed in city with id {cityId}.");
+
+                return RedirectToAction("CityMembers", "City", new { cityid = cityId });
             }
             catch (Exception e)
             {

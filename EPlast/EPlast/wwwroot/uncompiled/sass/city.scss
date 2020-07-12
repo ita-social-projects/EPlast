@@ -1,5 +1,4 @@
 ﻿#divCityContainer {
-
 }
 
 #formCityContainer {
@@ -12,7 +11,6 @@
 }
 
 #divEditCity {
-
 }
 
 #divFormEditCity {
@@ -25,12 +23,12 @@
 
 @media (max-width: 360px) {
     #divTableEditCity {
-        width:95vw;
+        width: 95vw;
     }
 }
 
-#linkUser{
-    color:black;
+#linkUser {
+    color: black;
 }
 
 .cityProfileWrapper {
@@ -46,7 +44,6 @@
         padding: 15px;
 
         .row.d-inline.d-xl-flex.mx-auto {
-            height: 400px;
             width: 100%;
             padding-bottom: 15px;
 
@@ -89,99 +86,63 @@
                                 width: 60%;
                             }
                         }
-                    }
 
-                    .d-none.d-sm-flex.d-xl-flex.justify-content-center.align-items-center.justify-content-sm-center.align-items-sm-center.justify-content-xl-center.align-items-xl-center {
-                        width: 50%;
+                        a.city-detail-btn {
+                            background-color: #3c5438;
+                            color: white;
+                            height: 40px;
+                            width: 60%;
+                        }
 
-                        .d-sm-flex.d-xl-flex.my-auto.justify-content-xl-center.align-items-xl-center {
-                            width: 90%;
-                            height: 90%;
+                        a:hover.city-detail-btn {
+                            background-color: #73bd79;
+                            border-color: #73bd79;
+                            color: black;
+                            text-decoration: none;
                         }
                     }
                 }
-            }
 
-            .col {
-                padding: 15px;
-                padding-bottom: 0px;
+                .d-none.d-sm-flex.d-xl-flex.justify-content-center.align-items-center.justify-content-sm-center.align-items-sm-center.justify-content-xl-center.align-items-xl-center {
+                    width: 50%;
 
-                .border.rounded {
-                    width: 100%;
-                    background-color: #ffffff;
-                    height: 100%;
-                    min-height: 375px;
-
-                    .text-center.d-xl-flex.justify-content-xl-center.align-items-xl-center {
-                        height: 45px;
-                        width: 100%;
-                        margin: 0px;
-                        font-size: 24px;
+                    .d-sm-flex.d-xl-flex.my-auto.justify-content-xl-center.align-items-xl-center {
+                        width: 90%;
+                        height: 90%;
                     }
                 }
             }
         }
 
-        .row.d-inline.float-none.d-lg-flex.d-xl-flex.mx-auto {
-            width: 100%;
-            height: 400px;
-            padding: 0px;
-            padding-bottom: 15px;
+        .col-md-12.col-xl-4 {
+            padding: 15px;
+            padding-bottom: 0px;
 
-            .col {
-                padding: 15px;
-                padding-bottom: 0px;
+            .border.rounded {
+                width: 100%;
+                background-color: #ffffff;
+                height: 100%;
+                min-height: 375px;
 
-                .border.rounded {
+                .text-center.d-xl-flex.justify-content-xl-center.align-items-xl-center {
+                    height: 45px;
                     width: 100%;
-                    height: 100%;
-                    background-color: #ffffff;
-                    min-height: 375px;
-
-                    .text-center.d-xl-flex.justify-content-xl-center.align-items-xl-center {
-                        height: 45px;
-                        width: 100%;
-                        margin: 0px;
-                        font-size: 24px;
-                    }
+                    margin: 0px;
+                    font-size: 24px;
                 }
-            }
 
-            .col {
-                padding: 15px;
-                padding-bottom: 0px;
-
-                .border.rounded {
-                    width: 100%;
-                    height: 100%;
-                    background-color: #ffffff;
-                    min-height: 375px;
-
-                    .text-center.d-xl-flex.justify-content-xl-center.align-items-xl-center {
-                        height: 45px;
-                        width: 100%;
-                        margin: 0px;
-                        font-size: 24px;
-                    }
+                a.city-detail-btn {
+                    background-color: #3c5438;
+                    color: white;
+                    height: 40px;
+                    width: 60%;
                 }
-            }
 
-            .col {
-                padding: 15px;
-                padding-bottom: 0px;
-
-                .border.rounded {
-                    width: 100%;
-                    height: 100%;
-                    background-color: #ffffff;
-                    min-height: 375px;
-
-                    .text-center.d-xl-flex.justify-content-xl-center.align-items-xl-center {
-                        height: 45px;
-                        width: 100%;
-                        margin: 0px;
-                        font-size: 24px;
-                    }
+                a:hover.city-detail-btn {
+                    background-color: #73bd79;
+                    border-color: #73bd79;
+                    color: black;
+                    text-decoration: none;
                 }
             }
         }
@@ -304,5 +265,19 @@
                 }
             }
         }
+    }
+
+    a.city-detail-btn {
+        background-color: #3c5438;
+        color: white;
+        height: 40px;
+        width: 200px;
+    }
+
+    a:hover.city-detail-btn {
+        background-color: #73bd79;
+        border-color: #73bd79;
+        color: black;
+        text-decoration: none;
     }
 }
