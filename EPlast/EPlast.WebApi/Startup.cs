@@ -11,6 +11,7 @@ using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Middlewares;
 using EPlast.BLL.Services;
 using EPlast.BLL.Services.Admin;
 using EPlast.BLL.Services.AzureStorage;
@@ -66,6 +67,34 @@ namespace EPlast.WebApi
                 .Where(x =>
                     x.FullName.Equals("EPlast.BLL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null") ||
                     x.FullName.Equals("EPlast.WebApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null")));
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddGoogle(options =>
+                {
+                    options.ClientId = Configuration.GetSection("GoogleAuthentication:GoogleClientId").Value;
+                    options.ClientSecret = Configuration.GetSection("GoogleAuthentication:GoogleClientSecret").Value;
+                })
+                .AddFacebook(options =>
+                {
+                    options.AppId = Configuration.GetSection("FacebookAuthentication:FacebookAppId").Value;
+                    options.AppSecret = Configuration.GetSection("FacebookAuthentication:FacebookAppSecret").Value;
+                })
+                .AddJwtBearer(config =>
+                {
+                    config.RequireHttpsMetadata = false;
+                    config.SaveToken = true;
+
+                    config.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidIssuer = Configuration["Jwt:Issuer"],
+                        ValidAudience = Configuration["Jwt:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                    };
+                });
 
             services.AddDbContextPool<EPlastDBContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("EPlastDBConnection")));
@@ -164,40 +193,7 @@ namespace EPlast.WebApi
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddLogging();
 
-            services.AddAuthentication(options =>
-                {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                /*.AddCookie(options =>
-                {
-                    options.Cookie.HttpOnly = true;
-                    options.Cookie.Expiration = TimeSpan.FromDays(5);
-                    options.LoginPath = "/Account/Login";
-                    options.LogoutPath = "/Account/Logout";
-                })*/
-                .AddGoogle(options =>
-                {
-                    options.ClientId = Configuration.GetSection("GoogleAuthentication:GoogleClientId").Value;
-                    options.ClientSecret = Configuration.GetSection("GoogleAuthentication:GoogleClientSecret").Value;
-                })
-                .AddFacebook(options =>
-                {
-                    options.AppId = Configuration.GetSection("FacebookAuthentication:FacebookAppId").Value;
-                    options.AppSecret = Configuration.GetSection("FacebookAuthentication:FacebookAppSecret").Value;
-                })
-                .AddJwtBearer(config =>
-                 {
-                 config.RequireHttpsMetadata = false;
-                 config.SaveToken = true;
-
-                 config.TokenValidationParameters = new TokenValidationParameters()
-                  {
-                     ValidIssuer = Configuration["Jwt:Issuer"],
-                     ValidAudience = Configuration["Jwt:Issuer"],
-                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
-                  };
-               });
+            
             services.AddAuthorization();
 
             services.Configure<RequestLocalizationOptions>(
@@ -229,7 +225,6 @@ namespace EPlast.WebApi
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
             });
-            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -5,7 +5,6 @@ using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
-using EPlast.BLL.Services.Jwt;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -198,11 +197,11 @@ namespace EPlast.WebApi.Controllers
             {
                 return BadRequest();
             }
-            string code = await _accountService.GenerateConfToken(userDto);
+            string token = await _accountService.GenerateConfToken(userDto);
             var confirmationLink = Url.Action(
                 nameof(ConfirmingEmail),
                 "Account",
-                new { code = code, userId = userDto.Id },
+                new { token = token, userId = userDto.Id },
                 protocol: HttpContext.Request.Scheme);
             await _accountService.SendEmailRegistr(confirmationLink, userDto);
             
@@ -232,11 +231,11 @@ namespace EPlast.WebApi.Controllers
                     {
                         return BadRequest(_resourceForErrors["Forgot-NotRegisteredUser"]);
                     }
-                    string code = await _accountService.GenerateResetTokenAsync(userDto);
+                    string token = await _accountService.GenerateResetTokenAsync(userDto);
                     string confirmationLink = Url.Action(
                         nameof(ResetPassword),
                         "Account",
-                        new { userId = userDto.Id, code = HttpUtility.UrlEncode(code) },
+                        new { userId = userDto.Id, token = HttpUtility.UrlEncode(token) },
                         protocol: HttpContext.Request.Scheme);
                     await _accountService.SendEmailReseting(confirmationLink, forgotpasswordDto);
                     return Ok(_resourceForErrors["ForgotPasswordConfirmation"]);
@@ -252,7 +251,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpGet("resetPassword")]
         [AllowAnonymous]
-        public async Task<IActionResult> ResetPassword(string userId, string code = null)
+        public async Task<IActionResult> ResetPassword(string userId, string token = null)
         {
             var userDto = await _accountService.FindByIdAsync(userId);
             if (userDto == null)
@@ -262,7 +261,7 @@ namespace EPlast.WebApi.Controllers
             int totalTime = _accountService.GetTimeAfterReset(userDto);
             if (totalTime < 180)
             {
-                if (string.IsNullOrWhiteSpace(code))
+                if (string.IsNullOrWhiteSpace(token))
                 {
                     return BadRequest();
                 }
@@ -279,7 +278,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("resetPassword")]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetpasswordDto) //+
         {
             try
