@@ -2,7 +2,6 @@
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Services.City;
-using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
@@ -20,16 +19,11 @@ namespace EPlast.XUnitTest.Services.City
     {
         private readonly Mock<IRepositoryWrapper> _repositoryWrapper = new Mock<IRepositoryWrapper>();
         private readonly Mock<IMapper> _mapper = new Mock<IMapper>();
-        private readonly Mock<ICityService> _cityService = new Mock<ICityService>(); 
-        private readonly Mock<IUserManagerService> _userManagerService = new Mock<IUserManagerService>();
         private readonly ICityMembersService _cityMembersService;
 
         public CityMembersServiceTests()
         {
-            _cityMembersService = new CityMembersService(_repositoryWrapper.Object,
-                _cityService.Object,
-                _mapper.Object,
-                _userManagerService.Object);
+            _cityMembersService = new CityMembersService(_repositoryWrapper.Object, _mapper.Object);
         }
 
         [Fact]
