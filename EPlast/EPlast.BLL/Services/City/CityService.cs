@@ -100,11 +100,11 @@ namespace EPlast.BLL.Services
             var cityProfileDto = new CityProfileDTO
             {
                 City = city,
-                CityHead = cityHead,
+                Head = cityHead,
                 Members = members,
                 Followers = followers,
-                CityAdmins = cityAdmins,
-                CityDoc = cityDoc
+                Admins = cityAdmins,
+                Documents = cityDoc
             };
 
             return cityProfileDto;
@@ -124,7 +124,7 @@ namespace EPlast.BLL.Services
                 .Where(m => m.IsApproved)
                 .ToList();
 
-            return new CityProfileDTO { City = city, Members = members, CityHead= cityHead };
+            return new CityProfileDTO { City = city, Members = members, Head= cityHead };
         }
 
         public async Task<CityProfileDTO> GetCityFollowersAsync(int cityId)
@@ -141,7 +141,7 @@ namespace EPlast.BLL.Services
                 .Where(m => !m.IsApproved)
                 .ToList();
 
-            return new CityProfileDTO { City = city, Followers = followers, CityHead = cityHead };
+            return new CityProfileDTO { City = city, Followers = followers, Head = cityHead };
         }
 
         public async Task<CityProfileDTO> GetCityAdminsAsync(int cityId)
@@ -158,7 +158,7 @@ namespace EPlast.BLL.Services
                 .Where(a => a.EndDate == null && a.AdminType.AdminTypeName != "Голова Станиці")
                 .ToList();
 
-            return new CityProfileDTO { City = city, CityAdmins = cityAdmins, CityHead = cityHead };
+            return new CityProfileDTO { City = city, Admins = cityAdmins, Head = cityHead };
         }
 
         public async Task<CityProfileDTO> GetCityDocumentsAsync(int cityId)
@@ -173,7 +173,7 @@ namespace EPlast.BLL.Services
                 .FirstOrDefault(a => a.EndDate == null && a.AdminType.AdminTypeName == "Голова Станиці");
             var cityDoc = city.CityDocuments.ToList();
 
-            return new CityProfileDTO { City = city, CityDoc = cityDoc, CityHead = cityHead };
+            return new CityProfileDTO { City = city, Documents = cityDoc, Head = cityHead };
         }
 
         public async Task<string> GetLogoBase64(string logoName)
@@ -205,7 +205,7 @@ namespace EPlast.BLL.Services
             var cityProfileDto = new CityProfileDTO
             {
                 City = city,
-                CityAdmins = cityAdmins,
+                Admins = cityAdmins,
                 Members = members,
                 Followers = followers
             };
