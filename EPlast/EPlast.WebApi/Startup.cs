@@ -190,6 +190,8 @@ namespace EPlast.WebApi
             services.Configure<JwtOptions>(Configuration.GetSection("Jwt"));
             services.AddTransient<IJwtService, JwtService>();
             services.AddScoped<IUserBlobStorageRepository, UserBlobStorageRepository>();
+            services.AddScoped<IDecisionBlobStorageRepository, DecisionBlobStorageRepository>();
+            services.AddScoped<ICityBlobStorageRepository, CityBlobStorageRepository>();
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddLogging();
 
