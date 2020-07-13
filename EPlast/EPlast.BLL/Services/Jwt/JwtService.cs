@@ -9,10 +9,10 @@ using System.Text;
 
 namespace EPlast.BLL.Services.Jwt
 {
-    public class JwtService : IJwtService
+    public class Jwtservice : IJwtService
     {
         private readonly JwtOptions _jwtOptions;
-        public JwtService(IOptions<JwtOptions> jwtOptions)
+        public Jwtservice(IOptions<JwtOptions> jwtOptions)
         {
             _jwtOptions = jwtOptions.Value;
         }
