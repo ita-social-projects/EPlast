@@ -87,7 +87,7 @@ namespace EPlast.BLL.Services
 
         public async void RefreshSignInAsync(UserDTO userDto)
         {
-            await _signInManager.RefreshSignInAsync(_mapper.Map<UserDTO, User>(userDto));
+            await _signInManager.RefreshSignInAsync(_mapper.Map<UserDTO, User>(userDto));  
         }
 
         public AuthenticationProperties GetAuthProperties(string provider, string returnUrl)

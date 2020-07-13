@@ -1,5 +1,6 @@
 ﻿using EPlast.BLL;
 using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using Moq;
 using System.Threading.Tasks;
@@ -33,9 +34,9 @@ namespace EPlast.XUnitTest.Services.Home
             Assert.Null(result);
         }
 
-        private ContactDTO GetTestContactDtoWithAllFields()
+        private ContactsDto GetTestContactDtoWithAllFields()
         {
-            return new ContactDTO()
+            return new ContactsDto()
             {
                 Name = "Іван",
                 Email = "ivan@gmail.com",

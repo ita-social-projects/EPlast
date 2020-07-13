@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.Controllers;
 using EPlast.DataAccess.Entities;
@@ -138,7 +139,7 @@ namespace EPlast.XUnitTest
         {
             var controller = new HomeController(_homeService.Object, _repoWrapper.Object, _mapper.Object);
             _mapper
-                .Setup(s => s.Map<ContactDTO>(It.IsAny<ContactsViewModel>()))
+                .Setup(s => s.Map<ContactsDto>(It.IsAny<ContactsViewModel>()))
                 .Returns(GetTestContactDtoWithAllFields());
 
             var validResult = await controller.SendContacts(GetTestValidContactViewModel());
@@ -183,9 +184,9 @@ namespace EPlast.XUnitTest
             };
         }
 
-        private ContactDTO GetTestContactDtoWithAllFields()
+        private ContactsDto GetTestContactDtoWithAllFields()
         {
-            return new ContactDTO()
+            return new ContactsDto()
             {
                 Name = "Настя",
                 Email = "nasty@gmail.com",
