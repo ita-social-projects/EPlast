@@ -8,7 +8,7 @@
         @foreach (var follCity in Model.Followers)
         {
             <div class="card border rounded shadow-none d-inline float-left">
-                @if (User.IsInRole("Admin") || User.Identity.Name == Model.CityHead.User.Email)
+                @if (User.IsInRole("Admin") || User.Identity.Name == Model.Head.User.Email)
                 {
                     <div class="float-left d-xl-flex justify-content-xl-center align-items-xl-center">
                         <a class="d-xl-flex justify-content-xl-end" asp-action="AddCityMember" asp-controller="City" asp-route-cityId="@Model.City.ID" asp-route-userId="@follCity.UserId"><i class="fa fa-check" style="font-size: 24px;"></i></a>
