@@ -1,4 +1,4 @@
-﻿using EPlast.BLL.DTO;
+﻿using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using System.Threading.Tasks;
 
@@ -13,7 +13,7 @@ namespace EPlast.BLL
             _emailConfirmation = emailConfirmation;
         }
 
-        public Task SendEmailAdmin(ContactDTO contactDTO)
+        public Task SendEmailAdmin(ContactsDto contactDTO)
         {
             return _emailConfirmation.SendEmailAsync("eplastdmnstrtr@gmail.com",
                 "Питання користувачів",
