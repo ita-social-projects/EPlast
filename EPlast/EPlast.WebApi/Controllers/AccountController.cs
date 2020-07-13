@@ -174,7 +174,7 @@ namespace EPlast.WebApi.Controllers
            
                 if (result.Succeeded) 
                 {
-                    return Ok(_resourceForErrors["Confirmed-Registration"]);
+                    return Ok(new { userId = userId });//зразу редірект на юзер пейджу
                 }
                 else
                 {
