@@ -83,9 +83,9 @@ namespace EPlast.BLL.Services
             }
             
             var cityHead = city.CityAdministration?
-                .FirstOrDefault(a => a.EndDate == null && a.AdminType.AdminTypeName == "Голова Станиці");
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Станиці");
             var cityAdmins = city.CityAdministration
-                .Where(a => a.EndDate == null && a.AdminType.AdminTypeName != "Голова Станиці")
+                .Where(a => a.AdminType.AdminTypeName != "Голова Станиці")
                 .ToList();
             var members = city.CityMembers
                 .Where(m => m.IsApproved)
@@ -119,7 +119,7 @@ namespace EPlast.BLL.Services
             }
             
             var cityHead = city.CityAdministration?
-                .FirstOrDefault(a => a.EndDate == null && a.AdminType.AdminTypeName == "Голова Станиці");
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Станиці");
             var members = city.CityMembers
                 .Where(m => m.IsApproved)
                 .ToList();
@@ -136,7 +136,7 @@ namespace EPlast.BLL.Services
             }
 
             var cityHead = city.CityAdministration?
-                   .FirstOrDefault(a => a.EndDate == null && a.AdminType.AdminTypeName == "Голова Станиці");
+                   .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Станиці");
             var followers = city.CityMembers
                 .Where(m => !m.IsApproved)
                 .ToList();
@@ -153,9 +153,9 @@ namespace EPlast.BLL.Services
             }
 
             var cityHead = city.CityAdministration?
-                .FirstOrDefault(a => a.EndDate == null && a.AdminType.AdminTypeName == "Голова Станиці");
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Станиці");
             var cityAdmins = city.CityAdministration
-                .Where(a => a.EndDate == null && a.AdminType.AdminTypeName != "Голова Станиці")
+                .Where(a => a.AdminType.AdminTypeName != "Голова Станиці")
                 .ToList();
 
             return new CityProfileDTO { City = city, Admins = cityAdmins, Head = cityHead };
@@ -170,7 +170,7 @@ namespace EPlast.BLL.Services
             }
 
             var cityHead = city.CityAdministration?
-                .FirstOrDefault(a => a.EndDate == null && a.AdminType.AdminTypeName == "Голова Станиці");
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Станиці");
             var cityDoc = city.CityDocuments.ToList();
 
             return new CityProfileDTO { City = city, Documents = cityDoc, Head = cityHead };
@@ -192,7 +192,6 @@ namespace EPlast.BLL.Services
             }
 
             var cityAdmins = city.CityAdministration
-                .Where(a => a.EndDate == null)
                 .ToList();
             var members = city.CityMembers
                 .Where(p => cityAdmins.All(a => a.UserId != p.UserId))

@@ -17,16 +17,19 @@ namespace EPlast.WebApi.Controllers
         private readonly IMapper _mapper;
         private readonly ICityService _cityService;
         private readonly ICityMembersService _cityMembersService;
+        private readonly ICityAdministrationService _cityAdministrationService;
 
         public CitiesController(ILoggerService<CitiesController> logger,
             IMapper mapper,
             ICityService cityService,
-            ICityMembersService cityMembersService)
+            ICityMembersService cityMembersService,
+            ICityAdministrationService cityAdministrationService)
         {
             _logger = logger;
             _mapper = mapper;
             _cityService = cityService;
             _cityMembersService = cityMembersService;
+            _cityAdministrationService = cityAdministrationService;
         }
 
         [HttpGet("Profiles")]
@@ -186,34 +189,6 @@ namespace EPlast.WebApi.Controllers
             return Ok(logoBase64);
         }
 
-        [HttpPut("EditCity/{cityId}")]
-        public async Task<IActionResult> Edit(CityViewModel city)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                var cityProfileDTO = new CityProfileDTO
-                {
-                    City = _mapper.Map<CityViewModel, CityDTO>(city)
-                };
-
-                await _cityService.EditAsync(cityProfileDTO);
-                _logger.LogInformation($"City {{{cityProfileDTO.City.Name}}} was edited profile and saved in the database");
-
-                return Ok(_mapper.Map<CityDTO, CityViewModel>(cityProfileDTO.City));
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Exception :{e.Message}");
-
-                return BadRequest();
-            }
-        }
-
         [HttpPost("CreateCity")]
         public async Task<IActionResult> Create(CityViewModel city)
         {
@@ -230,7 +205,35 @@ namespace EPlast.WebApi.Controllers
                 };
 
                 await _cityService.CreateAsync(cityProfileDTO);
-                _logger.LogInformation($"City {{{cityProfileDTO.City.Name}}} was created profile and saved in the database");
+                _logger.LogInformation($"City {{{cityProfileDTO.City.Name}}} was created.");
+
+                return Ok(_mapper.Map<CityDTO, CityViewModel>(cityProfileDTO.City));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return BadRequest();
+            }
+        }
+
+        [HttpPut("EditCity/{cityId}")]
+        public async Task<IActionResult> Edit(CityViewModel city)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var cityProfileDTO = new CityProfileDTO
+                {
+                    City = _mapper.Map<CityViewModel, CityDTO>(city)
+                };
+
+                await _cityService.EditAsync(cityProfileDTO);
+                _logger.LogInformation($"City {{{cityProfileDTO.City.Name}}} was edited.");
 
                 return Ok(_mapper.Map<CityDTO, CityViewModel>(cityProfileDTO.City));
             }
@@ -260,6 +263,24 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        [HttpDelete("RemoveFollower/{userId}")]
+        public async Task<IActionResult> RemoveFollower(string userId)
+        {
+            try
+            {
+                await _cityMembersService.RemoveMemberAsync(userId);
+                _logger.LogInformation($"Follower with User-ID {{{userId}}} was removed.");
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return BadRequest();
+            }
+        }
+
         [HttpPut("ChangeApproveStatus/{userId}")]
         public async Task<IActionResult> ChangeApproveStatus(string userId)
         {
@@ -278,13 +299,34 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpDelete("RemoveFollower/{userId}")]
-        public async Task<IActionResult> RemoveFollower(string userId)
+        [HttpPost("AddAdmin/{clubId}")]
+        public async Task<IActionResult> AddAdmin(CityAdministrationViewModel admin)
         {
             try
             {
-                await _cityMembersService.RemoveMemberAsync(userId);
-                _logger.LogInformation($"Follower with id {{{userId}}} was removed.");
+                var adminDTO = _mapper.Map<CityAdministrationViewModel, CityAdministrationDTO>(admin);
+
+                await _cityAdministrationService.AddAdministratorAsync(adminDTO);
+                _logger.LogInformation($"User {{{admin.UserId}}} became admin for city {{{admin.CityId}}}" +
+                    $" with role {{{admin.AdminType.AdminTypeName}}}.");
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return BadRequest();
+            }
+        }
+
+        [HttpDelete("RemoveAdmin/{userId}")]
+        public async Task<IActionResult> RemoveAdmin(string userId)
+        {
+            try
+            {
+                await _cityAdministrationService.RemoveAdministratorAsync(userId);
+                _logger.LogInformation($"Admin with User-ID {{{userId}}} was removed.");
 
                 return Ok();
             }
