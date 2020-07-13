@@ -41,7 +41,7 @@ namespace EPlast.XUnitTest.Services.City
                     .ReturnsAsync(new List<DatabaseEntities.CityMembers> { new DatabaseEntities.CityMembers() });
 
             // Act
-            await _cityMembersService.GetCurrentByCityIdAsync(It.IsAny<int>());
+            await _cityMembersService.GetMembersByCityIdAsync(It.IsAny<int>());
 
             // Assert
             _mapper.Verify(m => m.Map<IEnumerable<DatabaseEntities.CityMembers>, IEnumerable<CityMembersDTO>>(It.IsAny<IEnumerable<DatabaseEntities.CityMembers>>()));

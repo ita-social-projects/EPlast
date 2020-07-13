@@ -27,11 +27,11 @@ namespace EPlast.WebApi.Models.City
 
         public void SetMembersAndAdministration(CityProfileViewModel cityProfile)
         {
-            Head = cityProfile.CityHead;
-            Administration = cityProfile.CityAdmins;
+            Head = cityProfile.Head;
+            Administration = cityProfile.Admins;
             Members = cityProfile.Members;
             Followers = cityProfile.Followers;
-            Documents = cityProfile.CityDoc;
+            Documents = cityProfile.Documents;
         }
     }
 }

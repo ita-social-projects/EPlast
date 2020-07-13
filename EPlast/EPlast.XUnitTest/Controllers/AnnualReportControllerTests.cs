@@ -83,7 +83,7 @@ namespace EPlast.XUnitTest
                 .ReturnsAsync(cities);
             _mapper.Setup(m => m.Map<CityDTOs.CityDTO, CityVMs.CityViewModel>(It.IsAny<CityDTOs.CityDTO>()))
                 .Returns(city);
-            _cityMembersService.Setup(c => c.GetCurrentByCityIdAsync(It.IsAny<int>()))
+            _cityMembersService.Setup(c => c.GetMembersByCityIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(cityMembersDTOs);
             _mapper.Setup(m => m.Map<IEnumerable<CityDTOs.CityMembersDTO>, IEnumerable<CityVMs.CityMembersViewModel>>(It.IsAny<IEnumerable<CityDTOs.CityMembersDTO>>()))
                 .Returns(cityMembers);
@@ -185,7 +185,7 @@ namespace EPlast.XUnitTest
                 .ReturnsAsync(cityDTO);
             _mapper.Setup(m => m.Map<CityDTOs.CityDTO, CityVMs.CityViewModel>(It.IsAny<CityDTOs.CityDTO>()))
                 .Returns(city);
-            _cityMembersService.Setup(c => c.GetCurrentByCityIdAsync(It.IsAny<int>()))
+            _cityMembersService.Setup(c => c.GetMembersByCityIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(cityMembersDTOs);
             _mapper.Setup(m => m.Map<IEnumerable<CityDTOs.CityMembersDTO>, IEnumerable<CityVMs.CityMembersViewModel>>(It.IsAny<IEnumerable<CityDTOs.CityMembersDTO>>()))
                 .Returns(cityMembers);
@@ -239,7 +239,7 @@ namespace EPlast.XUnitTest
             Assert.Equal("Error", viewResult.ControllerName);
             Assert.Equal(StatusCodes.Status500InternalServerError, viewResult.RouteValues["code"]);
             _mapper.Verify(m => m.Map<CityDTOs.CityDTO, CityVMs.CityViewModel>(It.IsAny<CityDTOs.CityDTO>()));
-            _cityMembersService.Verify(c => c.GetCurrentByCityIdAsync(It.IsAny<int>()), Times.Never);
+            _cityMembersService.Verify(c => c.GetMembersByCityIdAsync(It.IsAny<int>()), Times.Never);
         }
 
         [Fact]
@@ -319,7 +319,7 @@ namespace EPlast.XUnitTest
                 .ReturnsAsync(cityDTO);
             _mapper.Setup(m => m.Map<CityDTOs.CityDTO, CityVMs.CityViewModel>(It.IsAny<CityDTOs.CityDTO>()))
                 .Returns(city);
-            _cityMembersService.Setup(c => c.GetCurrentByCityIdAsync(It.IsAny<int>()))
+            _cityMembersService.Setup(c => c.GetMembersByCityIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(cityMembersDTOs);
             _mapper.Setup(m => m.Map<IEnumerable<CityDTOs.CityMembersDTO>, IEnumerable<CityVMs.CityMembersViewModel>>(It.IsAny<IEnumerable<CityDTOs.CityMembersDTO>>()))
                 .Returns(cityMembers);

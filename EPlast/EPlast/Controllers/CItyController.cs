@@ -242,7 +242,7 @@ namespace EPlast.Controllers
         {
             try
             {
-                await _cityMembersService.AddCityFollower(cityId, userId);
+                await _cityMembersService.AddFollowerAsync(cityId, userId);
                 _logger.LogInformation($"User {userId} became a follower of city with id {cityId}.");
 
                 return RedirectToAction("CityProfile", "City", new { cityid = cityId });
@@ -259,7 +259,7 @@ namespace EPlast.Controllers
         {
             try
             {
-                await _cityMembersService.RemoveMember(userId);
+                await _cityMembersService.RemoveMemberAsync(userId);
                 _logger.LogInformation($"Follower with id {userId} was removed.");
 
                 return RedirectToAction("CityFollowers", "City", new { cityid = cityId });
@@ -276,7 +276,7 @@ namespace EPlast.Controllers
         {
             try
             {
-                await _cityMembersService.ToggleMemberStatus(cityId, userId);
+                await _cityMembersService.ToggleApproveStatusAsync(cityId, userId);
                 _logger.LogInformation($"Status of user {userId} was changed in city with id {cityId}.");
 
                 return RedirectToAction("CityFollowers", "City", new { cityid = cityId });
@@ -293,7 +293,7 @@ namespace EPlast.Controllers
         {
             try
             {
-                await _cityMembersService.ToggleMemberStatus(cityId, userId);
+                await _cityMembersService.ToggleApproveStatusAsync(cityId, userId);
                 _logger.LogInformation($"Status of user {userId} was changed in city with id {cityId}.");
 
                 return RedirectToAction("CityMembers", "City", new { cityid = cityId });

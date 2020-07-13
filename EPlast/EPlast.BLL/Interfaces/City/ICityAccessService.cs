@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace EPlast.BLL.Services.Interfaces
+namespace EPlast.BLL.Interfaces.City
 {
     public interface ICityAccessService
     {

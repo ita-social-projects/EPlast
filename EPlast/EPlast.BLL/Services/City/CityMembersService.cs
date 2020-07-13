@@ -28,7 +28,7 @@ namespace EPlast.BLL.Services.City
             _userManagerService = userManagerService;
         }
 
-        public async Task<IEnumerable<CityMembersDTO>> GetCurrentByCityIdAsync(int cityId)
+        public async Task<IEnumerable<CityMembersDTO>> GetMembersByCityIdAsync(int cityId)
         {
             var cityMembers = await _repositoryWrapper.CityMembers.GetAllAsync(
                     predicate: c => c.CityId == cityId && c.EndDate == null,
@@ -37,7 +37,7 @@ namespace EPlast.BLL.Services.City
             return _mapper.Map<IEnumerable<CityMembers>, IEnumerable<CityMembersDTO>>(cityMembers);
         }
 
-        public async Task<CityMembersDTO> AddCityFollower(int cityId, string userId)
+        public async Task<CityMembersDTO> AddFollowerAsync(int cityId, string userId)
         {
             var city = await _cityService.GetByIdAsync(cityId);
             var user = await _userManagerService.FindByIdAsync(userId); 
@@ -64,7 +64,7 @@ namespace EPlast.BLL.Services.City
             return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
         }
 
-        public async Task<CityMembersDTO> ToggleMemberStatus(int cityId, string userId)
+        public async Task<CityMembersDTO> ToggleApproveStatusAsync(int cityId, string userId)
         {
             var cityMember = await _repositoryWrapper.CityMembers
                 .GetFirstOrDefaultAsync(u => u.UserId == userId);
@@ -77,7 +77,7 @@ namespace EPlast.BLL.Services.City
             return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
         }
 
-        public async Task RemoveMember(string userId)
+        public async Task RemoveMemberAsync(string userId)
         {
             var cityMember = await _repositoryWrapper.CityMembers
                 .GetFirstOrDefaultAsync(u => u.UserId == userId);
