@@ -260,13 +260,13 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPut("ChangeApproveStatus/{cityId}/{userId}")]
-        public async Task<IActionResult> ChangeApproveStatus(int cityId, string userId)
+        [HttpPut("ChangeApproveStatus/{userId}")]
+        public async Task<IActionResult> ChangeApproveStatus(string userId)
         {
             try
             {
-                await _cityMembersService.ToggleApproveStatusAsync(cityId, userId);
-                _logger.LogInformation($"Status of user {userId} was changed in city with id {cityId}.");
+                await _cityMembersService.ToggleApproveStatusAsync(userId);
+                _logger.LogInformation($"Status of user {{{userId}}} was changed.");
 
                 return Ok();
             }
