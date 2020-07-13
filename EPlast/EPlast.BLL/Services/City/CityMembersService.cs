@@ -39,9 +39,6 @@ namespace EPlast.BLL.Services.City
 
         public async Task<CityMembersDTO> AddFollowerAsync(int cityId, string userId)
         {
-            var city = await _cityService.GetByIdAsync(cityId);
-            var user = await _userManagerService.FindByIdAsync(userId); 
-
             var oldCityMember = await _repositoryWrapper.CityMembers
                 .GetFirstOrDefaultAsync(i => i.UserId == userId);
 
