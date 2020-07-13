@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using EPlast.BLL.DTO;
 using EPlast.ViewModels;
+using EPlast.BLL.DTO.Account;
 
 namespace EPlast.Mapping
 {
@@ -8,7 +8,7 @@ namespace EPlast.Mapping
     {
         public ContactProfile()
         {
-            CreateMap<ContactsViewModel, ContactDTO>().ReverseMap();
+            CreateMap<ContactsViewModel, ContactsDto>().ReverseMap();
         }
     }
 }
