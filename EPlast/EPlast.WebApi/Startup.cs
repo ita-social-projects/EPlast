@@ -11,7 +11,6 @@ using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
-using EPlast.BLL.Middlewares;
 using EPlast.BLL.Services;
 using EPlast.BLL.Services.Admin;
 using EPlast.BLL.Services.AzureStorage;
