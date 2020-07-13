@@ -10,21 +10,37 @@ namespace EPlast.BLL.Services.Events
     public class EventCategoryManager : IEventCategoryManager
     {
         private readonly IRepositoryWrapper _repoWrapper;
+        private readonly IEventTypeManager _eventTypeManager;
 
-        public EventCategoryManager(IRepositoryWrapper repoWrapper)
+
+        public EventCategoryManager(IRepositoryWrapper repoWrapper, IEventTypeManager eventTypeManager)
         {
             _repoWrapper = repoWrapper;
+            _eventTypeManager = eventTypeManager;
         }
-        public async Task<List<EventCategoryDTO>> GetDTOAsync()
+
+        public async Task<IEnumerable<EventCategoryDTO>> GetDTOAsync()
         {
-            var eventCategories = (await _repoWrapper.EventCategory.GetAllAsync()).ToList();
+            var eventCategories = await _repoWrapper.EventCategory.GetAllAsync();
             var dto = eventCategories
                 .Select(eventCategory => new EventCategoryDTO()
                 {
                     EventCategoryId = eventCategory.ID,
                     EventCategoryName = eventCategory.EventCategoryName
-                })
-                .ToList();
+                });
+
+            return dto;
+        }
+
+        public async Task<IEnumerable<EventCategoryDTO>> GetDTOByEventTypeIdAsync(int eventTypeId)
+        {
+            var eventType = await _eventTypeManager.GetTypeByIdAsync(eventTypeId);
+            var dto = eventType.EventCategories
+                .Select(eventTypeCategory => new EventCategoryDTO()
+                {
+                    EventCategoryId = eventTypeCategory.EventCategoryId,
+                    EventCategoryName = eventTypeCategory.EventCategory.EventCategoryName
+                });
 
             return dto;
         }
