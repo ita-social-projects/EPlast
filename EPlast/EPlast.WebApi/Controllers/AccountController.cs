@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
-using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.Resources;
+using EPlast.BLL.Interfaces.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
