@@ -27,7 +27,6 @@ namespace EPlast.XUnitTest
 {
     public class AccountControllerTests
     {
-        private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IUserStore<User>> _userStoreMock;
         private Mock<IHttpContextAccessor> _contextAccessor;
         private Mock<IUserClaimsPrincipalFactory<User>> _userPrincipalFactory;
@@ -51,7 +50,6 @@ namespace EPlast.XUnitTest
 
         public AccountControllerTests()
         {
-            _repoWrapper = new Mock<IRepositoryWrapper>();
             _userStoreMock = new Mock<IUserStore<User>>();
             _contextAccessor = new Mock<IHttpContextAccessor>();
             _userPrincipalFactory = new Mock<IUserClaimsPrincipalFactory<User>>();
