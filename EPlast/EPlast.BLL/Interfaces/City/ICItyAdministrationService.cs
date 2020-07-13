@@ -7,5 +7,7 @@ namespace EPlast.BLL.Interfaces.City
     public interface ICityAdministrationService
     {
         Task<IEnumerable<CityAdministrationDTO>> GetByCityIdAsync(int cityId);
+        Task<CityAdministrationDTO> AddAdministratorAsync(CityAdministrationDTO adminDTO);
+        Task RemoveAdministratorAsync(string userId);
     }
 }
