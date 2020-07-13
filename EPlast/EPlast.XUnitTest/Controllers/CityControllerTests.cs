@@ -31,6 +31,7 @@ namespace EPlast.XUnitTest
         public CityControllerTests()
         {
             _cityService = new Mock<ICityService>();
+            _cityMembersService = new Mock<ICityMembersService>();
             _mapper = new Mock<IMapper>();
             _logger = new Mock<ILoggerService<CityController>>();
         }
