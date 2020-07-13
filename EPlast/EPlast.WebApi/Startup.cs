@@ -187,13 +187,12 @@ namespace EPlast.WebApi
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
             services.Configure<JwtOptions>(Configuration.GetSection("Jwt"));
-            services.AddTransient<IJwtService, JwtService>();
+            services.AddTransient<IJwtService, Jwtservice>();
             services.AddScoped<IUserBlobStorageRepository, UserBlobStorageRepository>();
             services.AddScoped<IDecisionBlobStorageRepository, DecisionBlobStorageRepository>();
             services.AddScoped<ICityBlobStorageRepository, CityBlobStorageRepository>();
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddLogging();
-
             
             services.AddAuthorization();
 
