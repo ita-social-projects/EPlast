@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.DataAccess.Repositories;
 using EPlast.Models;
@@ -87,7 +88,7 @@ namespace EPlast.Controllers
                 return View("Contacts");
             }
 
-            var contact = _mapper.Map<ContactDTO>(contactsViewModel);
+            var contact = _mapper.Map<ContactsDto>(contactsViewModel);
 
             await _homeService.SendEmailAdmin(contact);
 
