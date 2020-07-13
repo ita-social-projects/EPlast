@@ -64,7 +64,7 @@ namespace EPlast.BLL.Services.City
             return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
         }
 
-        public async Task<CityMembersDTO> ToggleApproveStatusAsync(int cityId, string userId)
+        public async Task<CityMembersDTO> ToggleApproveStatusAsync(string userId)
         {
             var cityMember = await _repositoryWrapper.CityMembers
                 .GetFirstOrDefaultAsync(u => u.UserId == userId);

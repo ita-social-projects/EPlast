@@ -276,7 +276,7 @@ namespace EPlast.Controllers
         {
             try
             {
-                await _cityMembersService.ToggleApproveStatusAsync(cityId, userId);
+                await _cityMembersService.ToggleApproveStatusAsync(userId);
                 _logger.LogInformation($"Status of user {userId} was changed in city with id {cityId}.");
 
                 return RedirectToAction("CityFollowers", "City", new { cityid = cityId });
@@ -293,7 +293,7 @@ namespace EPlast.Controllers
         {
             try
             {
-                await _cityMembersService.ToggleApproveStatusAsync(cityId, userId);
+                await _cityMembersService.ToggleApproveStatusAsync(userId);
                 _logger.LogInformation($"Status of user {userId} was changed in city with id {cityId}.");
 
                 return RedirectToAction("CityMembers", "City", new { cityid = cityId });
