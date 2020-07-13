@@ -13,19 +13,12 @@ namespace EPlast.BLL.Services.City
     public class CityMembersService : ICityMembersService
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
-        private readonly ICityService _cityService;
         private readonly IMapper _mapper;
-        private readonly IUserManagerService _userManagerService;
 
-        public CityMembersService(IRepositoryWrapper repositoryWrapper,
-            ICityService cityService,
-            IMapper mapper,
-            IUserManagerService userManagerService)
+        public CityMembersService(IRepositoryWrapper repositoryWrapper, IMapper mapper)
         {
             _repositoryWrapper = repositoryWrapper;
-            _cityService = cityService;
             _mapper = mapper;
-            _userManagerService = userManagerService;
         }
 
         public async Task<IEnumerable<CityMembersDTO>> GetMembersByCityIdAsync(int cityId)
