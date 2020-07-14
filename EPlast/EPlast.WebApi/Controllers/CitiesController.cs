@@ -263,13 +263,13 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpDelete("RemoveFollower/{userId}")]
-        public async Task<IActionResult> RemoveFollower(string userId)
+        [HttpDelete("RemoveFollower/{followerId}")]
+        public async Task<IActionResult> RemoveFollower(int followerId)
         {
             try
             {
-                await _cityMembersService.RemoveMemberAsync(userId);
-                _logger.LogInformation($"Follower with User-ID {{{userId}}} was removed.");
+                await _cityMembersService.RemoveFollowerAsync(followerId);
+                _logger.LogInformation($"Follower with ID {{{followerId}}} was removed.");
 
                 return Ok();
             }
@@ -281,13 +281,13 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPut("ChangeApproveStatus/{userId}")]
-        public async Task<IActionResult> ChangeApproveStatus(string userId)
+        [HttpPut("ChangeApproveStatus/{memberId}")]
+        public async Task<IActionResult> ChangeApproveStatus(int memberId)
         {
             try
             {
-                await _cityMembersService.ToggleApproveStatusAsync(userId);
-                _logger.LogInformation($"Status of user {{{userId}}} was changed.");
+                await _cityMembersService.ToggleApproveStatusAsync(memberId);
+                _logger.LogInformation($"Status of member with ID {{{memberId}}} was changed.");
 
                 return Ok();
             }
@@ -320,13 +320,33 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpDelete("RemoveAdmin/{userId}")]
-        public async Task<IActionResult> RemoveAdmin(string userId)
+        [HttpDelete("RemoveAdmin/{adminId}")]
+        public async Task<IActionResult> RemoveAdmin(int adminId)
         {
             try
             {
-                await _cityAdministrationService.RemoveAdministratorAsync(userId);
-                _logger.LogInformation($"Admin with User-ID {{{userId}}} was removed.");
+                await _cityAdministrationService.RemoveAdministratorAsync(adminId);
+                _logger.LogInformation($"Admin with ID {{{adminId}}} was removed.");
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return BadRequest();
+            }
+        }
+
+        [HttpPut("EditAdmin/{adminId}")]
+        public async Task<IActionResult> EditAdmin(CityAdministrationViewModel admin)
+        {
+            try
+            {
+                var adminDTO = _mapper.Map<CityAdministrationViewModel, CityAdministrationDTO>(admin);
+
+                await _cityAdministrationService.EditAdministratorAsync(adminDTO);
+                _logger.LogInformation($"Admin with User-ID {{{admin.UserId}}} was edited.");
 
                 return Ok();
             }

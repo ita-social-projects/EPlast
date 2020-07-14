@@ -35,15 +35,9 @@ namespace EPlast.BLL.Services.City
         public async Task<CityAdministrationDTO> AddAdministratorAsync(CityAdministrationDTO adminDTO)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
+            adminDTO.AdminTypeId = adminType.ID;
 
-            var admin = new CityAdministration()
-            {
-                AdminTypeId = adminType.ID,
-                CityId = adminDTO.CityId,
-                StartDate = adminDTO.StartDate,
-                EndDate = adminDTO.EndDate,
-                UserId = adminDTO.UserId
-            };
+            var admin = _mapper.Map<CityAdministrationDTO, CityAdministration>(adminDTO);
 
             await _repositoryWrapper.CityAdministration.CreateAsync(admin);
             await _repositoryWrapper.SaveAsync();
@@ -51,13 +45,27 @@ namespace EPlast.BLL.Services.City
             return _mapper.Map<CityAdministration, CityAdministrationDTO>(admin);
         }
 
-        public async Task RemoveAdministratorAsync(string userId)
+        public async Task<CityAdministrationDTO> EditAdministratorAsync(CityAdministrationDTO adminDTO)
+        {
+            var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
+            adminDTO.AdminTypeId = adminType.ID;
+
+            var admin = _mapper.Map<CityAdministrationDTO, CityAdministration>(adminDTO);
+
+            _repositoryWrapper.CityAdministration.Update(admin);
+            await _repositoryWrapper.SaveAsync();
+
+            return _mapper.Map<CityAdministration, CityAdministrationDTO>(admin);
+        }
+
+        public async Task RemoveAdministratorAsync(int adminId)
         {
             var admin = await _repositoryWrapper.CityAdministration
-                .GetFirstOrDefaultAsync(u => u.UserId == userId);
+                .GetFirstOrDefaultAsync(u => u.ID == adminId);
 
             _repositoryWrapper.CityAdministration.Delete(admin);
             await _repositoryWrapper.SaveAsync();
         }
+
     }
 }

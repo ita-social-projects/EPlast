@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces.City;
-using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -54,10 +53,10 @@ namespace EPlast.BLL.Services.City
             return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
         }
 
-        public async Task<CityMembersDTO> ToggleApproveStatusAsync(string userId)
+        public async Task<CityMembersDTO> ToggleApproveStatusAsync(int memberId)
         {
             var cityMember = await _repositoryWrapper.CityMembers
-                .GetFirstOrDefaultAsync(u => u.UserId == userId);
+                .GetFirstOrDefaultAsync(u => u.ID == memberId);
 
             cityMember.IsApproved = !cityMember.IsApproved;
 
@@ -67,10 +66,10 @@ namespace EPlast.BLL.Services.City
             return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
         }
 
-        public async Task RemoveMemberAsync(string userId)
+        public async Task RemoveFollowerAsync(int followerId)
         {
             var cityMember = await _repositoryWrapper.CityMembers
-                .GetFirstOrDefaultAsync(u => u.UserId == userId);
+                .GetFirstOrDefaultAsync(u => u.ID == followerId);
 
             _repositoryWrapper.CityMembers.Delete(cityMember);
             await _repositoryWrapper.SaveAsync();
