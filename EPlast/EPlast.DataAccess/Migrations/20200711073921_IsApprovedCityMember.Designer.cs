@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20200711073921_IsApprovedCityMember")]
+    partial class IsApprovedCityMember
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1033,6 +1035,28 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("Religions");
                 });
 
+            modelBuilder.Entity("EPlast.DataAccess.Entities.UnconfirmedCityMember", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("CityID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("CityID");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UnconfirmedCityMember");
+                });
+
             modelBuilder.Entity("EPlast.DataAccess.Entities.UserPlastDegree", b =>
                 {
                     b.Property<int>("Id")
@@ -1678,6 +1702,17 @@ namespace EPlast.DataAccess.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.UnconfirmedCityMember", b =>
+                {
+                    b.HasOne("EPlast.DataAccess.Entities.City", "City")
+                        .WithMany("UnconfirmedCityMember")
+                        .HasForeignKey("CityID");
+
+                    b.HasOne("EPlast.DataAccess.Entities.User", "User")
+                        .WithMany("UnconfirmedCityMembers")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.UserPlastDegree", b =>

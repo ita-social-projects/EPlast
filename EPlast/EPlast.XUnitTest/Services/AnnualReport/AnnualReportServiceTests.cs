@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.AnnualReport;
+using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Services;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Repositories;
