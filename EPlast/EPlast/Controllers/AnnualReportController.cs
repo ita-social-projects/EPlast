@@ -292,7 +292,7 @@ namespace EPlast.Controllers
 
         private async Task<CreateEditAnnualReportViewModel> GetCreateEditViewModel(CityVMs.CityViewModel city, AnnualReportOperation operation)
         {
-            var cityMemebrsDTO = await _cityMembersService.GetCurrentByCityIdAsync(city.ID);
+            var cityMemebrsDTO = await _cityMembersService.GetMembersByCityIdAsync(city.ID);
             var cityMembers = _mapper.Map<IEnumerable<CityDTOs.CityMembersDTO>, IEnumerable<CityVMs.CityMembersViewModel>>(cityMemebrsDTO);
             return new CreateEditAnnualReportViewModel(cityMembers)
             {
