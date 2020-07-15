@@ -1,7 +1,8 @@
-﻿using EPlast.BLL.DTO.City;
+﻿using AutoMapper;
+using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Logging;
-using Microsoft.AspNetCore.Http;
+using EPlast.WebApi.Models.City;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -13,12 +14,22 @@ namespace EPlast.WebApi.Controllers
     public class CitiesController : ControllerBase
     {
         private readonly ILoggerService<CitiesController> _logger;
+        private readonly IMapper _mapper;
         private readonly ICityService _cityService;
+        private readonly ICityMembersService _cityMembersService;
+        private readonly ICityAdministrationService _cityAdministrationService;
 
-        public CitiesController(ILoggerService<CitiesController> logger, ICityService cityService)
+        public CitiesController(ILoggerService<CitiesController> logger,
+            IMapper mapper,
+            ICityService cityService,
+            ICityMembersService cityMembersService,
+            ICityAdministrationService cityAdministrationService)
         {
             _logger = logger;
+            _mapper = mapper;
             _cityService = cityService;
+            _cityMembersService = cityMembersService;
+            _cityAdministrationService = cityAdministrationService;
         }
 
         [HttpGet("Profiles")]
@@ -40,8 +51,10 @@ namespace EPlast.WebApi.Controllers
                     return NotFound();
                 }
 
-                return Ok(cityProfileDto);
+                var cityProfile = _mapper.Map<CityProfileDTO, CityProfileViewModel>(cityProfileDto);
+                cityProfile.SetMembersAndAdministration();
 
+                return Ok(cityProfile.City);
             }
             catch (Exception e)
             {
@@ -62,7 +75,10 @@ namespace EPlast.WebApi.Controllers
                     return NotFound();
                 }
 
-                return Ok(cityProfileDto.Members);
+                var cityProfile = _mapper.Map<CityProfileDTO, CityProfileViewModel>(cityProfileDto);
+                cityProfile.SetMembersAndAdministration();
+
+                return Ok(cityProfile.Members);
             }
             catch (Exception e)
             {
@@ -77,11 +93,14 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                var cityProfile = await _cityService.GetCityFollowersAsync(cityId);
-                if (cityProfile == null)
+                var cityProfileDto = await _cityService.GetCityFollowersAsync(cityId);
+                if (cityProfileDto == null)
                 {
                     return NotFound();
                 }
+
+                var cityProfile = _mapper.Map<CityProfileDTO, CityProfileViewModel>(cityProfileDto);
+                cityProfile.SetMembersAndAdministration();
 
                 return Ok(cityProfile.Followers);
             }
@@ -98,13 +117,16 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                CityProfileDTO cityProfileDto = await _cityService.GetCityAdminsAsync(cityId);
+                var cityProfileDto = await _cityService.GetCityAdminsAsync(cityId);
                 if (cityProfileDto == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(cityProfileDto.CityAdmins);
+                var cityProfile = _mapper.Map<CityProfileDTO, CityProfileViewModel>(cityProfileDto);
+                cityProfile.SetMembersAndAdministration();
+
+                return Ok(cityProfile.Admins);
             }
             catch (Exception e)
             {
@@ -114,79 +136,21 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpGet("EditCity/{cityId}")]
-        public async Task<IActionResult> Edit(int cityId)
+        [HttpGet("Documents/{cityId}")]
+        public async Task<IActionResult> GetDocuments(int cityId)
         {
             try
             {
-                CityProfileDTO cityProfileDto = await _cityService.EditAsync(cityId);
+                var cityProfileDto = await _cityService.GetCityDocumentsAsync(cityId);
                 if (cityProfileDto == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(cityProfileDto);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Exception :{e.Message}");
+                var cityProfile = _mapper.Map<CityProfileDTO, CityProfileViewModel>(cityProfileDto);
+                cityProfile.SetMembersAndAdministration();
 
-                return BadRequest();
-            }
-        }
-
-        [HttpPut]
-        public async Task<IActionResult> Edit(CityProfileDTO cityProfileDTO, IFormFile file)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                await _cityService.EditAsync(cityProfileDTO, file);
-                _logger.LogInformation($"City {cityProfileDTO.City.Name} was edited profile and saved in the database");
-
-                return NoContent();
-
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Exception :{e.Message}");
-
-                return BadRequest();
-            }
-
-        }
-
-        [HttpGet("CreateCity")]
-        public IActionResult Create()
-        {
-            try
-            {
-                return Ok(new CityProfileDTO());
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Exception :{e.Message}");
-
-                return BadRequest();
-            }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Create(CityProfileDTO cityProfileDto, IFormFile file)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                int cityId = await _cityService.CreateAsync(cityProfileDto, file);
-
-                return CreatedAtAction(nameof(Create), cityProfileDto);
-
+                return Ok(cityProfile.Documents);
             }
             catch (Exception e)
             {
@@ -207,7 +171,7 @@ namespace EPlast.WebApi.Controllers
                     return NotFound();
                 }
 
-                return Ok(cityDto);
+                return Ok(_mapper.Map<CityDTO, CityViewModel>(cityDto));
             }
             catch (Exception e)
             {
@@ -217,18 +181,154 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpGet("Documents/{cityId}")]
-        public async Task<IActionResult> GetDocuments(int cityId)
+        [HttpGet("LogoBase64")]
+        public async Task<IActionResult> GetPhotoBase64(string logoName)
+        {
+            var logoBase64 = await _cityService.GetLogoBase64(logoName);
+
+            return Ok(logoBase64);
+        }
+
+        [HttpPost("CreateCity")]
+        public async Task<IActionResult> Create(CityViewModel city)
         {
             try
             {
-                CityProfileDTO cityProfileDto = await _cityService.GetCityDocumentsAsync(cityId);
-                if (cityProfileDto == null)
+                if (!ModelState.IsValid)
                 {
-                    return NotFound();
+                    return BadRequest(ModelState);
                 }
 
-                return Ok(cityProfileDto);
+                var cityProfileDTO = new CityProfileDTO
+                {
+                    City = _mapper.Map<CityViewModel, CityDTO>(city)
+                };
+
+                await _cityService.CreateAsync(cityProfileDTO);
+                _logger.LogInformation($"City {{{cityProfileDTO.City.Name}}} was created.");
+
+                return Ok(_mapper.Map<CityDTO, CityViewModel>(cityProfileDTO.City));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return BadRequest();
+            }
+        }
+
+        [HttpPut("EditCity/{cityId}")]
+        public async Task<IActionResult> Edit(CityViewModel city)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var cityProfileDTO = new CityProfileDTO
+                {
+                    City = _mapper.Map<CityViewModel, CityDTO>(city)
+                };
+
+                await _cityService.EditAsync(cityProfileDTO);
+                _logger.LogInformation($"City {{{cityProfileDTO.City.Name}}} was edited.");
+
+                return Ok(_mapper.Map<CityDTO, CityViewModel>(cityProfileDTO.City));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return BadRequest();
+            }
+        }
+
+        [HttpPost("AddFollower/{cityId}/{userId}")]
+        public async Task<IActionResult> AddFollower(int cityId, string userId)
+        {
+            try
+            {
+                await _cityMembersService.AddFollowerAsync(cityId, userId);
+                _logger.LogInformation($"User {{{userId}}} became a follower of city {{{cityId}}}.");
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return BadRequest();
+            }
+        }
+
+        [HttpDelete("RemoveFollower/{userId}")]
+        public async Task<IActionResult> RemoveFollower(string userId)
+        {
+            try
+            {
+                await _cityMembersService.RemoveMemberAsync(userId);
+                _logger.LogInformation($"Follower with User-ID {{{userId}}} was removed.");
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return BadRequest();
+            }
+        }
+
+        [HttpPut("ChangeApproveStatus/{userId}")]
+        public async Task<IActionResult> ChangeApproveStatus(string userId)
+        {
+            try
+            {
+                await _cityMembersService.ToggleApproveStatusAsync(userId);
+                _logger.LogInformation($"Status of user {{{userId}}} was changed.");
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return BadRequest();
+            }
+        }
+
+        [HttpPost("AddAdmin/{clubId}")]
+        public async Task<IActionResult> AddAdmin(CityAdministrationViewModel admin)
+        {
+            try
+            {
+                var adminDTO = _mapper.Map<CityAdministrationViewModel, CityAdministrationDTO>(admin);
+
+                await _cityAdministrationService.AddAdministratorAsync(adminDTO);
+                _logger.LogInformation($"User {{{admin.UserId}}} became admin for city {{{admin.CityId}}}" +
+                    $" with role {{{admin.AdminType.AdminTypeName}}}.");
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return BadRequest();
+            }
+        }
+
+        [HttpDelete("RemoveAdmin/{userId}")]
+        public async Task<IActionResult> RemoveAdmin(string userId)
+        {
+            try
+            {
+                await _cityAdministrationService.RemoveAdministratorAsync(userId);
+                _logger.LogInformation($"Admin with User-ID {{{userId}}} was removed.");
+
+                return Ok();
             }
             catch (Exception e)
             {

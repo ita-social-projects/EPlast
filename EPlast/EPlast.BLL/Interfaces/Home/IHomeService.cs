@@ -1,10 +1,10 @@
-﻿using EPlast.BLL.DTO;
+﻿using EPlast.BLL.DTO.Account;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Interfaces
 {
     public interface IHomeService
     {
-        Task SendEmailAdmin(ContactDTO contactDTO);
+        Task SendEmailAdmin(ContactsDto contactDTO);
     }
 }

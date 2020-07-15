@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
+using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -20,12 +21,14 @@ namespace EPlast.XUnitTest.Services.City
         private readonly Mock<IRepositoryWrapper> _repoWrapper;
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<IWebHostEnvironment> _env;
+        private readonly Mock<ICityBlobStorageRepository> _cityBlobStorage;
 
         public CityServiceTests()
         {
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _mapper = new Mock<IMapper>();
             _env = new Mock<IWebHostEnvironment>();
+            _cityBlobStorage = new Mock<ICityBlobStorageRepository>();
         }
 
         private CityService CreateCityService()
@@ -50,8 +53,10 @@ namespace EPlast.XUnitTest.Services.City
                 .Verifiable();
             _repoWrapper.Setup(r => r.Save())
                 .Verifiable();
-
-            return new CityService(_repoWrapper.Object, _mapper.Object, _env.Object);
+            _repoWrapper.Setup(r => r.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(), null))
+                .ReturnsAsync(GetTestCity());
+            
+            return new CityService(_repoWrapper.Object, _mapper.Object, _env.Object, _cityBlobStorage.Object);
         }
 
         [Fact]
@@ -191,6 +196,17 @@ namespace EPlast.XUnitTest.Services.City
             };
 
             return region;
+        }
+        
+        public DataAccess.Entities.City GetTestCity()
+        {
+            var city = new DataAccess.Entities.City
+            {
+                Name = "city",
+                Logo = "710b8b06-6869-45db-894f-7a0b131e6c6b.jpg"
+            };
+
+            return city;
         }
 
         public IQueryable<CityDTO> CreateFakeCityDto(int count)
