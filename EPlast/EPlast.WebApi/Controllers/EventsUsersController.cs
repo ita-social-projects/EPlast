@@ -48,7 +48,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("newEvent")]
         public async Task<IActionResult> EventCreate(EventCreateDTO createDTO)
-        {
+            {
             try
             {
                 await _eventUserManager.CreateEventAsync(createDTO);
@@ -80,7 +80,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> EventEdit([FromBody] EventCreateDTO createDTO)
         {
             try
-            {
+                {
                 await _eventUserManager.EditEventAsync((createDTO));
 
                 return Created(nameof(GetEventUserByUserId), createDTO);
