@@ -31,7 +31,7 @@ namespace EPlast.BLL.Services.EventUser
 
         public EventUserManager(IRepositoryWrapper repoWrapper, UserManager<User> userManager,
             IParticipantStatusManager participantStatusManager, IMapper mapper, IParticipantManager participantManager,
-            IEventCategoryManager eventCategoryManager, IEventStatusManager eventStatusManager, 
+            IEventCategoryManager eventCategoryManager, IEventStatusManager eventStatusManager,
             IEventAdministrationTypeManager eventAdministrationTypeManager,
             IEventAdmininistrationManager eventAdmininistrationManager)
         {
@@ -92,6 +92,7 @@ namespace EPlast.BLL.Services.EventUser
             var users = _mapper.Map<List<User>, IEnumerable<UserInfoDTO>>((await _repoWrapper.User.GetAllAsync()).ToList());
             var eventTypes = _mapper.Map<List<EventType>, IEnumerable<EventTypeDTO>>((await _repoWrapper.EventType.GetAllAsync())
                 .ToList());
+
             var model = new EventCreateDTO()
             {
                 Users = users,
@@ -147,15 +148,8 @@ namespace EPlast.BLL.Services.EventUser
         }
 
         public async Task<EventCreateDTO> InitializeEventEditDTOAsync(int eventId)
-        {
-            var editedEvent = await _repoWrapper.Event.
-                GetFirstAsync(predicate: e => e.ID == eventId, include: source => source.
-                Include(q => q.EventCategory).
-                Include(q => q.EventAdministrations).
-                ThenInclude(q => q.User).
-                Include(q => q.EventType).
-                Include(q => q.EventStatus).
-                Include(q => q.Participants));
+       {
+            var editedEvent = await _repoWrapper.Event.GetFirstAsync();
 
             var users = _mapper.Map<List<User>, IEnumerable<UserInfoDTO>>((await _repoWrapper.User.GetAllAsync()).ToList());
             var eventTypes = _mapper.Map<List<EventType>, IEnumerable<EventTypeDTO>>((await _repoWrapper.EventType.GetAllAsync()).ToList());
