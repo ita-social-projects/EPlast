@@ -335,6 +335,8 @@ namespace EPlast.BLL.Services
 
                 var logoBase64Parts = logoBase64.Split(',');
                 var extension = logoBase64Parts[0].Split(new[] { '/', ';' }, 3)[1];
+                extension = extension[0] == '.' ? "" : "." + extension;
+
                 var fileName = Guid.NewGuid() + extension;
                 
                 await _cityBlobStorage.UploadBlobForBase64Async(logoBase64Parts[1], fileName);

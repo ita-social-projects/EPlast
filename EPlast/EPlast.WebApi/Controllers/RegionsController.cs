@@ -12,15 +12,12 @@ namespace EPlast.WebApi.Controllers
     public class RegionsController : ControllerBase
     {
         private readonly ILoggerService<CitiesController> _logger;
-        private readonly IMapper _mapper;
         private readonly IRegionService _regionService;
 
         public RegionsController(ILoggerService<CitiesController> logger,
-            IMapper mapper,
             IRegionService regionService)
         {
             _logger = logger;
-            _mapper = mapper;
             _regionService = regionService;
         }
 
@@ -33,7 +30,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("Profile/{regionId}")]
-        public async Task<IActionResult> GetProfile(int regionId)  // ПЕРЕВІРИТИ ВСЕ, добавляння адміна\видалення і регіони
+        public async Task<IActionResult> GetProfile(int regionId)
         {
             try
             {
@@ -52,5 +49,7 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest();
             }
         }
+
+
     }
 }
