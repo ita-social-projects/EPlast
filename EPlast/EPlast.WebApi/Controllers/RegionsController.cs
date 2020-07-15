@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EPlast.BLL.DTO.Region;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Region;
 using Microsoft.AspNetCore.Mvc;
@@ -50,6 +51,19 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        [HttpPost("AddAdministrator/{regionId}")]
+        public async Task<IActionResult> AddAdministrator(RegionAdministrationDTO admin)
+        {
+            try
+            {
 
+            }
+            catch(Exception e)
+            {
+                _logger.LogError($"Exception :{e.Message}");
+
+                return BadRequest();
+            }
+        }
     }
 }
