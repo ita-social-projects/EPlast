@@ -37,7 +37,7 @@ namespace EPlast.XUnitTest.Services.City
                     .ReturnsAsync(new List<DatabaseEntities.CityAdministration> { new DatabaseEntities.CityAdministration() });
 
             // Act
-            await _cityAdministrationService.GetByCityIdAsync(It.IsAny<int>());
+            await _cityAdministrationService.GetAdministrationByIdAsync(It.IsAny<int>());
 
             // Assert
             _mapper.Verify(m => m.Map<IEnumerable<DatabaseEntities.CityAdministration>, IEnumerable<CityAdministrationDTO>>(It.IsAny<IEnumerable<DatabaseEntities.CityAdministration>>()));

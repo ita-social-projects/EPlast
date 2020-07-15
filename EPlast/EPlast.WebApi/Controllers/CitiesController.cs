@@ -299,7 +299,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPost("AddAdmin/{clubId}")]
+        [HttpPost("AddAdmin/{cityId}")]
         public async Task<IActionResult> AddAdmin(CityAdministrationViewModel admin)
         {
             try
@@ -320,7 +320,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpDelete("RemoveAdmin/{adminId}")]
+        [HttpPut("RemoveAdmin/{adminId}")]
         public async Task<IActionResult> RemoveAdmin(int adminId)
         {
             try
