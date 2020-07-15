@@ -6,6 +6,7 @@ using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.AzureStorage.Base;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
+using EPlast.BLL.Interfaces.EventCalendar;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Interfaces.Jwt;
@@ -184,6 +185,8 @@ namespace EPlast.WebApi
             services.AddScoped<IEventAdminManager, EventAdminManager>();
             services.AddScoped<IEventAdmininistrationManager, EventAdministrationManager>();
             services.AddScoped<IEventAdministrationTypeManager, EventAdministrationTypeManager>();
+            services.AddScoped<IEventCalendarService, EventCalendarService>();
+            services.AddScoped<IEventsManager, EventsManager>();
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
             services.Configure<JwtOptions>(Configuration.GetSection("Jwt"));
