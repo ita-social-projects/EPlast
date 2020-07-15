@@ -142,7 +142,6 @@ namespace EPlast.WebApi
                 options.CustomSchemaIds(x => x.FullName);
             });
             services.AddControllers().AddNewtonsoftJson();
-            services.AddTokenAuthentication(Configuration);
             services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
