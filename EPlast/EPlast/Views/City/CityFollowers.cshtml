@@ -11,8 +11,8 @@
                 @if (User.IsInRole("Admin") || User.Identity.Name == Model.Head.User.Email)
                 {
                     <div class="float-left d-xl-flex justify-content-xl-center align-items-xl-center">
-                        <a class="d-xl-flex justify-content-xl-end" asp-action="AddCityMember" asp-controller="City" asp-route-cityId="@Model.City.ID" asp-route-userId="@follCity.UserId"><i class="fa fa-check" style="font-size: 24px;"></i></a>
-                        <a class="float-none d-xl-flex" asp-action="RemoveCityFollower" asp-controller="City" asp-route-cityId="@Model.City.ID" asp-route-userId="@follCity.UserId"><i class="fa fa-close" style="font-size: 24px;"></i></a>
+                        <a class="d-xl-flex justify-content-xl-end" asp-action="AddCityMember" asp-controller="City" asp-route-cityId="@Model.City.ID" asp-route-memberId="@follCity.ID"><i class="fa fa-check" style="font-size: 24px;"></i></a>
+                        <a class="float-none d-xl-flex" asp-action="RemoveCityFollower" asp-controller="City" asp-route-cityId="@Model.City.ID" asp-route-followerId="@follCity.ID"><i class="fa fa-close" style="font-size: 24px;"></i></a>
                     </div>
                 }
                 <div class="border rounded-circle" style="background-image: url('../../images/Users/@follCity.User.ImagePath');"></div>

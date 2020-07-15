@@ -56,6 +56,13 @@ namespace EPlast.BLL.Services
             return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(await GetAllAsync());
         }
 
+        public async Task<IEnumerable<CityDTO>> GetCitiesByRegionAsync(int regionId)
+        {
+            var cities = await _repoWrapper.City.GetAllAsync(c => c.RegionId == regionId);
+
+            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(cities);
+        }
+
         public async Task<CityDTO> GetByIdAsync(int cityId)
         {
             var city = await _repoWrapper.City.GetFirstOrDefaultAsync(

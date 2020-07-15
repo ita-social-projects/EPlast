@@ -12,7 +12,7 @@
                 {
                     <div class="float-left d-xl-flex justify-content-xl-center align-items-xl-center">
                         <a class="d-xl-flex justify-content-xl-end"><i class="fa fa-gear" style="font-size: 24px;"></i></a>
-                        <a class="float-none d-xl-flex" asp-action="RemoveCityMember" asp-controller="City" asp-route-cityId="@Model.City.ID" asp-route-userId="@membrCity.UserId"><i class="fa fa-close" style="font-size: 24px;"></i></a>
+                        <a class="float-none d-xl-flex" asp-action="RemoveCityMember" asp-controller="City" asp-route-cityId="@Model.City.ID" asp-route-memberId="@membrCity.ID"><i class="fa fa-close" style="font-size: 24px;"></i></a>
                     </div>
                 }
                 <div class="border rounded-circle" style=" background-image: url('../../images/Users/@membrCity.User.ImagePath');"></div>

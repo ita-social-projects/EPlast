@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using EPlast.BLL.DTO.City;
-
-namespace EPlast.BLL.DTO.Region
+﻿namespace EPlast.BLL.DTO.Region
 {
     public class RegionDTO
     {

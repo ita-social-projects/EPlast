@@ -10,6 +10,7 @@ namespace EPlast.BLL.Interfaces.City
     {
         Task<IEnumerable<DataAccessCity.City>> GetAllAsync();
         Task<IEnumerable<CityDTO>> GetAllDTOAsync();
+        Task<IEnumerable<CityDTO>> GetCitiesByRegionAsync(int regionId);
         Task<CityDTO> GetByIdAsync(int cityId);
         Task<CityProfileDTO> GetCityProfileAsync(int cityId);
         Task<CityProfileDTO> GetCityMembersAsync(int cityId);
