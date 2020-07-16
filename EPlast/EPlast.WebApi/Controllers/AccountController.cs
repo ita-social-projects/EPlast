@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.Resources;
-using EPlast.BLL.Interfaces.Jwt;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -359,13 +360,19 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        
+        /*[HttpGet("/Google-Login")]
+        [AllowAnonymous]
+        public async Task LoginGoogle()
+        {
+            await HttpContext.ChallengeAsync("Google", new AuthenticationProperties() { RedirectUri = "/signin-google" });
+        }*/
+
         /*[HttpPost("externalLogin")]
         [AllowAnonymous]
         public IActionResult ExternalLogin(string provider, string returnUrl)
         {
-            string redirectUrl = Url.Action("ExternalLoginCallBack",
-                "Account",
-                new { ReturnUrl = returnUrl });
+            string redirectUrl = Url.Action("ExternalLoginCallBack", "Account", new { ReturnUrl = returnUrl });
             AuthenticationProperties properties = _accountService.GetAuthProperties(provider, redirectUrl);
             return new ChallengeResult(provider, properties);
         }*/
@@ -407,6 +414,7 @@ namespace EPlast.WebApi.Controllers
                         if (email != null)
                         {
                             await _accountService.GoogleAuthentication(email, info);
+                            //var generatedToken = _jwtService.GenerateJWTToken(user);
                             return LocalRedirect(returnUrl);
                         }
                     }

@@ -30,6 +30,7 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.DataAccess.Repositories.Realizations.Base;
 using EPlast.WebApi.Extensions;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -76,11 +77,14 @@ namespace EPlast.WebApi
                 {
                     options.ClientId = Configuration.GetSection("GoogleAuthentication:GoogleClientId").Value;
                     options.ClientSecret = Configuration.GetSection("GoogleAuthentication:GoogleClientSecret").Value;
+                    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    //тут ще подивитись чи все ок
                 })
                 .AddFacebook(options =>
                 {
                     options.AppId = Configuration.GetSection("FacebookAuthentication:FacebookAppId").Value;
                     options.AppSecret = Configuration.GetSection("FacebookAuthentication:FacebookAppSecret").Value;
+                    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 })
                 .AddJwtBearer(config =>
                 {
