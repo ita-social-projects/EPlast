@@ -17,10 +17,8 @@ namespace EPlast.BLL.Services
     public class AnnualReportService : IAnnualReportService
     {
         private const string CityAdminTypeName = "Голова Станиці";
-        private const string ErrorMessageNoAccess = "Ви не маєте доступу до даного звіту!";
         private const string ErrorMessageHasCreated = "Річний звіт для даної станиці вже створений!";
         private const string ErrorMessageHasUnconfirmed = "Станиця має непідтверджені звіти!";
-        private const string ErrorMessageEditFailed = "Не вдалося редагувати річний звіт!";
 
         private readonly AdminType _cityAdminType;
 
@@ -50,7 +48,7 @@ namespace EPlast.BLL.Services
                             .ThenInclude(c => c.CityAdminNew)
                         .Include(a => a.City));
             return await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId) ? _mapper.Map<AnnualReport, AnnualReportDTO>(annualReport)
-                : throw new UnauthorizedAccessException(ErrorMessageNoAccess);
+                : throw new UnauthorizedAccessException();
         }
 
         public async Task<IEnumerable<AnnualReportDTO>> GetAllAsync(ClaimsPrincipal claimsPrincipal)
@@ -69,7 +67,7 @@ namespace EPlast.BLL.Services
         {
             if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReportDTO.CityId))
             {
-                throw new UnauthorizedAccessException(ErrorMessageNoAccess);
+                throw new UnauthorizedAccessException();
             }
             await CheckCanBeCreatedAsync(annualReportDTO.CityId);
             var annualReport = _mapper.Map<AnnualReportDTO, AnnualReport>(annualReportDTO);
@@ -88,11 +86,11 @@ namespace EPlast.BLL.Services
                         && a.Date.Date == annualReportDTO.Date.Date && a.Status == AnnualReportStatus.Unconfirmed);
             if (annualReportDTO.Status != AnnualReportStatusDTO.Unconfirmed)
             {
-                throw new InvalidOperationException(ErrorMessageEditFailed);
+                throw new InvalidOperationException();
             }
             if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
             {
-                throw new UnauthorizedAccessException(ErrorMessageNoAccess);
+                throw new UnauthorizedAccessException();
             }
             annualReport = _mapper.Map<AnnualReportDTO, AnnualReport>(annualReportDTO);
             _repositoryWrapper.AnnualReports.Update(annualReport);
@@ -107,7 +105,7 @@ namespace EPlast.BLL.Services
                         .Include(a => a.CityManagement));
             if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
             {
-                throw new UnauthorizedAccessException(ErrorMessageNoAccess);
+                throw new UnauthorizedAccessException();
             }
             annualReport.Status = AnnualReportStatus.Confirmed;
             await ChangeCityAdministrationAsync(annualReport);
@@ -125,7 +123,7 @@ namespace EPlast.BLL.Services
                         .Include(ar => ar.CityManagement));
             if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
             {
-                throw new UnauthorizedAccessException(ErrorMessageNoAccess);
+                throw new UnauthorizedAccessException();
             }
             annualReport.Status = AnnualReportStatus.Unconfirmed;
             var cityAdministrationRevertPoint = annualReport.CityManagement.CityAdminOldId ?? default;
@@ -143,7 +141,7 @@ namespace EPlast.BLL.Services
                     predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed);
             if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
             {
-                throw new UnauthorizedAccessException(ErrorMessageNoAccess);
+                throw new UnauthorizedAccessException();
             }
             _repositoryWrapper.AnnualReports.Delete(annualReport);
             await _repositoryWrapper.SaveAsync();
