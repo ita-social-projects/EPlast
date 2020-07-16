@@ -30,7 +30,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _mapper = new Mock<IMapper>();
             var env = new Mock<IWebHostEnvironment>();
-            _clubService = new ClubService(_repoWrapper.Object, _mapper.Object, env.Object);
+            _clubService = new ClubService(_repoWrapper.Object, _mapper.Object, env.Object, null);
         }
 
         [Fact]
@@ -112,10 +112,10 @@ namespace EPlast.XUnitTest.Services.ClubTests
             _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Club, bool>>>(),
                     It.IsAny<Func<IQueryable<Club>, IIncludableQueryable<Club, object>>>()))
                 .ReturnsAsync((Club)null);
-           
+
             //act
-            async Task Act() => await _clubService.GetClubInfoByIdAsync(It.IsAny<int>()); 
-            
+            async Task Act() => await _clubService.GetClubInfoByIdAsync(It.IsAny<int>());
+
             //assert
             await Assert.ThrowsAsync<ArgumentNullException>(Act);
             _mapper.Verify(m => m.Map<Club, ClubDTO>(new Club()), Times.Never);

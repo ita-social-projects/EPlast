@@ -124,10 +124,11 @@ namespace EPlast
             services.AddScoped<IEventAdminManager, EventAdminManager>();
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
+            services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddScoped<IUserBlobStorageRepository, UserBlobStorageRepository>();
             services.AddScoped<IDecisionBlobStorageRepository, DecisionBlobStorageRepository>();
             services.AddScoped<ICityBlobStorageRepository, CityBlobStorageRepository>();
-            services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
+            services.AddScoped<IClubBlobStorageRepository, ClubBlobStorageRepository>();
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -156,9 +157,9 @@ namespace EPlast
                 })
                 .AddFacebook(options =>
                 {
-                options.AppId = Configuration.GetSection("FacebookAuthentication:FacebookAppId").Value;
-                options.AppSecret = Configuration.GetSection("FacebookAuthentication:FacebookAppSecret").Value;
-            });
+                    options.AppId = Configuration.GetSection("FacebookAuthentication:FacebookAppId").Value;
+                    options.AppSecret = Configuration.GetSection("FacebookAuthentication:FacebookAppSecret").Value;
+                });
 
             services.Configure<DataProtectionTokenProviderOptions>(options =>
                 options.TokenLifespan = TimeSpan.FromHours(3));
