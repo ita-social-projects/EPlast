@@ -12,6 +12,8 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.AzureStorage;
+using Microsoft.Azure.Storage.Blob;
 using DataAccessClub = EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Services.Club
@@ -21,12 +23,14 @@ namespace EPlast.BLL.Services.Club
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IWebHostEnvironment _env;
         private readonly IMapper _mapper;
+        private readonly IClubBlobStorageRepository _clubBlobStorage;
 
-        public ClubService(IRepositoryWrapper repoWrapper, IMapper mapper, IWebHostEnvironment env)
+        public ClubService(IRepositoryWrapper repoWrapper, IMapper mapper, IWebHostEnvironment env, IClubBlobStorageRepository clubBlobStorage)
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
             _env = env;
+            _clubBlobStorage = clubBlobStorage;
         }
 
         public async Task<IEnumerable<ClubDTO>> GetAllClubsAsync()
@@ -45,7 +49,10 @@ namespace EPlast.BLL.Services.Club
 
             return new ClubProfileDTO
             {
-                Club = club, Members = members, Followers = followers, ClubAdmin = clubAdmin,
+                Club = club,
+                Members = members,
+                Followers = followers,
+                ClubAdmin = clubAdmin,
                 ClubAdministration = clubAdministration
             };
         }
@@ -153,7 +160,9 @@ namespace EPlast.BLL.Services.Club
         public async Task<ClubDTO> CreateAsync(ClubDTO club, IFormFile file)
         {
             var newClub = _mapper.Map<ClubDTO, DataAccessClub.Club>(club);
-            UpdateOrCreateAnImage(club, file);
+            newClub.Logo = Guid.NewGuid().ToString();
+            //UpdateOrCreateAnImage(club, file);
+            await _clubBlobStorage.UploadBlobAsync(file, newClub.Logo);
             await _repoWrapper.Club.CreateAsync(newClub);
             await _repoWrapper.SaveAsync();
 
@@ -176,8 +185,18 @@ namespace EPlast.BLL.Services.Club
             var clubAdmin = GetCurrentClubAdmin(club);
 
             return isApproved
-                ? new ClubProfileDTO {Club = club, ClubAdmin = clubAdmin, Members = members}
-                : new ClubProfileDTO {Club = club, ClubAdmin = clubAdmin, Followers = members};
+                ? new ClubProfileDTO { Club = club, ClubAdmin = clubAdmin, Members = members }
+                : new ClubProfileDTO { Club = club, ClubAdmin = clubAdmin, Followers = members };
+        }
+
+        public async Task<string> DownloadLogoFromBlobBase64Async(string fileName)
+        {
+            CloudBlockBlob blob = (await _clubBlobStorage.GetBlobAsync(fileName));
+            blob.FetchAttributes();//Fetch blob's properties
+            byte[] arr = new byte[blob.Properties.Length];
+            blob.DownloadToByteArray(arr, 0);
+            var azureBase64 = Convert.ToBase64String(arr);
+            return azureBase64;
         }
     }
 }

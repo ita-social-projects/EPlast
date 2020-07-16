@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.Club;
@@ -6,6 +8,7 @@ using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.WebApi.Models.Club;
+using EPlast.WebApi.Models.Decision;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -43,9 +46,14 @@ namespace EPlast.WebApi.Controllers
             return viewModel;
         }
 
-        [HttpGet("index")]
-        public async Task<IActionResult> Index()
+        [HttpGet]
+        public async Task<IActionResult> Get()
         {
+            var clubsWithoutLogo = await _clubService.GetAllClubsAsync();
+            foreach (var club in clubsWithoutLogo)
+            {
+                club.Logo = await _clubService.DownloadLogoFromBlobBase64Async(club.Logo);
+            }
             return Ok(await _clubService.GetAllClubsAsync());
         }
 
