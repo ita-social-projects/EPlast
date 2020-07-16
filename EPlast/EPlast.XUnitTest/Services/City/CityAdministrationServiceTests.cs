@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.City;
+using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Services.City;
 using EPlast.DataAccess.Repositories;
@@ -19,11 +20,12 @@ namespace EPlast.XUnitTest.Services.City
     {
         private readonly Mock<IRepositoryWrapper> _repositoryWrapper = new Mock<IRepositoryWrapper>();
         private readonly Mock<IMapper> _mapper = new Mock<IMapper>();
-        private readonly ICItyAdministrationService _cityAdministrationService;
+        private readonly Mock<IAdminTypeService> _adminTypeService = new Mock<IAdminTypeService>();
+        private readonly ICityAdministrationService _cityAdministrationService;
 
         public CityAdministrationServiceTests()
         {
-            _cityAdministrationService = new CityAdministrationService(_repositoryWrapper.Object, _mapper.Object);
+            _cityAdministrationService = new CityAdministrationService(_repositoryWrapper.Object, _mapper.Object, _adminTypeService.Object);
         }
 
         [Fact]

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.City;
+using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Services.City.CityAccess.CityAccessGetters;
-using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Settings;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;

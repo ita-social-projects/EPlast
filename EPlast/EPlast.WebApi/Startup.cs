@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BLL;
-using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.AzureStorage.Base;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
+using EPlast.BLL.Interfaces.EventCalendar;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
+using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
-using EPlast.BLL.Middlewares;
 using EPlast.BLL.Services;
 using EPlast.BLL.Services.Admin;
 using EPlast.BLL.Services.AzureStorage;
@@ -27,6 +22,7 @@ using EPlast.BLL.Services.Club;
 using EPlast.BLL.Services.Events;
 using EPlast.BLL.Services.EventUser;
 using EPlast.BLL.Services.Interfaces;
+using EPlast.BLL.Services.Jwt;
 using EPlast.BLL.Services.Logging;
 using EPlast.BLL.Services.UserProfiles;
 using EPlast.BLL.Settings;
@@ -35,7 +31,7 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.DataAccess.Repositories.Realizations.Base;
 using EPlast.WebApi.Extensions;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -46,6 +42,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text;
 
 namespace EPlast.WebApi
 {
@@ -67,6 +68,34 @@ namespace EPlast.WebApi
                     x.FullName.Equals("EPlast.BLL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null") ||
                     x.FullName.Equals("EPlast.WebApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null")));
 
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddGoogle(options =>
+                {
+                    options.ClientId = Configuration.GetSection("GoogleAuthentication:GoogleClientId").Value;
+                    options.ClientSecret = Configuration.GetSection("GoogleAuthentication:GoogleClientSecret").Value;
+                })
+                .AddFacebook(options =>
+                {
+                    options.AppId = Configuration.GetSection("FacebookAuthentication:FacebookAppId").Value;
+                    options.AppSecret = Configuration.GetSection("FacebookAuthentication:FacebookAppSecret").Value;
+                })
+                .AddJwtBearer(config =>
+                {
+                    config.RequireHttpsMetadata = false;
+                    config.SaveToken = true;
+
+                    config.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidIssuer = Configuration["Jwt:Issuer"],
+                        ValidAudience = Configuration["Jwt:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                    };
+                });
+
             services.AddDbContextPool<EPlastDBContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("EPlastDBConnection")));
 
@@ -86,21 +115,33 @@ namespace EPlast.WebApi
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
+                    Type = SecuritySchemeType.Http,
                     Scheme = "Bearer",
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
                     Description = "JWT Authorization header using the Bearer scheme."
                 });
-                //c.AddSecurityRequirement(security);
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                          new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "Bearer"
+                                }
+                            },
+                            new string[] {}
+                    }
+                });
             });
 
             services.ConfigureSwaggerGen(options =>
             {
                 options.CustomSchemaIds(x => x.FullName);
             });
-            services.AddControllers();
-            services.AddTokenAuthentication(Configuration);
+            services.AddControllers().AddNewtonsoftJson();
             services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
@@ -125,7 +166,7 @@ namespace EPlast.WebApi
             services.AddScoped<IConfirmedUsersService, ConfirmedUsersService>();
             services.AddScoped<IUserManagerService, UserManagerService>();
             services.AddScoped<IAdminService, AdminService>();
-            services.AddScoped<ICItyAdministrationService, CityAdministrationService>();
+            services.AddScoped<ICityAdministrationService, CityAdministrationService>();
             services.AddScoped<ICityService, CityService>();
             services.AddScoped<IGlobalLoggerService, GlobalLoggerService>();
             services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
@@ -144,30 +185,19 @@ namespace EPlast.WebApi
             services.AddScoped<IEventAdminManager, EventAdminManager>();
             services.AddScoped<IEventAdmininistrationManager, EventAdministrationManager>();
             services.AddScoped<IEventAdministrationTypeManager, EventAdministrationTypeManager>();
+            services.AddScoped<IEventCalendarService, EventCalendarService>();
+            services.AddScoped<IEventsManager, EventsManager>();
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
+            services.Configure<JwtOptions>(Configuration.GetSection("Jwt"));
+            services.AddTransient<IJwtService, Jwtservice>();
             services.AddScoped<IUserBlobStorageRepository, UserBlobStorageRepository>();
+            services.AddScoped<IDecisionBlobStorageRepository, DecisionBlobStorageRepository>();
+            services.AddScoped<ICityBlobStorageRepository, CityBlobStorageRepository>();
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddLogging();
-
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options =>
-                {
-                    options.Cookie.HttpOnly = true;
-                    options.Cookie.Expiration = TimeSpan.FromDays(5);
-                    options.LoginPath = "/Account/Login";
-                    options.LogoutPath = "/Account/Logout";
-                })
-                .AddGoogle(options =>
-                {
-                    options.ClientId = Configuration.GetSection("GoogleAuthentication:GoogleClientId").Value;
-                    options.ClientSecret = Configuration.GetSection("GoogleAuthentication:GoogleClientSecret").Value;
-                })
-                .AddFacebook(options =>
-                {
-                    options.AppId = Configuration.GetSection("FacebookAuthentication:FacebookAppId").Value;
-                    options.AppSecret = Configuration.GetSection("FacebookAuthentication:FacebookAppSecret").Value;
-                });
+            
+            services.AddAuthorization();
 
             services.Configure<RequestLocalizationOptions>(
             opts =>
@@ -198,13 +228,19 @@ namespace EPlast.WebApi
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
             });
-
-     
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCors(builder =>
+            {
+                builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+            });
+
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -238,22 +274,17 @@ namespace EPlast.WebApi
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            app.UseCors(builder =>
-            {
-                builder
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-        });
-         //   app.UseAntiforgeryTokens();
+            
+            //app.UseAntiforgeryTokens();
+            app.UseStatusCodePages();
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-            app.UseAuthentication();
         }
     }
 }

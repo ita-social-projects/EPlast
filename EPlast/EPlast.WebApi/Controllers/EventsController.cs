@@ -16,12 +16,12 @@ namespace EPlast.WebApi.Controllers
             _actionManager = actionManager;
         }
 
-        [HttpGet("categories")]
-        public async Task<IActionResult> GetCategories()
+        [HttpGet("types")]
+        public async Task<IActionResult> GetTypes()
         {
             try
             {
-                return Ok(await _actionManager.GetActionCategoriesAsync());
+                return Ok(await _actionManager.GetEventTypesAsync());
             }
             catch
             {
@@ -29,12 +29,25 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpGet("~/api/categories/{categoryId:int}/events")]
-        public async Task<IActionResult> GetEventsByCategoryId(int categoryId)
+        [HttpGet("types/{typeId:int}/categories")]
+        public async Task<IActionResult> GetCategories(int typeId)
         {
             try
             {
-                var model = await _actionManager.GetEventsAsync(categoryId, User);
+                return Ok(await _actionManager.GetCategoriesByTypeIdAsync(typeId));
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("~/api/types/{typeId:int}/categories/{categoryId:int}/events")]
+        public async Task<IActionResult> GetEvents(int typeId, int categoryId)
+        {
+            try
+            {
+                var model = await _actionManager.GetEventsAsync(categoryId, typeId, User);
 
                 return Ok(model);
             }

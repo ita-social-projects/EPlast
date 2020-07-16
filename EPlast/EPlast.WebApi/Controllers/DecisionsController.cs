@@ -1,4 +1,5 @@
-﻿using EPlast.BLL;
+﻿using AutoMapper;
+using EPlast.BLL;
 using EPlast.BLL.DTO;
 using EPlast.WebApi.Models.Decision;
 using Microsoft.AspNetCore.Mvc;
@@ -15,17 +16,25 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly IDecisionService _decisionService;
         private readonly IPdfService _pdfService;
-
-        public DecisionsController(IPdfService pdfService, IDecisionService decisionService)
+        private readonly IMapper _mapper;
+        public DecisionsController(IPdfService pdfService, IDecisionService decisionService, IMapper mapper)
         {
             _pdfService = pdfService;
             _decisionService = decisionService;
+            _mapper = mapper;
         }
 
         [HttpGet("NewDecision")]
-        public async Task<ActionResult<DecisionViewModel>> GetMetaData()
+        public async Task<ActionResult<DecisionCreateViewModel>> GetMetaData()
         {
-            return Ok(await DecisionViewModel.GetNewDecisionViewModel(_decisionService));
+            DecisionCreateViewModel decisionViewModel = new DecisionCreateViewModel
+            {
+                Organizations = await _decisionService.GetOrganizationListAsync(),
+                DecisionTargets = await _decisionService.GetDecisionTargetListAsync(),
+                DecisionStatusTypeListItems = _decisionService.GetDecisionStatusTypes()
+            };
+
+            return Ok(decisionViewModel);
         }
 
         [HttpGet("{id:int}")]
@@ -57,7 +66,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> Save(DecisionWrapperDTO decisionWrapper)
         {
 
-            if (decisionWrapper.Decision.DecisionTarget.ID != 0 || decisionWrapper == null)
+            if (decisionWrapper == null)
             {
                 return BadRequest("Дані введені неправильно");
             }
@@ -84,14 +93,18 @@ namespace EPlast.WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            List<DecisionViewModel> decisions = new List<DecisionViewModel>
-                (
-                    (await _decisionService.GetDecisionListAsync())
-                        .Select(decesion => new DecisionViewModel { DecisionWrapper = decesion })
-                        .ToList()
-                );
+            List<DecisionViewModel> decisions = (await _decisionService.GetDecisionListAsync())
+                        .Select(decesion => {
+                            var dvm = _mapper.Map<DecisionViewModel>(decesion.Decision);
 
-            return Ok(Tuple.Create(await DecisionViewModel.GetNewDecisionViewModel(_decisionService), decisions));
+                            dvm.DecisionStatusType = _decisionService.GetDecisionStatusTypes()
+                            .FirstOrDefault(dst => dst.Value == decesion.Decision.DecisionStatusType.ToString()).Text;
+                            dvm.FileName = decesion.Filename;
+                            return dvm;
+                        })
+                        .ToList();
+
+            return Ok(decisions);
         }
 
         [HttpDelete("{id:int}")]
@@ -107,11 +120,12 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("downloadfile/{id:int}")]
-        public async Task<IActionResult> Download(int id, string filename)
+        public async Task<IActionResult> Download(string filename)
         {
-            byte[] fileBytes = await _decisionService.DownloadDecisionFileAsync(id);
+            var blob = await _decisionService.DownloadDecisionFileFromBlobAsync(filename);
+            var blobStream = blob.OpenRead();
 
-            return File(fileBytes, _decisionService.GetContentType(id, filename), filename);
+            return File(blobStream, blob.Properties.ContentType, filename);
         }
 
         [HttpPost("createpdf/{objId:int}")]

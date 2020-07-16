@@ -103,7 +103,7 @@ namespace EPlast
             services.AddScoped<IConfirmedUsersService, ConfirmedUsersService>();
             services.AddScoped<IUserManagerService, UserManagerService>();
             services.AddScoped<IAdminService, AdminService>();
-            services.AddScoped<ICItyAdministrationService, CityAdministrationService>();
+            services.AddScoped<ICityAdministrationService, CityAdministrationService>();
             services.AddScoped<ICityService, CityService>();
             services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
             services.AddScoped<IClubService, ClubService>();
@@ -125,6 +125,8 @@ namespace EPlast
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
             services.AddScoped<IUserBlobStorageRepository, UserBlobStorageRepository>();
+            services.AddScoped<IDecisionBlobStorageRepository, DecisionBlobStorageRepository>();
+            services.AddScoped<ICityBlobStorageRepository, CityBlobStorageRepository>();
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
 
             services.Configure<IdentityOptions>(options =>

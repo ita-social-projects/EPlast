@@ -13,7 +13,6 @@ namespace EPlast.DataAccess.Repositories
         IDecesionTargetRepository DecesionTarget { get; }
         IDocumentTemplateRepository DocumentTemplate { get; }
         IDecesionRepository Decesion { get; }
-
         IEventRepository Event { get; }
         IGallaryRepository Gallary { get; }
         IParticipantStatusRepository ParticipantStatus { get; }
@@ -37,7 +36,6 @@ namespace EPlast.DataAccess.Repositories
         ICityDocumentTypeRepository CityDocumentType { get; }
         ICityMembersRepository CityMembers { get; }
         ICityRepository City { get; }
-        IUnconfirmedCityMemberRepository UnconfirmedCityMember { get; }
         IAdminTypeRepository AdminType { get; }
         IClubRepository Club { get; }
         IClubMembersRepository ClubMembers { get; }
