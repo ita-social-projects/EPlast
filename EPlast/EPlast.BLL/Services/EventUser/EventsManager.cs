@@ -1,10 +1,8 @@
 ﻿using EPlast.BLL.DTO.EventCalendar;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.DataAccess.Repositories;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.EventUser
