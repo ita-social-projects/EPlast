@@ -59,7 +59,7 @@ namespace EPlast.XUnitTest
                 .Returns(() => GetTestDecisionsDtoListElement(decisionId));
             mapper.Setup(m => m.Map<IEnumerable<DecisionDTO>>(It.IsAny<IEnumerable<Decesion>>())).Returns(GetTestDecisionsDtoList);
             return new DecisionService(_repository.Object, hostingEnvironment.Object, directoryManager.Object,
-                fileManager.Object, fileStreamManager.Object, mapper.Object, decisionVmCreator.Object, logger.Object);
+                fileManager.Object, fileStreamManager.Object, mapper.Object, decisionVmCreator.Object, logger.Object, null);
         }
 
         [Fact]
@@ -239,9 +239,9 @@ namespace EPlast.XUnitTest
         {
             return new List<DecisionDTO>
             {
-                new DecisionDTO {ID = 1,HaveFile = true,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
+                new DecisionDTO {ID = 1,HaveFile = false,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
                 new DecisionDTO {ID = 2,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
-                new DecisionDTO {ID = 3,HaveFile = true,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
+                new DecisionDTO {ID = 3,HaveFile =false,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
                 new DecisionDTO {ID = 4,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()}
             };
         }
