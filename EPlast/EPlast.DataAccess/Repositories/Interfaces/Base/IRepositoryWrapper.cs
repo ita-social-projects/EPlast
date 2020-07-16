@@ -13,7 +13,6 @@ namespace EPlast.DataAccess.Repositories
         IDecesionTargetRepository DecesionTarget { get; }
         IDocumentTemplateRepository DocumentTemplate { get; }
         IDecesionRepository Decesion { get; }
-
         IEventRepository Event { get; }
         IGallaryRepository Gallary { get; }
         IParticipantStatusRepository ParticipantStatus { get; }
