@@ -107,7 +107,7 @@ namespace EPlast.BLL.Services.EventUser
             model.Event.EventStatusID = await _eventStatusManager.GetStatusIdAsync("Не затверджені");
 
             var eventToCreate = _mapper.Map<EventCreationDTO, Event>(model.Event);
-            var comendantTypeId = await _eventAdministrationTypeManager.GetTypeIdAsync("Комендант");
+            var commandantTypeId = await _eventAdministrationTypeManager.GetTypeIdAsync("Комендант");
             var alternateTypeId = await _eventAdministrationTypeManager.GetTypeIdAsync("Заступник коменданта");
             var bunchuzhnyiTypeID = await _eventAdministrationTypeManager.GetTypeIdAsync("Бунчужний");
             var pysarTypeId = await _eventAdministrationTypeManager.GetTypeIdAsync("Писар");
@@ -117,7 +117,7 @@ namespace EPlast.BLL.Services.EventUser
                 new EventAdministration
                 {
                     UserID = model.Сommandant.UserId,
-                    EventAdministrationTypeID = comendantTypeId,
+                    EventAdministrationTypeID = commandantTypeId,
                     ID = eventToCreate.ID
                 },
                  new EventAdministration
@@ -148,19 +148,19 @@ namespace EPlast.BLL.Services.EventUser
         }
 
         public async Task<EventCreateDTO> InitializeEventEditDTOAsync(int eventId)
-       {
+        {
             var editedEvent = await _repoWrapper.Event.GetFirstAsync(predicate: i=> i.ID == eventId);
 
             var users = _mapper.Map<List<User>, IEnumerable<UserInfoDTO>>((await _repoWrapper.User.GetAllAsync()).ToList());
             var eventTypes = _mapper.Map<List<EventType>, IEnumerable<EventTypeDTO>>((await _repoWrapper.EventType.GetAllAsync()).ToList());
             var eventCategories = await _eventCategoryManager.GetDTOAsync();
-            var comendantTypeId = await _eventAdministrationTypeManager.GetTypeIdAsync("Комендант");
+            var commandantTypeId = await _eventAdministrationTypeManager.GetTypeIdAsync("Комендант");
             var alternateTypeId = await _eventAdministrationTypeManager.GetTypeIdAsync("Заступник коменданта");
             var bunchuzhnyiTypeID = await _eventAdministrationTypeManager.GetTypeIdAsync("Бунчужний");
             var pysarTypeId = await _eventAdministrationTypeManager.GetTypeIdAsync("Писар");
 
             var commandant = _mapper.Map<EventAdministration, EventAdministrationDTO>(await _repoWrapper.EventAdministration.
-                GetFirstAsync(predicate: i => i.EventAdministrationType.ID == comendantTypeId, include: source => source.Include(q => q.User)));
+                GetFirstAsync(predicate: i => i.EventAdministrationType.ID == commandantTypeId, include: source => source.Include(q => q.User)));
             var alternate = _mapper.Map<EventAdministration, EventAdministrationDTO>(await _repoWrapper.EventAdministration.
                GetFirstAsync(predicate: i => i.EventAdministrationType.ID == alternateTypeId, include: source => source.Include(q => q.User)));
             var bunchuzhnyi = _mapper.Map<EventAdministration, EventAdministrationDTO>(await _repoWrapper.EventAdministration.

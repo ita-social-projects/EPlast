@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using EPlast.BLL.DTO.EventCalendar;
+﻿using EPlast.BLL.DTO.EventCalendar;
 using EPlast.BLL.Interfaces.EventCalendar;
 using EPlast.BLL.Interfaces.EventUser;
-using EPlast.DataAccess.Repositories;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
