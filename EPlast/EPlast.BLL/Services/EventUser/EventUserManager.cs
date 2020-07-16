@@ -149,7 +149,7 @@ namespace EPlast.BLL.Services.EventUser
 
         public async Task<EventCreateDTO> InitializeEventEditDTOAsync(int eventId)
        {
-            var editedEvent = await _repoWrapper.Event.GetFirstAsync();
+            var editedEvent = await _repoWrapper.Event.GetFirstAsync(predicate: i=> i.ID == eventId);
 
             var users = _mapper.Map<List<User>, IEnumerable<UserInfoDTO>>((await _repoWrapper.User.GetAllAsync()).ToList());
             var eventTypes = _mapper.Map<List<EventType>, IEnumerable<EventTypeDTO>>((await _repoWrapper.EventType.GetAllAsync()).ToList());
