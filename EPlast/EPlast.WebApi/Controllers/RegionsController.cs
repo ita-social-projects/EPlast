@@ -14,12 +14,15 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly ILoggerService<CitiesController> _logger;
         private readonly IRegionService _regionService;
+        private readonly IRegionAdministrationService _regionAdministrationService;
 
         public RegionsController(ILoggerService<CitiesController> logger,
-            IRegionService regionService)
+            IRegionService regionService,
+            IRegionAdministrationService regionAdministrationService)
         {
             _logger = logger;
             _regionService = regionService;
+            _regionAdministrationService = regionAdministrationService;
         }
 
         [HttpGet("Profiles")]
@@ -56,7 +59,11 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
+                await _regionAdministrationService.AddAdministratorAsync(admin);
+                _logger.LogInformation($"User {{{admin.UserId}}} became admin for region {{{admin.CityId}}}" +
+                    $" with role {{{admin.AdminType.AdminTypeName}}}.");
 
+                return Ok();
             }
             catch(Exception e)
             {

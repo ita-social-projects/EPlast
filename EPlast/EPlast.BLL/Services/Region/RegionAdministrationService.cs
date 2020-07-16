@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Region
 {
-    class RegionAdministrationService : IRegionAdministrationService
+    public class RegionAdministrationService : IRegionAdministrationService
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;

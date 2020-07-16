@@ -170,6 +170,7 @@ namespace EPlast.WebApi
             services.AddScoped<ICityAdministrationService, CityAdministrationService>();
             services.AddScoped<ICityService, CityService>();
             services.AddScoped<IRegionService, RegionService>();
+            services.AddScoped<IRegionAdministrationService, RegionAdministrationService>();
             services.AddScoped<IGlobalLoggerService, GlobalLoggerService>();
             services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
             services.AddScoped<IClubService, ClubService>();
