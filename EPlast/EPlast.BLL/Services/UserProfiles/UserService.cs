@@ -59,6 +59,7 @@ namespace EPlast.BLL.Services.UserProfiles
                         ThenInclude(q => (q as ConfirmedUser).Approver).
                             ThenInclude(q => q.User));
             var model = _mapper.Map<User, UserDTO>(user);
+
             return model;
         }
 
@@ -66,6 +67,7 @@ namespace EPlast.BLL.Services.UserProfiles
         {
             var result = user.ConfirmedUsers.
                 Where(x => x.isCityAdmin == false && x.isClubAdmin == false);
+
             return result;
         }
 
@@ -73,6 +75,7 @@ namespace EPlast.BLL.Services.UserProfiles
         {
             var result = user.ConfirmedUsers.
                 FirstOrDefault(x => x.isClubAdmin == true);
+
             return result;
         }
 
@@ -80,6 +83,7 @@ namespace EPlast.BLL.Services.UserProfiles
         {
             var result = user.ConfirmedUsers.
                 FirstOrDefault(x => x.isCityAdmin == true);
+
             return result;
         }
         public async Task<bool> CanApproveAsync(IEnumerable<ConfirmedUserDTO> confUsers, string userId, ClaimsPrincipal user)
@@ -90,6 +94,7 @@ namespace EPlast.BLL.Services.UserProfiles
             var canApprove = confUsers.Count() < 3
                     && !confUsers.Any(x => x.Approver.UserID == currentUserId)
                     && currentUserId != userId;
+
             return canApprove;
         }
         public async Task<TimeSpan> CheckOrAddPlastunRoleAsync(string userId, DateTime registeredOn)
@@ -103,6 +108,7 @@ namespace EPlast.BLL.Services.UserProfiles
                     await _userManager.AddToRoleAsync(us, "Пластун");
                     return TimeSpan.Zero;
                 }
+
                 return timeToJoinPlast;
             }
             catch
@@ -125,9 +131,9 @@ namespace EPlast.BLL.Services.UserProfiles
             _repoWrapper.UserProfile.Update(userForUpdate.UserProfile);
             await _repoWrapper.SaveAsync();
         }
-        public async Task UpdateAsync(UserDTO user, string base64, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
+        public async Task UpdateAsyncForBase64(UserDTO user, string imageBase64, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
-            user.ImagePath = await UploadPhotoAsync(user.Id, base64);
+            user.ImagePath = await UploadPhotoAsyncFromBase64(user.Id, imageBase64);
             user.UserProfile.Nationality = CheckFieldForNull(user.UserProfile.NationalityId, user.UserProfile.Nationality.Name, user.UserProfile.Nationality);
             user.UserProfile.Religion = CheckFieldForNull(user.UserProfile.ReligionId, user.UserProfile.Religion.Name, user.UserProfile.Religion);
             user.UserProfile.Degree = CheckFieldForNull(user.UserProfile.DegreeId, user.UserProfile.Degree.Name, user.UserProfile.Degree);
@@ -148,15 +154,14 @@ namespace EPlast.BLL.Services.UserProfiles
         }
         private async Task<int?> CheckEducationFieldsAsync(string firstName, string secondName, int? firstId, int? secondId)
         {
-
-            var spec = await _educationService?.GetByIdAsync(secondId);
-            var placeStudy = await _educationService?.GetByIdAsync(firstId);
             if (secondId == firstId)
             {
                 return secondId;
             }
             else
             {
+                var spec = await _educationService?.GetByIdAsync(secondId);
+                var placeStudy = await _educationService?.GetByIdAsync(firstId);
                 if (spec != null && spec.PlaceOfStudy == firstName)
                 {
                     return spec.ID;
@@ -174,14 +179,14 @@ namespace EPlast.BLL.Services.UserProfiles
 
         private async Task<int?> CheckWorkFieldsAsync(string firstName, string secondName, int? firstId, int? secondId)
         {
-            var placeOfWork = await _workService?.GetByIdAsync(firstId);
-            var position = await _workService?.GetByIdAsync(secondId);
             if (secondId == firstId)
             {
                 return secondId;
             }
             else
             {
+                var placeOfWork = await _workService?.GetByIdAsync(firstId);
+                var position = await _workService?.GetByIdAsync(secondId);
                 if (position != null && position.PlaceOfwork == firstName)
                 {
                     return position.ID;
@@ -231,7 +236,6 @@ namespace EPlast.BLL.Services.UserProfiles
                             File.Delete(oldPath);
                         }
                     }
-
                     var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
                     var filePath = Path.Combine(uploads, fileName);
                     img.Save(filePath);
@@ -243,13 +247,15 @@ namespace EPlast.BLL.Services.UserProfiles
                 return oldImageName;
             }
         }
-        private async Task<string> UploadPhotoAsync(string userId, IFormFile file)
+        private async Task<string> UploadPhotoAsyncFromBase64(string userId, string imageBase64)
         {
             var oldImageName = (await _repoWrapper.User.GetFirstOrDefaultAsync(x => x.Id == userId)).ImagePath;
-            if (file != null && file.Length > 0)
+            if (!string.IsNullOrWhiteSpace(imageBase64) && imageBase64.Length > 0)
             {
-                var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-                await _userBlobStorage.UploadBlobAsync(file, fileName);
+                var base64Parts = imageBase64.Split(',');
+                var ext = base64Parts[0].Split(new[] { '/', ';' }, 3)[1];
+                var fileName = Guid.NewGuid().ToString() + "." + ext;
+                await _userBlobStorage.UploadBlobForBase64Async(base64Parts[1], fileName);
                 if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default_user_image.png"))
                 {
                     await _userBlobStorage.DeleteBlobAsync(oldImageName);
@@ -261,25 +267,7 @@ namespace EPlast.BLL.Services.UserProfiles
             {
                 return oldImageName;
             }
-        }
-        private async Task<string> UploadPhotoAsync(string userId, string base64)
-        {
-            var oldImageName = (await _repoWrapper.User.GetFirstOrDefaultAsync(x => x.Id == userId)).ImagePath;
-            if (!string.IsNullOrWhiteSpace(base64) && base64.Length > 0)
-            {
-                var fileName = Guid.NewGuid().ToString();
-                await _userBlobStorage.UploadBlobForBase64Async(base64, fileName);
-                if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default_user_image.png"))
-                {
-                    await _userBlobStorage.DeleteBlobAsync(oldImageName);
-                }
 
-                return fileName;
-            }
-            else
-            {
-                return oldImageName;
-            }
         }
     }
 }
