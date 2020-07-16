@@ -73,7 +73,7 @@ namespace EPlast.WebApi.Controllers
                 var model = new PersonalDataViewModel
                 {
                     User = _mapper.Map<UserDTO, UserViewModel>(user),
-                    TimeToJoinPlast = time,
+                    TimeToJoinPlast = ((int)time.TotalDays),
                     IsUserPlastun = isUserPlastun
                 };
 
