@@ -157,24 +157,14 @@ namespace EPlast.BLL.Services.Club
             }
         }
 
-        public async Task<ClubDTO> CreateAsync(ClubDTO club, IFormFile file)
-        {
-            var newClub = _mapper.Map<ClubDTO, DataAccessClub.Club>(club);
-            newClub.Logo = Guid.NewGuid().ToString();
-            //UpdateOrCreateAnImage(club, file);
-            await _clubBlobStorage.UploadBlobAsync(file, newClub.Logo);
-            await _repoWrapper.Club.CreateAsync(newClub);
-            await _repoWrapper.SaveAsync();
-
-            return _mapper.Map<DataAccessClub.Club, ClubDTO>(newClub);
-        }
-
         public async Task<ClubDTO> CreateAsync(ClubDTO club)
         {
             var newClub = _mapper.Map<ClubDTO, DataAccessClub.Club>(club);
             await _repoWrapper.Club.CreateAsync(newClub);
             await _repoWrapper.SaveAsync();
-
+            newClub.Logo = await UploadPhotoAsyncFromBase64(newClub.ID, newClub.Logo);
+            _repoWrapper.Club.Update(newClub);
+            await _repoWrapper.SaveAsync();
             return _mapper.Map<DataAccessClub.Club, ClubDTO>(newClub);
         }
 
@@ -189,6 +179,22 @@ namespace EPlast.BLL.Services.Club
                 : new ClubProfileDTO { Club = club, ClubAdmin = clubAdmin, Followers = members };
         }
 
+        private async Task<string> UploadPhotoAsyncFromBase64(int clubId, string imageBase64)
+        {
+            var oldImageName = (await _repoWrapper.Club.GetFirstOrDefaultAsync(x => x.ID == clubId)).Logo;
+            if (string.IsNullOrWhiteSpace(imageBase64) || imageBase64.Length <= 0) return oldImageName;
+            var base64Parts = imageBase64.Split(',');
+            var ext = base64Parts[0].Split(new[] { '/', ';' }, 3)[1];
+            var fileName = Guid.NewGuid() + "." + ext;
+            await _clubBlobStorage.UploadBlobForBase64Async(base64Parts[1], fileName);
+            if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default_club_image.png") && oldImageName.Length < 20)
+            {
+                await _clubBlobStorage.DeleteBlobAsync(oldImageName);
+            }
+
+            return fileName;
+        }
+
         public async Task<string> DownloadLogoFromBlobBase64Async(string fileName)
         {
             CloudBlockBlob blob = (await _clubBlobStorage.GetBlobAsync(fileName));
@@ -197,6 +203,11 @@ namespace EPlast.BLL.Services.Club
             blob.DownloadToByteArray(arr, 0);
             var azureBase64 = Convert.ToBase64String(arr);
             return azureBase64;
+        }
+
+        public async Task<string> GetImageBase64Async(string fileName)
+        {
+            return await _clubBlobStorage.GetBlobBase64Async(fileName);
         }
     }
 }
