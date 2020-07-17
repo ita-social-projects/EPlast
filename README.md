@@ -13,7 +13,7 @@ Let's take a closer look at the technologies of each part.
 
 **Client Frontend** - You can see [here](https://github.com/IrynaZavushchak/EPlast-Client/). We using React, Ant Design
 
-**Backend** - ASP.NET Core 3.1
+**Backend** - ASP.NET Core 3.1.0
 
 **Database** -  Microsoft SQL Server and hosted on Microsoft Azure.
 
@@ -31,7 +31,7 @@ Before sending any pull request, please discuss requirements/changes to be imple
 # 4. How to start the project locally.
 4.1. Clone or download the project from **https://github.com/IrynaZavushchak/EPlast.git**
 
-4.2 Install [ASP.NET Core Runtime 2.2.0](https://dotnet.microsoft.com/download/dotnet-core/2.2) and [ASP.NET Core SDK 2.2.100](https://dotnet.microsoft.com/download/dotnet-core/2.2)
+4.2 Install [ASP.NET Core Runtime 3.1.0](https://dotnet.microsoft.com/download/dotnet-core/3.1) and [ASP.NET Core SDK 3.1.0](https://dotnet.microsoft.com/download/dotnet-core/3.1)
 
 4.3 Install [Microsoft SQL Server 2017+](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
 
