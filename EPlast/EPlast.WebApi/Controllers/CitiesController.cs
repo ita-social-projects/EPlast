@@ -5,6 +5,7 @@ using EPlast.BLL.Interfaces.Logging;
 using EPlast.WebApi.Models.City;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
@@ -32,12 +33,19 @@ namespace EPlast.WebApi.Controllers
             _cityAdministrationService = cityAdministrationService;
         }
 
-        [HttpGet("Profiles")]
-        public async Task<IActionResult> Index()
+        [HttpGet("Profiles/{page}")]
+        public async Task<IActionResult> Index(int page, int pageSize = 10)
         {
             var cities = await _cityService.GetAllDTOAsync();
+            var citiesViewModel = new CitiesViewModel()
+            {
+                Cities = cities.Skip((page - 1) * pageSize).Take(pageSize),
+                Total = cities.Count(),
+                Page = new PageViewModel(cities.Count(), page, pageSize),
+                CanCreate = User.IsInRole("Admin")
+            };
 
-            return Ok(cities);
+            return Ok(citiesViewModel);
         }
 
         [HttpGet("Profile/{cityId}")]
@@ -51,10 +59,8 @@ namespace EPlast.WebApi.Controllers
                     return NotFound();
                 }
 
-                var cityProfile = _mapper.Map<CityProfileDTO, CityProfileViewModel>(cityProfileDto);
-                cityProfile.SetMembersAndAdministration();
-
-                return Ok(cityProfile.City);
+                var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
+                return Ok(cityProfile);
             }
             catch (Exception e)
             {
@@ -75,8 +81,7 @@ namespace EPlast.WebApi.Controllers
                     return NotFound();
                 }
 
-                var cityProfile = _mapper.Map<CityProfileDTO, CityProfileViewModel>(cityProfileDto);
-                cityProfile.SetMembersAndAdministration();
+                var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
 
                 return Ok(cityProfile.Members);
             }
@@ -99,8 +104,7 @@ namespace EPlast.WebApi.Controllers
                     return NotFound();
                 }
 
-                var cityProfile = _mapper.Map<CityProfileDTO, CityProfileViewModel>(cityProfileDto);
-                cityProfile.SetMembersAndAdministration();
+                var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
 
                 return Ok(cityProfile.Followers);
             }
@@ -123,10 +127,9 @@ namespace EPlast.WebApi.Controllers
                     return NotFound();
                 }
 
-                var cityProfile = _mapper.Map<CityProfileDTO, CityProfileViewModel>(cityProfileDto);
-                cityProfile.SetMembersAndAdministration();
+                var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
 
-                return Ok(cityProfile.Admins);
+                return Ok(cityProfile.Administration);
             }
             catch (Exception e)
             {
@@ -147,8 +150,7 @@ namespace EPlast.WebApi.Controllers
                     return NotFound();
                 }
 
-                var cityProfile = _mapper.Map<CityProfileDTO, CityProfileViewModel>(cityProfileDto);
-                cityProfile.SetMembersAndAdministration();
+                var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
 
                 return Ok(cityProfile.Documents);
             }
@@ -199,15 +201,12 @@ namespace EPlast.WebApi.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var cityProfileDTO = new CityProfileDTO
-                {
-                    City = _mapper.Map<CityViewModel, CityDTO>(city)
-                };
+                var cityDTO = _mapper.Map<CityViewModel, CityDTO>(city);
+                
+                cityDTO.ID = await _cityService.CreateAsync(cityDTO);
+                _logger.LogInformation($"City {{{cityDTO.Name}}} was created.");
 
-                await _cityService.CreateAsync(cityProfileDTO);
-                _logger.LogInformation($"City {{{cityProfileDTO.City.Name}}} was created.");
-
-                return Ok(_mapper.Map<CityDTO, CityViewModel>(cityProfileDTO.City));
+                return Ok(city.ID);
             }
             catch (Exception e)
             {
@@ -227,15 +226,12 @@ namespace EPlast.WebApi.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var cityProfileDTO = new CityProfileDTO
-                {
-                    City = _mapper.Map<CityViewModel, CityDTO>(city)
-                };
+                var cityDTO = _mapper.Map<CityViewModel, CityDTO>(city);
+                
+                await _cityService.EditAsync(cityDTO);
+                _logger.LogInformation($"City {{{cityDTO.Name}}} was edited.");
 
-                await _cityService.EditAsync(cityProfileDTO);
-                _logger.LogInformation($"City {{{cityProfileDTO.City.Name}}} was edited.");
-
-                return Ok(_mapper.Map<CityDTO, CityViewModel>(cityProfileDTO.City));
+                return Ok();
             }
             catch (Exception e)
             {
@@ -245,7 +241,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPost("AddFollower/{cityId}/{userId}")]
+        [HttpPost("AddFollower/{cityId}")]
         public async Task<IActionResult> AddFollower(int cityId, string userId)
         {
             try

@@ -37,7 +37,11 @@ namespace EPlast.BLL.DTO.City
         public string Logo { get; set; }
         public int RegionId { get; set; }
         public RegionDTO Region { get; set; }
-
+        public bool CanEdit { get; set; }
+        public bool CanJoin { get; set; }
+        public bool CanApprove { get; set; }
+        public bool CanSeeReports { get; set; }
+        public bool CanAddReports { get; set; }
         public IEnumerable<CityDocumentsDTO> CityDocuments { get; set; }
         public IEnumerable<CityMembersDTO> CityMembers { get; set; }
         public IEnumerable<CityAdministrationDTO> CityAdministration { get; set; }
