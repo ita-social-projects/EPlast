@@ -6,6 +6,7 @@ namespace EPlast.DataAccess.Entities
     public class CityMembers
     {
         public int ID { get; set; }
+        public bool IsApproved { get; set; }
 
         public int CityId { get; set; }
         public City City { get; set; }

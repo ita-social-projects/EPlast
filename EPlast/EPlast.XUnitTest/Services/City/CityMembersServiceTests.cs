@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.City;
+using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Services.City;
-using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
@@ -35,7 +35,7 @@ namespace EPlast.XUnitTest.Services.City
                     .ReturnsAsync(new List<DatabaseEntities.CityMembers> { new DatabaseEntities.CityMembers() });
 
             // Act
-            await _cityMembersService.GetCurrentByCityIdAsync(It.IsAny<int>());
+            await _cityMembersService.GetMembersByCityIdAsync(It.IsAny<int>());
 
             // Assert
             _mapper.Verify(m => m.Map<IEnumerable<DatabaseEntities.CityMembers>, IEnumerable<CityMembersDTO>>(It.IsAny<IEnumerable<DatabaseEntities.CityMembers>>()));

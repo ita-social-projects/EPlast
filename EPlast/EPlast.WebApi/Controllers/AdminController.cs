@@ -18,13 +18,13 @@ namespace EPlast.WebApi.Controllers
         private readonly IUserManagerService _userManagerService;
         private readonly IAdminService _adminService;
         private readonly ICityService _cityService;
-        private readonly ICItyAdministrationService _cityAdministrationService;
+        private readonly ICityAdministrationService _cityAdministrationService;
 
         public AdminController(ILogger<AdminController> logger,
             IUserManagerService userManagerService,
             IAdminService adminService,
             ICityService cityService,
-            ICItyAdministrationService cityAdministrationService)
+            ICityAdministrationService cityAdministrationService)
         {
             _logger = logger;
             _userManagerService = userManagerService;
