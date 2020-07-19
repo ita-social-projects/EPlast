@@ -22,7 +22,7 @@ namespace EPlast.BLL.Services
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _env;
         private readonly ICityBlobStorageRepository _cityBlobStorage;
-
+        
         public CityService(IRepositoryWrapper repoWrapper,
             IMapper mapper,
             IWebHostEnvironment env,
@@ -91,10 +91,10 @@ namespace EPlast.BLL.Services
 
             var cityHead = city.CityAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Станиці"
-                    && (a.EndDate > DateTime.Now || a.EndDate == null));
+                    && (DateTime.Now < a.EndDate || a.EndDate == null));
             var cityAdmins = city.CityAdministration
                 .Where(a => a.AdminType.AdminTypeName != "Голова Станиці"
-                    && (a.EndDate > DateTime.Now || a.EndDate == null))
+                    && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .Take(6)
                 .ToList();
             var members = city.CityMembers
@@ -130,7 +130,7 @@ namespace EPlast.BLL.Services
 
             var cityHead = city.CityAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Станиці"
-                    && (a.EndDate > DateTime.Now || a.EndDate == null));
+                    && (DateTime.Now < a.EndDate || a.EndDate == null));
             var members = city.CityMembers
                 .Where(m => m.IsApproved)
                 .ToList();
@@ -148,7 +148,7 @@ namespace EPlast.BLL.Services
 
             var cityHead = city.CityAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Станиці"
-                    && (a.EndDate > DateTime.Now || a.EndDate == null));
+                    && (DateTime.Now < a.EndDate || a.EndDate == null));
             var followers = city.CityMembers
                 .Where(m => !m.IsApproved)
                 .ToList();
@@ -166,10 +166,10 @@ namespace EPlast.BLL.Services
 
             var cityHead = city.CityAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Станиці"
-                    && (a.EndDate > DateTime.Now || a.EndDate == null));
+                    && (DateTime.Now < a.EndDate || a.EndDate == null));
             var cityAdmins = city.CityAdministration
                 .Where(a => a.AdminType.AdminTypeName != "Голова Станиці"
-                    && (a.EndDate > DateTime.Now || a.EndDate == null))
+                    && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .ToList();
 
             return new CityProfileDTO { City = city, Admins = cityAdmins, Head = cityHead };
@@ -185,7 +185,7 @@ namespace EPlast.BLL.Services
 
             var cityHead = city.CityAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Станиці"
-                    && (a.EndDate > DateTime.Now || a.EndDate == null));
+                    && (a.EndDate < DateTime.Now || a.EndDate == null));
             var cityDoc = city.CityDocuments.ToList();
 
             return new CityProfileDTO { City = city, Documents = cityDoc, Head = cityHead };
@@ -230,16 +230,16 @@ namespace EPlast.BLL.Services
         public async Task EditAsync(CityProfileDTO model, IFormFile file)
         {
             await UploadPhotoAsync(model.City, file);
-            var city = await CreateCityAsync(model);
+            var city = await CreateCityAndRegionAsync(model);
 
             _repoWrapper.City.Attach(city);
             _repoWrapper.City.Update(city);
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task EditAsync(CityProfileDTO model)
+        public async Task EditAsync(CityDTO model)
         {
-            await UploadPhotoAsync(model.City);
+            await UploadPhotoAsync(model);
             var city = await CreateCityAsync(model);
 
             _repoWrapper.City.Attach(city);
@@ -250,7 +250,7 @@ namespace EPlast.BLL.Services
         public async Task<int> CreateAsync(CityProfileDTO model, IFormFile file)
         {
             await UploadPhotoAsync(model.City, file);
-            var city = await CreateCityAsync(model);
+            var city = await CreateCityAndRegionAsync(model);
 
             _repoWrapper.City.Attach(city);
             await _repoWrapper.City.CreateAsync(city);
@@ -259,9 +259,9 @@ namespace EPlast.BLL.Services
             return city.ID;
         }
 
-        public async Task<int> CreateAsync(CityProfileDTO model)
+        public async Task<int> CreateAsync(CityDTO model)
         {
-            await UploadPhotoAsync(model.City);
+            await UploadPhotoAsync(model);
             var city = await CreateCityAsync(model);
 
             _repoWrapper.City.Attach(city);
@@ -271,7 +271,7 @@ namespace EPlast.BLL.Services
             return city.ID;
         }
 
-        private async Task<DataAccessCity.City> CreateCityAsync(CityProfileDTO model)
+        private async Task<DataAccessCity.City> CreateCityAndRegionAsync(CityProfileDTO model)
         {
             var cityDto = model.City;
 
@@ -289,6 +289,17 @@ namespace EPlast.BLL.Services
                 await _repoWrapper.SaveAsync();
             }
 
+            city.RegionId = region.ID;
+            city.Region = region;
+
+            return city;
+        }
+
+        private async Task<DataAccessCity.City> CreateCityAsync(CityDTO model)
+        {
+            var city = _mapper.Map<CityDTO, DataAccessCity.City>(model);
+            var region = await _repoWrapper.Region.GetFirstOrDefaultAsync(r => r.RegionName == city.Region.RegionName);
+            
             city.RegionId = region.ID;
             city.Region = region;
 
@@ -335,19 +346,21 @@ namespace EPlast.BLL.Services
 
             if (!string.IsNullOrWhiteSpace(logoBase64) && logoBase64.Length > 0)
             {
-                if (!string.IsNullOrEmpty(oldImageName))
-                {
-                    await _cityBlobStorage.DeleteBlobAsync(oldImageName);
-                }
-
                 var logoBase64Parts = logoBase64.Split(',');
                 var extension = logoBase64Parts[0].Split(new[] { '/', ';' }, 3)[1];
-                extension = extension[0] == '.' ? "" : "." + extension;
-
+                extension = extension != ""
+                    ? (extension[0] == '.' ? "" : "." + extension)
+                    : extension;
+                
                 var fileName = Guid.NewGuid() + extension;
 
                 await _cityBlobStorage.UploadBlobForBase64Async(logoBase64Parts[1], fileName);
                 city.Logo = fileName;
+
+                if (!string.IsNullOrEmpty(oldImageName))
+                {
+                    await _cityBlobStorage.DeleteBlobAsync(oldImageName);
+                }
             }
             else
             {
