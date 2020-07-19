@@ -112,11 +112,6 @@ namespace EPlast.DataAccess
                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<User>()
-               .HasMany(x => x.UnconfirmedCityMembers)
-               .WithOne(x => x.User)
-               .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<User>()
                .HasMany(x => x.CityAdministrations)
                .WithOne(x => x.User)
                .OnDelete(DeleteBehavior.Cascade);
@@ -154,7 +149,6 @@ namespace EPlast.DataAccess
         public DbSet<CityDocuments> CityDocuments { get; set; }
         public DbSet<CityDocumentType> CityDocumentTypes { get; set; }
         public DbSet<CityMembers> CityMembers { get; set; }
-        public DbSet<UnconfirmedCityMember> UnconfirmedCityMember { get; set; }
         public DbSet<AdminType> AdminTypes { get; set; }
         public DbSet<ClubMembers> ClubMembers { get; set; }
         public DbSet<ClubAdministration> ClubAdministrations { get; set; }

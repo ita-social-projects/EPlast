@@ -42,7 +42,6 @@ namespace EPlast.ViewModels.UserInformation.UserProfile
         public IEnumerable<Participant> Participants { get; set; }
         public IEnumerable<CityMembers> CityMembers { get; set; }
         public IEnumerable<CityAdministration> CityAdministrations { get; set; }
-        public IEnumerable<UnconfirmedCityMember> UnconfirmedCityMembers { get; set; }
         public IEnumerable<ClubMembers> ClubMembers { get; set; }
         public IEnumerable<RegionAdministration> RegionAdministrations { get; set; }
         public IEnumerable<UserPlastDegree> UserPlastDegrees { get; set; }
