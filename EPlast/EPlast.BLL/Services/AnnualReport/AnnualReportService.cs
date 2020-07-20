@@ -17,8 +17,6 @@ namespace EPlast.BLL.Services
     public class AnnualReportService : IAnnualReportService
     {
         private const string CityAdminTypeName = "Голова Станиці";
-        private const string ErrorMessageHasCreated = "Річний звіт для даної станиці вже створений!";
-        private const string ErrorMessageHasUnconfirmed = "Станиця має непідтверджені звіти!";
 
         private readonly AdminType _cityAdminType;
 
@@ -69,7 +67,10 @@ namespace EPlast.BLL.Services
             {
                 throw new UnauthorizedAccessException();
             }
-            await CheckCanBeCreatedAsync(annualReportDTO.CityId);
+            if (await CheckCreated(annualReportDTO.CityId))
+            {
+                throw new InvalidOperationException();
+            }
             var annualReport = _mapper.Map<AnnualReportDTO, AnnualReport>(annualReportDTO);
             var user = await _userManager.GetUserAsync(claimsPrincipal);
             annualReport.UserId = user.Id;
@@ -147,30 +148,12 @@ namespace EPlast.BLL.Services
             await _repositoryWrapper.SaveAsync();
         }
 
-        public async Task<bool> HasUnconfirmedAsync(int cityId)
+        public async Task<bool> CheckCreated(int cityId)
         {
-            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
-                predicate: a => a.CityId == cityId && a.Status == AnnualReportStatus.Unconfirmed);
-            return annualReport != null;
-        }
-
-        public async Task<bool> HasCreatedAsync(int cityId)
-        {
-            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
-                predicate: a => a.CityId == cityId && a.Date.Year == DateTime.Now.Year);
-            return annualReport != null;
-        }
-
-        public async Task CheckCanBeCreatedAsync(int cityId)
-        {
-            if (await HasCreatedAsync(cityId))
-            {
-                throw new InvalidOperationException(ErrorMessageHasCreated);
-            }
-            if (await HasUnconfirmedAsync(cityId))
-            {
-                throw new InvalidOperationException(ErrorMessageHasUnconfirmed);
-            }
+            var city = await _repositoryWrapper.City.GetFirstOrDefaultAsync(
+                predicate: a => a.ID == cityId);
+            return await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
+                predicate: a => a.CityId == city.ID && (a.Status == AnnualReportStatus.Unconfirmed) || a.Date.Year == DateTime.Now.Year) != null;
         }
 
         private async Task SaveLastConfirmedAsync(int cityId)
