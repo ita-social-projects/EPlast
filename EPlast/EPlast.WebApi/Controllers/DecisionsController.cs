@@ -76,7 +76,7 @@ namespace EPlast.WebApi.Controllers
             //    return BadRequest("файл за великий (більше 10 Мб)");
             //}
 
-            decisionWrapper.Decision.HaveFile = decisionWrapper.File != null;
+        //    decisionWrapper.Decision.FileName = decisionWrapper.File != null;
             decisionWrapper.Decision.ID = await _decisionService.SaveDecisionAsync(decisionWrapper);
             var decisionOrganizations = (await _decisionService
                         .GetDecisionOrganizationAsync(decisionWrapper.Decision.Organization))

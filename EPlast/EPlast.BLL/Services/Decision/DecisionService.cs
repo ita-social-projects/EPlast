@@ -84,33 +84,34 @@ namespace EPlast.BLL
 
         public async Task<IEnumerable<DecisionWrapperDTO>> GetDecisionListAsync()
         {
-            IEnumerable<DecisionWrapperDTO> decisions = null;
-            try
-            {
-                decisions = (await GetDecisionAsync()).ToList();
-                foreach (var decision in decisions)
-                {
-                    var path = _appEnvironment.WebRootPath + DecesionsDocumentFolder + decision.Decision.ID;
-                    if (!decision.Decision.HaveFile || !_directoryManager.Exists(path))
-                    {
-                        continue;
-                    }
-                    var files = _directoryManager.GetFiles(path);
+          IEnumerable<DecisionWrapperDTO> decisions = null;
+            /*  try
+              {
+                  decisions = (await GetDecisionAsync()).ToList();
+                  foreach (var decision in decisions)
+                  {
+                      var path = _appEnvironment.WebRootPath + DecesionsDocumentFolder + decision.Decision.ID;
+                      if (!decision.Decision.HaveFile || !_directoryManager.Exists(path))
+                      {
+                          continue;
+                      }
+                      var files = _directoryManager.GetFiles(path);
 
-                    if (files.Length == 0)
-                    {
-                        throw new ArgumentException($"File count in '{path}' is 0");
-                    }
+                      if (files.Length == 0)
+                      {
+                          throw new ArgumentException($"File count in '{path}' is 0");
+                      }
 
-                    decision.Filename = Path.GetFileName(files.First());
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Exception: {e.Message}");
-            }
-
+                      decision.Filename = Path.GetFileName(files.First());
+                  }
+              }
+              catch (Exception e)
+              {
+                  _logger.LogError($"Exception: {e.Message}");
+              }
+                         */
             return decisions;
+ 
         }
 
         public async Task<bool> ChangeDecisionAsync(DecisionDTO decisionDto)
@@ -145,7 +146,7 @@ namespace EPlast.BLL
             {
                 _logger.LogError($"Exception: {e.Message}");
             }
-            if (decision.Decision.HaveFile)
+            if (decision.Decision.FileName != null)
                 await UploadFileToBlobAsync(decision.File, decision.Filename);
 
             return decision.Decision.ID;

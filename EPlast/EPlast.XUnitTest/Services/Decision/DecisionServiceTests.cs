@@ -228,9 +228,9 @@ namespace EPlast.XUnitTest
         {
             return new List<Decesion>
             {
-                new Decesion  {ID = 1,HaveFile = true,Description = "old"},
+                new Decesion  {ID = 1,Description = "old"},
                 new Decesion  {ID = 2,Description = "old"},
-                new Decesion  {ID = 3,HaveFile = true,Description = "old"},
+                new Decesion  {ID = 3,Description = "old"},
                 new Decesion  {ID = 4,Description = "old"}
             }.AsQueryable();
         }
@@ -239,9 +239,9 @@ namespace EPlast.XUnitTest
         {
             return new List<DecisionDTO>
             {
-                new DecisionDTO {ID = 1,HaveFile = false,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
+                new DecisionDTO {ID = 1,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
                 new DecisionDTO {ID = 2,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
-                new DecisionDTO {ID = 3,HaveFile =false,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
+                new DecisionDTO {ID = 3,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
                 new DecisionDTO {ID = 4,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()}
             };
         }
