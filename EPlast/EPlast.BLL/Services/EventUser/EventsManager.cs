@@ -25,7 +25,8 @@ namespace EPlast.BLL.Services.EventUser
                     EventName = events.EventName,
                     EventDateStart = events.EventDateStart,
                     EventDateEnd = events.EventDateEnd,
-                    Description = events.Description
+                    Description = events.Description,
+                    Eventlocation = events.Eventlocation,
                 })
                 .ToList();
 
