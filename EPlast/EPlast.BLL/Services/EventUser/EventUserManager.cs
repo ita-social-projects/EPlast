@@ -83,6 +83,7 @@ namespace EPlast.BLL.Services.EventUser
                     model.VisitedEvents.Add(eventToAdd);
                 }
             }
+
             return model;
         }
 
@@ -90,8 +91,7 @@ namespace EPlast.BLL.Services.EventUser
         {
             var eventCategories = await _eventCategoryManager.GetDTOAsync();
             var users = _mapper.Map<List<User>, IEnumerable<UserInfoDTO>>((await _repoWrapper.User.GetAllAsync()).ToList());
-            var eventTypes = _mapper.Map<List<EventType>, IEnumerable<EventTypeDTO>>((await _repoWrapper.EventType.GetAllAsync())
-                .ToList());
+            var eventTypes = _mapper.Map<List<EventType>, IEnumerable<EventTypeDTO>>((await _repoWrapper.EventType.GetAllAsync()).ToList());
 
             var model = new EventCreateDTO()
             {
@@ -99,6 +99,7 @@ namespace EPlast.BLL.Services.EventUser
                 EventTypes = eventTypes,
                 EventCategories = eventCategories
             };
+
             return model;
         }
 
@@ -118,25 +119,25 @@ namespace EPlast.BLL.Services.EventUser
                 {
                     UserID = model.Сommandant.UserId,
                     EventAdministrationTypeID = commandantTypeId,
-                    ID = eventToCreate.ID
+                    EventID = eventToCreate.ID,
                 },
                  new EventAdministration
                  {
                     UserID = model.Alternate.UserId,
                     EventAdministrationTypeID = alternateTypeId,
-                    ID = eventToCreate.ID
+                    EventID = eventToCreate.ID,
                  },
                   new EventAdministration
                   {
                     UserID = model.Bunchuzhnyi.UserId,
                     EventAdministrationTypeID = bunchuzhnyiTypeID,
-                    ID = eventToCreate.ID
+                    EventID = eventToCreate.ID,
                   },
                    new EventAdministration
                    {
                     UserID = model.Pysar.UserId,
                     EventAdministrationTypeID = pysarTypeId,
-                    ID = eventToCreate.ID
+                    EventID = eventToCreate.ID,
                    },
             };
 
@@ -144,12 +145,13 @@ namespace EPlast.BLL.Services.EventUser
 
             await _repoWrapper.Event.CreateAsync(eventToCreate);
             await _repoWrapper.SaveAsync();
+
             return eventToCreate.ID;
         }
 
         public async Task<EventCreateDTO> InitializeEventEditDTOAsync(int eventId)
         {
-            var editedEvent = await _repoWrapper.Event.GetFirstAsync(predicate: i=> i.ID == eventId);
+            var editedEvent = await _repoWrapper.Event.GetFirstAsync(predicate: i => i.ID == eventId, include: source => source.Include(i => i.EventAdministrations));
 
             var users = _mapper.Map<List<User>, IEnumerable<UserInfoDTO>>((await _repoWrapper.User.GetAllAsync()).ToList());
             var eventTypes = _mapper.Map<List<EventType>, IEnumerable<EventTypeDTO>>((await _repoWrapper.EventType.GetAllAsync()).ToList());
@@ -160,13 +162,13 @@ namespace EPlast.BLL.Services.EventUser
             var pysarTypeId = await _eventAdministrationTypeManager.GetTypeIdAsync("Писар");
 
             var commandant = _mapper.Map<EventAdministration, EventAdministrationDTO>(await _repoWrapper.EventAdministration.
-                GetFirstAsync(predicate: i => i.EventAdministrationType.ID == commandantTypeId, include: source => source.Include(q => q.User)));
+                GetFirstAsync(predicate: i => i.EventAdministrationTypeID == commandantTypeId && i.EventID == eventId, include: source => source.Include(q => q.User)));
             var alternate = _mapper.Map<EventAdministration, EventAdministrationDTO>(await _repoWrapper.EventAdministration.
-               GetFirstAsync(predicate: i => i.EventAdministrationType.ID == alternateTypeId, include: source => source.Include(q => q.User)));
+               GetFirstAsync(predicate: i => i.EventAdministrationTypeID == alternateTypeId && i.EventID == eventId, include: source => source.Include(q => q.User)));
             var bunchuzhnyi = _mapper.Map<EventAdministration, EventAdministrationDTO>(await _repoWrapper.EventAdministration.
-               GetFirstAsync(predicate: i => i.EventAdministrationType.ID == bunchuzhnyiTypeID, include: source => source.Include(q => q.User)));
+               GetFirstAsync(predicate: i => i.EventAdministrationTypeID == bunchuzhnyiTypeID && i.EventID == eventId, include: source => source.Include(q => q.User)));
             var pysar = _mapper.Map<EventAdministration, EventAdministrationDTO>(await _repoWrapper.EventAdministration.
-               GetFirstAsync(predicate: i => i.EventAdministrationType.ID == pysarTypeId, include: source => source.Include(q => q.User)));
+               GetFirstAsync(predicate: i => i.EventAdministrationTypeID == pysarTypeId && i.EventID == eventId, include: source => source.Include(q => q.User)));
             var model = new EventCreateDTO()
             {
                 Event = _mapper.Map<Event, EventCreationDTO>(editedEvent),
@@ -185,8 +187,55 @@ namespace EPlast.BLL.Services.EventUser
         public async Task EditEventAsync(EventCreateDTO model)
         {
             model.Event.EventStatusID = await _eventStatusManager.GetStatusIdAsync("Не затверджені");
-            var eventEdit = _mapper.Map<EventCreationDTO, Event>(model.Event);
-            _repoWrapper.Event.Update(eventEdit);
+
+            var eventToEdit = _mapper.Map<EventCreationDTO, Event>(model.Event);
+            var commandantTypeId = await _eventAdministrationTypeManager.GetTypeIdAsync("Комендант");
+            var alternateTypeId = await _eventAdministrationTypeManager.GetTypeIdAsync("Заступник коменданта");
+            var bunchuzhnyiTypeID = await _eventAdministrationTypeManager.GetTypeIdAsync("Бунчужний");
+            var pysarTypeId = await _eventAdministrationTypeManager.GetTypeIdAsync("Писар");
+
+            var commandant = await _repoWrapper.EventAdministration.
+                GetFirstAsync(predicate: i => i.EventAdministrationTypeID == commandantTypeId && i.EventID == eventToEdit.ID, include: source => source.Include(q => q.User));
+            var alternate = await _repoWrapper.EventAdministration.
+               GetFirstAsync(predicate: i => i.EventAdministrationTypeID == alternateTypeId && i.EventID == eventToEdit.ID, include: source => source.Include(q => q.User));
+            var bunchuzhnyi = await _repoWrapper.EventAdministration.
+               GetFirstAsync(predicate: i => i.EventAdministrationTypeID == bunchuzhnyiTypeID && i.EventID == eventToEdit.ID, include: source => source.Include(q => q.User));
+            var pysar = await _repoWrapper.EventAdministration.
+               GetFirstAsync(predicate: i => i.EventAdministrationTypeID == pysarTypeId && i.EventID == eventToEdit.ID, include: source => source.Include(q => q.User));
+            var administrationList = new List<EventAdministration>
+            {
+                new EventAdministration
+                {
+                    UserID = model.Сommandant.UserId,
+                    EventAdministrationTypeID = commandantTypeId,
+                    EventID = eventToEdit.ID,
+                    ID = commandant.ID,
+                },
+                 new EventAdministration
+                 {
+                    UserID = model.Alternate.UserId,
+                    EventAdministrationTypeID = alternateTypeId,
+                    EventID = eventToEdit.ID,
+                    ID = alternate.ID,
+                 },
+                  new EventAdministration
+                  {
+                    UserID = model.Bunchuzhnyi.UserId,
+                    EventAdministrationTypeID = bunchuzhnyiTypeID,
+                    EventID = eventToEdit.ID,
+                    ID =  bunchuzhnyi.ID,
+                  },
+                   new EventAdministration
+                   {
+                    UserID = model.Pysar.UserId,
+                    EventAdministrationTypeID = pysarTypeId,
+                    EventID = eventToEdit.ID,
+                    ID = pysar.ID,
+                   },
+            };
+
+            eventToEdit.EventAdministrations = administrationList;
+            _repoWrapper.Event.Update(eventToEdit);
             await _repoWrapper.SaveAsync();
         }
     }
