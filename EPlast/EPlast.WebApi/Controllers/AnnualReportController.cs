@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.ExtensionMethods;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -195,6 +197,17 @@ namespace EPlast.WebApi.Controllers
             {
                 return StatusCode(StatusCodes.Status404NotFound);
             }
+        }
+
+        [HttpGet("getStatuses")]
+        public IActionResult GetStatuses()
+        {
+            var statuses = new List<string>();
+            foreach (Enum status in Enum.GetValues(typeof(AnnualReportStatusDTO)))
+            {
+                statuses.Add(status.GetDescription());
+            }
+            return StatusCode(StatusCodes.Status200OK, new { statuses });
         }
     }
 }
