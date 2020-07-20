@@ -167,15 +167,15 @@ namespace EPlast.BLL
 
             return organizational;
         }
-        public async Task<CloudBlockBlob> DownloadDecisionFileFromBlobAsync(string fileName)
+        public async Task<string> DownloadDecisionFileFromBlobAsync(string fileName)
         {
-            CloudBlockBlob blob = (await  _decisionBlobStorage.GetBlobAsync(fileName));
- 
+            var blob = await _decisionBlobStorage.GetBlobBase64Async(fileName);
+
             return blob;
         }
-        private async Task UploadFileToBlobAsync(IFormFile formFile, string fileName)
+        private async Task UploadFileToBlobAsync(string base64, string fileName)
         {
-             await _decisionBlobStorage.UploadBlobAsync(formFile,fileName);
+            await _decisionBlobStorage.UploadBlobForBase64Async(base64, fileName);
         }
         public async Task<byte[]> DownloadDecisionFileAsync(int decisionId)
         {
@@ -291,7 +291,7 @@ namespace EPlast.BLL
 
         private async Task SaveDecisionFileAsync(DecisionWrapperDTO decision)
         {
-            try
+        /*    try
             {
                 var path = _appEnvironment.WebRootPath + DecesionsDocumentFolder + decision.Decision.ID;
 
@@ -315,6 +315,7 @@ namespace EPlast.BLL
             {
                 _logger.LogError($"Exception: {e.Message}");
             }
+            */
         }
 
         private void SaveDecisionFilePathCreateCheck(string path)

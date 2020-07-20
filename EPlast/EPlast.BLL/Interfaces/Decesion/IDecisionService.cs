@@ -31,6 +31,6 @@ namespace EPlast.BLL
         IEnumerable<SelectListItem> GetDecisionStatusTypes();
 
         string GetContentType(int decisionId, string filename);
-         Task<CloudBlockBlob> DownloadDecisionFileFromBlobAsync(string fileName);
+         Task<string> DownloadDecisionFileFromBlobAsync(string fileName);
     }
 }
