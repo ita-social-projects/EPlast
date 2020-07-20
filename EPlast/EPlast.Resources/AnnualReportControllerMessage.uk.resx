@@ -118,27 +118,30 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Canceled" xml:space="preserve">
-    <value>Річний звіт успішно скасовано</value>
+    <value>Річний звіт успішно скасовано!</value>
   </data>
   <data name="Confirmed" xml:space="preserve">
-    <value>Річний звіт успішно підтверджено</value>
+    <value>Річний звіт успішно підтверджено!</value>
   </data>
   <data name="Created" xml:space="preserve">
-    <value>Річний звіт успішно створено</value>
+    <value>Річний звіт успішно створено!</value>
   </data>
   <data name="Deleted" xml:space="preserve">
-    <value>Річний звіт успішно видалено</value>
+    <value>Річний звіт успішно видалено!</value>
   </data>
   <data name="Edited" xml:space="preserve">
-    <value>Річний звіт успішно відредаговано</value>
+    <value>Річний звіт успішно відредаговано!</value>
   </data>
   <data name="FailedEdit" xml:space="preserve">
-    <value>Не вдалося редагувати річний звіт</value>
+    <value>Не вдалося редагувати річний звіт!</value>
+  </data>
+  <data name="HasReport" xml:space="preserve">
+    <value>Станиця вже має створений річний звіт!</value>
   </data>
   <data name="NoAccess" xml:space="preserve">
-    <value>Ви не маєте доступу до даного річного звіту</value>
+    <value>Ви не маєте доступу до даного річного звіту!</value>
   </data>
   <data name="NotFound" xml:space="preserve">
-    <value>Не вдалося знайти річний звіт</value>
+    <value>Не вдалося знайти річний звіт!</value>
   </data>
 </root>

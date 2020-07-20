@@ -64,10 +64,10 @@ namespace EPlast.WebApi.Controllers
                     await _annualReportService.CreateAsync(User, annualReport);
                     return StatusCode(StatusCodes.Status201Created, new { message = _localizer["Created"] });
                 }
-                catch (InvalidOperationException e)
+                catch (InvalidOperationException)
                 {
-                    _loggerService.LogError(e.Message);
-                    return StatusCode(StatusCodes.Status400BadRequest, new { message = e.Message });
+                    _loggerService.LogError(_localizer["HasReport"]);
+                    return StatusCode(StatusCodes.Status400BadRequest, new { message = _localizer["HasReport"] });
                 }
                 catch (UnauthorizedAccessException)
                 {
@@ -174,6 +174,26 @@ namespace EPlast.WebApi.Controllers
             {
                 _loggerService.LogError(_localizer["NoAccess"]);
                 return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["NoAccess"] });
+            }
+        }
+
+        [HttpGet("checkCreated/{cityId:int}")]
+        public async Task<IActionResult> CheckCreated(int cityId)
+        {
+            try
+            {
+                if (await _annualReportService.CheckCreated(cityId))
+                {
+                    return StatusCode(StatusCodes.Status200OK, new { hasCreated = true, message = _localizer["HasReport"] });
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status200OK, new { hasCreated = false });
+                }
+            }
+            catch (NullReferenceException)
+            {
+                return StatusCode(StatusCodes.Status404NotFound);
             }
         }
     }
