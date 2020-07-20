@@ -12,63 +12,59 @@ namespace EPlast.DataAccess.Entities
         public AnnualReportStatus Status { get; set; }
 
         [Required(ErrorMessage = "Заповніть поле")]
-        [Range(0, Int32.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
-        public int NumberOfSeatsInCity { get; set; }
-
-        [Required(ErrorMessage = "Заповніть поле")]
-        [Range(0, Int32.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
         public int NumberOfSeatsPtashat { get; set; }
 
         [Required(ErrorMessage = "Заповніть поле")]
-        [Range(0, Int32.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
         public int NumberOfIndependentRiy { get; set; }
 
         [Required(ErrorMessage = "Заповніть поле")]
-        [Range(0, Int32.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
         public int NumberOfClubs { get; set; }
 
         [Required(ErrorMessage = "Заповніть поле")]
-        [Range(0, Int32.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
         public int NumberOfIndependentGroups { get; set; }
 
         [Required(ErrorMessage = "Заповніть поле")]
-        [Range(0, Int32.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
         public int NumberOfTeachers { get; set; }
 
         [Required(ErrorMessage = "Заповніть поле")]
-        [Range(0, Int32.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
         public int NumberOfAdministrators { get; set; }
 
         [Required(ErrorMessage = "Заповніть поле")]
-        [Range(0, Int32.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
         public int NumberOfTeacherAdministrators { get; set; }
 
         [Required(ErrorMessage = "Заповніть поле")]
-        [Range(0, Int32.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
         public int NumberOfBeneficiaries { get; set; }
 
         [Required(ErrorMessage = "Заповніть поле")]
-        [Range(0, Int32.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
         public int NumberOfPlastpryiatMembers { get; set; }
 
         [Required(ErrorMessage = "Заповніть поле")]
-        [Range(0, Int32.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
         public int NumberOfHonoraryMembers { get; set; }
 
         [Required(ErrorMessage = "Заповніть поле")]
-        [Range(0, Int32.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
         public int PublicFunds { get; set; }
 
         [Required(ErrorMessage = "Заповніть поле")]
-        [Range(0, Int32.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
         public int ContributionFunds { get; set; }
 
         [Required(ErrorMessage = "Заповніть поле")]
-        [Range(0, Int32.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
         public int PlastSalary { get; set; }
 
         [Required(ErrorMessage = "Заповніть поле")]
-        [Range(0, Int32.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
         public int SponsorshipFunds { get; set; }
 
         public string ListProperty { get; set; }
