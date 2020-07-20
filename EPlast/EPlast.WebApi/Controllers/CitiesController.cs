@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.City;
+using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.WebApi.Models.City;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
@@ -336,6 +338,17 @@ namespace EPlast.WebApi.Controllers
 
                 return BadRequest();
             }
+        }
+
+        [HttpGet("getLegalStatuses")]
+        public IActionResult GetLegalStatuses()
+        {
+            var legalStatuses = new List<string>();
+            foreach (Enum legalStatus in Enum.GetValues(typeof(CityLegalStatusDTO)))
+            {
+                legalStatuses.Add(legalStatus.GetDescription());
+            }
+            return Ok(new { legalStatuses });
         }
     }
 }
