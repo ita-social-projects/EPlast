@@ -7,7 +7,7 @@ namespace EPlast.BLL.DTO
     {
         public DecisionDTO Decision { get; set; }
         public IEnumerable<DecisionTargetDTO> DecisionTargets { get; set; }
-        public IFormFile File { get; set; }
+        public string File { get; set; }
         public string Filename { get; set; }
     }
 }
