@@ -99,7 +99,8 @@ namespace EPlast.WebApi.Controllers
 
                             dvm.DecisionStatusType = _decisionService.GetDecisionStatusTypes()
                             .FirstOrDefault(dst => dst.Value == decesion.Decision.DecisionStatusType.ToString()).Text;
-                            dvm.FileName = decesion.Filename;
+                            dvm.FileName = decesion.Decision.FileName;
+
                             return dvm;
                         })
                         .ToList();
