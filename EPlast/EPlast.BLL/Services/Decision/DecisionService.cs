@@ -111,6 +111,7 @@ namespace EPlast.BLL
             try
             {
                 var repoDecision = _mapper.Map<Decesion>(decision.Decision);
+                repoDecision.FileName = Guid.NewGuid() + repoDecision.FileName;
                 _repoWrapper.Decesion.Attach(repoDecision);
                 _repoWrapper.Decesion.Create(repoDecision);
                 await _repoWrapper.SaveAsync();
