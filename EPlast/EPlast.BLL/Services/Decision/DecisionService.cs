@@ -115,13 +115,13 @@ namespace EPlast.BLL
                 _repoWrapper.Decesion.Attach(repoDecision);
                 _repoWrapper.Decesion.Create(repoDecision);
                 await _repoWrapper.SaveAsync();
+                if (decision.FileAsBase64 != null)
+                    await UploadFileToBlobAsync(decision.FileAsBase64, repoDecision.FileName);
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception: {e.Message}");
             }
-            if (decision.Decision.FileName != null)
-                await UploadFileToBlobAsync(decision.File, decision.Filename);
 
             return decision.Decision.ID;
         }
