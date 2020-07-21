@@ -7,7 +7,9 @@ using EPlast.WebApi.Models.City;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AnnualReportDTOs = EPlast.BLL.DTO.AnnualReport;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -344,9 +346,9 @@ namespace EPlast.WebApi.Controllers
         public IActionResult GetLegalStatuses()
         {
             var legalStatuses = new List<string>();
-            foreach (Enum legalStatus in Enum.GetValues(typeof(CityLegalStatusDTO)))
+            foreach (var enumValue in Enum.GetValues(typeof(AnnualReportDTOs.CityLegalStatusTypeDTO)).Cast<AnnualReportDTOs.CityLegalStatusTypeDTO>())
             {
-                legalStatuses.Add(legalStatus.GetDescription());
+                legalStatuses.Add(enumValue.GetDescription());
             }
             return Ok(new { legalStatuses });
         }
