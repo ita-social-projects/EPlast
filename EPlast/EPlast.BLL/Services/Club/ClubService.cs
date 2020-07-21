@@ -99,7 +99,7 @@ namespace EPlast.BLL.Services.Club
         public async Task<ClubDTO> UpdateAsync(ClubDTO club)
         {
             var editedClub = _mapper.Map<ClubDTO, DataAccessClub.Club>(club);
-            await UploadPhotoAsyncFromBase64(club.ID, club.Logo);
+            editedClub.Logo = await UploadPhotoAsyncFromBase64(club.ID, club.Logo);
             _repoWrapper.Club.Update(editedClub);
             await _repoWrapper.SaveAsync();
             return _mapper.Map<DataAccessClub.Club, ClubDTO>(editedClub);
@@ -135,8 +135,7 @@ namespace EPlast.BLL.Services.Club
             var ext = base64Parts[0].Split(new[] { '/', ';' }, 3)[1];
             var fileName = Guid.NewGuid() + "." + ext;
             await _clubBlobStorage.UploadBlobForBase64Async(base64Parts[1], fileName);
-            if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default_club_image.png") &&
-                oldImageName.Length < 20)
+            if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default_club_image.png"))
             {
                 await _clubBlobStorage.DeleteBlobAsync(oldImageName);
             }
@@ -146,7 +145,9 @@ namespace EPlast.BLL.Services.Club
 
         public async Task<string> GetImageBase64Async(string fileName)
         {
-            return await _clubBlobStorage.GetBlobBase64Async(fileName);
+            return await _clubBlobStorage.GetBlobBase64Async(string.IsNullOrEmpty(fileName)
+                ? "default_club_image.png"
+                : fileName);
         }
     }
 }

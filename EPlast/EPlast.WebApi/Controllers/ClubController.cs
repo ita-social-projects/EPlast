@@ -1,16 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.WebApi.Models.Club;
-using EPlast.WebApi.Models.Decision;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -71,7 +67,7 @@ namespace EPlast.WebApi.Controllers
                 var viewModel =
                     _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(await _clubService.GetClubProfileAsync(clubId));
                 viewModel = await CheckCurrentUserRoles(viewModel);
-
+                viewModel.Club.Logo = await _clubService.GetImageBase64Async(viewModel.Club.Logo);
                 return Ok(viewModel);
             }
             catch (ArgumentNullException e)
