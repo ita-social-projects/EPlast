@@ -175,11 +175,12 @@ namespace EPlast.WebApi.Controllers
            
                 if (result.Succeeded) 
                 {
-                    return Ok(new { userId = userId });//зразу редірект на юзер пейджу
+                    return Redirect("https://plastua.azurewebsites.net/");
+                    //return Ok(new { userId = userId });//зразу редірект на юзер пейджу
                 }
                 else
                 {
-                    return BadRequest();
+                    return BadRequest("sdfsddsf");  // може якусь сторінку б було добре зробити
                 }
             }
             else
@@ -328,7 +329,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("changePassword")]
-        [Authorize]
+        [Authorize]  //коли зайшов через реакт він не авторизований
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changepasswordDto)//+ приходить все норм
         {
             try
