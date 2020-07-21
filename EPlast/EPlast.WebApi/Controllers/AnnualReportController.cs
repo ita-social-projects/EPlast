@@ -1,4 +1,5 @@
 ﻿using EPlast.BLL.DTO.AnnualReport;
+using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.Resources;
@@ -8,8 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BLL.ExtensionMethods;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -215,9 +216,9 @@ namespace EPlast.WebApi.Controllers
         public IActionResult GetStatuses()
         {
             var statuses = new List<string>();
-            foreach (Enum status in Enum.GetValues(typeof(AnnualReportStatusDTO)))
+            foreach (var enumValue in Enum.GetValues(typeof(AnnualReportStatusDTO)).Cast<AnnualReportStatusDTO>())
             {
-                statuses.Add(status.GetDescription());
+                statuses.Add(enumValue.GetDescription());
             }
             return StatusCode(StatusCodes.Status200OK, new { statuses });
         }
