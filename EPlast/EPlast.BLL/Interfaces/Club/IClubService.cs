@@ -16,13 +16,9 @@ namespace EPlast.BLL.Interfaces.Club
 
         Task<ClubProfileDTO> GetClubMembersOrFollowersAsync(int clubId, bool isApproved);
 
-        Task UpdateAsync(ClubDTO club, IFormFile file);
-
         Task<ClubDTO> UpdateAsync(ClubDTO club);
 
         Task<ClubDTO> CreateAsync(ClubDTO club);
-
-        Task<string> DownloadLogoFromBlobBase64Async(string fileName);
 
         Task<string> GetImageBase64Async(string imageName);
     }

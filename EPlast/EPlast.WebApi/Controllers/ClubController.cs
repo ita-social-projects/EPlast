@@ -52,7 +52,7 @@ namespace EPlast.WebApi.Controllers
             var clubs = await _clubService.GetAllClubsAsync();
             foreach (var club in clubs)
             {
-                club.Logo = await _clubService.DownloadLogoFromBlobBase64Async(club.Logo);
+                club.Logo = await _clubService.GetImageBase64Async(club.Logo);
             }
             return Ok(clubs);
         }
