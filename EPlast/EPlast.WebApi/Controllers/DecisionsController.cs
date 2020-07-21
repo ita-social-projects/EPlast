@@ -120,7 +120,7 @@ namespace EPlast.WebApi.Controllers
             return NotFound();
         }
 
-        [HttpGet("downloadfile/{id:int}")]
+        [HttpGet("downloadfile/{filename}")]
         public async Task<IActionResult> Download(string filename)
         {
             var base64 = await _decisionService.DownloadDecisionFileFromBlobAsync(filename);
