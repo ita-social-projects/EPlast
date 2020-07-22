@@ -19,28 +19,21 @@ namespace EPlast.BLL
 {
     public class DecisionService : IDecisionService
     {
-        private const string DecesionsDocumentFolder = @"\documents\";
-        private readonly IWebHostEnvironment _appEnvironment;
+
         private readonly IDecisionVmInitializer _decisionVMCreator;
-        private readonly IDirectoryManager _directoryManager;
-        private readonly IFileManager _fileManager;
-        private readonly IFileStreamManager _fileStreamManager;
         private readonly IMapper _mapper;
         private readonly ILoggerService<DecisionService> _logger;
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IDecisionBlobStorageRepository _decisionBlobStorage;
 
-        public DecisionService(IRepositoryWrapper repoWrapper, IWebHostEnvironment appEnvironment,
-            IDirectoryManager directoryManager, IFileManager fileManager,
-            IFileStreamManager fileStreamManager, IMapper mapper, IDecisionVmInitializer decisionVMCreator,
+        public DecisionService(IRepositoryWrapper repoWrapper,
+            IDirectoryManager directoryManager,
+            IMapper mapper,
+            IDecisionVmInitializer decisionVMCreator,
             ILoggerService<DecisionService> logger,
             IDecisionBlobStorageRepository decisionBlobStorage)
         {
             _repoWrapper = repoWrapper;
-            _appEnvironment = appEnvironment;
-            _directoryManager = directoryManager;
-            _fileManager = fileManager;
-            _fileStreamManager = fileStreamManager;
             _logger = logger;
             _mapper = mapper;
             _decisionVMCreator = decisionVMCreator;
@@ -152,49 +145,6 @@ namespace EPlast.BLL
         {
             await _decisionBlobStorage.UploadBlobForBase64Async(base64, fileName);
         }
-        public async Task<byte[]> DownloadDecisionFileAsync(int decisionId)
-        {
-            if (decisionId <= 0) return null;
-            MemoryStream memory = null;
-            try
-            {
-                var path = GetDecisionFilePath(decisionId);
-
-                DownloadDecisionFilePathCheck(path);
-                var filename = _directoryManager.GetFiles(path).First();
-                path = Path.Combine(path, filename);
-                memory = new MemoryStream();
-
-                using (var stream = _fileStreamManager.GenerateFileStreamManager(path, FileMode.Open))
-                {
-                    await _fileStreamManager.CopyToAsync(stream.GetStream(), memory);
-
-                    if (memory.Length == 0) throw new ArgumentException("memory length is 0");
-                }
-
-                memory.Position = 0;
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Exception: {e.Message}");
-            }
-
-            return memory?.ToArray();
-        }
-
-        private void DownloadDecisionFilePathCheck(string path)
-        {
-            if (!_directoryManager.Exists(path) || _directoryManager.GetFiles(path).Length == 0)
-                throw new ArgumentException($"directory '{path}' does not exist");
-        }
-
-        public string GetContentType(int decisionId, string filename)
-        {
-            var types = GetMimeTypes();
-            var ext = Path.GetExtension(Path.Combine(GetDecisionFilePath(decisionId), filename)).ToLowerInvariant();
-
-            return types[ext];
-        }
 
         public async Task<IEnumerable<OrganizationDTO>> GetOrganizationListAsync()
         {
@@ -221,6 +171,7 @@ namespace EPlast.BLL
                     throw new ArgumentNullException($"Decision with {id} id not found");
                 success = true;
                 _repoWrapper.Decesion.Delete(decision);
+              
                 await _repoWrapper.SaveAsync();
             }
             catch (Exception e)
@@ -240,63 +191,6 @@ namespace EPlast.BLL
                     .Select(decision => new DecisionWrapperDTO { Decision = decision });
         }
 
-        private string GetDecisionFilePath(int decisionId)
-        {
-            return Path.Combine(_appEnvironment.WebRootPath + DecesionsDocumentFolder, decisionId.ToString());
-        }
 
-        private static Dictionary<string, string> GetMimeTypes()
-        {
-            return new Dictionary<string, string>
-            {
-                {".txt", "text/plain"},
-                {".pdf", "application/pdf"},
-                {".doc", "application/vnd.ms-word"},
-                {".docx", "application/vnd.ms-word"},
-                {".xls", "application/vnd.ms-excel"},
-                {".xlsx", "application/vnd.openxmlformatsofficedocument.spreadsheetml.sheet"},
-                {".png", "image/png"},
-                {".jpg", "image/jpeg"},
-                {".jpeg", "image/jpeg"},
-                {".gif", "image/gif"},
-                {".csv", "text/csv"},
-                {".mp4", "video/mp4"}
-            };
-        }
-
-        private async Task SaveDecisionFileAsync(DecisionWrapperDTO decision)
-        {
-        /*    try
-            {
-                var path = _appEnvironment.WebRootPath + DecesionsDocumentFolder + decision.Decision.ID;
-
-                _directoryManager.CreateDirectory(path);
-
-                SaveDecisionFilePathCreateCheck(path);
-
-                if (decision.File != null)
-                {
-                    path = Path.Combine(path, decision.File.FileName);
-
-                    using (var stream = _fileStreamManager.GenerateFileStreamManager(path, FileMode.Create))
-                    {
-                        await _fileStreamManager.CopyToAsync(decision.File, stream.GetStream());
-                        if (!_fileManager.Exists(path))
-                            throw new ArgumentException($"File was not created it '{path}' directory");
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Exception: {e.Message}");
-            }
-            */
-        }
-
-        private void SaveDecisionFilePathCreateCheck(string path)
-        {
-            if (!_directoryManager.Exists(path))
-                throw new ArgumentException($"directory '{path}' is not exist");
-        }
     }
 }

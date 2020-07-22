@@ -70,13 +70,6 @@ namespace EPlast.WebApi.Controllers
             {
                 return BadRequest("Дані введені неправильно");
             }
-
-            //if (decisionWrapper.File != null && decisionWrapper.File.Length > 10485760)
-            //{
-            //    return BadRequest("файл за великий (більше 10 Мб)");
-            //}
-
-        //    decisionWrapper.Decision.FileName = decisionWrapper.File != null;
             decisionWrapper.Decision.ID = await _decisionService.SaveDecisionAsync(decisionWrapper);
             var decisionOrganizations = (await _decisionService
                         .GetDecisionOrganizationAsync(decisionWrapper.Decision.Organization))
@@ -124,18 +117,16 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> Download(string filename)
         {
             var base64 = await _decisionService.DownloadDecisionFileFromBlobAsync(filename);
-            // var blobStream = blob.OpenRead();
+
             return Ok(base64);
-           // return File(blobStream, blob.Properties.ContentType, filename);
         }
 
         [HttpGet("createpdf/{objId:int}")]
         public async Task<IActionResult> CreatePdf(int objId)
         {
             byte[] fileBytes = await _pdfService.DecisionCreatePDFAsync(objId);
-            string base64EncodedPDF = System.Convert.ToBase64String(fileBytes);
-            //  return new FileContentResult(fileBytes, "application/pdf");
-            // return File(fileBytes, "application/pdf");
+            string base64EncodedPDF = Convert.ToBase64String(fileBytes);
+
             return Ok(base64EncodedPDF);
         }
     }
