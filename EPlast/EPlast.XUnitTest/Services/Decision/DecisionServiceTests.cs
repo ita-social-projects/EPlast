@@ -58,8 +58,7 @@ namespace EPlast.XUnitTest
             mapper.Setup(m => m.Map<DecisionDTO>(It.IsAny<Decesion>()))
                 .Returns(() => GetTestDecisionsDtoListElement(decisionId));
             mapper.Setup(m => m.Map<IEnumerable<DecisionDTO>>(It.IsAny<IEnumerable<Decesion>>())).Returns(GetTestDecisionsDtoList);
-            return new DecisionService(_repository.Object, hostingEnvironment.Object, directoryManager.Object,
-                fileManager.Object, fileStreamManager.Object, mapper.Object, decisionVmCreator.Object, logger.Object, null);
+            return new DecisionService(_repository.Object, mapper.Object, decisionVmCreator.Object, logger.Object, null);
         }
 
         [Fact]
@@ -118,9 +117,9 @@ namespace EPlast.XUnitTest
             _decisionService = CreateDecisionService();
             _repository.Setup(rep => rep.Decesion.GetAllAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
                     It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
-                .ReturnsAsync(GetTestDecesionQueryable());
+                .ReturnsAsync(GetTestDecesionQueryable().AsEnumerable);
 
-            var decision = await _decisionService.GetDecisionListAsync();
+            var decision = (await _decisionService.GetDecisionListAsync()).ToList();
 
             Assert.IsType<List<DecisionWrapperDTO>>(decision);
         }
@@ -191,7 +190,7 @@ namespace EPlast.XUnitTest
 
             Assert.Equal(decisionId, actualReturn);
         }
-
+        /*
         [Theory]
         [InlineData(1, new byte[] { 1, 2, 3, 4, 5 })]
         [InlineData(3, new byte[] { 5, 4, 3, 2, 1 })]
@@ -203,7 +202,7 @@ namespace EPlast.XUnitTest
 
             Assert.Equal(exceptedBytesCount.Length, result.Length);
         }
-
+        */
         private static IQueryable<DecesionTarget> GetTestDecisionTargetsQueryable()
         {
             return new List<DecesionTarget>
@@ -228,9 +227,9 @@ namespace EPlast.XUnitTest
         {
             return new List<Decesion>
             {
-                new Decesion  {ID = 1,HaveFile = true,Description = "old"},
+                new Decesion  {ID = 1,Description = "old"},
                 new Decesion  {ID = 2,Description = "old"},
-                new Decesion  {ID = 3,HaveFile = true,Description = "old"},
+                new Decesion  {ID = 3,Description = "old"},
                 new Decesion  {ID = 4,Description = "old"}
             }.AsQueryable();
         }
@@ -239,9 +238,9 @@ namespace EPlast.XUnitTest
         {
             return new List<DecisionDTO>
             {
-                new DecisionDTO {ID = 1,HaveFile = false,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
+                new DecisionDTO {ID = 1,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
                 new DecisionDTO {ID = 2,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
-                new DecisionDTO {ID = 3,HaveFile =false,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
+                new DecisionDTO {ID = 3,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
                 new DecisionDTO {ID = 4,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()}
             };
         }

@@ -1,6 +1,7 @@
-﻿using EPlast.BLL.DTO.EventUser;
-using EPlast.BLL.Interfaces.EventUser;
+﻿using EPlast.BLL.Interfaces.EventUser;
+using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.EventUser
