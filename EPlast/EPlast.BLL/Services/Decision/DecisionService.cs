@@ -4,14 +4,10 @@ using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Azure.Storage.Blob;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
