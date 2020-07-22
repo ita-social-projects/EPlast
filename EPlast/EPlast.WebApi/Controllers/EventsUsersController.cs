@@ -75,7 +75,7 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest();
             }
         }
-
+            
         [HttpPut("editedEvent")]
         public async Task<IActionResult> EventEdit([FromBody] EventCreateDTO createDTO)
         {
