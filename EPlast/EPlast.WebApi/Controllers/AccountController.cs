@@ -6,7 +6,6 @@ using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.Resources;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -34,7 +33,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IConfirmedUsersService _confirmedUserService;
         private readonly ILoggerService<AccountController> _loggerService;
         private readonly IStringLocalizer<AuthenticationErrors> _resourceForErrors;
-        private readonly IJwtService _jwtService;
+        private readonly IJwtService _JwtService;
 
         public AccountController(IUserService userService,
             INationalityService nationalityService,
@@ -49,7 +48,7 @@ namespace EPlast.WebApi.Controllers
             ILoggerService<AccountController> loggerService,
             IAccountService accountService,
             IStringLocalizer<AuthenticationErrors> resourceForErrors,
-            IJwtService jwtService)
+            IJwtService JwtService)
         {
             _accountService = accountService;
             _userService = userService;
@@ -64,7 +63,7 @@ namespace EPlast.WebApi.Controllers
             _userManagerService = userManagerService;
             _loggerService = loggerService;
             _resourceForErrors = resourceForErrors;
-            _jwtService = jwtService;
+            _JwtService = JwtService;
         }
 
         [HttpPost("signin")]
@@ -94,7 +93,7 @@ namespace EPlast.WebApi.Controllers
                     }
                     if (result.Succeeded)
                     {
-                        var generatedToken = _jwtService.GenerateJWTToken(user);
+                        var generatedToken = _JwtService.GenerateJWTToken(user);
                         return Ok(new { token = generatedToken });
                     }
                     else
@@ -176,17 +175,15 @@ namespace EPlast.WebApi.Controllers
                 if (result.Succeeded) 
                 {
                     return Redirect("https://plastua.azurewebsites.net/");
-                    //return Ok(new { userId = userId });//зразу редірект на юзер пейджу
                 }
                 else
                 {
-                    return BadRequest("sdfsddsf");  // може якусь сторінку б було добре зробити
+                    return BadRequest();
                 }
             }
             else
             {
-                //return View("ConfirmEmailNotAllowed", userDto);
-                return Ok("ConfirmedEmailNotAllowed");
+                return Ok("ConfirmedEmailNotAllowed");  //дописати ресурс
             }
         }
 
@@ -346,7 +343,7 @@ namespace EPlast.WebApi.Controllers
                     {
                         return BadRequest(_resourceForErrors["Change-PasswordProblems"]);
                     }
-                    _accountService.RefreshSignInAsync(userDto);
+                    _accountService.RefreshSignInAsync(userDto); //тут
                     return Ok(_resourceForErrors["ChangePasswordConfirmation"]);
                 }
                 else
@@ -360,14 +357,6 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest();
             }
         }
-
-        
-        /*[HttpGet("/Google-Login")]
-        [AllowAnonymous]
-        public async Task LoginGoogle()
-        {
-            await HttpContext.ChallengeAsync("Google", new AuthenticationProperties() { RedirectUri = "/signin-google" });
-        }*/
 
         /*[HttpPost("externalLogin")]
         [AllowAnonymous]
@@ -415,7 +404,7 @@ namespace EPlast.WebApi.Controllers
                         if (email != null)
                         {
                             await _accountService.GoogleAuthentication(email, info);
-                            //var generatedToken = _jwtService.GenerateJWTToken(user);
+                            //var generatedToken = _JwtService.GenerateJWTToken(user);
                             return LocalRedirect(returnUrl);
                         }
                     }

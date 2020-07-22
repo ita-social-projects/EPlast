@@ -35,6 +35,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
@@ -79,7 +80,6 @@ namespace EPlast.WebApi
                     options.ClientId = Configuration.GetSection("GoogleAuthentication:GoogleClientId").Value;
                     options.ClientSecret = Configuration.GetSection("GoogleAuthentication:GoogleClientSecret").Value;
                     options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    //тут ще подивитись чи все ок
                 })
                 .AddFacebook(options =>
                 {
@@ -194,7 +194,7 @@ namespace EPlast.WebApi
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
             services.Configure<JwtOptions>(Configuration.GetSection("Jwt"));
-            services.AddTransient<IJwtService, Jwtservice>();
+            services.AddTransient<IJwtService, JwtService>();
             services.AddScoped<IUserBlobStorageRepository, UserBlobStorageRepository>();
             services.AddScoped<IDecisionBlobStorageRepository, DecisionBlobStorageRepository>();
             services.AddScoped<ICityBlobStorageRepository, CityBlobStorageRepository>();
