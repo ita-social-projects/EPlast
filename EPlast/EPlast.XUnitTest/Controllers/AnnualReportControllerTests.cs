@@ -100,31 +100,6 @@ namespace EPlast.XUnitTest
         }
 
         [Fact]
-        public async Task CreateAsyncHasCreatedOrUnconfirmed()
-        {
-            // Arrange
-            IEnumerable<CityDTOs.CityDTO> cities = new List<CityDTOs.CityDTO>
-            {
-                new CityDTOs.CityDTO { ID = 1, Name = "Львів" }
-            };
-            var city = new CityVMs.CityViewModel { ID = cities.First().ID, Name = cities.First().Name };
-            _cityAccessService.Setup(cas => cas.GetCitiesAsync(It.IsAny<ClaimsPrincipal>()))
-               .ReturnsAsync(cities);
-            _mapper.Setup(m => m.Map<CityDTOs.CityDTO, CityVMs.CityViewModel>(It.IsAny<CityDTOs.CityDTO>()))
-                .Returns(city);
-            _annualReportService.Setup(a => a.CheckCanBeCreatedAsync(It.IsAny<int>()))
-                .Throws(new InvalidOperationException("Станиця має непідтверджені звіти!"));
-
-            // Act
-            var result = await controller.Create();
-
-            // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEdit", viewResult.ViewName);
-            Assert.Equal("Станиця має непідтверджені звіти!", viewResult.ViewData["ErrorMessage"]);
-        }
-
-        [Fact]
         public async Task CreateAsyncError()
         {
             // Arrange
@@ -199,24 +174,6 @@ namespace EPlast.XUnitTest
             Assert.Null(viewResult.ViewData["ErrorMessage"]);
             var actualViewModel = Assert.IsType<CreateEditAnnualReportViewModel>(viewResult.Model);
             Assert.Equal(JsonConvert.SerializeObject(expectedViewModel), JsonConvert.SerializeObject(actualViewModel));
-        }
-
-        [Fact]
-        public async Task CreateAsAdminAsyncHasCreatedOrUnconfirmed()
-        {
-            // Arrange
-            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .ReturnsAsync(true);
-            _annualReportService.Setup(a => a.CheckCanBeCreatedAsync(It.IsAny<int>()))
-                .Throws(new InvalidOperationException("Станиця має непідтверджені звіти!"));
-
-            // Act
-            var result = await controller.CreateAsAdmin(It.IsAny<int>());
-
-            // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("CreateEdit", viewResult.ViewName);
-            Assert.Equal("Станиця має непідтверджені звіти!", viewResult.ViewData["ErrorMessage"]);
         }
 
         [Fact]
