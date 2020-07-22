@@ -34,6 +34,7 @@ namespace EPlast.WebApi.Controllers
         private readonly ILoggerService<AccountController> _loggerService;
         private readonly IStringLocalizer<AuthenticationErrors> _resourceForErrors;
         private readonly IJwtService _JwtService;
+        private readonly IHomeService _homeService;
 
         public AccountController(IUserService userService,
             INationalityService nationalityService,
@@ -48,7 +49,8 @@ namespace EPlast.WebApi.Controllers
             ILoggerService<AccountController> loggerService,
             IAccountService accountService,
             IStringLocalizer<AuthenticationErrors> resourceForErrors,
-            IJwtService JwtService)
+            IJwtService JwtService,
+            IHomeService homeService)
         {
             _accountService = accountService;
             _userService = userService;
@@ -64,6 +66,7 @@ namespace EPlast.WebApi.Controllers
             _loggerService = loggerService;
             _resourceForErrors = resourceForErrors;
             _JwtService = JwtService;
+            _homeService = homeService;
         }
 
         [HttpPost("signin")]
@@ -358,69 +361,17 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        /*[HttpPost("externalLogin")]
-        [AllowAnonymous]
-        public IActionResult ExternalLogin(string provider, string returnUrl)
+        [HttpPost("sendQuestion")]
+        public async Task<IActionResult> SendContacts([FromBody]ContactsDto contactsDto)
         {
-            string redirectUrl = Url.Action("ExternalLoginCallBack", "Account", new { ReturnUrl = returnUrl });
-            AuthenticationProperties properties = _accountService.GetAuthProperties(provider, redirectUrl);
-            return new ChallengeResult(provider, properties);
-        }*/
-
-        /*[HttpGet("externalLoginCallBack")]
-        [AllowAnonymous]
-        public async Task<IActionResult> ExternalLoginCallBack(string returnUrl = null, string remoteError = null)
-        {
-            try
+            if (!ModelState.IsValid)
             {
-                returnUrl = returnUrl ?? Url.Content("~/Account/UserProfile");
-                LoginDto loginDto = new LoginDto
-                {
-                    ReturnUrl = returnUrl,
-                    ExternalLogins = (await _accountService.GetAuthSchemesAsync()).ToList()
-                };
-
-                if (remoteError != null)
-                {
-                    return BadRequest(_resourceForErrors["Error-ExternalLoginProvider"]);
-                }
-                var info = await _accountService.GetInfoAsync();
-                if (info == null)
-                {
-                    return BadRequest(_resourceForErrors["Error-ExternalLoginInfo"]);
-                }
-
-                var signInResult = await _accountService.GetSignInResultAsync(info);
-                if (signInResult.Succeeded)
-                {
-                    return LocalRedirect(returnUrl);
-                }
-                else
-                {
-                    var email = "defaultEmail";
-                        //info.Principal.FindFirstValue(ClaimTypes.Email);
-                    if (info.LoginProvider.ToString() == "Google")
-                    {
-                        if (email != null)
-                        {
-                            await _accountService.GoogleAuthentication(email, info);
-                            //var generatedToken = _JwtService.GenerateJWTToken(user);
-                            return LocalRedirect(returnUrl);
-                        }
-                    }
-                    else if (info.LoginProvider.ToString() == "Facebook")
-                    {
-                        await _accountService.FacebookAuthentication(email, info);
-                        return LocalRedirect(returnUrl);
-                    }
-                    return BadRequest();
-                }
+                ModelState.AddModelError("", "Дані введені неправильно");
+                return BadRequest(_resourceForErrors["ModelIsNotValid"]);
             }
-            catch (Exception e)
-            {
-                _loggerService.LogError($"Exception: {e.Message}");
-                return BadRequest();
-            }
-        }*/
+            await _homeService.SendEmailAdmin(contactsDto);
+
+            return Ok(_resourceForErrors["Feedback-Sended"]);
+        }
     }
 }
