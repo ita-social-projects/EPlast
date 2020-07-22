@@ -120,6 +120,12 @@
   <data name="Canceled" xml:space="preserve">
     <value>Річний звіт успішно скасовано!</value>
   </data>
+  <data name="CityNoAccess" xml:space="preserve">
+    <value>Ви не маєте доступу до даної станиці!</value>
+  </data>
+  <data name="CityNotFound" xml:space="preserve">
+    <value>Не вдалося знайти інформацію про станицю!</value>
+  </data>
   <data name="Confirmed" xml:space="preserve">
     <value>Річний звіт успішно підтверджено!</value>
   </data>

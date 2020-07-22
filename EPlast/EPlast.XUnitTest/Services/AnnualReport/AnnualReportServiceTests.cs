@@ -129,6 +129,8 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         public async Task CreateAsyncUnauthorizedAccessException()
         {
             // Arrange
+            _repositoryWrapper.Setup(r => r.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(), null))
+                .ReturnsAsync(new DatabaseEntities.City());
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .ReturnsAsync(false);
 
@@ -141,7 +143,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         }
 
         [Fact]
-        public async Task CreateAsyncHasCreated()
+        public async Task CreateAsyncInvalidOperationException()
         {
             // Arrange
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
@@ -160,7 +162,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         }
 
         [Fact]
-        public async Task CreateCityNotFound()
+        public async Task CreateCityNullReferenceException()
         {
             // Arrange
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
@@ -721,6 +723,66 @@ namespace EPlast.XUnitTest.Services.AnnualReport
             // Assert
             _repositoryWrapper.Verify(r => r.AnnualReports.Delete(It.IsAny<DatabaseEntities.AnnualReport>()), Times.Never);
             _repositoryWrapper.Verify(r => r.SaveAsync(), Times.Never);
+        }
+
+        [Fact]
+        public async Task CheckCreatedTrue()
+        {
+            // Arrange
+            _repositoryWrapper.Setup(r => r.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(), null))
+                .ReturnsAsync(new DatabaseEntities.City());
+            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
+                .ReturnsAsync(true);
+            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
+                .ReturnsAsync(new DatabaseEntities.AnnualReport());
+
+            // Act
+            var result = await _annualReportService.CheckCreated(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>());
+
+            // Assert
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task CheckCreatedFalse()
+        {
+            // Arrange
+            _repositoryWrapper.Setup(r => r.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(), null))
+                .ReturnsAsync(new DatabaseEntities.City());
+            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
+                .ReturnsAsync(true);
+            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
+                .ReturnsAsync((DatabaseEntities.AnnualReport)null);
+
+            // Act
+            var result = await _annualReportService.CheckCreated(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>());
+
+            // Assert
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task CheckCreatedNullReferenceException()
+        {
+            // Arrange
+            _repositoryWrapper.Setup(r => r.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(), null))
+                .ReturnsAsync((DatabaseEntities.City)null);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<NullReferenceException>(() => _annualReportService.CheckCreated(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()));
+        }
+
+        [Fact]
+        public async Task CheckCreatedUnauthorizedAccessException()
+        {
+            // Arrange
+            _repositoryWrapper.Setup(r => r.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(), null))
+               .ReturnsAsync(new DatabaseEntities.City());
+            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
+                .ReturnsAsync(false);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.CheckCreated(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()));
         }
     }
 }
