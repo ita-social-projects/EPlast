@@ -27,7 +27,6 @@ namespace EPlast.BLL
         private readonly IDecisionBlobStorageRepository _decisionBlobStorage;
 
         public DecisionService(IRepositoryWrapper repoWrapper,
-            IDirectoryManager directoryManager,
             IMapper mapper,
             IDecisionVmInitializer decisionVMCreator,
             ILoggerService<DecisionService> logger,
@@ -104,12 +103,15 @@ namespace EPlast.BLL
             try
             {
                 var repoDecision = _mapper.Map<Decesion>(decision.Decision);
-                repoDecision.FileName = Guid.NewGuid() + repoDecision.FileName;
                 _repoWrapper.Decesion.Attach(repoDecision);
                 _repoWrapper.Decesion.Create(repoDecision);
-                await _repoWrapper.SaveAsync();
                 if (decision.FileAsBase64 != null)
+                {
+                    repoDecision.FileName = Guid.NewGuid() + repoDecision.FileName;
                     await UploadFileToBlobAsync(decision.FileAsBase64, repoDecision.FileName);
+                }
+                await _repoWrapper.SaveAsync();
+
             }
             catch (Exception e)
             {
@@ -135,12 +137,12 @@ namespace EPlast.BLL
 
             return organizational;
         }
+
         public async Task<string> DownloadDecisionFileFromBlobAsync(string fileName)
         {
-            var blob = await _decisionBlobStorage.GetBlobBase64Async(fileName);
-
-            return blob;
+            return await _decisionBlobStorage.GetBlobBase64Async(fileName);
         }
+
         private async Task UploadFileToBlobAsync(string base64, string fileName)
         {
             await _decisionBlobStorage.UploadBlobForBase64Async(base64, fileName);
@@ -171,7 +173,8 @@ namespace EPlast.BLL
                     throw new ArgumentNullException($"Decision with {id} id not found");
                 success = true;
                 _repoWrapper.Decesion.Delete(decision);
-              
+                if (decision.FileName != null)
+                    await _decisionBlobStorage.DeleteBlobAsync(decision.FileName);
                 await _repoWrapper.SaveAsync();
             }
             catch (Exception e)
@@ -186,6 +189,7 @@ namespace EPlast.BLL
         {
             IEnumerable<Decesion> decisions = await _repoWrapper.Decesion.GetAllAsync(include: dec =>
                 dec.Include(d => d.DecesionTarget).Include(d => d.Organization));
+
             return _mapper
                 .Map<IEnumerable<DecisionDTO>>(decisions)
                     .Select(decision => new DecisionWrapperDTO { Decision = decision });
