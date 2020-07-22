@@ -16,7 +16,6 @@ namespace EPlast.BLL
 
         Task<int> SaveDecisionAsync(DecisionWrapperDTO decision);
 
-        Task<byte[]> DownloadDecisionFileAsync(int decisionId);
 
         Task<DecisionWrapperDTO> CreateDecisionAsync();
 
@@ -30,7 +29,6 @@ namespace EPlast.BLL
 
         IEnumerable<SelectListItem> GetDecisionStatusTypes();
 
-        string GetContentType(int decisionId, string filename);
          Task<string> DownloadDecisionFileFromBlobAsync(string fileName);
     }
 }
