@@ -45,7 +45,6 @@ namespace EPlast.Controllers
             {
                 if (await _cityAccessService.HasAccessAsync(User, cityId))
                 {
-                    await _annualReportService.CheckCanBeCreatedAsync(cityId);
                     var cityDTO = await _cityService.GetByIdAsync(cityId);
                     var city = _mapper.Map<CityDTOs.CityDTO, CityVMs.CityViewModel>(cityDTO);
                     return View("CreateEdit", await GetCreateEditViewModel(city, AnnualReportOperation.Creating));
@@ -76,7 +75,6 @@ namespace EPlast.Controllers
             {
                 var citiesDTO = await _cityAccessService.GetCitiesAsync(User);
                 var city = _mapper.Map<CityDTOs.CityDTO, CityVMs.CityViewModel>(citiesDTO.First());
-                await _annualReportService.CheckCanBeCreatedAsync(city.ID);
                 return View("CreateEdit", await GetCreateEditViewModel(city, AnnualReportOperation.Creating));
             }
             catch (InvalidOperationException e)
@@ -292,7 +290,7 @@ namespace EPlast.Controllers
 
         private async Task<CreateEditAnnualReportViewModel> GetCreateEditViewModel(CityVMs.CityViewModel city, AnnualReportOperation operation)
         {
-            var cityMemebrsDTO = await _cityMembersService.GetCurrentByCityIdAsync(city.ID);
+            var cityMemebrsDTO = await _cityMembersService.GetMembersByCityIdAsync(city.ID);
             var cityMembers = _mapper.Map<IEnumerable<CityDTOs.CityMembersDTO>, IEnumerable<CityVMs.CityMembersViewModel>>(cityMemebrsDTO);
             return new CreateEditAnnualReportViewModel(cityMembers)
             {

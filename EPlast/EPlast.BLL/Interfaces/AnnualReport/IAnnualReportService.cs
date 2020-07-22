@@ -14,8 +14,6 @@ namespace EPlast.BLL.Services.Interfaces
         Task ConfirmAsync(ClaimsPrincipal claimsPrincipal, int id);
         Task CancelAsync(ClaimsPrincipal claimsPrincipal, int id);
         Task DeleteAsync(ClaimsPrincipal claimsPrincipal, int id);
-        Task<bool> HasUnconfirmedAsync(int cityId);
-        Task<bool> HasCreatedAsync(int cityId);
-        Task CheckCanBeCreatedAsync(int cityId);
+        Task<bool> CheckCreated(int cityId);
     }
 }

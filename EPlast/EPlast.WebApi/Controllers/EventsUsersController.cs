@@ -18,7 +18,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpGet("eventsUsers/{userId}")]
         public async Task<IActionResult> GetEventUserByUserId(string userId)
-        {
+            {
             try
             {
                 var eventUserModel = await _eventUserManager.EventUserAsync(userId, User);
@@ -47,8 +47,8 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("newEvent")]
-        public async Task<IActionResult> EventCreate(EventCreateDTO createDTO)
-        {
+        public async Task<IActionResult> EventCreate([FromBody] EventCreateDTO createDTO)
+            {
             try
             {
                 await _eventUserManager.CreateEventAsync(createDTO);
@@ -80,10 +80,10 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> EventEdit([FromBody] EventCreateDTO createDTO)
         {
             try
-            {
+                {
                 await _eventUserManager.EditEventAsync((createDTO));
 
-                return Created(nameof(GetEventUserByUserId), createDTO);
+                return NoContent();
             }
             catch
             {

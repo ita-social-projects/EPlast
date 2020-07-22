@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BLL;
 using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.AzureStorage.Base;
 using EPlast.BLL.Interfaces.City;
@@ -10,6 +11,7 @@ using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services;
+using EPlast.BLL.Services.Admin;
 using EPlast.BLL.Services.AzureStorage;
 using EPlast.BLL.Services.AzureStorage.Base;
 using EPlast.BLL.Services.City;
@@ -41,8 +43,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BLL.Interfaces.Admin;
-using EPlast.BLL.Services.Admin;
 
 namespace EPlast
 {
@@ -103,7 +103,7 @@ namespace EPlast
             services.AddScoped<IConfirmedUsersService, ConfirmedUsersService>();
             services.AddScoped<IUserManagerService, UserManagerService>();
             services.AddScoped<IAdminService, AdminService>();
-            services.AddScoped<ICItyAdministrationService, CityAdministrationService>();
+            services.AddScoped<ICityAdministrationService, CityAdministrationService>();
             services.AddScoped<ICityService, CityService>();
             services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
             services.AddScoped<IClubService, ClubService>();
