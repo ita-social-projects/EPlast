@@ -9,10 +9,10 @@ using System.Text;
 
 namespace EPlast.BLL.Services.Jwt
 {
-    public class Jwtservice : IJwtService
+    public class JwtService : IJwtService
     {
         private readonly JwtOptions _jwtOptions;
-        public Jwtservice(IOptions<JwtOptions> jwtOptions)
+        public JwtService(IOptions<JwtOptions> jwtOptions)
         {
             _jwtOptions = jwtOptions.Value;
         }
@@ -30,7 +30,7 @@ namespace EPlast.BLL.Services.Jwt
 
             var token = new JwtSecurityToken(
               issuer: _jwtOptions.Issuer,
-              audience: _jwtOptions.Issuer,
+              audience: _jwtOptions.Audience,
               claims: claims,
               expires: DateTime.Now.AddMinutes(_jwtOptions.Time),
               signingCredentials: creds);

@@ -32,7 +32,8 @@ namespace EPlast.BLL
 
             if (!settings.ImagePath.Contains("Blank"))
             {
-                Image image = section.AddImage(settings.ImagePath);
+                string base64 = "base64:" + settings.ImagePath.Split(',')[1];
+                Image image = section.AddImage(base64);
                 image.Width = 600;
                 image.RelativeHorizontal = RelativeHorizontal.Page;
                 image.RelativeVertical = RelativeVertical.Page;
