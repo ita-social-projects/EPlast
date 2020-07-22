@@ -61,7 +61,7 @@ namespace EPlast.BLL.Services
                 LastName = registerDto.SurName,
                 FirstName = registerDto.Name,
                 RegistredOn = DateTime.Now,
-                ImagePath = "default.png",
+                ImagePath = "default_user_image.png",
                 SocialNetworking = false,
                 UserProfile = new UserProfile()
             };
