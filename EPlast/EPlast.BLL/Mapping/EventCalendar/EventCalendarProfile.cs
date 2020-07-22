@@ -11,7 +11,10 @@ namespace EPlast.BLL.Mapping.EventCalendarProfile
     {
         public EventCalendarProfile()
         {
-            CreateMap<Event, EventCalendarInfoDTO>().ReverseMap();
+            CreateMap<Event, EventCalendarInfoDTO>()
+                .ForMember(e => e.Title, s => s.MapFrom(f => f.EventName))
+                .ForMember(e => e.Start, s => s.MapFrom(f => f.EventDateStart))
+                .ForMember(e => e.End, s => s.MapFrom(f => f.EventDateEnd)).ReverseMap();
         }
     }
 }
