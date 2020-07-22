@@ -6,6 +6,7 @@ using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.AzureStorage.Base;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
+using EPlast.BLL.Interfaces.EventCalendar;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Interfaces.Jwt;
@@ -30,9 +31,11 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.DataAccess.Repositories.Realizations.Base;
 using EPlast.WebApi.Extensions;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
@@ -76,11 +79,13 @@ namespace EPlast.WebApi
                 {
                     options.ClientId = Configuration.GetSection("GoogleAuthentication:GoogleClientId").Value;
                     options.ClientSecret = Configuration.GetSection("GoogleAuthentication:GoogleClientSecret").Value;
+                    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 })
                 .AddFacebook(options =>
                 {
                     options.AppId = Configuration.GetSection("FacebookAuthentication:FacebookAppId").Value;
                     options.AppSecret = Configuration.GetSection("FacebookAuthentication:FacebookAppSecret").Value;
+                    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 })
                 .AddJwtBearer(config =>
                 {
@@ -165,7 +170,7 @@ namespace EPlast.WebApi
             services.AddScoped<IConfirmedUsersService, ConfirmedUsersService>();
             services.AddScoped<IUserManagerService, UserManagerService>();
             services.AddScoped<IAdminService, AdminService>();
-            services.AddScoped<ICItyAdministrationService, CityAdministrationService>();
+            services.AddScoped<ICityAdministrationService, CityAdministrationService>();
             services.AddScoped<ICityService, CityService>();
             services.AddScoped<IGlobalLoggerService, GlobalLoggerService>();
             services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
@@ -184,10 +189,12 @@ namespace EPlast.WebApi
             services.AddScoped<IEventAdminManager, EventAdminManager>();
             services.AddScoped<IEventAdmininistrationManager, EventAdministrationManager>();
             services.AddScoped<IEventAdministrationTypeManager, EventAdministrationTypeManager>();
+            services.AddScoped<IEventCalendarService, EventCalendarService>();
+            services.AddScoped<IEventsManager, EventsManager>();
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
             services.Configure<JwtOptions>(Configuration.GetSection("Jwt"));
-            services.AddTransient<IJwtService, Jwtservice>();
+            services.AddTransient<IJwtService, JwtService>();
             services.AddScoped<IUserBlobStorageRepository, UserBlobStorageRepository>();
             services.AddScoped<IDecisionBlobStorageRepository, DecisionBlobStorageRepository>();
             services.AddScoped<ICityBlobStorageRepository, CityBlobStorageRepository>();
