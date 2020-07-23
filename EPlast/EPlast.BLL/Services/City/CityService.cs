@@ -5,12 +5,14 @@ using EPlast.BLL.Interfaces.City;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using DataAccessCity = EPlast.DataAccess.Entities;
 
@@ -22,16 +24,22 @@ namespace EPlast.BLL.Services
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _env;
         private readonly ICityBlobStorageRepository _cityBlobStorage;
-        
+        private readonly ICityAccessService _cityAccessService;
+        private readonly UserManager<DataAccessCity.User> _userManager;
+
         public CityService(IRepositoryWrapper repoWrapper,
             IMapper mapper,
             IWebHostEnvironment env,
-            ICityBlobStorageRepository cityBlobStorage)
+            ICityBlobStorageRepository cityBlobStorage,
+            ICityAccessService cityAccessService,
+            UserManager<DataAccessCity.User> userManager)
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
             _env = env;
             _cityBlobStorage = cityBlobStorage;
+            _cityAccessService = cityAccessService;
+            _userManager = userManager;
         }
 
         public async Task<IEnumerable<DataAccessCity.City>> GetAllAsync()
@@ -116,11 +124,21 @@ namespace EPlast.BLL.Services
                 Admins = cityAdmins,
                 Documents = cityDoc,     
             };
-            cityProfileDto.City.CanEdit = true;
-            cityProfileDto.City.CanJoin = true;
-            cityProfileDto.City.CanApprove = true;
-            cityProfileDto.City.CanSeeReports = true;
-            cityProfileDto.City.CanAddReports = true;
+            
+            return cityProfileDto;
+        }
+
+        public async Task<CityProfileDTO> GetCityProfileAsync(int cityId, ClaimsPrincipal user)
+        {
+            var cityProfileDto = await GetCityProfileAsync(cityId);
+            var userId = _userManager.GetUserId(user);
+
+            cityProfileDto.City.CanCreate = user.IsInRole("Admin");
+            cityProfileDto.City.CanEdit = await _cityAccessService.HasAccessAsync(user, cityId);
+            cityProfileDto.City.CanJoin = (await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(u => u.User.Id == userId)) == null;
+            cityProfileDto.City.CanApprove = await _cityAccessService.HasAccessAsync(user, cityId);
+            cityProfileDto.City.CanSeeReports = await _cityAccessService.HasAccessAsync(user, cityId);
+            cityProfileDto.City.CanAddReports = await _cityAccessService.HasAccessAsync(user, cityId);
 
             return cityProfileDto;
         }
@@ -151,6 +169,14 @@ namespace EPlast.BLL.Services
             return cityProfileDto;
         }
 
+        public async Task<CityProfileDTO> GetCityMembersAsync(int cityId, ClaimsPrincipal user)
+        {
+            var cityProfileDto = await GetCityMembersAsync(cityId);
+            cityProfileDto.City.CanApprove = await _cityAccessService.HasAccessAsync(user, cityId);
+
+            return cityProfileDto;
+        }
+
         public async Task<CityProfileDTO> GetCityFollowersAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
@@ -173,6 +199,14 @@ namespace EPlast.BLL.Services
                 Head = cityHead
             };
             cityProfileDto.City.CanApprove = true;
+
+            return cityProfileDto;
+        }
+
+        public async Task<CityProfileDTO> GetCityFollowersAsync(int cityId, ClaimsPrincipal user)
+        {
+            var cityProfileDto = await GetCityFollowersAsync(cityId);
+            cityProfileDto.City.CanApprove = await _cityAccessService.HasAccessAsync(user, cityId);
 
             return cityProfileDto;
         }
@@ -200,6 +234,14 @@ namespace EPlast.BLL.Services
                 Head = cityHead
             };
             cityProfileDto.City.CanApprove = true;
+
+            return cityProfileDto;
+        }
+
+        public async Task<CityProfileDTO> GetCityAdminsAsync(int cityId, ClaimsPrincipal user)
+        {
+            var cityProfileDto = await GetCityAdminsAsync(cityId);
+            cityProfileDto.City.CanApprove = await _cityAccessService.HasAccessAsync(user, cityId);
 
             return cityProfileDto;
         }
@@ -385,9 +427,11 @@ namespace EPlast.BLL.Services
             {
                 var logoBase64Parts = logoBase64.Split(',');
                 var extension = logoBase64Parts[0].Split(new[] { '/', ';' }, 3)[1];
-                extension = extension != ""
-                    ? (extension[0] == '.' ? "" : "." + extension)
-                    : extension;
+                
+                if (!string.IsNullOrEmpty(extension))
+                {
+                    extension = (extension[0] == '.' ? "" : ".") + extension;
+                }
                 
                 var fileName = Guid.NewGuid() + extension;
 

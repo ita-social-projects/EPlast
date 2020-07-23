@@ -26,7 +26,7 @@ namespace EPlast.Tests.Controllers
             Mock<IStringLocalizer<AuthenticationErrors>> mockStringLocalizer = new Mock<IStringLocalizer<AuthenticationErrors>>();
 
             AccountController accountController = new AccountController(mockUserService.Object, null, null,
-                null, null, null, null, null, null, mockMapper.Object, null, mockAccountService.Object, mockStringLocalizer.Object, null);
+                null, null, null, null, null, null, mockMapper.Object, null, mockAccountService.Object, mockStringLocalizer.Object, null, null);
             return (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController);
         }
 
