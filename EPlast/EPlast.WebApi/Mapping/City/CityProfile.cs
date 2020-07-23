@@ -27,6 +27,7 @@ namespace EPlast.BLL.Mapping.City
                 .ForMember(r => r.PostIndex, s => s.MapFrom(t => t.City.PostIndex))
                 .ForMember(r => r.Logo, s => s.MapFrom(t => t.City.Logo))
                 .ForMember(r => r.Region, s => s.MapFrom(t => t.City.Region))
+                .ForMember(r => r.CanCreate, s => s.MapFrom(t => t.City.CanCreate))
                 .ForMember(r => r.CanJoin, s => s.MapFrom(t => t.City.CanJoin))
                 .ForMember(r => r.CanEdit, s => s.MapFrom(t => t.City.CanEdit))
                 .ForMember(r => r.CanApprove, s => s.MapFrom(t => t.City.CanApprove))

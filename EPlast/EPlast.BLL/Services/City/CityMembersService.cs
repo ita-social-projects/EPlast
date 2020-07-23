@@ -3,8 +3,10 @@ using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces.City;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.City
@@ -13,11 +15,15 @@ namespace EPlast.BLL.Services.City
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
+        private readonly UserManager<User> _userManager;
 
-        public CityMembersService(IRepositoryWrapper repositoryWrapper, IMapper mapper)
+        public CityMembersService(IRepositoryWrapper repositoryWrapper,
+            IMapper mapper,
+            UserManager<User> userManager)
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         public async Task<IEnumerable<CityMembersDTO>> GetMembersByCityIdAsync(int cityId)
@@ -44,7 +50,8 @@ namespace EPlast.BLL.Services.City
             {
                 CityId = cityId,
                 IsApproved = false,
-                UserId = userId
+                UserId = userId,
+                User = await _userManager.FindByIdAsync(userId)
             };
 
             await _repositoryWrapper.CityMembers.CreateAsync(cityMember);
@@ -53,10 +60,17 @@ namespace EPlast.BLL.Services.City
             return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
         }
 
+        public async Task<CityMembersDTO> AddFollowerAsync(int cityId, ClaimsPrincipal user)
+        {
+            var userId = _userManager.GetUserId(user);
+
+            return await AddFollowerAsync(cityId, userId);
+        }
+
         public async Task<CityMembersDTO> ToggleApproveStatusAsync(int memberId)
         {
             var cityMember = await _repositoryWrapper.CityMembers
-                .GetFirstOrDefaultAsync(u => u.ID == memberId);
+                .GetFirstOrDefaultAsync(u => u.ID == memberId, m => m.Include(u => u.User));
 
             cityMember.IsApproved = !cityMember.IsApproved;
 

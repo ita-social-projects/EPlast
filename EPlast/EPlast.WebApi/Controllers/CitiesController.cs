@@ -4,6 +4,7 @@ using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.WebApi.Models.City;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace EPlast.WebApi.Controllers
         private readonly ICityService _cityService;
         private readonly ICityMembersService _cityMembersService;
         private readonly ICityAdministrationService _cityAdministrationService;
-
+        
         public CitiesController(ILoggerService<CitiesController> logger,
             IMapper mapper,
             ICityService cityService,
@@ -37,6 +38,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("Profiles/{page}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Index(int page, int pageSize)
         {
             var cities = await _cityService.GetAllDTOAsync();
@@ -45,16 +47,17 @@ namespace EPlast.WebApi.Controllers
                 Cities = cities.Skip((page - 1) * pageSize).Take(pageSize),
                 Total = cities.Count(),
                 Page = new PageViewModel(cities.Count(), page, pageSize),
-                CanCreate = true
+                CanCreate = page == 1 && User.IsInRole("Admin")
             };
 
             return Ok(citiesViewModel);
         }
 
         [HttpGet("Profile/{cityId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetProfile(int cityId)
         {
-            var cityProfileDto = await _cityService.GetCityProfileAsync(cityId);
+            var cityProfileDto = await _cityService.GetCityProfileAsync(cityId, User);
             if (cityProfileDto == null)
             {
                 return NotFound();
@@ -66,9 +69,10 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("Members/{cityId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetMembers(int cityId)
         {
-            var cityProfileDto = await _cityService.GetCityMembersAsync(cityId);
+            var cityProfileDto = await _cityService.GetCityMembersAsync(cityId, User);
             if (cityProfileDto == null)
             {
                 return NotFound();
@@ -81,9 +85,10 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("Followers/{cityId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetFollowers(int cityId)
         {
-            var cityProfileDto = await _cityService.GetCityFollowersAsync(cityId);
+            var cityProfileDto = await _cityService.GetCityFollowersAsync(cityId, User);
             if (cityProfileDto == null)
             {
                 return NotFound();
@@ -96,9 +101,10 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("Admins/{cityId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetAdmins(int cityId)
         {
-            var cityProfileDto = await _cityService.GetCityAdminsAsync(cityId);
+            var cityProfileDto = await _cityService.GetCityAdminsAsync(cityId, User);
             if (cityProfileDto == null)
             {
                 return NotFound();
@@ -110,6 +116,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("Documents/{cityId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetDocuments(int cityId)
         {
             var cityProfileDto = await _cityService.GetCityDocumentsAsync(cityId);
@@ -125,6 +132,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("Details/{cityId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Details(int cityId)
         {
             var cityDto = await _cityService.GetByIdAsync(cityId);
@@ -137,6 +145,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("LogoBase64")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetPhotoBase64(string logoName)
         {
             var logoBase64 = await _cityService.GetLogoBase64(logoName);
@@ -145,6 +154,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("CreateCity")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Create(CityViewModel city)
         {
             if (!ModelState.IsValid)
@@ -161,6 +171,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPut("EditCity/{cityId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Edit(CityViewModel city)
         {
             if (!ModelState.IsValid)
@@ -177,21 +188,17 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("AddFollower/{cityId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> AddFollower(int cityId)
         {
-            var userId = User.Identity.Name;
-            if (userId is null)
-            {
-                return NotFound();
-            }
+            var follower = await _cityMembersService.AddFollowerAsync(cityId, User);
+            _logger.LogInformation($"User {{{follower.UserId}}} became a follower of city {{{cityId}}}.");
 
-            await _cityMembersService.AddFollowerAsync(cityId, userId);
-            _logger.LogInformation($"User {{{userId}}} became a follower of city {{{cityId}}}.");
-
-            return Ok();
+            return Ok(follower);
         }
 
         [HttpDelete("RemoveFollower/{followerId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RemoveFollower(int followerId)
         {
             await _cityMembersService.RemoveFollowerAsync(followerId);
@@ -201,15 +208,17 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPut("ChangeApproveStatus/{memberId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> ChangeApproveStatus(int memberId)
         {
-            await _cityMembersService.ToggleApproveStatusAsync(memberId);
+            var member = await _cityMembersService.ToggleApproveStatusAsync(memberId);
             _logger.LogInformation($"Status of member with ID {{{memberId}}} was changed.");
 
-            return Ok();
+            return Ok(member);
         }
 
         [HttpPost("AddAdmin/{cityId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> AddAdmin(CityAdministrationViewModel admin)
         {
             var adminDTO = _mapper.Map<CityAdministrationViewModel, CityAdministrationDTO>(admin);
@@ -222,6 +231,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPut("RemoveAdmin/{adminId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RemoveAdmin(int adminId)
         {
             await _cityAdministrationService.RemoveAdministratorAsync(adminId);
@@ -231,6 +241,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPut("EditAdmin/{adminId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> EditAdmin(CityAdministrationViewModel admin)
         {
             var adminDTO = _mapper.Map<CityAdministrationViewModel, CityAdministrationDTO>(admin);
