@@ -244,6 +244,12 @@ namespace EPlast.WebApi
                 .AllowAnyMethod()
                 .AllowAnyHeader();
             });
+            
+            app.Use(async (context, next) =>
+            {
+                context.Features.Get<IHttpMaxRequestBodySizeFeature>().MaxRequestBodySize = 4294967295;                
+                await next.Invoke();
+            });
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>
