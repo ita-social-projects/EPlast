@@ -212,7 +212,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpGet("logout")] //+
         //[ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public IActionResult Logout()
         {
             _accountService.SignOutAsync();
@@ -222,7 +222,7 @@ namespace EPlast.WebApi.Controllers
         [HttpPost("forgotPassword")]
         [AllowAnonymous]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotpasswordDto)//+
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotpasswordDto)
         {
             try
             {
@@ -312,34 +312,18 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpGet("changePassword")]
-        [Authorize]
-        public async Task<IActionResult> ChangePassword()
-        {
-            var userDto = await _accountService.GetUserAsync(User);
-            var result = userDto.SocialNetworking;
-            if (result != true)
-            {
-                return Ok("changePassword");
-            }
-            else
-            {
-                return Ok(_resourceForErrors["ChangePasswordNotAllowed"]);
-            }
-        }
-
         [HttpPost("changePassword")]
-        [Authorize]  //коли зайшов через реакт він не авторизований
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changepasswordDto)//+ приходить все норм
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changepasswordDto)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var userDto = await _accountService.GetUserAsync(User);  // перше треба зробити логін
+                    var userDto = await _accountService.GetUserAsync(User); 
                     if (userDto == null)
                     {
-                        return BadRequest(); // тут просто вийдіть з сайту
+                        return BadRequest(); 
                     }
                     var result = await _accountService.ChangePasswordAsync(userDto.Id, changepasswordDto);
                     if (!result.Succeeded)
