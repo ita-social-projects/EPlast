@@ -27,7 +27,9 @@
                         <label class="col-form-label" id="type">Категорія</label>
                     </div>
                     <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
-                        <select id="select" asp-for="Event.EventCategoryID" asp-items='new SelectList(Model.EventCategories, "EventCategoryId", "EventCategoryName")' class=" border TextIinput infoInput form-control"></select>
+                        <select id="select" asp-for="Event.EventCategoryID" asp-items='new SelectList(Model.EventCategories,
+                             "EventCategoryId",
+                             "EventCategoryName")' class=" border TextIinput infoInput form-control"></select>
                     </div>
                 </div>
                 <span asp-validation-for="Event.EventCategoryID" class="text-danger "></span>
@@ -57,7 +59,7 @@
                             <option selected="selected" disabled="disabled"></option>
                             @foreach (var item in Model.Users)
                             {
-                                <option data-value="@item.Id" value="@item.FirstName @item.LastName">@item.UserName</option>
+                                <option data-value="@item.Id" value="@item.FirstName @item.LastName / @item.UserName"></option>
                             }
                         </datalist>
                         @Html.HiddenFor(i => i.Сommandant.UserId, new { @id = "autocomplete_input_id_0" })

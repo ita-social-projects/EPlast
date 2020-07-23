@@ -189,26 +189,27 @@ namespace EPlast.Controllers
             }) :
                Json(new { success = false });
         }
+        /* 
+              [Authorize(Roles = "Admin")]
+              public async Task<IActionResult> Download(int id, string filename)
+              {
+                  /*  byte[] fileBytes;
+                    try
+                    {
+                        DecisionIdVerify(id);
+                        fileBytes = await _decisionService.DownloadDecisionFileAsync(id);
+                    }
+                    catch (Exception e)
+                    {
+                        _loggerService.LogError($"{e.Message}");
 
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Download(int id, string filename)
-        {
-            byte[] fileBytes;
-            try
-            {
-                DecisionIdVerify(id);
-                fileBytes = await _decisionService.DownloadDecisionFileAsync(id);
-            }
-            catch (Exception e)
-            {
-                _loggerService.LogError($"{e.Message}");
+                        return RedirectToAction("HandleError", "Error");
+                    }
 
-                return RedirectToAction("HandleError", "Error");
-            }
+                    return File(fileBytes, _decisionService.GetContentType(id, filename), filename);
 
-            return File(fileBytes, _decisionService.GetContentType(id, filename), filename);
-        }
-
+                }
+                   */
         private static void DecisionIdVerify(int id)
         {
             if (id <= 0) throw new ArgumentException("Decision id cannot be null lest than zero");

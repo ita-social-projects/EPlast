@@ -11,11 +11,17 @@ This project contains  4 main parts: client frontend, backend, and database. All
 
 Let's take a closer look at the technologies of each part.
 
-**Client Frontend** - using React, Bootstrap 4
+**Client Frontend** - You can see [here](https://github.com/IrynaZavushchak/EPlast-Client/). We using React, Ant Design
 
-**Backend** - using ASP.NET Core.
+**Backend** - ASP.NET Core 3.1.0
 
 **Database** -  Microsoft SQL Server and hosted on Microsoft Azure.
+
+**Code quality** - [SonarCloud](https://sonarcloud.io/dashboard?id=IrynaZavushchak_EPlast)   [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=IrynaZavushchak_EPlast&metric=alert_status)](https://sonarcloud.io/dashboard?id=IrynaZavushchak_EPlast)
+
+**Testing** - xUnit, NUnit, Selenium, Moq
+
+**SDLC** - Scrum/Kanban 
 
 # 3. How to contribute
 You're encouraged to contribute to our project if you've found any issues or missing functionality that you would want to see.  [**Here**](https://github.com/IrynaZavushchak/EPlast/issues) you can see the list of issues and [**here**](https://github.com/IrynaZavushchak/EPlast/issues/new) you can create a new issue.
@@ -25,11 +31,11 @@ Before sending any pull request, please discuss requirements/changes to be imple
 # 4. How to start the project locally.
 4.1. Clone or download the project from **https://github.com/IrynaZavushchak/EPlast.git**
 
-4.2 Install [ASP.NET Core Runtime 2.2.0](https://dotnet.microsoft.com/download/dotnet-core/2.2) and [ASP.NET Core SDK 2.2.100](https://dotnet.microsoft.com/download/dotnet-core/2.2)
+4.2 Install [ASP.NET Core Runtime 3.1.0](https://dotnet.microsoft.com/download/dotnet-core/3.1) and [ASP.NET Core SDK 3.1.0](https://dotnet.microsoft.com/download/dotnet-core/3.1)
 
 4.3 Install [Microsoft SQL Server 2017+](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
 
-4.4 Install [Node.js v10.19.0](https://nodejs.org/en/blog/release/v10.19.0/)
+4.4 Install [Node.js v10.19.0](https://nodejs.org/en/blog/release/v10.19.0/)+
 
 4.5 Create local database from EPlast.DataAccess migrations.
 

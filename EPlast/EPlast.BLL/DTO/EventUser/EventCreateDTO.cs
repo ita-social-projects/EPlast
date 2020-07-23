@@ -1,4 +1,5 @@
 ﻿using EPlast.BLL.DTO.Events;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
 namespace EPlast.BLL.DTO.EventUser

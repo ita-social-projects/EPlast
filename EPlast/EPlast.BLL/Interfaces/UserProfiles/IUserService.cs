@@ -12,7 +12,7 @@ namespace EPlast.BLL.Interfaces.UserProfiles
     {
         Task<UserDTO> GetUserAsync(string userId);
         Task UpdateAsync(UserDTO user, IFormFile file, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId);
-        Task UpdateAsync(UserDTO user, string base64, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId);
+        Task UpdateAsyncForBase64(UserDTO user,string base64, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId);
         Task<TimeSpan> CheckOrAddPlastunRoleAsync(string userId, DateTime registeredOn);
         IEnumerable<ConfirmedUserDTO> GetConfirmedUsers(UserDTO user);
         ConfirmedUserDTO GetClubAdminConfirmedUser(UserDTO user);
