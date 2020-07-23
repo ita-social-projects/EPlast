@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.DTO.UserProfiles;
@@ -11,10 +6,15 @@ using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Services.Club;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Interfaces.AzureStorage.Base;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.ClubTests
@@ -23,14 +23,15 @@ namespace EPlast.XUnitTest.Services.ClubTests
     {
         private readonly Mock<IRepositoryWrapper> _repoWrapper;
         private readonly Mock<IMapper> _mapper;
+        private readonly Mock<IClubBlobStorageRepository> _blob;
         private readonly IClubService _clubService;
 
         public ClubServiceTests()
         {
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _mapper = new Mock<IMapper>();
-            var env = new Mock<IWebHostEnvironment>();
-            _clubService = new ClubService(_repoWrapper.Object, _mapper.Object, env.Object, null);
+            _blob = new Mock<IClubBlobStorageRepository>();
+            _clubService = new ClubService(_repoWrapper.Object, _mapper.Object, _blob.Object);
         }
 
         [Fact]
@@ -121,40 +122,5 @@ namespace EPlast.XUnitTest.Services.ClubTests
             _mapper.Verify(m => m.Map<Club, ClubDTO>(new Club()), Times.Never);
         }
 
-        [Fact]
-        public async Task UpdateAsync_ReturnsClubDto()
-        {
-            //arrange
-            var mockFile = new Mock<IFormFile>();
-            _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Club, bool>>>(),
-                    It.IsAny<Func<IQueryable<Club>, IIncludableQueryable<Club, object>>>()))
-                .ReturnsAsync(new Club());
-            _mapper.Setup(m => m.Map<Club, ClubDTO>(It.IsAny<Club>()))
-                .Returns(() => new ClubDTO());
-
-            //act
-            await _clubService.UpdateAsync(new ClubDTO(), mockFile.Object);
-
-            //assert
-            _repoWrapper.Verify(r => r.Club.Update(It.IsAny<Club>()));
-            _repoWrapper.Verify(r => r.SaveAsync());
-        }
-
-        [Fact]
-        public async Task CreateAsync_ReturnsClubDto()
-        {
-            //arrange
-            var mockFile = new Mock<IFormFile>();
-            _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Club, bool>>>(),
-                    It.IsAny<Func<IQueryable<Club>, IIncludableQueryable<Club, object>>>()))
-                .ReturnsAsync(new Club());
-
-            //act
-            await _clubService.CreateAsync(new ClubDTO(), mockFile.Object);
-
-            //assert
-            _repoWrapper.Verify(r => r.Club.CreateAsync(It.IsAny<Club>()));
-            _repoWrapper.Verify(r => r.SaveAsync());
-        }
     }
 }
