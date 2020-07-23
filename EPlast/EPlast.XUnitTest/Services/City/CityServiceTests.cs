@@ -2,10 +2,12 @@
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -22,6 +24,8 @@ namespace EPlast.XUnitTest.Services.City
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<IWebHostEnvironment> _env;
         private readonly Mock<ICityBlobStorageRepository> _cityBlobStorage;
+        private readonly Mock<ICityAccessService> _cityAccessService;
+        private readonly Mock<UserManager<User>> _userManager;
 
         public CityServiceTests()
         {
@@ -56,7 +60,7 @@ namespace EPlast.XUnitTest.Services.City
             _repoWrapper.Setup(r => r.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(), null))
                 .ReturnsAsync(GetTestCity());
             
-            return new CityService(_repoWrapper.Object, _mapper.Object, _env.Object, _cityBlobStorage.Object);
+            return new CityService(_repoWrapper.Object, _mapper.Object, _env.Object, _cityBlobStorage.Object, _cityAccessService.Object, _userManager.Object);
         }
 
         [Fact]
