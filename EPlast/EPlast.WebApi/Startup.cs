@@ -31,9 +31,12 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.DataAccess.Repositories.Realizations.Base;
 using EPlast.WebApi.Extensions;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
@@ -67,7 +70,7 @@ namespace EPlast.WebApi
                 .Where(x =>
                     x.FullName.Equals("EPlast.BLL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null") ||
                     x.FullName.Equals("EPlast.WebApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null")));
-
+            services.AddControllers().AddNewtonsoftJson();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -77,11 +80,13 @@ namespace EPlast.WebApi
                 {
                     options.ClientId = Configuration.GetSection("GoogleAuthentication:GoogleClientId").Value;
                     options.ClientSecret = Configuration.GetSection("GoogleAuthentication:GoogleClientSecret").Value;
+                    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 })
                 .AddFacebook(options =>
                 {
                     options.AppId = Configuration.GetSection("FacebookAuthentication:FacebookAppId").Value;
                     options.AppSecret = Configuration.GetSection("FacebookAuthentication:FacebookAppSecret").Value;
+                    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 })
                 .AddJwtBearer(config =>
                 {
@@ -91,7 +96,7 @@ namespace EPlast.WebApi
                     config.TokenValidationParameters = new TokenValidationParameters()
                     {
                         ValidIssuer = Configuration["Jwt:Issuer"],
-                        ValidAudience = Configuration["Jwt:Issuer"],
+                        ValidAudience = Configuration["Jwt:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
                     };
                 });
@@ -141,7 +146,7 @@ namespace EPlast.WebApi
             {
                 options.CustomSchemaIds(x => x.FullName);
             });
-            services.AddControllers().AddNewtonsoftJson();
+            
             services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
@@ -190,7 +195,7 @@ namespace EPlast.WebApi
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
             services.Configure<JwtOptions>(Configuration.GetSection("Jwt"));
-            services.AddTransient<IJwtService, Jwtservice>();
+            services.AddTransient<IJwtService, JwtService>();
             services.AddScoped<IUserBlobStorageRepository, UserBlobStorageRepository>();
             services.AddScoped<IDecisionBlobStorageRepository, DecisionBlobStorageRepository>();
             services.AddScoped<ICityBlobStorageRepository, CityBlobStorageRepository>();

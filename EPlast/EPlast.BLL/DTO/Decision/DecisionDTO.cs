@@ -18,6 +18,6 @@ namespace EPlast.BLL.DTO
 
         public DateTime Date { get; set; }
 
-        public bool HaveFile { get; set; }
+        public string FileName { get; set; }
     }
 }

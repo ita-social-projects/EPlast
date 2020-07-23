@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Services.Interfaces;
+using EPlast.BLL.Interfaces.AzureStorage;
 
 namespace EPlast.BLL
 {
@@ -11,11 +12,12 @@ namespace EPlast.BLL
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly ILoggerService<PdfService> _logger;
-
-        public PdfService(IRepositoryWrapper repoWrapper, ILoggerService<PdfService> logger)
+        private readonly IDecisionBlobStorageRepository _decisionBlobStorage;
+        public PdfService(IRepositoryWrapper repoWrapper, ILoggerService<PdfService> logger, IDecisionBlobStorageRepository decisionBlobStorage)
         {
             _repoWrapper = repoWrapper;
             _logger = logger;
+            _decisionBlobStorage = decisionBlobStorage;
         }
 
         public async Task<byte[]> BlankCreatePDFAsync(string userId)
@@ -47,10 +49,11 @@ namespace EPlast.BLL
                     .FirstOrDefault(x => x.ID == DecisionId);
                 if (decision != null)
                 {
+                    var base64 = await _decisionBlobStorage.GetBlobBase64Async("dafaultPhotoForPdf.jpg");
                     IPdfSettings pdfSettings = new PdfSettings
                     {
                         Title = $"Рішення {decision.Organization.OrganizationName}",
-                        ImagePath = "wwwroot/images/pdf/Header-Eplast.png"
+                        ImagePath = base64
                     };
                     IPdfCreator creator = new PdfCreator(new DecisionDocument(decision, pdfSettings));
                     return await Task.Run(() => creator.GetPDFBytes());
