@@ -59,7 +59,7 @@
                             <option selected="selected" disabled="disabled"></option>
                             @foreach (var item in Model.Users)
                             {
-                                <option data-value="@item.Id" value="@item.FirstName @item.LastName">@item.UserName</option>
+                                <option data-value="@item.Id" value="@item.FirstName @item.LastName / @item.UserName"></option>
                             }
                         </datalist>
                         @Html.HiddenFor(i => i.Сommandant.UserId, new { @id = "autocomplete_input_id_0" })
