@@ -114,8 +114,13 @@ namespace EPlast.BLL.Services
                 Members = members,
                 Followers = followers,
                 Admins = cityAdmins,
-                Documents = cityDoc
+                Documents = cityDoc,     
             };
+            cityProfileDto.City.CanEdit = true;
+            cityProfileDto.City.CanJoin = true;
+            cityProfileDto.City.CanApprove = true;
+            cityProfileDto.City.CanSeeReports = true;
+            cityProfileDto.City.CanAddReports = true;
 
             return cityProfileDto;
         }
@@ -135,7 +140,15 @@ namespace EPlast.BLL.Services
                 .Where(m => m.IsApproved)
                 .ToList();
 
-            return new CityProfileDTO { City = city, Members = members, Head = cityHead };
+            var cityProfileDto = new CityProfileDTO
+            {
+                City = city,
+                Members = members,
+                Head = cityHead
+            };
+            cityProfileDto.City.CanApprove = true;
+
+            return cityProfileDto;
         }
 
         public async Task<CityProfileDTO> GetCityFollowersAsync(int cityId)
@@ -153,7 +166,15 @@ namespace EPlast.BLL.Services
                 .Where(m => !m.IsApproved)
                 .ToList();
 
-            return new CityProfileDTO { City = city, Followers = followers, Head = cityHead };
+            var cityProfileDto = new CityProfileDTO
+            {
+                City = city,
+                Followers = followers,
+                Head = cityHead
+            };
+            cityProfileDto.City.CanApprove = true;
+
+            return cityProfileDto;
         }
 
         public async Task<CityProfileDTO> GetCityAdminsAsync(int cityId)
@@ -172,7 +193,15 @@ namespace EPlast.BLL.Services
                     && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .ToList();
 
-            return new CityProfileDTO { City = city, Admins = cityAdmins, Head = cityHead };
+            var cityProfileDto = new CityProfileDTO
+            {
+                City = city,
+                Admins = cityAdmins,
+                Head = cityHead
+            };
+            cityProfileDto.City.CanApprove = true;
+
+            return cityProfileDto;
         }
 
         public async Task<CityProfileDTO> GetCityDocumentsAsync(int cityId)
@@ -188,7 +217,15 @@ namespace EPlast.BLL.Services
                     && (a.EndDate < DateTime.Now || a.EndDate == null));
             var cityDoc = city.CityDocuments.ToList();
 
-            return new CityProfileDTO { City = city, Documents = cityDoc, Head = cityHead };
+            var cityProfileDto = new CityProfileDTO
+            {
+                City = city,
+                Documents = cityDoc,
+                Head = cityHead
+            };
+            cityProfileDto.City.CanAddReports = true;
+
+            return cityProfileDto;
         }
 
         public async Task<string> GetLogoBase64(string logoName)
