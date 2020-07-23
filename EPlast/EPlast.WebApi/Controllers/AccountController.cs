@@ -71,7 +71,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("signin")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginDto loginDto) //+
+        public async Task<IActionResult> Login(LoginDto loginDto)
         {
             try
             {
@@ -115,7 +115,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("signup")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody]RegisterDto registerDto)//+
+        public async Task<IActionResult> Register([FromBody]RegisterDto registerDto)
         {
             try
             {
@@ -186,7 +186,7 @@ namespace EPlast.WebApi.Controllers
             }
             else
             {
-                return Ok("ConfirmedEmailNotAllowed");  //дописати ресурс
+                return Ok(_resourceForErrors["ConfirmedEmailNotAllowed"]);  
             }
         }
 
