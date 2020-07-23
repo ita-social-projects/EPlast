@@ -149,7 +149,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("cityAdmins/{cityId}")]
         public async Task<IActionResult> GetAdmins(int cityId)
         {
-            return Ok(await _cityAdministrationService.GetByCityIdAsync(cityId));
+            return Ok(await _cityAdministrationService.GetAdministrationByIdAsync(cityId));
         }
     }
 }
