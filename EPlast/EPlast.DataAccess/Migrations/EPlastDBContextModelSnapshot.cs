@@ -79,9 +79,6 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<int>("NumberOfPlastpryiatMembers")
                         .HasColumnType("int");
 
-                    b.Property<int>("NumberOfSeatsInCity")
-                        .HasColumnType("int");
-
                     b.Property<int>("NumberOfSeatsPtashat")
                         .HasColumnType("int");
 
@@ -510,8 +507,8 @@ namespace EPlast.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("HaveFile")
-                        .HasColumnType("bit");
+                    b.Property<string>("FileName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()

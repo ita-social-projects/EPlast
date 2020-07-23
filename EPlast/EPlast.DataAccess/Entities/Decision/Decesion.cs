@@ -28,7 +28,6 @@ namespace EPlast.DataAccess.Entities
         [Display(Name = "Date")]
         public DateTime Date { get; set; }
 
-        [Required]
-        public bool HaveFile { get; set; }
+        public string FileName { get; set; }
     }
 }

@@ -4,11 +4,11 @@ using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.WebApi.Models.UserModels;
+using EPlast.WebApi.Models.UserModels.UserProfileFields;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
@@ -73,7 +73,7 @@ namespace EPlast.WebApi.Controllers
                 var model = new PersonalDataViewModel
                 {
                     User = _mapper.Map<UserDTO, UserViewModel>(user),
-                    TimeToJoinPlast = time,
+                    TimeToJoinPlast = ((int)time.TotalDays),
                     IsUserPlastun = isUserPlastun
                 };
 
@@ -86,6 +86,12 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        [HttpGet("getImage/{imageName}")]
+        public async Task<string> GetImage(string imageName)
+        {
+            return await _userService.GetImageBase64Async(imageName);
+        }
+
         //[Authorize]
         [HttpGet("edit/{userId}")]
         public async Task<IActionResult> Edit(string userId)
@@ -96,35 +102,34 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest();
             }
             var user = await _userService.GetUserAsync(userId);
+            var genders = _mapper.Map<IEnumerable<GenderDTO>, IEnumerable<GenderViewModel>>(await _genderService.GetAllAsync());
 
-            var genders = (from item in await _genderService.GetAllAsync() select new SelectListItem { Text = item.Name, Value = item.ID.ToString() });
-
-            var placeOfStudyUnique = await _educationService.GetAllGroupByPlaceAsync();
-            var specialityUnique = await _educationService.GetAllGroupBySpecialityAsync();
-            var placeOfWorkUnique = await _workService.GetAllGroupByPlaceAsync();
-            var positionUnique = await _workService.GetAllGroupByPositionAsync();
+            var placeOfStudyUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(await _educationService.GetAllGroupByPlaceAsync());
+            var specialityUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(await _educationService.GetAllGroupBySpecialityAsync());
+            var placeOfWorkUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(await _workService.GetAllGroupByPlaceAsync());
+            var positionUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(await _workService.GetAllGroupByPositionAsync());
 
             var educView = new UserEducationViewModel { PlaceOfStudyID = user.UserProfile.EducationId, SpecialityID = user.UserProfile.EducationId, PlaceOfStudyList = placeOfStudyUnique, SpecialityList = specialityUnique };
             var workView = new UserWorkViewModel { PlaceOfWorkID = user.UserProfile.WorkId, PositionID = user.UserProfile.WorkId, PlaceOfWorkList = placeOfWorkUnique, PositionList = positionUnique };
             var model = new EditUserViewModel()
             {
                 User = _mapper.Map<UserDTO, UserViewModel>(user),
-                Nationalities = await _nationalityService.GetAllAsync(),
-                Religions = await _religionService.GetAllAsync(),
+                Nationalities = _mapper.Map<IEnumerable<NationalityDTO>, IEnumerable<NationalityViewModel>>(await _nationalityService.GetAllAsync()),
+                Religions = _mapper.Map<IEnumerable<ReligionDTO>, IEnumerable<ReligionViewModel>>(await _religionService.GetAllAsync()),
                 EducationView = educView,
                 WorkView = workView,
-                Degrees = await _degreeService.GetAllAsync(),
-                Genders = genders
+                Degrees = _mapper.Map<IEnumerable<DegreeDTO>, IEnumerable<DegreeViewModel>>(await _degreeService.GetAllAsync()),
+                Genders = genders,
             };
-
             return Ok(model);
         }
         [HttpPut("editbase64")]
-        public async Task<IActionResult> EditBase64(EditUserViewModel model, string base64)
+        public async Task<IActionResult> EditBase64([FromBody] EditUserViewModel model)
         {
             try
             {
-                await _userService.UpdateAsync(_mapper.Map<UserViewModel, UserDTO>(model.User), base64, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID, model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
+                
+                await _userService.UpdateAsyncForBase64(_mapper.Map<UserViewModel, UserDTO>(model.User), model.ImageBase64, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID, model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
                 _loggerService.LogInformation($"User  was edited profile and saved in the database");
 
                 return Ok();
