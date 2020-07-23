@@ -25,14 +25,14 @@ namespace EPlast.XUnitTest.Services.City
         private readonly Mock<IWebHostEnvironment> _env;
         private readonly Mock<ICityBlobStorageRepository> _cityBlobStorage;
         private readonly Mock<ICityAccessService> _cityAccessService;
-        private readonly Mock<UserManager<User>> _userManager;
-
+        
         public CityServiceTests()
         {
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _mapper = new Mock<IMapper>();
             _env = new Mock<IWebHostEnvironment>();
             _cityBlobStorage = new Mock<ICityBlobStorageRepository>();
+            _cityAccessService = new Mock<ICityAccessService>();
         }
 
         private CityService CreateCityService()
@@ -60,7 +60,7 @@ namespace EPlast.XUnitTest.Services.City
             _repoWrapper.Setup(r => r.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(), null))
                 .ReturnsAsync(GetTestCity());
             
-            return new CityService(_repoWrapper.Object, _mapper.Object, _env.Object, _cityBlobStorage.Object, _cityAccessService.Object, _userManager.Object);
+            return new CityService(_repoWrapper.Object, _mapper.Object, _env.Object, _cityBlobStorage.Object, _cityAccessService.Object, null);
         }
 
         [Fact]

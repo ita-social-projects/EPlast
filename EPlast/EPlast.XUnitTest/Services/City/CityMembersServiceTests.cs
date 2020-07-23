@@ -20,12 +20,11 @@ namespace EPlast.XUnitTest.Services.City
     {
         private readonly Mock<IRepositoryWrapper> _repositoryWrapper = new Mock<IRepositoryWrapper>();
         private readonly Mock<IMapper> _mapper = new Mock<IMapper>();
-        private readonly Mock<UserManager<DatabaseEntities.User>> _userManager = new Mock<UserManager<DatabaseEntities.User>>();
         private readonly ICityMembersService _cityMembersService;
         
         public CityMembersServiceTests()
         {
-            _cityMembersService = new CityMembersService(_repositoryWrapper.Object, _mapper.Object, _userManager.Object);
+            _cityMembersService = new CityMembersService(_repositoryWrapper.Object, _mapper.Object, null);
         }
 
         [Fact]
