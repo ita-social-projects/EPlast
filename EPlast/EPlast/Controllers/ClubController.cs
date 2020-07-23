@@ -67,13 +67,13 @@ namespace EPlast.Controllers
             catch (ArgumentNullException e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new {code = StatusCodes.Status404NotFound});
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
                 return RedirectToAction("HandleError", "Error",
-                    new {code = StatusCodes.Status505HttpVersionNotsupported});
+                    new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -90,13 +90,13 @@ namespace EPlast.Controllers
             catch (ArgumentNullException e)
             {
                 _logger.LogError($"Exception :{e.Message}");
-                return RedirectToAction("HandleError", "Error", new {code = StatusCodes.Status404NotFound});
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
                 return RedirectToAction("HandleError", "Error",
-                    new {code = StatusCodes.Status505HttpVersionNotsupported});
+                    new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -115,7 +115,7 @@ namespace EPlast.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
                 return RedirectToAction("HandleError", "Error",
-                    new {code = StatusCodes.Status505HttpVersionNotsupported});
+                    new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -134,7 +134,7 @@ namespace EPlast.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
                 return RedirectToAction("HandleError", "Error",
-                    new {code = StatusCodes.Status505HttpVersionNotsupported});
+                    new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -146,7 +146,7 @@ namespace EPlast.Controllers
                 var clubDto = await _clubService.GetClubInfoByIdAsync(index);
                 if (clubDto == null)
                 {
-                    return RedirectToAction("HandleError", "Error", new {code = StatusCodes.Status404NotFound});
+                    return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
                 }
 
                 return View(_mapper.Map<ClubDTO, ClubViewModel>(clubDto));
@@ -155,7 +155,7 @@ namespace EPlast.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
                 return RedirectToAction("HandleError", "Error",
-                    new {code = StatusCodes.Status505HttpVersionNotsupported});
+                    new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -167,7 +167,7 @@ namespace EPlast.Controllers
                 var clubDto = await _clubService.GetClubInfoByIdAsync(index);
                 if (clubDto == null)
                 {
-                    return RedirectToAction("HandleError", "Error", new {code = StatusCodes.Status404NotFound});
+                    return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
                 }
 
                 return View(_mapper.Map<ClubDTO, ClubViewModel>(clubDto));
@@ -176,25 +176,25 @@ namespace EPlast.Controllers
             {
                 _logger.LogError($"Exception :{e.Message}");
                 return RedirectToAction("HandleError", "Error",
-                    new {code = StatusCodes.Status505HttpVersionNotsupported});
+                    new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditClub(ClubViewModel model, IFormFile file)
+        public async Task<IActionResult> EditClub(ClubViewModel model)
         {
             try
             {
-                await _clubService.UpdateAsync(_mapper.Map<ClubViewModel, ClubDTO>(model), file);
+                await _clubService.UpdateAsync(_mapper.Map<ClubViewModel, ClubDTO>(model));
 
-                return RedirectToAction("Club", new {index = model.ID});
+                return RedirectToAction("Club", new { index = model.ID });
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
 
                 return RedirectToAction("HandleError", "Error",
-                    new {code = StatusCodes.Status505HttpVersionNotsupported});
+                    new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -204,22 +204,22 @@ namespace EPlast.Controllers
             try
             {
                 return (await _clubMembersService.ToggleIsApprovedInClubMembersAsync(index, clubIndex)).IsApproved
-                    ? RedirectToAction("ClubFollowers", new {index = clubIndex})
-                    : RedirectToAction("ClubMembers", new {index = clubIndex});
+                    ? RedirectToAction("ClubFollowers", new { index = clubIndex })
+                    : RedirectToAction("ClubMembers", new { index = clubIndex });
             }
             catch (NullReferenceException e)
             {
                 _logger.LogError($"Exception :{e.Message}");
 
                 return RedirectToAction("HandleError", "Error",
-                    new {code = StatusCodes.Status404NotFound});
+                    new { code = StatusCodes.Status404NotFound });
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
 
                 return RedirectToAction("HandleError", "Error",
-                    new {code = StatusCodes.Status505HttpVersionNotsupported});
+                    new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -230,20 +230,20 @@ namespace EPlast.Controllers
             {
                 await _clubMembersService.ToggleIsApprovedInClubMembersAsync(index, clubIndex);
 
-                return RedirectToAction("Club", new {index = clubIndex});
+                return RedirectToAction("Club", new { index = clubIndex });
             }
             catch (ArgumentNullException e)
             {
                 _logger.LogError($"Exception :{e.Message}");
 
-                return RedirectToAction("HandleError", "Error", new {code = StatusCodes.Status404NotFound});
+                return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status404NotFound });
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
 
                 return RedirectToAction("HandleError", "Error",
-                    new {code = StatusCodes.Status505HttpVersionNotsupported});
+                    new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
@@ -254,10 +254,10 @@ namespace EPlast.Controllers
 
             if (isSuccessful)
             {
-                return RedirectToAction("ClubAdmins", new {index = clubIndex});
+                return RedirectToAction("ClubAdmins", new { index = clubIndex });
             }
 
-            return RedirectToAction("HandleError", "Error", new {code = StatusCodes.Status505HttpVersionNotsupported});
+            return RedirectToAction("HandleError", "Error", new { code = StatusCodes.Status505HttpVersionNotsupported });
         }
 
         [HttpPost]
@@ -310,7 +310,7 @@ namespace EPlast.Controllers
             userId = User.IsInRole("Admin") ? userId : await _userManagerService.GetUserIdAsync(User);
             await _clubMembersService.AddFollowerAsync(clubIndex, userId);
 
-            return RedirectToAction("UserProfile", "Account", new {userId});
+            return RedirectToAction("UserProfile", "Account", new { userId });
         }
 
         [HttpGet]
@@ -325,25 +325,25 @@ namespace EPlast.Controllers
                 _logger.LogError($"Exception :{e.Message}");
 
                 return RedirectToAction("HandleError", "Error",
-                    new {code = StatusCodes.Status505HttpVersionNotsupported});
+                    new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateClub(ClubViewModel model, IFormFile file)
+        public async Task<IActionResult> CreateClub(ClubViewModel model)
         {
             try
             {
-                var club = await _clubService.CreateAsync(_mapper.Map<ClubViewModel, ClubDTO>(model), file);
+                var club = await _clubService.CreateAsync(_mapper.Map<ClubViewModel, ClubDTO>(model));
 
-                return RedirectToAction("Club", new {index = club.ID});
+                return RedirectToAction("Club", new { index = club.ID });
             }
             catch (Exception e)
             {
                 _logger.LogError($"Exception :{e.Message}");
 
                 return RedirectToAction("HandleError", "Error",
-                    new {code = StatusCodes.Status505HttpVersionNotsupported});
+                    new { code = StatusCodes.Status505HttpVersionNotsupported });
             }
         }
     }
