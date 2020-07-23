@@ -11,6 +11,7 @@ using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services;
 using EPlast.BLL.Services.Admin;
@@ -24,6 +25,7 @@ using EPlast.BLL.Services.EventUser;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.Jwt;
 using EPlast.BLL.Services.Logging;
+using EPlast.BLL.Services.Region;
 using EPlast.BLL.Services.UserProfiles;
 using EPlast.BLL.Settings;
 using EPlast.DataAccess;
@@ -173,6 +175,8 @@ namespace EPlast.WebApi
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<ICityAdministrationService, CityAdministrationService>();
             services.AddScoped<ICityService, CityService>();
+            services.AddScoped<IRegionService, RegionService>();
+            services.AddScoped<IRegionAdministrationService, RegionAdministrationService>();
             services.AddScoped<IGlobalLoggerService, GlobalLoggerService>();
             services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
             services.AddScoped<IClubService, ClubService>();
@@ -199,10 +203,11 @@ namespace EPlast.WebApi
             services.AddScoped<IUserBlobStorageRepository, UserBlobStorageRepository>();
             services.AddScoped<IDecisionBlobStorageRepository, DecisionBlobStorageRepository>();
             services.AddScoped<ICityBlobStorageRepository, CityBlobStorageRepository>();
+            services.AddScoped<IRegionBlobStorageRepository, RegionBlobStorageRepository>();
             services.AddScoped<IClubBlobStorageRepository, ClubBlobStorageRepository>();
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddLogging();
-
+            
             services.AddAuthorization();
 
             services.Configure<RequestLocalizationOptions>(

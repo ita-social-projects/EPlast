@@ -254,12 +254,12 @@ namespace EPlast.Controllers
             }
         }
 
-        public async Task<IActionResult> RemoveCityFollower(int cityId, string userId)
+        public async Task<IActionResult> RemoveCityFollower(int cityId, int followerId)
         {
             try
             {
-                await _cityMembersService.RemoveMemberAsync(userId);
-                _logger.LogInformation($"Follower with id {userId} was removed.");
+                await _cityMembersService.RemoveFollowerAsync(followerId);
+                _logger.LogInformation($"Follower with id {followerId} was removed.");
 
                 return RedirectToAction("CityFollowers", "City", new { cityid = cityId });
             }
@@ -271,12 +271,12 @@ namespace EPlast.Controllers
             }
         }
 
-        public async Task<IActionResult> AddCityMember(int cityId, string userId)
+        public async Task<IActionResult> AddCityMember(int cityId, int memberId)
         {
             try
             {
-                await _cityMembersService.ToggleApproveStatusAsync(userId);
-                _logger.LogInformation($"Status of user {userId} was changed in city with id {cityId}.");
+                await _cityMembersService.ToggleApproveStatusAsync(memberId);
+                _logger.LogInformation($"Status of user {memberId} was changed in city with id {cityId}.");
 
                 return RedirectToAction("CityFollowers", "City", new { cityid = cityId });
             }
@@ -288,12 +288,12 @@ namespace EPlast.Controllers
             }
         }
 
-        public async Task<IActionResult> RemoveCityMember(int cityId, string userId)
+        public async Task<IActionResult> RemoveCityMember(int cityId, int memberId)
         {
             try
             {
-                await _cityMembersService.ToggleApproveStatusAsync(userId);
-                _logger.LogInformation($"Status of user {userId} was changed in city with id {cityId}.");
+                await _cityMembersService.ToggleApproveStatusAsync(memberId);
+                _logger.LogInformation($"Status of user {memberId} was changed in city with id {cityId}.");
 
                 return RedirectToAction("CityMembers", "City", new { cityid = cityId });
             }
