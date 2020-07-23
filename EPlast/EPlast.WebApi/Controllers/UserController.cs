@@ -1,8 +1,12 @@
 ﻿using AutoMapper;
+using AutoMapper.Internal;
+using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
+using EPlast.WebApi.Models.Approver;
+using EPlast.WebApi.Models.User;
 using EPlast.WebApi.Models.UserModels;
 using EPlast.WebApi.Models.UserModels.UserProfileFields;
 using Microsoft.AspNetCore.Http;
@@ -128,7 +132,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                
+
                 await _userService.UpdateAsyncForBase64(_mapper.Map<UserViewModel, UserDTO>(model.User), model.ImageBase64, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID, model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
                 _loggerService.LogInformation($"User  was edited profile and saved in the database");
 
@@ -177,7 +181,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        //   [Authorize]
+        // [Authorize]
         [HttpDelete("deleteApprove/{confirmedId}")]
         public async Task<IActionResult> ApproverDelete(int confirmedId)
         {
@@ -194,6 +198,56 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest();
             }
 
+        }
+        [HttpGet("approvers/{userId}/{approverId}")]
+        public async Task<IActionResult> Approvers(string userId, string approverId)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _loggerService.LogError("User id is null");
+                    return RedirectToAction("HandleError", "Error", new { code = 500 });
+                }
+
+                var user = await _userService.GetUserAsync(userId);
+                var confirmedUsers = _userService.GetConfirmedUsers(user);
+                var canApprove = await _userService.CanApproveAsync(confirmedUsers, userId, approverId);
+                var time = await _userService.CheckOrAddPlastunRoleAsync(user.Id, user.RegistredOn);
+                var clubApprover = _userService.GetClubAdminConfirmedUser(user);
+                var cityApprover = _userService.GetCityAdminConfirmedUser(user);
+
+                if (user != null)
+                {
+                    var model = new UserApproversViewModel
+                    {
+                        User = _mapper.Map<UserDTO, UserInfoViewModel>(user),
+                        canApprove = canApprove,
+                        TimeToJoinPlast = ((int)time.TotalDays),
+                        ConfirmedUsers = _mapper.Map<IEnumerable<ConfirmedUserDTO>, IEnumerable<ConfirmedUserViewModel>>(confirmedUsers),
+                        ClubApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(clubApprover),
+                        CityApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(cityApprover),
+                        IsUserHeadOfCity = await _userManagerService.IsInRoleAsync(user, "Голова Станиці"),
+                        IsUserHeadOfClub = await _userManagerService.IsInRoleAsync(user, "Голова Куреня"),
+                        IsUserHeadOfRegion = await _userManagerService.IsInRoleAsync(user, "Голова Округу"),
+                        IsUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун"),
+                        CurrentUserId = approverId
+                    };
+                    model.ConfirmedUsers.ForAll(async x => x.Approver.User.ImagePath = await _userService.GetImageBase64Async(x.Approver.User.ImagePath));
+                    //foreach (var i in model.ConfirmedUsers)
+                    //{
+                    //    i.Approver.User.ImagePath = await this.GetImage(i.Approver.User.ImagePath);
+                    //}
+                    return Ok(model);
+                }
+                _loggerService.LogError($"Can`t find this user:{userId}, or smth else");
+                return RedirectToAction("HandleError", "Error", new { code = 500 });
+            }
+            catch (Exception e)
+            {
+                _loggerService.LogError("Smth went wrong");
+                return RedirectToAction("HandleError", "Error", new { code = 500 });
+            }
         }
     }
 }
