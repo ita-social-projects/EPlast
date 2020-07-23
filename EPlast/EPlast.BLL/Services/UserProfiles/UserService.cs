@@ -3,6 +3,7 @@ using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
@@ -22,13 +23,14 @@ namespace EPlast.BLL.Services.UserProfiles
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
+        private readonly IUserManagerService _userManagerService;
         private readonly IMapper _mapper;
         private readonly IWorkService _workService;
         private readonly IWebHostEnvironment _env;
         private readonly IEducationService _educationService;
         private readonly IUserBlobStorageRepository _userBlobStorage;
         public UserService(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IMapper mapper, IWorkService workService,
-            IEducationService educationService, IUserBlobStorageRepository userBlobStorage, IWebHostEnvironment env)
+            IEducationService educationService, IUserBlobStorageRepository userBlobStorage, IWebHostEnvironment env, IUserManagerService userManagerService)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
@@ -37,6 +39,7 @@ namespace EPlast.BLL.Services.UserProfiles
             _educationService = educationService;
             _userBlobStorage = userBlobStorage;
             _env = env;
+            _userManagerService = userManagerService;
         }
         public async Task<UserDTO> GetUserAsync(string userId)
         {
@@ -67,7 +70,6 @@ namespace EPlast.BLL.Services.UserProfiles
         {
             var result = user.ConfirmedUsers.
                 Where(x => x.isCityAdmin == false && x.isClubAdmin == false);
-
             return result;
         }
 
@@ -85,6 +87,18 @@ namespace EPlast.BLL.Services.UserProfiles
                 FirstOrDefault(x => x.isCityAdmin == true);
 
             return result;
+        }
+        public async Task<bool> CanApproveAsync(IEnumerable<ConfirmedUserDTO> confUsers, string userId, string approverId)
+        {
+            var currentUser = await this.GetUserAsync(approverId);
+            var currentUserId = currentUser.Id;
+
+            var canApprove = confUsers.Count() < 3
+                    && !confUsers.Any(x => x.Approver.UserID == currentUserId)
+                    && currentUserId != userId
+                    && await _userManagerService.IsInRoleAsync(currentUser, "Пластун");
+
+            return canApprove;
         }
         public async Task<bool> CanApproveAsync(IEnumerable<ConfirmedUserDTO> confUsers, string userId, ClaimsPrincipal user)
         {
