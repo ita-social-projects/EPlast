@@ -199,9 +199,10 @@ namespace EPlast.WebApi
             services.AddScoped<IUserBlobStorageRepository, UserBlobStorageRepository>();
             services.AddScoped<IDecisionBlobStorageRepository, DecisionBlobStorageRepository>();
             services.AddScoped<ICityBlobStorageRepository, CityBlobStorageRepository>();
+            services.AddScoped<IClubBlobStorageRepository, ClubBlobStorageRepository>();
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddLogging();
-            
+
             services.AddAuthorization();
 
             services.Configure<RequestLocalizationOptions>(
@@ -270,7 +271,7 @@ namespace EPlast.WebApi
             });
 
             if (env.IsDevelopment())
-            {   
+            {
                 app.UseDeveloperExceptionPage();
             }
             else
@@ -279,7 +280,7 @@ namespace EPlast.WebApi
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            
+
             //app.UseAntiforgeryTokens();
             app.UseStatusCodePages();
             app.UseHttpsRedirection();
