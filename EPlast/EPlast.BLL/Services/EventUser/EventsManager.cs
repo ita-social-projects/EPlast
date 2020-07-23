@@ -22,11 +22,12 @@ namespace EPlast.BLL.Services.EventUser
                 .Select(events => new EventCalendarInfoDTO()
                 {
                     ID = events.ID,
-                    EventName = events.EventName,
-                    EventDateStart = events.EventDateStart,
-                    EventDateEnd = events.EventDateEnd,
+                    Title = events.EventName,
+                    Start = events.EventDateStart,
+                    End = events.EventDateEnd,
                     Description = events.Description,
                     Eventlocation = events.Eventlocation,
+                    EventTypeID = events.EventTypeID,
                 })
                 .ToList();
 
