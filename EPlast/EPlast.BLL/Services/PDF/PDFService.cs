@@ -49,10 +49,11 @@ namespace EPlast.BLL
                     .FirstOrDefault(x => x.ID == DecisionId);
                 if (decision != null)
                 {
+                    var base64 = await _decisionBlobStorage.GetBlobBase64Async("dafaultPhotoForPdf.jpg");
                     IPdfSettings pdfSettings = new PdfSettings
                     {
                         Title = $"Рішення {decision.Organization.OrganizationName}",
-                        ImagePath = await _decisionBlobStorage.GetBlobBase64Async("dafaultPhotoForPdf.jpg")
+                        ImagePath = base64
                     };
                     IPdfCreator creator = new PdfCreator(new DecisionDocument(decision, pdfSettings));
                     return await Task.Run(() => creator.GetPDFBytes());
