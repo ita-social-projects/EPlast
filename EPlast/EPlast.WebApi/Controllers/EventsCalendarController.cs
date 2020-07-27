@@ -15,10 +15,26 @@ namespace EPlast.WebApi.Controllers
             _eventCalendarService = eventCalendarService;
         }
 
-        [HttpGet("eventsForCalendar")]
-        public async Task<IActionResult> GetEvents()
+        [HttpGet("actionsForCalendar")]
+        public async Task<IActionResult> GetActions()
         {
-            var events = await _eventCalendarService.GetAllEvents();
+            var events = await _eventCalendarService.GetAllActions();
+
+            return Ok(events);
+        }
+
+        [HttpGet("educationsForCalendar")]
+        public async Task<IActionResult> GetEducations()
+        {
+            var events = await _eventCalendarService.GetAllEducations();
+
+            return Ok(events);
+        }
+
+        [HttpGet("campsForCalendar")]
+        public async Task<IActionResult> GetCamps()
+        {
+            var events = await _eventCalendarService.GetAllCamps();
 
             return Ok(events);
         }
