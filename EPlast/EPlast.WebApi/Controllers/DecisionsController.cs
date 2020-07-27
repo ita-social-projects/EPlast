@@ -70,13 +70,6 @@ namespace EPlast.WebApi.Controllers
             {
                 return BadRequest("Дані введені неправильно");
             }
-
-            if (decisionWrapper.File != null && decisionWrapper.File.Length > 10485760)
-            {
-                return BadRequest("файл за великий (більше 10 Мб)");
-            }
-
-            decisionWrapper.Decision.HaveFile = decisionWrapper.File != null;
             decisionWrapper.Decision.ID = await _decisionService.SaveDecisionAsync(decisionWrapper);
             var decisionOrganizations = (await _decisionService
                         .GetDecisionOrganizationAsync(decisionWrapper.Decision.Organization))
@@ -99,7 +92,8 @@ namespace EPlast.WebApi.Controllers
 
                             dvm.DecisionStatusType = _decisionService.GetDecisionStatusTypes()
                             .FirstOrDefault(dst => dst.Value == decesion.Decision.DecisionStatusType.ToString()).Text;
-                            dvm.FileName = decesion.Filename;
+                            dvm.FileName = decesion.Decision.FileName;
+
                             return dvm;
                         })
                         .ToList();
@@ -119,21 +113,21 @@ namespace EPlast.WebApi.Controllers
             return NotFound();
         }
 
-        [HttpPost("downloadfile/{id:int}")]
+        [HttpGet("downloadfile/{filename}")]
         public async Task<IActionResult> Download(string filename)
         {
-            var blob = await _decisionService.DownloadDecisionFileFromBlobAsync(filename);
-            var blobStream = blob.OpenRead();
+            var base64 = await _decisionService.DownloadDecisionFileFromBlobAsync(filename);
 
-            return File(blobStream, blob.Properties.ContentType, filename);
+            return Ok(base64);
         }
 
-        [HttpPost("createpdf/{objId:int}")]
+        [HttpGet("createpdf/{objId:int}")]
         public async Task<IActionResult> CreatePdf(int objId)
         {
             byte[] fileBytes = await _pdfService.DecisionCreatePDFAsync(objId);
+            string base64EncodedPDF = Convert.ToBase64String(fileBytes);
 
-            return File(fileBytes, "application/pdf");
+            return Ok(base64EncodedPDF);
         }
     }
 }

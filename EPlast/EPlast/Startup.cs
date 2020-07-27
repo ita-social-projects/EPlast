@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BLL;
 using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.AzureStorage.Base;
 using EPlast.BLL.Interfaces.City;
@@ -10,6 +11,7 @@ using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services;
+using EPlast.BLL.Services.Admin;
 using EPlast.BLL.Services.AzureStorage;
 using EPlast.BLL.Services.AzureStorage.Base;
 using EPlast.BLL.Services.City;
@@ -41,8 +43,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BLL.Interfaces.Admin;
-using EPlast.BLL.Services.Admin;
 
 namespace EPlast
 {
@@ -124,10 +124,11 @@ namespace EPlast
             services.AddScoped<IEventAdminManager, EventAdminManager>();
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
+            services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddScoped<IUserBlobStorageRepository, UserBlobStorageRepository>();
             services.AddScoped<IDecisionBlobStorageRepository, DecisionBlobStorageRepository>();
             services.AddScoped<ICityBlobStorageRepository, CityBlobStorageRepository>();
-            services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
+            services.AddScoped<IClubBlobStorageRepository, ClubBlobStorageRepository>();
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -156,9 +157,9 @@ namespace EPlast
                 })
                 .AddFacebook(options =>
                 {
-                options.AppId = Configuration.GetSection("FacebookAuthentication:FacebookAppId").Value;
-                options.AppSecret = Configuration.GetSection("FacebookAuthentication:FacebookAppSecret").Value;
-            });
+                    options.AppId = Configuration.GetSection("FacebookAuthentication:FacebookAppId").Value;
+                    options.AppSecret = Configuration.GetSection("FacebookAuthentication:FacebookAppSecret").Value;
+                });
 
             services.Configure<DataProtectionTokenProviderOptions>(options =>
                 options.TokenLifespan = TimeSpan.FromHours(3));

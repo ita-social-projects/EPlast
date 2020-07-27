@@ -159,7 +159,7 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task GetAdminsTest()
         {
-            _cityAdministrationService.Setup(x => x.GetByCityIdAsync(It.IsAny<int>())).ReturnsAsync(new List<CityAdministrationDTO>());
+            _cityAdministrationService.Setup(x => x.GetAdministrationByIdAsync(It.IsAny<int>())).ReturnsAsync(new List<CityAdministrationDTO>());
             _mapper.Setup(x => x.Map<IEnumerable<CityAdministrationDTO>, IEnumerable<CityAdministrationViewModel>>(It.IsAny<IEnumerable<CityAdministrationDTO>>()));
             var controller = new AdminController(_logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object,
                 _cityService.Object, _cityAdministrationService.Object);

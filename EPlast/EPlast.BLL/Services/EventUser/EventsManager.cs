@@ -1,10 +1,8 @@
 ﻿using EPlast.BLL.DTO.EventCalendar;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.DataAccess.Repositories;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.EventUser
@@ -24,10 +22,12 @@ namespace EPlast.BLL.Services.EventUser
                 .Select(events => new EventCalendarInfoDTO()
                 {
                     ID = events.ID,
-                    EventName = events.EventName,
-                    EventDateStart = events.EventDateStart,
-                    EventDateEnd = events.EventDateEnd,
-                    Description = events.Description
+                    Title = events.EventName,
+                    Start = events.EventDateStart,
+                    End = events.EventDateEnd,
+                    Description = events.Description,
+                    Eventlocation = events.Eventlocation,
+                    EventTypeID = events.EventTypeID,
                 })
                 .ToList();
 

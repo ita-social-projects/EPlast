@@ -13,10 +13,6 @@ namespace EPlast.BLL.DTO.AnnualReport
 
         [Required(ErrorMessage = "Заповніть поле")]
         [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
-        public int NumberOfSeatsInCity { get; set; }
-
-        [Required(ErrorMessage = "Заповніть поле")]
-        [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
         public int NumberOfSeatsPtashat { get; set; }
 
         [Required(ErrorMessage = "Заповніть поле")]
