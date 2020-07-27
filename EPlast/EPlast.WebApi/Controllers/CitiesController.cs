@@ -248,7 +248,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Add current user to followers
+        /// Add a current user to followers
         /// </summary>
         /// <param name="cityId">An id of the city</param>
         /// <returns>An information about a new follower</returns>
@@ -277,10 +277,10 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Toggle approve status for member
+        /// Toggle an approve status for member
         /// </summary>
         /// <param name="memberId">The id of the member</param>
-        /// <returns>An information about a member</returns>
+        /// <returns>An information about a specific member</returns>
         [HttpPut("ChangeApproveStatus/{memberId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> ChangeApproveStatus(int memberId)
@@ -292,7 +292,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Add new administrator
+        /// Add a new administrator to the city
         /// </summary>
         /// <param name="newAdmin">An information about a new administrator</param>
         /// <returns>An information about a new administrator</returns>
@@ -310,7 +310,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Remove administrator
+        /// Remove a specific administrator from the city
         /// </summary>
         /// <param name="adminId">The id of the administrator</param>
         [HttpPut("RemoveAdmin/{adminId}")]
@@ -324,7 +324,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Edit information about admininstrator
+        /// Edit an information about a specific admininstrator
         /// </summary>
         /// <param name="admin">An information about a new administrator</param>
         /// <returns>An information about a specific admininstrator</returns>
