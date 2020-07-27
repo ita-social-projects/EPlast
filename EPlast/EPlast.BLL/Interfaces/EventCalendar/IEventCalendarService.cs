@@ -6,6 +6,10 @@ namespace EPlast.BLL.Interfaces.EventCalendar
 {
     public interface IEventCalendarService
     {
-        Task<List<EventCalendarInfoDTO>> GetAllEvents();
+        Task<List<EventCalendarInfoDTO>> GetAllActions();
+
+        Task<List<EventCalendarInfoDTO>> GetAllEducations();
+
+        Task<List<EventCalendarInfoDTO>> GetAllCamps();
     }
 }

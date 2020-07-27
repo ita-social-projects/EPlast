@@ -139,7 +139,7 @@ namespace EPlast.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAdmins(int cityId)
         {
-            var res = _mapper.Map<IEnumerable<CityAdministrationDTO>, IEnumerable<CityAdministrationViewModel>>(await _cityAdministrationService.GetByCityIdAsync(cityId));
+            var res = _mapper.Map<IEnumerable<CityAdministrationDTO>, IEnumerable<CityAdministrationViewModel>>(await _cityAdministrationService.GetAdministrationByIdAsync(cityId));
             return PartialView(res);
         }
     }
