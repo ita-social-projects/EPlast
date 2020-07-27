@@ -15,6 +15,12 @@ namespace EPlast.WebApi.Controllers
             _eventCalendarService = eventCalendarService;
         }
 
+        /// <summary>
+        /// Get all event of actions type
+        /// </summary>
+        /// <returns>Array of events of actions type</returns>
+        /// <response code="200">Returns the array of events of actions type</response>
+        /// <response code="400">If the array is null or empty</response> 
         [HttpGet("actionsForCalendar")]
         public async Task<IActionResult> GetActions()
         {
@@ -23,6 +29,12 @@ namespace EPlast.WebApi.Controllers
             return Ok(events);
         }
 
+        /// <summary>
+        /// Get all event of education type
+        /// </summary>
+        /// <returns>Array of events of education type</returns>
+        /// <response code="200">Returns the array of events of education type</response>
+        /// <response code="400">If the array is null or empty</response> 
         [HttpGet("educationsForCalendar")]
         public async Task<IActionResult> GetEducations()
         {
@@ -31,6 +43,12 @@ namespace EPlast.WebApi.Controllers
             return Ok(events);
         }
 
+        /// <summary>
+        /// Get all event of camps type
+        /// </summary>
+        /// <returns>Array of events of camps type</returns>
+        /// <response code="200">Returns the array of events of camps type</response>
+        /// <response code="400">If the array is null or empty</response> 
         [HttpGet("campsForCalendar")]
         public async Task<IActionResult> GetCamps()
         {
