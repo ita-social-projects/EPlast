@@ -11,6 +11,7 @@ using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services;
 using EPlast.BLL.Services.Admin;
@@ -24,6 +25,7 @@ using EPlast.BLL.Services.EventUser;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.Jwt;
 using EPlast.BLL.Services.Logging;
+using EPlast.BLL.Services.Region;
 using EPlast.BLL.Services.UserProfiles;
 using EPlast.BLL.Settings;
 using EPlast.DataAccess;
@@ -47,7 +49,9 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace EPlast.WebApi
@@ -116,6 +120,11 @@ namespace EPlast.WebApi
                 {
                     {"Bearer", new string[] { }},
                 };
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -172,6 +181,8 @@ namespace EPlast.WebApi
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<ICityAdministrationService, CityAdministrationService>();
             services.AddScoped<ICityService, CityService>();
+            services.AddScoped<IRegionService, RegionService>();
+            services.AddScoped<IRegionAdministrationService, RegionAdministrationService>();
             services.AddScoped<IGlobalLoggerService, GlobalLoggerService>();
             services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
             services.AddScoped<IClubService, ClubService>();
@@ -198,6 +209,8 @@ namespace EPlast.WebApi
             services.AddScoped<IUserBlobStorageRepository, UserBlobStorageRepository>();
             services.AddScoped<IDecisionBlobStorageRepository, DecisionBlobStorageRepository>();
             services.AddScoped<ICityBlobStorageRepository, CityBlobStorageRepository>();
+            services.AddScoped<IRegionBlobStorageRepository, RegionBlobStorageRepository>();
+            services.AddScoped<IClubBlobStorageRepository, ClubBlobStorageRepository>();
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddLogging();
             
@@ -244,12 +257,6 @@ namespace EPlast.WebApi
                 .AllowAnyMethod()
                 .AllowAnyHeader();
             });
-            
-            app.Use(async (context, next) =>
-            {
-                context.Features.Get<IHttpMaxRequestBodySizeFeature>().MaxRequestBodySize = 4294967295;                
-                await next.Invoke();
-            });
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>
@@ -275,7 +282,7 @@ namespace EPlast.WebApi
             });
 
             if (env.IsDevelopment())
-            {   
+            {
                 app.UseDeveloperExceptionPage();
             }
             else
@@ -284,7 +291,7 @@ namespace EPlast.WebApi
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            
+
             //app.UseAntiforgeryTokens();
             app.UseStatusCodePages();
             app.UseHttpsRedirection();
