@@ -26,7 +26,7 @@ namespace EPlast.Tests.Controllers
             Mock<IStringLocalizer<AuthenticationErrors>> mockStringLocalizer = new Mock<IStringLocalizer<AuthenticationErrors>>();
 
             AccountController accountController = new AccountController(mockUserService.Object, null, null,
-                null, null, null, null, null, null, mockMapper.Object, null, mockAccountService.Object, mockStringLocalizer.Object, null);
+                null, null, null, null, null, null, mockMapper.Object, null, mockAccountService.Object, mockStringLocalizer.Object, null, null);
             return (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController);
         }
 
@@ -476,17 +476,10 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
         }
 
-
-
-
-
-
-
-
         //Fakes
         private LocalizedString GetLoginNotRegistered()
         {
-            var localizedString = new LocalizedString("Login-NotRegistered", 
+            var localizedString = new LocalizedString("Login-NotRegistered",
                 "Ви не зареєстровані в системі, або не підтвердили свою електронну пошту");
             return localizedString;
         }
@@ -633,6 +626,7 @@ namespace EPlast.Tests.Controllers
         {
             return new string("500");
         }
+
         private UserDTO GetTestUserWithEmailConfirmed()
         {
             return new UserDTO()

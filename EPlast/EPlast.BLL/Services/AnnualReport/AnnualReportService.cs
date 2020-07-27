@@ -63,11 +63,13 @@ namespace EPlast.BLL.Services
 
         public async Task CreateAsync(ClaimsPrincipal claimsPrincipal, AnnualReportDTO annualReportDTO)
         {
-            if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReportDTO.CityId))
+            var city = await _repositoryWrapper.City.GetFirstOrDefaultAsync(
+                predicate: a => a.ID == annualReportDTO.CityId);
+            if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, city.ID))
             {
                 throw new UnauthorizedAccessException();
             }
-            if (await CheckCreated(annualReportDTO.CityId))
+            if (await CheckCreated(city.ID))
             {
                 throw new InvalidOperationException();
             }
@@ -148,12 +150,15 @@ namespace EPlast.BLL.Services
             await _repositoryWrapper.SaveAsync();
         }
 
-        public async Task<bool> CheckCreated(int cityId)
+        public async Task<bool> CheckCreated(ClaimsPrincipal claimsPrincipal, int cityId)
         {
             var city = await _repositoryWrapper.City.GetFirstOrDefaultAsync(
                 predicate: a => a.ID == cityId);
-            return await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
-                predicate: a => a.CityId == city.ID && (a.Status == AnnualReportStatus.Unconfirmed) || a.Date.Year == DateTime.Now.Year) != null;
+            if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, city.ID))
+            {
+                throw new UnauthorizedAccessException();
+            }
+            return await CheckCreated(city.ID);
         }
 
         private async Task SaveLastConfirmedAsync(int cityId)
@@ -250,6 +255,12 @@ namespace EPlast.BLL.Services
                 cityLegalStatusRevertPoint.DateFinish = null;
                 _repositoryWrapper.CityLegalStatuses.Update(cityLegalStatusRevertPoint);
             }
+        }
+
+        private async Task<bool> CheckCreated(int cityId)
+        {
+            return await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
+                predicate: a => a.CityId == cityId && (a.Status == AnnualReportStatus.Unconfirmed) || a.Date.Year == DateTime.Now.Year) != null;
         }
     }
 }
