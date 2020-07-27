@@ -16,6 +16,13 @@ namespace EPlast.WebApi.Controllers
             _eventUserManager = eventUserManager;
         }
 
+        /// <summary>
+        /// Get all created, planned, visited events for user by id
+        /// </summary>
+        /// <returns>Array of all created, planned, visited events for user</returns>
+        /// /// <param name="userId"></param>
+        /// <response code="200">Instance of EventUserDTO</response>
+        /// <response code="400">If the array is null or empty</response> 
         [HttpGet("eventsUsers/{userId}")]
         public async Task<IActionResult> GetEventUserByUserId(string userId)
             {
@@ -31,6 +38,12 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Get all data for creating event
+        /// </summary>
+        /// <returns>Array of data for creating event</returns>
+        /// <response code="200">Instance of EventCreateDTO</response>
+        /// <response code="400">If the array is null or empty</response> 
         [HttpGet("dataForNewEvent")]
         public async Task<IActionResult> GetEventsDataForCreate()
         {
@@ -46,6 +59,13 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Create a event
+        /// </summary>
+        /// <returns>A newly created event</returns>
+        /// /// /// <param name="createDTO"></param>
+        /// <response code="200">Instance of EventCreateDTO</response>
+        /// <response code="400">If the array is null or empty</response> 
         [HttpPost("newEvent")]
         public async Task<IActionResult> EventCreate([FromBody] EventCreateDTO createDTO)
             {
@@ -61,6 +81,13 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Get event for edit
+        /// </summary>
+        /// <returns>A edited event and data for editing</returns>
+        /// /// /// <param name="eventId"></param>
+        /// <response code="200">Instance of EventCreateDTO</response>
+        /// <response code="400">If the array is null or empty</response> 
         [HttpGet("editedEvent/{eventId:int}")]
         public async Task<IActionResult> EventEdit(int eventId)
         {
@@ -75,7 +102,14 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest();
             }
         }
-            
+
+        /// <summary>
+        /// Put edited event
+        /// </summary>
+        /// <returns>A newly edited event</returns>
+        /// <param name="createDTO"></param>
+        /// <response code="200">Instance of EventCreateDTO</response>
+        /// <response code="400">If the array is null or empty</response> 
         [HttpPut("editedEvent")]
         public async Task<IActionResult> EventEdit([FromBody] EventCreateDTO createDTO)
         {

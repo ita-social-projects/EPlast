@@ -16,7 +16,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Get all event of actions type
+        /// Get all events of actions type
         /// </summary>
         /// <returns>Array of events of actions type</returns>
         /// <response code="200">Returns the array of events of actions type</response>
@@ -30,7 +30,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Get all event of education type
+        /// Get all events of education type
         /// </summary>
         /// <returns>Array of events of education type</returns>
         /// <response code="200">Returns the array of events of education type</response>
@@ -44,7 +44,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Get all event of camps type
+        /// Get all events of camps type
         /// </summary>
         /// <returns>Array of events of camps type</returns>
         /// <response code="200">Returns the array of events of camps type</response>
