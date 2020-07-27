@@ -37,22 +37,29 @@ namespace EPlast.WebApi.Controllers
             _cityAdministrationService = cityAdministrationService;
         }
 
+        /// <summary>
+        /// Get a specific number of cities 
+        /// </summary>
+        /// <param name="page">A number of the page</param>
+        /// <param name="pageSize">A count of cities to display</param>
+        /// <returns>A specific number of cities</returns>
         [HttpGet("Profiles/{page}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> Index(int page, int pageSize)
+        public async Task<IActionResult> GetCities(int page, int pageSize)
         {
             var cities = await _cityService.GetAllDTOAsync();
-            var citiesViewModel = new CitiesViewModel()
-            {
-                Cities = cities.Skip((page - 1) * pageSize).Take(pageSize),
-                Total = cities.Count(),
-                Page = new PageViewModel(cities.Count(), page, pageSize),
-                CanCreate = page == 1 && User.IsInRole("Admin")
-            };
+            var citiesViewModel = new CitiesViewModel(page, pageSize, cities, User.IsInRole("Admin"));
 
             return Ok(citiesViewModel);
         }
 
+        /// <summary>
+        /// Get a specific city
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        /// <returns>A specific city</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">City not found</response>
         [HttpGet("Profile/{cityId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetProfile(int cityId)
@@ -68,6 +75,13 @@ namespace EPlast.WebApi.Controllers
             return Ok(cityProfile);
         }
 
+        /// <summary>
+        /// Get all members of a specific city
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        /// <returns>All members of a specific city</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">City not found</response>
         [HttpGet("Members/{cityId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetMembers(int cityId)
@@ -84,6 +98,13 @@ namespace EPlast.WebApi.Controllers
 
         }
 
+        /// <summary>
+        /// Get all followers of a specific city
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        /// <returns>All followers of a specific city</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">City not found</response>
         [HttpGet("Followers/{cityId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetFollowers(int cityId)
@@ -100,6 +121,13 @@ namespace EPlast.WebApi.Controllers
 
         }
 
+        /// <summary>
+        /// Get all administrators of a specific city
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        /// <returns>All administrators of a specific city</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">City not found</response>
         [HttpGet("Admins/{cityId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetAdmins(int cityId)
@@ -115,6 +143,13 @@ namespace EPlast.WebApi.Controllers
             return Ok(cityProfile.Administration);
         }
 
+        /// <summary>
+        /// Get all documents of a specific city
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        /// <returns>All documents of a specific city</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">City not found</response>
         [HttpGet("Documents/{cityId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetDocuments(int cityId)
@@ -131,6 +166,13 @@ namespace EPlast.WebApi.Controllers
 
         }
 
+        /// <summary>
+        /// Get an information about a specific city
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        /// <returns>An information about a specific city</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">City not found</response>
         [HttpGet("Details/{cityId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Details(int cityId)
@@ -144,6 +186,11 @@ namespace EPlast.WebApi.Controllers
             return Ok(_mapper.Map<CityDTO, CityViewModel>(cityDto));
         }
 
+        /// <summary>
+        /// Get a photo in base64 format
+        /// </summary>
+        /// <param name="logoName">The name of a city logo</param>
+        /// <returns>A base64 string of the city logo</returns>
         [HttpGet("LogoBase64")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetPhotoBase64(string logoName)
@@ -153,6 +200,13 @@ namespace EPlast.WebApi.Controllers
             return Ok(logoBase64);
         }
 
+        /// <summary>
+        /// Create a new city
+        /// </summary>
+        /// <param name="city">An information about a new city</param>
+        /// <returns>An id of a new city</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="400">Wrong input</response>
         [HttpPost("CreateCity")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Create(CityViewModel city)
@@ -170,6 +224,12 @@ namespace EPlast.WebApi.Controllers
             return Ok(city.ID);
         }
 
+        /// <summary>
+        /// Edit a specific city
+        /// </summary>
+        /// <param name="city">An information about an edited city</param>
+        /// <response code="200">Successful operation</response>
+        /// <response code="400">Wrong input</response>
         [HttpPut("EditCity/{cityId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Edit(CityViewModel city)
@@ -187,6 +247,11 @@ namespace EPlast.WebApi.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Add current user to followers
+        /// </summary>
+        /// <param name="cityId">An id of the city</param>
+        /// <returns>An information about a new follower</returns>
         [HttpPost("AddFollower/{cityId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> AddFollower(int cityId)
@@ -197,6 +262,10 @@ namespace EPlast.WebApi.Controllers
             return Ok(follower);
         }
 
+        /// <summary>
+        /// Remove a specific follower from the city
+        /// </summary>
+        /// <param name="followerId">The id of the follower</param>
         [HttpDelete("RemoveFollower/{followerId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RemoveFollower(int followerId)
@@ -207,6 +276,11 @@ namespace EPlast.WebApi.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Toggle approve status for member
+        /// </summary>
+        /// <param name="memberId">The id of the member</param>
+        /// <returns>An information about a member</returns>
         [HttpPut("ChangeApproveStatus/{memberId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> ChangeApproveStatus(int memberId)
@@ -217,19 +291,28 @@ namespace EPlast.WebApi.Controllers
             return Ok(member);
         }
 
+        /// <summary>
+        /// Add new administrator
+        /// </summary>
+        /// <param name="newAdmin">An information about a new administrator</param>
+        /// <returns>An information about a new administrator</returns>
         [HttpPost("AddAdmin/{cityId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> AddAdmin(CityAdministrationViewModel admin)
+        public async Task<IActionResult> AddAdmin(CityAdministrationViewModel newAdmin)
         {
-            var adminDTO = _mapper.Map<CityAdministrationViewModel, CityAdministrationDTO>(admin);
+            var admin = _mapper.Map<CityAdministrationViewModel, CityAdministrationDTO>(newAdmin);
 
-            await _cityAdministrationService.AddAdministratorAsync(adminDTO);
+            await _cityAdministrationService.AddAdministratorAsync(admin);
             _logger.LogInformation($"User {{{admin.UserId}}} became admin for city {{{admin.CityId}}}" +
                 $" with role {{{admin.AdminType.AdminTypeName}}}.");
 
-            return Ok();
+            return Ok(admin);
         }
 
+        /// <summary>
+        /// Remove administrator
+        /// </summary>
+        /// <param name="adminId">The id of the administrator</param>
         [HttpPut("RemoveAdmin/{adminId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RemoveAdmin(int adminId)
@@ -240,6 +323,11 @@ namespace EPlast.WebApi.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Edit information about admininstrator
+        /// </summary>
+        /// <param name="admin">An information about a new administrator</param>
+        /// <returns>An information about a specific admininstrator</returns>
         [HttpPut("EditAdmin/{adminId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> EditAdmin(CityAdministrationViewModel admin)
@@ -249,9 +337,13 @@ namespace EPlast.WebApi.Controllers
             await _cityAdministrationService.EditAdministratorAsync(adminDTO);
             _logger.LogInformation($"Admin with User-ID {{{admin.UserId}}} was edited.");
 
-            return Ok();
+            return Ok(adminDTO);
         }
 
+        /// <summary>
+        /// Get all legal statuses
+        /// </summary>
+        /// <returns>List of legal statuses</returns>
         [HttpGet("getLegalStatuses")]
         public IActionResult GetLegalStatuses()
         {
@@ -260,6 +352,7 @@ namespace EPlast.WebApi.Controllers
             {
                 legalStatuses.Add(enumValue.GetDescription());
             }
+
             return Ok(new { legalStatuses });
         }
     }
