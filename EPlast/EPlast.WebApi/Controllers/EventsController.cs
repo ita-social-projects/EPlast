@@ -1,4 +1,5 @@
 ﻿using EPlast.BLL.Interfaces.Events;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("types")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetTypes()
         {
             try
@@ -30,6 +32,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("types/{typeId:int}/categories")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetCategories(int typeId)
         {
             try
@@ -43,6 +46,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("~/api/types/{typeId:int}/categories/{categoryId:int}/events")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetEvents(int typeId, int categoryId)
         {
             try
@@ -58,6 +62,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("{id:int}/details")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetEventDetail(int id)
         {
             try
@@ -73,6 +78,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -87,6 +93,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpDelete("pictures/{pictureId:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> DeletePicture(int pictureId)
         {
             try
@@ -101,6 +108,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("{eventId:int}/participants")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> SubscribeOnEvent(int eventId)
         {
             try
@@ -115,6 +123,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpDelete("{eventId:int}/participants")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> UnSubscribeOnEvent(int eventId)
         {
             try
@@ -129,6 +138,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPut("participants/{participantId:int}/status/approved")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> ApproveParticipant(int participantId)
         {
             try
@@ -143,6 +153,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPut("participants/{participantId:int}/status/underReviewed")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> UnderReviewParticipant(int participantId)
         {
             try
@@ -157,6 +168,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPut("participants/{participantId:int}/status/rejected")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RejectParticipant(int participantId)
         {
             try
@@ -171,6 +183,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("{eventId:int}/eventGallery")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> FillEventGallery(int eventId, [FromForm] IList<IFormFile> files)
         {
             try
