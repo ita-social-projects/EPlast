@@ -1,0 +1,48 @@
+pool:
+  name: Azure Pipelines
+  demands: java
+
+steps:
+
+- task: DotNetCoreCLI@2
+  displayName: Restore
+  inputs:
+    command: restore
+    projects: '$(Parameters.RestoreBuildProjects)'
+    version: 3.x
+    
+
+- task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
+  displayName: 'Prepare analysis on SonarCloud'
+  inputs:
+    SonarCloud: sonarcloud
+    organization: irynazavushchak
+    projectKey: 'IrynaZavushchak_EPlast'
+    projectName: 'EPlast-backend'
+    extraProperties: |
+     # Additional properties that will be passed to the scanner, 
+     # Put one key=value per line, example:
+     # sonar.exclusions=**/*.bin
+     sonar.exclusions=EPlast/EPlast.AutomatedTest/**, EPlast/EPlast.DataAccess/**, EPlast/EPlast.Resources/**, EPlast/EPlast/**, EPlast/EPlast.BLL/DTO/**, EPlast/EPlast.BLL/Middlewares/**, EPlast/EPlast.BLL/Mapping/**, EPlast/EPlast.BLL/ExtensionMethods/**, EPlast/EPlast.BLL/Models/**, EPlast/EPlast.WebApi/CustomExceptionMiddleware/**. EPlast/EPlast.WebApi/Models/**, EPlast/EPlast.WebApi/Mapping/**, EPlast/EPlast.WebApi/Extensions/**, EPlast/EPlast.AutomatedTest/**, EPlast/EPlast.BLL/Services/AzureStorage/**, EPlast/EPlast.BLL/Settings/**, EPlast/EPlast.WebApi/Startup.cs
+
+- task: DotNetCoreCLI@2
+  displayName: Build
+  inputs:
+    projects: '$(Parameters.RestoreBuildProjects)'
+    arguments: '--configuration $(BuildConfiguration)'
+    version: 3.x
+
+- task: DotNetCoreCLI@2
+  displayName: Test
+  inputs:
+    command: test
+    projects: |
+     EPlast/EPlast.XUnitTest/EPlast.XUnitTest.csproj
+     EPlast/EPlast.Tests/EPlast.Tests.csproj
+    arguments: '--configuration $(BuildConfiguration)'
+
+- task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
+  displayName: 'Run Code Analysis'
+
+- task: SonarSource.sonarcloud.38b27399-a642-40af-bb7d-9971f69712e8.SonarCloudPublish@1
+  displayName: 'Publish Quality Gate Result'
