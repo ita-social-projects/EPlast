@@ -63,7 +63,7 @@ namespace EPlast.WebApi.Controllers
         /// Create a event
         /// </summary>
         /// <returns>A newly created event</returns>
-        /// /// /// <param name="createDTO"></param>
+        /// <param name="createDTO"></param>
         /// <response code="200">Instance of EventCreateDTO</response>
         /// <response code="400">If the array is null or empty</response> 
         [HttpPost("newEvent")]
@@ -85,7 +85,7 @@ namespace EPlast.WebApi.Controllers
         /// Get event for edit
         /// </summary>
         /// <returns>A edited event and data for editing</returns>
-        /// /// /// <param name="eventId"></param>
+        /// <param name="eventId"></param>
         /// <response code="200">Instance of EventCreateDTO</response>
         /// <response code="400">If the array is null or empty</response> 
         [HttpGet("editedEvent/{eventId:int}")]
