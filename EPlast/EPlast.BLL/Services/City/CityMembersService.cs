@@ -26,6 +26,7 @@ namespace EPlast.BLL.Services.City
             _userManager = userManager;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<CityMembersDTO>> GetMembersByCityIdAsync(int cityId)
         {
             var cityMembers = await _repositoryWrapper.CityMembers.GetAllAsync(
@@ -35,6 +36,7 @@ namespace EPlast.BLL.Services.City
             return _mapper.Map<IEnumerable<CityMembers>, IEnumerable<CityMembersDTO>>(cityMembers);
         }
 
+        /// <inheritdoc />
         public async Task<CityMembersDTO> AddFollowerAsync(int cityId, string userId)
         {
             var oldCityMember = await _repositoryWrapper.CityMembers
@@ -60,6 +62,7 @@ namespace EPlast.BLL.Services.City
             return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
         }
 
+        /// <inheritdoc />
         public async Task<CityMembersDTO> AddFollowerAsync(int cityId, ClaimsPrincipal user)
         {
             var userId = _userManager.GetUserId(user);
@@ -67,6 +70,7 @@ namespace EPlast.BLL.Services.City
             return await AddFollowerAsync(cityId, userId);
         }
 
+        /// <inheritdoc />
         public async Task<CityMembersDTO> ToggleApproveStatusAsync(int memberId)
         {
             var cityMember = await _repositoryWrapper.CityMembers
@@ -80,6 +84,7 @@ namespace EPlast.BLL.Services.City
             return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
         }
 
+        /// <inheritdoc />
         public async Task RemoveFollowerAsync(int followerId)
         {
             var cityMember = await _repositoryWrapper.CityMembers

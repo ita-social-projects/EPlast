@@ -43,4 +43,4 @@ Before sending any pull request, please discuss requirements/changes to be imple
 
 # 5. Project Deploy
 
-Our project deployed at **http://eplast.azurewebsites.net/**
+Our project deployed at **https://eplastua.azurewebsites.net/**

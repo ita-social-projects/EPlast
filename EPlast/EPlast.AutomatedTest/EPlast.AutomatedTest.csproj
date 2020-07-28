@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
 
     <IsPackable>false</IsPackable>
+    <ProjectGuid>{01E0FCEC-6CF9-468F-8D44-72A7A93FE584}</ProjectGuid>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,5 +21,4 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
 </Project>
