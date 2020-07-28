@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
 
     <IsPackable>false</IsPackable>
+    <ProjectGuid>{60967799-6640-4067-B320-E5659FE29A5A}</ProjectGuid>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,5 +23,4 @@
     <ProjectReference Include="..\EPlast.DataAccess\EPlast.DataAccess.csproj" />
     <ProjectReference Include="..\EPlast.WebApi\EPlast.WebApi.csproj" />
   </ItemGroup>
-
 </Project>
