@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <ProjectGuid>{76067960-4AFB-4DC3-B565-552FCF519AAD}</ProjectGuid>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,5 +22,4 @@
       <LastGenOutput>AuthenticationErrors.uk.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-
 </Project>
