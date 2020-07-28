@@ -58,8 +58,7 @@ namespace EPlast.BLL
             {
                 decisionWrapperDto = new DecisionWrapperDTO
                 {
-                    Decision = new DecisionDTO(),
-                    DecisionTargets = await GetDecisionTargetListAsync()
+                    Decision = new DecisionDTO()
                 };
             }
             catch (Exception e)

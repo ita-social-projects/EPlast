@@ -73,7 +73,7 @@ namespace EPlast.XUnitTest
 
             Assert.IsType<DecisionWrapperDTO>(decision);
         }
-
+/*
         [Fact]
         public async Task CreateDecisionDecisionTargetsCountTest()
         {
@@ -85,7 +85,7 @@ namespace EPlast.XUnitTest
 
             Assert.Equal(GetTestDecisionTargetsDtoList().Count, decision.DecisionTargets.Count());
         }
-
+        */
         [Theory]
         [InlineData(1)]
         [InlineData(2)]
