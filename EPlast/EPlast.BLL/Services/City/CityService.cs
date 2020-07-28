@@ -42,6 +42,7 @@ namespace EPlast.BLL.Services
             _userManager = userManager;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<DataAccessCity.City>> GetAllAsync()
         {
             var cities = await _repoWrapper.City.GetAllAsync(
@@ -59,11 +60,13 @@ namespace EPlast.BLL.Services
             return cities;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<CityDTO>> GetAllDTOAsync()
         {
             return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(await GetAllAsync());
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<CityDTO>> GetCitiesByRegionAsync(int regionId)
         {
             var cities = await _repoWrapper.City.GetAllAsync(c => c.RegionId == regionId);
@@ -71,6 +74,7 @@ namespace EPlast.BLL.Services
             return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(cities);
         }
 
+        /// <inheritdoc />
         public async Task<CityDTO> GetByIdAsync(int cityId)
         {
             var city = await _repoWrapper.City.GetFirstOrDefaultAsync(
@@ -89,6 +93,7 @@ namespace EPlast.BLL.Services
             return _mapper.Map<DataAccessCity.City, CityDTO>(city);
         }
 
+        /// <inheritdoc />
         public async Task<CityProfileDTO> GetCityProfileAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
@@ -128,6 +133,7 @@ namespace EPlast.BLL.Services
             return cityProfileDto;
         }
 
+        /// <inheritdoc />
         public async Task<CityProfileDTO> GetCityProfileAsync(int cityId, ClaimsPrincipal user)
         {
             var cityProfileDto = await GetCityProfileAsync(cityId);
@@ -143,6 +149,7 @@ namespace EPlast.BLL.Services
             return cityProfileDto;
         }
 
+        /// <inheritdoc />
         public async Task<CityProfileDTO> GetCityMembersAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
@@ -169,6 +176,7 @@ namespace EPlast.BLL.Services
             return cityProfileDto;
         }
 
+        /// <inheritdoc />
         public async Task<CityProfileDTO> GetCityMembersAsync(int cityId, ClaimsPrincipal user)
         {
             var cityProfileDto = await GetCityMembersAsync(cityId);
@@ -177,6 +185,7 @@ namespace EPlast.BLL.Services
             return cityProfileDto;
         }
 
+        /// <inheritdoc />
         public async Task<CityProfileDTO> GetCityFollowersAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
@@ -203,6 +212,7 @@ namespace EPlast.BLL.Services
             return cityProfileDto;
         }
 
+        /// <inheritdoc />
         public async Task<CityProfileDTO> GetCityFollowersAsync(int cityId, ClaimsPrincipal user)
         {
             var cityProfileDto = await GetCityFollowersAsync(cityId);
@@ -211,6 +221,7 @@ namespace EPlast.BLL.Services
             return cityProfileDto;
         }
 
+        /// <inheritdoc />
         public async Task<CityProfileDTO> GetCityAdminsAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
@@ -238,6 +249,7 @@ namespace EPlast.BLL.Services
             return cityProfileDto;
         }
 
+        /// <inheritdoc />
         public async Task<CityProfileDTO> GetCityAdminsAsync(int cityId, ClaimsPrincipal user)
         {
             var cityProfileDto = await GetCityAdminsAsync(cityId);
@@ -246,6 +258,7 @@ namespace EPlast.BLL.Services
             return cityProfileDto;
         }
 
+        /// <inheritdoc />
         public async Task<CityProfileDTO> GetCityDocumentsAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
@@ -270,6 +283,7 @@ namespace EPlast.BLL.Services
             return cityProfileDto;
         }
 
+        /// <inheritdoc />
         public async Task<string> GetLogoBase64(string logoName)
         {
             var logoBase64 = await _cityBlobStorage.GetBlobBase64Async(logoName);
@@ -277,6 +291,7 @@ namespace EPlast.BLL.Services
             return logoBase64;
         }
 
+        /// <inheritdoc />
         public async Task<CityProfileDTO> EditAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
@@ -306,6 +321,7 @@ namespace EPlast.BLL.Services
             return cityProfileDto;
         }
 
+        /// <inheritdoc />
         public async Task EditAsync(CityProfileDTO model, IFormFile file)
         {
             await UploadPhotoAsync(model.City, file);
@@ -316,6 +332,7 @@ namespace EPlast.BLL.Services
             await _repoWrapper.SaveAsync();
         }
 
+        /// <inheritdoc />
         public async Task EditAsync(CityDTO model)
         {
             await UploadPhotoAsync(model);
@@ -326,6 +343,7 @@ namespace EPlast.BLL.Services
             await _repoWrapper.SaveAsync();
         }
 
+        /// <inheritdoc />
         public async Task<int> CreateAsync(CityProfileDTO model, IFormFile file)
         {
             await UploadPhotoAsync(model.City, file);
@@ -338,6 +356,7 @@ namespace EPlast.BLL.Services
             return city.ID;
         }
 
+        /// <inheritdoc />
         public async Task<int> CreateAsync(CityDTO model)
         {
             await UploadPhotoAsync(model);
