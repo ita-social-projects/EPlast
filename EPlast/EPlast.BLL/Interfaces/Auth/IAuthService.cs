@@ -1,7 +1,5 @@
 ﻿using EPlast.BLL.DTO.Account;
 using EPlast.BLL.DTO.UserProfiles;
-using EPlast.BLL.Models.Jwt;
-using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
