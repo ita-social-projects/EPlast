@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <ProjectGuid>{1710D928-0613-4EA4-8497-C71B981C92E8}</ProjectGuid>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,5 +33,4 @@
     <ProjectReference Include="..\EPlast.BLL\EPlast.BLL.csproj" />
     <ProjectReference Include="..\EPlast.Resources\EPlast.Resources.csproj" />
   </ItemGroup>
-
 </Project>
