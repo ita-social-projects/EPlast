@@ -19,7 +19,7 @@ using System.Web;
 
 namespace EPlast.BLL.Services
 {
-    public class AccountService : IAccountService
+    public class AuthService : IAuthService
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
@@ -27,7 +27,7 @@ namespace EPlast.BLL.Services
         private readonly IMapper _mapper;
         private readonly IConfiguration _config;
 
-        public AccountService(UserManager<User> userManager,
+        public AuthService(UserManager<User> userManager,
             SignInManager<User> signInManager,
             IEmailConfirmation emailConfirmation,
             IMapper mapper,

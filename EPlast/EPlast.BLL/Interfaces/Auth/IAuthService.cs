@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL.Interfaces
 {
-    public interface IAccountService
+    public interface IAuthService
     {
         Task<SignInResult> SignInAsync(LoginDto loginDto);
         void SignOutAsync();
