@@ -51,7 +51,7 @@ namespace EPlast.BLL
             return decision;
         }
 
-        public async Task<DecisionWrapperDTO> CreateDecisionAsync()
+        public  DecisionWrapperDTO CreateDecision()
         {
             DecisionWrapperDTO decisionWrapperDto = null;
             try

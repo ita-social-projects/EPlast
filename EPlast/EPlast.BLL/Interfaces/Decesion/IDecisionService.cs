@@ -17,7 +17,7 @@ namespace EPlast.BLL
         Task<int> SaveDecisionAsync(DecisionWrapperDTO decision);
 
 
-        Task<DecisionWrapperDTO> CreateDecisionAsync();
+        DecisionWrapperDTO CreateDecision();
 
         Task<OrganizationDTO> GetDecisionOrganizationAsync(OrganizationDTO organization);
 
