@@ -33,7 +33,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IConfirmedUsersService _confirmedUserService;
         private readonly ILoggerService<AccountController> _loggerService;
         private readonly IStringLocalizer<AuthenticationErrors> _resourceForErrors;
-        private readonly IJwtService _JwtService;
+        private readonly IJwtService _jwtService;
         private readonly IHomeService _homeService;
 
         public AccountController(IUserService userService,
@@ -49,7 +49,7 @@ namespace EPlast.WebApi.Controllers
             ILoggerService<AccountController> loggerService,
             IAccountService accountService,
             IStringLocalizer<AuthenticationErrors> resourceForErrors,
-            IJwtService JwtService,
+            IJwtService jwtService,
             IHomeService homeService)
         {
             _accountService = accountService;
@@ -65,10 +65,17 @@ namespace EPlast.WebApi.Controllers
             _userManagerService = userManagerService;
             _loggerService = loggerService;
             _resourceForErrors = resourceForErrors;
-            _JwtService = JwtService;
+            _jwtService = jwtService;
             _homeService = homeService;
         }
 
+        /// <summary>
+        /// Method for logining in system
+        /// </summary>
+        /// <param name="loginDto">Login model(dto)</param>
+        /// <returns>Answer from backend for login method</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Problems with logining</response>
         [HttpPost("signin")]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginDto loginDto)
@@ -96,7 +103,7 @@ namespace EPlast.WebApi.Controllers
                     }
                     if (result.Succeeded)
                     {
-                        var generatedToken = _JwtService.GenerateJWTToken(user);
+                        var generatedToken = _jwtService.GenerateJWTToken(user);
                         return Ok(new { token = generatedToken });
                     }
                     else
@@ -113,6 +120,13 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for registering in system
+        /// </summary>
+        /// <param name="registerDto">Register model(dto)</param>
+        /// <returns>Answer from backend for register method</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Problems with registration</response>
         [HttpPost("signup")]
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody]RegisterDto registerDto)
@@ -157,6 +171,14 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for confirming email in system
+        /// </summary>
+        /// <param name="userId">Id of user</param>
+        /// <param name="token">Token for confirming email</param>
+        /// <returns>Answer from backend for confirming email method</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Problems with confirming email</response>
         [HttpGet("confirmingEmail")]
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmingEmail(string userId, string token) //+
@@ -190,6 +212,13 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for resending email in system
+        /// </summary>
+        /// <param name="userId">Id of user</param>
+        /// <returns>Answer from backend for resending email method</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Problems with resending email</response>
         [HttpGet("resendEmailForRegistering")]
         [AllowAnonymous]
         public async Task<IActionResult> ResendEmailForRegistering(string userId)
@@ -219,6 +248,13 @@ namespace EPlast.WebApi.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Method for forgotting password in system
+        /// </summary>
+        /// <param name="forgotpasswordDto">Forgot Password model(dto)</param>
+        /// <returns>Answer from backend for forgoting password email method</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Problems with forgotting password</response>
         [HttpPost("forgotPassword")]
         [AllowAnonymous]
         //[ValidateAntiForgeryToken]
