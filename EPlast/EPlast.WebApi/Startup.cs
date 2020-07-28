@@ -72,7 +72,7 @@ namespace EPlast.WebApi
                 .Where(x =>
                     x.FullName.Equals("EPlast.BLL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null") ||
                     x.FullName.Equals("EPlast.WebApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null")));
-            services.AddControllers().AddNewtonsoftJson();
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -153,7 +153,8 @@ namespace EPlast.WebApi
             {
                 options.CustomSchemaIds(x => x.FullName);
             });
-            
+            services.AddControllers().AddNewtonsoftJson();
+
             services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
