@@ -287,6 +287,14 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for resetting password in system
+        /// </summary>
+        /// <param name="userId">Id of user</param>
+        /// <param name="token">Token for reseting password</param>
+        /// <returns>Answer from backend for resetting password method</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Problems with resetting password</response>
         [HttpGet("resetPassword")]
         [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(string userId, string token = null)
@@ -314,6 +322,13 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for resetting password in system
+        /// </summary>
+        /// <param name="resetpasswordDto">ResetPassword model(dto)</param>
+        /// <returns>Answer from backend for resetting password method</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Problems with resetting password</response>
         [HttpPost("resetPassword")]
         [AllowAnonymous]
         //[ValidateAntiForgeryToken]
@@ -348,6 +363,13 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for resetting password in system
+        /// </summary>
+        /// <param name="changepasswordDto">ResetPassword model(dto)</param>
+        /// <returns>Answer from backend for resetting password method</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Problems with resetting password</response>
         [HttpPost("changePassword")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changepasswordDto)
