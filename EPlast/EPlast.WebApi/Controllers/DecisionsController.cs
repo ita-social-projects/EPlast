@@ -70,6 +70,10 @@ namespace EPlast.WebApi.Controllers
             {
                 return BadRequest("Дані введені неправильно");
             }
+            if(decisionWrapper.FileAsBase64 == null && decisionWrapper.Decision.FileName != null)
+            {
+                return BadRequest("Проблеми з завантаженням файлу");
+            }
             decisionWrapper.Decision.ID = await _decisionService.SaveDecisionAsync(decisionWrapper);
             var decisionOrganizations = (await _decisionService
                         .GetDecisionOrganizationAsync(decisionWrapper.Decision.Organization))
