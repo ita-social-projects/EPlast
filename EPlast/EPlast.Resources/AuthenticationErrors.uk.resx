@@ -135,6 +135,9 @@
   <data name="Confirmed-Registration" xml:space="preserve">
     <value>Ви підтвердили свій вхід. Для того щоб увійти в профіль натисніть Увійти/Зареєструватись.</value>
   </data>
+  <data name="ConfirmedEmailNotAllowed" xml:space="preserve">
+    <value>Час для підтвердження акаунта вичерпаний. </value>
+  </data>
   <data name="Error-ExternalLoginInfo" xml:space="preserve">
     <value>Error loading external login information</value>
   </data>
