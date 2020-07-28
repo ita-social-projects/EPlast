@@ -2,18 +2,13 @@
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
-using EPlast.BLL.Models.Jwt;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -25,21 +20,19 @@ namespace EPlast.BLL.Services
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailConfirmation _emailConfirmation;
         private readonly IMapper _mapper;
-        private readonly IConfiguration _config;
 
         public AuthService(UserManager<User> userManager,
             SignInManager<User> signInManager,
             IEmailConfirmation emailConfirmation,
-            IMapper mapper,
-            IConfiguration config)
+            IMapper mapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailConfirmation = emailConfirmation;
             _mapper = mapper;
-            _config = config;
         }
 
+        ///<inheritdoc/>
         public async Task<SignInResult> SignInAsync(LoginDto loginDto)
         {
             var user = _userManager.FindByEmailAsync(loginDto.Email);
@@ -47,11 +40,13 @@ namespace EPlast.BLL.Services
             return result;
         }
 
+        ///<inheritdoc/>
         public async void SignOutAsync()
         {
             await _signInManager.SignOutAsync();
         }
 
+        ///<inheritdoc/>
         public async Task<IdentityResult> CreateUserAsync(RegisterDto registerDto)
         {
             var user = new User()
@@ -70,6 +65,7 @@ namespace EPlast.BLL.Services
             return result;
         }
 
+        ///<inheritdoc/>
         public async Task<IdentityResult> ConfirmEmailAsync(string userId, string code) 
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -77,6 +73,7 @@ namespace EPlast.BLL.Services
             return result;
         }
 
+        ///<inheritdoc/>
         public async Task<IdentityResult> ChangePasswordAsync(string userId, ChangePasswordDto changePasswordDto)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -85,23 +82,27 @@ namespace EPlast.BLL.Services
             return result;
         }
 
+        ///<inheritdoc/>
         public async void RefreshSignInAsync(UserDTO userDto)
         {
             await _signInManager.RefreshSignInAsync(_mapper.Map<UserDTO, User>(userDto));  
         }
 
+        ///<inheritdoc/>
         public AuthenticationProperties GetAuthProperties(string provider, string returnUrl)
         {
             AuthenticationProperties properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, returnUrl);
             return properties;
         }
 
+        ///<inheritdoc/>
         public async Task<ExternalLoginInfo> GetInfoAsync()
         {
             var info = await _signInManager.GetExternalLoginInfoAsync();
             return info;
         }
 
+        ///<inheritdoc/>
         public async Task<SignInResult> GetSignInResultAsync(ExternalLoginInfo externalLoginInfo)
         {
             SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider,
@@ -109,12 +110,14 @@ namespace EPlast.BLL.Services
             return signInResult;
         }
 
+        ///<inheritdoc/>
         public async Task<bool> IsEmailConfirmedAsync(UserDTO userDto)
         {
             bool result = await _userManager.IsEmailConfirmedAsync(_mapper.Map<UserDTO, User>(userDto));
             return result;
         }
 
+        ///<inheritdoc/>
         public async Task<string> AddRoleAndTokenAsync(RegisterDto registerDto) 
         {
             var user = await _userManager.FindByEmailAsync(registerDto.Email);
@@ -123,12 +126,14 @@ namespace EPlast.BLL.Services
             return code;
         }
 
+        ///<inheritdoc/>
         public async Task<string> GenerateConfToken(UserDTO userDto)
         {
             string code = await _userManager.GenerateEmailConfirmationTokenAsync(_mapper.Map<UserDTO, User>(userDto));
             return code;
         }
 
+        ///<inheritdoc/>
         public async Task<string> GenerateResetTokenAsync(UserDTO userDto)
         {
             var user = _mapper.Map<UserDTO, User>(userDto);
@@ -136,6 +141,7 @@ namespace EPlast.BLL.Services
             return code;
         }
 
+        ///<inheritdoc/>
         public async Task<IdentityResult> ResetPasswordAsync(string userId, ResetPasswordDto resetPasswordDto)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -143,6 +149,7 @@ namespace EPlast.BLL.Services
             return result;
         }
 
+        ///<inheritdoc/>
         public async Task CheckingForLocking(UserDTO userDto)
         {
             if (await _userManager.IsLockedOutAsync(_mapper.Map<UserDTO, User>(userDto)))
@@ -151,30 +158,35 @@ namespace EPlast.BLL.Services
             }
         }
 
+        ///<inheritdoc/>
         public async Task<IEnumerable<AuthenticationScheme>> GetAuthSchemesAsync()
         {
             var externalLogins = await _signInManager.GetExternalAuthenticationSchemesAsync();
             return externalLogins;
         }
 
+        ///<inheritdoc/>
         public async Task<UserDTO> FindByEmailAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
             return _mapper.Map<User, UserDTO>(user);
         }
 
+        ///<inheritdoc/>
         public async Task<UserDTO> FindByIdAsync(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
             return _mapper.Map<User, UserDTO>(user);
         }
 
+        ///<inheritdoc/>
         public string GetIdForUser(ClaimsPrincipal claimsPrincipal)
         {
             var currentUserId = _userManager.GetUserId(claimsPrincipal);
             return currentUserId;
         }
 
+        ///<inheritdoc/>
         public int GetTimeAfterRegistr(UserDTO userDto)
         {
             IDateTimeHelper dateTimeConfirming = new DateTimeHelper();
@@ -183,6 +195,7 @@ namespace EPlast.BLL.Services
             return totalTime;
         }
 
+        ///<inheritdoc/>
         public int GetTimeAfterReset(UserDTO userDto)
         {
             IDateTimeHelper dateTimeResetingPassword = new DateTimeHelper();
@@ -191,12 +204,14 @@ namespace EPlast.BLL.Services
             return totalTime;
         }
 
+        ///<inheritdoc/>
         public async Task<UserDTO> GetUserAsync(ClaimsPrincipal claimsPrincipal)
         {
             var user = await _userManager.GetUserAsync(claimsPrincipal);
             return _mapper.Map<User, UserDTO>(user);
         }
 
+        ///<inheritdoc/>
         public async Task SendEmailRegistr(string confirmationLink, UserDTO userDto)
         {
             var user = await _userManager.FindByIdAsync(userDto.Id);
@@ -206,6 +221,7 @@ namespace EPlast.BLL.Services
                 $"Підтвердіть реєстрацію, перейшовши за :  <a href='{confirmationLink}'>посиланням</a> ", "Адміністрація сайту EPlast");
         }
 
+        ///<inheritdoc/>
         public async Task SendEmailRegistr(string confirmationLink, RegisterDto registerDto)
         {
             var user = await _userManager.FindByEmailAsync(registerDto.Email);
@@ -215,6 +231,7 @@ namespace EPlast.BLL.Services
                 $"Підтвердіть реєстрацію, перейшовши за :  <a href='{confirmationLink}'>посиланням</a> ", "Адміністрація сайту EPlast");
         }
 
+        ///<inheritdoc/>
         public async Task SendEmailReseting(string confirmationLink, ForgotPasswordDto forgotPasswordDto) 
         {
             var user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email);
@@ -224,6 +241,7 @@ namespace EPlast.BLL.Services
                 $"Для скидування пароля перейдіть за : <a href='{confirmationLink}'>посиланням</a>", "Адміністрація сайту EPlast");
         }
 
+        ///<inheritdoc/>
         public async Task GoogleAuthentication(string email, ExternalLoginInfo externalLoginInfo)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -250,6 +268,7 @@ namespace EPlast.BLL.Services
             await _signInManager.SignInAsync(user, isPersistent: false);
         }
 
+        ///<inheritdoc/>
         public async Task FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo)
         {
             var nameIdentifier = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -274,30 +293,6 @@ namespace EPlast.BLL.Services
             await _userManager.AddToRoleAsync(user, "Прихильник");
             await _userManager.AddLoginAsync(user, externalLoginInfo);
             await _signInManager.SignInAsync(user, isPersistent: false);
-        }
-
-        public string BuildToken()
-        {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtToken:SecretKey"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(_config["JwtToken:Issuer"],
-              _config["JwtToken:Issuer"],
-              expires: DateTime.Now.AddMinutes(30),
-              signingCredentials: creds);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        public bool Authenticate(LoginModel login)
-        {
-            bool validUser = false;
-
-            if ((login.Username == "admin") && (login.Password == "admin123"))
-            {
-                validUser = true;
-            }
-            return validUser;
         }
     }
 }
