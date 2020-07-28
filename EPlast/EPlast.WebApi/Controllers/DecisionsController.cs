@@ -23,7 +23,10 @@ namespace EPlast.WebApi.Controllers
             _decisionService = decisionService;
             _mapper = mapper;
         }
-
+        /// <summary>
+        /// Returns data for creating new decision
+        /// </summary>
+        /// <returns>Data for creating new decision</returns>
         [HttpGet("NewDecision")]
         public async Task<ActionResult<DecisionCreateViewModel>> GetMetaData()
         {
@@ -36,7 +39,11 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(decisionViewModel);
         }
-
+        /// <summary>
+        /// Returns the decision by id 
+        /// </summary>
+        /// <param name="id">Decision id</param>
+        /// <returns>Decision object</returns>
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
@@ -48,7 +55,12 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(decisionDto);
         }
-
+        /// <summary>
+        /// Updates decision
+        /// </summary>
+        /// <param name="id">decision id</param>
+        /// <param name="decision">decison</param>
+        /// <returns>204 status code</returns>
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, DecisionDTO decision)
         {
@@ -61,7 +73,11 @@ namespace EPlast.WebApi.Controllers
             return NoContent();
 
         }
-
+        /// <summary>
+        /// Creates new decision
+        /// </summary>
+        /// <param name="decisionWrapper">Decision wrapper</param>
+        /// <returns>Created decision object</returns>
         [HttpPost]
         public async Task<IActionResult> Save(DecisionWrapperDTO decisionWrapper)
         {
@@ -86,7 +102,10 @@ namespace EPlast.WebApi.Controllers
             });
 
         }
-
+        /// <summary>
+        /// Returns all decisions
+        /// </summary>
+        /// <returns>All decisions</returns>
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -104,7 +123,11 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(decisions);
         }
-
+        /// <summary>
+        /// Deletes decision by id 
+        /// </summary>
+        /// <param name="id">Decision id</param>
+        /// <returns>204 status code</returns>
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -116,7 +139,11 @@ namespace EPlast.WebApi.Controllers
 
             return NotFound();
         }
-
+        /// <summary>
+        /// Returns file by name as base64
+        /// </summary>
+        /// <param name="filename">File name</param>
+        /// <returns>File as base64</returns>
         [HttpGet("downloadfile/{filename}")]
         public async Task<IActionResult> Download(string filename)
         {
@@ -124,7 +151,11 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(base64);
         }
-
+        /// <summary>
+        ///  Returns pdf file as base64
+        /// </summary>
+        /// <param name="objId">Decision id</param>
+        /// <returns>Pdf file as base64 what was created with decision data</returns>
         [HttpGet("createpdf/{objId:int}")]
         public async Task<IActionResult> CreatePdf(int objId)
         {
