@@ -20,7 +20,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <returns>Array of events of actions type</returns>
         /// <response code="200">Instance of EventCalendarInfoDTO</response>
-        /// <response code="400">If the array is null or empty</response> 
+        /// <response code="400">When the EventCalendarInfoDTO is null or empty</response> 
         [HttpGet("actionsForCalendar")]
         public async Task<IActionResult> GetActions()
         {
@@ -34,7 +34,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <returns>Array of events of education type</returns>
         /// <response code="200">Instance of EventCalendarInfoDTO</response>
-        /// <response code="400">If the array is null or empty</response> 
+        /// <response code="400">When the EventCalendarInfoDTO is null or empty</response> 
         [HttpGet("educationsForCalendar")]
         public async Task<IActionResult> GetEducations()
         {
@@ -48,7 +48,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <returns>Array of events of camps type</returns>
         /// <response code="200">Instance of EventCalendarInfoDTO</response>
-        /// <response code="400">If the array is null or empty</response> 
+        /// <response code="400">When the EventCalendarInfoDTO is null or empty</response> 
         [HttpGet("campsForCalendar")]
         public async Task<IActionResult> GetCamps()
         {
