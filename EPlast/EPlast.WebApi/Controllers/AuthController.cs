@@ -49,7 +49,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">Problems with logining</response>
         [HttpPost("signin")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginDto loginDto)
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
             try
             {
@@ -212,7 +212,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpGet("logout")] //+
         //[ValidateAntiForgeryToken]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize]
         public IActionResult Logout()
         {
             _authService.SignOutAsync();
@@ -342,7 +342,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">Problems with changing password</response>
         [HttpPost("changePassword")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changepasswordDto)
         {
             try
