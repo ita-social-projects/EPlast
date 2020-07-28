@@ -364,12 +364,12 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Method for resetting password in system
+        /// Method for changing password in system
         /// </summary>
-        /// <param name="changepasswordDto">ResetPassword model(dto)</param>
-        /// <returns>Answer from backend for resetting password method</returns>
+        /// <param name="changepasswordDto">ChangePassword model(dto)</param>
+        /// <returns>Answer from backend for changing password method</returns>
         /// <response code="200">Successful operation</response>
-        /// <response code="404">Problems with resetting password</response>
+        /// <response code="404">Problems with changing password</response>
         [HttpPost("changePassword")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changepasswordDto)
@@ -403,6 +403,13 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for sending question to admin in system
+        /// </summary>
+        /// <param name="contactsDto">Contacts model(dto)</param>
+        /// <returns>Answer from backend sending question to admin in system</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Problems with sending question</response>
         [HttpPost("sendQuestion")]
         public async Task<IActionResult> SendContacts([FromBody]ContactsDto contactsDto)
         {
