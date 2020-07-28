@@ -18,25 +18,23 @@ namespace EPlast.Tests.Controllers
     {
         private Mock<IActionManager> _actionManager;
 
-        private EventsController _sut;
+        private EventsController _eventsController;
 
         [SetUp]
         public void SetUp()
         {
             _actionManager = new Mock<IActionManager>();
 
-            _sut = new EventsController(
+            _eventsController = new EventsController(
                 _actionManager.Object);
         }
 
         [Test]
         public async Task GetTypes_ReturnsOkObjectResult()
         {
-            // Arrange
-
             // Act
 
-            var result = await _sut.GetTypes();
+            var result = await _eventsController.GetTypes();
 
             // Assert
 
@@ -58,7 +56,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.GetTypes();
+            var result = await _eventsController.GetTypes();
 
             var actual = (result as ObjectResult).Value as List<EventTypeDTO>;
 
@@ -78,7 +76,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.GetTypes();
+            var result = await _eventsController.GetTypes();
 
             // Assert
 
@@ -88,11 +86,9 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task GetCategories_ReturnsOkObjectResult()
         {
-            // Arrange
-
             // Act
 
-            var result = await _sut.GetCategories(It.IsAny<int>());
+            var result = await _eventsController.GetCategories(It.IsAny<int>());
 
             // Assert
 
@@ -114,7 +110,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.GetCategories(It.IsAny<int>());
+            var result = await _eventsController.GetCategories(It.IsAny<int>());
 
             var actual = (result as ObjectResult).Value as List<EventCategoryDTO>;
 
@@ -134,7 +130,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.GetCategories(It.IsAny<int>());
+            var result = await _eventsController.GetCategories(It.IsAny<int>());
 
             // Assert
 
@@ -144,11 +140,9 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task GetEvents_ReturnsOkObjectResult()
         {
-            // Arrange
-
             // Act
 
-            var result = await _sut.GetEvents(It.IsAny<int>(), It.IsAny<int>());
+            var result = await _eventsController.GetEvents(It.IsAny<int>(), It.IsAny<int>());
 
             // Assert
 
@@ -166,7 +160,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.GetEvents(It.IsAny<int>(), It.IsAny<int>());
+            var result = await _eventsController.GetEvents(It.IsAny<int>(), It.IsAny<int>());
 
             // Assert
 
@@ -188,7 +182,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.GetEvents(It.IsAny<int>(), It.IsAny<int>());
+            var result = await _eventsController.GetEvents(It.IsAny<int>(), It.IsAny<int>());
 
             var actual = (result as ObjectResult).Value as List<GeneralEventDTO>;
 
@@ -200,11 +194,9 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task GetEventDetail_ReturnsOkObjectResult()
         {
-            // Arrange
-
             // Act
 
-            var result = await _sut.GetEventDetail(It.IsAny<int>());
+            var result = await _eventsController.GetEventDetail(It.IsAny<int>());
 
             // Assert
 
@@ -222,7 +214,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.GetEventDetail(It.IsAny<int>());
+            var result = await _eventsController.GetEventDetail(It.IsAny<int>());
 
             // Assert
 
@@ -240,7 +232,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.GetEventDetail(It.IsAny<int>());
+            var result = await _eventsController.GetEventDetail(It.IsAny<int>());
 
             var actual = (result as ObjectResult).Value as EventDTO;
 
@@ -262,7 +254,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.Delete(It.IsAny<int>());
+            var result = await _eventsController.Delete(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
@@ -282,7 +274,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.Delete(It.IsAny<int>());
+            var result = await _eventsController.Delete(It.IsAny<int>());
 
             // Assert
 
@@ -302,7 +294,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.Delete(It.IsAny<int>());
+            var result = await _eventsController.Delete(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
@@ -324,7 +316,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.DeletePicture(It.IsAny<int>());
+            var result = await _eventsController.DeletePicture(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
@@ -346,7 +338,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.DeletePicture(It.IsAny<int>());
+            var result = await _eventsController.DeletePicture(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
@@ -366,7 +358,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.DeletePicture(It.IsAny<int>());
+            var result = await _eventsController.DeletePicture(It.IsAny<int>());
 
             // Assert
 
@@ -386,7 +378,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.SubscribeOnEvent(It.IsAny<int>());
+            var result = await _eventsController.SubscribeOnEvent(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
@@ -406,7 +398,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.SubscribeOnEvent(It.IsAny<int>());
+            var result = await _eventsController.SubscribeOnEvent(It.IsAny<int>());
 
             // Assert
 
@@ -426,7 +418,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.SubscribeOnEvent(It.IsAny<int>());
+            var result = await _eventsController.SubscribeOnEvent(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
@@ -448,7 +440,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.UnSubscribeOnEvent(It.IsAny<int>());
+            var result = await _eventsController.UnSubscribeOnEvent(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
@@ -468,7 +460,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.UnSubscribeOnEvent(It.IsAny<int>());
+            var result = await _eventsController.UnSubscribeOnEvent(It.IsAny<int>());
 
             // Assert
 
@@ -488,7 +480,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.UnSubscribeOnEvent(It.IsAny<int>());
+            var result = await _eventsController.UnSubscribeOnEvent(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
@@ -510,7 +502,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.ApproveParticipant(It.IsAny<int>());
+            var result = await _eventsController.ApproveParticipant(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
@@ -530,7 +522,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.ApproveParticipant(It.IsAny<int>());
+            var result = await _eventsController.ApproveParticipant(It.IsAny<int>());
 
             // Assert
 
@@ -550,7 +542,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.ApproveParticipant(It.IsAny<int>());
+            var result = await _eventsController.ApproveParticipant(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
@@ -572,7 +564,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.UnderReviewParticipant(It.IsAny<int>());
+            var result = await _eventsController.UnderReviewParticipant(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
@@ -594,7 +586,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.UnderReviewParticipant(It.IsAny<int>());
+            var result = await _eventsController.UnderReviewParticipant(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
@@ -614,7 +606,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.UnderReviewParticipant(It.IsAny<int>());
+            var result = await _eventsController.UnderReviewParticipant(It.IsAny<int>());
 
             // Assert
 
@@ -634,7 +626,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.RejectParticipant(It.IsAny<int>());
+            var result = await _eventsController.RejectParticipant(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
@@ -656,7 +648,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.RejectParticipant(It.IsAny<int>());
+            var result = await _eventsController.RejectParticipant(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
@@ -676,7 +668,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
 
-            var result = await _sut.RejectParticipant(It.IsAny<int>());
+            var result = await _eventsController.RejectParticipant(It.IsAny<int>());
 
             // Assert
 
