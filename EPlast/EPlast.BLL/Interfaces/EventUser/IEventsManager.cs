@@ -6,6 +6,10 @@ namespace EPlast.BLL.Interfaces.EventUser
 {
     public interface IEventsManager
     {
-        Task<List<EventCalendarInfoDTO>> GetEventsAsync();
+        Task<List<EventCalendarInfoDTO>> GetActionsAsync();
+
+        Task<List<EventCalendarInfoDTO>> GetEducationsAsync();
+
+        Task<List<EventCalendarInfoDTO>> GetCampsAsync();
     }
 }
