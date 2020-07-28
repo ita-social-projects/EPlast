@@ -1,15 +1,12 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.DataAccess.Repositories;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DataAccessClub = EPlast.DataAccess.Entities;
@@ -19,14 +16,14 @@ namespace EPlast.BLL.Services.Club
     public class ClubService : IClubService
     {
         private readonly IRepositoryWrapper _repoWrapper;
-        private readonly IWebHostEnvironment _env;
         private readonly IMapper _mapper;
+        private readonly IClubBlobStorageRepository _clubBlobStorage;
 
-        public ClubService(IRepositoryWrapper repoWrapper, IMapper mapper, IWebHostEnvironment env)
+        public ClubService(IRepositoryWrapper repoWrapper, IMapper mapper, IClubBlobStorageRepository clubBlobStorage)
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
-            _env = env;
+            _clubBlobStorage = clubBlobStorage;
         }
 
         public async Task<IEnumerable<ClubDTO>> GetAllClubsAsync()
@@ -45,7 +42,10 @@ namespace EPlast.BLL.Services.Club
 
             return new ClubProfileDTO
             {
-                Club = club, Members = members, Followers = followers, ClubAdmin = clubAdmin,
+                Club = club,
+                Members = members,
+                Followers = followers,
+                ClubAdmin = clubAdmin,
                 ClubAdministration = clubAdministration
             };
         }
@@ -60,17 +60,14 @@ namespace EPlast.BLL.Services.Club
 
         private async Task<ClubDTO> GetByIdWithDetailsAsync(int id)
         {
-            var club = await _repoWrapper.Club
-                .GetFirstOrDefaultAsync(
-                    q => q.ID == id,
-                    q =>
-                        q.Include(c => c.ClubAdministration)
-                            .ThenInclude(t => t.AdminType)
-                            .Include(n => n.ClubAdministration)
-                            .ThenInclude(t => t.ClubMembers)
-                            .ThenInclude(us => us.User)
-                            .Include(m => m.ClubMembers)
-                            .ThenInclude(u => u.User));
+            var club = await _repoWrapper.Club.GetFirstOrDefaultAsync(q => q.ID == id,
+                q => q.Include(c => c.ClubAdministration)
+                    .ThenInclude(t => t.AdminType)
+                    .Include(n => n.ClubAdministration)
+                    .ThenInclude(t => t.ClubMembers)
+                    .ThenInclude(us => us.User)
+                    .Include(m => m.ClubMembers)
+                    .ThenInclude(u => u.User));
             return (club != null)
                 ? _mapper.Map<DataAccessClub.Club, ClubDTO>(club)
                 : throw new ArgumentNullException($"Club with {id} id not found");
@@ -86,78 +83,26 @@ namespace EPlast.BLL.Services.Club
 
         private IEnumerable<ClubAdministrationDTO> GetCurrentClubAdministration(ClubDTO club)
         {
-            return club?.ClubAdministration
-                .Where(a => a.EndDate >= DateTime.Now || a.EndDate == null)
-                .ToList();
+            return club?.ClubAdministration.Where(a => a.EndDate >= DateTime.Now || a.EndDate == null).ToList();
         }
 
         private IEnumerable<ClubMembersDTO> GetClubMembers(ClubDTO club, bool isApproved, int amount)
         {
-            return club?.ClubMembers.Where(m => m.IsApproved == isApproved)
-                .Take(amount)
-                .ToList();
+            return club?.ClubMembers.Where(m => m.IsApproved == isApproved).Take(amount).ToList();
         }
 
         private IEnumerable<ClubMembersDTO> GetClubMembers(ClubDTO club, bool isApproved)
         {
-            return club?.ClubMembers.Where(m => m.IsApproved == isApproved)
-                .ToList();
-        }
-
-        public async Task UpdateAsync(ClubDTO club, IFormFile file)
-        {
-            var clubInfo = await GetClubInfoByIdAsync(club.ID);
-            var oldImageName = clubInfo?.Logo;
-            UpdateOrCreateAnImage(club, file, oldImageName);
-            _repoWrapper.Club.Update(_mapper.Map<ClubDTO, DataAccessClub.Club>(club));
-            await _repoWrapper.SaveAsync();
+            return club?.ClubMembers.Where(m => m.IsApproved == isApproved).ToList();
         }
 
         public async Task<ClubDTO> UpdateAsync(ClubDTO club)
         {
-            await GetClubInfoByIdAsync(club.ID);
             var editedClub = _mapper.Map<ClubDTO, DataAccessClub.Club>(club);
+            editedClub.Logo = await UploadPhotoAsyncFromBase64(club.ID, club.Logo);
             _repoWrapper.Club.Update(editedClub);
             await _repoWrapper.SaveAsync();
             return _mapper.Map<DataAccessClub.Club, ClubDTO>(editedClub);
-        }
-
-        private void UpdateOrCreateAnImage(ClubDTO club, IFormFile file, string oldImageName = null)
-        {
-            if (file != null && file.Length > 0)
-            {
-                using (var img = Image.FromStream(file.OpenReadStream()))
-                {
-                    var uploads = Path.Combine(_env.WebRootPath, "images\\Club");
-                    if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default.jpg"))
-                    {
-                        var oldPath = Path.Combine(uploads, oldImageName);
-                        if (File.Exists(oldPath))
-                        {
-                            File.Delete(oldPath);
-                        }
-                    }
-
-                    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-                    var filePath = Path.Combine(uploads, fileName);
-                    img.Save(filePath);
-                    club.Logo = fileName;
-                }
-            }
-            else
-            {
-                club.Logo = oldImageName;
-            }
-        }
-
-        public async Task<ClubDTO> CreateAsync(ClubDTO club, IFormFile file)
-        {
-            var newClub = _mapper.Map<ClubDTO, DataAccessClub.Club>(club);
-            UpdateOrCreateAnImage(club, file);
-            await _repoWrapper.Club.CreateAsync(newClub);
-            await _repoWrapper.SaveAsync();
-
-            return _mapper.Map<DataAccessClub.Club, ClubDTO>(newClub);
         }
 
         public async Task<ClubDTO> CreateAsync(ClubDTO club)
@@ -165,7 +110,9 @@ namespace EPlast.BLL.Services.Club
             var newClub = _mapper.Map<ClubDTO, DataAccessClub.Club>(club);
             await _repoWrapper.Club.CreateAsync(newClub);
             await _repoWrapper.SaveAsync();
-
+            newClub.Logo = await UploadPhotoAsyncFromBase64(newClub.ID, newClub.Logo);
+            _repoWrapper.Club.Update(newClub);
+            await _repoWrapper.SaveAsync();
             return _mapper.Map<DataAccessClub.Club, ClubDTO>(newClub);
         }
 
@@ -176,8 +123,31 @@ namespace EPlast.BLL.Services.Club
             var clubAdmin = GetCurrentClubAdmin(club);
 
             return isApproved
-                ? new ClubProfileDTO {Club = club, ClubAdmin = clubAdmin, Members = members}
-                : new ClubProfileDTO {Club = club, ClubAdmin = clubAdmin, Followers = members};
+                ? new ClubProfileDTO { Club = club, ClubAdmin = clubAdmin, Members = members }
+                : new ClubProfileDTO { Club = club, ClubAdmin = clubAdmin, Followers = members };
+        }
+
+        private async Task<string> UploadPhotoAsyncFromBase64(int clubId, string imageBase64)
+        {
+            var oldImageName = (await _repoWrapper.Club.GetFirstOrDefaultAsync(x => x.ID == clubId)).Logo;
+            if (string.IsNullOrWhiteSpace(imageBase64) || imageBase64.Length <= 0) return oldImageName;
+            var base64Parts = imageBase64.Split(',');
+            var ext = base64Parts[0].Split(new[] { '/', ';' }, 3)[1];
+            var fileName = Guid.NewGuid() + "." + ext;
+            await _clubBlobStorage.UploadBlobForBase64Async(base64Parts[1], fileName);
+            if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default_club_image.png"))
+            {
+                await _clubBlobStorage.DeleteBlobAsync(oldImageName);
+            }
+
+            return fileName;
+        }
+
+        public async Task<string> GetImageBase64Async(string fileName)
+        {
+            return await _clubBlobStorage.GetBlobBase64Async(string.IsNullOrEmpty(fileName)
+                ? "default_club_image.png"
+                : fileName);
         }
     }
 }

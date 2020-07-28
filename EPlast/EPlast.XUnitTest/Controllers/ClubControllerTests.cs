@@ -53,7 +53,7 @@ namespace EPlast.XUnitTest.Controllers
             var context = new Mock<HttpContext>();
             var identity = new GenericIdentity("username");
             identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, "1"));
-            var principal = new GenericPrincipal(identity, new[] {"user"});
+            var principal = new GenericPrincipal(identity, new[] { "user" });
             context.Setup(s => s.User).Returns(principal);
             controller.ControllerContext.HttpContext = context.Object;
         }
@@ -80,7 +80,7 @@ namespace EPlast.XUnitTest.Controllers
         public async Task Club_FindByID_ReturnsAView()
         {
             _clubService.Setup(c => c.GetClubProfileAsync(It.IsAny<int>()))
-                .ReturnsAsync(() => new ClubProfileDTO {Club = new ClubDTO()});
+                .ReturnsAsync(() => new ClubProfileDTO { Club = new ClubDTO() });
             _mapper.Setup(c => c.Map<ClubProfileDTO, ClubProfileViewModel>(It.IsAny<ClubProfileDTO>()))
                 .Returns(new ClubProfileViewModel());
 
@@ -129,7 +129,7 @@ namespace EPlast.XUnitTest.Controllers
             //Arrange
             _mapper
                 .Setup(s => s.Map<ClubProfileDTO>(It.IsAny<ClubProfileViewModel>()))
-                .Returns((ClubProfileDTO) null);
+                .Returns((ClubProfileDTO)null);
 
             //Act
             var result = await controller.ClubAdmins(1);
@@ -162,7 +162,7 @@ namespace EPlast.XUnitTest.Controllers
             _clubService.Setup(c => c.GetClubMembersOrFollowersAsync(It.IsAny<int>(), true))
                 .ReturnsAsync(() => null);
             _mapper.Setup(c => c.Map<ClubProfileDTO, ClubProfileViewModel>(null))
-                .Returns((ClubProfileViewModel) null);
+                .Returns((ClubProfileViewModel)null);
 
             //Act
             var result = await controller.ClubMembers(It.IsAny<int>());
@@ -198,7 +198,7 @@ namespace EPlast.XUnitTest.Controllers
             _clubService.Setup(c => c.GetClubMembersOrFollowersAsync(It.IsAny<int>(), false))
                 .ReturnsAsync(() => null);
             _mapper.Setup(c => c.Map<ClubProfileDTO, ClubProfileViewModel>(null))
-                .Returns((ClubProfileViewModel) null);
+                .Returns((ClubProfileViewModel)null);
 
             //Act
             var result = await controller.ClubFollowers(It.IsAny<int>());
@@ -234,7 +234,7 @@ namespace EPlast.XUnitTest.Controllers
             _clubService.Setup(c => c.GetClubInfoByIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(() => null);
             _mapper.Setup(c => c.Map<ClubDTO, ClubViewModel>(null))
-                .Returns((ClubViewModel) null);
+                .Returns((ClubViewModel)null);
 
             //Act
             var result = await controller.ClubDescription(It.IsAny<int>());
@@ -270,7 +270,7 @@ namespace EPlast.XUnitTest.Controllers
             _clubService.Setup(c => c.GetClubInfoByIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(() => null);
             _mapper.Setup(c => c.Map<ClubDTO, ClubViewModel>(null))
-                .Returns((ClubViewModel) null);
+                .Returns((ClubViewModel)null);
 
             //Act
             var result = await controller.EditClub(It.IsAny<int>());
@@ -286,13 +286,13 @@ namespace EPlast.XUnitTest.Controllers
         public async Task EditPost_Correct_ReturnsAView()
         {
             //Arrange
-            _clubService.Setup(c => c.UpdateAsync(It.IsAny<ClubDTO>(), It.IsAny<IFormFile>()))
+            _clubService.Setup(c => c.UpdateAsync(It.IsAny<ClubDTO>()))
                 .Verifiable();
             _mapper.Setup(c => c.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
                 .Returns(new ClubDTO());
 
             //Act
-            var result = await controller.EditClub(new ClubViewModel(), It.IsAny<IFormFile>());
+            var result = await controller.EditClub(new ClubViewModel());
 
             //Assert
             Assert.NotNull(result);
@@ -304,13 +304,13 @@ namespace EPlast.XUnitTest.Controllers
         public async Task EditPost_InvalidModel_ReturnsHandleError()
         {
             //Arrange
-            _clubService.Setup(c => c.UpdateAsync(It.IsAny<ClubDTO>(), It.IsAny<IFormFile>()))
+            _clubService.Setup(c => c.UpdateAsync(It.IsAny<ClubDTO>()))
                 .Verifiable();
             _mapper.Setup(c => c.Map<ClubViewModel, ClubDTO>(null))
-                .Returns((ClubDTO) null);
+                .Returns((ClubDTO)null);
 
             //Act
-            var result = await controller.EditClub(It.IsAny<ClubViewModel>(), It.IsAny<IFormFile>());
+            var result = await controller.EditClub(It.IsAny<ClubViewModel>());
 
             //Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
@@ -465,7 +465,7 @@ namespace EPlast.XUnitTest.Controllers
 
             controller.ControllerContext = new ControllerContext()
             {
-                HttpContext = new DefaultHttpContext() {User = user}
+                HttpContext = new DefaultHttpContext() { User = user }
             };
 
             _userManagerService
@@ -496,13 +496,13 @@ namespace EPlast.XUnitTest.Controllers
         public async Task CreatePost_Correct_ReturnsAView()
         {
             //Arrange
-            _clubService.Setup(c => c.CreateAsync(It.IsAny<ClubDTO>(), It.IsAny<IFormFile>()))
+            _clubService.Setup(c => c.CreateAsync(It.IsAny<ClubDTO>()))
                 .ReturnsAsync(new ClubDTO());
             _mapper.Setup(c => c.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
                 .Returns(new ClubDTO());
 
             //Act
-            var result = await controller.CreateClub(new ClubViewModel(), It.IsAny<IFormFile>());
+            var result = await controller.CreateClub(new ClubViewModel());
 
             //Assert
             Assert.NotNull(result);
@@ -514,13 +514,13 @@ namespace EPlast.XUnitTest.Controllers
         public async Task CreatePost_InvalidModel_ReturnsHandleError()
         {
             //Arrange
-            _clubService.Setup(c => c.CreateAsync(It.IsAny<ClubDTO>(), It.IsAny<IFormFile>()))
-                .ReturnsAsync((ClubDTO) null);
+            _clubService.Setup(c => c.CreateAsync(It.IsAny<ClubDTO>()))
+                .ReturnsAsync((ClubDTO)null);
             _mapper.Setup(c => c.Map<ClubViewModel, ClubDTO>(null))
-                .Returns((ClubDTO) null);
+                .Returns((ClubDTO)null);
 
             //Act
-            var result = await controller.EditClub(It.IsAny<ClubViewModel>(), It.IsAny<IFormFile>());
+            var result = await controller.EditClub(It.IsAny<ClubViewModel>());
 
             //Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);

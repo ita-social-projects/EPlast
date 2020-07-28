@@ -17,21 +17,17 @@ namespace EPlast.WebApi.Models.City
         public string OfficeNumber { get; set; }
         public string PostIndex { get; set; }
         public string Logo { get; set; }
-        public int RegionId { get; set; }
-        public RegionViewModel Region { get; set; }
+        public string Region { get; set; }
+        public bool CanCreate { get; set; }
+        public bool CanEdit { get; set; }
+        public bool CanJoin { get; set; }
+        public bool CanApprove { get; set; }
+        public bool CanSeeReports { get; set; }
+        public bool CanAddReports { get; set; }
         public CityAdministrationViewModel Head { get; set; }
         public IEnumerable<CityAdministrationViewModel> Administration { get; set; }
         public IEnumerable<CityMembersViewModel> Members { get; set; }
         public IEnumerable<CityMembersViewModel> Followers { get; set; }
         public IEnumerable<CityDocumentsViewModel> Documents { get; set; }
-
-        public void SetMembersAndAdministration(CityProfileViewModel cityProfile)
-        {
-            Head = cityProfile.Head;
-            Administration = cityProfile.Admins;
-            Members = cityProfile.Members;
-            Followers = cityProfile.Followers;
-            Documents = cityProfile.Documents;
-        }
     }
 }

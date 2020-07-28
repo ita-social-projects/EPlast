@@ -1,13 +1,12 @@
-using System;
-using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.WebApi.Models.Club;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -43,10 +42,21 @@ namespace EPlast.WebApi.Controllers
             return viewModel;
         }
 
-        [HttpGet("index")]
-        public async Task<IActionResult> Index()
+        [HttpGet]
+        public async Task<IActionResult> Get()
         {
-            return Ok(await _clubService.GetAllClubsAsync());
+            var clubs = await _clubService.GetAllClubsAsync();
+            foreach (var club in clubs)
+            {
+                club.Logo = await _clubService.GetImageBase64Async(club.Logo);
+            }
+            return Ok(clubs);
+        }
+
+        [HttpGet("getImage/{imageName}")]
+        public async Task<string> GetImage(string imageName)
+        {
+            return await _clubService.GetImageBase64Async(imageName);
         }
 
         [HttpGet("{clubId:int}")]
@@ -57,7 +67,7 @@ namespace EPlast.WebApi.Controllers
                 var viewModel =
                     _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(await _clubService.GetClubProfileAsync(clubId));
                 viewModel = await CheckCurrentUserRoles(viewModel);
-
+                viewModel.Club.Logo = await _clubService.GetImageBase64Async(viewModel.Club.Logo);
                 return Ok(viewModel);
             }
             catch (ArgumentNullException e)
@@ -158,11 +168,11 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> Create(ClubViewModel model, [FromForm] IFormFile file)
+        public async Task<IActionResult> Create(ClubViewModel model)
         {
             try
             {
-                return Ok(await _clubService.CreateAsync(_mapper.Map<ClubViewModel, ClubDTO>(model), file));
+                return Ok(await _clubService.CreateAsync(_mapper.Map<ClubViewModel, ClubDTO>(model)));
             }
             catch (Exception e)
             {

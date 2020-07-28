@@ -10,10 +10,5 @@ namespace EPlast.WebApi.Models.City
         public List<CityMembersViewModel> Members { get; set; }
         public List<CityMembersViewModel> Followers { get; set; }
         public List<CityDocumentsViewModel> Documents { get; set; }
-
-        public void SetMembersAndAdministration()
-        {
-            City.SetMembersAndAdministration(this);
-        }
     }
 }
