@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL
 {
+    /// <inheritdoc />
     public class DecisionService : IDecisionService
     {
 
@@ -34,7 +35,7 @@ namespace EPlast.BLL
             _decisionVMCreator = decisionVMCreator;
             _decisionBlobStorage = decisionBlobStorage;
         }
-
+        /// <inheritdoc />
         public async Task<DecisionDTO> GetDecisionAsync(int decisionId)
         {
             DecisionDTO decision = null;
@@ -50,16 +51,15 @@ namespace EPlast.BLL
 
             return decision;
         }
-
-        public async Task<DecisionWrapperDTO> CreateDecisionAsync()
+        /// <inheritdoc />
+        public DecisionWrapperDTO CreateDecision()
         {
             DecisionWrapperDTO decisionWrapperDto = null;
             try
             {
                 decisionWrapperDto = new DecisionWrapperDTO
                 {
-                    Decision = new DecisionDTO(),
-                    DecisionTargets = await GetDecisionTargetListAsync()
+                    Decision = new DecisionDTO()
                 };
             }
             catch (Exception e)
@@ -69,12 +69,12 @@ namespace EPlast.BLL
 
             return decisionWrapperDto;
         }
-
+        /// <inheritdoc />
         public async Task<IEnumerable<DecisionWrapperDTO>> GetDecisionListAsync()
         {
            return await GetDecisionAsync();
         }
-
+        /// <inheritdoc />
         public async Task<bool> ChangeDecisionAsync(DecisionDTO decisionDto)
         {
             Decesion decision = null;
@@ -93,7 +93,7 @@ namespace EPlast.BLL
 
             return decision != null;
         }
-
+        /// <inheritdoc />
         public async Task<int> SaveDecisionAsync(DecisionWrapperDTO decision)
         {
             try
@@ -116,7 +116,7 @@ namespace EPlast.BLL
 
             return decision.Decision.ID;
         }
-
+        /// <inheritdoc />
         public async Task<OrganizationDTO> GetDecisionOrganizationAsync(OrganizationDTO organization)
         {
             OrganizationDTO organizational = null;
@@ -133,7 +133,7 @@ namespace EPlast.BLL
 
             return organizational;
         }
-
+        /// <inheritdoc />
         public async Task<string> DownloadDecisionFileFromBlobAsync(string fileName)
         {
             return await _decisionBlobStorage.GetBlobBase64Async(fileName);
@@ -143,22 +143,22 @@ namespace EPlast.BLL
         {
             await _decisionBlobStorage.UploadBlobForBase64Async(base64, fileName);
         }
-
+        /// <inheritdoc />
         public async Task<IEnumerable<OrganizationDTO>> GetOrganizationListAsync()
         {
             return _mapper.Map<IEnumerable<OrganizationDTO>>((await _repoWrapper.Organization.GetAllAsync()));
         }
-
+        /// <inheritdoc />
         public async Task<IEnumerable<DecisionTargetDTO>> GetDecisionTargetListAsync()
         {
             return _mapper.Map<IEnumerable<DecisionTargetDTO>>((await _repoWrapper.DecesionTarget.GetAllAsync()));
         }
-
+        /// <inheritdoc />
         public IEnumerable<SelectListItem> GetDecisionStatusTypes()
         {
             return _decisionVMCreator.GetDecesionStatusTypes();
         }
-
+        /// <inheritdoc />
         public async Task<bool> DeleteDecisionAsync(int id)
         {
             var success = false;
