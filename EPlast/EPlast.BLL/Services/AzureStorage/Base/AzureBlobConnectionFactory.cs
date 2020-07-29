@@ -19,11 +19,6 @@ namespace EPlast.BLL.Services.AzureStorage.Base
         }
         public async Task<CloudBlobContainer> GetBlobContainer(string containerNameKey)
         {
-            if (_blobContainer != null)
-            {
-                return _blobContainer;
-            }
-
             var containerName = _configuration.GetValue<string>(containerNameKey);
             var blobClient = GetBlobClient();
 

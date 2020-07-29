@@ -8,8 +8,7 @@ namespace EPlast.DataAccess.Entities
         public int ID { get; set; }
         public int AdminTypeId { get; set; }
         public AdminType AdminType { get; set; }
-        [Required]
-        public DateTime StartDate { get; set; }
+        [Required] public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public int? ClubId { get; set; }
         public Club Club { get; set; }
