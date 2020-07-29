@@ -6,7 +6,6 @@ namespace EPlast.BLL.DTO
     public class DecisionWrapperDTO
     {
         public DecisionDTO Decision { get; set; }
-        public IEnumerable<DecisionTargetDTO> DecisionTargets { get; set; }
         public string FileAsBase64 { get; set; }
     }
 }

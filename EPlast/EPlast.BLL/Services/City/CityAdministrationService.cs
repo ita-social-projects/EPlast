@@ -24,6 +24,7 @@ namespace EPlast.BLL.Services.City
             _adminTypeService = adminTypeService;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<CityAdministrationDTO>> GetAdministrationByIdAsync(int cityId)
         {
             var cityAdministration = await _repositoryWrapper.CityAdministration.GetAllAsync(
@@ -34,6 +35,7 @@ namespace EPlast.BLL.Services.City
             return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(cityAdministration);
         }
 
+        /// <inheritdoc />
         public async Task<CityAdministrationDTO> AddAdministratorAsync(CityAdministrationDTO adminDTO)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
@@ -47,6 +49,7 @@ namespace EPlast.BLL.Services.City
             return adminDTO;
         }
 
+        /// <inheritdoc />
         public async Task<CityAdministrationDTO> EditAdministratorAsync(CityAdministrationDTO adminDTO)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
@@ -60,6 +63,7 @@ namespace EPlast.BLL.Services.City
             return adminDTO;
         }
 
+        /// <inheritdoc />
         public async Task RemoveAdministratorAsync(int adminId)
         {
             var admin = await _repositoryWrapper.CityAdministration.GetFirstOrDefaultAsync(u => u.ID == adminId);
