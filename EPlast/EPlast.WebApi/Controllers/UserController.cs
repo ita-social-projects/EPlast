@@ -26,7 +26,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IDegreeService _degreeService;
         private readonly IUserManagerService _userManagerService;
         private readonly IConfirmedUsersService _confirmedUserService;
-        private readonly ILoggerService<AccountController> _loggerService;
+        private readonly ILoggerService<AuthController> _loggerService;
         private readonly IMapper _mapper;
 
         public UserController(IUserService userService,
@@ -38,7 +38,7 @@ namespace EPlast.WebApi.Controllers
             IDegreeService degreeService,
             IConfirmedUsersService confirmedUserService,
             IUserManagerService userManagerService,
-            ILoggerService<AccountController> loggerService,
+            ILoggerService<AuthController> loggerService,
             IMapper mapper)
         {
             _userService = userService;

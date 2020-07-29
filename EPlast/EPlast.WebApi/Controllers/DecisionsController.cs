@@ -23,7 +23,11 @@ namespace EPlast.WebApi.Controllers
             _decisionService = decisionService;
             _mapper = mapper;
         }
-
+        /// <summary>
+        /// Returns data for creating new decision
+        /// </summary>
+        /// <returns>Data for creating new decision</returns>
+        /// <response code="200">Array of organizations, tagrets and status types</response>
         [HttpGet("NewDecision")]
         public async Task<ActionResult<DecisionCreateViewModel>> GetMetaData()
         {
@@ -36,7 +40,13 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(decisionViewModel);
         }
-
+        /// <summary>
+        /// Returns the decision by id 
+        /// </summary>
+        /// <param name="id">Decision id</param>
+        /// <returns>Decision object</returns>
+        /// <response code="200">An instance of decision</response>
+        /// <response code="404">The decision does not exist</response>
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
@@ -48,7 +58,14 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(decisionDto);
         }
-
+        /// <summary>
+        /// Updates decision
+        /// </summary>
+        /// <param name="id">decision id</param>
+        /// <param name="decision">decison</param>
+        /// <returns>Info that decision was created</returns>
+        /// <response code="204">An instance of decision was created</response>
+        /// <response code="400">The id and decision id are not same</response>
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, DecisionDTO decision)
         {
@@ -61,14 +78,19 @@ namespace EPlast.WebApi.Controllers
             return NoContent();
 
         }
-
+        /// <summary>
+        /// Creates new decision
+        /// </summary>
+        /// <param name="decisionWrapper">Decision wrapper</param>
+        /// <returns>Created decision object</returns>
+        /// <response code="201">Created decision object</response>
+        /// <response code="400">Problem with file validation or model state is not valid</response>
         [HttpPost]
         public async Task<IActionResult> Save(DecisionWrapperDTO decisionWrapper)
         {
-
-            if (decisionWrapper == null)
+            if(decisionWrapper.FileAsBase64 == null && decisionWrapper.Decision.FileName != null)
             {
-                return BadRequest("Дані введені неправильно");
+                return BadRequest("Проблеми з завантаженням файлу");
             }
             decisionWrapper.Decision.ID = await _decisionService.SaveDecisionAsync(decisionWrapper);
             var decisionOrganizations = (await _decisionService
@@ -82,7 +104,11 @@ namespace EPlast.WebApi.Controllers
             });
 
         }
-
+        /// <summary>
+        /// Returns all decisions
+        /// </summary>
+        /// <returns>All decisions</returns>
+        /// <response code="200">Array of all decisions</response>
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -100,7 +126,13 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(decisions);
         }
-
+        /// <summary>
+        /// Deletes decision by id 
+        /// </summary>
+        /// <param name="id">Decision id</param>
+        /// <returns>Info that decision was deleted</returns>
+        /// <response code="204">Decision was deleted</response>
+        /// <response code="404">Decision does not exist</response>
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -112,7 +144,12 @@ namespace EPlast.WebApi.Controllers
 
             return NotFound();
         }
-
+        /// <summary>
+        /// Returns file by name as base64
+        /// </summary>
+        /// <param name="filename">File name</param>
+        /// <returns>File as base64</returns>
+        /// <response code="200">File as base64</response>
         [HttpGet("downloadfile/{filename}")]
         public async Task<IActionResult> Download(string filename)
         {
@@ -120,7 +157,12 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(base64);
         }
-
+        /// <summary>
+        ///  Returns pdf file as base64
+        /// </summary>
+        /// <param name="objId">Decision id</param>
+        /// <returns>Pdf file as base64 what was created with decision data</returns>
+        /// <response code="200">Pdf file as base64</response>
         [HttpGet("createpdf/{objId:int}")]
         public async Task<IActionResult> CreatePdf(int objId)
         {
