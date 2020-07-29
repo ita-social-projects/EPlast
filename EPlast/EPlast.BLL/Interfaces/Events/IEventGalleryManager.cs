@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using EPlast.BLL.DTO.Events;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -8,5 +9,6 @@ namespace EPlast.BLL.Interfaces.Events
     {
         Task<int> AddPicturesAsync(int id, IList<IFormFile> files);
         Task<int> DeletePictureAsync(int id);
+        Task<IEnumerable<EventGalleryDTO>> ConvertPicturesToBase64(IEnumerable<EventGalleryDTO> galleryDTOs);
     }
 }

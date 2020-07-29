@@ -141,6 +141,11 @@ namespace EPlast.BLL.Services.Events
                 dto.Event.EventParticipants = dto.Event.EventParticipants.Where(p => p.StatusId == approvedStatus);
             }
 
+            if (dto.Event.EventGallery.Count != 0)
+            {
+                dto.Event.EventGallery = (await _eventGalleryManager.ConvertPicturesToBase64(dto.Event.EventGallery)).ToList();
+            }
+
             return dto;
         }
 
