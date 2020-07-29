@@ -9,6 +9,6 @@ namespace EPlast.BLL.Interfaces.Events
     {
         Task<int> AddPicturesAsync(int id, IList<IFormFile> files);
         Task<int> DeletePictureAsync(int id);
-        Task<IEnumerable<EventGalleryDTO>> ConvertPicturesToBase64(IEnumerable<EventGalleryDTO> galleryDTOs);
+        Task<IEnumerable<EventGalleryDTO>> GetPicturesInBase64(int eventId);
     }
 }

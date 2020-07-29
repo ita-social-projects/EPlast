@@ -59,11 +59,13 @@ namespace EPlast.BLL.Services.Events
         public async Task<IEnumerable<EventCategoryDTO>> GetCategoriesByTypeIdAsync(int eventTypeId)
         {
             var dto = await _eventCategoryManager.GetDTOByEventTypeIdAsync(eventTypeId);
+
             return dto;
         }
 
         public async Task<List<GeneralEventDTO>> GetEventsAsync(int categoryId, int eventTypeId, ClaimsPrincipal user)
         {
+            var userId = _userManager.GetUserId(user);
             int approvedStatus = await _participantStatusManager.GetStatusIdAsync("Учасник");
             int undeterminedStatus = await _participantStatusManager.GetStatusIdAsync("Розглядається");
             int rejectedStatus = await _participantStatusManager.GetStatusIdAsync("Відмовлено");
@@ -141,10 +143,17 @@ namespace EPlast.BLL.Services.Events
                 dto.Event.EventParticipants = dto.Event.EventParticipants.Where(p => p.StatusId == approvedStatus);
             }
 
-            if (dto.Event.EventGallery.Count != 0)
-            {
-                dto.Event.EventGallery = (await _eventGalleryManager.ConvertPicturesToBase64(dto.Event.EventGallery)).ToList();
-            }
+            //if (dto.Event.EventGallery.Count != 0)
+            //{
+            //    dto.Event.EventGallery = (await _eventGalleryManager.ConvertPicturesToBase64(dto.Event.EventGallery)).ToList();
+            //}
+
+            return dto;
+        }
+
+        public async Task<IEnumerable<EventGalleryDTO>> GetPicturesAsync(int id)
+        {
+            var dto = await _eventGalleryManager.GetPicturesInBase64(id);
 
             return dto;
         }
@@ -254,5 +263,6 @@ namespace EPlast.BLL.Services.Events
                 await _repoWrapper.SaveAsync();
             }
         }
+
     }
 }
