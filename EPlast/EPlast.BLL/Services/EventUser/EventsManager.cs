@@ -18,7 +18,8 @@ namespace EPlast.BLL.Services.EventUser
 
         public async Task<List<EventCalendarInfoDTO>> GetActionsAsync()
         {
-            var events = (await _repoWrapper.Event.GetAllAsync(predicate: i => i.EventTypeID == 1)).ToList();
+            var actionsEventTypeID = 1;
+            var events = (await _repoWrapper.Event.GetAllAsync(predicate: i => i.EventTypeID == actionsEventTypeID)).ToList();
             var dto = events
                 .Select(events => new EventCalendarInfoDTO()
                 {
@@ -37,7 +38,8 @@ namespace EPlast.BLL.Services.EventUser
 
         public async Task<List<EventCalendarInfoDTO>> GetEducationsAsync()
         {
-            var events = (await _repoWrapper.Event.GetAllAsync(predicate: i => i.EventTypeID == 2)).ToList();
+            var educationsEventTypeID = 2;
+            var events = (await _repoWrapper.Event.GetAllAsync(predicate: i => i.EventTypeID == educationsEventTypeID)).ToList();
             var dto = events
                 .Select(events => new EventCalendarInfoDTO()
                 {
@@ -56,7 +58,8 @@ namespace EPlast.BLL.Services.EventUser
 
         public async Task<List<EventCalendarInfoDTO>> GetCampsAsync()
         {
-            var events = (await _repoWrapper.Event.GetAllAsync(predicate: i => i.EventTypeID == 3)).ToList();
+            var campsEventTypeID = 3;
+            var events = (await _repoWrapper.Event.GetAllAsync(predicate: i => i.EventTypeID == campsEventTypeID)).ToList();
             var dto = events
                 .Select(events => new EventCalendarInfoDTO()
                 {
