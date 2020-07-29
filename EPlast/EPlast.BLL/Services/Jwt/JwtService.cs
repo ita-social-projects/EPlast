@@ -16,6 +16,8 @@ namespace EPlast.BLL.Services.Jwt
         {
             _jwtOptions = jwtOptions.Value;
         }
+
+        ///<inheritdoc/>
         public string GenerateJWTToken(UserDTO userDTO)
         {
             var claims = new[] {

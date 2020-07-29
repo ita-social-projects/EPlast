@@ -16,6 +16,7 @@ namespace EPlast.BLL
             Settings = settings;
         }
 
+        ///<inheritdoc/>
         public async Task SendEmailAsync(string email, string subject, string message, string title)
         {
             var SMTPServer = Settings.Value.SMTPServer;
