@@ -1,4 +1,5 @@
 ﻿using EPlast.BLL.Interfaces.EventCalendar;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -15,6 +16,13 @@ namespace EPlast.WebApi.Controllers
             _eventCalendarService = eventCalendarService;
         }
 
+        /// <summary>
+        /// Get all events of actions type
+        /// </summary>
+        /// <returns>Array of events of actions type</returns>
+        /// <response code="200">Instance of EventCalendarInfoDTO</response>
+        /// <response code="400">When the EventCalendarInfoDTO is null or empty</response> 
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpGet("actionsForCalendar")]
         public async Task<IActionResult> GetActions()
         {
@@ -23,6 +31,13 @@ namespace EPlast.WebApi.Controllers
             return Ok(events);
         }
 
+        /// <summary>
+        /// Get all events of education type
+        /// </summary>
+        /// <returns>Array of events of education type</returns>
+        /// <response code="200">Instance of EventCalendarInfoDTO</response>
+        /// <response code="400">When the EventCalendarInfoDTO is null or empty</response> 
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpGet("educationsForCalendar")]
         public async Task<IActionResult> GetEducations()
         {
@@ -31,6 +46,13 @@ namespace EPlast.WebApi.Controllers
             return Ok(events);
         }
 
+        /// <summary>
+        /// Get all events of camps type
+        /// </summary>
+        /// <returns>Array of events of camps type</returns>
+        /// <response code="200">Instance of EventCalendarInfoDTO</response>
+        /// <response code="400">When the EventCalendarInfoDTO is null or empty</response> 
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpGet("campsForCalendar")]
         public async Task<IActionResult> GetCamps()
         {

@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.EventUser
 {
+    /// <inheritdoc/>
     public class EventUserManager : IEventUserManager
     {
         private readonly IRepositoryWrapper _repoWrapper;
