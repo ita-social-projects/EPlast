@@ -32,12 +32,25 @@ namespace EPlast.WebApi.Controllers
             _localizer = localizer;
         }
 
+        /// <summary>
+        /// Method to get all reports that the user has access to
+        /// </summary>
+        /// <returns>List of annual reports</returns>
+        /// <response code="200">Successful operation</response>
         [HttpGet]
         public async Task<IActionResult> Get()
         {
             return StatusCode(StatusCodes.Status200OK, new { annualReports = await _annualReportService.GetAllAsync(User) });
         }
 
+        /// <summary>
+        /// Method to get all the information in the annual report
+        /// </summary>
+        /// <param name="id">Annual report identification number</param>
+        /// <returns>Annual report</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="403">User hasn't access to annual report</response>
+        /// <response code="404">The annual report does not exist</response>
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
@@ -57,6 +70,16 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Method to create new annual report for city
+        /// </summary>
+        /// <param name="annualReport">Annual report model</param>
+        /// <returns>Answer from backend</returns>
+        /// <response code="201">Annual report was successfully created</response>
+        /// <response code="400">City has created annual report</response>
+        /// <response code="403">User hasn't access to city</response>
+        /// <response code="404">The city does not exist</response>
+        /// <response code="404">Annual report model is not valid</response>
         [HttpPost]
         public async Task<IActionResult> Create(AnnualReportDTO annualReport)
         {
@@ -90,6 +113,16 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Method to edit annual report
+        /// </summary>
+        /// <param name="annualReport"></param>
+        /// <returns>Answer from backend</returns>
+        /// <response code="200">Annual report was successfully edited</response>
+        /// <response code="400">Annual report can not be edited</response>
+        /// <response code="403">User hasn't access to annual report</response>
+        /// <response code="404">The annual report does not exist</response>
+        /// <response code="404">Annual report model is not valid</response>
         [HttpPut]
         public async Task<IActionResult> Edit(AnnualReportDTO annualReport)
         {
@@ -123,6 +156,14 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Method to confirm annual report
+        /// </summary>
+        /// <param name="id">Annual report identification number</param>
+        /// <returns>Answer from backend</returns>
+        /// <response code="200">Annual report was successfully confirmed</response>
+        /// <response code="403">User hasn't access to annual report</response>
+        /// <response code="404">The annual report does not exist</response>
         [HttpPut("confirm/{id:int}")]
         public async Task<IActionResult> Confirm(int id)
         {
@@ -144,6 +185,14 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Method to cancel annual report
+        /// </summary>
+        /// <param name="id">Annual report identification number</param>
+        /// <returns>Answer from backend</returns>
+        /// <response code="200">Annual report was successfully canceled</response>
+        /// <response code="403">User hasn't access to annual report</response>
+        /// <response code="404">The annual report does not exist</response>
         [HttpPut("cancel/{id:int}")]
         public async Task<IActionResult> Cancel(int id)
         {
@@ -165,6 +214,14 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Method to delete annual report
+        /// </summary>
+        /// <param name="id">Annual report identification number</param>
+        /// <returns>Answer from backend</returns>
+        /// <response code="200">Annual report was successfully deleted</response>
+        /// <response code="403">User hasn't access to annual report</response>
+        /// <response code="404">The annual report does not exist</response>
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -186,6 +243,14 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Method to get information whether city has created annual report
+        /// </summary>
+        /// <param name="cityId">City identification number</param>
+        /// <returns>Answer from backend</returns>
+        /// <response code="200">Successful operation</response>
+        /// /// <response code="403">User hasn't access to city</response>
+        /// <response code="404">The city not exist</response>
         [HttpGet("checkCreated/{cityId:int}")]
         public async Task<IActionResult> CheckCreated(int cityId)
         {
@@ -210,6 +275,11 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Method to get annual report statuses
+        /// </summary>
+        /// <returns>List of enum values</returns>
+        /// <response code="200">Successful operation</response>
         [HttpGet("getStatuses")]
         public IActionResult GetStatuses()
         {
