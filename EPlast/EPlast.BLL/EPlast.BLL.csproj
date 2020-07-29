@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <ProjectGuid>{AB9A904C-A828-4D59-88FA-9D2730A43935}</ProjectGuid>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,5 +21,4 @@
   <ItemGroup>
     <ProjectReference Include="..\EPlast.DataAccess\EPlast.DataAccess.csproj" />
   </ItemGroup>
-
 </Project>
