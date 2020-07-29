@@ -129,6 +129,8 @@ namespace EPlast
             services.AddScoped<IDecisionBlobStorageRepository, DecisionBlobStorageRepository>();
             services.AddScoped<ICityBlobStorageRepository, CityBlobStorageRepository>();
             services.AddScoped<IClubBlobStorageRepository, ClubBlobStorageRepository>();
+            services.AddScoped<IEventBlobStorageRepository, EventBlobStorageRepository>();
+            services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
 
             services.Configure<IdentityOptions>(options =>
             {
