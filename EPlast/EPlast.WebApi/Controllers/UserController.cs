@@ -9,6 +9,7 @@ using EPlast.WebApi.Models.Approver;
 using EPlast.WebApi.Models.User;
 using EPlast.WebApi.Models.UserModels;
 using EPlast.WebApi.Models.UserModels.UserProfileFields;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -59,6 +60,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Get(string userId)
         {
             try
@@ -85,24 +87,26 @@ namespace EPlast.WebApi.Controllers
             }
             catch (Exception e)
             {
-                _loggerService.LogError($"Smth went wrong: {e.Message}");
+                _loggerService.LogError($"Exception: {e.Message}");
                 return BadRequest();
             }
         }
 
         [HttpGet("getImage/{imageName}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<string> GetImage(string imageName)
         {
             return await _userService.GetImageBase64Async(imageName);
         }
 
-        //[Authorize]
         [HttpGet("edit/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Edit(string userId)
         {
             if (userId == null)
             {
                 _loggerService.LogError("User id is null");
+
                 return BadRequest();
             }
             var user = await _userService.GetUserAsync(userId);
@@ -125,9 +129,12 @@ namespace EPlast.WebApi.Controllers
                 Degrees = _mapper.Map<IEnumerable<DegreeDTO>, IEnumerable<DegreeViewModel>>(await _degreeService.GetAllAsync()),
                 Genders = genders,
             };
+
             return Ok(model);
         }
+
         [HttpPut("editbase64")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> EditBase64([FromBody] EditUserViewModel model)
         {
             try
@@ -144,8 +151,9 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest();
             }
         }
-        // [Authorize]
+
         [HttpPut("edit")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Edit(EditUserViewModel model, IFormFile file)
         {
             try
@@ -161,8 +169,8 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest();
             }
         }
-        // [Authorize]
         [HttpPost("approveUser/{userId}/{isClubAdmin}/{isCityAdmin}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> ApproveUser(string userId, bool isClubAdmin = false, bool isCityAdmin = false)
         {
             try
@@ -181,8 +189,8 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        // [Authorize]
         [HttpDelete("deleteApprove/{confirmedId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> ApproverDelete(int confirmedId)
         {
             try
@@ -200,6 +208,7 @@ namespace EPlast.WebApi.Controllers
 
         }
         [HttpGet("approvers/{userId}/{approverId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Approvers(string userId, string approverId)
         {
             try
@@ -207,9 +216,8 @@ namespace EPlast.WebApi.Controllers
                 if (string.IsNullOrEmpty(userId))
                 {
                     _loggerService.LogError("User id is null");
-                    return RedirectToAction("HandleError", "Error", new { code = 500 });
+                    return BadRequest();
                 }
-
                 var user = await _userService.GetUserAsync(userId);
                 var confirmedUsers = _userService.GetConfirmedUsers(user);
                 var canApprove = await _userService.CanApproveAsync(confirmedUsers, userId, approverId);
@@ -227,26 +235,30 @@ namespace EPlast.WebApi.Controllers
                         ConfirmedUsers = _mapper.Map<IEnumerable<ConfirmedUserDTO>, IEnumerable<ConfirmedUserViewModel>>(confirmedUsers),
                         ClubApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(clubApprover),
                         CityApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(cityApprover),
-                        IsUserHeadOfCity = await _userManagerService.IsInRoleAsync(user, "Голова Станиці"),
-                        IsUserHeadOfClub = await _userManagerService.IsInRoleAsync(user, "Голова Куреня"),
-                        IsUserHeadOfRegion = await _userManagerService.IsInRoleAsync(user, "Голова Округу"),
-                        IsUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун"),
+                        IsUserHeadOfCity = await _userManagerService.IsInRoleAsync(User, "Голова Станиці"),
+                        IsUserHeadOfClub = await _userManagerService.IsInRoleAsync(User, "Голова Куреня"),
+                        IsUserHeadOfRegion = await _userManagerService.IsInRoleAsync(User, "Голова Округу"),
+                        IsUserPlastun = await _userManagerService.IsInRoleAsync(User, "Пластун"),
                         CurrentUserId = approverId
                     };
                     model.ConfirmedUsers.ForAll(async x => x.Approver.User.ImagePath = await _userService.GetImageBase64Async(x.Approver.User.ImagePath));
-                    //foreach (var i in model.ConfirmedUsers)
-                    //{
-                    //    i.Approver.User.ImagePath = await this.GetImage(i.Approver.User.ImagePath);
-                    //}
+                    if (model.ClubApprover != null)
+                    {
+                        model.ClubApprover.Approver.User.ImagePath = await _userService.GetImageBase64Async(model?.ClubApprover?.Approver?.User.ImagePath);
+                    }
+                    if (model.CityApprover != null)
+                    {
+                        model.CityApprover.Approver.User.ImagePath = await _userService.GetImageBase64Async(model?.CityApprover?.Approver?.User.ImagePath);
+                    }
                     return Ok(model);
                 }
                 _loggerService.LogError($"Can`t find this user:{userId}, or smth else");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
+                return BadRequest();
             }
             catch (Exception e)
             {
-                _loggerService.LogError("Smth went wrong");
-                return RedirectToAction("HandleError", "Error", new { code = 500 });
+                _loggerService.LogError($"Exception: { e.Message}");
+                return BadRequest();
             }
         }
     }
