@@ -17,17 +17,19 @@ namespace EPlast.WebApi.Controllers
         private readonly IDecisionService _decisionService;
         private readonly IPdfService _pdfService;
         private readonly IMapper _mapper;
+
         public DecisionsController(IPdfService pdfService, IDecisionService decisionService, IMapper mapper)
         {
             _pdfService = pdfService;
             _decisionService = decisionService;
             _mapper = mapper;
         }
+
         /// <summary>
         /// Returns data for creating new decision
         /// </summary>
         /// <returns>Data for creating new decision</returns>
-        /// <response code="200">Array of organizations, tagrets and status types</response>
+        /// <response code="200">Array of organizations, targets and status types</response>
         [HttpGet("NewDecision")]
         public async Task<ActionResult<DecisionCreateViewModel>> GetMetaData()
         {
@@ -40,8 +42,9 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(decisionViewModel);
         }
+
         /// <summary>
-        /// Returns the decision by id 
+        /// Returns the decision by id
         /// </summary>
         /// <param name="id">Decision id</param>
         /// <returns>Decision object</returns>
@@ -58,11 +61,12 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(decisionDto);
         }
+
         /// <summary>
         /// Updates decision
         /// </summary>
         /// <param name="id">decision id</param>
-        /// <param name="decision">decison</param>
+        /// <param name="decision">decision</param>
         /// <returns>Info that decision was created</returns>
         /// <response code="204">An instance of decision was created</response>
         /// <response code="400">The id and decision id are not same</response>
@@ -76,8 +80,8 @@ namespace EPlast.WebApi.Controllers
             await _decisionService.ChangeDecisionAsync(decision);
 
             return NoContent();
-
         }
+
         /// <summary>
         /// Creates new decision
         /// </summary>
@@ -88,7 +92,7 @@ namespace EPlast.WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Save(DecisionWrapperDTO decisionWrapper)
         {
-            if(decisionWrapper.FileAsBase64 == null && decisionWrapper.Decision.FileName != null)
+            if (decisionWrapper.FileAsBase64 == null && decisionWrapper.Decision.FileName != null)
             {
                 return BadRequest("Проблеми з завантаженням файлу");
             }
@@ -102,8 +106,8 @@ namespace EPlast.WebApi.Controllers
                 decision = decisionWrapper.Decision,
                 decisionOrganization = decisionOrganizations
             });
-
         }
+
         /// <summary>
         /// Returns all decisions
         /// </summary>
@@ -113,7 +117,8 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> Get()
         {
             List<DecisionViewModel> decisions = (await _decisionService.GetDecisionListAsync())
-                        .Select(decesion => {
+                        .Select(decesion =>
+                        {
                             var dvm = _mapper.Map<DecisionViewModel>(decesion.Decision);
 
                             dvm.DecisionStatusType = _decisionService.GetDecisionStatusTypes()
@@ -126,8 +131,9 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(decisions);
         }
+
         /// <summary>
-        /// Deletes decision by id 
+        /// Deletes decision by id
         /// </summary>
         /// <param name="id">Decision id</param>
         /// <returns>Info that decision was deleted</returns>
@@ -136,7 +142,6 @@ namespace EPlast.WebApi.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-
             if (await _decisionService.DeleteDecisionAsync(id))
             {
                 return NoContent();
@@ -144,6 +149,7 @@ namespace EPlast.WebApi.Controllers
 
             return NotFound();
         }
+
         /// <summary>
         /// Returns file by name as base64
         /// </summary>
@@ -157,6 +163,7 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(base64);
         }
+
         /// <summary>
         ///  Returns pdf file as base64
         /// </summary>
