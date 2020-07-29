@@ -54,6 +54,13 @@ namespace EPlast.WebApi.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Get a user
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>A user</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">User not found</response>
         [HttpGet("{userId}")]
         public async Task<IActionResult> Get(string userId)
         {
@@ -86,13 +93,35 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Get a image
+        /// </summary>
+        /// <param name="imageName">The name of the image</param>
+        /// <returns>Image in format base64</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">User not found</response>
         [HttpGet("getImage/{imageName}")]
-        public async Task<string> GetImage(string imageName)
+        public async Task<IActionResult> GetImage(string imageName)
         {
-            return await _userService.GetImageBase64Async(imageName);
+            try
+            {
+                return Ok(await _userService.GetImageBase64Async(imageName));
+            }
+            catch(Exception e)
+            {
+                _loggerService.LogError($"Exception: {e.Message}");
+                return BadRequest();
+            }
+            
         }
 
-        //[Authorize]
+        /// <summary>
+        /// Get user for edit
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>A data of user for editing</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">User id is null</response>
         [HttpGet("edit/{userId}")]
         public async Task<IActionResult> Edit(string userId)
         {
@@ -130,7 +159,7 @@ namespace EPlast.WebApi.Controllers
             {
                 
                 await _userService.UpdateAsyncForBase64(_mapper.Map<UserViewModel, UserDTO>(model.User), model.ImageBase64, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID, model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
-                _loggerService.LogInformation($"User  was edited profile and saved in the database");
+                _loggerService.LogInformation($"User was edited profile and saved in the database");
 
                 return Ok();
             }
