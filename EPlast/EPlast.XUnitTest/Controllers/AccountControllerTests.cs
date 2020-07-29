@@ -25,14 +25,14 @@ using Xunit;
 
 namespace EPlast.XUnitTest
 {
-    public class AccountControllerTests
+    public class AuthControllerTests
     {
         private Mock<IUserStore<User>> _userStoreMock;
         private Mock<IHttpContextAccessor> _contextAccessor;
         private Mock<IUserClaimsPrincipalFactory<User>> _userPrincipalFactory;
         private Mock<UserManager<User>> _userManager;
         private Mock<SignInManager<User>> _signInManager;
-        private Mock<ILogger<AccountController>> _logger;
+        private Mock<ILogger<AuthController>> _logger;
         private Mock<IEmailConfirmation> _emailConfirm;
         private Mock<IWebHostEnvironment> _hostEnv;
         private Mock<IUserService> _userService;
@@ -45,17 +45,17 @@ namespace EPlast.XUnitTest
         private Mock<IUserManagerService> _userManagerService;
         private Mock<IConfirmedUsersService> _confirmedUserService;
         private Mock<IMapper> _mapper;
-        private Mock<ILoggerService<AccountController>> _loggerService;
-        private Mock<IAccountService> _accountService;
+        private Mock<ILoggerService<AuthController>> _loggerService;
+        private Mock<IAuthService> _AuthService;
 
-        public AccountControllerTests()
+        public AuthControllerTests()
         {
             _userStoreMock = new Mock<IUserStore<User>>();
             _contextAccessor = new Mock<IHttpContextAccessor>();
             _userPrincipalFactory = new Mock<IUserClaimsPrincipalFactory<User>>();
             _userManager = new Mock<UserManager<User>>(_userStoreMock.Object, null, null, null, null, null, null, null, null);
             _signInManager = new Mock<SignInManager<User>>(_userManager.Object, _contextAccessor.Object, _userPrincipalFactory.Object, null, null, null);
-            _logger = new Mock<ILogger<AccountController>>();
+            _logger = new Mock<ILogger<AuthController>>();
             _emailConfirm = new Mock<IEmailConfirmation>();
             _hostEnv = new Mock<IWebHostEnvironment>();
             _userService = new Mock<IUserService>();
@@ -68,8 +68,8 @@ namespace EPlast.XUnitTest
             _userManagerService = new Mock<IUserManagerService>();
             _confirmedUserService = new Mock<IConfirmedUsersService>();
             _mapper = new Mock<IMapper>();
-            _loggerService = new Mock<ILoggerService<AccountController>>();
-            _accountService = new Mock<IAccountService>();
+            _loggerService = new Mock<ILoggerService<AuthController>>();
+            _AuthService = new Mock<IAuthService>();
         }
         [Fact]
         public async Task UserProfileTest()
@@ -93,8 +93,8 @@ namespace EPlast.XUnitTest
             _userManagerService.Setup(x => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>())).ReturnsAsync(true);
             UserViewModel a = new UserViewModel { Id = "1" };
             _mapper.Setup(x => x.Map<UserDTO, UserViewModel>(It.IsAny<UserDTO>())).Returns(a);
-            var controller = new AccountController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object, null);
+            var controller = new AuthController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _AuthService.Object, null);
             // Act
             var result = await controller.UserProfile("1");
             // Assert
@@ -106,8 +106,8 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task UserProfileTestFailure()
         {
-            var controller = new AccountController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object, null);
+            var controller = new AuthController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _AuthService.Object, null);
             // Act
             var result = await controller.UserProfile("");
             // Assert
@@ -132,8 +132,8 @@ namespace EPlast.XUnitTest
             _mapper.Setup(x => x.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(It.IsAny<ConfirmedUserDTO>())).Returns(new ConfirmedUserViewModel());
             _userManagerService.Setup(x => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>())).ReturnsAsync(true);
             _userManagerService.Setup(x => x.GetUserIdAsync(ClaimsPrincipal.Current)).ReturnsAsync(It.IsAny<string>());
-            var controller = new AccountController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object, null);
+            var controller = new AuthController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _AuthService.Object, null);
             // Acts
             var result = await controller.Approvers("q");
             // Assert
@@ -146,8 +146,8 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task ApproversTestFailure()
         {
-            var controller = new AccountController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object, null);
+            var controller = new AuthController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _AuthService.Object, null);
             // Acts
             var result = await  controller.Approvers("");
             // Assert
@@ -160,8 +160,8 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task ApproveUserTest()
         {
-            var controller = new AccountController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object, null);
+            var controller = new AuthController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _AuthService.Object, null);
             // Acts
             var result = await controller.ApproveUser("1", false, false);
             // Assert
@@ -175,8 +175,8 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task ApproveUserTestFailure()
         {
-            var controller = new AccountController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object, null);
+            var controller = new AuthController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _AuthService.Object, null);
             // Acts
             var result = await  controller.ApproveUser(null, false, false);
             // Assert
@@ -189,8 +189,8 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task ApproverDeleteTest()
         {
-            var controller = new AccountController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object, null);
+            var controller = new AuthController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _AuthService.Object, null);
             // Acts
             var result = await controller.ApproverDelete(1, "");
             // Assert
@@ -221,8 +221,8 @@ namespace EPlast.XUnitTest
             _mapper.Setup(x => x.Map<IEnumerable<ReligionDTO>, IEnumerable<ReligionViewModel>>(new List<ReligionDTO>())).Returns(new List<ReligionViewModel>());
             _mapper.Setup(x => x.Map<IEnumerable<DegreeDTO>, IEnumerable<DegreeViewModel>>(new List<DegreeDTO>())).Returns(new List<DegreeViewModel>());
 
-            var controller = new AccountController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object, null);
+            var controller = new AuthController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _AuthService.Object, null);
             // Act
             var result = await controller.Edit("");
 
@@ -234,8 +234,8 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task EditGetTestFailure()
         {
-            var controller = new AccountController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object, null);
+            var controller = new AuthController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _AuthService.Object, null);
             // Act
             var result = await controller.Edit(null);
 
@@ -250,8 +250,8 @@ namespace EPlast.XUnitTest
         {
             _mapper.Setup(x => x.Map<UserViewModel, UserDTO>(It.IsAny<UserViewModel>())).Returns(new UserDTO());
             var mockFile = new Mock<IFormFile>();
-            var controller = new AccountController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object, null);
+            var controller = new AuthController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _AuthService.Object, null);
             // Act
             var result = await controller.Edit(new EditUserViewModel { User = new UserViewModel(), EducationView = new EducationUserViewModel(), WorkView = new WorkUserViewModel() }, mockFile.Object);
 
@@ -265,8 +265,8 @@ namespace EPlast.XUnitTest
         public async Task EditPostTestFailure()
         {
             // Arrange
-            var controller = new AccountController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
-                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _accountService.Object, null);
+            var controller = new AuthController(_userService.Object, _nationalityService.Object, _educationService.Object, _religionService.Object, _workService.Object, _genderService.Object, _degreeService.Object,
+                _confirmedUserService.Object, _userManagerService.Object, _mapper.Object, _loggerService.Object, _AuthService.Object, null);
             var mockFile = new Mock<IFormFile>();
             var user = new EditUserViewModel();
 
