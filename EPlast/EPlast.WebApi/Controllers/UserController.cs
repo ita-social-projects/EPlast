@@ -55,7 +55,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Get a user
+        /// Get a specify user
         /// </summary>
         /// <param name="userId">The id of the user</param>
         /// <returns>A user</returns>
@@ -64,16 +64,15 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("{userId}")]
         public async Task<IActionResult> Get(string userId)
         {
-            try
+            if (string.IsNullOrEmpty(userId))
             {
-                if (string.IsNullOrEmpty(userId))
-                {
-                    // _logger.Log(LogLevel.Error, "User id is null");
-                    // return RedirectToAction("HandleError", "Error", new { code = 500 });
-                    userId = await _userManagerService.GetUserIdAsync(User);
-                }
+                _loggerService.LogError("User id is null");
+                return NotFound();
+            }
 
-                var user = await _userService.GetUserAsync(userId);
+            var user = await _userService.GetUserAsync(userId);
+            if (user != null)
+            {
                 var time = await _userService.CheckOrAddPlastunRoleAsync(user.Id, user.RegistredOn);
                 var isUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун");
 
@@ -86,11 +85,8 @@ namespace EPlast.WebApi.Controllers
 
                 return Ok(model);
             }
-            catch (Exception e)
-            {
-                _loggerService.LogError($"Smth went wrong: {e.Message}");
-                return BadRequest();
-            }
+
+            return NotFound();
         }
 
         /// <summary>
@@ -99,20 +95,10 @@ namespace EPlast.WebApi.Controllers
         /// <param name="imageName">The name of the image</param>
         /// <returns>Image in format base64</returns>
         /// <response code="200">Successful operation</response>
-        /// <response code="404">User not found</response>
         [HttpGet("getImage/{imageName}")]
         public async Task<IActionResult> GetImage(string imageName)
         {
-            try
-            {
-                return Ok(await _userService.GetImageBase64Async(imageName));
-            }
-            catch(Exception e)
-            {
-                _loggerService.LogError($"Exception: {e.Message}");
-                return BadRequest();
-            }
-            
+            return Ok(await _userService.GetImageBase64Async(imageName));
         }
 
         /// <summary>
@@ -121,108 +107,93 @@ namespace EPlast.WebApi.Controllers
         /// <param name="userId">The id of the user</param>
         /// <returns>A data of user for editing</returns>
         /// <response code="200">Successful operation</response>
-        /// <response code="404">User id is null</response>
+        /// <response code="404">User not found</response>
         [HttpGet("edit/{userId}")]
         public async Task<IActionResult> Edit(string userId)
         {
             if (userId == null)
             {
                 _loggerService.LogError("User id is null");
-                return BadRequest();
+
+                return NotFound();
             }
             var user = await _userService.GetUserAsync(userId);
-            var genders = _mapper.Map<IEnumerable<GenderDTO>, IEnumerable<GenderViewModel>>(await _genderService.GetAllAsync());
-
-            var placeOfStudyUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(await _educationService.GetAllGroupByPlaceAsync());
-            var specialityUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(await _educationService.GetAllGroupBySpecialityAsync());
-            var placeOfWorkUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(await _workService.GetAllGroupByPlaceAsync());
-            var positionUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(await _workService.GetAllGroupByPositionAsync());
-
-            var educView = new UserEducationViewModel { PlaceOfStudyID = user.UserProfile.EducationId, SpecialityID = user.UserProfile.EducationId, PlaceOfStudyList = placeOfStudyUnique, SpecialityList = specialityUnique };
-            var workView = new UserWorkViewModel { PlaceOfWorkID = user.UserProfile.WorkId, PositionID = user.UserProfile.WorkId, PlaceOfWorkList = placeOfWorkUnique, PositionList = positionUnique };
-            var model = new EditUserViewModel()
+            if(user!=null)
             {
-                User = _mapper.Map<UserDTO, UserViewModel>(user),
-                Nationalities = _mapper.Map<IEnumerable<NationalityDTO>, IEnumerable<NationalityViewModel>>(await _nationalityService.GetAllAsync()),
-                Religions = _mapper.Map<IEnumerable<ReligionDTO>, IEnumerable<ReligionViewModel>>(await _religionService.GetAllAsync()),
-                EducationView = educView,
-                WorkView = workView,
-                Degrees = _mapper.Map<IEnumerable<DegreeDTO>, IEnumerable<DegreeViewModel>>(await _degreeService.GetAllAsync()),
-                Genders = genders,
-            };
-            return Ok(model);
+                var genders = _mapper.Map<IEnumerable<GenderDTO>, IEnumerable<GenderViewModel>>(await _genderService.GetAllAsync());
+                var placeOfStudyUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(await _educationService.GetAllGroupByPlaceAsync());
+                var specialityUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(await _educationService.GetAllGroupBySpecialityAsync());
+                var placeOfWorkUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(await _workService.GetAllGroupByPlaceAsync());
+                var positionUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(await _workService.GetAllGroupByPositionAsync());
+
+                var educView = new UserEducationViewModel { PlaceOfStudyID = user.UserProfile.EducationId, SpecialityID = user.UserProfile.EducationId, PlaceOfStudyList = placeOfStudyUnique, SpecialityList = specialityUnique };
+                var workView = new UserWorkViewModel { PlaceOfWorkID = user.UserProfile.WorkId, PositionID = user.UserProfile.WorkId, PlaceOfWorkList = placeOfWorkUnique, PositionList = positionUnique };
+                var model = new EditUserViewModel()
+                {
+                    User = _mapper.Map<UserDTO, UserViewModel>(user),
+                    Nationalities = _mapper.Map<IEnumerable<NationalityDTO>, IEnumerable<NationalityViewModel>>(await _nationalityService.GetAllAsync()),
+                    Religions = _mapper.Map<IEnumerable<ReligionDTO>, IEnumerable<ReligionViewModel>>(await _religionService.GetAllAsync()),
+                    EducationView = educView,
+                    WorkView = workView,
+                    Degrees = _mapper.Map<IEnumerable<DegreeDTO>, IEnumerable<DegreeViewModel>>(await _degreeService.GetAllAsync()),
+                    Genders = genders,
+                };
+
+                return Ok(model);
+            }
+
+            return NotFound();
+            
         }
+
+        /// <summary>
+        /// Edit a user
+        /// </summary>
+        /// <param name="model">Edit model</param>
+        /// <response code="200">Successful operation</response>
         [HttpPut("editbase64")]
         public async Task<IActionResult> EditBase64([FromBody] EditUserViewModel model)
         {
-            try
-            {
-                
-                await _userService.UpdateAsyncForBase64(_mapper.Map<UserViewModel, UserDTO>(model.User), model.ImageBase64, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID, model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
-                _loggerService.LogInformation($"User was edited profile and saved in the database");
+            await _userService.UpdateAsyncForBase64(_mapper.Map<UserViewModel, UserDTO>(model.User), model.ImageBase64, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID, model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
+            _loggerService.LogInformation($"User was edited profile and saved in the database");
 
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                _loggerService.LogError($"Exception: { e.Message}");
-                return BadRequest();
-            }
+            return Ok();
         }
-        // [Authorize]
-        [HttpPut("edit")]
-        public async Task<IActionResult> Edit(EditUserViewModel model, IFormFile file)
-        {
-            try
-            {
-                await _userService.UpdateAsync(_mapper.Map<UserViewModel, UserDTO>(model.User), file, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID, model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
-                _loggerService.LogInformation($"User {model.User.FirstName}{model.User.LastName} was edited profile and saved in the database");
 
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                _loggerService.LogError($"Exception: { e.Message}");
-                return BadRequest();
-            }
-        }
-        // [Authorize]
+        /// <summary>
+        /// Approving user
+        /// </summary>
+        /// <param name="userId">The user ID which is confirmed</param>
+        /// <param name="isClubAdmin">Confirm as an club admin</param>
+        /// <param name="isCityAdmin">Confirm as an city admin</param>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">User not found</response>
         [HttpPost("approveUser/{userId}/{isClubAdmin}/{isCityAdmin}")]
         public async Task<IActionResult> ApproveUser(string userId, bool isClubAdmin = false, bool isCityAdmin = false)
         {
-            try
+            if (userId != null)
             {
-                if (userId != null)
-                {
-                    await _confirmedUserService.CreateAsync(User, userId, isClubAdmin, isCityAdmin);
-                    return Ok();
-                }
-                throw new ArgumentException("User id is null");
-            }
-            catch (Exception e)
-            {
-                _loggerService.LogError($"Exception: { e.Message}");
-                return BadRequest();
-            }
-        }
-
-        //   [Authorize]
-        [HttpDelete("deleteApprove/{confirmedId}")]
-        public async Task<IActionResult> ApproverDelete(int confirmedId)
-        {
-            try
-            {
-                await _confirmedUserService.DeleteAsync(confirmedId);
-                _loggerService.LogInformation("Approve succesfuly deleted");
+                await _confirmedUserService.CreateAsync(User, userId, isClubAdmin, isCityAdmin);
 
                 return Ok();
             }
-            catch (Exception e)
-            {
-                _loggerService.LogError($"Exception: { e.Message}");
-                return BadRequest();
-            }
+            _loggerService.LogError("User id is null");
 
+            return NotFound();
+        }
+
+        /// <summary>
+        /// Delete approve
+        /// </summary>
+        /// <param name="confirmedId">Confirmation ID to be deleted</param>
+        /// <response code="200">Successful operation</response>
+        [HttpDelete("deleteApprove/{confirmedId}")]
+        public async Task<IActionResult> ApproverDelete(int confirmedId)
+        {
+            await _confirmedUserService.DeleteAsync(confirmedId);
+            _loggerService.LogInformation("Approve succesfuly deleted");
+
+            return Ok();
         }
     }
 }
