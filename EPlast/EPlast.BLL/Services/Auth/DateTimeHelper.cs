@@ -5,6 +5,7 @@ namespace EPlast.BLL.Services
 {
     public class DateTimeHelper : IDateTimeHelper
     {
+        ///<inheritdoc/>
         DateTime IDateTimeHelper.GetCurrentTime()
         {
             return DateTime.Now;
