@@ -1,5 +1,6 @@
 ﻿using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.EventUser;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -23,6 +24,7 @@ namespace EPlast.WebApi.Controllers
         /// /// <param name="userId"></param>
         /// <response code="200">Instance of EventUserDTO</response>
         /// <response code="400">When the EventUserDTO is null or empty</response> 
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpGet("eventsUsers/{userId}")]
         public async Task<IActionResult> GetEventUserByUserId(string userId)
         {
@@ -44,6 +46,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>Array of data for creating event</returns>
         /// <response code="200">Instance of EventCreateDTO</response>
         /// <response code="400">When the EventCreateDTO is null or empty</response> 
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpGet("dataForNewEvent")]
         public async Task<IActionResult> GetEventsDataForCreate()
         {
@@ -66,6 +69,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="createDTO"></param>
         /// <response code="201">Instance of EventCreateDTO</response>
         /// <response code="400">When the EventCreateDTO is null or empty</response> 
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPost("newEvent")]
         public async Task<IActionResult> EventCreate([FromBody] EventCreateDTO createDTO)
         {
@@ -88,6 +92,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="eventId"></param>
         /// <response code="200">Instance of EventCreateDTO</response>
         /// <response code="400">When the EventCreateDTO is null or empty</response> 
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpGet("editedEvent/{eventId:int}")]
         public async Task<IActionResult> EventEdit(int eventId)
         {
@@ -109,7 +114,8 @@ namespace EPlast.WebApi.Controllers
         /// <returns>A newly edited event</returns>
         /// <param name="createDTO"></param>
         /// <response code="201">Instance of EventCreateDTO</response>
-        /// <response code="400">When the EventCreateDTO is null or empty</response> 
+        /// <response code="400">When the EventCreateDTO is null or empty</response>
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPut("editedEvent")]
         public async Task<IActionResult> EventEdit([FromBody] EventCreateDTO createDTO)
         {
