@@ -77,6 +77,15 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        [HttpGet("{eventId:int}/pictures")]
+        //[Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetPictures(int eventId)
+        {
+            var dto = await _actionManager.GetPicturesAsync(eventId);
+            
+            return Ok(dto);
+        }
+
         [HttpDelete("{id:int}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Delete(int id)

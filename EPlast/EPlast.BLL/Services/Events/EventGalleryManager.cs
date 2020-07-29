@@ -4,6 +4,7 @@ using EPlast.BLL.Interfaces.Events;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -68,15 +69,21 @@ namespace EPlast.BLL.Services.Events
         }
 
 
-        public async Task<IEnumerable<EventGalleryDTO>> ConvertPicturesToBase64(IEnumerable<EventGalleryDTO> galleryDTOs)
+        public async Task<IEnumerable<EventGalleryDTO>> GetPicturesInBase64(int eventId)
         {
+            var galleries = (await _repoWrapper.EventGallary
+                .GetAllAsync(
+                eg => eg.EventID == eventId,
+                source => source.Include(eg => eg.Gallary)
+                ))
+                .Select(eg => eg.Gallary);
             List<EventGalleryDTO> dto = new List<EventGalleryDTO>();
-            foreach(var galleryDTO in galleryDTOs)
+            foreach (var gallery in galleries)
             {
                 dto.Add(new EventGalleryDTO
                 {
-                    GalleryId=galleryDTO.GalleryId,
-                    FileName =await _eventBlobStorage.GetBlobBase64Async(galleryDTO.FileName)
+                    GalleryId = gallery.ID,
+                    FileName = await _eventBlobStorage.GetBlobBase64Async(gallery.GalaryFileName)
                 });
             }
             return dto;
