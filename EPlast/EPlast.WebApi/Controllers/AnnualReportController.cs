@@ -44,7 +44,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Method to get all the information in the annual report
+        /// Method to get annual report
         /// </summary>
         /// <param name="id">Annual report identification number</param>
         /// <returns>Annual report</returns>
@@ -130,7 +130,7 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    await _annualReportService.CreateAsync(User, annualReport);
+                    await _annualReportService.EditAsync(User, annualReport);
                     _loggerService.LogInformation($"User (id: {await _userManagerService.GetUserIdAsync(User)}) edited annual report (id: {annualReport.ID})");
                     return StatusCode(StatusCodes.Status200OK, new { message = _localizer["Edited"].Value });
                 }
