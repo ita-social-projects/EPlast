@@ -50,7 +50,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IEventAdministrationRepository _eventAdministration;
         private IEventAdministrationTypeRepository _eventAdministrationType;
         private IEventCategoryTypeRepository _eventCategoryTypeRepository;
-        private IPlastDegreeRepository _plastDegreeRepository;
+        private IPlastDegreeRepository _plastDegree;
         public IDecesionRepository Decesion
         {
             get
@@ -590,11 +590,11 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         {
             get
             {
-                if(_plastDegreeRepository == null)
+                if(_plastDegree == null)
                 {
-                    _plastDegreeRepository = new PlastDegreeRepository(_dbContext);
+                    _plastDegree = new PlastDegreeRepository(_dbContext);
                 }
-                return _plastDegreeRepository;
+                return _plastDegree;
             }
         }
         public RepositoryWrapper(EPlastDBContext ePlastDBContext)
