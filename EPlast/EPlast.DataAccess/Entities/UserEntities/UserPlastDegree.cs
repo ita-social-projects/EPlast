@@ -7,7 +7,7 @@ namespace EPlast.DataAccess.Entities
     {
         public int Id { get; set; }
         [Required]
-        public string PlastDegreeId { get; set; }
+        public int PlastDegreeId { get; set; }
         public PlastDegree PlastDegree { get; set; }
 
         public DateTime DateStart { get; set; }

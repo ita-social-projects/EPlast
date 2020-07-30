@@ -136,10 +136,6 @@ namespace EPlast.DataAccess
                .WithOne(x => x.User)
                .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<PlastDegree>()
-              .HasMany(x => x.UserPlastDegrees)
-              .WithOne(x => x.PlastDegree)
-              .OnDelete(DeleteBehavior.Cascade);
         }
 
         public DbSet<DocumentTemplate> DocumentTemplates { get; set; }

@@ -97,7 +97,7 @@ namespace EPlast.BLL.Services
 
                     UserPlastDegreeName = user.UserPlastDegrees.Count != 0 ? user.UserPlastDegrees
                         .FirstOrDefault(x => x.UserId == user.Id && x.DateFinish == null)
-                        ?.UserPlastDegreeType.GetDescription() : string.Empty,
+                        ?.PlastDegree.Name : string.Empty,
                     UserRoles = string.Join(", ", roles)
                 });
             }
