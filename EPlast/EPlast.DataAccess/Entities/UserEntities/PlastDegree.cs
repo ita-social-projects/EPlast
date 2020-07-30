@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EPlast.DataAccess.Entities.UserEntities
+﻿namespace EPlast.DataAccess.Entities.UserEntities
 {
     public class PlastDegree
     {
