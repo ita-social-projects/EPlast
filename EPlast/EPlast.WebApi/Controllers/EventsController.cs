@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
+    /// <summary>
+    /// Implements all business logic related with events.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class EventsController : ControllerBase
@@ -18,11 +21,11 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Get all event types
+        /// Get all event types.
         /// </summary>
-        /// <returns>List of all event types</returns>
-        /// <response code="200">OK</response>
-        /// <response code="400">Bad Request</response> 
+        /// <returns>List of all event types.</returns>
+        /// <response code="200">List of all event types</response>
+        /// <response code="400">Server could not understand the request due to invalid syntax</response> 
         [HttpGet("types")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetTypes()
@@ -31,13 +34,13 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Get event categories of the appropriate event type
+        /// Get event categories of the appropriate event type.
         /// </summary>
-        /// <returns>List of event categories of the appropriate event type</returns>
+        /// <returns>List of event categories of the appropriate event type.</returns>
         /// <param name="typeId">The Id of event type</param>
-        /// <response code="200">OK</response>
-        /// <response code="400">Bad Request</response> 
-        /// <response code="404">Not Found</response> 
+        /// <response code="200">List of event categories</response>
+        /// <response code="400">Server could not understand the request due to invalid syntax</response> 
+        /// <response code="404">Events does not exist</response> 
         [HttpGet("types/{typeId:int}/categories")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetCategories(int typeId)
@@ -46,14 +49,14 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Get events of the appropriate event type and event category
+        /// Get events of the appropriate event type and event category.
         /// </summary>
-        /// <returns>List of events of the appropriate event type and event category</returns>
+        /// <returns>List of events of the appropriate event type and event category.</returns>
         /// <param name="typeId">The Id of event type</param>
         /// <param name="categoryId">The Id of event category</param>
-        /// <response code="200">OK</response>
-        /// <response code="400">Bad Request</response> 
-        /// <response code="404">Not Found</response> 
+        /// <response code="200">List of events</response>
+        /// <response code="400">Server could not understand the request due to invalid syntax</response> 
+        /// <response code="404">Ther</response> 
         [HttpGet("~/api/types/{typeId:int}/categories/{categoryId:int}/events")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetEvents(int typeId, int categoryId)
@@ -62,13 +65,13 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Get detailed information about specific event
+        /// Get detailed information about specific event.
         /// </summary>
-        /// <returns>A detailed information about specific event</returns>
+        /// <returns>A detailed information about specific event.</returns>
         /// <param name="id">The Id of event</param>
-        /// <response code="200">OK</response>
-        /// <response code="400">Bad Request</response> 
-        /// <response code="404">Not Found</response> 
+        /// <response code="200">An instance of event</response>
+        /// <response code="400">Server could not understand the request due to invalid syntax</response> 
+        /// <response code="404">Event does not exist</response> 
         [HttpGet("{id:int}/details")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetEventDetail(int id)
@@ -77,13 +80,12 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Delete event by Id
+        /// Delete event by Id.
         /// </summary>
-        /// <returns>Status code of the event delete operation</returns>
+        /// <returns>Status code of the event delete operation.</returns>
         /// <param name="id">The Id of event</param>
         /// <response code="200">OK</response>
         /// <response code="400">Bad Request</response> 
-        /// <response code="404">Not Found</response> 
         [HttpDelete("{id:int}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Delete(int id)
@@ -92,9 +94,9 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Delete picture by Id
+        /// Delete picture by Id.
         /// </summary>
-        /// <returns>Status code of the picture delete operation</returns>
+        /// <returns>Status code of the picture delete operation.</returns>
         /// <param name="pictureId">The Id of picture</param>
         /// <response code="200">OK</response>
         /// <response code="400">Bad Request</response> 
@@ -107,9 +109,9 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Create new event participant
+        /// Create new event participant.
         /// </summary>
-        /// <returns>Status code of the subscribing on event operation</returns>
+        /// <returns>Status code of the subscribing on event operation.</returns>
         /// <param name="eventId">The Id of event</param>
         /// <response code="200">OK</response>
         /// <response code="400">Bad Request</response> 
@@ -121,9 +123,9 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Delete event participant by event id
+        /// Delete event participant by event id.
         /// </summary>
-        /// <returns>Status code of the unsubscribing on event operation</returns>
+        /// <returns>Status code of the unsubscribing on event operation.</returns>
         /// <param name="eventId">The Id of event</param>
         /// <response code="200">OK</response>
         /// <response code="400">Bad Request</response> 
@@ -135,9 +137,9 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Change event participant status to approved
+        /// Change event participant status to approved.
         /// </summary>
-        /// <returns>Status code of the changing event participant status operation</returns>
+        /// <returns>Status code of the changing event participant status operation.</returns>
         /// <param name="participantId">The Id of event participant</param>
         /// <response code="200">OK</response>
         /// <response code="400">Bad Request</response> 
@@ -149,9 +151,9 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Change event participant status to under reviewed
+        /// Change event participant status to under reviewed.
         /// </summary>
-        /// <returns>Status code of the changing event participant status operation</returns>
+        /// <returns>Status code of the changing event participant status operation.</returns>
         /// <param name="participantId">The Id of event participant</param>
         /// <response code="200">OK</response>
         /// <response code="400">Bad Request</response> 
@@ -163,9 +165,9 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Change event participant status to rejected
+        /// Change event participant status to rejected.
         /// </summary>
-        /// <returns>Status code of the changing event participant status operation</returns>
+        /// <returns>Status code of the changing event participant status operation.</returns>
         /// <param name="participantId">The Id of event participant</param>
         /// <response code="200">OK</response>
         /// <response code="400">Bad Request</response> 
