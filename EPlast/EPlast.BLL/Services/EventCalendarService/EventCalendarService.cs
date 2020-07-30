@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services
 {
+    /// <inheritdoc/>
     public class EventCalendarService : IEventCalendarService
     {
         private readonly IEventsManager _eventsManager;
