@@ -32,220 +32,214 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task GetTypes_ReturnsOkObjectResult()
         {
-            // Act
+            //Arrange
+            _actionManager
+                .Setup((x) => x.GetEventTypesAsync())
+                .ReturnsAsync(CreateListOfFakeEventTypes());
 
+            // Act
             var result = await _eventsController.GetTypes();
 
             // Assert
-
+            Assert.NotNull((result as ObjectResult).Value);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
         [Test]
-        public async Task GetTypes_ActionManagerGetEventTypesAsyncReturnsListWithTwoItems_ReturnsListWithTwoEventTypes()
+        public async Task GetTypes_ListWithTwoItems_ReturnsListWithTwoItems()
         {
             // Arrange
-
-            var eventTypes = new List<EventTypeDTO>() { new EventTypeDTO(), new EventTypeDTO(), };
+            var listCount = 2;
 
             _actionManager
                 .Setup((x) => x.GetEventTypesAsync())
-                .ReturnsAsync(eventTypes);
+                .ReturnsAsync(CreateListOfFakeEventTypes());
 
-            var expected = 2;
+            var expected = listCount;
 
             // Act
-
             var result = await _eventsController.GetTypes();
 
             var actual = (result as ObjectResult).Value as List<EventTypeDTO>;
 
             // Assert
-
+            Assert.NotNull((result as ObjectResult).Value);
             Assert.AreEqual(expected, actual.Count);
         }
 
         [Test]
-        public async Task GetTypes_ActionManagerGetEventTypesAsyncThrowsException_ReturnsBadRequestResult()
+        public async Task GetTypes_ThrowsException_ReturnsBadRequestResult()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.GetEventTypesAsync())
                 .ThrowsAsync(new Exception());
 
             // Act
-
             var result = await _eventsController.GetTypes();
 
             // Assert
-
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
         public async Task GetCategories_ReturnsOkObjectResult()
         {
-            // Act
+            //Assert
+            _actionManager
+                .Setup((x) => x.GetCategoriesByTypeIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(CreateListOfFakeEventCategories());
 
+            // Act
             var result = await _eventsController.GetCategories(It.IsAny<int>());
 
             // Assert
-
+            Assert.NotNull((result as ObjectResult).Value);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
         [Test]
-        public async Task GetCategories_ActionManagerGetCategoriesByTypeIdAsyncReturnsListWithTwoItems_ReturnsListWithTwoCategories()
+        public async Task GetCategories_ListWithTwoItems_ReturnsListWithItems()
         {
             // Arrange
-
-            var categories = new List<EventCategoryDTO>() { new EventCategoryDTO(), new EventCategoryDTO(), };
+            var listCount = 2;
 
             _actionManager
                 .Setup((x) => x.GetCategoriesByTypeIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(categories);
+                .ReturnsAsync(CreateListOfFakeEventCategories());
 
-            var expected = 2;
+            var expected = listCount;
 
             // Act
-
             var result = await _eventsController.GetCategories(It.IsAny<int>());
 
             var actual = (result as ObjectResult).Value as List<EventCategoryDTO>;
 
             // Assert
-
+            Assert.NotNull((result as ObjectResult).Value);
             Assert.AreEqual(expected, actual.Count);
         }
 
         [Test]
-        public async Task GetCategories_ActionManagerGetCategoriesByTypeIdAsyncThrowsException_ReturnsBadRequestResult()
+        public async Task GetCategories_ThrowsException_ReturnsBadRequestResult()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.GetCategoriesByTypeIdAsync(It.IsAny<int>()))
                 .ThrowsAsync(new Exception());
 
             // Act
-
             var result = await _eventsController.GetCategories(It.IsAny<int>());
 
             // Assert
-
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
         public async Task GetEvents_ReturnsOkObjectResult()
         {
-            // Act
+            // Arrange
+            _actionManager
+                .Setup((x) => x.GetEventsAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(CreateListOfFakeGeneralEvents());
 
+            // Act
             var result = await _eventsController.GetEvents(It.IsAny<int>(), It.IsAny<int>());
 
             // Assert
-
+            Assert.NotNull((result as ObjectResult).Value);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
         [Test]
-        public async Task GetEvents_ActionManagerGetEventsAsyncThrowsException_ReturnsBadRequestResult()
+        public async Task GetEvents_ThrowsException_ReturnsBadRequestResult()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.GetEventsAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
                 .ThrowsAsync(new Exception());
 
             // Act
-
             var result = await _eventsController.GetEvents(It.IsAny<int>(), It.IsAny<int>());
 
             // Assert
-
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
-        public async Task GetEvents_ActionManagerGetEventsAsyncReturnsListWithTwoItems_ReturnsListWithTwoCategories()
+        public async Task GetEvents_ListWithTwoItems_ReturnsListWithTwoCategories()
         {
             // Arrange
-
-            var events = new List<GeneralEventDTO>() { new GeneralEventDTO(), new GeneralEventDTO(), };
+            var listCount = 2;
 
             _actionManager
                 .Setup((x) => x.GetEventsAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
-                .ReturnsAsync(events);
+                .ReturnsAsync(CreateListOfFakeGeneralEvents());
 
-            var expected = 2;
+            var expected = listCount;
 
             // Act
-
             var result = await _eventsController.GetEvents(It.IsAny<int>(), It.IsAny<int>());
 
             var actual = (result as ObjectResult).Value as List<GeneralEventDTO>;
 
             // Assert
-
+            Assert.NotNull((result as ObjectResult).Value);
             Assert.AreEqual(expected, actual.Count);
         }
 
         [Test]
         public async Task GetEventDetail_ReturnsOkObjectResult()
         {
-            // Act
+            // Arrange
+            _actionManager
+                .Setup((x) => x.GetEventInfoAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(CreateFakeEvent());
 
+            // Act
             var result = await _eventsController.GetEventDetail(It.IsAny<int>());
 
             // Assert
-
+            Assert.NotNull((result as ObjectResult).Value);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
         [Test]
-        public async Task GetEventDetail_ActionManagerGetEventInfoAsyncThrowsException_ReturnsBadRequestResult()
+        public async Task GetEventDetail_ThrowsException_ReturnsBadRequestResult()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.GetEventInfoAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
                 .ThrowsAsync(new Exception());
 
             // Act
-
             var result = await _eventsController.GetEventDetail(It.IsAny<int>());
 
             // Assert
-
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
-        public async Task GetEventDetail_ActionManagerGetEventInfoAsyncReturnsEventDTO_ReturnsNotNullEventDTO()
+        public async Task GetEventDetail_EventDTO_ReturnsNotNullEventDTO()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.GetEventInfoAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
-                .ReturnsAsync(new EventDTO());
+                .ReturnsAsync(CreateFakeEvent());
 
             // Act
-
             var result = await _eventsController.GetEventDetail(It.IsAny<int>());
 
             var actual = (result as ObjectResult).Value as EventDTO;
 
             // Assert
-
             Assert.IsNotNull(actual);
         }
 
         [Test]
-        public async Task Delete_ActionManagerDeleteEventAsyncReturnsStatus200OK_ReturnsStatus200OK()
+        public async Task Delete_Status200OK_ReturnsStatus200OK()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.DeleteEventAsync(It.IsAny<int>()))
                 .ReturnsAsync(StatusCodes.Status200OK);
@@ -253,39 +247,33 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status200OK;
 
             // Act
-
             var result = await _eventsController.Delete(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
-
             Assert.AreEqual(expected, actual);
         }
 
         [Test]
-        public async Task Delete_ActionManagerDeleteEventAsyncThrowsException_ReturnsBadRequestResult()
+        public async Task Delete_ThrowsException_ReturnsBadRequestResult()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.DeleteEventAsync(It.IsAny<int>()))
                 .ThrowsAsync(new Exception());
 
             // Act
-
             var result = await _eventsController.Delete(It.IsAny<int>());
 
             // Assert
-
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
-        public async Task Delete_ActionManagerDeleteEventAsyncReturnsStatus400BadRequest_ReturnsStatus400BadRequest()
+        public async Task Delete_Status400BadRequest_ReturnsStatus400BadRequest()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.DeleteEventAsync(It.IsAny<int>()))
                 .ReturnsAsync(StatusCodes.Status400BadRequest);
@@ -293,21 +281,18 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status400BadRequest;
 
             // Act
-
             var result = await _eventsController.Delete(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
-
             Assert.AreEqual(expected, actual);
         }
 
         [Test]
-        public async Task DeletePicture_ActionManagerDeletePictureAsyncReturnsStatus200OK_ReturnsStatus200OK()
+        public async Task DeletePicture_Status200OK_ReturnsStatus200OK()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.DeletePictureAsync(It.IsAny<int>()))
                 .ReturnsAsync(StatusCodes.Status200OK);
@@ -315,21 +300,18 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status200OK;
 
             // Act
-
             var result = await _eventsController.DeletePicture(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
-
             Assert.AreEqual(expected, actual);
         }
 
         [Test]
-        public async Task DeletePicture_ActionManagerDeletePictureAsyncStatus400BadRequest_ReturnsStatus400BadRequest()
+        public async Task DeletePicture_Status400BadRequest_ReturnsStatus400BadRequest()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.DeletePictureAsync(It.IsAny<int>()))
                 .ReturnsAsync(StatusCodes.Status400BadRequest);
@@ -337,39 +319,33 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status400BadRequest;
 
             // Act
-
             var result = await _eventsController.DeletePicture(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
-
             Assert.AreEqual(expected, actual);
         }
 
         [Test]
-        public async Task DeletePicture_ActionManagerDeletePictureAsyncThrowsException_ReturnsBadRequestResult()
+        public async Task DeletePicture_ThrowsException_ReturnsBadRequestResult()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.DeletePictureAsync(It.IsAny<int>()))
                 .ThrowsAsync(new Exception());
 
             // Act
-
             var result = await _eventsController.DeletePicture(It.IsAny<int>());
 
             // Assert
-
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
-        public async Task SubscribeOnEvent_ActionManagerSubscribeOnEventAsyncReturnsStatus200OK_ReturnsStatus200OK()
+        public async Task SubscribeOnEvent_Status200OK_ReturnsStatus200OK()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.SubscribeOnEventAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(StatusCodes.Status200OK);
@@ -377,39 +353,33 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status200OK;
 
             // Act
-
             var result = await _eventsController.SubscribeOnEvent(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
-
             Assert.AreEqual(expected, actual);
         }
 
         [Test]
-        public async Task SubscribeOnEvent_ActionManagerSubscribeOnEventAsyncThrowsException_ReturnsBadRequestResult()
+        public async Task SubscribeOnEvent_ThrowsException_ReturnsBadRequestResult()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.SubscribeOnEventAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
                 .ThrowsAsync(new Exception());
 
             // Act
-
             var result = await _eventsController.SubscribeOnEvent(It.IsAny<int>());
 
             // Assert
-
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
-        public async Task SubscribeOnEvent_ActionManagerSubscribeOnEventAsyncReturnsStatus400BadRequest_ReturnsStatus400BadRequest()
+        public async Task SubscribeOnEvent_Status400BadRequest_ReturnsStatus400BadRequest()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.SubscribeOnEventAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(StatusCodes.Status400BadRequest);
@@ -417,21 +387,18 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status400BadRequest;
 
             // Act
-
             var result = await _eventsController.SubscribeOnEvent(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
-
             Assert.AreEqual(expected, actual);
         }
 
         [Test]
-        public async Task UnSubscribeOnEvent_ActionManagerUnSubscribeOnEventAsyncReturnsStatus200OK_ReturnsStatus200OK()
+        public async Task UnSubscribeOnEvent_Status200OK_ReturnsStatus200OK()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.UnSubscribeOnEventAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(StatusCodes.Status200OK);
@@ -439,39 +406,33 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status200OK;
 
             // Act
-
             var result = await _eventsController.UnSubscribeOnEvent(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
-
             Assert.AreEqual(expected, actual);
         }
 
         [Test]
-        public async Task UnSubscribeOnEvent_ActionManagerUnSubscribeOnEventAsyncThrowsException_ReturnsBadRequestResult()
+        public async Task UnSubscribeOnEvent_ThrowsException_ReturnsBadRequestResult()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.UnSubscribeOnEventAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
                 .ThrowsAsync(new Exception());
 
             // Act
-
             var result = await _eventsController.UnSubscribeOnEvent(It.IsAny<int>());
 
             // Assert
-
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
-        public async Task UnSubscribeOnEvent_ActionManagerUnSubscribeOnEventAsyncReturnsStatus400BadRequest_ReturnsStatus400BadRequest()
+        public async Task UnSubscribeOnEvent_Status400BadRequest_ReturnsStatus400BadRequest()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.UnSubscribeOnEventAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(StatusCodes.Status400BadRequest);
@@ -479,21 +440,18 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status400BadRequest;
 
             // Act
-
             var result = await _eventsController.UnSubscribeOnEvent(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
-
             Assert.AreEqual(expected, actual);
         }
 
         [Test]
-        public async Task ApproveParticipant_ActionManagerApproveParticipantAsyncReturnsStatus200OK_ReturnsStatus200OK()
+        public async Task ApproveParticipant_Status200OK_ReturnsStatus200OK()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.ApproveParticipantAsync(It.IsAny<int>()))
                 .ReturnsAsync(StatusCodes.Status200OK);
@@ -501,39 +459,33 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status200OK;
 
             // Act
-
             var result = await _eventsController.ApproveParticipant(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
-
             Assert.AreEqual(expected, actual);
         }
 
         [Test]
-        public async Task ApproveParticipant_ActionManagerApproveParticipantAsyncThrowsException_ReturnsBadRequestResult()
+        public async Task ApproveParticipant_ThrowsException_ReturnsBadRequestResult()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.ApproveParticipantAsync(It.IsAny<int>()))
                 .ThrowsAsync(new Exception());
 
             // Act
-
             var result = await _eventsController.ApproveParticipant(It.IsAny<int>());
 
             // Assert
-
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
-        public async Task ApproveParticipant_ActionManagerApproveParticipantAsyncReturnsStatus400BadRequest_ReturnsStatus400BadRequest()
+        public async Task ApproveParticipant_Status400BadRequest_ReturnsStatus400BadRequest()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.ApproveParticipantAsync(It.IsAny<int>()))
                 .ReturnsAsync(StatusCodes.Status400BadRequest);
@@ -541,21 +493,18 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status400BadRequest;
 
             // Act
-
             var result = await _eventsController.ApproveParticipant(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
-
             Assert.AreEqual(expected, actual);
         }
 
         [Test]
-        public async Task UnderReviewParticipant_ActionManagerUnderReviewParticipantAsyncReturnsStatus200OK_ReturnsStatus200OK()
+        public async Task UnderReviewParticipant_Status200OK_ReturnsStatus200OK()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.UnderReviewParticipantAsync(It.IsAny<int>()))
                 .ReturnsAsync(StatusCodes.Status200OK);
@@ -563,21 +512,18 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status200OK;
 
             // Act
-
             var result = await _eventsController.UnderReviewParticipant(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
-
             Assert.AreEqual(expected, actual);
         }
 
         [Test]
-        public async Task UnderReviewParticipant_ActionManagerUnderReviewParticipantAsyncReturnsStatus400BadRequest_ReturnsStatus400BadRequest()
+        public async Task UnderReviewParticipant_Status400BadRequest_ReturnsStatus400BadRequest()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.UnderReviewParticipantAsync(It.IsAny<int>()))
                 .ReturnsAsync(StatusCodes.Status400BadRequest);
@@ -585,39 +531,33 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status400BadRequest;
 
             // Act
-
             var result = await _eventsController.UnderReviewParticipant(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
-
             Assert.AreEqual(expected, actual);
         }
 
         [Test]
-        public async Task UnderReviewParticipant_ActionManagerUnderReviewParticipantAsyncThrowsException_ReturnsBadRequestResult()
+        public async Task UnderReviewParticipant_ThrowsException_ReturnsBadRequestResult()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.UnderReviewParticipantAsync(It.IsAny<int>()))
                 .ThrowsAsync(new Exception());
 
             // Act
-
             var result = await _eventsController.UnderReviewParticipant(It.IsAny<int>());
 
             // Assert
-
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
-        public async Task RejectParticipant_ActionManagerRejectParticipantAsyncReturnsStatus200OK_ReturnsStatus200OK()
+        public async Task RejectParticipant_ReturnsStatus200OK_ReturnsStatus200OK()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.RejectParticipantAsync(It.IsAny<int>()))
                 .ReturnsAsync(StatusCodes.Status200OK);
@@ -625,21 +565,18 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status200OK;
 
             // Act
-
             var result = await _eventsController.RejectParticipant(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
-
             Assert.AreEqual(expected, actual);
         }
 
         [Test]
-        public async Task RejectParticipant_ActionManagerRejectParticipantAsyncReturnsStatus400BadRequest_ReturnsStatus400BadRequest()
+        public async Task RejectParticipant_Status400BadRequest_ReturnsStatus400BadRequest()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.RejectParticipantAsync(It.IsAny<int>()))
                 .ReturnsAsync(StatusCodes.Status400BadRequest);
@@ -647,32 +584,84 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status400BadRequest;
 
             // Act
-
             var result = await _eventsController.RejectParticipant(It.IsAny<int>());
 
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
-
             Assert.AreEqual(expected, actual);
         }
 
         [Test]
-        public async Task RejectParticipant_ActionManagerRejectParticipantAsyncThrowsException_ReturnsBadRequestResult()
+        public async Task RejectParticipant_ThrowsException_ReturnsBadRequestResult()
         {
             // Arrange
-
             _actionManager
                 .Setup((x) => x.RejectParticipantAsync(It.IsAny<int>()))
                 .ThrowsAsync(new Exception());
 
             // Act
-
             var result = await _eventsController.RejectParticipant(It.IsAny<int>());
 
             // Assert
-
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
+
+        public IEnumerable<EventTypeDTO> CreateListOfFakeEventTypes()
+            => new List<EventTypeDTO>()
+            { 
+                new EventTypeDTO()
+                { 
+                    ID = 0,
+                    EventTypeName = "SomeEventTypeName",
+                },
+                new EventTypeDTO()
+                { 
+                    ID = 1,
+                    EventTypeName = "AnotherEventTypeName",
+                },
+            };
+
+        public IEnumerable<EventCategoryDTO> CreateListOfFakeEventCategories()
+            => new List<EventCategoryDTO>()
+            {
+                new EventCategoryDTO()
+                { 
+                    EventCategoryId = 0,
+                    EventCategoryName = "SomeEventCategoryName",
+                },
+                new EventCategoryDTO()
+                { 
+                    EventCategoryId = 1,
+                    EventCategoryName = "AnotherEventCategoryName",
+                },
+            };
+
+        public List<GeneralEventDTO> CreateListOfFakeGeneralEvents()
+            => new List<GeneralEventDTO>()
+            {
+                new GeneralEventDTO()
+                { 
+                    EventId = 0, 
+                    EventName = "SomeGeneralEventName",
+                },
+                new GeneralEventDTO()
+                { 
+                    EventId = 1, 
+                    EventName = "AnotherGeneralEventName",
+                },
+            };
+
+        public EventDTO CreateFakeEvent()
+            => new EventDTO()
+            {
+                Event = new EventInfoDTO()
+                { 
+                    EventId = 0, 
+                    EventName = "SomeEventName",
+                }
+            };
+
+
     }
 }
