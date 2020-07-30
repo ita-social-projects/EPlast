@@ -102,7 +102,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Get user for edit
+        /// Get specify model for edit user
         /// </summary>
         /// <param name="userId">The id of the user</param>
         /// <returns>A data of user for editing</returns>

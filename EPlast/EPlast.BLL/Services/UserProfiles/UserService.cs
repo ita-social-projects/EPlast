@@ -38,6 +38,8 @@ namespace EPlast.BLL.Services.UserProfiles
             _userBlobStorage = userBlobStorage;
             _env = env;
         }
+
+        /// <inheritdoc />
         public async Task<UserDTO> GetUserAsync(string userId)
         {
             var user = await _repoWrapper.User.GetFirstAsync(
@@ -63,6 +65,7 @@ namespace EPlast.BLL.Services.UserProfiles
             return model;
         }
 
+        /// <inheritdoc />
         public IEnumerable<ConfirmedUserDTO> GetConfirmedUsers(UserDTO user)
         {
             var result = user.ConfirmedUsers.
@@ -71,6 +74,7 @@ namespace EPlast.BLL.Services.UserProfiles
             return result;
         }
 
+        /// <inheritdoc />
         public ConfirmedUserDTO GetClubAdminConfirmedUser(UserDTO user)
         {
             var result = user.ConfirmedUsers.
@@ -79,6 +83,7 @@ namespace EPlast.BLL.Services.UserProfiles
             return result;
         }
 
+        /// <inheritdoc />
         public ConfirmedUserDTO GetCityAdminConfirmedUser(UserDTO user)
         {
             var result = user.ConfirmedUsers.
@@ -86,6 +91,8 @@ namespace EPlast.BLL.Services.UserProfiles
 
             return result;
         }
+
+        /// <inheritdoc />
         public async Task<bool> CanApproveAsync(IEnumerable<ConfirmedUserDTO> confUsers, string userId, ClaimsPrincipal user)
         {
             var currentUser = await _userManager.GetUserAsync(user);
@@ -97,6 +104,8 @@ namespace EPlast.BLL.Services.UserProfiles
 
             return canApprove;
         }
+
+        /// <inheritdoc />
         public async Task<TimeSpan> CheckOrAddPlastunRoleAsync(string userId, DateTime registeredOn)
         {
             try
@@ -131,6 +140,8 @@ namespace EPlast.BLL.Services.UserProfiles
             _repoWrapper.UserProfile.Update(userForUpdate.UserProfile);
             await _repoWrapper.SaveAsync();
         }
+
+        /// <inheritdoc />
         public async Task UpdateAsyncForBase64(UserDTO user, string imageBase64, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
             user.ImagePath = await UploadPhotoAsyncFromBase64(user.Id, imageBase64);
@@ -147,6 +158,7 @@ namespace EPlast.BLL.Services.UserProfiles
             await _repoWrapper.SaveAsync();
         }
 
+        /// <inheritdoc />
         public async Task<string> GetImageBase64Async(string fileName)
         {
             return await _userBlobStorage.GetBlobBase64Async(fileName);
