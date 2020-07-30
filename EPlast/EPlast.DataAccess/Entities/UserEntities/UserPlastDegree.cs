@@ -1,5 +1,4 @@
-﻿using EPlast.DataAccess.Entities.UserEntities;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.DataAccess.Entities

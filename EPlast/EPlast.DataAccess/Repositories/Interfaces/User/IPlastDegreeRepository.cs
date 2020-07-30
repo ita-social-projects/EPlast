@@ -1,8 +1,9 @@
-﻿using EPlast.DataAccess.Entities.UserEntities;
+﻿
+using EPlast.DataAccess.Entities;
 
-namespace EPlast.DataAccess.Repositories.Interfaces.User
+namespace EPlast.DataAccess.Repositories
 {
-    interface IPlastDegreeRepository: IRepositoryBase<PlastDegree>
+    public interface IPlastDegreeRepository: IRepositoryBase<PlastDegree>
     {
     }
 }
