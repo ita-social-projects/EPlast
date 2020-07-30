@@ -1,10 +1,15 @@
 ﻿using AutoMapper;
+using AutoMapper.Internal;
+using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
+using EPlast.WebApi.Models.Approver;
+using EPlast.WebApi.Models.User;
 using EPlast.WebApi.Models.UserModels;
 using EPlast.WebApi.Models.UserModels.UserProfileFields;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -26,7 +31,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IDegreeService _degreeService;
         private readonly IUserManagerService _userManagerService;
         private readonly IConfirmedUsersService _confirmedUserService;
-        private readonly ILoggerService<AuthController> _loggerService;
+        private readonly ILoggerService<UserController> _loggerService;
         private readonly IMapper _mapper;
 
         public UserController(IUserService userService,
@@ -38,7 +43,7 @@ namespace EPlast.WebApi.Controllers
             IDegreeService degreeService,
             IConfirmedUsersService confirmedUserService,
             IUserManagerService userManagerService,
-            ILoggerService<AuthController> loggerService,
+            ILoggerService<UserController> loggerService,
             IMapper mapper)
         {
             _userService = userService;
@@ -62,6 +67,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">User not found</response>
         [HttpGet("{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Get(string userId)
         {
             if (string.IsNullOrEmpty(userId))
@@ -96,7 +102,8 @@ namespace EPlast.WebApi.Controllers
         /// <returns>Image in format base64</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("getImage/{imageName}")]
-        public async Task<IActionResult> GetImage(string imageName)
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<string> GetImage(string imageName)
         {
             return Ok(await _userService.GetImageBase64Async(imageName));
         }
@@ -109,6 +116,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">User not found</response>
         [HttpGet("edit/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Edit(string userId)
         {
             if (userId == null)
@@ -152,6 +160,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="model">Edit model</param>
         /// <response code="200">Successful operation</response>
         [HttpPut("editbase64")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> EditBase64([FromBody] EditUserViewModel model)
         {
             await _userService.UpdateAsyncForBase64(_mapper.Map<UserViewModel, UserDTO>(model.User), model.ImageBase64, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID, model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
@@ -169,6 +178,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">User not found</response>
         [HttpPost("approveUser/{userId}/{isClubAdmin}/{isCityAdmin}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> ApproveUser(string userId, bool isClubAdmin = false, bool isCityAdmin = false)
         {
             if (userId != null)
@@ -188,6 +198,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="confirmedId">Confirmation ID to be deleted</param>
         /// <response code="200">Successful operation</response>
         [HttpDelete("deleteApprove/{confirmedId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> ApproverDelete(int confirmedId)
         {
             await _confirmedUserService.DeleteAsync(confirmedId);
