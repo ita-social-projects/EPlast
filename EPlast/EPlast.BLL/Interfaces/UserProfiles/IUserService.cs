@@ -67,6 +67,7 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         /// <returns>Can the user approve</returns>
         Task<bool> CanApproveAsync(IEnumerable<ConfirmedUserDTO> confUsers, string userId, ClaimsPrincipal user);
 
+
         /// <summary>
         /// Get a image
         /// </summary>
