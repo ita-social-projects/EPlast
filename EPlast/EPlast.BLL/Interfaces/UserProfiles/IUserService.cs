@@ -17,6 +17,7 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         IEnumerable<ConfirmedUserDTO> GetConfirmedUsers(UserDTO user);
         ConfirmedUserDTO GetClubAdminConfirmedUser(UserDTO user);
         ConfirmedUserDTO GetCityAdminConfirmedUser(UserDTO user);
+        Task<bool> CanApproveAsync(IEnumerable<ConfirmedUserDTO> confUsers, string userId, string approverId);
         Task<bool> CanApproveAsync(IEnumerable<ConfirmedUserDTO> confUsers, string userId, ClaimsPrincipal user);
         Task<string> GetImageBase64Async(string fileName);
     }

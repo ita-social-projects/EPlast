@@ -26,12 +26,14 @@ namespace EPlast.BLL.Services.Club
             _clubBlobStorage = clubBlobStorage;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<ClubDTO>> GetAllClubsAsync()
         {
             return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubDTO>>(
                 await _repoWrapper.Club.GetAllAsync());
         }
 
+        /// <inheritdoc />
         public async Task<ClubProfileDTO> GetClubProfileAsync(int clubId)
         {
             var club = await GetByIdWithDetailsAsync(clubId);
@@ -50,6 +52,7 @@ namespace EPlast.BLL.Services.Club
             };
         }
 
+        /// <inheritdoc />
         public async Task<ClubDTO> GetClubInfoByIdAsync(int id)
         {
             var club = await _repoWrapper.Club.GetFirstOrDefaultAsync(c => c.ID == id);
@@ -73,7 +76,7 @@ namespace EPlast.BLL.Services.Club
                 : throw new ArgumentNullException($"Club with {id} id not found");
         }
 
-        private UserDTO GetCurrentClubAdmin(ClubDTO club)
+        private static UserDTO GetCurrentClubAdmin(ClubDTO club)
         {
             return club?.ClubAdministration
                 .Where(a => (a.EndDate >= DateTime.Now || a.EndDate == null) && a.AdminType.AdminTypeName == "Курінний")
@@ -81,21 +84,22 @@ namespace EPlast.BLL.Services.Club
                 .FirstOrDefault();
         }
 
-        private IEnumerable<ClubAdministrationDTO> GetCurrentClubAdministration(ClubDTO club)
+        private static IEnumerable<ClubAdministrationDTO> GetCurrentClubAdministration(ClubDTO club)
         {
             return club?.ClubAdministration.Where(a => a.EndDate >= DateTime.Now || a.EndDate == null).ToList();
         }
 
-        private IEnumerable<ClubMembersDTO> GetClubMembers(ClubDTO club, bool isApproved, int amount)
+        private static IEnumerable<ClubMembersDTO> GetClubMembers(ClubDTO club, bool isApproved, int amount)
         {
             return club?.ClubMembers.Where(m => m.IsApproved == isApproved).Take(amount).ToList();
         }
 
-        private IEnumerable<ClubMembersDTO> GetClubMembers(ClubDTO club, bool isApproved)
+        private static IEnumerable<ClubMembersDTO> GetClubMembers(ClubDTO club, bool isApproved)
         {
             return club?.ClubMembers.Where(m => m.IsApproved == isApproved).ToList();
         }
 
+        /// <inheritdoc />
         public async Task<ClubDTO> UpdateAsync(ClubDTO club)
         {
             var editedClub = _mapper.Map<ClubDTO, DataAccessClub.Club>(club);
@@ -105,6 +109,7 @@ namespace EPlast.BLL.Services.Club
             return _mapper.Map<DataAccessClub.Club, ClubDTO>(editedClub);
         }
 
+        /// <inheritdoc />
         public async Task<ClubDTO> CreateAsync(ClubDTO club)
         {
             var newClub = _mapper.Map<ClubDTO, DataAccessClub.Club>(club);
@@ -116,6 +121,7 @@ namespace EPlast.BLL.Services.Club
             return _mapper.Map<DataAccessClub.Club, ClubDTO>(newClub);
         }
 
+        /// <inheritdoc />
         public async Task<ClubProfileDTO> GetClubMembersOrFollowersAsync(int clubId, bool isApproved)
         {
             var club = await GetByIdWithDetailsAsync(clubId);
@@ -143,6 +149,7 @@ namespace EPlast.BLL.Services.Club
             return fileName;
         }
 
+        /// <inheritdoc />
         public async Task<string> GetImageBase64Async(string fileName)
         {
             return await _clubBlobStorage.GetBlobBase64Async(string.IsNullOrEmpty(fileName)
