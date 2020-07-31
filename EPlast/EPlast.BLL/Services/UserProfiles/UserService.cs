@@ -3,6 +3,7 @@ using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
@@ -22,13 +23,14 @@ namespace EPlast.BLL.Services.UserProfiles
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
+        private readonly IUserManagerService _userManagerService;
         private readonly IMapper _mapper;
         private readonly IWorkService _workService;
         private readonly IWebHostEnvironment _env;
         private readonly IEducationService _educationService;
         private readonly IUserBlobStorageRepository _userBlobStorage;
         public UserService(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IMapper mapper, IWorkService workService,
-            IEducationService educationService, IUserBlobStorageRepository userBlobStorage, IWebHostEnvironment env)
+            IEducationService educationService, IUserBlobStorageRepository userBlobStorage, IWebHostEnvironment env, IUserManagerService userManagerService)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
@@ -37,7 +39,10 @@ namespace EPlast.BLL.Services.UserProfiles
             _educationService = educationService;
             _userBlobStorage = userBlobStorage;
             _env = env;
+            _userManagerService = userManagerService;
         }
+
+        /// <inheritdoc />
         public async Task<UserDTO> GetUserAsync(string userId)
         {
             var user = await _repoWrapper.User.GetFirstAsync(
@@ -63,14 +68,15 @@ namespace EPlast.BLL.Services.UserProfiles
             return model;
         }
 
+        /// <inheritdoc />
         public IEnumerable<ConfirmedUserDTO> GetConfirmedUsers(UserDTO user)
         {
             var result = user.ConfirmedUsers.
                 Where(x => x.isCityAdmin == false && x.isClubAdmin == false);
-
             return result;
         }
 
+        /// <inheritdoc />
         public ConfirmedUserDTO GetClubAdminConfirmedUser(UserDTO user)
         {
             var result = user.ConfirmedUsers.
@@ -79,6 +85,7 @@ namespace EPlast.BLL.Services.UserProfiles
             return result;
         }
 
+        /// <inheritdoc />
         public ConfirmedUserDTO GetCityAdminConfirmedUser(UserDTO user)
         {
             var result = user.ConfirmedUsers.
@@ -86,6 +93,8 @@ namespace EPlast.BLL.Services.UserProfiles
 
             return result;
         }
+
+        /// <inheritdoc />
         public async Task<bool> CanApproveAsync(IEnumerable<ConfirmedUserDTO> confUsers, string userId, ClaimsPrincipal user)
         {
             var currentUser = await _userManager.GetUserAsync(user);
@@ -97,6 +106,8 @@ namespace EPlast.BLL.Services.UserProfiles
 
             return canApprove;
         }
+
+        /// <inheritdoc />
         public async Task<TimeSpan> CheckOrAddPlastunRoleAsync(string userId, DateTime registeredOn)
         {
             try
@@ -131,6 +142,8 @@ namespace EPlast.BLL.Services.UserProfiles
             _repoWrapper.UserProfile.Update(userForUpdate.UserProfile);
             await _repoWrapper.SaveAsync();
         }
+
+        /// <inheritdoc />
         public async Task UpdateAsyncForBase64(UserDTO user, string imageBase64, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
             user.ImagePath = await UploadPhotoAsyncFromBase64(user.Id, imageBase64);
@@ -147,6 +160,7 @@ namespace EPlast.BLL.Services.UserProfiles
             await _repoWrapper.SaveAsync();
         }
 
+        /// <inheritdoc />
         public async Task<string> GetImageBase64Async(string fileName)
         {
             return await _userBlobStorage.GetBlobBase64Async(fileName);
