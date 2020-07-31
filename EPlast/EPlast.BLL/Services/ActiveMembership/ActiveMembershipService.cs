@@ -35,11 +35,12 @@ namespace EPlast.BLL.Services.ActiveMembership
 
             return userDTO.RegistredOn;
         }
-        public async Task<IEnumerable<PlastDegreeDTO>> GetUserPlastDegreesAsync(string userId)
+        /// <inheritdoc />
+        public async Task<IEnumerable<UserPlastDegreeDTO>> GetUserPlastDegreesAsync(string userId)
         {
             var userPlastDegrees = await _repoWrapper.UserPlastDegrees.GetAllAsync(upd => upd.UserId == userId);
 
-            return null;
+            return _mapper.Map<IEnumerable<UserPlastDegreeDTO>>(userPlastDegrees);
         }
     }
 }

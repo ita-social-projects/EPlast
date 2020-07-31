@@ -21,5 +21,11 @@ namespace EPlast.BLL.Interfaces.ActiveMembership
         /// <param name="userId">User id</param>
         /// <returns>User date of entry</returns>
         public Task<DateTime> GetDateOfEntryAsync(string userId);
+        /// <summary>
+        /// Returns All degrees of current user
+        /// </summary>
+        /// <param name="userId">User id</param>
+        /// <returns>All degrees of current user</returns>
+        public Task<IEnumerable<UserPlastDegreeDTO>> GetUserPlastDegreesAsync(string userId);
     }
 }
