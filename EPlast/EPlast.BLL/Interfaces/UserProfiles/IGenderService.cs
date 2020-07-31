@@ -6,6 +6,10 @@ namespace EPlast.BLL.Interfaces.UserProfiles
 {
     public interface IGenderService
     {
+        /// <summary>
+        /// Get all genders
+        /// </summary>
+        /// <returns>All genders</returns>
         Task<IEnumerable<GenderDTO>> GetAllAsync();
     }
 }

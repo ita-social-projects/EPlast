@@ -41,6 +41,8 @@ namespace EPlast.BLL.Services.UserProfiles
             _env = env;
             _userManagerService = userManagerService;
         }
+
+        /// <inheritdoc />
         public async Task<UserDTO> GetUserAsync(string userId)
         {
             var user = await _repoWrapper.User.GetFirstAsync(
@@ -66,6 +68,7 @@ namespace EPlast.BLL.Services.UserProfiles
             return model;
         }
 
+        /// <inheritdoc />
         public IEnumerable<ConfirmedUserDTO> GetConfirmedUsers(UserDTO user)
         {
             var result = user.ConfirmedUsers.
@@ -73,6 +76,7 @@ namespace EPlast.BLL.Services.UserProfiles
             return result;
         }
 
+        /// <inheritdoc />
         public ConfirmedUserDTO GetClubAdminConfirmedUser(UserDTO user)
         {
             var result = user.ConfirmedUsers.
@@ -81,6 +85,7 @@ namespace EPlast.BLL.Services.UserProfiles
             return result;
         }
 
+        /// <inheritdoc />
         public ConfirmedUserDTO GetCityAdminConfirmedUser(UserDTO user)
         {
             var result = user.ConfirmedUsers.
@@ -88,18 +93,8 @@ namespace EPlast.BLL.Services.UserProfiles
 
             return result;
         }
-        public async Task<bool> CanApproveAsync(IEnumerable<ConfirmedUserDTO> confUsers, string userId, string approverId)
-        {
-            var currentUser = await this.GetUserAsync(approverId);
-            var currentUserId = currentUser.Id;
 
-            var canApprove = confUsers.Count() < 3
-                    && !confUsers.Any(x => x.Approver.UserID == currentUserId)
-                    && currentUserId != userId
-                    && await _userManagerService.IsInRoleAsync(currentUser, "Пластун");
-
-            return canApprove;
-        }
+        /// <inheritdoc />
         public async Task<bool> CanApproveAsync(IEnumerable<ConfirmedUserDTO> confUsers, string userId, ClaimsPrincipal user)
         {
             var currentUser = await _userManager.GetUserAsync(user);
@@ -111,6 +106,8 @@ namespace EPlast.BLL.Services.UserProfiles
 
             return canApprove;
         }
+
+        /// <inheritdoc />
         public async Task<TimeSpan> CheckOrAddPlastunRoleAsync(string userId, DateTime registeredOn)
         {
             try
@@ -145,6 +142,8 @@ namespace EPlast.BLL.Services.UserProfiles
             _repoWrapper.UserProfile.Update(userForUpdate.UserProfile);
             await _repoWrapper.SaveAsync();
         }
+
+        /// <inheritdoc />
         public async Task UpdateAsyncForBase64(UserDTO user, string imageBase64, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
             user.ImagePath = await UploadPhotoAsyncFromBase64(user.Id, imageBase64);
@@ -161,6 +160,7 @@ namespace EPlast.BLL.Services.UserProfiles
             await _repoWrapper.SaveAsync();
         }
 
+        /// <inheritdoc />
         public async Task<string> GetImageBase64Async(string fileName)
         {
             return await _userBlobStorage.GetBlobBase64Async(fileName);
