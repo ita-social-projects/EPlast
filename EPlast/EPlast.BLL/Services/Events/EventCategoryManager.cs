@@ -12,7 +12,6 @@ namespace EPlast.BLL.Services.Events
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IEventTypeManager _eventTypeManager;
 
-
         public EventCategoryManager(IRepositoryWrapper repoWrapper, IEventTypeManager eventTypeManager)
         {
             _repoWrapper = repoWrapper;
@@ -32,6 +31,7 @@ namespace EPlast.BLL.Services.Events
             return dto;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<EventCategoryDTO>> GetDTOByEventTypeIdAsync(int eventTypeId)
         {
             var eventType = await _eventTypeManager.GetTypeByIdAsync(eventTypeId);

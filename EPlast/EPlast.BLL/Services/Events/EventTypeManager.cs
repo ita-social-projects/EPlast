@@ -18,6 +18,7 @@ namespace EPlast.BLL.Services.Events
             _repoWrapper = repoWrapper;
         }
 
+        /// <inheritdoc />
         public async Task<int> GetTypeIdAsync(string typeName)
         {
             var type = await _repoWrapper.EventType
@@ -26,6 +27,7 @@ namespace EPlast.BLL.Services.Events
             return type.ID;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<EventTypeDTO>> GetDTOAsync()
         {
             var eventTypes = await _repoWrapper.EventType.GetAllAsync();
@@ -39,6 +41,7 @@ namespace EPlast.BLL.Services.Events
             return dto;
         }
 
+        /// <inheritdoc />
         public async Task<EventType> GetTypeByIdAsync(int id)
         {
             var eventType = await _repoWrapper.EventType
