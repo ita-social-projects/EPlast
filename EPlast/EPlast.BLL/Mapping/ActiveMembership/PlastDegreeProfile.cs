@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.ActiveMembership
     {
         public PlastDegreeProfile()
         {
-            CreateMap<PlastDergeeDTO, PlastDegree>().ReverseMap();
+            CreateMap<PlastDegreeDTO, PlastDegree>().ReverseMap();
         }
     }
 }
