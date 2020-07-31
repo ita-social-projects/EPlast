@@ -118,7 +118,7 @@ namespace EPlast.BLL.Services
                 .Where(m => !m.IsApproved)
                 .Take(6)
                 .ToList();
-            var cityDoc = city.CityDocuments.Take(4).ToList();
+            var cityDoc = city.CityDocuments.Take(6).ToList();
 
             var cityProfileDto = new CityProfileDTO
             {
@@ -141,7 +141,8 @@ namespace EPlast.BLL.Services
 
             cityProfileDto.City.CanCreate = user.IsInRole("Admin");
             cityProfileDto.City.CanEdit = await _cityAccessService.HasAccessAsync(user, cityId);
-            cityProfileDto.City.CanJoin = (await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(u => u.User.Id == userId)) == null;
+            cityProfileDto.City.CanJoin = (await _repoWrapper.CityMembers
+                .GetFirstOrDefaultAsync(u => u.User.Id == userId && u.CityId == cityId)) == null;
             cityProfileDto.City.CanApprove = await _cityAccessService.HasAccessAsync(user, cityId);
             cityProfileDto.City.CanSeeReports = await _cityAccessService.HasAccessAsync(user, cityId);
             cityProfileDto.City.CanAddReports = await _cityAccessService.HasAccessAsync(user, cityId);
