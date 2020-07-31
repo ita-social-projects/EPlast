@@ -13,6 +13,7 @@ namespace EPlast.BLL.Services.Events
             _repoWrapper = repoWrapper;
         }
 
+        /// <inheritdoc />
         public async Task<int> GetStatusIdAsync(string statusName)
         {
             var status = await _repoWrapper.EventStatus
