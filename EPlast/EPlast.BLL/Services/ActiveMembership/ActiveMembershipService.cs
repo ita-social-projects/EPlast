@@ -16,11 +16,13 @@ namespace EPlast.BLL.Services.ActiveMembership
             _mapper = mapper;
             _repoWrapper = repoWrapper;
         }
-        /*
-        public async Task<IEnumerable<PlastDergeeDTO>> GetDergee()
+
+        public async Task<IEnumerable<PlastDergeeDTO>> GetDergeesAsync()
         {
-            return null;
+            var degrees = await _repoWrapper.PlastDegrees.GetAllAsync();
+
+            return _mapper.Map<IEnumerable<PlastDergeeDTO>>(degrees);
         }
-        */
+
     }
 }
