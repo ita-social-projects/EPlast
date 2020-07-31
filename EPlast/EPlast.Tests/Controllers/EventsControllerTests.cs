@@ -68,21 +68,6 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetTypes_ThrowsException_ReturnsBadRequestResult()
-        {
-            // Arrange
-            _actionManager
-                .Setup((x) => x.GetEventTypesAsync())
-                .ThrowsAsync(new Exception());
-
-            // Act
-            var result = await _eventsController.GetTypes();
-
-            // Assert
-            Assert.IsInstanceOf<BadRequestResult>(result);
-        }
-
-        [Test]
         public async Task GetCategories_ReturnsOkObjectResult()
         {
             //Assert
@@ -121,21 +106,6 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetCategories_ThrowsException_ReturnsBadRequestResult()
-        {
-            // Arrange
-            _actionManager
-                .Setup((x) => x.GetCategoriesByTypeIdAsync(It.IsAny<int>()))
-                .ThrowsAsync(new Exception());
-
-            // Act
-            var result = await _eventsController.GetCategories(It.IsAny<int>());
-
-            // Assert
-            Assert.IsInstanceOf<BadRequestResult>(result);
-        }
-
-        [Test]
         public async Task GetEvents_ReturnsOkObjectResult()
         {
             // Arrange
@@ -149,21 +119,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull((result as ObjectResult).Value);
             Assert.IsInstanceOf<OkObjectResult>(result);
-        }
-
-        [Test]
-        public async Task GetEvents_ThrowsException_ReturnsBadRequestResult()
-        {
-            // Arrange
-            _actionManager
-                .Setup((x) => x.GetEventsAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
-                .ThrowsAsync(new Exception());
-
-            // Act
-            var result = await _eventsController.GetEvents(It.IsAny<int>(), It.IsAny<int>());
-
-            // Assert
-            Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
@@ -205,21 +160,6 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetEventDetail_ThrowsException_ReturnsBadRequestResult()
-        {
-            // Arrange
-            _actionManager
-                .Setup((x) => x.GetEventInfoAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
-                .ThrowsAsync(new Exception());
-
-            // Act
-            var result = await _eventsController.GetEventDetail(It.IsAny<int>());
-
-            // Assert
-            Assert.IsInstanceOf<BadRequestResult>(result);
-        }
-
-        [Test]
         public async Task GetEventDetail_EventDTO_ReturnsNotNullEventDTO()
         {
             // Arrange
@@ -253,21 +193,6 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             Assert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public async Task Delete_ThrowsException_ReturnsBadRequestResult()
-        {
-            // Arrange
-            _actionManager
-                .Setup((x) => x.DeleteEventAsync(It.IsAny<int>()))
-                .ThrowsAsync(new Exception());
-
-            // Act
-            var result = await _eventsController.Delete(It.IsAny<int>());
-
-            // Assert
-            Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
@@ -328,21 +253,6 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task DeletePicture_ThrowsException_ReturnsBadRequestResult()
-        {
-            // Arrange
-            _actionManager
-                .Setup((x) => x.DeletePictureAsync(It.IsAny<int>()))
-                .ThrowsAsync(new Exception());
-
-            // Act
-            var result = await _eventsController.DeletePicture(It.IsAny<int>());
-
-            // Assert
-            Assert.IsInstanceOf<BadRequestResult>(result);
-        }
-
-        [Test]
         public async Task SubscribeOnEvent_Status200OK_ReturnsStatus200OK()
         {
             // Arrange
@@ -359,21 +269,6 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             Assert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public async Task SubscribeOnEvent_ThrowsException_ReturnsBadRequestResult()
-        {
-            // Arrange
-            _actionManager
-                .Setup((x) => x.SubscribeOnEventAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
-                .ThrowsAsync(new Exception());
-
-            // Act
-            var result = await _eventsController.SubscribeOnEvent(It.IsAny<int>());
-
-            // Assert
-            Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
@@ -415,21 +310,6 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task UnSubscribeOnEvent_ThrowsException_ReturnsBadRequestResult()
-        {
-            // Arrange
-            _actionManager
-                .Setup((x) => x.UnSubscribeOnEventAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
-                .ThrowsAsync(new Exception());
-
-            // Act
-            var result = await _eventsController.UnSubscribeOnEvent(It.IsAny<int>());
-
-            // Assert
-            Assert.IsInstanceOf<BadRequestResult>(result);
-        }
-
-        [Test]
         public async Task UnSubscribeOnEvent_Status400BadRequest_ReturnsStatus400BadRequest()
         {
             // Arrange
@@ -465,21 +345,6 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             Assert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public async Task ApproveParticipant_ThrowsException_ReturnsBadRequestResult()
-        {
-            // Arrange
-            _actionManager
-                .Setup((x) => x.ApproveParticipantAsync(It.IsAny<int>()))
-                .ThrowsAsync(new Exception());
-
-            // Act
-            var result = await _eventsController.ApproveParticipant(It.IsAny<int>());
-
-            // Assert
-            Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
@@ -540,21 +405,6 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task UnderReviewParticipant_ThrowsException_ReturnsBadRequestResult()
-        {
-            // Arrange
-            _actionManager
-                .Setup((x) => x.UnderReviewParticipantAsync(It.IsAny<int>()))
-                .ThrowsAsync(new Exception());
-
-            // Act
-            var result = await _eventsController.UnderReviewParticipant(It.IsAny<int>());
-
-            // Assert
-            Assert.IsInstanceOf<BadRequestResult>(result);
-        }
-
-        [Test]
         public async Task RejectParticipant_ReturnsStatus200OK_ReturnsStatus200OK()
         {
             // Arrange
@@ -590,21 +440,6 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             Assert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public async Task RejectParticipant_ThrowsException_ReturnsBadRequestResult()
-        {
-            // Arrange
-            _actionManager
-                .Setup((x) => x.RejectParticipantAsync(It.IsAny<int>()))
-                .ThrowsAsync(new Exception());
-
-            // Act
-            var result = await _eventsController.RejectParticipant(It.IsAny<int>());
-
-            // Assert
-            Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         public IEnumerable<EventTypeDTO> CreateListOfFakeEventTypes()
