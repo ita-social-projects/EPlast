@@ -6,6 +6,10 @@ namespace EPlast.BLL.Interfaces.UserProfiles
 {
     public interface IReligionService
     {
+        /// <summary>
+        /// Get all religions
+        /// </summary>
+        /// <returns>All religions</returns>
         Task<IEnumerable<ReligionDTO>> GetAllAsync();
     }
 }
