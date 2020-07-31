@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using AutoMapper.Internal;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.Logging;
@@ -10,7 +9,6 @@ using EPlast.WebApi.Models.User;
 using EPlast.WebApi.Models.UserModels;
 using EPlast.WebApi.Models.UserModels.UserProfileFields;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -92,6 +90,7 @@ namespace EPlast.WebApi.Controllers
                 return Ok(model);
             }
 
+            _loggerService.LogError($"User not found. UserId:{userId}");
             return NotFound();
         }
 
@@ -103,7 +102,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         [HttpGet("getImage/{imageName}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<string> GetImage(string imageName)
+        public async Task<IActionResult> GetImage(string imageName)
         {
             return Ok(await _userService.GetImageBase64Async(imageName));
         }
@@ -126,7 +125,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
             var user = await _userService.GetUserAsync(userId);
-            if(user!=null)
+            if (user != null)
             {
                 var genders = _mapper.Map<IEnumerable<GenderDTO>, IEnumerable<GenderViewModel>>(await _genderService.GetAllAsync());
                 var placeOfStudyUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(await _educationService.GetAllGroupByPlaceAsync());
@@ -149,9 +148,8 @@ namespace EPlast.WebApi.Controllers
 
                 return Ok(model);
             }
-
+            _loggerService.LogError($"User not found. UserId:{userId}");
             return NotFound();
-            
         }
 
         /// <summary>
@@ -169,6 +167,64 @@ namespace EPlast.WebApi.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Get approvers of selected user
+        /// </summary>
+        /// <param name="userId">The id of the user which can be approved</param>
+        /// <param name="approverId">The id of the user which can approve</param>
+        /// <returns>A specify data of user approvers for approve user or just review</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">User not found</response>
+        [HttpGet("approvers/{userId}/{approverId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> Approvers(string userId, string approverId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                _loggerService.LogError("User id is null");
+                return NotFound();
+            }
+            var user = await _userService.GetUserAsync(userId);
+            var confirmedUsers = _userService.GetConfirmedUsers(user);
+            var canApprove = await _userService.CanApproveAsync(confirmedUsers, userId, User);
+            var time = await _userService.CheckOrAddPlastunRoleAsync(user.Id, user.RegistredOn);
+            var clubApprover = _userService.GetClubAdminConfirmedUser(user);
+            var cityApprover = _userService.GetCityAdminConfirmedUser(user);
+
+            if (user != null)
+            {
+                var model = new UserApproversViewModel
+                {
+                    User = _mapper.Map<UserDTO, UserInfoViewModel>(user),
+                    canApprove = canApprove,
+                    TimeToJoinPlast = ((int)time.TotalDays),
+                    ConfirmedUsers = _mapper.Map<IEnumerable<ConfirmedUserDTO>, IEnumerable<ConfirmedUserViewModel>>(confirmedUsers),
+                    ClubApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(clubApprover),
+                    CityApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(cityApprover),
+                    IsUserHeadOfCity = await _userManagerService.IsInRoleAsync(User, "Голова Станиці"),
+                    IsUserHeadOfClub = await _userManagerService.IsInRoleAsync(User, "Голова Куреня"),
+                    IsUserHeadOfRegion = await _userManagerService.IsInRoleAsync(User, "Голова Округу"),
+                    IsUserPlastun = await _userManagerService.IsInRoleAsync(User, "Пластун"),
+                    CurrentUserId = approverId
+                };
+                foreach (var item in model.ConfirmedUsers)
+                {
+                    item.Approver.User.ImagePath = await _userService.GetImageBase64Async(item.Approver.User.ImagePath);
+                }
+                if (model.ClubApprover != null)
+                {
+                    model.ClubApprover.Approver.User.ImagePath = await _userService.GetImageBase64Async(model?.ClubApprover?.Approver?.User.ImagePath);
+                }
+                if (model.CityApprover != null)
+                {
+                    model.CityApprover.Approver.User.ImagePath = await _userService.GetImageBase64Async(model?.CityApprover?.Approver?.User.ImagePath);
+                }
+                return Ok(model);
+            }
+
+            _loggerService.LogError($"User not found. UserId:{userId}");
+            return NotFound();
+        }
         /// <summary>
         /// Approving user
         /// </summary>
@@ -197,14 +253,20 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="confirmedId">Confirmation ID to be deleted</param>
         /// <response code="200">Successful operation</response>
+        /// <response code="404">Confirmed id is 0</response>
         [HttpDelete("deleteApprove/{confirmedId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> ApproverDelete(int confirmedId)
         {
-            await _confirmedUserService.DeleteAsync(confirmedId);
-            _loggerService.LogInformation("Approve succesfuly deleted");
+            if (confirmedId != 0)
+            {
+                await _confirmedUserService.DeleteAsync(confirmedId);
+                _loggerService.LogInformation("Approve succesfuly deleted");
 
-            return Ok();
+                return Ok();
+            }
+            _loggerService.LogError("Confirmed id is 0");
+            return NotFound();
         }
     }
 }
