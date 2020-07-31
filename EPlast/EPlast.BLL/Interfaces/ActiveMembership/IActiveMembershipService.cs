@@ -1,4 +1,4 @@
-﻿using EPlast.BLL.DTO.UserProfiles;
+﻿using EPlast.BLL.DTO.ActiveMembership;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
