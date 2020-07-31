@@ -4,7 +4,7 @@ using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Mapping.ActiveMembership
 {
-    class PlastDegreeProfile : Profile
+    public class PlastDegreeProfile : Profile
     {
         public PlastDegreeProfile()
         {
