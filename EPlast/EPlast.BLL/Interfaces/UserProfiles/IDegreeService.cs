@@ -6,6 +6,10 @@ namespace EPlast.BLL.Interfaces.UserProfiles
 {
     public interface IDegreeService
     {
-       Task<IEnumerable<DegreeDTO>> GetAllAsync();
+        /// <summary>
+        /// Get all education degrees
+        /// </summary>
+        /// <returns>All education degrees</returns>
+        Task<IEnumerable<DegreeDTO>> GetAllAsync();
     }
 }
