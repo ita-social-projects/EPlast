@@ -26,6 +26,8 @@ namespace EPlast.BLL.Services
             _mapper = mapper;
             _roleManager = roleManager;
         }
+
+        /// <inheritdoc />
         public async Task<IEnumerable<IdentityRole>> GetRolesExceptAdminAsync()
         {
             var admin = _roleManager.Roles.Where(i => i.Name == "Admin");
@@ -36,6 +38,7 @@ namespace EPlast.BLL.Services
             return allRoles;
         }
 
+        /// <inheritdoc />
         public async Task EditAsync(string userId, List<string> roles)
         {
             User user = await _userManager.FindByIdAsync(userId);
@@ -53,6 +56,7 @@ namespace EPlast.BLL.Services
             }
         }
 
+        /// <inheritdoc />
         public async Task DeleteUserAsync(string userId)
         {
             User user = await _repoWrapper.User.GetFirstOrDefaultAsync(x => x.Id == userId);
@@ -64,6 +68,7 @@ namespace EPlast.BLL.Services
             }
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<UserTableDTO>> UsersTableAsync()
         {
             var users = await _repoWrapper.User.GetAllAsync(null,

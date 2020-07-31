@@ -19,6 +19,7 @@ namespace EPlast.BLL.Services.UserProfiles
             _mapper = mapper;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<ReligionDTO>> GetAllAsync()
         {
             return _mapper.Map<IEnumerable<Religion>, IEnumerable<ReligionDTO>>(await _repoWrapper.Religion.GetAllAsync());
