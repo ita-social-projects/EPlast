@@ -10,10 +10,10 @@ namespace EPlast.BLL.Interfaces.ActiveMembership
     /// </summary>
     public interface IActiveMembershipService
     {
-       /// <summary>
-       /// Returns all plast degrees
-       /// </summary>
-       /// <returns>All plast degrees</returns>
+        /// <summary>
+        /// Returns all plast degrees
+        /// </summary>
+        /// <returns>All plast degrees</returns>
         public Task<IEnumerable<PlastDegreeDTO>> GetDergeesAsync();
         /// <summary>
         /// Returns user date of entry
@@ -27,5 +27,11 @@ namespace EPlast.BLL.Interfaces.ActiveMembership
         /// <param name="userId">User id</param>
         /// <returns>All degrees of current user</returns>
         public Task<IEnumerable<UserPlastDegreeDTO>> GetUserPlastDegreesAsync(string userId);
+        /// <summary>
+        /// Returns All access levels of current user
+        /// </summary>
+        /// <param name="userId">User id</param>
+        /// <returns>All access levels of current user</returns>
+        public Task<IEnumerable<string>> GetUserAccessLevelsAsync(string userId);
     }
 }

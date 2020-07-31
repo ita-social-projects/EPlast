@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.ActiveMembership;
+using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.ActiveMembership
@@ -21,6 +23,7 @@ namespace EPlast.BLL.Services.ActiveMembership
             _repoWrapper = repoWrapper;
             _userManagerService = userManagerService;
         }
+
         /// <inheritdoc />
         public async Task<IEnumerable<PlastDegreeDTO>> GetDergeesAsync()
         {
@@ -28,6 +31,7 @@ namespace EPlast.BLL.Services.ActiveMembership
 
             return _mapper.Map<IEnumerable<PlastDegreeDTO>>(degrees);
         }
+
         /// <inheritdoc />
         public async Task<DateTime> GetDateOfEntryAsync(string userId)
         {
@@ -35,12 +39,45 @@ namespace EPlast.BLL.Services.ActiveMembership
 
             return userDTO.RegistredOn;
         }
+
         /// <inheritdoc />
         public async Task<IEnumerable<UserPlastDegreeDTO>> GetUserPlastDegreesAsync(string userId)
         {
             var userPlastDegrees = await _repoWrapper.UserPlastDegrees.GetAllAsync(upd => upd.UserId == userId);
 
             return _mapper.Map<IEnumerable<UserPlastDegreeDTO>>(userPlastDegrees);
+        }
+
+        public async Task<IEnumerable<string>> GetUserAccessLevelsAsync(string userId)
+        {
+            List<string> accessLevels = new List<string>();
+            var user = await _userManagerService.FindByIdAsync(userId);
+            List<string> userRoles = (await _userManagerService.GetRolesAsync(user)).ToList();
+            if(userRoles.Count == 1)
+            {
+                if(userRoles[0] == "Пластун")
+                {
+                   accessLevels.Add(AccessLevelTypeDTO.Member.GetDescription());
+                }
+                else if(userRoles[0] == "Прихильник")
+                {
+                    accessLevels.Add(AccessLevelTypeDTO.Supporter.GetDescription());
+                }
+            }
+            else if (userRoles.Count > 1)
+            {
+                accessLevels.AddRange(new List<string> 
+                {
+                    AccessLevelTypeDTO.Member.GetDescription(),
+                    AccessLevelTypeDTO.LeadershipMember.GetDescription()
+                });
+            }
+            else
+            {
+                accessLevels.Add(AccessLevelTypeDTO.FormerMember.GetDescription());
+            }
+
+            return accessLevels;
         }
     }
 }
