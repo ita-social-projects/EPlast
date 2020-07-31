@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.ActiveMembership
 {
+    /// <inheritdoc />
     public class ActiveMembershipService : IActiveMembershipService
     {
         private readonly IMapper _mapper;
@@ -16,7 +17,7 @@ namespace EPlast.BLL.Services.ActiveMembership
             _mapper = mapper;
             _repoWrapper = repoWrapper;
         }
-
+        /// <inheritdoc />
         public async Task<IEnumerable<PlastDergeeDTO>> GetDergeesAsync()
         {
             var degrees = await _repoWrapper.PlastDegrees.GetAllAsync();
