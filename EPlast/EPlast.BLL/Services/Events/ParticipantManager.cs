@@ -22,6 +22,7 @@ namespace EPlast.BLL.Services.Events
             _participantStatusManager = participantStatusManager;
         }
 
+        /// <inheritdoc />
         public async Task<int> SubscribeOnEventAsync(Event targetEvent, string userId)
         {
             try
@@ -42,6 +43,7 @@ namespace EPlast.BLL.Services.Events
             }
         }
 
+        /// <inheritdoc />
         public async Task<int> UnSubscribeOnEventAsync(Event targetEvent, string userId)
         {
             try
@@ -65,6 +67,7 @@ namespace EPlast.BLL.Services.Events
             }
         }
 
+        /// <inheritdoc />
         public async Task<int> ChangeStatusToApprovedAsync(int id)
         {
             try
@@ -84,6 +87,7 @@ namespace EPlast.BLL.Services.Events
             }
         }
 
+        /// <inheritdoc />
         public async Task<int> ChangeStatusToUnderReviewAsync(int id)
         {
             try
@@ -103,6 +107,7 @@ namespace EPlast.BLL.Services.Events
             }
         }
 
+        /// <inheritdoc />
         public async Task<int> ChangeStatusToRejectedAsync(int id)
         {
             try
@@ -122,6 +127,7 @@ namespace EPlast.BLL.Services.Events
             }
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<Participant>> GetParticipantsByUserIdAsync(string userId)
         {
 
