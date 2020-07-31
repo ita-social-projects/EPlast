@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Mapping.ActiveMembership

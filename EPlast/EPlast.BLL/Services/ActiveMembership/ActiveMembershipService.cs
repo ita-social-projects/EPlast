@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Repositories;
@@ -31,9 +31,15 @@ namespace EPlast.BLL.Services.ActiveMembership
         /// <inheritdoc />
         public async Task<DateTime> GetDateOfEntryAsync(string userId)
         {
-            var result = await _userManagerService.FindByIdAsync(userId);
+            var userDTO = await _userManagerService.FindByIdAsync(userId);
 
-            return result.RegistredOn;
+            return userDTO.RegistredOn;
+        }
+        public async Task<IEnumerable<PlastDegreeDTO>> GetUserPlastDegreesAsync(string userId)
+        {
+            var userPlastDegrees = await _repoWrapper.UserPlastDegrees.GetAllAsync(upd => upd.UserId == userId);
+
+            return null;
         }
     }
 }

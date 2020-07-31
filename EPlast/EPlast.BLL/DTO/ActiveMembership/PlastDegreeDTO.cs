@@ -1,4 +1,6 @@
-﻿namespace EPlast.BLL.DTO.UserProfiles
+﻿
+
+namespace EPlast.BLL.DTO.ActiveMembership
 {
     public class PlastDegreeDTO
     {
