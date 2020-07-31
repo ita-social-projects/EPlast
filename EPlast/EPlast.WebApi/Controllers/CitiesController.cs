@@ -221,7 +221,7 @@ namespace EPlast.WebApi.Controllers
             cityDTO.ID = await _cityService.CreateAsync(cityDTO);
             _logger.LogInformation($"City {{{cityDTO.Name}}} was created.");
 
-            return Ok(city.ID);
+            return Ok(cityDTO.ID);
         }
 
         /// <summary>
