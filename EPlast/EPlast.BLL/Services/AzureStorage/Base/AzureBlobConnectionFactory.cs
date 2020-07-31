@@ -17,6 +17,8 @@ namespace EPlast.BLL.Services.AzureStorage.Base
         {
             _configuration = configuration;
         }
+
+        /// <inheritdoc />
         public async Task<CloudBlobContainer> GetBlobContainer(string containerNameKey)
         {
             var containerName = _configuration.GetValue<string>(containerNameKey);
