@@ -46,6 +46,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             var result = await _activeMembershipService.GetDergeesAsync();
 
             // Assert
+            Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<PlastDegreeDTO>>(result);
         }
         [Test]
@@ -60,8 +61,27 @@ namespace EPlast.Tests.Services.ActiveMembership
             var result = await _activeMembershipService.GetDateOfEntryAsync(userId);
 
             // Assert
+            Assert.NotNull(result);
             Assert.IsInstanceOf<DateTime>(result);
             Assert.AreEqual(userDateOfEntry, result);
+
+        }
+        [Test]
+        public async Task GetUserPlastDegreesAsync_ReturnsAllUserDegrees()
+        {
+            // Arrange
+            _repoWrapper.Setup(rw => rw.UserPlastDegrees.GetAllAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
+                .ReturnsAsync(GetTestUserPlastDegrees());
+            _mapper.Setup(m => m.Map<IEnumerable<UserPlastDegreeDTO>>(It.IsAny<IEnumerable<UserPlastDegree>>()))
+                .Returns(GetTestUserPlastDegreesDTO());
+
+            // Act
+            var result = await _activeMembershipService.GetUserPlastDegreesAsync(userId);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<UserPlastDegreeDTO>>(result);
 
         }
         private string userId => Guid.NewGuid().ToString();
@@ -71,6 +91,51 @@ namespace EPlast.Tests.Services.ActiveMembership
             Id = userId,
             RegistredOn = userDateOfEntry
         };
+        private IEnumerable<UserPlastDegree> GetTestUserPlastDegrees()
+        {
+            return new List<UserPlastDegree>
+            {
+               new  UserPlastDegree
+               {
+                   UserId = userId,
+                   PlastDegreeId = GetTestPlastDegrees().ToList()[0].Id,
+                   PlastDegree = GetTestPlastDegrees().ToList()[0]
+               },
+               new  UserPlastDegree
+               {
+                   UserId = userId,
+                   PlastDegreeId = GetTestPlastDegrees().ToList()[1].Id,
+                   PlastDegree = GetTestPlastDegrees().ToList()[1]
+               },
+               new  UserPlastDegree
+               {
+                   UserId = userId,
+                   PlastDegreeId = GetTestPlastDegrees().ToList()[2].Id,
+                   PlastDegree = GetTestPlastDegrees().ToList()[2]
+               }
+            }.AsEnumerable();
+        }
+        private IEnumerable<UserPlastDegreeDTO> GetTestUserPlastDegreesDTO()
+        {
+            return new List<UserPlastDegreeDTO>
+            {
+               new  UserPlastDegreeDTO
+               {
+                   PlastDegreeId = GetTestPlastDegreesDTO().ToList()[0].Id,
+                   PlastDegree = GetTestPlastDegreesDTO().ToList()[0]
+               },
+               new  UserPlastDegreeDTO
+               {
+                   PlastDegreeId = GetTestPlastDegreesDTO().ToList()[1].Id,
+                   PlastDegree = GetTestPlastDegreesDTO().ToList()[1]
+               },
+               new  UserPlastDegreeDTO
+               {
+                   PlastDegreeId = GetTestPlastDegreesDTO().ToList()[2].Id,
+                   PlastDegree = GetTestPlastDegreesDTO().ToList()[2]
+               }
+            }.AsEnumerable();
+        }
         private IEnumerable<PlastDegree> GetTestPlastDegrees()
         {
             return new List<PlastDegree>
