@@ -41,7 +41,7 @@ namespace EPlast.Controllers
                 var organizations = _mapper.Map<IEnumerable<Organization>>(await _decisionService.GetOrganizationListAsync());
                 decisionViewModel = new DecisionViewModel
                 {
-                    DecisionWrapper = _mapper.Map<DecisionWrapper>(await _decisionService.CreateDecisionAsync()),
+                    DecisionWrapper = _mapper.Map<DecisionWrapper>(_decisionService.CreateDecision()),
                     OrganizationListItems = from item in organizations
                                             select new SelectListItem
                                             {

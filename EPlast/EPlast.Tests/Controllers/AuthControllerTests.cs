@@ -16,18 +16,18 @@ using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
 {
-    public class AccountControllerTestsAuth
+    public class AuthControllerTestsAuth
     {
-        public (Mock<IAccountService>, Mock<IUserService>, Mock<IMapper>, Mock<IStringLocalizer<AuthenticationErrors>>, AccountController) CreateAccountController()
+        public (Mock<IAuthService>, Mock<IUserService>, Mock<IMapper>, Mock<IStringLocalizer<AuthenticationErrors>>, AuthController) CreateAuthController()
         {
-            Mock<IAccountService> mockAccountService = new Mock<IAccountService>();
+            Mock<IAuthService> mockAuthService = new Mock<IAuthService>();
             Mock<IUserService> mockUserService = new Mock<IUserService>();
             Mock<IMapper> mockMapper = new Mock<IMapper>();
             Mock<IStringLocalizer<AuthenticationErrors>> mockStringLocalizer = new Mock<IStringLocalizer<AuthenticationErrors>>();
 
-            AccountController accountController = new AccountController(mockUserService.Object, null, null,
-                null, null, null, null, null, null, mockMapper.Object, null, mockAccountService.Object, mockStringLocalizer.Object, null, null);
-            return (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController);
+            AuthController AuthController = new AuthController(mockAuthService.Object, mockMapper.Object, null, 
+                mockStringLocalizer.Object, null, null);
+            return (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController);
         }
 
         //Login
@@ -35,9 +35,9 @@ namespace EPlast.Tests.Controllers
         public async Task Test_LoginPost_UserNull()
         {
             //Arrange
-            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync((UserDTO)null);
 
@@ -46,7 +46,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(GetLoginNotRegistered());
 
             //Act
-            var result = await accountController.Login(GetTestLoginDto()) as BadRequestObjectResult;
+            var result = await AuthController.Login(GetTestLoginDto()) as BadRequestObjectResult;
 
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
@@ -58,13 +58,13 @@ namespace EPlast.Tests.Controllers
         public async Task Test_LoginPost_EmailNotConfirmed()
         {
             //Arrange
-            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
                 .ReturnsAsync(false);
 
@@ -73,7 +73,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(GetLoginNotConfirmed());
 
             //Act
-            var result = await accountController.Login(GetTestLoginDto()) as BadRequestObjectResult;
+            var result = await AuthController.Login(GetTestLoginDto()) as BadRequestObjectResult;
 
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
@@ -85,17 +85,17 @@ namespace EPlast.Tests.Controllers
         public async Task Test_LoginPost_AccountLocked()
         {
             //Arrange
-            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
                 .ReturnsAsync(true);
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.SignInAsync(It.IsAny<LoginDto>()))
                 .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.LockedOut);
 
@@ -104,7 +104,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(GetAccountLocked());
 
             //Act
-            var result = await accountController.Login(GetTestLoginDto()) as BadRequestObjectResult;
+            var result = await AuthController.Login(GetTestLoginDto()) as BadRequestObjectResult;
 
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
@@ -116,17 +116,17 @@ namespace EPlast.Tests.Controllers
         public async Task Test_LoginPost_LoginInCorrectPassword()
         {
             //Arrange
-            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
                 .ReturnsAsync(true);
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.SignInAsync(It.IsAny<LoginDto>()))
                 .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Failed);
 
@@ -135,7 +135,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(GetLoginInCorrectPassword());
 
             //Act
-            var result = await accountController.Login(GetTestLoginDto()) as BadRequestObjectResult;
+            var result = await AuthController.Login(GetTestLoginDto()) as BadRequestObjectResult;
 
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
@@ -147,15 +147,15 @@ namespace EPlast.Tests.Controllers
         public async Task Test_LoginPost_ModelIsNotValid()
         {
             //Arrange
-            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
-            accountController.ModelState.AddModelError("NameError", "Required");
+            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
+            AuthController.ModelState.AddModelError("NameError", "Required");
 
             mockStringLocalizer
                 .Setup(s => s["ModelIsNotValid"])
                 .Returns(GetModelIsNotValid());
 
             //Act
-            var result = await accountController.Login(GetTestLoginDto()) as ObjectResult;
+            var result = await AuthController.Login(GetTestLoginDto()) as ObjectResult;
 
             //Assert
             Assert.IsInstanceOf<ObjectResult>(result);
@@ -168,15 +168,15 @@ namespace EPlast.Tests.Controllers
         public async Task Test_RegisterPost_ModelIsNotValid()
         {
             //Arrange
-            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
-            accountController.ModelState.AddModelError("NameError", "Required");
+            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
+            AuthController.ModelState.AddModelError("NameError", "Required");
 
             mockStringLocalizer
                 .Setup(s => s["Register-InCorrectData"])
                 .Returns(GetRegisterInCorrectData());
 
             //Act
-            var result = await accountController.Register(GetTestRegisterDto()) as BadRequestObjectResult;
+            var result = await AuthController.Register(GetTestRegisterDto()) as BadRequestObjectResult;
 
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
@@ -188,9 +188,9 @@ namespace EPlast.Tests.Controllers
         public async Task Test_RegisterPost_RegisterRegisteredUser()
         {
             //Arrange
-            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
 
@@ -199,7 +199,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(GetRegisterRegisteredUser());
 
             //Act
-            var result = await accountController.Register(GetTestRegisterDto()) as BadRequestObjectResult;
+            var result = await AuthController.Register(GetTestRegisterDto()) as BadRequestObjectResult;
 
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
@@ -211,13 +211,13 @@ namespace EPlast.Tests.Controllers
         public async Task Test_RegisterPost_RegisterInCorrectPassword()
         {
             //Arrange
-            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync((UserDTO)null);
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.CreateUserAsync(It.IsAny<RegisterDto>()))
                 .ReturnsAsync(IdentityResult.Failed(null));
 
@@ -226,7 +226,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(GetRegisterInCorrectPassword());
 
             //Act
-            var result = await accountController.Register(GetTestRegisterDto()) as BadRequestObjectResult;
+            var result = await AuthController.Register(GetTestRegisterDto()) as BadRequestObjectResult;
 
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
@@ -238,17 +238,17 @@ namespace EPlast.Tests.Controllers
         public async Task Test_RegisterPost_ConfirmRegistration()
         {
             //Arrange
-            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync((UserDTO)null);
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.CreateUserAsync(It.IsAny<RegisterDto>()))
                 .ReturnsAsync(IdentityResult.Success);
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.AddRoleAndTokenAsync(It.IsAny<RegisterDto>()))
                 .ReturnsAsync(GetTestCodeForResetPasswordAndConfirmEmail());
 
@@ -262,10 +262,10 @@ namespace EPlast.Tests.Controllers
                 .Returns("callbackUrl")
                 .Verifiable();
 
-            accountController.Url = mockUrlHelper.Object;
-            accountController.ControllerContext.HttpContext = new DefaultHttpContext();
+            AuthController.Url = mockUrlHelper.Object;
+            AuthController.ControllerContext.HttpContext = new DefaultHttpContext();
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.SendEmailRegistr(It.IsAny<string>(), It.IsAny<RegisterDto>()))
                 .Verifiable();
 
@@ -274,7 +274,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(GetConfirmRegistration());
 
             //Act
-            var result = await accountController.Register(GetTestRegisterDto()) as ObjectResult;
+            var result = await AuthController.Register(GetTestRegisterDto()) as ObjectResult;
 
             //Assert
             Assert.IsInstanceOf<ObjectResult>(result);
@@ -287,15 +287,15 @@ namespace EPlast.Tests.Controllers
         public async Task Test_ForgotPost_ModelIsNotValid()
         {
             //Arrange
-            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
-            accountController.ModelState.AddModelError("NameError", "Required");
+            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
+            AuthController.ModelState.AddModelError("NameError", "Required");
 
             mockStringLocalizer
                 .Setup(s => s["ModelIsNotValid"])
                 .Returns(GetModelIsNotValid());
 
             //Act
-            var result = await accountController.ForgotPassword(GetTestForgotPasswordDto()) as BadRequestObjectResult;
+            var result = await AuthController.ForgotPassword(GetTestForgotPasswordDto()) as BadRequestObjectResult;
 
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
@@ -307,13 +307,13 @@ namespace EPlast.Tests.Controllers
         public async Task Test_ForgotPost_ForgotNotRegisteredUser()
         {
             //Arrange
-            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync((UserDTO)null);
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
                 .ReturnsAsync(GetTestUserDtoWithAllFields().EmailConfirmed);
 
@@ -322,7 +322,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(GetForgotNotRegisteredUser());
 
             //Act
-            var result = await accountController.ForgotPassword(GetTestForgotPasswordDto()) as BadRequestObjectResult;
+            var result = await AuthController.ForgotPassword(GetTestForgotPasswordDto()) as BadRequestObjectResult;
 
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
@@ -334,17 +334,17 @@ namespace EPlast.Tests.Controllers
         public async Task Test_ForgotPost_ForgotPasswordConfirmation()
         {
             //Arrange
-            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
                 .ReturnsAsync(GetTestUserWithEmailConfirmed().EmailConfirmed);
 
-            mockAccountService
+            mockAuthService
                 .Setup(i => i.GenerateResetTokenAsync(It.IsAny<UserDTO>()))
                 .ReturnsAsync(GetTestCodeForResetPasswordAndConfirmEmail());
 
@@ -358,15 +358,15 @@ namespace EPlast.Tests.Controllers
                 .Returns("callbackUrl")
                 .Verifiable();
 
-            accountController.Url = mockUrlHelper.Object;
-            accountController.ControllerContext.HttpContext = new DefaultHttpContext();
+            AuthController.Url = mockUrlHelper.Object;
+            AuthController.ControllerContext.HttpContext = new DefaultHttpContext();
 
             mockStringLocalizer
                 .Setup(s => s["ForgotPasswordConfirmation"])
                 .Returns(GetForgotPasswordConfirmation());
 
             //Act
-            var result = await accountController.ForgotPassword(GetTestForgotPasswordDto()) as ObjectResult;
+            var result = await AuthController.ForgotPassword(GetTestForgotPasswordDto()) as ObjectResult;
 
             //Assert
             Assert.IsInstanceOf<ObjectResult>(result);
@@ -379,9 +379,9 @@ namespace EPlast.Tests.Controllers
         public async Task Test_ResetPost_ResetNotRegisteredUser()
         {
             //Arrange
-            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync((UserDTO)null);
 
@@ -390,7 +390,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(GetResetNotRegisteredUser());
 
             //Act
-            var result = await accountController.ResetPassword(GetTestResetPasswordDto()) as BadRequestObjectResult;
+            var result = await AuthController.ResetPassword(GetTestResetPasswordDto()) as BadRequestObjectResult;
 
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
@@ -402,17 +402,17 @@ namespace EPlast.Tests.Controllers
         public async Task Test_ResetPost_ResetPasswordConfirmation()
         {
             //Arrange
-            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
 
-            mockAccountService
+            mockAuthService
                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                .ReturnsAsync(GetTestUserDtoWithAllFields());
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.ResetPasswordAsync(It.IsAny<string>(), It.IsAny<ResetPasswordDto>()))
                 .Returns(Task.FromResult(IdentityResult.Success));
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.CheckingForLocking(It.IsAny<UserDTO>()))
                 .Verifiable();
 
@@ -421,7 +421,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(GetResetPasswordConfirmation());
 
             //Act
-            var result = await accountController.ResetPassword(GetTestResetPasswordDto()) as ObjectResult;
+            var result = await AuthController.ResetPassword(GetTestResetPasswordDto()) as ObjectResult;
 
             //Assert
             Assert.IsInstanceOf<ObjectResult>(result);
@@ -433,13 +433,13 @@ namespace EPlast.Tests.Controllers
         public async Task Test_ResetPost_ResetPasswordProblems()
         {
             //Arrange
-            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
+            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
 
-            mockAccountService
+            mockAuthService
                 .Setup(s => s.ResetPasswordAsync(It.IsAny<string>(), It.IsAny<ResetPasswordDto>()))
                 .Returns(Task.FromResult(IdentityResult.Failed(null)));
 
@@ -448,7 +448,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(GetResetPasswordProblems());
 
             //Act
-            var result = await accountController.ResetPassword(GetTestResetPasswordDto()) as BadRequestObjectResult;
+            var result = await AuthController.ResetPassword(GetTestResetPasswordDto()) as BadRequestObjectResult;
 
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
@@ -460,15 +460,15 @@ namespace EPlast.Tests.Controllers
         public async Task Test_ResetPost_ModelIsNotValid()
         {
             //Arrange
-            var (mockAccountService, mockUserService, mockMapper, mockStringLocalizer, accountController) = CreateAccountController();
-            accountController.ModelState.AddModelError("NameError", "Required");
+            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
+            AuthController.ModelState.AddModelError("NameError", "Required");
 
             mockStringLocalizer
                 .Setup(s => s["ModelIsNotValid"])
                 .Returns(GetModelIsNotValid());
 
             //Act
-            var result = await accountController.ResetPassword(GetTestResetPasswordDto()) as BadRequestObjectResult;
+            var result = await AuthController.ResetPassword(GetTestResetPasswordDto()) as BadRequestObjectResult;
 
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(result);

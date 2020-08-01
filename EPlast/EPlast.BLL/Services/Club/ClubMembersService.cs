@@ -1,11 +1,11 @@
-using System;
-using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using System;
+using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Club
 {
@@ -25,11 +25,12 @@ namespace EPlast.BLL.Services.Club
             _userManagerService = userManagerService;
         }
 
+        /// <inheritdoc />
         public async Task<ClubMembersDTO> ToggleIsApprovedInClubMembersAsync(int memberId, int clubId)
         {
-            var person = await _repoWrapper.ClubMembers
-                             .GetFirstOrDefaultAsync(u => u.ID == memberId && u.ClubId == clubId) ??
-                         throw new ArgumentNullException($"User with id={memberId} not found");
+            var person =
+                await _repoWrapper.ClubMembers.GetFirstOrDefaultAsync(u => u.ID == memberId && u.ClubId == clubId) ??
+                throw new ArgumentNullException($"User with id={memberId} not found");
             person.IsApproved = !person.IsApproved;
             _repoWrapper.ClubMembers.Update(person);
             await _repoWrapper.SaveAsync();
@@ -37,14 +38,14 @@ namespace EPlast.BLL.Services.Club
             return _mapper.Map<ClubMembers, ClubMembersDTO>(person);
         }
 
+        /// <inheritdoc />
         public async Task<ClubMembersDTO> AddFollowerAsync(int clubId, string userId)
         {
             var club = await _clubService.GetClubInfoByIdAsync(clubId);
             var userDto = await _userManagerService.FindByIdAsync(userId) ??
                           throw new ArgumentNullException($"User with {userId} id not found");
 
-            var oldMember = await _repoWrapper.ClubMembers
-                .GetFirstOrDefaultAsync(i => i.UserId == userId);
+            var oldMember = await _repoWrapper.ClubMembers.GetFirstOrDefaultAsync(i => i.UserId == userId);
 
             if (oldMember != null)
             {
@@ -52,12 +53,7 @@ namespace EPlast.BLL.Services.Club
                 await _repoWrapper.SaveAsync();
             }
 
-            ClubMembers newMember = new ClubMembers()
-            {
-                ClubId = club.ID,
-                IsApproved = false,
-                UserId = userDto.Id
-            };
+            ClubMembers newMember = new ClubMembers() { ClubId = club.ID, IsApproved = false, UserId = userDto.Id };
 
             await _repoWrapper.ClubMembers.CreateAsync(newMember);
             await _repoWrapper.SaveAsync();
