@@ -37,8 +37,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
@@ -54,6 +52,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace EPlast.WebApi
 {
@@ -74,7 +73,7 @@ namespace EPlast.WebApi
                 .Where(x =>
                     x.FullName.Equals("EPlast.BLL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null") ||
                     x.FullName.Equals("EPlast.WebApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null")));
-            services.AddControllers().AddNewtonsoftJson();
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -155,9 +154,10 @@ namespace EPlast.WebApi
             {
                 options.CustomSchemaIds(x => x.FullName);
             });
-            
+            services.AddControllers().AddNewtonsoftJson();
+
             services.AddScoped<IHomeService, HomeService>();
-            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
             services.AddScoped<IEmailConfirmation, EmailConfirmationService>();
             services.AddScoped<IDecisionVmInitializer, DecisionVmInitializer>();
@@ -249,7 +249,7 @@ namespace EPlast.WebApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider services)
         {
             app.UseCors(builder =>
             {
@@ -303,6 +303,50 @@ namespace EPlast.WebApi
             {
                 endpoints.MapControllers();
             });
+
+            CreateRoles(services).Wait();
+        }
+        private async Task CreateRoles(IServiceProvider serviceProvider)
+        {
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+            var roles = new[] { "Admin", "Прихильник", "Пластун", "Голова Пласту","Адміністратор подій", "Голова Куреня","Діловод Куреня",
+            "Голова Округу","Діловод Округу","Голова Станиці","Діловод Станиці"};
+            foreach (var role in roles)
+            {
+                if (!(await roleManager.RoleExistsAsync(role)))
+                {
+                    var idRole = new IdentityRole
+                    {
+                        Name = role
+                    };
+
+                    var res = await roleManager.CreateAsync(idRole);
+                }
+            }
+            var admin = Configuration.GetSection("Admin");
+            var profile = new User
+            {
+                Email = admin["Email"],
+                UserName = admin["Email"],
+                FirstName = "Admin",
+                LastName = "Admin",
+                EmailConfirmed = true,
+                ImagePath = "default_user_image.png",
+                UserProfile = new UserProfile(),
+                RegistredOn = DateTime.Now
+            };
+            if (await userManager.FindByEmailAsync(admin["Email"]) == null)
+            {
+                var res = await userManager.CreateAsync(profile, admin["Password"]);
+                if (res.Succeeded)
+                    await userManager.AddToRoleAsync(profile, "Admin");
+            }
+            else if (!await userManager.IsInRoleAsync(userManager.Users.First(item => item.Email == profile.Email), "Admin"))
+            {
+                var user = userManager.Users.First(item => item.Email == profile.Email);
+                await userManager.AddToRoleAsync(user, "Admin");
+            }
         }
     }
 }

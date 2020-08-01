@@ -3,6 +3,7 @@ using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -30,6 +31,7 @@ namespace EPlast.XUnitTest.Services.UserArea
         private Mock<IEducationService> _educationService;
         private Mock<IUserBlobStorageRepository> _userBlobStorage;
         private Mock<IWebHostEnvironment> _env;
+        private Mock<IUserManagerService> _userManagerService;
 
         public UserServiceTests()
         {
@@ -41,11 +43,12 @@ namespace EPlast.XUnitTest.Services.UserArea
             _educationService = new Mock<IEducationService>();
             _userBlobStorage=new Mock<IUserBlobStorageRepository>();
             _env=new Mock<IWebHostEnvironment>();
+            _userManagerService = new Mock<IUserManagerService>();
         }
 
         private UserService GetService()
         {
-            return new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _workService.Object, _educationService.Object, _userBlobStorage.Object,_env.Object);
+            return new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _workService.Object, _educationService.Object, _userBlobStorage.Object,_env.Object, _userManagerService.Object);
         }
         [Fact]
         public async Task GetUserProfileTest()

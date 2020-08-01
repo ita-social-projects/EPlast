@@ -19,6 +19,7 @@ namespace EPlast.BLL.Services.UserProfiles
             _mapper = mapper;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<DegreeDTO>> GetAllAsync()
         {
             return _mapper.Map<IEnumerable<Degree>, IEnumerable<DegreeDTO>>(await _repoWrapper.Degree.GetAllAsync());
