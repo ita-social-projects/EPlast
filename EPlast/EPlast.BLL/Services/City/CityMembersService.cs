@@ -33,6 +33,7 @@ namespace EPlast.BLL.Services.City
                     predicate: c => c.CityId == cityId && c.EndDate == null,
                     include: source => source
                         .Include(c => c.User));
+
             return _mapper.Map<IEnumerable<CityMembers>, IEnumerable<CityMembersDTO>>(cityMembers);
         }
 
