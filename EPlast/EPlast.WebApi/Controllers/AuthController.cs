@@ -25,7 +25,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IJwtService _jwtService;
         private readonly IHomeService _homeService;
 
-        public AuthController(IAuthService authService, 
+        public AuthController(IAuthService authService,
             IMapper mapper,
             ILoggerService<AuthController> loggerService,
             IStringLocalizer<AuthenticationErrors> resourceForErrors,
@@ -51,44 +51,36 @@ namespace EPlast.WebApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
+                var user = await _authService.FindByEmailAsync(loginDto.Email);
+                if (user == null)
                 {
-                    var user = await _authService.FindByEmailAsync(loginDto.Email);
-                    if (user == null)
+                    return BadRequest(_resourceForErrors["Login-NotRegistered"]);
+                }
+                else
+                {
+                    if (!await _authService.IsEmailConfirmedAsync(user))
                     {
-                        return BadRequest(_resourceForErrors["Login-NotRegistered"]);
-                    }
-                    else
-                    {
-                        if (!await _authService.IsEmailConfirmedAsync(user))
-                        {
-                            return BadRequest(_resourceForErrors["Login-NotConfirmed"]);
-                        }
-                    }
-                    var result = await _authService.SignInAsync(loginDto);
-                    if (result.IsLockedOut)
-                    {
-                        return BadRequest(_resourceForErrors["Account-Locked"]);
-                    }
-                    if (result.Succeeded)
-                    {
-                        var generatedToken = _jwtService.GenerateJWTToken(user);
-                        return Ok(new { token = generatedToken });
-                    }
-                    else
-                    {
-                        return BadRequest(_resourceForErrors["Login-InCorrectPassword"]);
+                        return BadRequest(_resourceForErrors["Login-NotConfirmed"]);
                     }
                 }
-                return Ok(_resourceForErrors["ModelIsNotValid"]);
+                var result = await _authService.SignInAsync(loginDto);
+                if (result.IsLockedOut)
+                {
+                    return BadRequest(_resourceForErrors["Account-Locked"]);
+                }
+                if (result.Succeeded)
+                {
+                    var generatedToken = _jwtService.GenerateJWTToken(user);
+                    return Ok(new { token = generatedToken });
+                }
+                else
+                {
+                    return BadRequest(_resourceForErrors["Login-InCorrectPassword"]);
+                }
             }
-            catch (Exception e)
-            {
-                _loggerService.LogError($"Exception: {e.Message}");
-                return BadRequest();
-            }
+            return Ok(_resourceForErrors["ModelIsNotValid"]);
         }
 
         /// <summary>
@@ -102,43 +94,35 @@ namespace EPlast.WebApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody]RegisterDto registerDto)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
+                return BadRequest(_resourceForErrors["Register-InCorrectData"]);
+            }
+            var registeredUser = await _authService.FindByEmailAsync(registerDto.Email);
+            if (registeredUser != null)
+            {
+                return BadRequest(_resourceForErrors["Register-RegisteredUser"]);
+            }
+            else
+            {
+                var result = await _authService.CreateUserAsync(registerDto);
+                if (!result.Succeeded)
                 {
-                    return BadRequest(_resourceForErrors["Register-InCorrectData"]);
-                }
-                var registeredUser = await _authService.FindByEmailAsync(registerDto.Email);
-                if (registeredUser != null)
-                {
-                    return BadRequest(_resourceForErrors["Register-RegisteredUser"]);
+                    return BadRequest(_resourceForErrors["Register-InCorrectPassword"]);
                 }
                 else
                 {
-                    var result = await _authService.CreateUserAsync(registerDto);
-                    if (!result.Succeeded)
-                    {
-                        return BadRequest(_resourceForErrors["Register-InCorrectPassword"]);
-                    }
-                    else
-                    {
-                        string token = await _authService.AddRoleAndTokenAsync(registerDto);
-                        var userDto = await _authService.FindByEmailAsync(registerDto.Email);
-                        string confirmationLink = Url.Action(
-                            nameof(ConfirmingEmail),
-                            "Account",
-                            new { token = token, userId = userDto.Id },
-                              protocol: HttpContext.Request.Scheme);
-                        await _authService.SendEmailRegistr(confirmationLink, userDto);
-            
-                        return Ok(_resourceForErrors["Confirm-Registration"]);
-                    }
+                    string token = await _authService.AddRoleAndTokenAsync(registerDto);
+                    var userDto = await _authService.FindByEmailAsync(registerDto.Email);
+                    string confirmationLink = Url.Action(
+                        nameof(ConfirmingEmail),
+                        "Account",
+                        new { token = token, userId = userDto.Id },
+                          protocol: HttpContext.Request.Scheme);
+                    await _authService.SendEmailRegistr(confirmationLink, userDto);
+
+                    return Ok(_resourceForErrors["Confirm-Registration"]);
                 }
-            }
-            catch (Exception e)
-            {
-                _loggerService.LogError($"Exception: {e.Message}");
-                return BadRequest();
             }
         }
 
@@ -167,8 +151,8 @@ namespace EPlast.WebApi.Controllers
                     return BadRequest();
                 }
                 var result = await _authService.ConfirmEmailAsync(userDto.Id, token);
-           
-                if (result.Succeeded) 
+
+                if (result.Succeeded)
                 {
                     return Redirect("https://plastua.azurewebsites.net/");
                 }
@@ -179,7 +163,7 @@ namespace EPlast.WebApi.Controllers
             }
             else
             {
-                return Ok(_resourceForErrors["ConfirmedEmailNotAllowed"]);  
+                return Ok(_resourceForErrors["ConfirmedEmailNotAllowed"]);
             }
         }
 
@@ -206,13 +190,13 @@ namespace EPlast.WebApi.Controllers
                 new { token = token, userId = userDto.Id },
                 protocol: HttpContext.Request.Scheme);
             await _authService.SendEmailRegistr(confirmationLink, userDto);
-            
+
             return Ok("ResendEmailConfirmation");
         }
 
         [HttpGet("logout")] //+
         //[ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public IActionResult Logout()
         {
             _authService.SignOutAsync();
@@ -231,31 +215,23 @@ namespace EPlast.WebApi.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotpasswordDto)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
+                var userDto = await _authService.FindByEmailAsync(forgotpasswordDto.Email);
+                if (userDto == null || !(await _authService.IsEmailConfirmedAsync(userDto)))
                 {
-                    var userDto = await _authService.FindByEmailAsync(forgotpasswordDto.Email);
-                    if (userDto == null || !(await _authService.IsEmailConfirmedAsync(userDto)))
-                    {
-                        return BadRequest(_resourceForErrors["Forgot-NotRegisteredUser"]);
-                    }
-                    string token = await _authService.GenerateResetTokenAsync(userDto);
-                    string confirmationLink = Url.Action(
-                        nameof(ResetPassword),
-                        "Account",
-                        new { userId = userDto.Id, token = HttpUtility.UrlEncode(token) },
-                        protocol: HttpContext.Request.Scheme);
-                    await _authService.SendEmailReseting(confirmationLink, forgotpasswordDto);
-                    return Ok(_resourceForErrors["ForgotPasswordConfirmation"]);
+                    return BadRequest(_resourceForErrors["Forgot-NotRegisteredUser"]);
                 }
-                return BadRequest(_resourceForErrors["ModelIsNotValid"]);
+                string token = await _authService.GenerateResetTokenAsync(userDto);
+                string confirmationLink = Url.Action(
+                    nameof(ResetPassword),
+                    "Account",
+                    new { userId = userDto.Id, token = HttpUtility.UrlEncode(token) },
+                    protocol: HttpContext.Request.Scheme);
+                await _authService.SendEmailReseting(confirmationLink, forgotpasswordDto);
+                return Ok(_resourceForErrors["ForgotPasswordConfirmation"]);
             }
-            catch (Exception e)
-            {
-                _loggerService.LogError($"Exception: {e.Message}");
-                return BadRequest();
-            }
+            return BadRequest(_resourceForErrors["ModelIsNotValid"]);
         }
 
         /// <summary>
@@ -305,32 +281,24 @@ namespace EPlast.WebApi.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetpasswordDto) //+
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(_resourceForErrors["ModelIsNotValid"]);
-                }
-                var userDto = await _authService.FindByEmailAsync(resetpasswordDto.Email);
-                if (userDto == null)
-                {
-                    return BadRequest(_resourceForErrors["Reset-NotRegisteredUser"]);
-                }
-                var result = await _authService.ResetPasswordAsync(userDto.Id, resetpasswordDto);
-                if (result.Succeeded)
-                {
-                    await _authService.CheckingForLocking(userDto);
-                    return Ok(_resourceForErrors["ResetPasswordConfirmation"]);
-                }
-                else
-                {
-                    return BadRequest(_resourceForErrors["Reset-PasswordProblems"]);
-                }
+                return BadRequest(_resourceForErrors["ModelIsNotValid"]);
             }
-            catch (Exception e)
+            var userDto = await _authService.FindByEmailAsync(resetpasswordDto.Email);
+            if (userDto == null)
             {
-                _loggerService.LogError($"Exception: {e.Message}");
-                return BadRequest();
+                return BadRequest(_resourceForErrors["Reset-NotRegisteredUser"]);
+            }
+            var result = await _authService.ResetPasswordAsync(userDto.Id, resetpasswordDto);
+            if (result.Succeeded)
+            {
+                await _authService.CheckingForLocking(userDto);
+                return Ok(_resourceForErrors["ResetPasswordConfirmation"]);
+            }
+            else
+            {
+                return BadRequest(_resourceForErrors["Reset-PasswordProblems"]);
             }
         }
 
@@ -342,35 +310,27 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">Problems with changing password</response>
         [HttpPost("changePassword")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changepasswordDto)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
+                var userDto = await _authService.GetUserAsync(User);
+                if (userDto == null)
                 {
-                    var userDto = await _authService.GetUserAsync(User); 
-                    if (userDto == null)
-                    {
-                        return BadRequest(); 
-                    }
-                    var result = await _authService.ChangePasswordAsync(userDto.Id, changepasswordDto);
-                    if (!result.Succeeded)
-                    {
-                        return BadRequest(_resourceForErrors["Change-PasswordProblems"]);
-                    }
-                    _authService.RefreshSignInAsync(userDto); //тут
-                    return Ok(_resourceForErrors["ChangePasswordConfirmation"]);
+                    return BadRequest();
                 }
-                else
+                var result = await _authService.ChangePasswordAsync(userDto.Id, changepasswordDto);
+                if (!result.Succeeded)
                 {
-                    return BadRequest(_resourceForErrors["ModelIsNotValid"]);
+                    return BadRequest(_resourceForErrors["Change-PasswordProblems"]);
                 }
+                _authService.RefreshSignInAsync(userDto); //тут
+                return Ok(_resourceForErrors["ChangePasswordConfirmation"]);
             }
-            catch (Exception e)
+            else
             {
-                _loggerService.LogError($"Exception: {e.Message}");
-                return BadRequest();
+                return BadRequest(_resourceForErrors["ModelIsNotValid"]);
             }
         }
 

@@ -4,9 +4,18 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL.Interfaces.Events
 {
+    /// <summary>
+    ///  Implements  operations for work with event categories.
+    /// </summary>
     public interface IEventCategoryManager
     {
         Task<IEnumerable<EventCategoryDTO>> GetDTOAsync();
+
+        /// <summary>
+        /// Get list of event categories by event type Id.
+        /// </summary>
+        /// <returns>List of event categories of the appropriate event type.</returns>
+        /// <param name="eventTypeId">The Id of event type</param>
         Task<IEnumerable<EventCategoryDTO>> GetDTOByEventTypeIdAsync(int eventTypeId);
     }
 }

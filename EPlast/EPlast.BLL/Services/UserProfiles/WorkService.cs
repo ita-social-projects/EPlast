@@ -20,6 +20,7 @@ namespace EPlast.BLL.Services.UserProfiles
             _mapper = mapper;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<WorkDTO>> GetAllGroupByPlaceAsync()
         {
             return _mapper.Map<IEnumerable<Work>, IEnumerable<WorkDTO>>(
@@ -29,6 +30,7 @@ namespace EPlast.BLL.Services.UserProfiles
                 );
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<WorkDTO>> GetAllGroupByPositionAsync()
         {
             return _mapper.Map<IEnumerable<Work>, IEnumerable<WorkDTO>>(
@@ -37,6 +39,8 @@ namespace EPlast.BLL.Services.UserProfiles
                     Select(x => x.FirstOrDefault())
                 );
         }
+
+        /// <inheritdoc />
         public async Task<WorkDTO> GetByIdAsync(int? workId)
         {
             return _mapper.Map<Work, WorkDTO>(

@@ -50,16 +50,9 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("dataForNewEvent")]
         public async Task<IActionResult> GetEventsDataForCreate()
         {
-            try
-            {
                 var eventCreateModel = await _eventUserManager.InitializeEventCreateDTOAsync();
 
                 return Ok(eventCreateModel);
-            }
-            catch
-            {
-                return BadRequest();
-            }
         }
 
         /// <summary>
@@ -73,16 +66,9 @@ namespace EPlast.WebApi.Controllers
         [HttpPost("newEvent")]
         public async Task<IActionResult> EventCreate([FromBody] EventCreateDTO createDTO)
         {
-            try
-            {
                 await _eventUserManager.CreateEventAsync(createDTO);
 
                 return Created(nameof(GetEventUserByUserId), createDTO);
-            }
-            catch
-            {
-                return BadRequest();
-            }
         }
 
         /// <summary>
@@ -96,16 +82,9 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("editedEvent/{eventId:int}")]
         public async Task<IActionResult> EventEdit(int eventId)
         {
-            try
-            {
                 var eventCreateModel = await _eventUserManager.InitializeEventEditDTOAsync(eventId);
 
                 return Ok(eventCreateModel);
-            }
-            catch
-            {
-                return BadRequest();
-            }
         }
 
         /// <summary>
@@ -113,22 +92,15 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <returns>A newly edited event</returns>
         /// <param name="createDTO"></param>
-        /// <response code="201">Instance of EventCreateDTO</response>
+        /// <response code="204">Resource updated successfully</response>
         /// <response code="400">When the EventCreateDTO is null or empty</response>
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPut("editedEvent")]
         public async Task<IActionResult> EventEdit([FromBody] EventCreateDTO createDTO)
         {
-            try
-            {
                 await _eventUserManager.EditEventAsync((createDTO));
 
                 return NoContent();
-            }
-            catch
-            {
-                return BadRequest();
-            }
         }
 
     }
