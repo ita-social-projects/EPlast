@@ -40,11 +40,14 @@ namespace EPlast.BLL.Services.City
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
             adminDTO.AdminTypeId = adminType.ID;
+            adminDTO.AdminType = adminType;
 
             adminDTO.StartDate ??= DateTime.Now;
+            adminDTO.UserId = adminDTO.User.ID;
 
             var admin = _mapper.Map<CityAdministrationDTO, CityAdministration>(adminDTO);
 
+            _repositoryWrapper.CityAdministration.Attach(admin);
             await _repositoryWrapper.CityAdministration.CreateAsync(admin);
             await _repositoryWrapper.SaveAsync();
 
