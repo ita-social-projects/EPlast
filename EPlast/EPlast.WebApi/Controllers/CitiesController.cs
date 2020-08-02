@@ -248,6 +248,20 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Remove a specific city
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        [HttpDelete("RemoveCity/{cityId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> Remove(int cityId)
+        {
+            await _cityService.RemoveAsync(cityId);
+            _logger.LogInformation($"City with id {{{cityId}}} was deleted.");
+
+            return Ok();
+        }
+
+        /// <summary>
         /// Add a current user to followers
         /// </summary>
         /// <param name="cityId">An id of the city</param>
@@ -300,11 +314,6 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> AddAdmin(CityAdministrationViewModel newAdmin)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var admin = _mapper.Map<CityAdministrationViewModel, CityAdministrationDTO>(newAdmin);
             await _cityAdministrationService.AddAdministratorAsync(admin);
 
@@ -318,7 +327,7 @@ namespace EPlast.WebApi.Controllers
         /// Remove a specific administrator from the city
         /// </summary>
         /// <param name="adminId">The id of the administrator</param>
-        [HttpPut("RemoveAdmin/{adminId}")]
+        [HttpDelete("RemoveAdmin/{adminId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RemoveAdmin(int adminId)
         {

@@ -43,8 +43,7 @@ namespace EPlast.BLL.Services.City
             adminDTO.AdminType = adminType;
 
             adminDTO.StartDate ??= DateTime.Now;
-            adminDTO.UserId = adminDTO.User.ID;
-
+            
             var admin = _mapper.Map<CityAdministrationDTO, CityAdministration>(adminDTO);
 
             _repositoryWrapper.CityAdministration.Attach(admin);
@@ -61,7 +60,8 @@ namespace EPlast.BLL.Services.City
             adminDTO.AdminTypeId = adminType.ID;
 
             var admin = _mapper.Map<CityAdministrationDTO, CityAdministration>(adminDTO);
-
+            
+            _repositoryWrapper.CityAdministration.Attach(admin);
             _repositoryWrapper.CityAdministration.Update(admin);
             await _repositoryWrapper.SaveAsync();
 
@@ -72,11 +72,9 @@ namespace EPlast.BLL.Services.City
         public async Task RemoveAdministratorAsync(int adminId)
         {
             var admin = await _repositoryWrapper.CityAdministration.GetFirstOrDefaultAsync(u => u.ID == adminId);
-            admin.EndDate = DateTime.Now;
-
-            _repositoryWrapper.CityAdministration.Update(admin);
+            
+            _repositoryWrapper.CityAdministration.Delete(admin);
             await _repositoryWrapper.SaveAsync();
         }
-
     }
 }
