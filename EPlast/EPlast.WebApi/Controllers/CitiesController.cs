@@ -23,7 +23,7 @@ namespace EPlast.WebApi.Controllers
         private readonly ICityService _cityService;
         private readonly ICityMembersService _cityMembersService;
         private readonly ICityAdministrationService _cityAdministrationService;
-        
+
         public CitiesController(ILoggerService<CitiesController> logger,
             IMapper mapper,
             ICityService cityService,
@@ -300,9 +300,14 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> AddAdmin(CityAdministrationViewModel newAdmin)
         {
-            var admin = _mapper.Map<CityAdministrationViewModel, CityAdministrationDTO>(newAdmin);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
+            var admin = _mapper.Map<CityAdministrationViewModel, CityAdministrationDTO>(newAdmin);
             await _cityAdministrationService.AddAdministratorAsync(admin);
+
             _logger.LogInformation($"User {{{admin.UserId}}} became admin for city {{{admin.CityId}}}" +
                 $" with role {{{admin.AdminType.AdminTypeName}}}.");
 
