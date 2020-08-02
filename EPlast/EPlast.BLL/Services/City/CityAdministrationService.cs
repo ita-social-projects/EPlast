@@ -58,6 +58,7 @@ namespace EPlast.BLL.Services.City
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
             adminDTO.AdminTypeId = adminType.ID;
+            adminDTO.AdminType = adminType;
 
             var admin = _mapper.Map<CityAdministrationDTO, CityAdministration>(adminDTO);
             
