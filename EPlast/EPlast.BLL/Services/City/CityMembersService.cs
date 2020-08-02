@@ -42,10 +42,17 @@ namespace EPlast.BLL.Services.City
         {
             var oldCityMember = await _repositoryWrapper.CityMembers
                 .GetFirstOrDefaultAsync(i => i.UserId == userId);
-
             if (oldCityMember != null)
             {
                 _repositoryWrapper.CityMembers.Delete(oldCityMember);
+                await _repositoryWrapper.SaveAsync();
+            }
+
+            var oldCityAdmin = await _repositoryWrapper.CityAdministration
+                .GetFirstOrDefaultAsync(i => i.UserId == userId);
+            if (oldCityAdmin != null)
+            {
+                _repositoryWrapper.CityAdministration.Delete(oldCityAdmin);
                 await _repositoryWrapper.SaveAsync();
             }
 

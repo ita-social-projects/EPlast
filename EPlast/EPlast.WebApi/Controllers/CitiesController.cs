@@ -94,7 +94,7 @@ namespace EPlast.WebApi.Controllers
 
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
 
-            return Ok(cityProfile.Members);
+            return Ok(cityProfile);
 
         }
 
@@ -117,7 +117,7 @@ namespace EPlast.WebApi.Controllers
 
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
 
-            return Ok(cityProfile.Followers);
+            return Ok(cityProfile);
 
         }
 
@@ -140,7 +140,7 @@ namespace EPlast.WebApi.Controllers
 
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
 
-            return Ok(cityProfile.Administration);
+            return Ok(cityProfile);
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace EPlast.WebApi.Controllers
 
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
 
-            return Ok(cityProfile.Documents);
+            return Ok(cityProfile);
 
         }
 
