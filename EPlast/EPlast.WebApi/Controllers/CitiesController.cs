@@ -23,18 +23,21 @@ namespace EPlast.WebApi.Controllers
         private readonly ICityService _cityService;
         private readonly ICityMembersService _cityMembersService;
         private readonly ICityAdministrationService _cityAdministrationService;
+        private readonly ICityAccessService _cityAccessService;
         
         public CitiesController(ILoggerService<CitiesController> logger,
             IMapper mapper,
             ICityService cityService,
             ICityMembersService cityMembersService,
-            ICityAdministrationService cityAdministrationService)
+            ICityAdministrationService cityAdministrationService,
+            ICityAccessService cityAccessService)
         {
             _logger = logger;
             _mapper = mapper;
             _cityService = cityService;
             _cityMembersService = cityMembersService;
             _cityAdministrationService = cityAdministrationService;
+            _cityAccessService = cityAccessService;
         }
 
         /// <summary>
@@ -354,6 +357,17 @@ namespace EPlast.WebApi.Controllers
             }
 
             return Ok(new { legalStatuses });
+        }
+
+        /// <summary>
+        /// Get all cities that the user has access to
+        /// </summary>
+        /// <returns>List of cities</returns>
+        [HttpGet]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetCitiesThatUserHasAccessTo()
+        {
+            return Ok(new { cities = await _cityAccessService.GetCitiesAsync(User) });
         }
     }
 }
