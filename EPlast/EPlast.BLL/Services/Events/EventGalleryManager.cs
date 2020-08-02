@@ -25,29 +25,35 @@ namespace EPlast.BLL.Services.Events
             _eventBlobStorage = eventBlobStorage;
         }
 
-        public async Task<int> AddPicturesAsync(int id, IList<IFormFile> files)
+        public async Task<IEnumerable<EventGalleryDTO>> AddPicturesAsync(int id, IList<IFormFile> files)
         {
-            try
-            {
-                foreach (IFormFile file in files)
-                {
-                    if (file != null && file.Length > 0)
-                    {
-                        var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-                        await _eventBlobStorage.UploadBlobAsync(file, fileName);
-                        var gallery = new Gallary() { GalaryFileName = fileName };
-                        await _repoWrapper.Gallary.CreateAsync(gallery);
-                        await _repoWrapper.EventGallary.CreateAsync(new EventGallary { EventID = id, Gallary = gallery });
-                    }
-                }
-                await _repoWrapper.SaveAsync();
 
-                return StatusCodes.Status200OK;
-            }
-            catch
+            var uploadedPictures = new List<EventGalleryDTO>();
+            var createdGalleries = new List<Gallary>();
+            foreach (IFormFile file in files)
             {
-                return StatusCodes.Status400BadRequest;
+                if (file != null && file.Length > 0)
+                {
+                    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                    await _eventBlobStorage.UploadBlobAsync(file, fileName);
+                    var gallery = new Gallary() { GalaryFileName = fileName };
+                    await _repoWrapper.Gallary.CreateAsync(gallery);
+                    var eventGallery = new EventGallary { EventID = id, Gallary = gallery };
+                    await _repoWrapper.EventGallary.CreateAsync(eventGallery);
+                    createdGalleries.Add(gallery);
+                }
             }
+            await _repoWrapper.SaveAsync();
+            foreach (var gallery in createdGalleries)
+            {
+                uploadedPictures.Add(new EventGalleryDTO
+                {
+                    GalleryId = gallery.ID,
+                    FileName = await _eventBlobStorage.GetBlobBase64Async(gallery.GalaryFileName)
+                });
+            }
+
+            return uploadedPictures;
         }
 
         public async Task<int> DeletePictureAsync(int id)

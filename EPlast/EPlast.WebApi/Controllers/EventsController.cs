@@ -191,15 +191,9 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> FillEventGallery(int eventId, [FromForm] IList<IFormFile> files)
         {
-            try
-            {
-                var code = await _actionManager.FillEventGalleryAsync(eventId, files);
-                return StatusCode(code);
-            }
-            catch
-            {
-                return BadRequest();
-            }
+                var dto = await _actionManager.FillEventGalleryAsync(eventId, files);
+
+                return Ok(dto);      
         }
     }
 }
