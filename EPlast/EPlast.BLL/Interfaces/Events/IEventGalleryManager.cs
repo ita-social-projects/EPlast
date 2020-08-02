@@ -7,7 +7,7 @@ namespace EPlast.BLL.Interfaces.Events
 {
     public interface IEventGalleryManager
     {
-        Task<int> AddPicturesAsync(int id, IList<IFormFile> files);
+        Task<IEnumerable<EventGalleryDTO>> AddPicturesAsync(int id, IList<IFormFile> files);
         Task<int> DeletePictureAsync(int id);
         Task<IEnumerable<EventGalleryDTO>> GetPicturesInBase64(int eventId);
     }

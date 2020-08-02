@@ -89,7 +89,7 @@ namespace EPlast.BLL.Interfaces.Events
         /// <param name="id">The Id of event participant</param>
         Task<int> RejectParticipantAsync(int id);
 
-        Task<int> FillEventGalleryAsync(int id, IList<IFormFile> files);
+        Task<IEnumerable<EventGalleryDTO>> FillEventGalleryAsync(int id, IList<IFormFile> files);
 
         /// <summary>
         /// Delete picture by Id.

@@ -234,10 +234,10 @@ namespace EPlast.BLL.Services.Events
             return result;
         }
 
-        public async Task<int> FillEventGalleryAsync(int id, IList<IFormFile> files)
+        public async Task<IEnumerable<EventGalleryDTO>> FillEventGalleryAsync(int id, IList<IFormFile> files)
         {
-            int result = await _eventGalleryManager.AddPicturesAsync(id, files);
-            return result;
+            var uploadedPictures = await _eventGalleryManager.AddPicturesAsync(id, files);
+            return uploadedPictures;
         }
 
         /// <inheritdoc />
