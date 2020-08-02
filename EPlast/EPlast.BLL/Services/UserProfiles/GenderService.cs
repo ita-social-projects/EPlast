@@ -19,6 +19,7 @@ namespace EPlast.BLL.Services.UserProfiles
             _mapper = mapper;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<GenderDTO>> GetAllAsync()
         {
             return _mapper.Map<IEnumerable<Gender>, IEnumerable<GenderDTO>>(await _repoWrapper.Gender.GetAllAsync());
