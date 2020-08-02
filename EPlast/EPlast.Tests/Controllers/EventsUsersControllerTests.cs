@@ -13,24 +13,24 @@ namespace EPlast.Tests.Controllers
     [TestFixture]
     class EventsUsersControllerTests
     {
-        private Mock<IEventUserManager> _actionManager;
+        private Mock<IEventUserManager> _eventUserManager;
 
         private EventsUsersController _eventsUsersController;
 
         [SetUp]
         public void SetUp()
         {
-            _actionManager = new Mock<IEventUserManager>();
+            _eventUserManager = new Mock<IEventUserManager>();
 
             _eventsUsersController = new EventsUsersController(
-                _actionManager.Object);
+                _eventUserManager.Object);
         }
 
         [Test]
         public async Task GetEventUserByUserId_ReturnsOkObjectResult()
         {
             // Arrange
-            _actionManager
+            _eventUserManager
                 .Setup((x) => x.EventUserAsync(It.IsAny<string>(), It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(CreateFakeEventUser());
 
@@ -48,7 +48,7 @@ namespace EPlast.Tests.Controllers
             // Arrange
             var id = "1";
 
-            _actionManager
+            _eventUserManager
                 .Setup((x) => x.EventUserAsync(It.IsAny<string>(), It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(CreateFakeEventUser());
 
@@ -68,7 +68,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetEventsDataForCreate_ReturnsOkObjectResult()
         {
             // Arrange
-            _actionManager
+            _eventUserManager
                 .Setup((x) => x.InitializeEventCreateDTOAsync())
                 .ReturnsAsync(CreateFakeEventCreate());
 
@@ -86,7 +86,7 @@ namespace EPlast.Tests.Controllers
             // Arrange
             var id = 1;
 
-            _actionManager
+            _eventUserManager
                 .Setup((x) => x.InitializeEventCreateDTOAsync())
                 .ReturnsAsync(CreateFakeEventCreate());
 
@@ -106,7 +106,7 @@ namespace EPlast.Tests.Controllers
         public async Task EventCreate_ReturnsCreatedResult()
         {
             // Arrange
-            _actionManager
+            _eventUserManager
                 .Setup((x) => x.CreateEventAsync(CreateFakeEventCreate()))
                 .ReturnsAsync(It.IsAny<int>());
 
@@ -124,9 +124,9 @@ namespace EPlast.Tests.Controllers
             // Arrange
             var id = 1;
 
-            _actionManager
+            _eventUserManager
                 .Setup((x) => x.CreateEventAsync(CreateFakeEventCreate()))
-                .ReturnsAsync(id);
+                .ReturnsAsync(It.IsAny<int>());
 
             var expected = id;
 
@@ -144,7 +144,7 @@ namespace EPlast.Tests.Controllers
         public async Task EventEdit_ReturnsOkObjectResult()
         {
             // Arrange
-            _actionManager
+            _eventUserManager
                 .Setup((x) => x.InitializeEventEditDTOAsync(It.IsAny<int>()))
                 .ReturnsAsync(CreateFakeEventCreate());
 
@@ -162,7 +162,7 @@ namespace EPlast.Tests.Controllers
             // Arrange
             var id = 1;
 
-            _actionManager
+            _eventUserManager
                 .Setup((x) => x.InitializeEventEditDTOAsync(It.IsAny<int>()))
                 .ReturnsAsync(CreateFakeEventCreate());
 
@@ -182,9 +182,8 @@ namespace EPlast.Tests.Controllers
         public async Task EventEdit_EventCreate_ReturnsOkObjectResult()
         {
             // Arrange
-            _actionManager
+            _eventUserManager
                 .Setup((x) => x.EditEventAsync(CreateFakeEventCreate()));
-                //.ReturnsAsync(CreateFakeEventCreate());
 
             // Act
             var result = await _eventsUsersController.EventEdit(CreateFakeEventCreate());
@@ -203,6 +202,7 @@ namespace EPlast.Tests.Controllers
                     LastName = "SomeLastName",
                 }
             };
+
         public EventCreateDTO CreateFakeEventCreate()
             => new EventCreateDTO()
             {
