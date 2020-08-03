@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace EPlast.BLL.DTO.City
+﻿namespace EPlast.BLL.DTO.City
 {
     public class CityDocumentTypeDTO
     {
