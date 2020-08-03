@@ -146,6 +146,12 @@ namespace EPlast.BLL.Interfaces.City
         Task<int> CreateAsync(CityDTO model);
 
         /// <summary>
+        /// Remove a specific city
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        Task RemoveAsync(int cityId);
+
+        /// <summary>
         /// Get a photo in base64 format
         /// </summary>
         /// <param name="logoName">The name of a city logo</param>

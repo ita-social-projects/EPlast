@@ -33,6 +33,7 @@ namespace EPlast.BLL.Services.City
                     predicate: c => c.CityId == cityId && c.EndDate == null,
                     include: source => source
                         .Include(c => c.User));
+
             return _mapper.Map<IEnumerable<CityMembers>, IEnumerable<CityMembersDTO>>(cityMembers);
         }
 
@@ -41,10 +42,17 @@ namespace EPlast.BLL.Services.City
         {
             var oldCityMember = await _repositoryWrapper.CityMembers
                 .GetFirstOrDefaultAsync(i => i.UserId == userId);
-
             if (oldCityMember != null)
             {
                 _repositoryWrapper.CityMembers.Delete(oldCityMember);
+                await _repositoryWrapper.SaveAsync();
+            }
+
+            var oldCityAdmin = await _repositoryWrapper.CityAdministration
+                .GetFirstOrDefaultAsync(i => i.UserId == userId);
+            if (oldCityAdmin != null)
+            {
+                _repositoryWrapper.CityAdministration.Delete(oldCityAdmin);
                 await _repositoryWrapper.SaveAsync();
             }
 
