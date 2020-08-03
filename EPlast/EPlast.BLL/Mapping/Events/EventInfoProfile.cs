@@ -24,8 +24,7 @@ namespace EPlast.BLL.Mapping.Events
                 .ForMember(d => d.FormOfHolding, s => s.MapFrom(e => e.FormOfHolding))
                 .ForMember(d => d.ForWhom, s => s.MapFrom(e => e.ForWhom))
                 .ForMember(d => d.EventAdmins, s => s.MapFrom(e => e.EventAdministrations.ToList()))
-                .ForMember(d => d.EventParticipants, s => s.MapFrom(e => e.Participants.ToList()))
-                .ForMember(d => d.EventGallery, s => s.MapFrom(e => e.EventGallarys.ToList()));
+                .ForMember(d => d.EventParticipants, s => s.MapFrom(e => e.Participants.ToList()));
         }
     }
 }
