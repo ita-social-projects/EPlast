@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace EPlast.WebApi.Models.Admin
 {
     public class AdminTypeViewModel

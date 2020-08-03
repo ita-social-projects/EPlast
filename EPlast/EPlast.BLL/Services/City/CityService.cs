@@ -144,7 +144,6 @@ namespace EPlast.BLL.Services
             cityProfileDto.City.CanJoin = (await _repoWrapper.CityMembers
                 .GetFirstOrDefaultAsync(u => u.User.Id == userId && u.CityId == cityId)) == null;
             cityProfileDto.City.CanApprove = await _cityAccessService.HasAccessAsync(user, cityId);
-            cityProfileDto.City.CanSeeReports = await _cityAccessService.HasAccessAsync(user, cityId);
             cityProfileDto.City.CanAddReports = await _cityAccessService.HasAccessAsync(user, cityId);
 
             return cityProfileDto;
