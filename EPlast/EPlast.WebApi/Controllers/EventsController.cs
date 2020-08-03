@@ -56,7 +56,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="categoryId">The Id of event category</param>
         /// <response code="200">List of events</response>
         /// <response code="400">Server could not understand the request due to invalid syntax</response> 
-        /// <response code="404">Ther</response> 
+        /// <response code="404">Events don't exist</response> 
         [HttpGet("~/api/types/{typeId:int}/categories/{categoryId:int}/events")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetEvents(int typeId, int categoryId)
@@ -79,8 +79,15 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _actionManager.GetEventInfoAsync(id, User));
         }
 
+        /// <summary>
+        /// Get pictures in Base64 format by event Id.
+        /// </summary>
+        /// <returns>List of pictures in Base64 format.</returns>
+        /// <param name="eventId">The Id of event</param>
+        /// <response code="200">List of pictures</response>
+        /// <response code="400">Server could not understand the request due to invalid syntax</response> 
         [HttpGet("{eventId:int}/pictures")]
-        //[Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetPictures(int eventId)
         {
             var dto = await _actionManager.GetPicturesAsync(eventId);
@@ -91,7 +98,7 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Delete event by Id.
         /// </summary>
-        /// <returns>Status code of the event delete operation.</returns>
+        /// <returns>Status code of the event deleting operation.</returns>
         /// <param name="id">The Id of event</param>
         /// <response code="200">OK</response>
         /// <response code="400">Bad Request</response> 
@@ -105,7 +112,7 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Delete picture by Id.
         /// </summary>
-        /// <returns>Status code of the picture delete operation.</returns>
+        /// <returns>Status code of the picture deleting operation.</returns>
         /// <param name="pictureId">The Id of picture</param>
         /// <response code="200">OK</response>
         /// <response code="400">Bad Request</response> 
@@ -187,13 +194,19 @@ namespace EPlast.WebApi.Controllers
             return StatusCode(await _actionManager.RejectParticipantAsync(participantId));
         }
 
+        /// <summary>
+        /// Add pictures to gallery of specific event by event Id.
+        /// </summary>
+        /// <returns>List of added pictures.</returns>
+        /// <param name="eventId">The Id of event</param>
+        /// <param name="files">List of uploaded pictures</param>
+        /// <response code="200">List of added pictures</response>
+        /// <response code="400">Server could not understand the request due to invalid syntax</response> 
         [HttpPost("{eventId:int}/eventGallery")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> FillEventGallery(int eventId, [FromForm] IList<IFormFile> files)
         {
-                var dto = await _actionManager.FillEventGalleryAsync(eventId, files);
-
-                return Ok(dto);      
+                return Ok(await _actionManager.FillEventGalleryAsync(eventId, files));      
         }
     }
 }
