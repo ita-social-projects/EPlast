@@ -127,8 +127,6 @@ namespace EPlast.BLL.Services.Events
                             .ThenInclude(a => a.User)
                         .Include(e => e.EventType)
                         .Include(e => e.EventCategory)
-                        .Include(e => e.EventGallarys)
-                            .ThenInclude(eg => eg.Gallary)
                     );
 
             var dto = new EventDTO()
@@ -146,11 +144,6 @@ namespace EPlast.BLL.Services.Events
             {
                 dto.Event.EventParticipants = dto.Event.EventParticipants.Where(p => p.StatusId == approvedStatus);
             }
-
-            //if (dto.Event.EventGallery.Count != 0)
-            //{
-            //    dto.Event.EventGallery = (await _eventGalleryManager.ConvertPicturesToBase64(dto.Event.EventGallery)).ToList();
-            //}
 
             return dto;
         }

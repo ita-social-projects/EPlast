@@ -19,6 +19,5 @@ namespace EPlast.BLL.DTO.Events
         public string ForWhom { get; set; }
         public List<EventAdminDTO> EventAdmins { get; set; }
         public IEnumerable<EventParticipantDTO> EventParticipants { get; set; }
-        public List<EventGalleryDTO> EventGallery { get; set; }
     }
 }
