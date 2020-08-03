@@ -20,6 +20,7 @@ namespace EPlast.BLL.Services.UserProfiles
             _mapper = mapper;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<EducationDTO>> GetAllGroupByPlaceAsync()
         {
             return _mapper.Map<IEnumerable<Education>, IEnumerable<EducationDTO>>(
@@ -29,6 +30,7 @@ namespace EPlast.BLL.Services.UserProfiles
                 );
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<EducationDTO>> GetAllGroupBySpecialityAsync()
         {
             return _mapper.Map<IEnumerable<Education>, IEnumerable<EducationDTO>>(
@@ -37,6 +39,8 @@ namespace EPlast.BLL.Services.UserProfiles
                     Select(x => x.FirstOrDefault())
                 );
         }
+
+        /// <inheritdoc />
         public async Task<EducationDTO> GetByIdAsync(int? educationId)
         {
             return _mapper.Map<Education, EducationDTO>(
