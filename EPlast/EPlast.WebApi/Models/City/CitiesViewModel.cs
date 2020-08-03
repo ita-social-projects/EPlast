@@ -10,7 +10,7 @@ namespace EPlast.WebApi.Models.City
         {
             Cities = cities.Skip((page - 1) * pageSize).Take(pageSize);
             Total = cities.Count();
-            CanCreate = page == 1 && isAdmin;
+            CanCreate = isAdmin;
         }
 
         public IEnumerable<CityDTO> Cities { get; set; }
