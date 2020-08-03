@@ -25,6 +25,7 @@ namespace EPlast.BLL.Services.Events
             _eventBlobStorage = eventBlobStorage;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<EventGalleryDTO>> AddPicturesAsync(int id, IList<IFormFile> files)
         {
 
@@ -56,6 +57,7 @@ namespace EPlast.BLL.Services.Events
             return uploadedPictures;
         }
 
+        /// <inheritdoc />
         public async Task<int> DeletePictureAsync(int id)
         {
             try
@@ -74,7 +76,7 @@ namespace EPlast.BLL.Services.Events
             }
         }
 
-
+        /// <inheritdoc />
         public async Task<IEnumerable<EventGalleryDTO>> GetPicturesInBase64(int eventId)
         {
             var galleries = (await _repoWrapper.EventGallary
