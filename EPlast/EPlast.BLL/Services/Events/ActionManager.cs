@@ -68,7 +68,6 @@ namespace EPlast.BLL.Services.Events
         /// <inheritdoc />
         public async Task<List<GeneralEventDTO>> GetEventsAsync(int categoryId, int eventTypeId, ClaimsPrincipal user)
         {
-            var userId = _userManager.GetUserId(user);
             int approvedStatus = await _participantStatusManager.GetStatusIdAsync("Учасник");
             int undeterminedStatus = await _participantStatusManager.GetStatusIdAsync("Розглядається");
             int rejectedStatus = await _participantStatusManager.GetStatusIdAsync("Відмовлено");
