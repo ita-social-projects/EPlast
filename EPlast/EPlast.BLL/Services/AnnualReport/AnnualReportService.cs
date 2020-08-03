@@ -36,6 +36,7 @@ namespace EPlast.BLL.Services
                 .FirstOrDefault();
         }
 
+        ///<inheritdoc/>
         public async Task<AnnualReportDTO> GetByIdAsync(ClaimsPrincipal claimsPrincipal, int id)
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
@@ -49,6 +50,7 @@ namespace EPlast.BLL.Services
                 : throw new UnauthorizedAccessException();
         }
 
+        ///<inheritdoc/>
         public async Task<IEnumerable<AnnualReportDTO>> GetAllAsync(ClaimsPrincipal claimsPrincipal)
         {
             var annualReports = await _repositoryWrapper.AnnualReports.GetAllAsync(
@@ -61,6 +63,7 @@ namespace EPlast.BLL.Services
             return _mapper.Map<IEnumerable<AnnualReport>, IEnumerable<AnnualReportDTO>>(filteredAnnualReports);
         }
 
+        ///<inheritdoc/>
         public async Task CreateAsync(ClaimsPrincipal claimsPrincipal, AnnualReportDTO annualReportDTO)
         {
             var city = await _repositoryWrapper.City.GetFirstOrDefaultAsync(
@@ -82,6 +85,7 @@ namespace EPlast.BLL.Services
             await _repositoryWrapper.SaveAsync();
         }
 
+        ///<inheritdoc/>
         public async Task EditAsync(ClaimsPrincipal claimsPrincipal, AnnualReportDTO annualReportDTO)
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
@@ -100,6 +104,7 @@ namespace EPlast.BLL.Services
             await _repositoryWrapper.SaveAsync();
         }
 
+        ///<inheritdoc/>
         public async Task ConfirmAsync(ClaimsPrincipal claimsPrincipal, int id)
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
@@ -118,6 +123,7 @@ namespace EPlast.BLL.Services
             await _repositoryWrapper.SaveAsync();
         }
 
+        ///<inheritdoc/>
         public async Task CancelAsync(ClaimsPrincipal claimsPrincipal, int id)
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
@@ -138,6 +144,7 @@ namespace EPlast.BLL.Services
             await _repositoryWrapper.SaveAsync();
         }
 
+        ///<inheritdoc/>
         public async Task DeleteAsync(ClaimsPrincipal claimsPrincipal, int id)
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
@@ -150,6 +157,7 @@ namespace EPlast.BLL.Services
             await _repositoryWrapper.SaveAsync();
         }
 
+        ///<inheritdoc/>
         public async Task<bool> CheckCreated(ClaimsPrincipal claimsPrincipal, int cityId)
         {
             var city = await _repositoryWrapper.City.GetFirstOrDefaultAsync(
