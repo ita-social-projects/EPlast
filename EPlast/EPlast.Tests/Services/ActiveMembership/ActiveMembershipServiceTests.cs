@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Services.ActiveMembership;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
@@ -55,17 +57,18 @@ namespace EPlast.Tests.Services.ActiveMembership
             // Arrange
             _userManagerService
                 .Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(userDTO);
+                .ReturnsAsync(UserDTO);
 
             // Act
-            var result = await _activeMembershipService.GetDateOfEntryAsync(userId);
+            var result = await _activeMembershipService.GetDateOfEntryAsync(UserId);
 
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<DateTime>(result);
-            Assert.AreEqual(userDateOfEntry, result);
+            Assert.AreEqual(UserDateOfEntry, result);
 
         }
+
         [Test]
         public async Task GetUserPlastDegreesAsync_ReturnsAllUserDegrees()
         {
@@ -77,39 +80,147 @@ namespace EPlast.Tests.Services.ActiveMembership
                 .Returns(GetTestUserPlastDegreesDTO());
 
             // Act
-            var result = await _activeMembershipService.GetUserPlastDegreesAsync(userId);
+            var result = await _activeMembershipService.GetUserPlastDegreesAsync(UserId);
 
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<UserPlastDegreeDTO>>(result);
 
         }
-        private string userId => Guid.NewGuid().ToString();
-        private DateTime userDateOfEntry => DateTime.Today;
-        private UserDTO userDTO => new UserDTO
+
+        [Test]
+        public async Task GetUserAccessLevelsAsync_UserIsPlastun_ReturnsIEnumerableOfStringsWithPlastunRolesForActiveMembership()
         {
-            Id = userId,
-            RegistredOn = userDateOfEntry
+            // Arrange
+            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(UserDTO);
+            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(GetUserAccessLevelAsPlastun());
+
+            // Act
+            IEnumerable<string> result = await _activeMembershipService.GetUserAccessLevelsAsync(UserId);
+            List<string> listResult = result.ToList();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<string>>(result);
+            Assert.AreEqual(GetUserAccessLevelAsPlastun().ToList().Count, listResult.Count);
+            Assert.AreEqual(AccessLevelTypeDTO.Member.GetDescription(), listResult[0]);
+        }
+        [Test]
+        public async Task GetUserAccessLevelsAsync_UserIsSupporter_ReturnsIEnumerableOfStringsWithSupporterRolesForActiveMembership()
+        {
+            // Arrange
+            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(UserDTO);
+            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(GetUserAccessLevelAsSupporter());
+
+            // Act
+            IEnumerable<string> result = await _activeMembershipService.GetUserAccessLevelsAsync(UserId);
+            List<string> listResult = result.ToList();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<string>>(result);
+            Assert.AreEqual(GetUserAccessLevelAsSupporter().ToList().Count, listResult.Count);
+            Assert.AreEqual(AccessLevelTypeDTO.Supporter.GetDescription(), listResult[0]);
+        }
+
+        [Test]
+        public async Task GetUserAccessLevelsAsync_UserIsLeadershipMember_ReturnsIEnumerableOfStringsWithLeadershipMemberRolesForActiveMembership()
+        {
+            // Arrange
+            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(UserDTO);
+            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(GetUserAccessLevelAsLeadershipMember());
+
+            // Act
+            IEnumerable<string> result = await _activeMembershipService.GetUserAccessLevelsAsync(UserId);
+            List<string> listResult = result.ToList();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<string>>(result);
+            Assert.AreEqual(GetUserAccessLevelAsLeadershipMember().ToList().Count, listResult.Count);
+            Assert.AreEqual(AccessLevelTypeDTO.Member.GetDescription(), listResult[0]);
+            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMember.GetDescription(), listResult[1]);
+        }
+        public async Task GetUserAccessLevelsAsync_UserIsFormerMember_ReturnsIEnumerableOfStringsWithFormerMemberMemberRolesForActiveMembership()
+        {
+            // Arrange
+            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(UserDTO);
+            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(GetUserAccessLevelAsFormerMember());
+
+            // Act
+            IEnumerable<string> result = await _activeMembershipService.GetUserAccessLevelsAsync(UserId);
+            List<string> listResult = result.ToList();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<string>>(result);
+            Assert.AreEqual(GetUserAccessLevelAsFormerMember().ToList().Count, listResult.Count);
+            Assert.AreEqual(AccessLevelTypeDTO.FormerMember.GetDescription(), listResult[0]);
+        }
+
+        private string UserId => Guid.NewGuid().ToString();
+        private DateTime UserDateOfEntry => DateTime.Today;
+        private UserDTO UserDTO => new UserDTO
+        {
+            Id = UserId,
+            RegistredOn = UserDateOfEntry
         };
+        private IEnumerable<string> GetUserAccessLevelAsPlastun()
+        {
+            return new List<string>
+            {
+                RolesForActiveMembershipTypeDTO.Plastun.GetDescription()
+            };
+        }
+        private IEnumerable<string> GetUserAccessLevelAsSupporter()
+        {
+            return new List<string>
+            {
+               RolesForActiveMembershipTypeDTO.Supporter.GetDescription()
+            };
+        }
+        private IEnumerable<string> GetUserAccessLevelAsLeadershipMember()
+        {
+            return new List<string>
+            {
+                AccessLevelTypeDTO.Member.GetDescription(),
+                AccessLevelTypeDTO.LeadershipMember.GetDescription()
+            };
+        }
+        private IEnumerable<string> GetUserAccessLevelAsFormerMember()
+        {
+            return new List<string>
+            {
+              AccessLevelTypeDTO.FormerMember.GetDescription()
+            };
+        }
         private IEnumerable<UserPlastDegree> GetTestUserPlastDegrees()
         {
             return new List<UserPlastDegree>
             {
                new  UserPlastDegree
                {
-                   UserId = userId,
+                   UserId = UserId,
                    PlastDegreeId = GetTestPlastDegrees().ToList()[0].Id,
                    PlastDegree = GetTestPlastDegrees().ToList()[0]
                },
                new  UserPlastDegree
                {
-                   UserId = userId,
+                   UserId = UserId,
                    PlastDegreeId = GetTestPlastDegrees().ToList()[1].Id,
                    PlastDegree = GetTestPlastDegrees().ToList()[1]
                },
                new  UserPlastDegree
                {
-                   UserId = userId,
+                   UserId = UserId,
                    PlastDegreeId = GetTestPlastDegrees().ToList()[2].Id,
                    PlastDegree = GetTestPlastDegrees().ToList()[2]
                }
