@@ -526,7 +526,7 @@ namespace EPlast.Tests.Controllers
 
 
        
-        public int GetFakeID()
+        private int GetFakeID()
         {
             return 1;
         }
