@@ -61,6 +61,7 @@ namespace EPlast.BLL.Services.Events
         public async Task<IEnumerable<EventCategoryDTO>> GetCategoriesByTypeIdAsync(int eventTypeId)
         {
             var dto = await _eventCategoryManager.GetDTOByEventTypeIdAsync(eventTypeId);
+
             return dto;
         }
 
@@ -125,8 +126,6 @@ namespace EPlast.BLL.Services.Events
                             .ThenInclude(a => a.User)
                         .Include(e => e.EventType)
                         .Include(e => e.EventCategory)
-                        .Include(e => e.EventGallarys)
-                            .ThenInclude(eg => eg.Gallary)
                     );
 
             var dto = new EventDTO()
@@ -144,6 +143,14 @@ namespace EPlast.BLL.Services.Events
             {
                 dto.Event.EventParticipants = dto.Event.EventParticipants.Where(p => p.StatusId == approvedStatus);
             }
+
+            return dto;
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<EventGalleryDTO>> GetPicturesAsync(int id)
+        {
+            var dto = await _eventGalleryManager.GetPicturesInBase64(id);
 
             return dto;
         }
@@ -220,10 +227,11 @@ namespace EPlast.BLL.Services.Events
             return result;
         }
 
-        public async Task<int> FillEventGalleryAsync(int id, IList<IFormFile> files)
+        /// <inheritdoc />
+        public async Task<IEnumerable<EventGalleryDTO>> FillEventGalleryAsync(int id, IList<IFormFile> files)
         {
-            int result = await _eventGalleryManager.AddPicturesAsync(id, files);
-            return result;
+            var uploadedPictures = await _eventGalleryManager.AddPicturesAsync(id, files);
+            return uploadedPictures;
         }
 
         /// <inheritdoc />
@@ -260,5 +268,6 @@ namespace EPlast.BLL.Services.Events
                 await _repoWrapper.SaveAsync();
             }
         }
+
     }
 }
