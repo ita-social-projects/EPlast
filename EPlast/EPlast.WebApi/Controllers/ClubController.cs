@@ -21,13 +21,11 @@ namespace EPlast.WebApi.Controllers
         private readonly IMapper _mapper;
 
         public ClubController(IClubService clubService, IClubAdministrationService clubAdministrationService,
-            IClubMembersService clubMembersService, ILoggerService<ClubController> logger,
-            IUserManagerService userManagerService, IMapper mapper)
+            IClubMembersService clubMembersService, IUserManagerService userManagerService, IMapper mapper)
         {
             _clubService = clubService;
             _clubAdministrationService = clubAdministrationService;
             _clubMembersService = clubMembersService;
-            _logger = logger;
             _userManagerService = userManagerService;
             _mapper = mapper;
         }
