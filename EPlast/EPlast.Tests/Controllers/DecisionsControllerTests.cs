@@ -97,12 +97,12 @@ namespace EPlast.Tests.Controllers
         public async Task Update_ReturnsOkObjectResult()
         {
             //Arrange
-            Mock<DecisionDTO> mockDecision = new Mock<DecisionDTO>();
+            var mockDecision= new DecisionDTO();
             _decisionService
-                .Setup(x => x.ChangeDecisionAsync(mockDecision.Object));
+                .Setup(x => x.ChangeDecisionAsync(mockDecision));
 
             //Act
-            var result = await _decisionsController.Update(It.IsAny<int>(), mockDecision.Object);
+            var result = await _decisionsController.Update(It.IsAny<int>(), mockDecision);
 
             //Assert
             _decisionService.Verify();
@@ -114,13 +114,13 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             var expected = 1;
-            Mock<DecisionDTO> mockDecision = new Mock<DecisionDTO>();
-            mockDecision.Object.ID = 2;
+            var mockDecision = new DecisionDTO();
+            mockDecision.ID = 2;
             _decisionService
-                .Setup(x => x.ChangeDecisionAsync(mockDecision.Object));
+                .Setup(x => x.ChangeDecisionAsync(mockDecision));
 
             //Act
-            var result = await _decisionsController.Update(expected, mockDecision.Object);
+            var result = await _decisionsController.Update(expected, mockDecision);
 
             //Assert
             _decisionService.Verify();
