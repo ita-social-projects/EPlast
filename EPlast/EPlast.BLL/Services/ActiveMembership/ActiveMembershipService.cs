@@ -48,6 +48,7 @@ namespace EPlast.BLL.Services.ActiveMembership
             return _mapper.Map<IEnumerable<UserPlastDegreeDTO>>(userPlastDegrees);
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<string>> GetUserAccessLevelsAsync(string userId)
         {
             List<string> accessLevels = new List<string>();
