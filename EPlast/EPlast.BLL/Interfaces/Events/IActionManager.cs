@@ -45,9 +45,16 @@ namespace EPlast.BLL.Interfaces.Events
         Task<EventDTO> GetEventInfoAsync(int id, ClaimsPrincipal user);
 
         /// <summary>
+        /// Get pictures in Base64 format by event Id.
+        /// </summary>
+        /// <returns>List of pictures in Base64 format.</returns>
+        /// <param name="id">The Id of event</param>
+        Task<IEnumerable<EventGalleryDTO>> GetPicturesAsync(int id);
+
+        /// <summary>
         /// Delete event by Id.
         /// </summary>
-        /// <returns>Status code of the event delete operation.</returns>
+        /// <returns>Status code of the event deleting operation.</returns>
         /// <param name="id">The Id of event</param>
         Task<int> DeleteEventAsync(int id);
 
@@ -88,12 +95,18 @@ namespace EPlast.BLL.Interfaces.Events
         /// <param name="id">The Id of event participant</param>
         Task<int> RejectParticipantAsync(int id);
 
-        Task<int> FillEventGalleryAsync(int id, IList<IFormFile> files);
+        /// <summary>
+        /// Add pictures to gallery of specific event by event Id.
+        /// </summary>
+        /// <returns>List of added pictures.</returns>
+        /// <param name="id">The Id of event</param>
+        /// <param name="files">List of uploaded pictures</param>
+        Task<IEnumerable<EventGalleryDTO>> FillEventGalleryAsync(int id, IList<IFormFile> files);
 
         /// <summary>
         /// Delete picture by Id.
         /// </summary>
-        /// <returns>Status code of the picture delete operation.</returns>
+        /// <returns>Status code of the picture deleting operation.</returns>
         /// <param name="id">The Id of picture</param>
         Task<int> DeletePictureAsync(int id);
     }
