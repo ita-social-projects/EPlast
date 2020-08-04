@@ -519,7 +519,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkResult>(result);
         }
 
-        public UserDTO CreateFakeUser()
+        private UserDTO CreateFakeUser()
             => new UserDTO()
             {
                 Id = "1",
@@ -532,13 +532,13 @@ namespace EPlast.Tests.Controllers
                 },
             };
 
-        public UserViewModel CreateFakeUserViewModel()
+        private UserViewModel CreateFakeUserViewModel()
             => new UserViewModel()
             {
                 ID = "1",
             };
 
-        public EditUserViewModel CreateFakeEditUserViewModel()
+        private EditUserViewModel CreateFakeEditUserViewModel()
             => new EditUserViewModel()
             {
                 User = new UserViewModel()
@@ -561,13 +561,13 @@ namespace EPlast.Tests.Controllers
                 },
             };
 
-        public UserInfoViewModel CreateFaceUserInfoViewModel()
+        private UserInfoViewModel CreateFaceUserInfoViewModel()
             => new UserInfoViewModel()
             {
                 Id = "1",
             };
 
-        public List<ConfirmedUserViewModel> CreateListOfConfirmedUserViewModels()
+        private List<ConfirmedUserViewModel> CreateListOfConfirmedUserViewModels()
             => new List<ConfirmedUserViewModel>()
             {
                 new ConfirmedUserViewModel()
@@ -594,7 +594,7 @@ namespace EPlast.Tests.Controllers
                 },
             };
 
-        public ConfirmedUserViewModel CreateConfirmedUserViewModel()
+        private ConfirmedUserViewModel CreateConfirmedUserViewModel()
             => new ConfirmedUserViewModel()
             {
                 ID = 1,
