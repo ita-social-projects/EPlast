@@ -95,7 +95,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(UserDTO);
             _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
-                .ReturnsAsync(GetUserAccessLevelAsPlastun());
+                .ReturnsAsync(GetUserRolesAsPlastun());
 
             // Act
             IEnumerable<string> result = await _activeMembershipService.GetUserAccessLevelsAsync(UserId);
@@ -104,7 +104,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<string>>(result);
-            Assert.AreEqual(GetUserAccessLevelAsPlastun().ToList().Count, listResult.Count);
+            Assert.AreEqual(GetUserRolesAsPlastun().ToList().Count, listResult.Count);
             Assert.AreEqual(AccessLevelTypeDTO.Member.GetDescription(), listResult[0]);
         }
         [Test]
@@ -114,7 +114,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(UserDTO);
             _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
-                .ReturnsAsync(GetUserAccessLevelAsSupporter());
+                .ReturnsAsync(GetUserRolesAsSupporter());
 
             // Act
             IEnumerable<string> result = await _activeMembershipService.GetUserAccessLevelsAsync(UserId);
@@ -123,7 +123,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<string>>(result);
-            Assert.AreEqual(GetUserAccessLevelAsSupporter().ToList().Count, listResult.Count);
+            Assert.AreEqual(GetUserRolesAsSupporter().ToList().Count, listResult.Count);
             Assert.AreEqual(AccessLevelTypeDTO.Supporter.GetDescription(), listResult[0]);
         }
 
@@ -134,7 +134,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(UserDTO);
             _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
-                .ReturnsAsync(GetUserAccessLevelAsLeadershipMember());
+                .ReturnsAsync(GetUserRolesAsLeadershipMember());
 
             // Act
             IEnumerable<string> result = await _activeMembershipService.GetUserAccessLevelsAsync(UserId);
@@ -143,17 +143,16 @@ namespace EPlast.Tests.Services.ActiveMembership
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<string>>(result);
-            Assert.AreEqual(GetUserAccessLevelAsLeadershipMember().ToList().Count, listResult.Count);
-            Assert.AreEqual(AccessLevelTypeDTO.Member.GetDescription(), listResult[0]);
-            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMember.GetDescription(), listResult[1]);
         }
+
+        [Test]
         public async Task GetUserAccessLevelsAsync_UserIsFormerMember_ReturnsIEnumerableOfStringsWithFormerMemberMemberRolesForActiveMembership()
         {
             // Arrange
             _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(UserDTO);
             _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
-                .ReturnsAsync(GetUserAccessLevelAsFormerMember());
+                .ReturnsAsync(GetUserRolesAsFormerMember());
 
             // Act
             IEnumerable<string> result = await _activeMembershipService.GetUserAccessLevelsAsync(UserId);
@@ -162,45 +161,131 @@ namespace EPlast.Tests.Services.ActiveMembership
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<string>>(result);
-            Assert.AreEqual(GetUserAccessLevelAsFormerMember().ToList().Count, listResult.Count);
-            Assert.AreEqual(AccessLevelTypeDTO.FormerMember.GetDescription(), listResult[0]);
         }
 
+        [Test]
+        public async Task AddPlastDegreeForUserAsync_UserDoesNotExist_ReturnsFalse()
+        {
+            // Arrange
+            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(() => null);
+
+            //Act
+            var result = await _activeMembershipService.AddPlastDegreeForUserAsync(new UserPlastDegreePostDTO());
+
+            // Assert
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public async Task AddPlastDegreeForUserAsync_UserHasDegreeWhichHeAlreadyHas_ReturnsFalse()
+        {
+            // Arrange
+            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(UserDTO);
+            _mapper.Setup(m => m.Map<IEnumerable<UserPlastDegree>>(It.IsAny<IEnumerable<UserPlastDegreeDTO>>()))
+                .Returns(GetTestUserPlastDegrees());
+
+            //Act
+            var result = await _activeMembershipService.AddPlastDegreeForUserAsync(new UserPlastDegreePostDTO
+            {
+                PlastDegreeId = UserDTO.UserPlastDegrees.ToList()[0].PlastDegreeId
+            });
+
+            // Assert
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public async Task AddPlastDegreeForUserAsync_AddDegreeWhihDoesNotExist_ReturnsFalse()
+        {
+            // Arrange
+            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(UserDTO);
+            _mapper.Setup(m => m.Map<IEnumerable<UserPlastDegree>>(It.IsAny<IEnumerable<UserPlastDegreeDTO>>()))
+                .Returns(GetTestUserPlastDegrees());
+            _mapper.Setup(m => m.Map<UserPlastDegree>(It.IsAny<UserPlastDegreePostDTO>()))
+               .Returns(new UserPlastDegree());
+            _mapper.Setup(m => m.Map<User>(It.IsAny<UserDTO>()))
+                .Returns(new User());
+            _repoWrapper.Setup(rw => rw.PlastDegrees.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<PlastDegree, bool>>>(),
+                    It.IsAny<Func<IQueryable<PlastDegree>, IIncludableQueryable<PlastDegree, object>>>()))
+                .ReturnsAsync(() => null);
+            //Act
+            var result = await _activeMembershipService.AddPlastDegreeForUserAsync(new UserPlastDegreePostDTO
+            {
+                PlastDegreeId = DoesNotExistingId
+            });
+
+            // Assert
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public async Task AddPlastDegreeForUserAsync_AddDegree_ReturnsTrue()
+        {
+            // Arrange
+            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(UserDTO);
+            _mapper.Setup(m => m.Map<IEnumerable<UserPlastDegree>>(It.IsAny<IEnumerable<UserPlastDegreeDTO>>()))
+                .Returns(GetTestUserPlastDegrees());
+            _mapper.Setup(m => m.Map<UserPlastDegree>(It.IsAny<UserPlastDegreePostDTO>()))
+               .Returns(new UserPlastDegree());
+            _mapper.Setup(m => m.Map<User>(It.IsAny<UserDTO>()))
+                .Returns(new User());
+            _repoWrapper.Setup(rw => rw.PlastDegrees.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<PlastDegree, bool>>>(),
+                    It.IsAny<Func<IQueryable<PlastDegree>, IIncludableQueryable<PlastDegree, object>>>()))
+                .ReturnsAsync(new PlastDegree());
+            _repoWrapper.Setup(rw  => rw.UserPlastDegrees.Attach(It.IsAny<UserPlastDegree>()));
+            _repoWrapper.Setup(rw => rw.UserPlastDegrees.Create(It.IsAny<UserPlastDegree>()));
+
+            //Act
+            var result = await _activeMembershipService.AddPlastDegreeForUserAsync(new UserPlastDegreePostDTO
+            {
+                PlastDegreeId = DoesNotExistingId
+            });
+
+            // Assert
+            Assert.IsTrue(result);
+        }
         private string UserId => Guid.NewGuid().ToString();
         private DateTime UserDateOfEntry => DateTime.Today;
+        private int DoesNotExistingId => 42;
+
         private UserDTO UserDTO => new UserDTO
         {
             Id = UserId,
-            RegistredOn = UserDateOfEntry
+            RegistredOn = UserDateOfEntry,
+            UserPlastDegrees = new List<UserPlastDegreeDTO>
+            {
+                new UserPlastDegreeDTO{PlastDegreeId = 1}
+            }
         };
-        private IEnumerable<string> GetUserAccessLevelAsPlastun()
+        private IEnumerable<string> GetUserRolesAsPlastun()
         {
             return new List<string>
             {
                 RolesForActiveMembershipTypeDTO.Plastun.GetDescription()
             };
         }
-        private IEnumerable<string> GetUserAccessLevelAsSupporter()
+        private IEnumerable<string> GetUserRolesAsSupporter()
         {
             return new List<string>
             {
                RolesForActiveMembershipTypeDTO.Supporter.GetDescription()
             };
         }
-        private IEnumerable<string> GetUserAccessLevelAsLeadershipMember()
+        private IEnumerable<string> GetUserRolesAsLeadershipMember()
         {
             return new List<string>
             {
-                AccessLevelTypeDTO.Member.GetDescription(),
-                AccessLevelTypeDTO.LeadershipMember.GetDescription()
+                 RolesForActiveMembershipTypeDTO.Plastun.GetDescription(),
+                 "Admin"
             };
         }
-        private IEnumerable<string> GetUserAccessLevelAsFormerMember()
+        private IEnumerable<string> GetUserRolesAsFormerMember()
         {
-            return new List<string>
-            {
-              AccessLevelTypeDTO.FormerMember.GetDescription()
-            };
+            return new List<string>();
         }
         private IEnumerable<UserPlastDegree> GetTestUserPlastDegrees()
         {
