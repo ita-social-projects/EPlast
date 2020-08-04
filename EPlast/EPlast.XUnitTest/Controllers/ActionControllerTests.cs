@@ -377,39 +377,39 @@ namespace EPlast.XUnitTest.Controllers
             Assert.Empty(viewModel);
         }
 
-        [Fact]
-        public async void FillEventGallerySuccessTest()
-        {
-            //Arrange
-            int eventId = 2;
-            _actionManager.Setup(x => x.FillEventGalleryAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
-                .ReturnsAsync(StatusCodes.Status200OK);
-            //Act
-            var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = await actionsController.FillEventGallery(eventId, FakeFiles());
-            var codeResult = actionResult as StatusCodeResult;
-            //Assert
-            Assert.NotNull(actionResult);
-            Assert.IsType<StatusCodeResult>(actionResult);
-            Assert.Equal(StatusCodes.Status200OK, codeResult?.StatusCode);
-        }
+        //[Fact]
+        //public async void FillEventGallerySuccessTest()
+        //{
+        //    //Arrange
+        //    int eventId = 2;
+        //    _actionManager.Setup(x => x.FillEventGalleryAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
+        //        .ReturnsAsync(StatusCodes.Status200OK);
+        //    //Act
+        //    var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
+        //    var actionResult = await actionsController.FillEventGallery(eventId, FakeFiles());
+        //    var codeResult = actionResult as StatusCodeResult;
+        //    //Assert
+        //    Assert.NotNull(actionResult);
+        //    Assert.IsType<StatusCodeResult>(actionResult);
+        //    Assert.Equal(StatusCodes.Status200OK, codeResult?.StatusCode);
+        //}
 
-        [Fact]
-        public async void FillEventGalleryFailTest()
-        {
-            //Arrange
-            int eventId = 2;
-            _actionManager.Setup(x => x.FillEventGalleryAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
-                .ThrowsAsync(new Exception());
-            //Act
-            var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
-            var actionResult = await actionsController.FillEventGallery(eventId, FakeFiles());
-            var codeResult = actionResult as StatusCodeResult;
-            //Assert
-            Assert.NotNull(actionResult);
-            Assert.IsType<StatusCodeResult>(actionResult);
-            Assert.Equal(StatusCodes.Status500InternalServerError, codeResult?.StatusCode);
-        }
+        //[Fact]
+        //public async void FillEventGalleryFailTest()
+        //{
+        //    //Arrange
+        //    int eventId = 2;
+        //    _actionManager.Setup(x => x.FillEventGalleryAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
+        //        .ThrowsAsync(new Exception());
+        //    //Act
+        //    var actionsController = new ActionController(_actionManager.Object, _mapper.Object);
+        //    var actionResult = await actionsController.FillEventGallery(eventId, FakeFiles());
+        //    var codeResult = actionResult as StatusCodeResult;
+        //    //Assert
+        //    Assert.NotNull(actionResult);
+        //    Assert.IsType<StatusCodeResult>(actionResult);
+        //    Assert.Equal(StatusCodes.Status500InternalServerError, codeResult?.StatusCode);
+        //}
 
         public EventViewModel GetEventViewModel()
         {
