@@ -1,7 +1,6 @@
 using AutoMapper;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Club;
-using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.WebApi.Models.Club;
 using Microsoft.AspNetCore.Mvc;
