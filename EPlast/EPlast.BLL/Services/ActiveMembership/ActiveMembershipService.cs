@@ -56,11 +56,11 @@ namespace EPlast.BLL.Services.ActiveMembership
             List<string> userRoles = (await _userManagerService.GetRolesAsync(user)).ToList();
             if(userRoles.Count == 1)
             {
-                if(userRoles[0] == "Пластун")
+                if(userRoles[0] == RolesForActiveMembershipTypeDTO.Plastun.GetDescription())
                 {
                    accessLevels.Add(AccessLevelTypeDTO.Member.GetDescription());
                 }
-                else if(userRoles[0] == "Прихильник")
+                else if(userRoles[0] == RolesForActiveMembershipTypeDTO.Supporter.GetDescription())
                 {
                     accessLevels.Add(AccessLevelTypeDTO.Supporter.GetDescription());
                 }
