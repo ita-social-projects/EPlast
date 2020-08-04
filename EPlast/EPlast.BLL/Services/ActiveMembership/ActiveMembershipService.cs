@@ -78,7 +78,7 @@ namespace EPlast.BLL.Services.ActiveMembership
                 accessLevels.Add(AccessLevelTypeDTO.FormerMember.GetDescription());
             }
 
-            return accessLevels;
+            return accessLevels.AsEnumerable();
         }
     }
 }
