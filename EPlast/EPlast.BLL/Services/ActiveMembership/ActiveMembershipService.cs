@@ -80,5 +80,10 @@ namespace EPlast.BLL.Services.ActiveMembership
 
             return accessLevels.AsEnumerable();
         }
+
+        public async Task<bool> AddPlastDegreeForUser()
+        {
+            return false;
+        }
     }
 }
