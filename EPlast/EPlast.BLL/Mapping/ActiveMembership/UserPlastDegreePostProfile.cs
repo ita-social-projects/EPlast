@@ -1,9 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.DataAccess.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EPlast.BLL.Mapping.ActiveMembership
 {
@@ -11,9 +8,7 @@ namespace EPlast.BLL.Mapping.ActiveMembership
     {
         public UserPlastDegreePostProfile()
         {
-            CreateMap<UserPlastDegreePostDTO, UserPlastDegree>()
-                .ForMember(upd => upd.PlastDegreeId, updp => updp.MapFrom(f => f.PlastDegree.Id))
-                .ReverseMap();
+            CreateMap<UserPlastDegreePostDTO, UserPlastDegree>().ReverseMap();
         }
     }
 }

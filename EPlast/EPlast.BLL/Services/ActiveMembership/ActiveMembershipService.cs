@@ -89,15 +89,20 @@ namespace EPlast.BLL.Services.ActiveMembership
             var userDto = await _userManagerService.FindByIdAsync(userPlastDegreePostDTO.UserId);
             if (userDto != null)
             {
-
-                var userPlastDegrees = userDto.UserPlastDegrees.ToList();
-                if (!userPlastDegrees.Any(upd => upd.PlastDegree.Equals(_mapper.Map<PlastDegree>(userPlastDegreePostDTO.PlastDegree))))
+                List<UserPlastDegree> userPlastDegrees = userDto.UserPlastDegrees.ToList();
+                if (!userPlastDegrees.Any(upd => upd.PlastDegree.Id == userPlastDegreePostDTO.PlastDegreeId))
                 {
-                    var userPlastDegree = _mapper.Map<UserPlastDegree>(userPlastDegreePostDTO);
+                    UserPlastDegree userPlastDegree = _mapper.Map<UserPlastDegree>(userPlastDegreePostDTO);
                     userPlastDegree.User = _mapper.Map<User>(userDto);
-                    _repoWrapper.UserPlastDegrees.Attach(userPlastDegree);
-                    _repoWrapper.UserPlastDegrees.Create(userPlastDegree);
-                    isAdded = true;
+                    PlastDegree plastDegree = await _repoWrapper.PlastDegrees.GetFirstOrDefaultAsync(pd => pd.Id == userPlastDegreePostDTO.PlastDegreeId);
+                    if (plastDegree != null)
+                    {
+                        userPlastDegree.PlastDegree = plastDegree;
+                        _repoWrapper.UserPlastDegrees.Attach(userPlastDegree);
+                        _repoWrapper.UserPlastDegrees.Create(userPlastDegree);
+                        isAdded = true;
+                    }
+
                 }
             }
 
