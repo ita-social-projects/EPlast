@@ -13,7 +13,6 @@ namespace EPlast.BLL.Mapping.ActiveMembership
         {
             CreateMap<UserPlastDegreePostDTO, UserPlastDegree>()
                 .ForMember(upd => upd.PlastDegreeId, updp => updp.MapFrom(f => f.PlastDegree.Id))
-                .ForMember(upd => upd.UserId, updp => updp.MapFrom(f => f.User.Id))
                 .ReverseMap();
         }
     }

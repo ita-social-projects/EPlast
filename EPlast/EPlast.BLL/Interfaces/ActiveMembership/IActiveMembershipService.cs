@@ -33,5 +33,11 @@ namespace EPlast.BLL.Interfaces.ActiveMembership
         /// <param name="userId">User id</param>
         /// <returns>All access levels of current user</returns>
         public Task<IEnumerable<string>> GetUserAccessLevelsAsync(string userId);
+        /// <summary>
+        /// Adds plast degree for user
+        /// </summary>
+        /// <param name="userPlastDegreePostDTO"></param>
+        /// <returns>A bool value that says that degree was added</returns>
+        public Task<bool> AddPlastDegreeForUserAsync(UserPlastDegreePostDTO userPlastDegreePostDTO);
     }
 }
