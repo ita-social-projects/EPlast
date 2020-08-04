@@ -89,7 +89,7 @@ namespace EPlast.BLL.Services.ActiveMembership
             var userDto = await _userManagerService.FindByIdAsync(userPlastDegreePostDTO.UserId);
             if (userDto != null)
             {
-                List<UserPlastDegree> userPlastDegrees = userDto.UserPlastDegrees.ToList();
+                List<UserPlastDegree> userPlastDegrees = _mapper.Map<IEnumerable<UserPlastDegree>>(userDto.UserPlastDegrees).ToList();
                 if (!userPlastDegrees.Any(upd => upd.PlastDegree.Id == userPlastDegreePostDTO.PlastDegreeId))
                 {
                     UserPlastDegree userPlastDegree = _mapper.Map<UserPlastDegree>(userPlastDegreePostDTO);
