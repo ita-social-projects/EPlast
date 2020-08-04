@@ -227,7 +227,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="clubId">Club id</param>
         /// <param name="createdAdmin">New administrator</param>
         /// <returns>New club administrator object</returns>
-        /// <response code="200">New club administrator added</response>
+        /// <response code="200">A new club administrator added</response>
         [HttpPost("{clubId:int}/add-administration")]
         public async Task<IActionResult> AddAdmin(int clubId, ClubAdministrationViewModel createdAdmin)
         {
