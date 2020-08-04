@@ -1,15 +1,20 @@
-﻿using EPlast.BLL.Services.Events;
+﻿using EPlast.BLL.DTO.Events;
+using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Services.Events;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.Events
@@ -17,25 +22,25 @@ namespace EPlast.XUnitTest.Services.Events
     public class EventGalleryManagerTests
     {
         private readonly Mock<IRepositoryWrapper> _repoWrapper;
-        private readonly Mock<IWebHostEnvironment> _env;
+        private readonly Mock<IEventBlobStorageRepository> _eventBlobStorage;
 
         public EventGalleryManagerTests()
         {
             _repoWrapper = new Mock<IRepositoryWrapper>();
-            _env = new Mock<IWebHostEnvironment>();
+            _eventBlobStorage = new Mock<IEventBlobStorageRepository>();
         }
 
         [Fact]
         public async void DeletePictureSuccessTest()
         {
             //Arrange
-            int eventId = 5;
+            int eventId = 145;
             _repoWrapper.Setup(x =>
                     x.Gallary.GetFirstAsync(It.IsAny<Expression<Func<Gallary, bool>>>(), null))
                 .ReturnsAsync(new Gallary { ID = 2, GalaryFileName = "picture.jpj" });
-            _env.Setup(e => e.WebRootPath).Returns("Webroot\\");
+            _eventBlobStorage.Setup(x => x.DeleteBlobAsync(It.IsAny<string>()));
             //Act
-            var eventGalleryManager = new EventGalleryManager(_repoWrapper.Object, _env.Object);
+            var eventGalleryManager = new EventGalleryManager(_repoWrapper.Object, _eventBlobStorage.Object);
             var methodResult = await eventGalleryManager.DeletePictureAsync(eventId);
             //Assert
             _repoWrapper.Verify(r => r.Gallary.Delete(It.IsAny<Gallary>()), Times.Once());
@@ -47,31 +52,55 @@ namespace EPlast.XUnitTest.Services.Events
         public async void DeletePictureFailTest()
         {
             //Arrange
-            int eventId = 5;
+            int eventId = 145;
             _repoWrapper.Setup(x =>
                     x.Gallary.GetFirstAsync(It.IsAny<Expression<Func<Gallary, bool>>>(), null))
                 .ThrowsAsync(new Exception());
-            _env.Setup(e => e.WebRootPath).Returns("Webroot\\");
+            _eventBlobStorage.Setup(x => x.DeleteBlobAsync(It.IsAny<string>()));
             //Act
-            var eventGalleryManager = new EventGalleryManager(_repoWrapper.Object, _env.Object);
+            var eventGalleryManager = new EventGalleryManager(_repoWrapper.Object, _eventBlobStorage.Object);
             var methodResult = await eventGalleryManager.DeletePictureAsync(eventId);
             //Assert
             Assert.Equal(StatusCodes.Status400BadRequest, methodResult);
         }
 
         [Fact]
+        public async void GetPicturesInBase64Test()
+        {
+            //Arrange
+            int eventId = 145;
+            var picture = "StringInBase64";
+            _repoWrapper.Setup(x =>
+                    x.EventGallary.GetAllAsync(It.IsAny<Expression<Func<EventGallary, bool>>>(), It.IsAny<Func<IQueryable<EventGallary>, IIncludableQueryable<EventGallary, object>>>()))
+                .ReturnsAsync(GetEventsGallaries());
+            _eventBlobStorage.Setup(x => x.GetBlobBase64Async(It.IsAny<string>()))
+                .ReturnsAsync(picture);
+            //Act
+            var eventGalleryManager = new EventGalleryManager(_repoWrapper.Object, _eventBlobStorage.Object);
+            var methodResult = await eventGalleryManager.GetPicturesInBase64(eventId);
+            //Assert
+            Assert.NotNull(methodResult);
+            Assert.IsType<List<EventGalleryDTO>>(methodResult);
+            Assert.Equal(GetEventsGallaries().Count(), methodResult.ToList().Count);
+        }
+
+        [Fact]
         public async void FillEventGalleryTest()
         {
             //Arrange
-            int eventId = 5;
+            int eventId = 145;
+            var picture = "StringInBase64";
             _repoWrapper.Setup(x => x.Gallary.CreateAsync((It.IsAny<Gallary>())));
             _repoWrapper.Setup(x => x.EventGallary.CreateAsync((It.IsAny<EventGallary>())));
-            _env.Setup(e => e.WebRootPath).Returns("Webroot\\");
+            _eventBlobStorage.Setup(x => x.UploadBlobAsync(It.IsAny<IFormFile>(), It.IsAny<string>()));
+            _eventBlobStorage.Setup(x => x.GetBlobBase64Async(It.IsAny<string>()))
+                .ReturnsAsync(picture);
             //Act  
-            var eventGalleryManager = new EventGalleryManager(_repoWrapper.Object, _env.Object);
+            var eventGalleryManager = new EventGalleryManager(_repoWrapper.Object, _eventBlobStorage.Object);
             var methodResult = await eventGalleryManager.AddPicturesAsync(eventId, FakeFiles());
             //Assert
-            Assert.Equal(StatusCodes.Status400BadRequest, methodResult);
+            Assert.NotNull(methodResult);
+            Assert.IsType<List<EventGalleryDTO>>(methodResult);
         }
 
         public static IList<IFormFile> FakeFiles()
@@ -88,6 +117,19 @@ namespace EPlast.XUnitTest.Services.Events
             fileMock.Setup(_ => _.Length).Returns(ms.Length);
             var arr = new[] { fileMock.Object, fileMock.Object };
             return arr;
+        }
+
+        public IQueryable<EventGallary> GetEventsGallaries()
+        {
+            var eventsGallaries = new List<EventGallary>
+            {
+                new EventGallary{
+                    EventID=145,
+                    GallaryID=145,
+                    Gallary=new Gallary{ID=145,GalaryFileName="FileName"}
+                }
+            }.AsQueryable();
+            return eventsGallaries;
         }
     }
 

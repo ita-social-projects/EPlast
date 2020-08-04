@@ -16,14 +16,15 @@ namespace EPlast.BLL.Mapping.Events
                 .ForMember(d => d.EventDateStart, s => s.MapFrom(e => e.EventDateStart.ToString("dd-MM-yyyy")))
                 .ForMember(d => d.EventDateEnd, s => s.MapFrom(e => e.EventDateEnd.ToString("dd-MM-yyyy")))
                 .ForMember(d => d.EventLocation, s => s.MapFrom(e => e.Eventlocation))
+                .ForMember(d => d.EventTypeId, s => s.MapFrom(e => e.EventType.ID))
                 .ForMember(d => d.EventType, s => s.MapFrom(e => e.EventType.EventTypeName))
+                .ForMember(d => d.EventCategory, s => s.MapFrom(e => e.EventCategory.ID))
                 .ForMember(d => d.EventCategory, s => s.MapFrom(e => e.EventCategory.EventCategoryName))
                 .ForMember(d => d.EventStatus, s => s.MapFrom(e => e.EventStatus.EventStatusName))
                 .ForMember(d => d.FormOfHolding, s => s.MapFrom(e => e.FormOfHolding))
                 .ForMember(d => d.ForWhom, s => s.MapFrom(e => e.ForWhom))
                 .ForMember(d => d.EventAdmins, s => s.MapFrom(e => e.EventAdministrations.ToList()))
-                .ForMember(d => d.EventParticipants, s => s.MapFrom(e => e.Participants.ToList()))
-                .ForMember(d => d.EventGallery, s => s.MapFrom(e => e.EventGallarys.ToList()));
+                .ForMember(d => d.EventParticipants, s => s.MapFrom(e => e.Participants.ToList()));
         }
     }
 }

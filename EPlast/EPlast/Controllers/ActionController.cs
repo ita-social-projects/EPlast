@@ -171,18 +171,18 @@ namespace EPlast.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> FillEventGallery(int id, IList<IFormFile> files)
-        {
-            try
-            {
-                var code = await _actionManager.FillEventGalleryAsync(id, files);
-                return StatusCode(code);
-            }
-            catch
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
-        }
+        //[HttpPost]
+        //public async Task<IActionResult> FillEventGallery(int id, IList<IFormFile> files)
+        //{
+        //    try
+        //    {
+        //        var code = await _actionManager.FillEventGalleryAsync(id, files);
+        //        return StatusCode(code);
+        //    }
+        //    catch
+        //    {
+        //        return StatusCode(StatusCodes.Status500InternalServerError);
+        //    }
+        //}
     }
 }
