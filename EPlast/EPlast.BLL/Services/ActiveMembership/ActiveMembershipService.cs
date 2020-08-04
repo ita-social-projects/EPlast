@@ -3,6 +3,7 @@ using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Services.Interfaces;
+using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using System;
 using System.Collections.Generic;
@@ -54,20 +55,20 @@ namespace EPlast.BLL.Services.ActiveMembership
             List<string> accessLevels = new List<string>();
             var user = await _userManagerService.FindByIdAsync(userId);
             List<string> userRoles = (await _userManagerService.GetRolesAsync(user)).ToList();
-            if(userRoles.Count == 1)
+            if (userRoles.Count == 1)
             {
-                if(userRoles[0] == RolesForActiveMembershipTypeDTO.Plastun.GetDescription())
+                if (userRoles[0] == RolesForActiveMembershipTypeDTO.Plastun.GetDescription())
                 {
-                   accessLevels.Add(AccessLevelTypeDTO.Member.GetDescription());
+                    accessLevels.Add(AccessLevelTypeDTO.Member.GetDescription());
                 }
-                else if(userRoles[0] == RolesForActiveMembershipTypeDTO.Supporter.GetDescription())
+                else if (userRoles[0] == RolesForActiveMembershipTypeDTO.Supporter.GetDescription())
                 {
                     accessLevels.Add(AccessLevelTypeDTO.Supporter.GetDescription());
                 }
             }
             else if (userRoles.Count > 1)
             {
-                accessLevels.AddRange(new List<string> 
+                accessLevels.AddRange(new List<string>
                 {
                     AccessLevelTypeDTO.Member.GetDescription(),
                     AccessLevelTypeDTO.LeadershipMember.GetDescription()
@@ -81,9 +82,26 @@ namespace EPlast.BLL.Services.ActiveMembership
             return accessLevels.AsEnumerable();
         }
 
-        public async Task<bool> AddPlastDegreeForUser()
+        /// <inheritdoc />
+        public async Task<bool> AddPlastDegreeForUserAsync(UserPlastDegreePostDTO userPlastDegreePostDTO)
         {
-            return false;
+            bool isAdded = false;
+            var userDto = await _userManagerService.FindByIdAsync(userPlastDegreePostDTO.UserId);
+            if (userDto != null)
+            {
+
+                var userPlastDegrees = userDto.UserPlastDegrees.ToList();
+                if (!userPlastDegrees.Any(upd => upd.PlastDegree.Equals(_mapper.Map<PlastDegree>(userPlastDegreePostDTO.PlastDegree))))
+                {
+                    var userPlastDegree = _mapper.Map<UserPlastDegree>(userPlastDegreePostDTO);
+                    userPlastDegree.User = _mapper.Map<User>(userDto);
+                    _repoWrapper.UserPlastDegrees.Attach(userPlastDegree);
+                    _repoWrapper.UserPlastDegrees.Create(userPlastDegree);
+                    isAdded = true;
+                }
+            }
+
+            return isAdded;
         }
     }
 }
