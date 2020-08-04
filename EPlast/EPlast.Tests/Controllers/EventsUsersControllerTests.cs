@@ -46,13 +46,11 @@ namespace EPlast.Tests.Controllers
         public async Task GetEventUserByUserId_EventUserWithIdOne_ReturnsEventUserWithIdOne()
         {
             // Arrange
-            var id = "1";
+            var expectedId = "1";
 
             _eventUserManager
                 .Setup((x) => x.EventUserAsync(It.IsAny<string>(), It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(CreateFakeEventUser());
-
-            var expected = id;
 
             // Act
             var result = await _eventsUsersController.GetEventUserByUserId(It.IsAny<string>());
@@ -61,7 +59,7 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             Assert.NotNull((result as ObjectResult).Value);
-            Assert.AreEqual(expected, actual);
+            Assert.AreEqual(expectedId, actual);
         }
 
         [Test]
@@ -84,13 +82,11 @@ namespace EPlast.Tests.Controllers
         public async Task GetEventsDataForCreate_EventCreateWithIdOne_ReturnsEventCreateWithIdOne()
         {
             // Arrange
-            var id = 1;
+            var expectedId = 1;
 
             _eventUserManager
                 .Setup((x) => x.InitializeEventCreateDTOAsync())
                 .ReturnsAsync(CreateFakeEventCreate());
-
-            var expected = id;
 
             // Act
             var result = await _eventsUsersController.GetEventsDataForCreate();
@@ -99,7 +95,7 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             Assert.NotNull((result as ObjectResult).Value);
-            Assert.AreEqual(expected, actual);
+            Assert.AreEqual(expectedId, actual);
         }
 
         [Test]
@@ -122,13 +118,11 @@ namespace EPlast.Tests.Controllers
         public async Task EventCreate_EventCreateWithIdOne_ReturnsEventCreateWithIdOne()
         {
             // Arrange
-            var id = 1;
+            var expectedId = 1;
 
             _eventUserManager
                 .Setup((x) => x.CreateEventAsync(CreateFakeEventCreate()))
                 .ReturnsAsync(It.IsAny<int>());
-
-            var expected = id;
 
             // Act
             var result = await _eventsUsersController.EventCreate(CreateFakeEventCreate());
@@ -137,7 +131,7 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             Assert.NotNull((result as ObjectResult).Value);
-            Assert.AreEqual(expected, actual);
+            Assert.AreEqual(expectedId, actual);
         }
 
         [Test]
@@ -160,13 +154,11 @@ namespace EPlast.Tests.Controllers
         public async Task EventEdit_EventCreateWithIdOne_ReturnsEventCreateWithIdOne()
         {
             // Arrange
-            var id = 1;
+            var expectedId = 1;
 
             _eventUserManager
                 .Setup((x) => x.InitializeEventEditDTOAsync(It.IsAny<int>()))
                 .ReturnsAsync(CreateFakeEventCreate());
-
-            var expected = id;
 
             // Act
             var result = await _eventsUsersController.EventEdit(It.IsAny<int>());
@@ -175,7 +167,7 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             Assert.NotNull((result as ObjectResult).Value);
-            Assert.AreEqual(expected, actual);
+            Assert.AreEqual(expectedId, actual);
         }
 
         [Test]
@@ -192,7 +184,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<NoContentResult>(result);
         }
 
-        public EventUserDTO CreateFakeEventUser()
+        private EventUserDTO CreateFakeEventUser()
             => new EventUserDTO()
             {
                 User = new UserDTO()
@@ -203,7 +195,7 @@ namespace EPlast.Tests.Controllers
                 }
             };
 
-        public EventCreateDTO CreateFakeEventCreate()
+        private EventCreateDTO CreateFakeEventCreate()
             => new EventCreateDTO()
             {
                 Event = new EventCreationDTO()
