@@ -17,7 +17,6 @@ namespace EPlast.WebApi.Controllers
         private readonly IClubService _clubService;
         private readonly IClubAdministrationService _clubAdministrationService;
         private readonly IClubMembersService _clubMembersService;
-        private readonly ILoggerService<ClubController> _logger;
         private readonly IUserManagerService _userManagerService;
         private readonly IMapper _mapper;
 
