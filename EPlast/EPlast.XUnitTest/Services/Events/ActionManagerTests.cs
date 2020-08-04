@@ -282,17 +282,32 @@ namespace EPlast.XUnitTest.Services.Events
             Assert.Equal(StatusCodes.Status200OK, methodResult);
         }
         [Fact]
+        public async void GetPicturesTest()
+        {
+            //Arrange
+            int eventId = 3;
+            _eventGalleryManager.Setup(x => x.GetPicturesInBase64(It.IsAny<int>()))
+                .ReturnsAsync(new List<EventGalleryDTO>());
+            //Act
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
+            var methodResult = await actionManager.GetPicturesAsync(eventId);
+            //Assert
+            Assert.NotNull(methodResult);
+            Assert.IsType<List<EventGalleryDTO>>(methodResult);
+        }
+        [Fact]
         public async void FillEventGalleryTest()
         {
             //Arrange
             int eventId = 3;
             _eventGalleryManager.Setup(x => x.AddPicturesAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
-                .ReturnsAsync(StatusCodes.Status200OK);
+                .ReturnsAsync(new List<EventGalleryDTO>());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object, _eventTypeManager.Object, _eventStatusManager.Object, _participantStatusManager.Object, _participantManager.Object, _eventGalleryManager.Object);
             var methodResult = await actionManager.FillEventGalleryAsync(eventId, new List<IFormFile>());
             //Assert
-            Assert.Equal(StatusCodes.Status200OK, methodResult);
+            Assert.NotNull(methodResult);
+            Assert.IsType<List<EventGalleryDTO>>(methodResult);
         }
         [Fact]
         public async void DeletePictureTest()
