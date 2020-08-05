@@ -16,10 +16,8 @@ namespace EPlast.BLL.ExtensionMethods
             {
                 return attributes[0].Description;
             }
-            else
-            {
-                return string.Empty;
-            }
+
+            return string.Empty;
         }
     }
 }
