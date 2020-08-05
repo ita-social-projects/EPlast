@@ -13,6 +13,6 @@ namespace EPlast.BLL.DTO.ActiveMembership
 
         public DateTime DateStart { get; set; }
         public DateTime? DateFinish { get; set; }
-
+        public bool IsCurrent { get; set; }
     }
 }
