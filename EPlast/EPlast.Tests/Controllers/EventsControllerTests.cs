@@ -442,7 +442,77 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expected, actual);
         }
 
-        public IEnumerable<EventTypeDTO> CreateListOfFakeEventTypes()
+        [Test]
+        public async Task FillEventGallery_ReturnsOkObjectResult()
+        {
+            // Arrange
+            _actionManager
+                .Setup((x) => x.FillEventGalleryAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
+                .ReturnsAsync(CreateListOfFakeEventGallery());
+
+            // Act
+            var result = await _eventsController.FillEventGallery(It.IsAny<int>(), It.IsAny<IList<IFormFile>>());
+
+            // Assert
+            Assert.NotNull((result as ObjectResult).Value);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task FillEventGallery_ListOfTwoItems_ReturnsListOfTwoItems()
+        {
+            // Arrange
+            var expectedCount = 2;
+
+            _actionManager
+                .Setup((x) => x.FillEventGalleryAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
+                .ReturnsAsync(CreateListOfFakeEventGallery());
+
+            // Act
+            var result = await _eventsController.FillEventGallery(It.IsAny<int>(), It.IsAny<IList<IFormFile>>());
+
+            var actual = ((result as ObjectResult).Value as List<EventGalleryDTO>).Count;
+
+            // Assert
+            Assert.AreEqual(expectedCount, actual);
+        }
+
+        [Test]
+        public async Task GetPictures_ReturnsOkObjectResult()
+        {
+            // Arrange
+            _actionManager
+                .Setup((x) => x.GetPicturesAsync(It.IsAny<int>()))
+                .ReturnsAsync(CreateListOfFakeEventGallery());
+
+            // Act
+            var result = await _eventsController.GetPictures(It.IsAny<int>());
+
+            // Assert
+            Assert.NotNull((result as ObjectResult).Value);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetPictures_ListOfTwoItems_ReturnsListOfTwoItems()
+        {
+            // Arrange
+            var expectedCount = 2;
+
+            _actionManager
+                .Setup((x) => x.GetPicturesAsync(It.IsAny<int>()))
+                .ReturnsAsync(CreateListOfFakeEventGallery());
+
+            // Act
+            var result = await _eventsController.GetPictures(It.IsAny<int>());
+
+            var actual = ((result as ObjectResult).Value as List<EventGalleryDTO>).Count;
+
+            // Assert
+            Assert.AreEqual(expectedCount, actual);
+        }
+
+        private List<EventTypeDTO> CreateListOfFakeEventTypes()
             => new List<EventTypeDTO>()
             { 
                 new EventTypeDTO()
@@ -457,7 +527,7 @@ namespace EPlast.Tests.Controllers
                 },
             };
 
-        public IEnumerable<EventCategoryDTO> CreateListOfFakeEventCategories()
+        private List<EventCategoryDTO> CreateListOfFakeEventCategories()
             => new List<EventCategoryDTO>()
             {
                 new EventCategoryDTO()
@@ -472,7 +542,7 @@ namespace EPlast.Tests.Controllers
                 },
             };
 
-        public List<GeneralEventDTO> CreateListOfFakeGeneralEvents()
+        private List<GeneralEventDTO> CreateListOfFakeGeneralEvents()
             => new List<GeneralEventDTO>()
             {
                 new GeneralEventDTO()
@@ -487,16 +557,31 @@ namespace EPlast.Tests.Controllers
                 },
             };
 
-        public EventDTO CreateFakeEvent()
+        private EventDTO CreateFakeEvent()
             => new EventDTO()
             {
                 Event = new EventInfoDTO()
                 { 
                     EventId = 0, 
                     EventName = "SomeEventName",
-                }
+                },
             };
 
+        private List<EventGalleryDTO> CreateListOfFakeEventGallery()
+            => new List<EventGalleryDTO>()
+            {
+                new EventGalleryDTO()
+                {
+                    GalleryId = 1,
+                    FileName = "SomeFilenameID1"
+                },
+                new EventGalleryDTO()
+                {
+                    GalleryId = 2,
+                    FileName = "SomeFilenameID2"
+                },
+
+            };
 
     }
 }
