@@ -39,5 +39,12 @@ namespace EPlast.BLL.Interfaces.ActiveMembership
         /// <param name="userPlastDegreePostDTO"></param>
         /// <returns>A bool value that says that degree was added</returns>
         public Task<bool> AddPlastDegreeForUserAsync(UserPlastDegreePostDTO userPlastDegreePostDTO);
+        /// <summary>
+        /// Removes user degree
+        /// </summary>
+        /// <param name="userId">User id</param>
+        /// <param name="plastDegreeId">Plast degree id</param>
+        /// <returns>A bool value that says that degree was deleted</returns>
+        public Task<bool> DeletePlastDegreeForUserAsync(string userId, int plastDegreeId);
     }
 }
