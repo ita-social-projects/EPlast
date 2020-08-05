@@ -268,7 +268,7 @@ namespace EPlast.BLL.Services
         private async Task<bool> CheckCreated(int cityId)
         {
             return await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
-                predicate: a => a.CityId == cityId && (a.Status == AnnualReportStatus.Unconfirmed) || a.Date.Year == DateTime.Now.Year) != null;
+                predicate: a => a.CityId == cityId && (a.Status == AnnualReportStatus.Unconfirmed || a.Date.Year == DateTime.Now.Year)) != null;
         }
     }
 }
