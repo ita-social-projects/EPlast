@@ -7,6 +7,7 @@ namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class EventsCalendarController : ControllerBase
     {
         private readonly IEventCalendarService _eventCalendarService;
@@ -22,7 +23,6 @@ namespace EPlast.WebApi.Controllers
         /// <returns>Array of events of actions type</returns>
         /// <response code="200">Instance of EventCalendarInfoDTO</response>
         /// <response code="400">When the EventCalendarInfoDTO is null or empty</response> 
-        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpGet("actionsForCalendar")]
         public async Task<IActionResult> GetActions()
         {
@@ -37,7 +37,6 @@ namespace EPlast.WebApi.Controllers
         /// <returns>Array of events of education type</returns>
         /// <response code="200">Instance of EventCalendarInfoDTO</response>
         /// <response code="400">When the EventCalendarInfoDTO is null or empty</response> 
-        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpGet("educationsForCalendar")]
         public async Task<IActionResult> GetEducations()
         {
@@ -52,7 +51,6 @@ namespace EPlast.WebApi.Controllers
         /// <returns>Array of events of camps type</returns>
         /// <response code="200">Instance of EventCalendarInfoDTO</response>
         /// <response code="400">When the EventCalendarInfoDTO is null or empty</response> 
-        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpGet("campsForCalendar")]
         public async Task<IActionResult> GetCamps()
         {
