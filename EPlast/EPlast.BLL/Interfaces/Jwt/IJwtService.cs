@@ -1,4 +1,5 @@
 ﻿using EPlast.BLL.DTO.UserProfiles;
+using System.Threading.Tasks;
 
 namespace EPlast.BLL.Interfaces.Jwt
 {
@@ -9,6 +10,6 @@ namespace EPlast.BLL.Interfaces.Jwt
         /// </summary>
         /// <param name="userDTO"></param>
         /// <returns>Returns generated JWT token</returns>
-        string GenerateJWTToken(UserDTO userDTO);
+        Task<string> GenerateJWTTokenAsync(UserDTO userDTO);
     }
 }
