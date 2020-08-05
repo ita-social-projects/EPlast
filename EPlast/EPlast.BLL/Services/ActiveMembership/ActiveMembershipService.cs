@@ -98,6 +98,7 @@ namespace EPlast.BLL.Services.ActiveMembership
                     if (plastDegree != null)
                     {
                         userPlastDegree.PlastDegree = plastDegree;
+                        await SetDegreeAsCurrent(userPlastDegree.IsCurrent);
                         _repoWrapper.UserPlastDegrees.Attach(userPlastDegree);
                         _repoWrapper.UserPlastDegrees.Create(userPlastDegree);
                         await _repoWrapper.SaveAsync();
@@ -109,7 +110,20 @@ namespace EPlast.BLL.Services.ActiveMembership
 
             return isAdded;
         }
+        private async Task SetDegreeAsCurrent(bool IsUserPlastDegreeCurrent)
+        {
+            if (IsUserPlastDegreeCurrent)
+            {
+                UserPlastDegree prevCurrentUserPlastDegree = await _repoWrapper.UserPlastDegrees.GetFirstOrDefaultAsync(upd => upd.IsCurrent);
+                if (prevCurrentUserPlastDegree != null)
+                {
+                    prevCurrentUserPlastDegree.IsCurrent = false;
+                    _repoWrapper.UserPlastDegrees.Update(prevCurrentUserPlastDegree);
+                    await _repoWrapper.SaveAsync();
+                }
 
+            }
+        }
         /// <inheritdoc />
         public async Task<bool> DeletePlastDegreeForUserAsync(string userId, int plastDegreeId)
         {
@@ -135,6 +149,23 @@ namespace EPlast.BLL.Services.ActiveMembership
             if (userPlastDegree != null)
             {
                 userPlastDegree.DateFinish = userPlastDegreePutDTO.EndDate;
+                _repoWrapper.UserPlastDegrees.Update(userPlastDegree);
+                await _repoWrapper.SaveAsync();
+                isAdded = true;
+            }
+
+            return isAdded;
+        }
+
+        /// <inheritdoc />
+        public async Task<bool> SetPlastDegreeForUserAsCurrentAsync(string userId, int plastDegreeId)
+        {
+            bool isAdded = false;
+            UserPlastDegree userPlastDegree = await _repoWrapper.UserPlastDegrees
+               .GetFirstOrDefaultAsync(upd => upd.PlastDegreeId == plastDegreeId && upd.UserId == userId);
+            if(userPlastDegree != null)
+            {
+                await SetDegreeAsCurrent(true);
                 _repoWrapper.UserPlastDegrees.Update(userPlastDegree);
                 await _repoWrapper.SaveAsync();
                 isAdded = true;
