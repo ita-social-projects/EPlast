@@ -125,5 +125,22 @@ namespace EPlast.BLL.Services.ActiveMembership
 
             return isDeleted;
         }
+
+        /// <inheritdoc />
+        public async Task<bool> AddEndDateForUserPlastDegreeAsync(UserPlastDegreePutDTO userPlastDegreePutDTO)
+        {
+            bool isAdded = false;
+            UserPlastDegree userPlastDegree = await _repoWrapper.UserPlastDegrees
+                .GetFirstOrDefaultAsync(upd => upd.PlastDegreeId == userPlastDegreePutDTO.PlastDegreeId && upd.UserId == userPlastDegreePutDTO.UserId);
+            if (userPlastDegree != null)
+            {
+                userPlastDegree.DateFinish = userPlastDegreePutDTO.EndDate;
+                _repoWrapper.UserPlastDegrees.Update(userPlastDegree);
+                await _repoWrapper.SaveAsync();
+                isAdded = true;
+            }
+
+            return isAdded;
+        }
     }
 }
