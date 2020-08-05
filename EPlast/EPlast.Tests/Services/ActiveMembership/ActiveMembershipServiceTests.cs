@@ -236,7 +236,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             _repoWrapper.Setup(rw => rw.PlastDegrees.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<PlastDegree, bool>>>(),
                     It.IsAny<Func<IQueryable<PlastDegree>, IIncludableQueryable<PlastDegree, object>>>()))
                 .ReturnsAsync(new PlastDegree());
-            _repoWrapper.Setup(rw  => rw.UserPlastDegrees.Attach(It.IsAny<UserPlastDegree>()));
+            _repoWrapper.Setup(rw => rw.UserPlastDegrees.Attach(It.IsAny<UserPlastDegree>()));
             _repoWrapper.Setup(rw => rw.UserPlastDegrees.Create(It.IsAny<UserPlastDegree>()));
             _repoWrapper.Setup(rw => rw.SaveAsync());
 
@@ -249,6 +249,39 @@ namespace EPlast.Tests.Services.ActiveMembership
             // Assert
             Assert.IsTrue(result);
         }
+        [Test]
+        public async Task DeletePlastDegreeForUserAsync_DegreeForUserDoesNotExist_ReturnsFalse()
+        {
+            // Arrange
+            _repoWrapper.Setup(rw => rw.UserPlastDegrees.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
+                .ReturnsAsync(() => null);
+
+            //Act
+            var result = await _activeMembershipService.DeletePlastDegreeForUserAsync(UserId, DoesNotExistingId);
+
+            // Assert
+            Assert.IsFalse(result);
+
+        }
+
+        [Test]
+        public async Task DeletePlastDegreeForUserAsync_RemovesDegreeForUser_ReturnsTrue()
+        {
+            // Arrange
+            _repoWrapper.Setup(rw => rw.UserPlastDegrees.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
+                .ReturnsAsync(new UserPlastDegree());
+            _repoWrapper.Setup(rw => rw.UserPlastDegrees.Delete(It.IsAny<UserPlastDegree>()));
+            _repoWrapper.Setup(rw => rw.SaveAsync());
+
+            //Act
+            var result = await _activeMembershipService.DeletePlastDegreeForUserAsync(UserId, DoesNotExistingId);
+
+            // Assert
+            Assert.IsTrue(result);
+        }
+
         private string UserId => Guid.NewGuid().ToString();
         private DateTime UserDateOfEntry => DateTime.Today;
         private int DoesNotExistingId => 42;
