@@ -238,6 +238,7 @@ namespace EPlast.Tests.Services.ActiveMembership
                 .ReturnsAsync(new PlastDegree());
             _repoWrapper.Setup(rw  => rw.UserPlastDegrees.Attach(It.IsAny<UserPlastDegree>()));
             _repoWrapper.Setup(rw => rw.UserPlastDegrees.Create(It.IsAny<UserPlastDegree>()));
+            _repoWrapper.Setup(rw => rw.SaveAsync());
 
             //Act
             var result = await _activeMembershipService.AddPlastDegreeForUserAsync(new UserPlastDegreePostDTO

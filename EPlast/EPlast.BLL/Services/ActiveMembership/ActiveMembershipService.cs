@@ -100,6 +100,7 @@ namespace EPlast.BLL.Services.ActiveMembership
                         userPlastDegree.PlastDegree = plastDegree;
                         _repoWrapper.UserPlastDegrees.Attach(userPlastDegree);
                         _repoWrapper.UserPlastDegrees.Create(userPlastDegree);
+                        await _repoWrapper.SaveAsync();
                         isAdded = true;
                     }
 
@@ -107,6 +108,22 @@ namespace EPlast.BLL.Services.ActiveMembership
             }
 
             return isAdded;
+        }
+
+        /// <inheritdoc />
+        public async Task<bool> DeletePlastDegreeForUserAsync(string userId, int plastDegreeId)
+        {
+            bool isDeleted = false;
+            UserPlastDegree userPlastDegree = await _repoWrapper.UserPlastDegrees
+                .GetFirstOrDefaultAsync(upd => upd.PlastDegreeId == plastDegreeId && upd.UserId == userId);
+            if (userPlastDegree != null)
+            {
+                _repoWrapper.UserPlastDegrees.Delete(userPlastDegree);
+                await _repoWrapper.SaveAsync();
+                isDeleted = true;
+            }
+
+            return isDeleted;
         }
     }
 }
