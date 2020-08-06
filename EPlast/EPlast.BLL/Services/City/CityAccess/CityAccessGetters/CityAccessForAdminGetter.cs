@@ -1,4 +1,5 @@
 ﻿using EPlast.DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DatabaseEntities = EPlast.DataAccess.Entities;
@@ -16,7 +17,7 @@ namespace EPlast.BLL.Services.City.CityAccess.CityAccessGetters
 
         public async Task<IEnumerable<DatabaseEntities.City>> GetCities(string userId)
         {
-            return await _repositoryWrapper.City.GetAllAsync();
+            return await _repositoryWrapper.City.GetAllAsync(include: source => source.Include(c => c.Region));
         }
     }
 }
