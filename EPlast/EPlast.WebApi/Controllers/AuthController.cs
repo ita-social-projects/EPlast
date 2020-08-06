@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using System;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -72,7 +71,7 @@ namespace EPlast.WebApi.Controllers
                 }
                 if (result.Succeeded)
                 {
-                    var generatedToken = _jwtService.GenerateJWTToken(user);
+                    var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
                     return Ok(new { token = generatedToken });
                 }
                 else
