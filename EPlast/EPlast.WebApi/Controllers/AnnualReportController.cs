@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace EPlast.WebApi.Controllers
 {
     [ApiController, Route("api/[controller]")]
-    [Authorize(AuthenticationSchemes = "Bearer")]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці")]
     public class AnnualReportController : ControllerBase
     {
         private readonly IAnnualReportService _annualReportService;
@@ -38,6 +38,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>List of annual reports</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet]
+        [Authorize(Roles = "Admin, Голова Округу")]
         public async Task<IActionResult> Get()
         {
             return StatusCode(StatusCodes.Status200OK, new { annualReports = await _annualReportService.GetAllAsync(User) });
@@ -124,6 +125,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">The annual report does not exist</response>
         /// <response code="404">Annual report model is not valid</response>
         [HttpPut]
+        [Authorize(Roles = "Admin, Голова Округу")]
         public async Task<IActionResult> Edit(AnnualReportDTO annualReport)
         {
             if (ModelState.IsValid)
@@ -165,6 +167,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpPut("confirm/{id:int}")]
+        [Authorize(Roles = "Admin, Голова Округу")]
         public async Task<IActionResult> Confirm(int id)
         {
             try
@@ -194,6 +197,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpPut("cancel/{id:int}")]
+        [Authorize(Roles = "Admin, Голова Округу")]
         public async Task<IActionResult> Cancel(int id)
         {
             try
@@ -223,6 +227,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin, Голова Округу")]
         public async Task<IActionResult> Delete(int id)
         {
             try
