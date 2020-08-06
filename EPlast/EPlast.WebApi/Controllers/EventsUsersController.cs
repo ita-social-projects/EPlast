@@ -31,7 +31,6 @@ namespace EPlast.WebApi.Controllers
                 var eventUserModel = await _eventUserManager.EventUserAsync(userId, User);
 
                 return Ok(eventUserModel);
-           
         }
 
         /// <summary>
