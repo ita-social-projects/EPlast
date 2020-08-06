@@ -26,6 +26,7 @@ namespace EPlast.Tests.Controllers
         Mock<IClubMembersService> _clubMembersService;
         Mock<IUserManagerService> _userManagerService;
         Mock<IMapper> _mapper;
+
         [SetUp]
         public void SetUp()
         {
@@ -92,7 +93,6 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-
         public async Task Club_ReturnsOkObjectResult()
         {
             //Arrange
