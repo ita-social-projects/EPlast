@@ -81,8 +81,10 @@ namespace EPlast.Tests.Controllers
             _clubService
                 .Setup(x => x.GetImageBase64Async(imageName))
                 .ReturnsAsync(imageName);
+
             //Act
             var result = await _clubController.GetImage(imageName);
+
             //Assert
             _clubService.Verify();
             Assert.IsNotNull(result);
@@ -103,7 +105,7 @@ namespace EPlast.Tests.Controllers
                     httpContext.Object, new RouteData(),
                     new ControllerActionDescriptor()));
             _clubController.ControllerContext = context;
-            var clubID = 2;
+            var clubID = GetClubId();
             _mapper
                 .Setup(m => m.Map<ClubProfileDTO, ClubProfileViewModel>(It.IsAny<ClubProfileDTO>()))
                 .Returns(new ClubProfileViewModel() { Club = new ClubViewModel() });
@@ -117,6 +119,7 @@ namespace EPlast.Tests.Controllers
             //Act
             var result = await _clubController.Club(clubID);
             var resultValue = (result as OkObjectResult).Value;
+
             //Assert
             _clubService.Verify();
             _mapper.Verify();
@@ -130,7 +133,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetCLubMembers_ReturnsOkObjectResult()
         {
             //Arrange
-            var clubId = 2;
+            var clubId = GetClubId();
             var httpContext = new Mock<HttpContext>();
             httpContext
                 .Setup(m => m.User.IsInRole("Admin"))
@@ -164,7 +167,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetClubFollowers_ReturnsOkObjectResult()
         {
             //Arrange
-            var clubId = 2;
+            var clubId = GetClubId();
             var httpContext = new Mock<HttpContext>();
             httpContext
                 .Setup(m => m.User.IsInRole("Admin"))
@@ -267,7 +270,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetClubAdministrator_ReturnsOkObjectResult()
         {
             //Arrange
-            var clubId = 2;
+            var clubId = GetClubId();
             var httpContext = new Mock<HttpContext>();
             httpContext
                 .Setup(m => m.User.IsInRole("Admin"))
@@ -301,7 +304,7 @@ namespace EPlast.Tests.Controllers
         public async Task DeleteAdministration_ReturnsOkObjectResult()
         {
             //Arrange
-            var adminId = 2;
+            var adminId = GetClubId();
             var expectedValue = $"Club Administrator with id={adminId} deleted.";
             _clubAdministrationService
                 .Setup(x => x.DeleteClubAdminAsync(adminId))
@@ -323,8 +326,8 @@ namespace EPlast.Tests.Controllers
         public async Task ChangeApproveStatus_ReturnsOkObjectResult()
         {
             //Arrange
-            var memberId = 1;
-            var clubId = 2;
+            var memberId = GetClubId();
+            var clubId = GetClubId();
             _mapper
                 .Setup(m => m.Map<ClubMembersDTO, ClubMembersViewModel>(It.IsAny<ClubMembersDTO>()))
                 .Returns(new ClubMembersViewModel());
@@ -369,8 +372,7 @@ namespace EPlast.Tests.Controllers
         public async Task AddAdmin_ReturnsOkObjectResult()
         {
             //Arrange
-            var clubId = 2;
-
+            var clubId = GetClubId();
             _clubService
                 .Setup(x => x.GetClubInfoByIdAsync(clubId))
                 .ReturnsAsync(new ClubDTO());
@@ -404,7 +406,7 @@ namespace EPlast.Tests.Controllers
         public async Task AddFollower_ReturnsOkObjectResult()
         {
             //Arrange
-            var clubId = 2;
+            var clubId = GetClubId();
             var httpContext = new Mock<HttpContext>();
             httpContext
                 .Setup(m => m.User.IsInRole("Admin"))
@@ -436,6 +438,13 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(resultValue);
             Assert.IsInstanceOf<ClubMembersViewModel>(resultValue);
+        }
+
+        //Fakes
+        private int GetClubId()
+        {
+            int clubId = 2;
+            return clubId;
         }
     }
 }
