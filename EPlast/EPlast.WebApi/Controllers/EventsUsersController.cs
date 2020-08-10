@@ -19,6 +19,21 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get all created events for user by id which date are expired
+        /// </summary>
+        /// <returns>Array of all created events for user</returns>
+        /// /// <param name="userId"></param>
+        /// <response code="200">Instance of EventUserDTO</response>
+        /// <response code="400">When the EventUserDTO is null or empty</response> 
+        [HttpGet("createArchivedEvents/{userId}")]
+        public async Task<IActionResult> GetCreatedArchivedEventsByUserId(string userId)
+        {
+            var eventUserModel = await _eventUserManager.GetCreatedArchivedEvents(userId, User);
+
+            return Ok(eventUserModel);
+        }
+
+        /// <summary>
         /// Get all created, planned, visited events for user by id
         /// </summary>
         /// <returns>Array of all created, planned, visited events for user</returns>
@@ -31,7 +46,6 @@ namespace EPlast.WebApi.Controllers
                 var eventUserModel = await _eventUserManager.EventUserAsync(userId, User);
 
                 return Ok(eventUserModel);
-           
         }
 
         /// <summary>
