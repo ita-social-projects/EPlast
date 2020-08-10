@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace EPlast.DataAccess.Entities
 {
@@ -12,6 +13,6 @@ namespace EPlast.DataAccess.Entities
         public int CityId { get; set; }
         public City City { get; set; }
 
-        public CityManagement CityManagement { get; set; }
+        public IEnumerable<CityManagement> CityManagements { get; set; }
     }
 }
