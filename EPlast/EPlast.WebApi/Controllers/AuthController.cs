@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using System;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -72,7 +71,7 @@ namespace EPlast.WebApi.Controllers
                 }
                 if (result.Succeeded)
                 {
-                    var generatedToken = _jwtService.GenerateJWTToken(user);
+                    var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
                     return Ok(new { token = generatedToken });
                 }
                 else
@@ -116,7 +115,7 @@ namespace EPlast.WebApi.Controllers
                     var userDto = await _authService.FindByEmailAsync(registerDto.Email);
                     string confirmationLink = Url.Action(
                         nameof(ConfirmingEmail),
-                        "Account",
+                        "Auth",
                         new { token = token, userId = userDto.Id },
                           protocol: HttpContext.Request.Scheme);
                     await _authService.SendEmailRegistr(confirmationLink, userDto);
@@ -154,7 +153,7 @@ namespace EPlast.WebApi.Controllers
 
                 if (result.Succeeded)
                 {
-                    return Redirect("https://plastua.azurewebsites.net/");
+                    return Redirect("https://eplastua.azurewebsites.net/");
                 }
                 else
                 {
@@ -186,7 +185,7 @@ namespace EPlast.WebApi.Controllers
             string token = await _authService.GenerateConfToken(userDto);
             var confirmationLink = Url.Action(
                 nameof(ConfirmingEmail),
-                "Account",
+                "Auth",
                 new { token = token, userId = userDto.Id },
                 protocol: HttpContext.Request.Scheme);
             await _authService.SendEmailRegistr(confirmationLink, userDto);
@@ -225,7 +224,7 @@ namespace EPlast.WebApi.Controllers
                 string token = await _authService.GenerateResetTokenAsync(userDto);
                 string confirmationLink = Url.Action(
                     nameof(ResetPassword),
-                    "Account",
+                    "Auth",
                     new { userId = userDto.Id, token = HttpUtility.UrlEncode(token) },
                     protocol: HttpContext.Request.Scheme);
                 await _authService.SendEmailReseting(confirmationLink, forgotpasswordDto);
