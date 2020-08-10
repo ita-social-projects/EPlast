@@ -68,6 +68,7 @@ namespace EPlast.BLL.Services.EventUser
                 var eventToAdd = _mapper.Map<Event, EventGeneralInfoDTO>(eventAdmin.Event);
                 if (!(eventToAdd.EventDateEnd > DateTime.Now))
                 {
+                    eventToAdd.EventStatusID = 1;
                     model.CreatedEvents.Add(eventToAdd);
                 }
             }
