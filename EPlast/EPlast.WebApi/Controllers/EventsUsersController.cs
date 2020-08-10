@@ -8,7 +8,7 @@ namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(AuthenticationSchemes = "Bearer")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class EventsUsersController : ControllerBase
     {
         private readonly IEventUserManager _eventUserManager;
