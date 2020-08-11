@@ -1,10 +1,9 @@
 ﻿using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.WebApi.Models.Admin;
 using EPlast.WebApi.Models.Role;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -14,127 +13,139 @@ namespace EPlast.WebApi.Controllers
     [ApiController]
     public class AdminController : ControllerBase
     {
-        private readonly ILogger _logger;
+        private readonly ILoggerService<AdminController> _loggerService;
         private readonly IUserManagerService _userManagerService;
         private readonly IAdminService _adminService;
         private readonly ICityService _cityService;
         private readonly ICityAdministrationService _cityAdministrationService;
 
-        public AdminController(ILogger<AdminController> logger,
+        public AdminController(ILoggerService<AdminController> logger,
             IUserManagerService userManagerService,
             IAdminService adminService,
             ICityService cityService,
             ICityAdministrationService cityAdministrationService)
         {
-            _logger = logger;
+            _loggerService = logger;
             _userManagerService = userManagerService;
             _adminService = adminService;
             _cityService = cityService;
             _cityAdministrationService = cityAdministrationService;
         }
-        // [Authorize]
+
+        /// <summary>
+        /// Get all users with additional information
+        /// </summary>
+        /// <returns>Specify model with all users</returns>
+        /// <response code="200">Successful operation</response>
         [HttpGet("usersTable")]
         public async Task<IActionResult> UsersTable()
         {
-            try
-            {
-                var result = await _adminService.UsersTableAsync();
-                return Ok(result);
-            }
-            catch (Exception e)
-            {
-                _logger.Log(LogLevel.Error, $"Exception: {e.Message}");
-                return BadRequest();
-            }
+            var result = await _adminService.UsersTableAsync();
+            return Ok(result);
         }
 
-        // [Authorize(Roles = "Admin")]
+        /// <summary>
+        /// Get specify model for edit roles for selected user
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>A data of roles for editing user roles</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">User not found</response>
         [HttpGet("editRole/{userId}")]
         public async Task<IActionResult> Edit(string userId)
         {
-            try
+            if (!string.IsNullOrEmpty(userId))
             {
-                if (!string.IsNullOrEmpty(userId))
+                var user = await _userManagerService.FindByIdAsync(userId);
+                if (user == null)
                 {
-                    var user = await _userManagerService.FindByIdAsync(userId);
-                    if (user == null)
-                    {
-                        _logger.Log(LogLevel.Error, $"Can`t find the User");
-                        return BadRequest();
-                    }
-                    var userRoles = await _userManagerService.GetRolesAsync(user);
-                    var allRoles = await _adminService.GetRolesExceptAdminAsync();
-
-                    RoleViewModel model = new RoleViewModel
-                    {
-                        UserID = user.Id,
-                        UserEmail = user.Email,
-                        UserRoles = userRoles,
-                        AllRoles = allRoles
-                    };
-
-                    return Ok(model);
+                    _loggerService.LogError("User id is null");
+                    return NotFound();
                 }
-                throw new ArgumentException("User id is null");
+                var userRoles = await _userManagerService.GetRolesAsync(user);
+                var allRoles = await _adminService.GetRolesExceptAdminAsync();
+
+                RoleViewModel model = new RoleViewModel
+                {
+                    UserID = user.Id,
+                    UserEmail = user.Email,
+                    UserRoles = userRoles,
+                    AllRoles = allRoles
+                };
+
+                return Ok(model);
             }
-            catch (Exception e)
-            {
-                _logger.Log(LogLevel.Error, $"Exception: {e.Message}");
-                return BadRequest();
-            }
+            _loggerService.LogError("User id is null");
+            return NotFound();
         }
 
         // [Authorize(Roles = "Admin")]
+        /// <summary>
+        /// Edit user roles
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <param name="roles">List of new user roles</param>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">User not found</response>
         [HttpPut("editRole")]
         public async Task<IActionResult> Edit(string userId, List<string> roles)
         {
-            try
+            if (!string.IsNullOrEmpty(userId))
             {
-                if (!string.IsNullOrEmpty(userId))
-                {
-                    await _adminService.EditAsync(userId, roles);
-                    _logger.LogInformation($"Successful change role for {userId}");
-                    return Ok();
-                }
-                throw new ArgumentException("User id is null");
+                await _adminService.EditAsync(userId, roles);
+                _loggerService.LogInformation($"Successful change role for {userId}");
+                return Ok();
             }
-            catch (Exception e)
-            {
-                _logger.Log(LogLevel.Error, $"Exception: {e.Message}");
-                return BadRequest();
-            }
+            _loggerService.LogError("User id is null");
+            return NotFound();
         }
 
+        /// <summary>
+        /// Confirmation of delete a user
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>The id of the user</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">User id is null</response>
         [HttpGet("confirmDelete/{userId}")]
-        //  [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [ActionName("Delete")]
         public ActionResult ConfirmDelete(string userId)
         {
+            if (string.IsNullOrEmpty(userId))
+            {
+                _loggerService.LogError("User id is null");
+                return BadRequest();
+            }
             return Ok(userId);
         }
 
+        /// <summary>
+        /// Delete a user
+        /// </summary>
+        /// <param name="userId">The id of the user, which must be deleted</param>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">User id is null</response>
         //  [Authorize(Roles = "Admin")]
         [HttpDelete("deleteUser/{userId}")]
         public async Task<IActionResult> Delete(string userId)
         {
-            try
+            if (!string.IsNullOrEmpty(userId))
             {
-                if (!string.IsNullOrEmpty(userId))
-                {
-                    await _adminService.DeleteUserAsync(userId);
-                    _logger.LogInformation("Successful delete user {0}", userId);
+                await _adminService.DeleteUserAsync(userId);
+                _loggerService.LogInformation($"Successful delete user {userId}");
 
-                    return Ok();
-                }
-                throw new ArgumentException("User id is null");
+                return Ok();
             }
-            catch (Exception e)
-            {
-                _logger.Log(LogLevel.Error, $"Smth went wrong {e.Message}");
-                return BadRequest();
-            }
+            _loggerService.LogError("User id is null");
+            return BadRequest();
         }
 
+        /// <summary>
+        /// Get all cities
+        /// </summary>
+        /// <returns>All cities in specify model</returns>
+        /// <response code="200">Successful operation</response>
         [HttpGet("regionsAdmins")]
         public async Task<IActionResult> RegionsAdmins()
         {
@@ -146,10 +157,21 @@ namespace EPlast.WebApi.Controllers
             return Ok(model);
         }
 
+        /// <summary>
+        /// Get administration of selected city
+        /// </summary>
+        /// <returns>All administartion of selected city</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">City id is 0</response>
         [HttpGet("cityAdmins/{cityId}")]
         public async Task<IActionResult> GetAdmins(int cityId)
         {
-            return Ok(await _cityAdministrationService.GetAdministrationByIdAsync(cityId));
+            if (cityId != 0)
+            {
+                return Ok(await _cityAdministrationService.GetAdministrationByIdAsync(cityId));
+            }
+            _loggerService.LogError("City id is 0");
+            return BadRequest();
         }
     }
 }

@@ -23,18 +23,21 @@ namespace EPlast.WebApi.Controllers
         private readonly ICityService _cityService;
         private readonly ICityMembersService _cityMembersService;
         private readonly ICityAdministrationService _cityAdministrationService;
+        private readonly ICityAccessService _cityAccessService;
         
         public CitiesController(ILoggerService<CitiesController> logger,
             IMapper mapper,
             ICityService cityService,
             ICityMembersService cityMembersService,
-            ICityAdministrationService cityAdministrationService)
+            ICityAdministrationService cityAdministrationService,
+            ICityAccessService cityAccessService)
         {
             _logger = logger;
             _mapper = mapper;
             _cityService = cityService;
             _cityMembersService = cityMembersService;
             _cityAdministrationService = cityAdministrationService;
+            _cityAccessService = cityAccessService;
         }
 
         /// <summary>
@@ -140,7 +143,7 @@ namespace EPlast.WebApi.Controllers
 
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
 
-            return Ok(cityProfile.Administration);
+            return Ok(new { cityProfile.Administration, cityProfile.Head });
         }
 
         /// <summary>
@@ -163,7 +166,6 @@ namespace EPlast.WebApi.Controllers
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
 
             return Ok(cityProfile.Documents);
-
         }
 
         /// <summary>
@@ -221,7 +223,7 @@ namespace EPlast.WebApi.Controllers
             cityDTO.ID = await _cityService.CreateAsync(cityDTO);
             _logger.LogInformation($"City {{{cityDTO.Name}}} was created.");
 
-            return Ok(city.ID);
+            return Ok(cityDTO.ID);
         }
 
         /// <summary>
@@ -243,6 +245,20 @@ namespace EPlast.WebApi.Controllers
 
             await _cityService.EditAsync(cityDTO);
             _logger.LogInformation($"City {{{cityDTO.Name}}} was edited.");
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Remove a specific city
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        [HttpDelete("RemoveCity/{cityId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> Remove(int cityId)
+        {
+            await _cityService.RemoveAsync(cityId);
+            _logger.LogInformation($"City with id {{{cityId}}} was deleted.");
 
             return Ok();
         }
@@ -301,8 +317,8 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> AddAdmin(CityAdministrationViewModel newAdmin)
         {
             var admin = _mapper.Map<CityAdministrationViewModel, CityAdministrationDTO>(newAdmin);
-
             await _cityAdministrationService.AddAdministratorAsync(admin);
+
             _logger.LogInformation($"User {{{admin.UserId}}} became admin for city {{{admin.CityId}}}" +
                 $" with role {{{admin.AdminType.AdminTypeName}}}.");
 
@@ -313,7 +329,7 @@ namespace EPlast.WebApi.Controllers
         /// Remove a specific administrator from the city
         /// </summary>
         /// <param name="adminId">The id of the administrator</param>
-        [HttpPut("RemoveAdmin/{adminId}")]
+        [HttpDelete("RemoveAdmin/{adminId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RemoveAdmin(int adminId)
         {
@@ -354,6 +370,17 @@ namespace EPlast.WebApi.Controllers
             }
 
             return Ok(new { legalStatuses });
+        }
+
+        /// <summary>
+        /// Get all cities that the user has access to
+        /// </summary>
+        /// <returns>List of cities</returns>
+        [HttpGet]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetCitiesThatUserHasAccessTo()
+        {
+            return Ok(new { cities = await _cityAccessService.GetCitiesAsync(User) });
         }
     }
 }

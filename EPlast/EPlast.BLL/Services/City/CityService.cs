@@ -118,7 +118,7 @@ namespace EPlast.BLL.Services
                 .Where(m => !m.IsApproved)
                 .Take(6)
                 .ToList();
-            var cityDoc = city.CityDocuments.Take(4).ToList();
+            var cityDoc = city.CityDocuments.Take(6).ToList();
 
             var cityProfileDto = new CityProfileDTO
             {
@@ -127,9 +127,9 @@ namespace EPlast.BLL.Services
                 Members = members,
                 Followers = followers,
                 Admins = cityAdmins,
-                Documents = cityDoc,     
+                Documents = cityDoc,
             };
-            
+
             return cityProfileDto;
         }
 
@@ -141,9 +141,9 @@ namespace EPlast.BLL.Services
 
             cityProfileDto.City.CanCreate = user.IsInRole("Admin");
             cityProfileDto.City.CanEdit = await _cityAccessService.HasAccessAsync(user, cityId);
-            cityProfileDto.City.CanJoin = (await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(u => u.User.Id == userId)) == null;
+            cityProfileDto.City.CanJoin = (await _repoWrapper.CityMembers
+                .GetFirstOrDefaultAsync(u => u.User.Id == userId && u.CityId == cityId)) == null;
             cityProfileDto.City.CanApprove = await _cityAccessService.HasAccessAsync(user, cityId);
-            cityProfileDto.City.CanSeeReports = await _cityAccessService.HasAccessAsync(user, cityId);
             cityProfileDto.City.CanAddReports = await _cityAccessService.HasAccessAsync(user, cityId);
 
             return cityProfileDto;
@@ -292,6 +292,15 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
+        public async Task RemoveAsync(int cityId)
+        {
+            var city = await _repoWrapper.City.GetFirstOrDefaultAsync(c => c.ID == cityId);
+
+            _repoWrapper.City.Delete(city);
+            await _repoWrapper.SaveAsync();
+        }
+
+        /// <inheritdoc />
         public async Task<CityProfileDTO> EditAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
@@ -397,7 +406,7 @@ namespace EPlast.BLL.Services
         {
             var city = _mapper.Map<CityDTO, DataAccessCity.City>(model);
             var region = await _repoWrapper.Region.GetFirstOrDefaultAsync(r => r.RegionName == city.Region.RegionName);
-            
+
             city.RegionId = region.ID;
             city.Region = region;
 
@@ -410,7 +419,7 @@ namespace EPlast.BLL.Services
             var oldImageName = (await _repoWrapper.City.GetFirstOrDefaultAsync(
                 predicate: i => i.ID == cityId))
                 ?.Logo;
-            
+
             if (file != null && file.Length > 0)
             {
                 using (var img = Image.FromStream(file.OpenReadStream()))
@@ -446,12 +455,12 @@ namespace EPlast.BLL.Services
             {
                 var logoBase64Parts = logoBase64.Split(',');
                 var extension = logoBase64Parts[0].Split(new[] { '/', ';' }, 3)[1];
-                
+
                 if (!string.IsNullOrEmpty(extension))
                 {
                     extension = (extension[0] == '.' ? "" : ".") + extension;
                 }
-                
+
                 var fileName = Guid.NewGuid() + extension;
 
                 await _cityBlobStorage.UploadBlobForBase64Async(logoBase64Parts[1], fileName);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.DataAccess.Entities
@@ -19,6 +20,6 @@ namespace EPlast.DataAccess.Entities
         public int AdminTypeId { get; set; }
         public AdminType AdminType { get; set; }
 
-        public CityManagement CityManagement { get; set; }
+        public IEnumerable<CityManagement> CityManagements { get; set; }
     }
 }

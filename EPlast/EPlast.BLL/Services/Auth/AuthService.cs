@@ -216,7 +216,7 @@ namespace EPlast.BLL.Services
         {
             var user = await _userManager.FindByIdAsync(userDto.Id);
             user.EmailSendedOnRegister = DateTime.Now;
-            await _userManager.UpdateAsync(user); 
+            await _userManager.UpdateAsync(user);
             await _emailConfirmation.SendEmailAsync(user.Email, "Підтвердження реєстрації ",
                 $"Підтвердіть реєстрацію, перейшовши за :  <a href='{confirmationLink}'>посиланням</a> ", "Адміністрація сайту EPlast");
         }

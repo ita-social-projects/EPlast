@@ -323,13 +323,9 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("AnnualReportId")
                         .IsUnique();
 
-                    b.HasIndex("CityAdminOldId")
-                        .IsUnique()
-                        .HasFilter("[CityAdminOldId] IS NOT NULL");
+                    b.HasIndex("CityAdminOldId");
 
-                    b.HasIndex("CityLegalStatusOldId")
-                        .IsUnique()
-                        .HasFilter("[CityLegalStatusOldId] IS NOT NULL");
+                    b.HasIndex("CityLegalStatusOldId");
 
                     b.HasIndex("UserId");
 
@@ -1472,12 +1468,12 @@ namespace EPlast.DataAccess.Migrations
                         .IsRequired();
 
                     b.HasOne("EPlast.DataAccess.Entities.CityAdministration", "CityAdminOld")
-                        .WithOne("CityManagement")
-                        .HasForeignKey("EPlast.DataAccess.Entities.CityManagement", "CityAdminOldId");
+                        .WithMany("CityManagements")
+                        .HasForeignKey("CityAdminOldId");
 
                     b.HasOne("EPlast.DataAccess.Entities.CityLegalStatus", "CityLegalStatusOld")
-                        .WithOne("CityManagement")
-                        .HasForeignKey("EPlast.DataAccess.Entities.CityManagement", "CityLegalStatusOldId");
+                        .WithMany("CityManagements")
+                        .HasForeignKey("CityLegalStatusOldId");
 
                     b.HasOne("EPlast.DataAccess.Entities.User", "CityAdminNew")
                         .WithMany()
