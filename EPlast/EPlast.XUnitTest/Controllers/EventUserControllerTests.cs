@@ -30,6 +30,7 @@ namespace EPlast.XUnitTest.Controllers
         [Fact]
         public async Task EventUserSuccssesTest()
         {
+            //Arrange
             _eventUserManager.Setup(am => am.EventUserAsync(It.IsAny<string>(), It.IsAny<ClaimsPrincipal>()))
               .ReturnsAsync(new EventUserDTO());
             _mapper.Setup(m => m.Map<EventUserDTO, EventUserViewModel>(It.IsAny<EventUserDTO>())).Returns(GetEventUserViewModel());
@@ -64,6 +65,7 @@ namespace EPlast.XUnitTest.Controllers
         [Fact]
         public async Task EventCreateGetSuccessTest()
         {
+            //Arrange
             _eventUserManager.Setup(x => x.InitializeEventCreateDTOAsync()).ReturnsAsync(new EventCreateDTO());
 
             _mapper.Setup(m => m.Map<EventCreateDTO, EventCreateViewModel>(It.IsAny<EventCreateDTO>()))
@@ -164,6 +166,7 @@ namespace EPlast.XUnitTest.Controllers
         [Fact]
         public async Task EventEditPostSuccessTest()
         {
+            //Arrange
             _mapper.Setup(x => x.Map<EventCreateViewModel, EventCreateDTO>(It.IsAny<EventCreateViewModel>())).Returns(new EventCreateDTO());
             _eventUserManager.Setup(x => x.EditEventAsync(new EventCreateDTO()));
             // Act
@@ -178,6 +181,7 @@ namespace EPlast.XUnitTest.Controllers
         [Fact]
         public async Task EventEditPostFailureTest()
         {
+            //Arrange   
             _mapper.Setup(x => x.Map<EventCreateViewModel, EventCreateDTO>(It.IsAny<EventCreateViewModel>())).Returns(new EventCreateDTO());
             _eventUserManager.Setup(x => x.EditEventAsync(new EventCreateDTO()));
             // Act

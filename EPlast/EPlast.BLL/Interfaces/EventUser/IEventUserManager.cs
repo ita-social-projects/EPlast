@@ -10,6 +10,14 @@ namespace EPlast.BLL.Interfaces.EventUser
     public interface IEventUserManager
     {
         /// <summary>
+        /// Get all created events user by id which date are expired
+        /// </summary>
+        /// <returns>Array of all created events for user</returns>
+        /// /// <param name="userId"></param>
+        /// /// <param name="user"></param>
+        Task<EventUserDTO> GetCreatedArchivedEvents(string userId, ClaimsPrincipal user);
+
+        /// <summary>
         /// Get all created, planned, visited events for user by id
         /// </summary>
         /// <returns>Array of all created, planned, visited events for user</returns>

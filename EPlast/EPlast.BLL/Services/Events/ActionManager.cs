@@ -44,6 +44,7 @@ namespace EPlast.BLL.Services.Events
             _eventGalleryManager = eventGalleryManager;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<EventTypeDTO>> GetEventTypesAsync()
         {
             var dto = await _eventTypeManager.GetDTOAsync();
@@ -56,12 +57,15 @@ namespace EPlast.BLL.Services.Events
             return dto;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<EventCategoryDTO>> GetCategoriesByTypeIdAsync(int eventTypeId)
         {
             var dto = await _eventCategoryManager.GetDTOByEventTypeIdAsync(eventTypeId);
+
             return dto;
         }
 
+        /// <inheritdoc />
         public async Task<List<GeneralEventDTO>> GetEventsAsync(int categoryId, int eventTypeId, ClaimsPrincipal user)
         {
             int approvedStatus = await _participantStatusManager.GetStatusIdAsync("Учасник");
@@ -99,6 +103,7 @@ namespace EPlast.BLL.Services.Events
             return dto;
         }
 
+        /// <inheritdoc />
         public async Task<EventDTO> GetEventInfoAsync(int id, ClaimsPrincipal user)
         {
             int approvedStatus = await _participantStatusManager.GetStatusIdAsync("Учасник");
@@ -121,8 +126,6 @@ namespace EPlast.BLL.Services.Events
                             .ThenInclude(a => a.User)
                         .Include(e => e.EventType)
                         .Include(e => e.EventCategory)
-                        .Include(e => e.EventGallarys)
-                            .ThenInclude(eg => eg.Gallary)
                     );
 
             var dto = new EventDTO()
@@ -144,6 +147,15 @@ namespace EPlast.BLL.Services.Events
             return dto;
         }
 
+        /// <inheritdoc />
+        public async Task<IEnumerable<EventGalleryDTO>> GetPicturesAsync(int id)
+        {
+            var dto = await _eventGalleryManager.GetPicturesInBase64(id);
+
+            return dto;
+        }
+
+        /// <inheritdoc />
         public async Task<int> DeleteEventAsync(int id)
         {
             try
@@ -160,6 +172,7 @@ namespace EPlast.BLL.Services.Events
             }
         }
 
+        /// <inheritdoc />
         public async Task<int> SubscribeOnEventAsync(int id, ClaimsPrincipal user)
         {
             try
@@ -176,6 +189,7 @@ namespace EPlast.BLL.Services.Events
             }
         }
 
+        /// <inheritdoc />
         public async Task<int> UnSubscribeOnEventAsync(int id, ClaimsPrincipal user)
         {
             try
@@ -192,30 +206,35 @@ namespace EPlast.BLL.Services.Events
             }
         }
 
+        /// <inheritdoc />
         public async Task<int> ApproveParticipantAsync(int id)
         {
             int result = await _participantManager.ChangeStatusToApprovedAsync(id);
             return result;
         }
 
+        /// <inheritdoc />
         public async Task<int> UnderReviewParticipantAsync(int id)
         {
             int result = await _participantManager.ChangeStatusToUnderReviewAsync(id);
             return result;
         }
 
+        /// <inheritdoc />
         public async Task<int> RejectParticipantAsync(int id)
         {
             int result = await _participantManager.ChangeStatusToRejectedAsync(id);
             return result;
         }
 
-        public async Task<int> FillEventGalleryAsync(int id, IList<IFormFile> files)
+        /// <inheritdoc />
+        public async Task<IEnumerable<EventGalleryDTO>> FillEventGalleryAsync(int id, IList<IFormFile> files)
         {
-            int result = await _eventGalleryManager.AddPicturesAsync(id, files);
-            return result;
+            var uploadedPictures = await _eventGalleryManager.AddPicturesAsync(id, files);
+            return uploadedPictures;
         }
 
+        /// <inheritdoc />
         public async Task<int> DeletePictureAsync(int id)
         {
             int result = await _eventGalleryManager.DeletePictureAsync(id);
@@ -249,5 +268,6 @@ namespace EPlast.BLL.Services.Events
                 await _repoWrapper.SaveAsync();
             }
         }
+
     }
 }

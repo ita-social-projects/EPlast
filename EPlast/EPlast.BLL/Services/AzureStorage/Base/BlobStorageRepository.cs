@@ -15,6 +15,7 @@ namespace EPlast.BLL.Services.AzureStorage.Base
             _connectionFactory = connectionFactory;
         }
 
+        /// <inheritdoc />
         public async Task<CloudBlockBlob> GetBlobAsync(string blobName, string containerName)
         {
             var cloudBlobContainer = await _connectionFactory.GetBlobContainer(containerName);
@@ -22,6 +23,8 @@ namespace EPlast.BLL.Services.AzureStorage.Base
 
             return blockBlob;
         }
+
+        /// <inheritdoc />
         public async Task<string> GetBlobBase64Async(string blobName, string containerName)
         {
             var cloudBlobContainer = await _connectionFactory.GetBlobContainer(containerName);
@@ -34,6 +37,8 @@ namespace EPlast.BLL.Services.AzureStorage.Base
             var result = $"data:image/{Path.GetExtension(blobName)};base64," + azureBase64;
             return result;
         }
+
+        /// <inheritdoc />
         public async Task DeleteBlobAsync(string blobName, string containerName)
         {
             var cloudBlobContainer = await _connectionFactory.GetBlobContainer(containerName);
@@ -41,6 +46,7 @@ namespace EPlast.BLL.Services.AzureStorage.Base
             await blockBlob.DeleteIfExistsAsync();
         }
 
+        /// <inheritdoc />
         public async Task UploadBlobAsync(IFormFile blobfile, string fileName, string containerName)
         {
             var cloudBlobContainer = await _connectionFactory.GetBlobContainer(containerName);
@@ -50,6 +56,8 @@ namespace EPlast.BLL.Services.AzureStorage.Base
                 blockBlob.UploadFromStream(fileStream);
             }
         }
+
+        /// <inheritdoc />
         public async Task UploadBlobForBase64Async(string base64, string fileName, string containerName)
         {
             var cloudBlobContainer = await _connectionFactory.GetBlobContainer(containerName);
