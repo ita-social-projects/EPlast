@@ -8,7 +8,7 @@ namespace EPlast.BLL.Interfaces.ActiveMembership
     /// <summary>
     /// Implement  operations for work with active membership
     /// </summary>
-    public interface IActiveMembershipService
+    public interface IPlastDegreeService
     {
         /// <summary>
         /// Returns all plast degrees

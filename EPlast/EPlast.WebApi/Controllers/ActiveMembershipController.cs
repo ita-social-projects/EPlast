@@ -10,8 +10,8 @@ namespace EPlast.WebApi.Controllers
     [ApiController]
     public class ActiveMembershipController : ControllerBase
     {
-        private IActiveMembershipService _activeMembershipService;
-        public ActiveMembershipController(IActiveMembershipService activeMembershipService)
+        private IPlastDegreeService _activeMembershipService;
+        public ActiveMembershipController(IPlastDegreeService activeMembershipService)
         {
             _activeMembershipService = activeMembershipService;
         }

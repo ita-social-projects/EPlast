@@ -13,12 +13,12 @@ using System.Threading.Tasks;
 namespace EPlast.BLL.Services.ActiveMembership
 {
     /// <inheritdoc />
-    public class ActiveMembershipService : IActiveMembershipService
+    public class PlastDegreeService : IPlastDegreeService
     {
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IUserManagerService _userManagerService;
-        public ActiveMembershipService(IMapper mapper, IRepositoryWrapper repoWrapper, IUserManagerService userManagerService)
+        public PlastDegreeService(IMapper mapper, IRepositoryWrapper repoWrapper, IUserManagerService userManagerService)
         {
             _mapper = mapper;
             _repoWrapper = repoWrapper;
