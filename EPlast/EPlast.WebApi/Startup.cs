@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BLL;
 using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.AzureStorage.Base;
@@ -14,6 +15,7 @@ using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services;
+using EPlast.BLL.Services.ActiveMembership;
 using EPlast.BLL.Services.Admin;
 using EPlast.BLL.Services.AzureStorage;
 using EPlast.BLL.Services.AzureStorage.Base;
@@ -212,6 +214,8 @@ namespace EPlast.WebApi
             services.AddScoped<IRegionBlobStorageRepository, RegionBlobStorageRepository>();
             services.AddScoped<IClubBlobStorageRepository, ClubBlobStorageRepository>();
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
+            services.AddScoped<IAccessLevelService, AccessLevelService>();
+            services.AddScoped<IPlastDegreeService, PlastDegreeService>();
             services.AddLogging();
             
             services.AddAuthorization();

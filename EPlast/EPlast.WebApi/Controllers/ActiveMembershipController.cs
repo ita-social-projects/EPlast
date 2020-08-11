@@ -10,17 +10,23 @@ namespace EPlast.WebApi.Controllers
     [ApiController]
     public class ActiveMembershipController : ControllerBase
     {
-        private IPlastDegreeService _activeMembershipService;
-        public ActiveMembershipController(IPlastDegreeService activeMembershipService)
+        private IPlastDegreeService _plastDegreeService;
+        private IAccessLevelService _accessLevelService;
+        public ActiveMembershipController(IPlastDegreeService plastDegreeService, IAccessLevelService accessLevelService)
         {
-            _activeMembershipService = activeMembershipService;
+            _plastDegreeService = plastDegreeService;
+            _accessLevelService = accessLevelService;
         }
         [HttpGet("dergees")]
         public async Task<IEnumerable<PlastDegreeDTO>> GetAllDergees()
         {
-            return await _activeMembershipService.GetDergeesAsync();
+            return await _plastDegreeService.GetDergeesAsync();
         }
-       
 
+        [HttpGet("dergees")]
+        public async Task<IEnumerable<string>> GetAccessLevel(string userId)
+        {
+            return await _accessLevelService.GetUserAccessLevelsAsync(userId);
+        }
     }
 }
