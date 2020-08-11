@@ -264,7 +264,10 @@ namespace EPlast.WebApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider services)
+        public void Configure(IApplicationBuilder app,
+                              IWebHostEnvironment env,
+                              IRecurringJobManager recurringJobManager,
+                              IServiceProvider serviceProvider)
         {
             app.UseCors(builder =>
             {
@@ -318,8 +321,13 @@ namespace EPlast.WebApi
             {
                 endpoints.MapControllers();
             });
-
-            CreateRoles(services).Wait();
+            app.UseHangfireDashboard();
+            recurringJobManager.AddOrUpdate("Run every day",
+                () => serviceProvider.GetService<IPlastDegreeService>().GetDergeesAsync(),
+             "59 23 * * *",
+             TimeZoneInfo.Local
+             );
+            CreateRoles(serviceProvider).Wait();
         }
         private async Task CreateRoles(IServiceProvider serviceProvider)
         {
