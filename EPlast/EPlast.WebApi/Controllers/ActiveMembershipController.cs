@@ -18,15 +18,15 @@ namespace EPlast.WebApi.Controllers
             _accessLevelService = accessLevelService;
         }
         [HttpGet("dergees")]
-        public async Task<IEnumerable<PlastDegreeDTO>> GetAllDergees()
+        public async Task<IActionResult> GetAllDergees()
         {
-            return await _plastDegreeService.GetDergeesAsync();
+            return Ok(await _plastDegreeService.GetDergeesAsync());
         }
 
-        [HttpGet("dergees")]
-        public async Task<IEnumerable<string>> GetAccessLevel(string userId)
+        [HttpGet("accessLevel/{userId}")]
+        public async Task<IActionResult> GetAccessLevel(string userId)
         {
-            return await _accessLevelService.GetUserAccessLevelsAsync(userId);
+            return Ok(await _accessLevelService.GetUserAccessLevelsAsync(userId));
         }
     }
 }
