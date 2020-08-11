@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace EPlast.BLL.Interfaces.ActiveMembership
 {
     /// <summary>
-    /// Implement  operations for work with active membership
+    /// Implement  operations for work with plast degrees
     /// </summary>
     public interface IPlastDegreeService
     {
@@ -27,12 +27,6 @@ namespace EPlast.BLL.Interfaces.ActiveMembership
         /// <param name="userId">User id</param>
         /// <returns>All degrees of current user</returns>
         public Task<IEnumerable<UserPlastDegreeDTO>> GetUserPlastDegreesAsync(string userId);
-        /// <summary>
-        /// Returns All access levels of current user
-        /// </summary>
-        /// <param name="userId">User id</param>
-        /// <returns>All access levels of current user</returns>
-        public Task<IEnumerable<string>> GetUserAccessLevelsAsync(string userId);
         /// <summary>
         /// Adds plast degree for user
         /// </summary>

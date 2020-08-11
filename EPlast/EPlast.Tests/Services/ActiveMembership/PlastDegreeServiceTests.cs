@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.DTO.UserProfiles;
-using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Services.ActiveMembership;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
@@ -88,81 +86,7 @@ namespace EPlast.Tests.Services.ActiveMembership
 
         }
 
-        [Test]
-        public async Task GetUserAccessLevelsAsync_UserIsPlastun_ReturnsIEnumerableOfStringsWithPlastunRolesForActiveMembership()
-        {
-            // Arrange
-            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(UserDTO);
-            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
-                .ReturnsAsync(GetUserRolesAsPlastun());
-
-            // Act
-            IEnumerable<string> result = await _activeMembershipService.GetUserAccessLevelsAsync(UserId);
-            List<string> listResult = result.ToList();
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<IEnumerable<string>>(result);
-            Assert.AreEqual(GetUserRolesAsPlastun().ToList().Count, listResult.Count);
-            Assert.AreEqual(AccessLevelTypeDTO.Member.GetDescription(), listResult[0]);
-        }
-        [Test]
-        public async Task GetUserAccessLevelsAsync_UserIsSupporter_ReturnsIEnumerableOfStringsWithSupporterRolesForActiveMembership()
-        {
-            // Arrange
-            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(UserDTO);
-            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
-                .ReturnsAsync(GetUserRolesAsSupporter());
-
-            // Act
-            IEnumerable<string> result = await _activeMembershipService.GetUserAccessLevelsAsync(UserId);
-            List<string> listResult = result.ToList();
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<IEnumerable<string>>(result);
-            Assert.AreEqual(GetUserRolesAsSupporter().ToList().Count, listResult.Count);
-            Assert.AreEqual(AccessLevelTypeDTO.Supporter.GetDescription(), listResult[0]);
-        }
-
-        [Test]
-        public async Task GetUserAccessLevelsAsync_UserIsLeadershipMember_ReturnsIEnumerableOfStringsWithLeadershipMemberRolesForActiveMembership()
-        {
-            // Arrange
-            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(UserDTO);
-            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
-                .ReturnsAsync(GetUserRolesAsLeadershipMember());
-
-            // Act
-            IEnumerable<string> result = await _activeMembershipService.GetUserAccessLevelsAsync(UserId);
-            List<string> listResult = result.ToList();
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<IEnumerable<string>>(result);
-        }
-
-        [Test]
-        public async Task GetUserAccessLevelsAsync_UserIsFormerMember_ReturnsIEnumerableOfStringsWithFormerMemberMemberRolesForActiveMembership()
-        {
-            // Arrange
-            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(UserDTO);
-            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
-                .ReturnsAsync(GetUserRolesAsFormerMember());
-
-            // Act
-            IEnumerable<string> result = await _activeMembershipService.GetUserAccessLevelsAsync(UserId);
-            List<string> listResult = result.ToList();
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<IEnumerable<string>>(result);
-        }
-
+        
         [Test]
         public async Task AddPlastDegreeForUserAsync_UserDoesNotExist_ReturnsFalse()
         {
@@ -360,32 +284,7 @@ namespace EPlast.Tests.Services.ActiveMembership
                 new UserPlastDegreeDTO{PlastDegreeId = 1}
             }
         };
-        private IEnumerable<string> GetUserRolesAsPlastun()
-        {
-            return new List<string>
-            {
-                RolesForActiveMembershipTypeDTO.Plastun.GetDescription()
-            };
-        }
-        private IEnumerable<string> GetUserRolesAsSupporter()
-        {
-            return new List<string>
-            {
-               RolesForActiveMembershipTypeDTO.Supporter.GetDescription()
-            };
-        }
-        private IEnumerable<string> GetUserRolesAsLeadershipMember()
-        {
-            return new List<string>
-            {
-                 RolesForActiveMembershipTypeDTO.Plastun.GetDescription(),
-                 "Admin"
-            };
-        }
-        private IEnumerable<string> GetUserRolesAsFormerMember()
-        {
-            return new List<string>();
-        }
+       
         private IEnumerable<UserPlastDegree> GetTestUserPlastDegrees()
         {
             return new List<UserPlastDegree>
