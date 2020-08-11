@@ -35,6 +35,8 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.DataAccess.Repositories.Realizations.Base;
 using EPlast.WebApi.Extensions;
+using Hangfire;
+using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -74,7 +76,15 @@ namespace EPlast.WebApi
                 .Where(x =>
                     x.FullName.Equals("EPlast.BLL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null") ||
                     x.FullName.Equals("EPlast.WebApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null")));
-
+            services.AddHangfire(config =>
+            {
+                config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseDefaultTypeSerializer()
+                .UseMemoryStorage();
+            }
+            );
+            services.AddHangfireServer();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -252,7 +262,7 @@ namespace EPlast.WebApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IRecurringJobManager recurringJobManager, IServiceProvider serviceProvider)
         {
             app.UseCors(builder =>
             {
@@ -306,6 +316,12 @@ namespace EPlast.WebApi
             {
                 endpoints.MapControllers();
             });
+            app.UseHangfireDashboard();
+            recurringJobManager.AddOrUpdate("Run every day",
+                () => serviceProvider.GetService<IPlastDegreeService>().GetDergeesAsync(),
+             "59 23 * * *",
+             TimeZoneInfo.Local
+             );
         }
     }
 }
