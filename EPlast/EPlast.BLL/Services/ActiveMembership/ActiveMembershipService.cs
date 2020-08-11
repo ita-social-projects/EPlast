@@ -166,6 +166,7 @@ namespace EPlast.BLL.Services.ActiveMembership
             if(userPlastDegree != null)
             {
                 await SetDegreeAsCurrent(true);
+                userPlastDegree.IsCurrent = true;
                 _repoWrapper.UserPlastDegrees.Update(userPlastDegree);
                 await _repoWrapper.SaveAsync();
                 isAdded = true;
