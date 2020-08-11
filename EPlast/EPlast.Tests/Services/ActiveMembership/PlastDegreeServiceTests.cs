@@ -19,9 +19,9 @@ using System.Threading.Tasks;
 namespace EPlast.Tests.Services.ActiveMembership
 {
     [TestFixture]
-    public class ActiveMembershipServiceTests
+    public class PlastDegreeServiceTests
     {
-        private ActiveMembershipService _activeMembershipService;
+        private PlastDegreeService _activeMembershipService;
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IMapper> _mapper;
         private Mock<IUserManagerService> _userManagerService;
@@ -32,7 +32,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             _mapper = new Mock<IMapper>();
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _userManagerService = new Mock<IUserManagerService>();
-            _activeMembershipService = new ActiveMembershipService(_mapper.Object, _repoWrapper.Object, _userManagerService.Object);
+            _activeMembershipService = new PlastDegreeService(_mapper.Object, _repoWrapper.Object, _userManagerService.Object);
         }
         [Test]
         public async Task GetDergeesAsync_ReturnsAllDergees()
