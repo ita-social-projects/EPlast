@@ -316,7 +316,6 @@ namespace EPlast.WebApi
             {
                 endpoints.MapControllers();
             });
-          
         }
     }
 }
