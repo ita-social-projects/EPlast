@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using EPlast.DataAccess.Entities.Event;
+using EPlast.DataAccess.Entities.UserEntities;
 using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.DataAccess.Entities
@@ -45,6 +46,7 @@ namespace EPlast.DataAccess.Entities
         public ICollection<RegionAdministration> RegionAdministrations { get; set; }
         public ICollection<AnnualReport> AnnualReports { get; set; }
         public ICollection<UserPlastDegree> UserPlastDegrees { get; set; }
+        public ICollection<UserDistinction> UserDistinctions { get; set; }
         public User()
         {
             Approvers = new List<Approver>();

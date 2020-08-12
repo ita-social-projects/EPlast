@@ -50,11 +50,13 @@ namespace EPlast.Tests.Controllers
             _mockCalendarService
                .Setup(x => x.GetAllActions())
                .ReturnsAsync(GetAllEventsTest());
+
             //Act 
             var resultActionCount = ((
                 await _eventsCalendarController.GetActions() as ObjectResult)
                 .Value as List<EventCalendarInfoDTO>)
                 .Count;
+            
             //Assert
             _mockCalendarService.Verify();
             Assert.AreEqual(expectedCount, resultActionCount);
