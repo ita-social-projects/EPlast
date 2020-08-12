@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using EPlast.BLL;
 using EPlast.BLL.DTO;
+using EPlast.DataAccess.Migrations;
+using EPlast.DataAccess.Repositories;
 using EPlast.WebApi.Models.Decision;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -92,6 +94,7 @@ namespace EPlast.WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Save(DecisionWrapperDTO decisionWrapper)
         {
+            
             if (decisionWrapper.FileAsBase64 == null && decisionWrapper.Decision.FileName != null)
             {
                 return BadRequest("Проблеми з завантаженням файлу");
@@ -120,7 +123,7 @@ namespace EPlast.WebApi.Controllers
                         .Select(decesion =>
                         {
                             var dvm = _mapper.Map<DecisionViewModel>(decesion.Decision);
-
+                            
                             dvm.DecisionStatusType = _decisionService.GetDecisionStatusTypes()
                             .FirstOrDefault(dst => dst.Value == decesion.Decision.DecisionStatusType.ToString()).Text;
                             dvm.FileName = decesion.Decision.FileName;
@@ -178,5 +181,6 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(base64EncodedPDF);
         }
+
     }
 }
