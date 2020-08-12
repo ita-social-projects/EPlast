@@ -98,6 +98,7 @@ namespace EPlast.BLL
         {
             try
             {
+                decision.Decision.DecisionTarget = await CreateDecisionTargetAsync(decision.Decision.DecisionTarget.TargetName);
                 var repoDecision = _mapper.Map<Decesion>(decision.Decision);
                 _repoWrapper.Decesion.Attach(repoDecision);
                 _repoWrapper.Decesion.Create(repoDecision);
@@ -191,6 +192,21 @@ namespace EPlast.BLL
                     .Select(decision => new DecisionWrapperDTO { Decision = decision });
         }
 
+
+        private async Task<DecisionTargetDTO> CreateDecisionTargetAsync(string DecisionTargetName)
+        {
+            DecisionTargetDTO decisionTargetDto = _mapper.Map <DecisionTargetDTO> (await _repoWrapper.DecesionTarget.GetFirstOrDefaultAsync(x=>x.TargetName==DecisionTargetName));
+            
+            if (decisionTargetDto == null)
+            {
+                decisionTargetDto = new DecisionTargetDTO();
+                decisionTargetDto.TargetName = DecisionTargetName;
+            }
+
+            return decisionTargetDto;
+
+        }
+        
 
     }
 }
