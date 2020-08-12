@@ -14,6 +14,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IOrganizationRepository _organization;
         private IDecesionTargetRepository _decesionTarget;
         private IDistinctionRepository _distinction;
+        private IUserDistinctionRepository _userDistinction;
         private IDocumentTemplateRepository _documentTemplate;
         private IDecesionRepository _decesion;
         private IEventRepository _event;
@@ -598,6 +599,17 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                     _distinction = new DistinctionRepository(_dbContext);
                 }
                 return _distinction;
+            }
+        }
+        public IUserDistinctionRepository UserDistinction
+        {
+            get
+            {
+                if (_userDistinction == null)
+                {
+                    _userDistinction = new UserDistinctionRepository(_dbContext);
+                }
+                return _userDistinction;
             }
         }
 

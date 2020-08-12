@@ -23,7 +23,6 @@ namespace EPlast.DataAccess.Repositories
         IEventTypeRepository EventType { get; }
         IEventStatusRepository EventStatus { get; }
         IEventAdministrationTypeRepository EventAdministrationType { get; }
-
         IEducationRepository Education { get; }
         IDegreeRepository Degree { get; }
         IReligionRepository Religion { get; }
@@ -49,6 +48,8 @@ namespace EPlast.DataAccess.Repositories
         ICityManagementsRepository CityManagements { get; }
         IEventAdministrationRepository EventAdministration { get; }
         IEventCategoryTypeRepository EventCategoryType { get; }
+        IDistinctionRepository Distinction { get; }
+        IUserDistinctionRepository UserDistinction { get; }
 
 
         void Save();
