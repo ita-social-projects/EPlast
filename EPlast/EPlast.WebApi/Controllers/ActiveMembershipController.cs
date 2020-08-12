@@ -1,7 +1,5 @@
-﻿using EPlast.BLL.DTO.ActiveMembership;
-using EPlast.BLL.Interfaces.ActiveMembership;
+﻿using EPlast.BLL.Interfaces.ActiveMembership;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
@@ -10,8 +8,8 @@ namespace EPlast.WebApi.Controllers
     [ApiController]
     public class ActiveMembershipController : ControllerBase
     {
-        private IPlastDegreeService _plastDegreeService;
-        private IAccessLevelService _accessLevelService;
+        private readonly IPlastDegreeService _plastDegreeService;
+        private readonly IAccessLevelService _accessLevelService;
         public ActiveMembershipController(IPlastDegreeService plastDegreeService, IAccessLevelService accessLevelService)
         {
             _plastDegreeService = plastDegreeService;
