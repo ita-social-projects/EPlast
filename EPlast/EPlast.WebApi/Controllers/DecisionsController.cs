@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL;
 using EPlast.BLL.DTO;
-using EPlast.DataAccess.Migrations;
-using EPlast.DataAccess.Repositories;
 using EPlast.WebApi.Models.Decision;
 using Microsoft.AspNetCore.Mvc;
 using System;
