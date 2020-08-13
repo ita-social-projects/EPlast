@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20200805150600_AddIsCurrentFieldToUserPlastDegree")]
+    partial class AddIsCurrentFieldToUserPlastDegree
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -323,9 +325,13 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("AnnualReportId")
                         .IsUnique();
 
-                    b.HasIndex("CityAdminOldId");
+                    b.HasIndex("CityAdminOldId")
+                        .IsUnique()
+                        .HasFilter("[CityAdminOldId] IS NOT NULL");
 
-                    b.HasIndex("CityLegalStatusOldId");
+                    b.HasIndex("CityLegalStatusOldId")
+                        .IsUnique()
+                        .HasFilter("[CityLegalStatusOldId] IS NOT NULL");
 
                     b.HasIndex("UserId");
 
@@ -1468,12 +1474,12 @@ namespace EPlast.DataAccess.Migrations
                         .IsRequired();
 
                     b.HasOne("EPlast.DataAccess.Entities.CityAdministration", "CityAdminOld")
-                        .WithMany("CityManagements")
-                        .HasForeignKey("CityAdminOldId");
+                        .WithOne("CityManagement")
+                        .HasForeignKey("EPlast.DataAccess.Entities.CityManagement", "CityAdminOldId");
 
                     b.HasOne("EPlast.DataAccess.Entities.CityLegalStatus", "CityLegalStatusOld")
-                        .WithMany("CityManagements")
-                        .HasForeignKey("CityLegalStatusOldId");
+                        .WithOne("CityManagement")
+                        .HasForeignKey("EPlast.DataAccess.Entities.CityManagement", "CityLegalStatusOldId");
 
                     b.HasOne("EPlast.DataAccess.Entities.User", "CityAdminNew")
                         .WithMany()
