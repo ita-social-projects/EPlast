@@ -135,6 +135,7 @@ namespace EPlast.DataAccess
                .HasMany(x => x.Approvers)
                .WithOne(x => x.User)
                .OnDelete(DeleteBehavior.Cascade);
+
         }
 
         public DbSet<DocumentTemplate> DocumentTemplates { get; set; }
@@ -157,5 +158,6 @@ namespace EPlast.DataAccess
         public DbSet<RegionAdministration> RegionAdministrations { get; set; }
         public DbSet<CityLegalStatus> CityLegalStatuses { get; set; }
         public DbSet<UserPlastDegree> UserPlastDegrees { get; set; }
+        public DbSet<PlastDegree> PlastDegrees { get; set; }
     }
 }

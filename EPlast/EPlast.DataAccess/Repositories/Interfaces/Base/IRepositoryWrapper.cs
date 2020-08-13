@@ -49,7 +49,7 @@ namespace EPlast.DataAccess.Repositories
         ICityManagementsRepository CityManagements { get; }
         IEventAdministrationRepository EventAdministration { get; }
         IEventCategoryTypeRepository EventCategoryType { get; }
-
+        IPlastDegreeRepository PlastDegrees { get; }
 
         void Save();
         Task SaveAsync();

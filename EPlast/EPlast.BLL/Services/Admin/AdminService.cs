@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
-using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -102,7 +101,7 @@ namespace EPlast.BLL.Services
 
                     UserPlastDegreeName = user.UserPlastDegrees.Count != 0 ? user.UserPlastDegrees
                         .FirstOrDefault(x => x.UserId == user.Id && x.DateFinish == null)
-                        ?.UserPlastDegreeType.GetDescription() : string.Empty,
+                        ?.PlastDegree.Name : string.Empty,
                     UserRoles = string.Join(", ", roles)
                 });
             }
