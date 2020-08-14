@@ -29,8 +29,10 @@ namespace EPlast.BLL.Services.UserProfiles
         private readonly IWebHostEnvironment _env;
         private readonly IEducationService _educationService;
         private readonly IUserBlobStorageRepository _userBlobStorage;
+        private readonly IConfirmedUsersService _confirmedUsersService;
         public UserService(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IMapper mapper, IWorkService workService,
-            IEducationService educationService, IUserBlobStorageRepository userBlobStorage, IWebHostEnvironment env, IUserManagerService userManagerService)
+            IEducationService educationService, IUserBlobStorageRepository userBlobStorage, IWebHostEnvironment env, IUserManagerService userManagerService,
+            IConfirmedUsersService confirmedUsersService)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
@@ -40,6 +42,7 @@ namespace EPlast.BLL.Services.UserProfiles
             _userBlobStorage = userBlobStorage;
             _env = env;
             _userManagerService = userManagerService;
+            _confirmedUsersService = confirmedUsersService;
         }
 
         /// <inheritdoc />
@@ -113,12 +116,17 @@ namespace EPlast.BLL.Services.UserProfiles
             try
             {
                 var timeToJoinPlast = registeredOn.AddYears(1) - DateTime.Now;
+                if (_repoWrapper.ConfirmedUser.FindByCondition(x => x.UserID == userId).Any(q => q.isClubAdmin))
+                {
+                    timeToJoinPlast = timeToJoinPlast.Divide(2);
+                }
                 if (timeToJoinPlast <= TimeSpan.Zero)
                 {
                     var us = await _userManager.FindByIdAsync(userId);
                     await _userManager.AddToRoleAsync(us, "Пластун");
                     return TimeSpan.Zero;
                 }
+
 
                 return timeToJoinPlast;
             }
