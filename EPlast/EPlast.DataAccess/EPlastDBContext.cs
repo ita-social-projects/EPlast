@@ -1,5 +1,6 @@
 ﻿using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
+using EPlast.DataAccess.Entities.UserEntities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -135,6 +136,16 @@ namespace EPlast.DataAccess
                .HasMany(x => x.Approvers)
                .WithOne(x => x.User)
                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>()
+                .HasMany(x => x.UserDistinctions)
+                .WithOne(x => x.User)
+                .OnDelete(DeleteBehavior.Cascade);  
+
+            modelBuilder.Entity<Distinction>()
+                .HasMany(x => x.UserDistinctions)
+                .WithOne(x => x.Distinction)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         public DbSet<DocumentTemplate> DocumentTemplates { get; set; }
@@ -157,5 +168,7 @@ namespace EPlast.DataAccess
         public DbSet<RegionAdministration> RegionAdministrations { get; set; }
         public DbSet<CityLegalStatus> CityLegalStatuses { get; set; }
         public DbSet<UserPlastDegree> UserPlastDegrees { get; set; }
+        public DbSet<Distinction> Distinctions { get; set; }
+        public DbSet<UserDistinction> UserDistinctions { get; set; }
     }
 }
