@@ -43,6 +43,7 @@ namespace EPlast.BLL.DTO.UserProfiles
         public IEnumerable<ClubMembers> ClubMembers { get; set; }
         public IEnumerable<RegionAdministration> RegionAdministrations { get; set; }
         public IEnumerable<UserPlastDegree> UserPlastDegrees { get; set; }
+        public IEnumerable<UserDistinctionDTO> UserDistinctions { get; set; }
 
         public UserDTO()
         {
