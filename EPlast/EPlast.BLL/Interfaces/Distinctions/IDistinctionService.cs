@@ -8,7 +8,7 @@ namespace EPlast.BLL
         Task<IEnumerable<DistinctionDTO>> GetAllDistinctionAsync();
         Task<DistinctionDTO> GetDistinctionAsync(int id);
         DistinctionDTO AddDistinction();
-        Task<DistinctionDTO> ChangeDistinction(DistinctionDTO distinctionDTO);
+        Task<bool> ChangeDistinction(DistinctionDTO distinctionDTO);
         Task<bool> DeleteDistinction(int id);
     }
 }
