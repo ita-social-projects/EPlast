@@ -204,7 +204,7 @@ namespace EPlast.WebApi.Controllers
                     IsUserHeadOfCity = await _userManagerService.IsInRoleAsync(User, "Голова Станиці"),
                     IsUserHeadOfClub = await _userManagerService.IsInRoleAsync(User, "Голова Куреня"),
                     IsUserHeadOfRegion = await _userManagerService.IsInRoleAsync(User, "Голова Округу"),
-                    IsUserPlastun = await _userManagerService.IsInRoleAsync(User, "Пластун"),
+                    IsUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун"),
                     CurrentUserId = approverId
                 };
                 foreach (var item in model.ConfirmedUsers)
