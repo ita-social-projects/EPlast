@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace EPlast.BLL.Interfaces.Distinctions
+namespace EPlast.BLL
 {
     interface IUserDistinctionService
     {
