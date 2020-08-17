@@ -85,9 +85,12 @@ namespace EPlast.BLL.Services.EventUser
             }
 
             var targetUser = await _repoWrapper.User.GetFirstAsync(predicate: q => q.Id == userId);
+            User userWithRoles = await _userManager.FindByIdAsync(userId);
+            var userRoles = await _userManager.GetRolesAsync(userWithRoles);
             var model = new EventUserDTO
             {
-                User = _mapper.Map<User, UserDTO>(targetUser)
+                User = _mapper.Map<User, UserDTO>(targetUser),
+                UserRoles = userRoles
             };
             var eventAdmins = await _eventAdmininistrationManager.GetEventAdmininistrationByUserIdAsync(userId);
             var participants = await _participantManager.GetParticipantsByUserIdAsync(userId);
