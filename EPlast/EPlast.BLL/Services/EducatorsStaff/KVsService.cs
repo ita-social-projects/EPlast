@@ -2,60 +2,114 @@
 using EPlast.BLL.DTO.EducatorsStaff;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.EducatorsStaff;
+using EPlast.BLL.Interfaces.Logging;
+using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Repositories;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.EducatorsStaff
 {
-   public class KVsService:IKVService
+    public class KVsService:IKVService
     {
+        private readonly ILoggerService<DecisionService> _logger;
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
-        private readonly IKVService _kvService;
+       
 
         public KVsService(IRepositoryWrapper repositoryWrapper, IMapper mapper, IKVService adminTypeService)
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
-            _kvService = adminTypeService;
+            
         }
 
-        public Task<KadrasDTO> CreateKadra(KadrasDTO kadrasDTO)
+        public async Task<KadrasDTO> CreateKadra(KadrasDTO kadrasDTO)
         {
-            throw new NotImplementedException();
+            var newKV = _mapper.Map<KadrasDTO, KVs>(kadrasDTO);
+            await _repositoryWrapper.KVs.CreateAsync(newKV);
+            await _repositoryWrapper.SaveAsync();
+            return _mapper.Map<KVs,KadrasDTO>(newKV); 
         }
 
-        public Task<IEnumerable<KadrasDTO>> GetAllKVsAsync()
+        public async Task<bool> DeleteKadra(int kadra_id)
         {
-            throw new NotImplementedException();
+            bool status = false;
+            try
+            {
+                var deletedKadra = (await _repositoryWrapper.KVs.GetFirstAsync(d => d.ID == kadra_id));
+                if (deletedKadra == null)
+                    throw new ArgumentNullException($"Kadra with {kadra_id} id not found");
+
+                status = true;
+                _repositoryWrapper.KVs.Delete(deletedKadra);
+               
+                await _repositoryWrapper.SaveAsync();
+                return true;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception: {e.Message}");
+            }
+            return status;
         }
 
-        public Task<KadrasDTO> GetKadraById(int KadraID)
+        public async Task<IEnumerable<KadrasDTO>> GetAllKVsAsync()
         {
-            throw new NotImplementedException();
+            return _mapper.Map<IEnumerable<KVs>, IEnumerable<KadrasDTO>>(
+                 await _repositoryWrapper.KVs.GetAllAsync());
+          
         }
 
-        public Task<KadrasDTO> GetKadraByRegisterNumber(int KadrasRegisterNumber)
+        public async Task<KadrasDTO> GetKadraById(int KadraID)
         {
-            throw new NotImplementedException();
+            var KV = _mapper.Map<KVs, KadrasDTO>(await _repositoryWrapper.KVs.GetFirstOrDefaultAsync(c => c.ID == KadraID));
+            return KV;
         }
 
-        public Task<IEnumerable<KadrasDTO>> GetKVsOfGivenUser(UserDTO userDTO)
+        public async Task<KadrasDTO> GetKadraByRegisterNumber(int KadrasRegisterNumber)
         {
-            throw new NotImplementedException();
+            var KV = _mapper.Map<KVs, KadrasDTO>(await _repositoryWrapper.KVs.GetFirstOrDefaultAsync(c => c.NumberInRegister == KadrasRegisterNumber));
+            return KV;
         }
 
-        public Task<IEnumerable<KadrasDTO>> GetKVsWithKVType(KVTypeDTO kvTypeDTO)
+        public async Task<IEnumerable<KadrasDTO>> GetKVsOfGivenUser(UserDTO userDTO)
         {
-            throw new NotImplementedException();
+            var GivenUser = _mapper.Map<UserDTO,User>(userDTO);
+            var Kadras = _mapper.Map<IEnumerable<KVs>,IEnumerable<KadrasDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.User == GivenUser));
+            return Kadras;
         }
 
-        public Task<KadrasDTO> UpdateKadra(int KadraID, KadrasDTO kadrasDTO)
+        public async Task<IEnumerable<KadrasDTO>> GetKVsWithKVType(KVTypeDTO kvTypeDTO)
         {
-            throw new NotImplementedException();
+            var GivenKVType = _mapper.Map<KVTypeDTO, KVTypes>(kvTypeDTO);
+            var KVs = _mapper.Map<IEnumerable<KVs>, IEnumerable<KadrasDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.KVType == GivenKVType));
+            return KVs;
+        }
+
+        public async Task<bool> UpdateKadra(KadrasDTO kadrasDTO)
+        {
+
+           var  editedKadra = await _repositoryWrapper.KVs.GetFirstAsync(x => x.ID == kadrasDTO.ID);
+            try
+            {
+                editedKadra.NumberInRegister = kadrasDTO.NumberInRegister;
+                editedKadra.Link = kadrasDTO.Link;
+                editedKadra.User.Id = kadrasDTO.User.Id;
+                editedKadra.BasisOfGranting = kadrasDTO.BasisOfGranting;
+                editedKadra.DateOfGranting = kadrasDTO.DateOfGranting;
+
+                _repositoryWrapper.KVs.Update(editedKadra);
+                await _repositoryWrapper.SaveAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception: {e.Message}");
+            }
+
+            return editedKadra != null;
         }
     }
 }

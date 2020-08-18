@@ -1,8 +1,6 @@
 ﻿using EPlast.BLL.DTO.EducatorsStaff;
 using EPlast.BLL.DTO.UserProfiles;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Interfaces.EducatorsStaff
@@ -21,8 +19,8 @@ namespace EPlast.BLL.Interfaces.EducatorsStaff
 
         Task<KadrasDTO> GetKadraByRegisterNumber(int KadrasRegisterNumber);
 
-        Task<KadrasDTO> UpdateKadra(int KadraID, KadrasDTO kadrasDTO);
+        Task<bool> UpdateKadra( KadrasDTO kadrasDTO);
 
-
+        Task<bool> DeleteKadra(int kadra_id);
     }
 }

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.DataAccess.Entities.EducatorsStaff
 {
-   public  class KVTypes
+    public  class KVTypes
     {
         [Key]
         public int ID { get; set; }

@@ -1,9 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.EducatorsStaff;
 using EPlast.DataAccess.Entities.EducatorsStaff;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EPlast.BLL.Mapping.EducationsStaff
 {
@@ -11,7 +8,12 @@ namespace EPlast.BLL.Mapping.EducationsStaff
     {
         public KVTypesProfile()
         {
-            CreateMap<KVTypes, KVTypeDTO>().ReverseMap();
+            CreateMap<KVTypes, KVTypeDTO>( )
+                .ForMember(d => d.KVTypeName, o => o.MapFrom(s => s.KVTypeName))
+                .ForMember(d => d.ID, o => o.MapFrom(s => s.ID))
+                .ReverseMap();
         }
+
+       
     }
 }
