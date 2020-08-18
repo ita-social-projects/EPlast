@@ -13,6 +13,7 @@ namespace EPlast.WebApi.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "Bearer")]
+    [Authorize(Roles = "Admin")]
     public class AdminController : ControllerBase
     {
         private readonly ILoggerService<AdminController> _loggerService;
@@ -55,7 +56,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">User not found</response>
         [HttpGet("editRole/{userId}")]
         public async Task<IActionResult> Edit(string userId)
-        {
+            {
             if (!string.IsNullOrEmpty(userId))
             {
                 var user = await _userManagerService.FindByIdAsync(userId);
@@ -81,7 +82,6 @@ namespace EPlast.WebApi.Controllers
             return NotFound();
         }
 
-        // [Authorize(Roles = "Admin")]
         /// <summary>
         /// Edit user roles
         /// </summary>
@@ -89,12 +89,31 @@ namespace EPlast.WebApi.Controllers
         /// <param name="roles">List of new user roles</param>
         /// <response code="200">Successful operation</response>
         /// <response code="404">User not found</response>
-        [HttpPut("editRole")]
-        public async Task<IActionResult> Edit(string userId, List<string> roles)
+        [HttpPut("editedRole/{userId}")]
+        public async Task<IActionResult> Edit(string userId, [FromBody]List<string> roles)
         {
             if (!string.IsNullOrEmpty(userId))
             {
                 await _adminService.EditAsync(userId, roles);
+                _loggerService.LogInformation($"Successful change role for {userId}");
+                return Ok();
+            }
+            _loggerService.LogError("User id is null");
+            return NotFound();
+        }
+
+        /// <summary>
+        /// Change user role to expired
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">User not found</response>
+        [HttpPut("changeRole/{userId}")]
+        public async Task<IActionResult> ChangeUserRoleToExpired(string userId)
+        {
+            if (!string.IsNullOrEmpty(userId))
+            {
+                await _adminService.ChangeAsync(userId);
                 _loggerService.LogInformation($"Successful change role for {userId}");
                 return Ok();
             }
