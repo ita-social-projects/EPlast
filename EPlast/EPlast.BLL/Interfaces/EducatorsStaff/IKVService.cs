@@ -19,8 +19,8 @@ namespace EPlast.BLL.Interfaces.EducatorsStaff
 
         Task<KadrasDTO> GetKadraByRegisterNumber(int KadrasRegisterNumber);
 
-        Task<bool> UpdateKadra( KadrasDTO kadrasDTO);
+        Task UpdateKadra( KadrasDTO kadrasDTO);
 
-        Task<bool> DeleteKadra(int kadra_id);
+        Task DeleteKadra(int kadra_id);
     }
 }

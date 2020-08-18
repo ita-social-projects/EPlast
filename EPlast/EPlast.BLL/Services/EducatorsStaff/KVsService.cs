@@ -35,28 +35,16 @@ namespace EPlast.BLL.Services.EducatorsStaff
             return _mapper.Map<KVs,KadrasDTO>(newKV); 
         }
 
-        public async Task<bool> DeleteKadra(int kadra_id)
+        public async Task DeleteKadra(int kadra_id)
         {
-            bool status = false;
-            try
-            {
+
                 var deletedKadra = (await _repositoryWrapper.KVs.GetFirstAsync(d => d.ID == kadra_id));
                 if (deletedKadra == null)
                     throw new ArgumentNullException($"Kadra with {kadra_id} id not found");
-                else
-                {
-                    status = true;
+                
                     _repositoryWrapper.KVs.Delete(deletedKadra);
 
                     await _repositoryWrapper.SaveAsync();
-                    return true;
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Exception: {e.Message}");
-            }
-            return status;
         }
 
         public async Task<IEnumerable<KadrasDTO>> GetAllKVsAsync()
@@ -92,12 +80,10 @@ namespace EPlast.BLL.Services.EducatorsStaff
             return KVs;
         }
 
-        public async Task<bool> UpdateKadra(KadrasDTO kadrasDTO)
+        public async Task UpdateKadra(KadrasDTO kadrasDTO)
         {
-
            var  editedKadra = await _repositoryWrapper.KVs.GetFirstAsync(x => x.ID == kadrasDTO.ID);
-            try
-            {
+           
                 editedKadra.NumberInRegister = kadrasDTO.NumberInRegister;
                 editedKadra.Link = kadrasDTO.Link;
                 editedKadra.User.Id = kadrasDTO.User.Id;
@@ -106,13 +92,7 @@ namespace EPlast.BLL.Services.EducatorsStaff
 
                 _repositoryWrapper.KVs.Update(editedKadra);
                 await _repositoryWrapper.SaveAsync();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Exception: {e.Message}");
-            }
-
-            return editedKadra != null;
+            
         }
     }
 }
