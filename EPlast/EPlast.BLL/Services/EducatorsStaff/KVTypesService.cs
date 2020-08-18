@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.EducatorsStaff;
 using EPlast.BLL.Interfaces.EducatorsStaff;
+using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Repositories;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.EducatorsStaff
@@ -22,24 +21,35 @@ namespace EPlast.BLL.Services.EducatorsStaff
             _kvTypeService = adminTypeService;
         }
 
-        public void CreateKVType(KVTypeDTO kvTypeDTO)
+        public async Task<KVTypeDTO> CreateKVType(KVTypeDTO kvTypeDTO)
         {
-            throw new NotImplementedException();
+            var newKVType = _mapper.Map<KVTypeDTO,KVTypes>(kvTypeDTO);
+            await _repositoryWrapper.KVTypes.CreateAsync(newKVType);
+            await _repositoryWrapper.SaveAsync();
+            return _mapper.Map<KVTypes, KVTypeDTO>(newKVType);
         }
 
-        public Task<IEnumerable<KVTypeDTO>> GetAllKVTypesAsync()
+        public async Task<IEnumerable<KVTypeDTO>> GetAllKVTypesAsync()
         {
-            throw new NotImplementedException();
+            return _mapper.Map<IEnumerable<KVTypes>, IEnumerable<KVTypeDTO>>(
+               await _repositoryWrapper.KVTypes.GetAllAsync());
         }
 
-        public Task<KVTypeDTO> GetKVsTypeByIdAsync(int KV_id)
+        public async Task<IEnumerable<KadrasDTO>> GetKadrasWithSuchType(KVTypeDTO kvTypeDTO)
         {
-            throw new NotImplementedException();
+            
+            var KVs = _mapper.Map<IEnumerable<KVs>, IEnumerable<KadrasDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.KVType.ID == kvTypeDTO.ID));
+            return KVs;
         }
 
-        public Task<KVTypeDTO> GetTypeOfConcreteKVByIdAsync(int KV_id)
+        public async Task<KVTypeDTO> GetKVsTypeByIdAsync(int KV_id)
         {
-            throw new NotImplementedException();
+            var KV = _mapper.Map<KVs, KadrasDTO>(await _repositoryWrapper.KVs.GetFirstOrDefaultAsync(c => c.ID == KV_id));
+            
+                var Type = await _repositoryWrapper.KVTypes.GetFirstOrDefaultAsync(a => a.ID == KV.KVType.ID);
+                return _mapper.Map<KVTypes,KVTypeDTO>(Type);
         }
+
+       
     }
 }

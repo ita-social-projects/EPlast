@@ -1,17 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace EPlast.DataAccess.Entities.EducatorsStaff
 {
-   public class KVs
+    public class KVs
     {
         [Key]
         public int ID { get; set; }
 
+        //public string UserId { get; set; }
         public User User { get; set; }
 
+       // public int KVTypesId { get; set; }
         public KVTypes KVType { get; set; }
 
         public DateTime DateOfGranting { get; set; }
