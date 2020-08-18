@@ -6,7 +6,6 @@ using EPlast.BLL.Interfaces.Logging;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Repositories;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -39,8 +38,6 @@ namespace EPlast.BLL.Services.EducatorsStaff
         {
 
                 var deletedKadra = (await _repositoryWrapper.KVs.GetFirstAsync(d => d.ID == kadra_id));
-                if (deletedKadra == null)
-                    
                 
                     _repositoryWrapper.KVs.Delete(deletedKadra);
 
