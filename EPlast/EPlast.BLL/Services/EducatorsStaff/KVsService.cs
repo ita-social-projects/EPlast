@@ -14,13 +14,14 @@ namespace EPlast.BLL.Services.EducatorsStaff
 {
     public class KVsService:IKVService
     {
-        private readonly ILoggerService<DecisionService> _logger;
+        private readonly ILoggerService<KVsService> _logger;
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
        
 
-        public KVsService(IRepositoryWrapper repositoryWrapper, IMapper mapper, IKVService adminTypeService)
+        public KVsService(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService<KVsService> loggerService)
         {
+            _logger = loggerService;
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
             
@@ -42,12 +43,14 @@ namespace EPlast.BLL.Services.EducatorsStaff
                 var deletedKadra = (await _repositoryWrapper.KVs.GetFirstAsync(d => d.ID == kadra_id));
                 if (deletedKadra == null)
                     throw new ArgumentNullException($"Kadra with {kadra_id} id not found");
+                else
+                {
+                    status = true;
+                    _repositoryWrapper.KVs.Delete(deletedKadra);
 
-                status = true;
-                _repositoryWrapper.KVs.Delete(deletedKadra);
-               
-                await _repositoryWrapper.SaveAsync();
-                return true;
+                    await _repositoryWrapper.SaveAsync();
+                    return true;
+                }
             }
             catch (Exception e)
             {
