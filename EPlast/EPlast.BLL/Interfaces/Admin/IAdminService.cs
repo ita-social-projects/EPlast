@@ -21,6 +21,12 @@ namespace EPlast.BLL.Services.Interfaces
         Task EditAsync(string userId, List<string> roles);
 
         /// <summary>
+        /// Edit user roles
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        Task ChangeAsync(string userId);
+
+        /// <summary>
         /// Delete a user
         /// </summary>
         /// <param name="userId">The id of the user, which must be deleted</param>
