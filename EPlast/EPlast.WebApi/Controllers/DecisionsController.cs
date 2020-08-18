@@ -2,6 +2,7 @@
 using EPlast.BLL;
 using EPlast.BLL.DTO;
 using EPlast.WebApi.Models.Decision;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -10,8 +11,10 @@ using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
+    
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin")]
     public class DecisionsController : ControllerBase
     {
         private readonly IDecisionService _decisionService;
