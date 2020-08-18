@@ -12,13 +12,13 @@ namespace EPlast.BLL.Services.EducatorsStaff
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
-        private readonly IKVsTypeService _kvTypeService;
+       
 
         public KVTypesService(IRepositoryWrapper repositoryWrapper, IMapper mapper, IKVsTypeService adminTypeService)
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
-            _kvTypeService = adminTypeService;
+            
         }
 
         public async Task<KVTypeDTO> CreateKVType(KVTypeDTO kvTypeDTO)
