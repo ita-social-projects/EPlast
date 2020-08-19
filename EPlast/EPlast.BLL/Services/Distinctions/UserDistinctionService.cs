@@ -1,4 +1,11 @@
-﻿using System;
+﻿using AutoMapper;
+using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces.Logging;
+using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.UserEntities;
+using EPlast.DataAccess.Repositories;
+
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,29 +13,48 @@ namespace EPlast.BLL.Services.Distinctions
 {
     public class UserDistinctionService : IUserDistinctionService
     {
-        public UserDistinctionDTO AddUserDistinction()
+        private readonly IMapper _mapper;
+        private readonly IRepositoryWrapper _repoWrapper;
+
+        public UserDistinctionService(IMapper mapper, IRepositoryWrapper repoWrapper)
         {
-            throw new NotImplementedException();
+            _mapper = mapper;
+            _repoWrapper = repoWrapper;
+        }
+        public async Task AddUserDistinction(UserDistinctionDTO userDistinctionDTO)
+        {
+            var userDistinction = _mapper.Map<UserDistinctionDTO, UserDistinction>(userDistinctionDTO);
+            await _repoWrapper.UserDistinction.CreateAsync(userDistinction);
+            await _repoWrapper.SaveAsync();
         }
 
-        public Task<bool> ChangeUserDistinction(UserDistinctionDTO userDistinctionDTO)
+        public async Task ChangeUserDistinction(UserDistinctionDTO userDistinctionDTO)
         {
-            throw new NotImplementedException();
+            var userDistinction  = await _repoWrapper.UserDistinction.GetFirstAsync(x => x.Id == userDistinctionDTO.Id);
+                _repoWrapper.UserDistinction.Update(userDistinction);
+            await _repoWrapper.SaveAsync();
         }
 
-        public Task<bool> DeleteUserDistinction(int id)
+        public async Task DeleteUserDistinction(int id)
         {
-            throw new NotImplementedException();
+            var userDistinction = await _repoWrapper.UserDistinction.GetFirstOrDefaultAsync(d => d.Id == id);
+            if (userDistinction == null)
+                throw new NotImplementedException();
+            _repoWrapper.UserDistinction.Delete(userDistinction);
+            await _repoWrapper.SaveAsync();
+
         }
 
-        public Task<IEnumerable<UserDistinctionDTO>> GetAllUsersDistinctionAsync()
+        public async Task<IEnumerable<UserDistinctionDTO>> GetAllUsersDistinctionAsync()
         {
-            throw new NotImplementedException();
+            var userDistinctions = await _repoWrapper.UserDistinction.GetAllAsync();
+            return _mapper.Map<IEnumerable<UserDistinction>, IEnumerable<UserDistinctionDTO>>(userDistinctions);
         }
 
-        public Task<UserDistinctionDTO> GetUserDistinction(int id)
+        public async Task<UserDistinctionDTO> GetUserDistinction(int id)
         {
-            throw new NotImplementedException();
+            var userDistinction = await _repoWrapper.UserDistinction.GetFirstOrDefaultAsync(d => d.Id == id);
+            return _mapper.Map<UserDistinction, UserDistinctionDTO>(userDistinction);
         }
     }
 }

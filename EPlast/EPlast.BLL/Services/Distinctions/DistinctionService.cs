@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
+using EPlast.BLL.Interfaces.Logging;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,62 +12,35 @@ namespace EPlast.BLL
     {
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repoWrapper;
-        private readonly ILogger _logger;
 
-        public DistinctionService(IMapper mapper, IRepositoryWrapper repoWrapper, ILogger logger)
+
+        public DistinctionService(IMapper mapper, IRepositoryWrapper repoWrapper)
         {
             _mapper = mapper;
             _repoWrapper = repoWrapper;
-            _logger = logger;
         }
-        public DistinctionDTO AddDistinction()
+        public async Task AddDistinction(DistinctionDTO distinctionDto)
         {
-            DistinctionDTO distinction = null;
-            try
-            {
-                distinction = new DistinctionDTO();
-            }
-            catch(Exception e)
-            {
-                _logger.LogError($"Exception: {e.Message}");
-            }
-            return distinction;
+            var distinction = _mapper.Map<DistinctionDTO, Distinction>(distinctionDto);
+            await _repoWrapper.Distinction.CreateAsync(distinction);
+            await _repoWrapper.SaveAsync();
         }
 
-        public async Task<bool> ChangeDistinction(DistinctionDTO distinctionDTO)
+        public async Task ChangeDistinction(DistinctionDTO distinctionDTO)
         {
-            Distinction distinction = null;
-            try
-            {
-                distinction = await _repoWrapper.Distinction.GetFirstAsync(x => x.Id == distinctionDTO.Id);
-                distinction.Name = distinctionDTO.Name;
-                _repoWrapper.Distinction.Update(distinction);
-                await _repoWrapper.SaveAsync();
-            }
-            catch(Exception e)
-            {
-                _logger.LogError($"Exception: {e.Message}");
-            }
-            return distinction != null;
+            var distinction = await _repoWrapper.Distinction.GetFirstAsync(x => x.Id == distinctionDTO.Id);
+            distinction.Name = distinctionDTO.Name;
+            _repoWrapper.Distinction.Update(distinction);
+            await _repoWrapper.SaveAsync();
         }
 
-        public async Task<bool> DeleteDistinction(int id)
+        public async Task DeleteDistinction(int id)
         {
-            var success = false;
-            try
-            {
-                var distinction = (await _repoWrapper.Distinction.GetFirstAsync(d => d.Id == id));
-                if (distinction == null)
-                    throw new ArgumentNullException($"Distinction with {id}");
-                success = true;
-                _repoWrapper.Distinction.Delete(distinction);
-                await _repoWrapper.SaveAsync();
-            }
-            catch(Exception e)
-            {
-                _logger.LogError($"Exception: {e.Message}");
-            }
-            return success;
+            var distinction = (await _repoWrapper.Distinction.GetFirstAsync(d => d.Id == id));
+            if (distinction == null)
+                throw new ArgumentNullException($"Distinction with {id} not found");
+            _repoWrapper.Distinction.Delete(distinction);
+            await _repoWrapper.SaveAsync();
         }
 
         public async Task<IEnumerable<DistinctionDTO>> GetAllDistinctionAsync()
@@ -77,15 +50,7 @@ namespace EPlast.BLL
 
         public async Task<DistinctionDTO> GetDistinctionAsync(int id)
         {
-            DistinctionDTO distinction = null;
-            try
-            {
-                distinction = _mapper.Map<DistinctionDTO>(await _repoWrapper.Distinction.GetFirstAsync(d => d.Id == id));
-            }
-            catch(Exception e)
-            {
-                _logger.LogError($"Exception: {e.Message}");
-            }
+            var distinction = _mapper.Map<DistinctionDTO>(await _repoWrapper.Distinction.GetFirstAsync(d => d.Id == id));
             return distinction;
         }
     }
