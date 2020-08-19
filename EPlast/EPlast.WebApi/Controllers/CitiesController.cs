@@ -24,7 +24,7 @@ namespace EPlast.WebApi.Controllers
         private readonly ICityMembersService _cityMembersService;
         private readonly ICityAdministrationService _cityAdministrationService;
         private readonly ICityAccessService _cityAccessService;
-        
+
         public CitiesController(ILoggerService<CitiesController> logger,
             IMapper mapper,
             ICityService cityService,
@@ -89,16 +89,16 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetMembers(int cityId)
         {
-            var cityProfileDto = await _cityService.GetCityMembersAsync(cityId, User);
+            var cityProfileDto = await _cityService.GetCityMembersAsync(cityId);
             if (cityProfileDto == null)
             {
                 return NotFound();
             }
 
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
+            cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(User, cityId);
 
-            return Ok(cityProfile.Members);
-
+            return Ok(new { cityProfile.Members, cityProfile.CanEdit });
         }
 
         /// <summary>
@@ -112,16 +112,16 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetFollowers(int cityId)
         {
-            var cityProfileDto = await _cityService.GetCityFollowersAsync(cityId, User);
+            var cityProfileDto = await _cityService.GetCityFollowersAsync(cityId);
             if (cityProfileDto == null)
             {
                 return NotFound();
             }
 
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
+            cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(User, cityId);
 
-            return Ok(cityProfile.Followers);
-
+            return Ok(new { cityProfile.Followers, cityProfile.CanEdit });
         }
 
         /// <summary>
@@ -135,15 +135,16 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetAdmins(int cityId)
         {
-            var cityProfileDto = await _cityService.GetCityAdminsAsync(cityId, User);
+            var cityProfileDto = await _cityService.GetCityAdminsAsync(cityId);
             if (cityProfileDto == null)
             {
                 return NotFound();
             }
 
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
+            cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(User, cityId);
 
-            return Ok(new { cityProfile.Administration, cityProfile.Head });
+            return Ok(new { cityProfile.Administration, cityProfile.Head, cityProfile.CanEdit });
         }
 
         /// <summary>
@@ -164,8 +165,9 @@ namespace EPlast.WebApi.Controllers
             }
 
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
+            cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(User, cityId);
 
-            return Ok(cityProfile.Documents);
+            return Ok(new { cityProfile.Documents, cityProfile.CanEdit });
         }
 
         /// <summary>
@@ -329,7 +331,7 @@ namespace EPlast.WebApi.Controllers
         /// Remove a specific administrator from the city
         /// </summary>
         /// <param name="adminId">The id of the administrator</param>
-        [HttpDelete("RemoveAdmin/{adminId}")]
+        [HttpPut("RemoveAdmin/{adminId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RemoveAdmin(int adminId)
         {

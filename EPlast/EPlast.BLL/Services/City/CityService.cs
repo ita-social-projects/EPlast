@@ -143,8 +143,6 @@ namespace EPlast.BLL.Services
             cityProfileDto.City.CanEdit = await _cityAccessService.HasAccessAsync(user, cityId);
             cityProfileDto.City.CanJoin = (await _repoWrapper.CityMembers
                 .GetFirstOrDefaultAsync(u => u.User.Id == userId && u.CityId == cityId)) == null;
-            cityProfileDto.City.CanApprove = await _cityAccessService.HasAccessAsync(user, cityId);
-            cityProfileDto.City.CanAddReports = await _cityAccessService.HasAccessAsync(user, cityId);
 
             return cityProfileDto;
         }
@@ -168,19 +166,8 @@ namespace EPlast.BLL.Services
             var cityProfileDto = new CityProfileDTO
             {
                 City = city,
-                Members = members,
-                Head = cityHead
+                Members = members
             };
-            cityProfileDto.City.CanApprove = true;
-
-            return cityProfileDto;
-        }
-
-        /// <inheritdoc />
-        public async Task<CityProfileDTO> GetCityMembersAsync(int cityId, ClaimsPrincipal user)
-        {
-            var cityProfileDto = await GetCityMembersAsync(cityId);
-            cityProfileDto.City.CanApprove = await _cityAccessService.HasAccessAsync(user, cityId);
 
             return cityProfileDto;
         }
@@ -204,20 +191,9 @@ namespace EPlast.BLL.Services
             var cityProfileDto = new CityProfileDTO
             {
                 City = city,
-                Followers = followers,
-                Head = cityHead
+                Followers = followers
             };
-            cityProfileDto.City.CanApprove = true;
-
-            return cityProfileDto;
-        }
-
-        /// <inheritdoc />
-        public async Task<CityProfileDTO> GetCityFollowersAsync(int cityId, ClaimsPrincipal user)
-        {
-            var cityProfileDto = await GetCityFollowersAsync(cityId);
-            cityProfileDto.City.CanApprove = await _cityAccessService.HasAccessAsync(user, cityId);
-
+ 
             return cityProfileDto;
         }
 
@@ -244,16 +220,6 @@ namespace EPlast.BLL.Services
                 Admins = cityAdmins,
                 Head = cityHead
             };
-            cityProfileDto.City.CanApprove = true;
-
-            return cityProfileDto;
-        }
-
-        /// <inheritdoc />
-        public async Task<CityProfileDTO> GetCityAdminsAsync(int cityId, ClaimsPrincipal user)
-        {
-            var cityProfileDto = await GetCityAdminsAsync(cityId);
-            cityProfileDto.City.CanApprove = await _cityAccessService.HasAccessAsync(user, cityId);
 
             return cityProfileDto;
         }
@@ -275,10 +241,8 @@ namespace EPlast.BLL.Services
             var cityProfileDto = new CityProfileDTO
             {
                 City = city,
-                Documents = cityDoc,
-                Head = cityHead
+                Documents = cityDoc
             };
-            cityProfileDto.City.CanAddReports = true;
 
             return cityProfileDto;
         }

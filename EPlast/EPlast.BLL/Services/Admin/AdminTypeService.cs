@@ -26,6 +26,12 @@ namespace EPlast.BLL.Services.Admin
                 : await this.CreateByNameAsync(name);
         }
 
+        public async Task<AdminTypeDTO> GetAdminTypeByIdAsync(int adminTypeId)
+        {
+            var adminType = await _repoWrapper.AdminType.GetFirstOrDefaultAsync(i => i.ID == adminTypeId);
+            return _mapper.Map<AdminType, AdminTypeDTO>(adminType);
+        }
+
         public async Task<AdminTypeDTO> CreateByNameAsync(string adminTypeName)
         {
             return await this.CreateAsync(new AdminTypeDTO() {AdminTypeName = adminTypeName});
