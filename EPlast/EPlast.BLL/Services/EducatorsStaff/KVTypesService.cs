@@ -38,7 +38,7 @@ namespace EPlast.BLL.Services.EducatorsStaff
         public async Task<IEnumerable<KadrasDTO>> GetKadrasWithSuchType(KVTypeDTO kvTypeDTO)
         {
             
-            var KVs = _mapper.Map<IEnumerable<KVs>, IEnumerable<KadrasDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.KVType.ID == kvTypeDTO.ID));
+            var KVs = _mapper.Map<IEnumerable<KVs>, IEnumerable<KadrasDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.KVTypesID == kvTypeDTO.ID));
             return KVs;
         }
 
@@ -46,7 +46,7 @@ namespace EPlast.BLL.Services.EducatorsStaff
         {
             var KV = _mapper.Map<KVs, KadrasDTO>(await _repositoryWrapper.KVs.GetFirstOrDefaultAsync(c => c.ID == KV_id));
             
-                var Type = await _repositoryWrapper.KVTypes.GetFirstOrDefaultAsync(a => a.ID == KV.KVType.ID);
+                var Type = await _repositoryWrapper.KVTypes.GetFirstOrDefaultAsync(a => a.ID == KV.KVTypesID);
                 return _mapper.Map<KVTypes,KVTypeDTO>(Type);
         }
 

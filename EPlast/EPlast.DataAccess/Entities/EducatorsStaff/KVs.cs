@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EPlast.DataAccess.Entities.EducatorsStaff
 {
@@ -8,12 +9,11 @@ namespace EPlast.DataAccess.Entities.EducatorsStaff
         [Key]
         public int ID { get; set; }
 
-        //public string UserId { get; set; }
-        public User User { get; set; }
-
-       // public int KVTypesId { get; set; }
-        public KVTypes KVType { get; set; }
-
+        public string UserId { get; set; }
+       public User user { get; set; }
+        public int KVTypesID { get; set; }
+        public KVTypes kvTypes { get; set; }
+        
         public DateTime DateOfGranting { get; set; }
 
         public int NumberInRegister { get; set; }

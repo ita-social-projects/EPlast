@@ -66,14 +66,14 @@ namespace EPlast.BLL.Services.EducatorsStaff
         public async Task<IEnumerable<KadrasDTO>> GetKVsOfGivenUser(UserDTO userDTO)
         {
             var GivenUser = _mapper.Map<UserDTO,User>(userDTO);
-            var Kadras = _mapper.Map<IEnumerable<KVs>,IEnumerable<KadrasDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.User == GivenUser));
+            var Kadras = _mapper.Map<IEnumerable<KVs>,IEnumerable<KadrasDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.UserId == GivenUser.Id));
             return Kadras;
         }
 
         public async Task<IEnumerable<KadrasDTO>> GetKVsWithKVType(KVTypeDTO kvTypeDTO)
         {
             var GivenKVType = _mapper.Map<KVTypeDTO, KVTypes>(kvTypeDTO);
-            var KVs = _mapper.Map<IEnumerable<KVs>, IEnumerable<KadrasDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.KVType == GivenKVType));
+            var KVs = _mapper.Map<IEnumerable<KVs>, IEnumerable<KadrasDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.KVTypesID == GivenKVType.ID));
             return KVs;
         }
 
@@ -83,7 +83,7 @@ namespace EPlast.BLL.Services.EducatorsStaff
            
                 editedKadra.NumberInRegister = kadrasDTO.NumberInRegister;
                 editedKadra.Link = kadrasDTO.Link;
-                editedKadra.User.Id = kadrasDTO.User.Id;
+                editedKadra.UserId = kadrasDTO.UserId;
                 editedKadra.BasisOfGranting = kadrasDTO.BasisOfGranting;
                 editedKadra.DateOfGranting = kadrasDTO.DateOfGranting;
 
