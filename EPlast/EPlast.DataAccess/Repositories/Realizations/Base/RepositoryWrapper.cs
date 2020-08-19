@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
+using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Repositories.Contracts;
 using EPlast.DataAccess.Repositories.Interfaces.Events;
+using EPlast.DataAccess.Repositories.Realizations.EducatorsStaff;
 using EPlast.DataAccess.Repositories.Realizations.Events;
 
 namespace EPlast.DataAccess.Repositories.Realizations.Base
@@ -52,7 +54,34 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IEventAdministrationRepository _eventAdministration;
         private IEventAdministrationTypeRepository _eventAdministrationType;
         private IEventCategoryTypeRepository _eventCategoryTypeRepository;
+        private IPlastDegreeRepository _plastDegree;
+        private IKVsRepository _KVs;
+        private IKVTypesRepository _KVtypes;
 
+
+        public IKVTypesRepository KVTypes
+        {
+            get
+            {
+                if (_KVtypes == null)
+                {
+                    _KVtypes = new KVTypesRepository(_dbContext);
+                }
+                return _KVtypes;
+            }
+        }
+
+        public IKVsRepository KVs
+        {
+            get
+            {
+                if (_KVs == null)
+                {
+                    _KVs = new KVsRepository(_dbContext);
+                }
+                return _KVs;
+            }
+        }
 
         public IDecesionRepository Decesion
         {
@@ -613,6 +642,17 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             }
         }
 
+        public IPlastDegreeRepository PlastDegrees
+        {
+            get
+            {
+                if(_plastDegree == null)
+                {
+                    _plastDegree = new PlastDegreeRepository(_dbContext);
+                }
+                return _plastDegree;
+            }
+        }
         public RepositoryWrapper(EPlastDBContext ePlastDBContext)
         {
             _dbContext = ePlastDBContext;

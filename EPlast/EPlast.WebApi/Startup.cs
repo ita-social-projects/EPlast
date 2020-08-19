@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BLL;
 using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.AzureStorage.Base;
@@ -14,6 +15,7 @@ using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services;
+using EPlast.BLL.Services.ActiveMembership;
 using EPlast.BLL.Services.Admin;
 using EPlast.BLL.Services.AzureStorage;
 using EPlast.BLL.Services.AzureStorage.Base;
@@ -33,6 +35,8 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.DataAccess.Repositories.Realizations.Base;
 using EPlast.WebApi.Extensions;
+using Hangfire;
+using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -73,7 +77,15 @@ namespace EPlast.WebApi
                 .Where(x =>
                     x.FullName.Equals("EPlast.BLL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null") ||
                     x.FullName.Equals("EPlast.WebApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null")));
-
+            services.AddHangfire(config =>
+            {
+                config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseDefaultTypeSerializer()
+                .UseMemoryStorage();
+            }
+            );
+            services.AddHangfireServer();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -214,6 +226,8 @@ namespace EPlast.WebApi
             services.AddScoped<IClubBlobStorageRepository, ClubBlobStorageRepository>();
             services.AddScoped<IEventBlobStorageRepository, EventBlobStorageRepository>();
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
+            services.AddScoped<IAccessLevelService, AccessLevelService>();
+            services.AddScoped<IPlastDegreeService, PlastDegreeService>();
             services.AddLogging();
             
             services.AddAuthorization();
@@ -250,7 +264,10 @@ namespace EPlast.WebApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider services)
+        public void Configure(IApplicationBuilder app,
+                              IWebHostEnvironment env,
+                              IRecurringJobManager recurringJobManager,
+                              IServiceProvider serviceProvider)
         {
             app.UseCors(builder =>
             {
@@ -304,15 +321,20 @@ namespace EPlast.WebApi
             {
                 endpoints.MapControllers();
             });
-
-            CreateRoles(services).Wait();
+            app.UseHangfireDashboard();
+            recurringJobManager.AddOrUpdate("Run every day",
+                () => serviceProvider.GetService<IPlastDegreeService>().GetDergeesAsync(),
+             "59 23 * * *",
+             TimeZoneInfo.Local
+             );
+            CreateRoles(serviceProvider).Wait();
         }
         private async Task CreateRoles(IServiceProvider serviceProvider)
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
             var roles = new[] { "Admin", "Прихильник", "Пластун", "Голова Пласту","Адміністратор подій", "Голова Куреня","Діловод Куреня",
-            "Голова Округу","Діловод Округу","Голова Станиці","Діловод Станиці"};
+            "Голова Округу","Діловод Округу","Голова Станиці","Діловод Станиці", "Колишній член пласту"};
             foreach (var role in roles)
             {
                 if (!(await roleManager.RoleExistsAsync(role)))

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
-using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -40,7 +39,7 @@ namespace EPlast.BLL.Services
 
         /// <inheritdoc />
         public async Task EditAsync(string userId, List<string> roles)
-        {
+            {
             User user = await _userManager.FindByIdAsync(userId);
             var userRoles = await _userManager.GetRolesAsync(user);
             var addedRoles = roles.Except(userRoles);
@@ -53,6 +52,20 @@ namespace EPlast.BLL.Services
             if (currentRoles.Count == 0)
             {
                 await _userManager.AddToRoleAsync(user, "Прихильник");
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task ChangeAsync(string userId)
+        {
+            User user = await _userManager.FindByIdAsync(userId);
+
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            if (currentRoles.Count > 0)
+            {
+                var userRoles = await _userManager.GetRolesAsync(user);
+                await _userManager.RemoveFromRolesAsync(user, userRoles);
+                await _userManager.AddToRoleAsync(user, "Колишній член пласту");
             }
         }
 
@@ -102,7 +115,7 @@ namespace EPlast.BLL.Services
 
                     UserPlastDegreeName = user.UserPlastDegrees.Count != 0 ? user.UserPlastDegrees
                         .FirstOrDefault(x => x.UserId == user.Id && x.DateFinish == null)
-                        ?.UserPlastDegreeType.GetDescription() : string.Empty,
+                        ?.PlastDegree.Name : string.Empty,
                     UserRoles = string.Join(", ", roles)
                 });
             }
