@@ -629,7 +629,7 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<DateTime>("DateOfGranting")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("KVTypeID")
+                    b.Property<int>("KVTypesID")
                         .HasColumnType("int");
 
                     b.Property<string>("Link")
@@ -643,7 +643,7 @@ namespace EPlast.DataAccess.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("KVTypeID");
+                    b.HasIndex("KVTypesID");
 
                     b.HasIndex("UserId");
 
@@ -1611,11 +1611,13 @@ namespace EPlast.DataAccess.Migrations
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.EducatorsStaff.KVs", b =>
                 {
-                    b.HasOne("EPlast.DataAccess.Entities.EducatorsStaff.KVTypes", "KVType")
+                    b.HasOne("EPlast.DataAccess.Entities.EducatorsStaff.KVTypes", "kvTypes")
                         .WithMany()
-                        .HasForeignKey("KVTypeID");
+                        .HasForeignKey("KVTypesID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("EPlast.DataAccess.Entities.User", "User")
+                    b.HasOne("EPlast.DataAccess.Entities.User", "user")
                         .WithMany("UsersKVs")
                         .HasForeignKey("UserId");
                 });

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    [Migration("20200815171733_KV_Migrate")]
-    partial class KV_Migrate
+    [Migration("20200819093416_KVMigration")]
+    partial class KVMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -631,7 +631,7 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<DateTime>("DateOfGranting")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("KVTypeID")
+                    b.Property<int>("KVTypesID")
                         .HasColumnType("int");
 
                     b.Property<string>("Link")
@@ -645,7 +645,7 @@ namespace EPlast.DataAccess.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("KVTypeID");
+                    b.HasIndex("KVTypesID");
 
                     b.HasIndex("UserId");
 
@@ -1613,11 +1613,13 @@ namespace EPlast.DataAccess.Migrations
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.EducatorsStaff.KVs", b =>
                 {
-                    b.HasOne("EPlast.DataAccess.Entities.EducatorsStaff.KVTypes", "KVType")
+                    b.HasOne("EPlast.DataAccess.Entities.EducatorsStaff.KVTypes", "kvTypes")
                         .WithMany()
-                        .HasForeignKey("KVTypeID");
+                        .HasForeignKey("KVTypesID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("EPlast.DataAccess.Entities.User", "User")
+                    b.HasOne("EPlast.DataAccess.Entities.User", "user")
                         .WithMany("UsersKVs")
                         .HasForeignKey("UserId");
                 });
