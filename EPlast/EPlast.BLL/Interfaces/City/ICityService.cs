@@ -56,50 +56,21 @@ namespace EPlast.BLL.Interfaces.City
         /// </summary>
         /// <param name="cityId">The id of the city</param>
         /// <returns>A list of members of a specific city</returns>
-        /// See <see cref="ICityService.GetCityMembersAsync(int, ClaimsPrincipal)"/> to get a list of members of a specific city including user roles
         Task<CityProfileDTO> GetCityMembersAsync(int cityId);
-
-        /// <summary>
-        /// Get a list of members of a specific city including user roles
-        /// </summary>
-        /// <param name="cityId">The id of the city</param>
-        /// <param name="user">Current user</param>
-        /// <returns>A list of members of a specific city including user roles</returns>
-        /// See <see cref="ICityService.GetCityMembersAsync(int)"/> to get a list of members of a specific city
-        Task<CityProfileDTO> GetCityMembersAsync(int cityId, ClaimsPrincipal user);
 
         /// <summary>
         /// Get a list of followers of a specific city
         /// </summary>
         /// <param name="cityId">The id of the city</param>
         /// <returns>A list of followers of a specific city including user roles</returns>
-        /// See <see cref="ICityService.GetCityFollowersAsync(int, ClaimsPrincipal)"/> to get a list of followers of a specific city including user roles
         Task<CityProfileDTO> GetCityFollowersAsync(int cityId);
-
-        /// <summary>
-        /// Get a list of followers of a specific city including user roles
-        /// </summary>
-        /// <param name="cityId">The id of the city</param>
-        /// <returns>A list of followers of a specific city including user roles</returns>
-        /// See <see cref="ICityService.GetCityFollowersAsync(int)"/> to get a list of followers of a specific city
-        Task<CityProfileDTO> GetCityFollowersAsync(int cityId, ClaimsPrincipal user);
 
         /// <summary>
         /// Get a list of administrators of a specific city
         /// </summary>
         /// <param name="cityId">The id of the city</param>
         /// <returns>A list of followers of a specific city</returns>
-        /// See <see cref="ICityService.GetCityAdminsAsync(int, ClaimsPrincipal)"/> to get a list of administrators of a specific city including user roles
         Task<CityProfileDTO> GetCityAdminsAsync(int cityId);
-
-        /// <summary>
-        /// Get a list of administrators of a specific city including user roles
-        /// </summary>
-        /// <param name="cityId">The id of the city</param>
-        /// <param name="user">Current user</param>
-        /// <returns>A list of followers of a specific city including user roles</returns>
-        /// See <see cref="ICityService.GetCityAdminsAsync(int)"/> to get a list of administrators of a specific city
-        Task<CityProfileDTO> GetCityAdminsAsync(int cityId, ClaimsPrincipal user);
 
         /// <summary>
         /// Get a list of documents of a specific city
@@ -107,7 +78,7 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="cityId">The id of the city</param>
         /// <returns>A list of documents of a specific city</returns>
         Task<CityProfileDTO> GetCityDocumentsAsync(int cityId);
-        
+
         /// <summary>
         /// Edit a specific city
         /// </summary>
