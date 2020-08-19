@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 using Microsoft.AspNetCore.Identity;
@@ -42,7 +43,7 @@ namespace EPlast.BLL.DTO.UserProfiles
         public IEnumerable<CityAdministration> CityAdministrations { get; set; }
         public IEnumerable<ClubMembers> ClubMembers { get; set; }
         public IEnumerable<RegionAdministration> RegionAdministrations { get; set; }
-        public IEnumerable<UserPlastDegree> UserPlastDegrees { get; set; }
+        public IEnumerable<UserPlastDegreeDTO> UserPlastDegrees { get; set; }
 
         public UserDTO()
         {

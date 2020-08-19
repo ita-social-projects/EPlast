@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.WebApi.Models.Decision;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Mapping.Decision
 {

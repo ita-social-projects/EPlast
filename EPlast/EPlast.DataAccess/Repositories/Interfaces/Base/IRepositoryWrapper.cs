@@ -49,8 +49,9 @@ namespace EPlast.DataAccess.Repositories
         ICityManagementsRepository CityManagements { get; }
         IEventAdministrationRepository EventAdministration { get; }
         IEventCategoryTypeRepository EventCategoryType { get; }
-
-
+        IPlastDegreeRepository PlastDegrees { get; }
+        IKVsRepository KVs { get; }
+        IKVTypesRepository KVTypes { get; }
         void Save();
         Task SaveAsync();
     }
