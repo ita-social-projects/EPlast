@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL
 {
-    interface IUserDistinctionService
+    public interface IUserDistinctionService
     {
         Task<IEnumerable<UserDistinctionDTO>> GetAllUsersDistinctionAsync();
         Task<UserDistinctionDTO> GetUserDistinction(int id);
