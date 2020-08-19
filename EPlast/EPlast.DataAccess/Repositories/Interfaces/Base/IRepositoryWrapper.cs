@@ -52,6 +52,9 @@ namespace EPlast.DataAccess.Repositories
         IUserDistinctionRepository UserDistinction { get; }
 
 
+        IPlastDegreeRepository PlastDegrees { get; }
+        IKVsRepository KVs { get; }
+        IKVTypesRepository KVTypes { get; }
         void Save();
         Task SaveAsync();
     }

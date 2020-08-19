@@ -9,5 +9,6 @@ namespace EPlast.BLL.DTO.EventUser
         public ICollection<EventGeneralInfoDTO> PlanedEvents { get; set; }
         public ICollection<EventGeneralInfoDTO> CreatedEvents { get; set; }
         public ICollection<EventGeneralInfoDTO> VisitedEvents { get; set; }
+        public ICollection<string> UserRoles { get; set; }
     }
 }

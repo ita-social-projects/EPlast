@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+    web:
+        build:
+            context: ./../EPlast-Client
+            dockerfile: Dockerfile
+        init: true
+        restart: always
+        ports:
+            - "80:80"
+        depends_on:
+            - api
+    api:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        init: true
+        restart: always
+        environment:
+          - ConnectionStrings__EPlastDBConnection=${ConnectionStrings__EPlastDBConnection}
+        ports:
+            - "5000:5000"
+
+
