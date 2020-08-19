@@ -32,7 +32,7 @@ namespace EPlast.XUnitTest.Services.UserArea
         private Mock<IUserBlobStorageRepository> _userBlobStorage;
         private Mock<IWebHostEnvironment> _env;
         private Mock<IUserManagerService> _userManagerService;
-
+        private Mock<IConfirmedUsersService> _confirmedUserService;
         public UserServiceTests()
         {
             _repoWrapper = new Mock<IRepositoryWrapper>();
@@ -44,11 +44,12 @@ namespace EPlast.XUnitTest.Services.UserArea
             _userBlobStorage=new Mock<IUserBlobStorageRepository>();
             _env=new Mock<IWebHostEnvironment>();
             _userManagerService = new Mock<IUserManagerService>();
+            _confirmedUserService = new Mock<IConfirmedUsersService>();
         }
 
         private UserService GetService()
         {
-            return new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _workService.Object, _educationService.Object, _userBlobStorage.Object,_env.Object, _userManagerService.Object);
+            return new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _workService.Object, _educationService.Object, _userBlobStorage.Object,_env.Object, _userManagerService.Object, _confirmedUserService.Object);
         }
         [Fact]
         public async Task GetUserProfileTest()

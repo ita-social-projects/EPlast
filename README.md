@@ -41,6 +41,29 @@ Before sending any pull request, please discuss requirements/changes to be imple
 
 (Open Package Manager Console, change default project to "EPlast.DataAccess" and write "Update-Database")
 
-# 5. Project Deploy
+# 5. How to run the project with docker-compose locally.
+
+The instructions below will allow you to run application locally in the containers for developing and testing purpose. 
+
+5.1. Installation Prerequisites:<br/>
+     -  [Docker](https://www.docker.com) version 17.05 or higher, [Docker Compose] (https://docs.docker.com/compose). If you are running Microsoft Windows family OS, it is better to use [docker-desktop](https://www.docker.com/products/docker-desktop).     
+     - [Microsoft SQL Server 2017+](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) or access to cloud MSSQL server with deployed database.     
+     - Access to the Azure Storage.
+     
+5.2. Clone repository from GitHub with:<br/>
+     - git clone https://github.com/Lv-492-SoftServe/Bookcrossing-Back-End.git     
+     - git clone https://github.com/IrynaZavushchak/EPlast-Client.git
+     
+5.3. Go to the EPlast directory and create the environment file, named .env with following parameters:<br/>
+       ConnectionStrings__EPlastDBConnection={Full connection string to the MSSQL}       
+       StorageConnectionString={Full connection string to the Azure storage}
+       
+5.4. Edit file EPlast-Client/src/config.ts with the next line: const BASE_URL = "http://localhost:5000/api/";
+
+5.5. Run the FronEnd and BackEnd of the application by executing the "docker-compose up" command.
+
+5.6. Now you can access your application at http://localhost.
+
+# 6. Project Deploy
 
 Our project deployed at **https://eplastua.azurewebsites.net/**

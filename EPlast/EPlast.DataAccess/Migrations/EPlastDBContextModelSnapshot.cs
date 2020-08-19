@@ -597,6 +597,59 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("Educations");
                 });
 
+            modelBuilder.Entity("EPlast.DataAccess.Entities.EducatorsStaff.KVTypes", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("KVTypeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(20);
+
+                    b.HasKey("ID");
+
+                    b.ToTable("KVTypes");
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.EducatorsStaff.KVs", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("BasisOfGranting")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<DateTime>("DateOfGranting")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("KVTypesID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Link")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("NumberInRegister")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("KVTypesID");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("KVs");
+                });
+
             modelBuilder.Entity("EPlast.DataAccess.Entities.Event.Event", b =>
                 {
                     b.Property<int>("ID")
@@ -955,6 +1008,22 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("ParticipantStatuses");
                 });
 
+            modelBuilder.Entity("EPlast.DataAccess.Entities.PlastDegree", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PlastDegrees");
+                });
+
             modelBuilder.Entity("EPlast.DataAccess.Entities.Region", b =>
                 {
                     b.Property<int>("ID")
@@ -1039,14 +1108,19 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<DateTime>("DateStart")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsCurrent")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PlastDegreeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("UserPlastDegreeType")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("PlastDegreeId");
 
                     b.HasIndex("UserId");
 
@@ -1535,6 +1609,19 @@ namespace EPlast.DataAccess.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("EPlast.DataAccess.Entities.EducatorsStaff.KVs", b =>
+                {
+                    b.HasOne("EPlast.DataAccess.Entities.EducatorsStaff.KVTypes", "kvTypes")
+                        .WithMany()
+                        .HasForeignKey("KVTypesID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EPlast.DataAccess.Entities.User", "user")
+                        .WithMany("UsersKVs")
+                        .HasForeignKey("UserId");
+                });
+
             modelBuilder.Entity("EPlast.DataAccess.Entities.Event.Event", b =>
                 {
                     b.HasOne("EPlast.DataAccess.Entities.Event.EventCategory", "EventCategory")
@@ -1675,6 +1762,12 @@ namespace EPlast.DataAccess.Migrations
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.UserPlastDegree", b =>
                 {
+                    b.HasOne("EPlast.DataAccess.Entities.PlastDegree", "PlastDegree")
+                        .WithMany("UserPlastDegrees")
+                        .HasForeignKey("PlastDegreeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("EPlast.DataAccess.Entities.User", "User")
                         .WithMany("UserPlastDegrees")
                         .HasForeignKey("UserId")
