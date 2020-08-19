@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL
 {
-    interface IDistinctionService
+    public interface IDistinctionService
     {
         Task<IEnumerable<DistinctionDTO>> GetAllDistinctionAsync();
         Task<DistinctionDTO> GetDistinctionAsync(int id);
