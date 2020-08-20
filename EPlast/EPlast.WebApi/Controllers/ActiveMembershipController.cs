@@ -26,5 +26,10 @@ namespace EPlast.WebApi.Controllers
         {
             return Ok(await _accessLevelService.GetUserAccessLevelsAsync(userId));
         }
+        [HttpGet("dergees/{userId}")]
+        public async Task<IActionResult> GetUserDegrees(string userId)
+        {
+            return Ok(await _plastDegreeService.GetUserPlastDegreesAsync(userId));
+        }
     }
 }
