@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EPlast.BLL.Interfaces.Logging;
-using EPlast.BLL.Services.Interfaces;
 using Xunit;
 using Organization = EPlast.Models.Organization;
 using Microsoft.AspNetCore.Http;
@@ -52,7 +51,7 @@ namespace EPlast.XUnitTest
             Assert.Equal(expected, actual);
         }
 
- 
+
         [Fact]
         public async Task SaveDecisionWithNullDecisionViewMode()
         {

@@ -97,7 +97,7 @@ namespace EPlast.Tests.Controllers
         public async Task Update_ReturnsOkObjectResult()
         {
             //Arrange
-            var mockDecision= new DecisionDTO();
+            var mockDecision = new DecisionDTO();
             _decisionService
                 .Setup(x => x.ChangeDecisionAsync(mockDecision));
 
@@ -221,8 +221,6 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
 
         }
-
-      
 
         [Test]
         public async Task Download_ReturnsOkObjectResult()
