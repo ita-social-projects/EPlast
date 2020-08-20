@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    [Migration("20200819093416_KVMigration")]
-    partial class KVMigration
+    [Migration("20200820124401_KadraEntityAdding")]
+    partial class KadraEntityAdding
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -599,24 +599,7 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("Educations");
                 });
 
-            modelBuilder.Entity("EPlast.DataAccess.Entities.EducatorsStaff.KVTypes", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("KVTypeName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(20)")
-                        .HasMaxLength(20);
-
-                    b.HasKey("ID");
-
-                    b.ToTable("KVTypes");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.EducatorsStaff.KVs", b =>
+            modelBuilder.Entity("EPlast.DataAccess.Entities.EducatorsStaff.KadraVykhovnykiv", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -634,6 +617,9 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<int>("KVTypesID")
                         .HasColumnType("int");
 
+                    b.Property<int?>("KadraVykhovnykivTypesID")
+                        .HasColumnType("int");
+
                     b.Property<string>("Link")
                         .HasColumnType("nvarchar(max)");
 
@@ -645,11 +631,28 @@ namespace EPlast.DataAccess.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("KVTypesID");
+                    b.HasIndex("KadraVykhovnykivTypesID");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("KVs");
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.EducatorsStaff.KadraVykhovnykivTypes", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(20);
+
+                    b.HasKey("ID");
+
+                    b.ToTable("KVTypes");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Event.Event", b =>
@@ -1611,16 +1614,14 @@ namespace EPlast.DataAccess.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("EPlast.DataAccess.Entities.EducatorsStaff.KVs", b =>
+            modelBuilder.Entity("EPlast.DataAccess.Entities.EducatorsStaff.KadraVykhovnykiv", b =>
                 {
-                    b.HasOne("EPlast.DataAccess.Entities.EducatorsStaff.KVTypes", "kvTypes")
-                        .WithMany()
-                        .HasForeignKey("KVTypesID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("EPlast.DataAccess.Entities.EducatorsStaff.KadraVykhovnykivTypes", "KadraVykhovnykivTypes")
+                        .WithMany("UsersKadras")
+                        .HasForeignKey("KadraVykhovnykivTypesID");
 
-                    b.HasOne("EPlast.DataAccess.Entities.User", "user")
-                        .WithMany("UsersKVs")
+                    b.HasOne("EPlast.DataAccess.Entities.User", "User")
+                        .WithMany("UsersKadras")
                         .HasForeignKey("UserId");
                 });
 
