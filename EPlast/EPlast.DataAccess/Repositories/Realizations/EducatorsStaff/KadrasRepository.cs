@@ -2,9 +2,9 @@
 
 namespace EPlast.DataAccess.Repositories
 {
-    public class KVsRepository: RepositoryBase<KVs>, IKVsRepository
+    public class KadrasRepository: RepositoryBase<KadraVykhovnykiv>, IKadrassRepository
     {
-        public KVsRepository(EPlastDBContext dbContext)
+        public KadrasRepository(EPlastDBContext dbContext)
        : base(dbContext)
         {
         }
