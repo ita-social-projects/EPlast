@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.EducatorsStaff;
-using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.EducatorsStaff;
 using EPlast.BLL.Interfaces.Logging;
-using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Repositories;
 using System;
@@ -12,14 +10,14 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.EducatorsStaff
 {
-    public class KVsService:IKVService
+    public class KadraService:IKadraService
     {
         
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
        
 
-        public KVsService(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService<KVsService> loggerService)
+        public KadraService(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService<KadraService> loggerService)
         {
             
             _repositoryWrapper = repositoryWrapper;
@@ -27,12 +25,12 @@ namespace EPlast.BLL.Services.EducatorsStaff
             
         }
 
-        public async Task<KadrasDTO> CreateKadra(KadrasDTO kadrasDTO)
+        public async Task<KadraVykhovnykivDTO> CreateKadra(KadraVykhovnykivDTO kadrasDTO)
         {
-            var newKV = _mapper.Map<KadrasDTO, KVs>(kadrasDTO);
+            var newKV = _mapper.Map<KadraVykhovnykivDTO, KadraVykhovnykiv>(kadrasDTO);
             await _repositoryWrapper.KVs.CreateAsync(newKV);
             await _repositoryWrapper.SaveAsync();
-            return _mapper.Map<KVs,KadrasDTO>(newKV); 
+            return _mapper.Map<KadraVykhovnykiv,KadraVykhovnykivDTO>(newKV); 
         }
 
         public async Task DeleteKadra(int kadra_id)
@@ -50,43 +48,43 @@ namespace EPlast.BLL.Services.EducatorsStaff
                    
         }
 
-        public async Task<IEnumerable<KadrasDTO>> GetAllKVsAsync()
+        public async Task<IEnumerable<KadraVykhovnykivDTO>> GetAllKVsAsync()
         {
-            return _mapper.Map<IEnumerable<KVs>, IEnumerable<KadrasDTO>>(
+            return _mapper.Map<IEnumerable<KadraVykhovnykiv>, IEnumerable<KadraVykhovnykivDTO>>(
                  await _repositoryWrapper.KVs.GetAllAsync());
           
         }
 
-        public async Task<KadrasDTO> GetKadraById(int KadraID)
+        public async Task<KadraVykhovnykivDTO> GetKadraById(int KadraID)
         {
-            var KV = _mapper.Map<KVs, KadrasDTO>(await _repositoryWrapper.KVs.GetFirstOrDefaultAsync(c => c.ID == KadraID));
+            var KV = _mapper.Map<KadraVykhovnykiv, KadraVykhovnykivDTO>(await _repositoryWrapper.KVs.GetFirstOrDefaultAsync(c => c.ID == KadraID));
             return KV;
         }
 
-        public async Task<KadrasDTO> GetKadraByRegisterNumber(int KadrasRegisterNumber)
+        public async Task<KadraVykhovnykivDTO> GetKadraByRegisterNumber(int KadrasRegisterNumber)
         {
-            var KV = _mapper.Map<KVs, KadrasDTO>(await _repositoryWrapper.KVs.GetFirstOrDefaultAsync(c => c.NumberInRegister == KadrasRegisterNumber));
+            var KV = _mapper.Map<KadraVykhovnykiv, KadraVykhovnykivDTO>(await _repositoryWrapper.KVs.GetFirstOrDefaultAsync(c => c.NumberInRegister == KadrasRegisterNumber));
             return KV;
         }
 
-        public async Task<IEnumerable<KadrasDTO>> GetKVsOfGivenUser(string userId)
+        public async Task<IEnumerable<KadraVykhovnykivDTO>> GetKVsOfGivenUser(string userId)
         {
-            var Kadras = _mapper.Map<IEnumerable<KVs>,IEnumerable<KadrasDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.UserId == userId));
+            var Kadras = _mapper.Map<IEnumerable<KadraVykhovnykiv>,IEnumerable<KadraVykhovnykivDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.UserId == userId));
             return Kadras;
         }
 
-        public async Task<IEnumerable<KadrasDTO>> GetKVsWithKVType(int kvType_id)
+        public async Task<IEnumerable<KadraVykhovnykivDTO>> GetKVsWithKVType(int kvType_id)
         {
             var kvType = await _repositoryWrapper.KVTypes.GetFirstAsync(x => x.ID == kvType_id);
             if (kvType == null)
             {
                 throw new InvalidOperationException();
             }
-            var KVs = _mapper.Map<IEnumerable<KVs>, IEnumerable<KadrasDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.KVTypesID == kvType_id));
+            var KVs = _mapper.Map<IEnumerable<KadraVykhovnykiv>, IEnumerable<KadraVykhovnykivDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.KVTypesID == kvType_id));
             return KVs;
         }
 
-        public async Task UpdateKadra(KadrasDTO kadrasDTO)
+        public async Task UpdateKadra(KadraVykhovnykivDTO kadrasDTO)
         {
            var  editedKadra = await _repositoryWrapper.KVs.GetFirstAsync(x => x.ID == kadrasDTO.ID);
            
