@@ -67,20 +67,20 @@ namespace EPlast.BLL.Services.EducatorsStaff
             return KV;
         }
 
-        public async Task<IEnumerable<KadraVykhovnykivDTO>> GetKVsOfGivenUser(string userId)
+        public async Task<IEnumerable<KadraVykhovnykivDTO>> GetKVsOfGivenUser(string UserId)
         {
-            var Kadras = _mapper.Map<IEnumerable<KadraVykhovnykiv>,IEnumerable<KadraVykhovnykivDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.UserId == userId));
+            var Kadras = _mapper.Map<IEnumerable<KadraVykhovnykiv>,IEnumerable<KadraVykhovnykivDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.UserId == UserId));
             return Kadras;
         }
 
-        public async Task<IEnumerable<KadraVykhovnykivDTO>> GetKVsWithKVType(int kvType_id)
+        public async Task<IEnumerable<KadraVykhovnykivDTO>> GetKVsWithKVType(int kvType_Id)
         {
-            var kvType = await _repositoryWrapper.KVTypes.GetFirstAsync(x => x.ID == kvType_id);
+            var kvType = await _repositoryWrapper.KVTypes.GetFirstAsync(x => x.ID == kvType_Id);
             if (kvType == null)
             {
                 throw new InvalidOperationException();
             }
-            var KVs = _mapper.Map<IEnumerable<KadraVykhovnykiv>, IEnumerable<KadraVykhovnykivDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.KVTypesID == kvType_id));
+            var KVs = _mapper.Map<IEnumerable<KadraVykhovnykiv>, IEnumerable<KadraVykhovnykivDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.KVTypesID == kvType_Id));
             return KVs;
         }
 
