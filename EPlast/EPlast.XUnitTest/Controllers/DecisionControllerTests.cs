@@ -52,24 +52,7 @@ namespace EPlast.XUnitTest
             Assert.Equal(expected, actual);
         }
 
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task ChangeDecisionTest(bool expected)
-        {
-            DecisionViewModel decisionViewModel = CreateDecisionViewModel();
-            _mapper.Setup(m => m.Map<DecisionDTO>(It.IsAny<Decision>()))
-                 .Returns(new DecisionDTO());
-            _decisionService.Setup(d => d.ChangeDecisionAsync(It.IsAny<DecisionDTO>()))
-                .ReturnsAsync(() => expected);
-            DecisionController documentationController = CreateDocumentationController;
-
-            JsonResult jsonResult = await documentationController.ChangeDecision(decisionViewModel.DecisionWrapper.Decision);
-            bool actual = jsonResult.Value.ToString().Contains("True");
-
-            Assert.Equal(expected, actual);
-        }
-
+ 
         [Fact]
         public async Task SaveDecisionWithNullDecisionViewMode()
         {
@@ -179,30 +162,25 @@ namespace EPlast.XUnitTest
             Assert.IsType<ViewResult>(result);
         }
 
-        [Theory]
-        [InlineData(1, true)]
-        [InlineData(2, true)]
-        [InlineData(42, false)]
-        [InlineData(-1, false)]
-        public async Task DeleteDecisionTest(int id, bool expected)
+        [Fact]
+        public async Task DeleteDecisionTest()
         {
             Decision decision;
             try
             {
-                decision = CreateDecisionsQueryable().First(x => x.ID == id);
+                decision = CreateDecisionsQueryable().First(x => x.ID == CreateDecisionsQueryable().ToList().First().ID);
             }
             catch
             {
                 decision = null;
             }
-            _decisionService.Setup(d => d.DeleteDecisionAsync(It.IsAny<int>()))
-                .ReturnsAsync(() => decision != null);
+            _decisionService.Setup(d => d.DeleteDecisionAsync(It.IsAny<int>()));
             DecisionController documentationController = CreateDocumentationController;
 
-            JsonResult jsonResult = await documentationController.DeleteDecision(id);
+            JsonResult jsonResult = await documentationController.DeleteDecision(CreateDecisionsQueryable().ToList().First().ID);
             bool actual = jsonResult.Value.ToString().Contains("True");
 
-            Assert.Equal(expected, actual);
+            Assert.True(actual);
         }
 
         private static IQueryable<DecisionDTO> CreateDecisionsDtoQueryable()
