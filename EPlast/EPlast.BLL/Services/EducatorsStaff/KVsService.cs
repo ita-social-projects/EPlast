@@ -6,6 +6,7 @@ using EPlast.BLL.Interfaces.Logging;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -38,10 +39,15 @@ namespace EPlast.BLL.Services.EducatorsStaff
         {
 
                 var deletedKadra = (await _repositoryWrapper.KVs.GetFirstAsync(d => d.ID == kadra_id));
-                
-                    _repositoryWrapper.KVs.Delete(deletedKadra);
-
-                    await _repositoryWrapper.SaveAsync();
+            if (deletedKadra != null)
+            {
+                _repositoryWrapper.KVs.Delete(deletedKadra);
+                await _repositoryWrapper.SaveAsync();
+            }
+            else {
+                throw new InvalidOperationException();
+            }
+                   
         }
 
         public async Task<IEnumerable<KadrasDTO>> GetAllKVsAsync()
