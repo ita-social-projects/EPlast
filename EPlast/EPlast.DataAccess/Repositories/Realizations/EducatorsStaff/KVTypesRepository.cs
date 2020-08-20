@@ -2,9 +2,9 @@
 
 namespace EPlast.DataAccess.Repositories.Realizations.EducatorsStaff
 {
-    public class KadraTypesRepository: RepositoryBase<KadraVykhovnykivTypes>, IKadraTypesRepository
+    public class KVTypesRepository: RepositoryBase<KVTypes>, IKVTypesRepository
     {
-        public KadraTypesRepository(EPlastDBContext dbContext)
+        public KVTypesRepository(EPlastDBContext dbContext)
        : base(dbContext)
         {
         }
