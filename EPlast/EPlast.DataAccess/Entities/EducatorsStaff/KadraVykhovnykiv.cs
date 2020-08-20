@@ -1,18 +1,17 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EPlast.DataAccess.Entities.EducatorsStaff
 {
-    public class KVs
+    public class KadraVykhovnykiv
     {
         [Key]
         public int ID { get; set; }
 
         public string UserId { get; set; }
-       public User user { get; set; }
+       public User User { get; set; }
         public int KVTypesID { get; set; }
-        public KVTypes kvTypes { get; set; }
+        public KadraVykhovnykivTypes KadraVykhovnykivTypes { get; set; }
         
         public DateTime DateOfGranting { get; set; }
 
