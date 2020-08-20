@@ -221,6 +221,8 @@ namespace EPlast.Tests.Controllers
         public async Task Edit_ReturnsOkObjectResult()
         {
             //Arrange
+            var isValid = true;
+
             var expectedValue = "Updated";
             _mapper
                 .Setup(m => m.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
@@ -228,6 +230,9 @@ namespace EPlast.Tests.Controllers
             _clubService
                 .Setup(x => x.UpdateAsync(It.IsAny<ClubDTO>()))
                 .ReturnsAsync(It.IsAny<ClubDTO>);
+            _clubService
+                .Setup(x => x.Validate(It.IsAny<ClubDTO>()))
+                .ReturnsAsync(isValid);
 
             //Act
             var result = await _clubController.Edit(It.IsAny<ClubViewModel>());
@@ -243,15 +248,45 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task Edit_ValidationFailed_ReturnsStatus422UnprocessableEntity()
+        {
+            //Arrange
+            var isValid = false;
+
+            _mapper
+                .Setup(m => m.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
+                .Returns(new ClubDTO());
+            _clubService
+                .Setup(x => x.Validate(It.IsAny<ClubDTO>()))
+                .ReturnsAsync(isValid);
+
+            var expected = StatusCodes.Status422UnprocessableEntity;
+
+            //Act
+            var result = await _clubController.Edit(It.IsAny<ClubViewModel>());
+            var actual = (result as StatusCodeResult).StatusCode;
+
+            //Assert
+            _mapper.Verify();
+            _clubService.Verify();
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
         public async Task Create_ReturnsOkObjectResult()
         {
             //Arrange
+            var isValid = true;
+
             _mapper
                 .Setup(m => m.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
                 .Returns(new ClubDTO());
             _clubService
                 .Setup(x => x.CreateAsync(It.IsAny<ClubDTO>()))
                 .ReturnsAsync(new ClubDTO());
+            _clubService
+                .Setup(x => x.Validate(It.IsAny<ClubDTO>()))
+                .ReturnsAsync(isValid);
 
             //Act
             var result = await _clubController.Create(It.IsAny<ClubViewModel>());
@@ -264,6 +299,31 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(resultValue);
             Assert.IsInstanceOf<ClubDTO>(resultValue);
+        }
+
+        [Test]
+        public async Task Create_ValidationFailed_ReturnsStatus422UnprocessableEntity()
+        {
+            //Arrange
+            var isValid = false;
+
+            _mapper
+                .Setup(m => m.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
+                .Returns(new ClubDTO());
+            _clubService
+                .Setup(x => x.Validate(It.IsAny<ClubDTO>()))
+                .ReturnsAsync(isValid);
+
+            var expected = StatusCodes.Status422UnprocessableEntity;
+
+            //Act
+            var result = await _clubController.Create(It.IsAny<ClubViewModel>());
+            var actual = (result as StatusCodeResult).StatusCode;
+
+            //Assert
+            _mapper.Verify();
+            _clubService.Verify();
+            Assert.AreEqual(expected, actual);
         }
 
         [Test]

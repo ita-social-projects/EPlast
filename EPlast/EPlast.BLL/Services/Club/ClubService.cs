@@ -141,7 +141,7 @@ namespace EPlast.BLL.Services.Club
             var ext = base64Parts[0].Split(new[] { '/', ';' }, 3)[1];
             var fileName = Guid.NewGuid() + "." + ext;
             await _clubBlobStorage.UploadBlobForBase64Async(base64Parts[1], fileName);
-            if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default_club_image.png"))
+            if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default_club_image.png") && oldImageName.Length < 30)
             {
                 await _clubBlobStorage.DeleteBlobAsync(oldImageName);
             }
@@ -155,6 +155,13 @@ namespace EPlast.BLL.Services.Club
             return await _clubBlobStorage.GetBlobBase64Async(string.IsNullOrEmpty(fileName)
                 ? "default_club_image.png"
                 : fileName);
+        }
+
+        public async Task<bool> Validate(ClubDTO club)
+        {
+            var isClubNameNotUnique = await _repoWrapper.Club.FindAll().AnyAsync(x => x.ClubName == club.ClubName);
+
+            return !isClubNameNotUnique;
         }
     }
 }
