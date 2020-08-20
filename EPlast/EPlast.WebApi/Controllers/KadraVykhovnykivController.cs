@@ -13,10 +13,10 @@ namespace EPlast.WebApi.Controllers
     public class KadraVykhovnykivController : ControllerBase
     {
         private readonly ILoggerService<KadraVykhovnykivController> _logger;
-        private readonly IKVService _kvService;
-        private readonly IKVsTypeService _kvTypeService;
+        private readonly IKadraService _kvService;
+        private readonly IKadrasTypeService _kvTypeService;
      
-        public KadraVykhovnykivController(ILoggerService<KadraVykhovnykivController> logger,  IKVService kvService, IKVsTypeService kvTypeService)
+        public KadraVykhovnykivController(ILoggerService<KadraVykhovnykivController> logger,  IKadraService kvService, IKadrasTypeService kvTypeService)
         {
             _logger = logger;
             _kvService = kvService;
@@ -30,7 +30,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="403">User is not admin</response>
         [HttpPost("CreateKadra")]
-        public async Task<IActionResult> CreateKadra(KadrasDTO kvDTO)
+        public async Task<IActionResult> CreateKadra(KadraVykhovnykivDTO kvDTO)
         {
                 if (User.IsInRole("Admin"))
                 {
@@ -85,7 +85,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="403">User is not admin</response>
         [HttpPut()]
-        public async Task<IActionResult> Update( KadrasDTO kadrasDTO)
+        public async Task<IActionResult> Update( KadraVykhovnykivDTO kadrasDTO)
         {
            
             if (User.IsInRole("Admin"))
@@ -171,7 +171,7 @@ namespace EPlast.WebApi.Controllers
             {
                 return StatusCode(StatusCodes.Status404NotFound);
             }
-            return Ok();    
+            return Ok(Types);    
         }
 
         /// <summary>
