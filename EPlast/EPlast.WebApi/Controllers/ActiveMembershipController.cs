@@ -44,5 +44,16 @@ namespace EPlast.WebApi.Controllers
 
             return BadRequest();
         }
+
+        [HttpDelete("dergees/{userId}/{plastDegreeId}")]
+        public async Task<IActionResult> DeletePlastDegreeForUser(string userId, int plastDegreeId)
+        {
+            if (await _plastDegreeService.DeletePlastDegreeForUserAsync(userId, plastDegreeId))
+            {
+                return NoContent();
+            }
+
+            return BadRequest();
+        }
     }
 }
