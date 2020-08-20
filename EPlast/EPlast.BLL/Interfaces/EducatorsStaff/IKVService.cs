@@ -9,9 +9,9 @@ namespace EPlast.BLL.Interfaces.EducatorsStaff
     {
         Task<IEnumerable<KadrasDTO>> GetAllKVsAsync();
 
-        Task<IEnumerable<KadrasDTO>> GetKVsWithKVType(KVTypeDTO kvTypeDTO);
+        Task<IEnumerable<KadrasDTO>> GetKVsWithKVType(int kvTypeId);
 
-        Task<IEnumerable<KadrasDTO>> GetKVsOfGivenUser(UserDTO userDTO);
+        Task<IEnumerable<KadrasDTO>> GetKVsOfGivenUser(string UserId);
 
         Task<KadrasDTO> CreateKadra(KadrasDTO kadrasDTO);
 
