@@ -53,29 +53,29 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IEventAdministrationTypeRepository _eventAdministrationType;
         private IEventCategoryTypeRepository _eventCategoryTypeRepository;
         private IPlastDegreeRepository _plastDegree;
-        private IKVsRepository _KVs;
-        private IKVTypesRepository _KVtypes;
+        private IKadrassRepository _KVs;
+        private IKadraTypesRepository _KVtypes;
 
 
-        public IKVTypesRepository KVTypes
+        public IKadraTypesRepository KVTypes
         {
             get
             {
                 if (_KVtypes == null)
                 {
-                    _KVtypes = new KVTypesRepository(_dbContext);
+                    _KVtypes = new KadraTypesRepository(_dbContext);
                 }
                 return _KVtypes;
             }
         }
 
-        public IKVsRepository KVs
+        public IKadrassRepository KVs
         {
             get
             {
                 if (_KVs == null)
                 {
-                    _KVs = new KVsRepository(_dbContext);
+                    _KVs = new KadrasRepository(_dbContext);
                 }
                 return _KVs;
             }
