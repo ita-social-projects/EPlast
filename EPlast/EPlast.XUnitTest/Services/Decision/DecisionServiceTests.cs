@@ -186,19 +186,7 @@ namespace EPlast.XUnitTest
 
             Assert.Equal(decisionId, actualReturn);
         }
-        /*
-        [Theory]
-        [InlineData(1, new byte[] { 1, 2, 3, 4, 5 })]
-        [InlineData(3, new byte[] { 5, 4, 3, 2, 1 })]
-        public async Task DownloadDecisionFileTest(int decisionId, byte[] exceptedBytesCount)
-        {
-            _decisionService = CreateDecisionService();
 
-            var result = await _decisionService.DownloadDecisionFileAsync(decisionId);
-
-            Assert.Equal(exceptedBytesCount.Length, result.Length);
-        }
-        */
         private static IQueryable<DecesionTarget> GetTestDecisionTargetsQueryable()
         {
             return new List<DecesionTarget>
