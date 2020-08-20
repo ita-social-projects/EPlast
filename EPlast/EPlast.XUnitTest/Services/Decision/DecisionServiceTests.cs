@@ -12,10 +12,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using EPlast.BLL.Interfaces.Logging;
-using EPlast.BLL.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace EPlast.XUnitTest
@@ -128,10 +125,10 @@ namespace EPlast.XUnitTest
         }
 
         [Theory]
-        [InlineData( "new name", "new text")]
-        [InlineData( "", "new text")]
-        [InlineData( "new name", "")]
-        [InlineData( "", "")]
+        [InlineData("new name", "new text")]
+        [InlineData("", "new text")]
+        [InlineData("new name", "")]
+        [InlineData("", "")]
         public async Task ChangeDecisionTest(string decisionNewName, string decisionNewDescription)
         {
             _decisionService = CreateDecisionService();
