@@ -186,8 +186,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _decisionService
-                .Setup(x => x.DeleteDecisionAsync(It.IsAny<int>()))
-                .ReturnsAsync(true);
+                .Setup(x => x.DeleteDecisionAsync(It.IsAny<int>()));
 
             //Act
             var result = await _decisionsController.Delete(It.IsAny<int>());
@@ -223,22 +222,7 @@ namespace EPlast.Tests.Controllers
 
         }
 
-        [Test]
-        public async Task Delete_ReturnsNotFound()
-        {
-            //Arrange
-            _decisionService
-                .Setup(x => x.DeleteDecisionAsync(It.IsAny<int>()))
-                .ReturnsAsync(false);
-
-            //Act
-            var result = await _decisionsController.Delete(It.IsAny<int>());
-
-            //Assert
-            _decisionService.Verify();
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<NotFoundResult>(result);
-        }
+      
 
         [Test]
         public async Task Download_ReturnsOkObjectResult()

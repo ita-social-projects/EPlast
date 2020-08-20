@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EPlast.BLL.Interfaces.Logging;
-using EPlast.BLL.Services.Interfaces;
 using Organization = EPlast.Models.Organization;
 
 namespace EPlast.Controllers
@@ -86,7 +85,7 @@ namespace EPlast.Controllers
             var success = false;
             try
             {
-                success = await _decisionService.ChangeDecisionAsync(
+                 await _decisionService.ChangeDecisionAsync(
                     _mapper.Map<DecisionDTO>(decision));
             }
             catch (Exception e)
@@ -182,12 +181,12 @@ namespace EPlast.Controllers
         [HttpPost]
         public async Task<JsonResult> DeleteDecision(int id)
         {
-            return await _decisionService.DeleteDecisionAsync(id) ? Json(new
+            await _decisionService.DeleteDecisionAsync(id);
+            return Json(new
             {
                 success = true,
                 text = "Зміни пройшли успішно!"
-            }) :
-               Json(new { success = false });
+            });
         }
         /* 
               [Authorize(Roles = "Admin")]
