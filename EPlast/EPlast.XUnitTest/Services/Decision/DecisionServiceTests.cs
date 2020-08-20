@@ -71,19 +71,7 @@ namespace EPlast.XUnitTest
 
             Assert.IsType<DecisionWrapperDTO>(decision);
         }
-        /*
-                [Fact]
-                public async Task CreateDecisionDecisionTargetsCountTest()
-                {
-                    _decisionService = CreateDecisionService();
-                    _repository.Setup(rep => rep.DecesionTarget.GetAllAsync(It.IsAny<Expression<Func<DecesionTarget, bool>>>(),
-                            It.IsAny<Func<IQueryable<DecesionTarget>, IIncludableQueryable<DecesionTarget, object>>>()))
-                        .ReturnsAsync(GetTestDecisionTargetsQueryable);
-                    var decision = await _decisionService.CreateDecisionAsync();
 
-                    Assert.Equal(GetTestDecisionTargetsDtoList().Count, decision.DecisionTargets.Count());
-                }
-                */
         [Theory]
         [InlineData(1)]
         [InlineData(2)]
