@@ -5,6 +5,7 @@ using EPlast.BLL.Services.Interfaces;
 using EPlast.WebApi.Models.Club;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
@@ -142,6 +143,13 @@ namespace EPlast.WebApi.Controllers
         //[Authorize]
         public async Task<IActionResult> Edit(ClubViewModel club)
         {
+            var isValid = await _clubService.Validate(_mapper.Map<ClubViewModel, ClubDTO>(club));
+
+            if (!isValid)
+            {
+                return StatusCode((int)HttpStatusCode.UnprocessableEntity);
+            }
+
             await _clubService.UpdateAsync(_mapper.Map<ClubViewModel, ClubDTO>(club));
 
             return Ok("Updated");
@@ -156,6 +164,13 @@ namespace EPlast.WebApi.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> Create(ClubViewModel club)
         {
+            var isValid =  await _clubService.Validate(_mapper.Map<ClubViewModel, ClubDTO>(club));
+
+            if (!isValid)
+            {
+                return StatusCode((int)HttpStatusCode.UnprocessableEntity);
+            }
+
             return Ok(await _clubService.CreateAsync(_mapper.Map<ClubViewModel, ClubDTO>(club)));
         }
 

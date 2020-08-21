@@ -97,7 +97,7 @@ namespace EPlast.Tests.Controllers
         public async Task Update_ReturnsOkObjectResult()
         {
             //Arrange
-            var mockDecision= new DecisionDTO();
+            var mockDecision = new DecisionDTO();
             _decisionService
                 .Setup(x => x.ChangeDecisionAsync(mockDecision));
 
@@ -186,8 +186,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _decisionService
-                .Setup(x => x.DeleteDecisionAsync(It.IsAny<int>()))
-                .ReturnsAsync(true);
+                .Setup(x => x.DeleteDecisionAsync(It.IsAny<int>()));
 
             //Act
             var result = await _decisionsController.Delete(It.IsAny<int>());
@@ -221,23 +220,6 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
 
-        }
-
-        [Test]
-        public async Task Delete_ReturnsNotFound()
-        {
-            //Arrange
-            _decisionService
-                .Setup(x => x.DeleteDecisionAsync(It.IsAny<int>()))
-                .ReturnsAsync(false);
-
-            //Act
-            var result = await _decisionsController.Delete(It.IsAny<int>());
-
-            //Assert
-            _decisionService.Verify();
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
         [Test]

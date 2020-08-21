@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20200820124401_KadraEntityAdding")]
+    partial class KadraEntityAdding
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,12 +55,10 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ImprovementNeeds")
-                        .HasColumnType("nvarchar(2000)")
-                        .HasMaxLength(2000);
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ListProperty")
-                        .HasColumnType("nvarchar(2000)")
-                        .HasMaxLength(2000);
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("NumberOfAdministrators")
                         .HasColumnType("int");
