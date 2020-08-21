@@ -7,6 +7,7 @@ using EPlast.DataAccess.Repositories;
 
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Distinctions
@@ -21,21 +22,22 @@ namespace EPlast.BLL.Services.Distinctions
             _mapper = mapper;
             _repoWrapper = repoWrapper;
         }
-        public async Task AddUserDistinction(UserDistinctionDTO userDistinctionDTO)
+        public async Task AddUserDistinction(UserDistinctionDTO userDistinctionDTO, ClaimsPrincipal user)
         {
+            userDistinctionDTO.CanChange = user.IsInRole("Admin");
             var userDistinction = _mapper.Map<UserDistinctionDTO, UserDistinction>(userDistinctionDTO);
             await _repoWrapper.UserDistinction.CreateAsync(userDistinction);
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task ChangeUserDistinction(UserDistinctionDTO userDistinctionDTO)
+        public async Task ChangeUserDistinction(UserDistinctionDTO userDistinctionDTO, ClaimsPrincipal user)
         {
             var userDistinction  = await _repoWrapper.UserDistinction.GetFirstAsync(x => x.Id == userDistinctionDTO.Id);
                 _repoWrapper.UserDistinction.Update(userDistinction);
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task DeleteUserDistinction(int id)
+        public async Task DeleteUserDistinction(int id, ClaimsPrincipal user)
         {
             var userDistinction = await _repoWrapper.UserDistinction.GetFirstOrDefaultAsync(d => d.Id == id);
             if (userDistinction == null)
