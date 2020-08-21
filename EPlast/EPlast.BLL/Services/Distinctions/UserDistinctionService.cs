@@ -58,5 +58,11 @@ namespace EPlast.BLL.Services.Distinctions
             var userDistinction = await _repoWrapper.UserDistinction.GetFirstOrDefaultAsync(d => d.Id == id);
             return _mapper.Map<UserDistinction, UserDistinctionDTO>(userDistinction);
         }
+
+        public async Task<IEnumerable<UserDistinctionDTO>> GetUserDistinctionOfGivenUser(string UserId)
+        {
+            var userDistinctions = await _repoWrapper.UserDistinction.GetAllAsync(u => u.UserId == UserId);
+            return _mapper.Map<IEnumerable<UserDistinction>, IEnumerable<UserDistinctionDTO>>(userDistinctions);
+        }
     }
 }
