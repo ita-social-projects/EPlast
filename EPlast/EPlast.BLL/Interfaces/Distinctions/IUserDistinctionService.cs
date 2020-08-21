@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL
@@ -7,8 +8,8 @@ namespace EPlast.BLL
     {
         Task<IEnumerable<UserDistinctionDTO>> GetAllUsersDistinctionAsync();
         Task<UserDistinctionDTO> GetUserDistinction(int id);
-        Task AddUserDistinction(UserDistinctionDTO userDistinctionDTO);
-        Task ChangeUserDistinction(UserDistinctionDTO userDistinctionDTO);
-        Task DeleteUserDistinction(int id);        
+        Task AddUserDistinction(UserDistinctionDTO userDistinctionDTO, ClaimsPrincipal user);
+        Task ChangeUserDistinction(UserDistinctionDTO userDistinctionDTO, ClaimsPrincipal user);
+        Task DeleteUserDistinction(int id, ClaimsPrincipal user);        
     }
 }

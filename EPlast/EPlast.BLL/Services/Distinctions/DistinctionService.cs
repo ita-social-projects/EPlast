@@ -4,6 +4,7 @@ using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL
@@ -19,14 +20,14 @@ namespace EPlast.BLL
             _mapper = mapper;
             _repoWrapper = repoWrapper;
         }
-        public async Task AddDistinction(DistinctionDTO distinctionDto)
+        public async Task AddDistinction(DistinctionDTO distinctionDto, ClaimsPrincipal user)
         {
             var distinction = _mapper.Map<DistinctionDTO, Distinction>(distinctionDto);
             await _repoWrapper.Distinction.CreateAsync(distinction);
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task ChangeDistinction(DistinctionDTO distinctionDTO)
+        public async Task ChangeDistinction(DistinctionDTO distinctionDTO, ClaimsPrincipal user)
         {
             var distinction = await _repoWrapper.Distinction.GetFirstAsync(x => x.Id == distinctionDTO.Id);
             distinction.Name = distinctionDTO.Name;
@@ -34,7 +35,7 @@ namespace EPlast.BLL
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task DeleteDistinction(int id)
+        public async Task DeleteDistinction(int id, ClaimsPrincipal user)
         {
             var distinction = (await _repoWrapper.Distinction.GetFirstAsync(d => d.Id == id));
             if (distinction == null)

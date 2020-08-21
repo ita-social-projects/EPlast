@@ -58,5 +58,38 @@ namespace EPlast.WebApi.Controllers
             IEnumerable<UserDistinctionDTO> userDistinctions = await _userDistinctionService.GetAllUsersDistinctionAsync();
             return Ok(userDistinctions);
         }
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetDistinction(int id)
+        {
+            DistinctionDTO distinction = await _distinctionService.GetDistinctionAsync(id);
+            if (distinction == null)
+                return NotFound();
+            return Ok(distinction);
+        }
+
+        [HttpGet] 
+        public async Task<IActionResult> GetAllDistinction()
+        {
+            IEnumerable<DistinctionDTO> distinctions = await _distinctionService.GetAllDistinctionAsync();
+            return Ok(distinctions);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteDistinction(int id)
+        {
+            await _distinctionService.DeleteDistinction(id, User);
+            return Ok();
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteUserDistinction(int id)
+        {
+            await _distinctionService.DeleteDistinction(id, User);
+            return Ok();
+        }
+
+        [Htt[]]
+
     }
 }
