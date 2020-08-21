@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL;
 using EPlast.BLL.Interfaces.Logging;
+using Microsoft.AspNetCore.Authorization;
 using EPlast.DataAccess.Entities.UserEntities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -40,6 +41,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">An instance of distinction</response>
         /// <response code="404">The distinction does not exist</response>
         [HttpGet("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetUserDistinction(int id)
         {
             UserDistinctionDTO userDistinction = await _userDistinctionService.GetUserDistinction(id);
@@ -53,6 +55,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>All distinction</returns>
         /// <response code="200">Array of all distinction</response>
         [HttpGet]
+
         public async Task<IActionResult> GetUserDistinction()
         {
             IEnumerable<UserDistinctionDTO> userDistinctions = await _userDistinctionService.GetAllUsersDistinctionAsync();
@@ -69,27 +72,59 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet] 
-        public async Task<IActionResult> GetAllDistinction()
+        public async Task<IActionResult> GetDistinction()
         {
             IEnumerable<DistinctionDTO> distinctions = await _distinctionService.GetAllDistinctionAsync();
             return Ok(distinctions);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteDistinction(int id)
         {
             await _distinctionService.DeleteDistinction(id, User);
             return Ok();
         }
 
-        [HttpDelete]
+        [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUserDistinction(int id)
         {
-            await _distinctionService.DeleteDistinction(id, User);
+            await _userDistinctionService.DeleteUserDistinction(id, User);
             return Ok();
         }
 
-        [Htt[]]
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AddUserDistinction(UserDistinctionDTO userDistinctionDTO)
+        {
+            await _userDistinctionService.AddUserDistinction(userDistinctionDTO, User);
+            return Ok();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AddDistinction(DistinctionDTO distinctionDTO)
+        {
+            await _distinctionService.AddDistinction(distinctionDTO, User);
+            return Ok();
+        }
+
+        [HttpPut]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> EditUserDistinction(UserDistinctionDTO userDistinctionDTO)
+        {
+            await _userDistinctionService.ChangeUserDistinction(userDistinctionDTO, User);
+            return Ok();
+        }
+
+        [HttpPut]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> EditDistinction(DistinctionDTO distinctionDTO)
+        {
+            await _distinctionService.ChangeDistinction(distinctionDTO, User);
+            return Ok();
+        }
 
     }
 }

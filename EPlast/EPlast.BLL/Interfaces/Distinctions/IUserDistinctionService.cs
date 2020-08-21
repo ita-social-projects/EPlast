@@ -10,6 +10,7 @@ namespace EPlast.BLL
         Task<UserDistinctionDTO> GetUserDistinction(int id);
         Task AddUserDistinction(UserDistinctionDTO userDistinctionDTO, ClaimsPrincipal user);
         Task ChangeUserDistinction(UserDistinctionDTO userDistinctionDTO, ClaimsPrincipal user);
-        Task DeleteUserDistinction(int id, ClaimsPrincipal user);        
+        Task DeleteUserDistinction(int id, ClaimsPrincipal user);
+        Task<IEnumerable<UserDistinctionDTO>> GetUserDistinctionOfGivenUser(string UserId);
     }
 }
