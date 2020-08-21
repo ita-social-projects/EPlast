@@ -40,7 +40,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns> object</returns>
         /// <response code="200">An instance of distinction</response>
         /// <response code="404">The distinction does not exist</response>
-        [HttpGet("{id:int}")]
+        [HttpGet("UserDistinction/{id:int}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetUserDistinction(int id)
         {
@@ -54,15 +54,14 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <returns>All distinction</returns>
         /// <response code="200">Array of all distinction</response>
-        [HttpGet]
-
+        [HttpGet("UserDistinctions")]
         public async Task<IActionResult> GetUserDistinction()
         {
             IEnumerable<UserDistinctionDTO> userDistinctions = await _userDistinctionService.GetAllUsersDistinctionAsync();
             return Ok(userDistinctions);
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("Distinction/{id:int}")]
         public async Task<IActionResult> GetDistinction(int id)
         {
             DistinctionDTO distinction = await _distinctionService.GetDistinctionAsync(id);
@@ -71,14 +70,14 @@ namespace EPlast.WebApi.Controllers
             return Ok(distinction);
         }
 
-        [HttpGet] 
+        [HttpGet("Distinctions")] 
         public async Task<IActionResult> GetDistinction()
         {
             IEnumerable<DistinctionDTO> distinctions = await _distinctionService.GetAllDistinctionAsync();
             return Ok(distinctions);
         }
 
-        [HttpDelete("{id:int}")]
+        [HttpDelete("Delete/{id:int}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteDistinction(int id)
         {
@@ -86,7 +85,7 @@ namespace EPlast.WebApi.Controllers
             return Ok();
         }
 
-        [HttpDelete("{id:int}")]
+        [HttpDelete("Delete/Distinction/{id:int}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUserDistinction(int id)
         {
@@ -102,7 +101,7 @@ namespace EPlast.WebApi.Controllers
             return Ok();
         }
 
-        [HttpPost]
+        [HttpPost("Distinction/Create")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddDistinction(DistinctionDTO distinctionDTO)
         {
@@ -118,7 +117,7 @@ namespace EPlast.WebApi.Controllers
             return Ok();
         }
 
-        [HttpPut]
+        [HttpPut("Distinction/Edit")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditDistinction(DistinctionDTO distinctionDTO)
         {
