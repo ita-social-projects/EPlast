@@ -1,4 +1,5 @@
 ﻿using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Entities.Event;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -159,5 +160,7 @@ namespace EPlast.DataAccess
         public DbSet<CityLegalStatus> CityLegalStatuses { get; set; }
         public DbSet<UserPlastDegree> UserPlastDegrees { get; set; }
         public DbSet<PlastDegree> PlastDegrees { get; set; }
+        public DbSet<KadraVykhovnykiv> KVs { get; set; }
+        public DbSet<KadraVykhovnykivTypes> KVTypes { get; set; }
     }
 }
