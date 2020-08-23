@@ -114,7 +114,9 @@ namespace EPlast.WebApi
                     {
                         ValidIssuer = Configuration["Jwt:Issuer"],
                         ValidAudience = Configuration["Jwt:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                        ValidateLifetime = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"])),
+                        ClockSkew = TimeSpan.Zero
                     };
                 });
 
@@ -233,7 +235,7 @@ namespace EPlast.WebApi
             services.AddScoped<IKadraService, KadraService>();
             services.AddScoped<IKadrasTypeService, KadrasTypesService>();
             services.AddLogging();
-            
+
             services.AddAuthorization();
 
             services.Configure<RequestLocalizationOptions>(

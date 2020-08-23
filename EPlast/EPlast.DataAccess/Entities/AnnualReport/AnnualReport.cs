@@ -67,8 +67,10 @@ namespace EPlast.DataAccess.Entities
         [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
         public int SponsorshipFunds { get; set; }
 
+        [MaxLength(2000, ErrorMessage = "Максимально допустима кількість символів 2000")]
         public string ListProperty { get; set; }
 
+        [MaxLength(2000, ErrorMessage = "Максимально допустима кількість символів 2000")]
         public string ImprovementNeeds { get; set; }
 
         public MembersStatistic MembersStatistic { get; set; }
