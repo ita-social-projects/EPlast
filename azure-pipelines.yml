@@ -9,20 +9,28 @@ resources:
 - repo: self
 
 variables:
-
+- group: pixelistic
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '5aab2e73-307d-46b2-8421-8ac50de15018'
-  imageRepository: 'eplastapi'
-  containerRegistry: 'eplast.azurecr.io'
-  dockerfilePath: '**/Dockerfile'
-  tag: '$(Build.BuildId)'
-  imagePullSecret: 'eplast1348122b-auth'
+- name: dockerRegistryServiceConnection
+  value: '5aab2e73-307d-46b2-8421-8ac50de15018'
+- name: imageRepository
+  value: 'eplastapi'
+- name: containerRegistry
+  value: 'eplast.azurecr.io'
+- name: dockerfilePath
+  value: '**/Dockerfile'
+- name: tag
+  value: '$(Build.BuildId)'
+- name: imagePullSecret
+  value: 'eplast1348122b-auth'
 
   # Agent VM image name
-  vmImageName: 'ubuntu-latest'
+- name: vmImageName
+  value: 'ubuntu-latest'
   
   # Name of the new namespace being created to deploy the PR changes.
-  k8sNamespaceForPR: 'review-app-$(System.PullRequest.PullRequestId)'
+- name: k8sNamespaceForPR
+  value: 'review-app-$(System.PullRequest.PullRequestId)'
 
 stages:
 - stage: Build
