@@ -34,12 +34,12 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Returns the tinction by id
+        /// Returns the user distinction by id
         /// </summary>
-        /// <param name="id">Distinction id</param>
+        /// <param name="id">User distinction id</param>
         /// <returns> object</returns>
-        /// <response code="200">An instance of distinction</response>
-        /// <response code="404">The distinction does not exist</response>
+        /// <response code="200">An instance of user distinction</response>
+        /// <response code="404">The user distinction does not exist</response>
         [HttpGet("UserDistinction/{id:int}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetUserDistinction(int id)
@@ -50,17 +50,23 @@ namespace EPlast.WebApi.Controllers
             return Ok(userDistinction);
         }
         /// <summary>
-        /// Returns all distinction
+        /// Returns all user distinctions
         /// </summary>
-        /// <returns>All distinction</returns>
-        /// <response code="200">Array of all distinction</response>
+        /// <returns>All user distinctions</returns>
+        /// <response code="200">Array of all user distinction</response>
         [HttpGet("UserDistinctions")]
         public async Task<IActionResult> GetUserDistinction()
         {
             IEnumerable<UserDistinctionDTO> userDistinctions = await _userDistinctionService.GetAllUsersDistinctionAsync();
             return Ok(userDistinctions);
         }
-
+        /// <summary>
+        /// Returns the distinction type by id
+        /// </summary>
+        /// <param name="id">Distinction type id</param>
+        /// <returns> object</returns>
+        /// <response code="200">An instance of distinction type</response>
+        /// <response code="404">The distinction type with this id does not exist</response>
         [HttpGet("Distinction/{id:int}")]
         public async Task<IActionResult> GetDistinction(int id)
         {
@@ -69,61 +75,169 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             return Ok(distinction);
         }
-
+        /// <summary>
+        /// Returns all distinction types
+        /// </summary>
+        /// <returns>All distinction types</returns>
+        /// <response code="200">Array of all distinction types</response>
         [HttpGet("Distinctions")] 
         public async Task<IActionResult> GetDistinction()
         {
             IEnumerable<DistinctionDTO> distinctions = await _distinctionService.GetAllDistinctionAsync();
             return Ok(distinctions);
         }
-
+        /// <summary>
+        /// Delete distinction type by id
+        /// </summary>
+        /// <param name="id">Distinction type id</param>
+        /// <returns> Answer from backend </returns>
+        /// <response code="200">Distinction type was successfully deleted</response>
+        /// <response code="404">Distinction type does not exist</response>
         [HttpDelete("Delete/{id:int}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteDistinction(int id)
         {
-            await _distinctionService.DeleteDistinction(id, User);
-            return Ok();
+            try
+            {
+                await _distinctionService.DeleteDistinction(id, User);
+                return Ok();
+            }
+            catch (NullReferenceException) 
+            {
+                return NotFound();
+            }
         }
-
+        /// <summary>
+        /// Delete user distinction by id
+        /// </summary>
+        /// <param name="id">User distinction id</param>
+        /// <returns> Answer from backend </returns>
+        /// <response code="200">User distinction was successfully deleted</response>
+        /// <response code="404">User distinction does not exist</response>
         [HttpDelete("Delete/Distinction/{id:int}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUserDistinction(int id)
         {
-            await _userDistinctionService.DeleteUserDistinction(id, User);
-            return Ok();
+            try
+            {
+                await _userDistinctionService.DeleteUserDistinction(id, User);
+                return Ok();
+            }
+            catch (NullReferenceException)
+            {
+                return NotFound();
+            }
         }
-
+        /// <summary>
+        /// Add user distinction
+        /// </summary>
+        /// <param name="userDistinctionDTO">User Distinction model</param>
+        /// <returns> Answer from backend </returns>
+        /// <response code="200">User distinction was successfully created</response>
+        /// <response code="404">User does not exist</response>
+        /// <response code="400">Model is not valid</response>
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddUserDistinction(UserDistinctionDTO userDistinctionDTO)
         {
-            await _userDistinctionService.AddUserDistinction(userDistinctionDTO, User);
-            return Ok();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _userDistinctionService.AddUserDistinction(userDistinctionDTO, User);
+                    return Ok();
+                }
+                catch (NullReferenceException)
+                {
+                    return NotFound();
+                }
+            }
+            return BadRequest(ModelState);
         }
-
+        /// <summary>
+        /// Add distinction type
+        /// </summary>
+        /// <param name="distinctionDTO">Distinction model</param>
+        /// <returns> Answer from backend </returns>
+        /// <response code="200">Distinction type was successfully created</response>
+        /// <response code="400">Model is not valid</response>
         [HttpPost("Distinction/Create")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddDistinction(DistinctionDTO distinctionDTO)
         {
-            await _distinctionService.AddDistinction(distinctionDTO, User);
-            return Ok();
+            if (ModelState.IsValid)
+            {
+                await _distinctionService.AddDistinction(distinctionDTO, User);
+                return Ok();
+            }
+            return BadRequest(ModelState);
         }
-
+        /// <summary>
+        /// Edit user distinction
+        /// </summary>
+        /// <param name="userDistinctionDTO">User Distinction model</param>
+        /// <returns> Answer from backend </returns>
+        /// <response code="200">User distinction was successfully edited</response>
+        /// <response code="404">User distinction does not exist</response>
+        /// <response code="400">Model is not valid</response>
         [HttpPut]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditUserDistinction(UserDistinctionDTO userDistinctionDTO)
         {
-            await _userDistinctionService.ChangeUserDistinction(userDistinctionDTO, User);
-            return Ok();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _userDistinctionService.ChangeUserDistinction(userDistinctionDTO, User);
+                    return Ok();
+                }
+                catch (NullReferenceException)
+                {
+                    return NotFound();
+                }
+            }
+            return BadRequest(ModelState);
         }
-
+        /// <summary>
+        /// Edit distinction type
+        /// </summary>
+        /// <param name="distinctionDTO">Distinction type model</param>
+        /// <returns> Answer from backend </returns>
+        /// <response code="200">Distinction type was successfully edited</response>
+        /// <response code="404">Distinction type does not exist</response>
+        /// <response code="400">Model is not valid</response>
         [HttpPut("Distinction/Edit")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditDistinction(DistinctionDTO distinctionDTO)
         {
-            await _distinctionService.ChangeDistinction(distinctionDTO, User);
-            return Ok();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _distinctionService.ChangeDistinction(distinctionDTO, User);
+                    return Ok();
+                }
+                catch (NullReferenceException)
+                {
+                    return NotFound();
+                }
+            }
+            return BadRequest(ModelState);
         }
-
+        /// <summary>
+        /// Get distinction of user with this id
+        /// </summary>
+        /// <param name="id">User id</param>
+        /// <returns> All distinctions of user </returns>
+        /// <response code="200"> Array of user distinctions</response>
+        /// <response code="404">User does not exist</response>
+        [HttpGet("User/Distinctions/{id:string}")]
+        public async Task<IActionResult> GetDistinctionOfGivenUser(string id)
+        {
+            var userDistinctions = await _userDistinctionService.GetUserDistinctionsOfGivenUser(id);
+            if (userDistinctions == null)
+                return NotFound();
+            return Ok(userDistinctions);
+        }
     }
 }
