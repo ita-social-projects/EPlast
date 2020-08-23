@@ -194,6 +194,7 @@ namespace EPlast.WebApi
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<ICityAdministrationService, CityAdministrationService>();
             services.AddScoped<ICityService, CityService>();
+            services.AddScoped<ICityDocumentsService, CityDocumentsService>();
             services.AddScoped<IRegionService, RegionService>();
             services.AddScoped<IRegionAdministrationService, RegionAdministrationService>();
             services.AddScoped<IGlobalLoggerService, GlobalLoggerService>();

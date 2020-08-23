@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
@@ -45,16 +46,20 @@ namespace EPlast.BLL.Services.City
         public async Task<CityAdministrationDTO> AddAdministratorAsync(CityAdministrationDTO adminDTO)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
-            adminDTO.AdminTypeId = adminType.ID;
-            adminDTO.AdminType = adminType;
-            adminDTO.StartDate ??= DateTime.Now;
+            var admin = new CityAdministration()
+            {
+                StartDate = adminDTO.StartDate ?? DateTime.Now,
+                EndDate = adminDTO.EndDate,
+                AdminTypeId = adminType.ID,
+                CityId = adminDTO.CityId,
+                UserId = adminDTO.UserId
+            };
 
             var user = await _userManager.FindByIdAsync(adminDTO.UserId);
             var role = adminType.AdminTypeName == "Голова Станиці" ? "Голова Станиці" : "Діловод Станиці";
             await _userManager.AddToRoleAsync(user, role);
             await CheckPreviousAdminEndDate(role, adminDTO);
 
-            var admin = _mapper.Map<CityAdministrationDTO, CityAdministration>(adminDTO);
             _repositoryWrapper.CityAdministration.Attach(admin);
             await _repositoryWrapper.CityAdministration.CreateAsync(admin);
             await _repositoryWrapper.SaveAsync();
@@ -77,11 +82,14 @@ namespace EPlast.BLL.Services.City
             adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
             role = adminType.AdminTypeName == "Голова Станиці" ? "Голова Станиці" : "Діловод Станиці";
             await _userManager.AddToRoleAsync(user, role);
-            adminDTO.AdminTypeId = adminType.ID;
-            adminDTO.AdminType = adminType;
+            
+            var admin = await _repositoryWrapper.CityAdministration.GetFirstOrDefaultAsync(a => a.ID == adminDTO.ID);
+            admin.StartDate = adminDTO.StartDate ?? DateTime.Now;
+            admin.EndDate = adminDTO.EndDate;
+            admin.AdminTypeId = adminType.ID;
+            admin.AdminType = _mapper.Map<AdminTypeDTO, AdminType>(adminType);
             await CheckPreviousAdminEndDate(role, adminDTO);
 
-            var admin = _mapper.Map<CityAdministrationDTO, CityAdministration>(adminDTO);
             _repositoryWrapper.CityAdministration.Attach(admin);
             _repositoryWrapper.CityAdministration.Update(admin);
             await _repositoryWrapper.SaveAsync();
