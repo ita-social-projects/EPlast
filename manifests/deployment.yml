@@ -1,9 +1,14 @@
-apiVersion : apps/v1beta1
+apiVersion : apps/v1
 kind: Deployment
 metadata:
-  name: eplastapi 
+  name: eplastapi
+  labels:
+    app: eplastapi  
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+    app: eplastapi
   template:
     metadata:
       labels:
@@ -14,3 +19,8 @@ spec:
           image: eplast.azurecr.io/eplastapi
           ports:
           - containerPort: 5000
+          env:
+          - name: ConnectionStrings__EPlastDBConnection
+            value: {{ConnectionStrings__EPlastDBConnection}}
+          - name: StorageConnectionString
+            value: {{StorageConnectionString}}
