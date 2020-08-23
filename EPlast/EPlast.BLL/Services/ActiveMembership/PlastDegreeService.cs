@@ -59,7 +59,6 @@ namespace EPlast.BLL.Services.ActiveMembership
                 if (!userPlastDegrees.Any(upd => upd.PlastDegree.Id == userPlastDegreePostDTO.PlastDegreeId))
                 {
                     UserPlastDegree userPlastDegree = _mapper.Map<UserPlastDegree>(userPlastDegreePostDTO);
-                    userPlastDegree.User = _mapper.Map<User>(userDto);
                     PlastDegree plastDegree = await _repoWrapper.PlastDegrees.GetFirstOrDefaultAsync(pd => pd.Id == userPlastDegreePostDTO.PlastDegreeId);
                     if (plastDegree != null)
                     {
