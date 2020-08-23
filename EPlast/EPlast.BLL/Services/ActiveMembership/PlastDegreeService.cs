@@ -4,6 +4,7 @@ using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,7 +44,7 @@ namespace EPlast.BLL.Services.ActiveMembership
         /// <inheritdoc />
         public async Task<IEnumerable<UserPlastDegreeDTO>> GetUserPlastDegreesAsync(string userId)
         {
-            var userPlastDegrees = await _repoWrapper.UserPlastDegrees.GetAllAsync(upd => upd.UserId == userId);
+            var userPlastDegrees = await _repoWrapper.UserPlastDegrees.GetAllAsync(upd => upd.UserId == userId, include : pd => pd.Include(d => d.PlastDegree));
 
             return _mapper.Map<IEnumerable<UserPlastDegreeDTO>>(userPlastDegrees);
         }
