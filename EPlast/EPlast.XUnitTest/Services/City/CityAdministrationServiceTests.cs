@@ -3,7 +3,9 @@ using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Services.City;
+using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using System;
@@ -22,10 +24,14 @@ namespace EPlast.XUnitTest.Services.City
         private readonly Mock<IMapper> _mapper = new Mock<IMapper>();
         private readonly Mock<IAdminTypeService> _adminTypeService = new Mock<IAdminTypeService>();
         private readonly ICityAdministrationService _cityAdministrationService;
+        private readonly Mock<UserManager<User>> _userManager;
 
         public CityAdministrationServiceTests()
         {
-            _cityAdministrationService = new CityAdministrationService(_repositoryWrapper.Object, _mapper.Object, _adminTypeService.Object);
+            _cityAdministrationService = new CityAdministrationService(_repositoryWrapper.Object,
+                _mapper.Object,
+                _adminTypeService.Object,
+                _userManager.Object);
         }
 
         [Fact]

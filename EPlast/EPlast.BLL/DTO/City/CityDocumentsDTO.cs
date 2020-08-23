@@ -6,7 +6,9 @@ namespace EPlast.BLL.DTO.City
     {
         public int ID { get; set; }
         public DateTime? SubmitDate { get; set; }
-        public string DocumentURL { get; set; }
+        public string Name { get; set; }
+        public int CityDocumentTypeId { get; set; }
         public CityDocumentTypeDTO CityDocumentType { get; set; }
+        public int CityId { get; set; }
     }
 }

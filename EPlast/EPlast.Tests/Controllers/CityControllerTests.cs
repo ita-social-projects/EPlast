@@ -49,7 +49,7 @@ namespace EPlast.Tests.Controllers
         [TestCase(2)]
         public async Task GetMembers_Valid_Test(int id)
         {
-            _cityService.Setup(cs => cs.GetCityMembersAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+            _cityService.Setup(cs => cs.GetCityMembersAsync(It.IsAny<int>()))
                 .ReturnsAsync(new CityProfileDTO());
 
             _mapper.Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
@@ -92,7 +92,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetFollowers_Valid_Test(int id)
         {
 
-            _cityService.Setup(c => c.GetCityFollowersAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+            _cityService.Setup(c => c.GetCityFollowersAsync(It.IsAny<int>()))
                 .ReturnsAsync(new CityProfileDTO());
 
             _mapper.Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
@@ -111,7 +111,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetFollowers_Invalid_Test(int id)
         {
 
-            _cityService.Setup(c => c.GetCityFollowersAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+            _cityService.Setup(c => c.GetCityFollowersAsync(It.IsAny<int>()))
                 .ReturnsAsync(() => null);
 
             _mapper.Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
@@ -148,7 +148,7 @@ namespace EPlast.Tests.Controllers
         [TestCase(2)]
         public async Task GetMembers_Invalid_Test(int id)
         {
-            _cityService.Setup(cs => cs.GetCityMembersAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+            _cityService.Setup(cs => cs.GetCityMembersAsync(It.IsAny<int>()))
                 .ReturnsAsync(() => null);
 
             _mapper.Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
@@ -186,7 +186,7 @@ namespace EPlast.Tests.Controllers
         [TestCase(2)]
         public async Task GetAdmins_Valid_Test(int id)
         {
-            _cityService.Setup(c => c.GetCityAdminsAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+            _cityService.Setup(c => c.GetCityAdminsAsync(It.IsAny<int>()))
                 .ReturnsAsync(new CityProfileDTO());
 
             _mapper.Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
@@ -206,7 +206,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetAdmins_Invalid_Test(int id)
         {
 
-            _cityService.Setup(c => c.GetCityAdminsAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+            _cityService.Setup(c => c.GetCityAdminsAsync(It.IsAny<int>()))
                 .ReturnsAsync(() => null);
 
             _mapper.Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
