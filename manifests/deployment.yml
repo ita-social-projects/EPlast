@@ -8,7 +8,7 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-    app: eplastapi
+      app: eplastapi
   template:
     metadata:
       labels:
@@ -22,5 +22,5 @@ spec:
           env:
           - name: ConnectionStrings__EPlastDBConnection
             value: ConnectionStrings__EPlastDBConnection
-          - name: StorageConnectionString
-            value: StorageConnectionString
+          - name: {{StorageConnectionString}}
+            value: {{StorageConnectionString}}
