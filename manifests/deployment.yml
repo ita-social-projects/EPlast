@@ -21,6 +21,6 @@ spec:
           - containerPort: 5000
           env:
           - name: ConnectionStrings__EPlastDBConnection
-            value: {{ConnectionStrings__EPlastDBConnection}}
+            value: ConnectionStrings__EPlastDBConnection
           - name: StorageConnectionString
-            value: {{StorageConnectionString}}
+            value: StorageConnectionString
