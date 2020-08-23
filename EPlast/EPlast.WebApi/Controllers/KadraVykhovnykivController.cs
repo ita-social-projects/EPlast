@@ -53,7 +53,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="403">User is not admin</response>
         ///  <response code="404">kadra with this id doesn't exist</response>
-        [HttpDelete("RemoveKadra/{kadra_id}")]
+        [HttpDelete("RemoveKadra/{kadra_id:int}")]
         public async Task<IActionResult> Remove(int kadraId)
         {
             try
@@ -84,7 +84,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="kadrasDTO">The dto of kadra that will be updated</param>
         /// <response code="200">Successful operation</response>
         /// <response code="403">User is not admin</response>
-        [HttpPut()]
+        [HttpPut("EditKadra")]
         public async Task<IActionResult> Update( KadraVykhovnykivDTO kadrasDTO)
         {
            
@@ -134,7 +134,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="403">User is not admin</response>
         ///  <response code="404"> param is not valid</response>
-        [HttpGet("{kvtype_id}")]
+        [HttpGet("{kvtype_id:int}")]
         public async Task<IActionResult> GetKVsWithType(int kvTypeId)
         {
             if (User.IsInRole("Admin"))

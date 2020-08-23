@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.EducationsStaff
     {
         public KadrasTypesProfile()
         {
-            CreateMap<KadraVykhovnykivTypes, KadraVykhovnykivTypes>( )
+            CreateMap<KadraVykhovnykivTypes, KadraVykhovnykivTypesDTO>( )
                 .ReverseMap();
         }
 
