@@ -124,6 +124,8 @@ namespace EPlast.BLL.Services.Events
                         .Include(e => e.EventStatus)
                         .Include(e => e.EventAdministrations)
                             .ThenInclude(a => a.User)
+                        .Include(e => e.EventAdministrations)
+                            .ThenInclude(a => a.EventAdministrationType)
                         .Include(e => e.EventType)
                         .Include(e => e.EventCategory)
                     );
