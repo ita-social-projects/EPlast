@@ -51,8 +51,9 @@ namespace EPlast.BLL.Services.City
             documentsDTO.BlobName = fileName;
 
             var documentTypes = await GetAllCityDocumentTypesAsync();
-            documentsDTO.CityDocumentTypeId = documentTypes
-                .FirstOrDefault(dt => dt.Name == documentsDTO.CityDocumentType.Name).ID;
+            documentsDTO.CityDocumentType = documentTypes
+                .FirstOrDefault(dt => dt.Name == documentsDTO.CityDocumentType.Name);
+            documentsDTO.CityDocumentTypeId = documentsDTO.CityDocumentType.ID;
 
             var document = _mapper.Map<CityDocumentsDTO, CityDocuments>(documentsDTO);
             _repositoryWrapper.CityDocuments.Attach(document);
