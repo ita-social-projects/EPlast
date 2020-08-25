@@ -51,7 +51,7 @@ The instructions below will allow you to run application locally in the containe
      - Access to the Azure Storage.
      
 5.2. Clone repository from GitHub with:<br/>
-     - git clone https://github.com/Lv-492-SoftServe/Bookcrossing-Back-End.git     
+     - git clone https://github.com/IrynaZavushchak/EPlast.git     
      - git clone https://github.com/IrynaZavushchak/EPlast-Client.git
      
 5.3. Go to the EPlast directory and create the environment file, named .env with following parameters:<br/>

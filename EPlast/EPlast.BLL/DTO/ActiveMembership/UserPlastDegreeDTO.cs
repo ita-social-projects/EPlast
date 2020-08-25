@@ -8,7 +8,6 @@ namespace EPlast.BLL.DTO.ActiveMembership
     {
         public int Id { get; set; }
         [Required]
-        public int PlastDegreeId { get; set; }
         public PlastDegreeDTO PlastDegree { get; set; }
 
         public DateTime DateStart { get; set; }

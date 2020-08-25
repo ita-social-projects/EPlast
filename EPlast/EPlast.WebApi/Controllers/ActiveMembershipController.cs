@@ -1,4 +1,5 @@
-﻿using EPlast.BLL.Interfaces.ActiveMembership;
+﻿using EPlast.BLL.DTO.ActiveMembership;
+using EPlast.BLL.Interfaces.ActiveMembership;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -15,7 +16,8 @@ namespace EPlast.WebApi.Controllers
             _plastDegreeService = plastDegreeService;
             _accessLevelService = accessLevelService;
         }
-        [HttpGet("dergees")]
+
+        [HttpGet("dergee")]
         public async Task<IActionResult> GetAllDergees()
         {
             return Ok(await _plastDegreeService.GetDergeesAsync());
@@ -25,6 +27,34 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetAccessLevel(string userId)
         {
             return Ok(await _accessLevelService.GetUserAccessLevelsAsync(userId));
+        }
+
+        [HttpGet("dergee/{userId}")]
+        public async Task<IActionResult> GetUserDegrees(string userId)
+        {
+            return Ok(await _plastDegreeService.GetUserPlastDegreesAsync(userId));
+        }
+
+        [HttpPost("dergee")]
+        public async Task<IActionResult> AddPlastDegreeForUser(UserPlastDegreePostDTO userPlastDegreePostDTO)
+        {
+            if (await _plastDegreeService.AddPlastDegreeForUserAsync(userPlastDegreePostDTO))
+            {
+                return Created("GetAllDergees", userPlastDegreePostDTO.PlastDegreeId);
+            }
+
+            return BadRequest();
+        }
+
+        [HttpDelete("dergee/{userId}/{plastDegreeId}")]
+        public async Task<IActionResult> DeletePlastDegreeForUser(string userId, int plastDegreeId)
+        {
+            if (await _plastDegreeService.DeletePlastDegreeForUserAsync(userId, plastDegreeId))
+            {
+                return NoContent();
+            }
+
+            return BadRequest();
         }
     }
 }
