@@ -36,6 +36,7 @@ namespace EPlast.DataAccess.Entities.Event
         public string ForWhom { get; set; }
         [Required(ErrorMessage = "Вам потрібно вказати приблизну кількість людей!")]
         public int NumberOfPartisipants { get; set; }
+        public double Rating { get; set; }
         public EventType EventType { get; set; }
         public EventCategory EventCategory { get; set; }
         public EventStatus EventStatus { get; set; }

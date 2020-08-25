@@ -80,6 +80,22 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Set an estimate of the participant's event.
+        /// </summary>
+        /// <returns>Status code of the setting an estimate of the participant's event operation.</returns>  
+        /// <param name="id">The Id of event</param>
+        /// <param name="estimate">The value of estimate</param>
+        /// <response code="200">OK</response>
+        /// <response code="400">Bad Request</response>  
+        [HttpPut("{id:int}/estimate/{estimate:double}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> EstimateEvent(int id, double estimate)
+        {
+            var result = await _actionManager.EstimateEventAsync(id, User, estimate);
+            return Ok(result);
+        }
+
+        /// <summary>
         /// Get pictures in Base64 format by event Id.
         /// </summary>
         /// <returns>List of pictures in Base64 format.</returns>

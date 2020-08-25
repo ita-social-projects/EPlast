@@ -20,7 +20,6 @@ namespace EPlast.WebApi.Controllers
         private readonly IDecisionService _decisionService;
         private readonly IPdfService _pdfService;
         private readonly IMapper _mapper;
-
         public DecisionsController(IPdfService pdfService, IDecisionService decisionService, IMapper mapper)
         {
             _pdfService = pdfService;
