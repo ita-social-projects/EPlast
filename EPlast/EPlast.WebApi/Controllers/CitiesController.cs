@@ -383,7 +383,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="fileName">The name of a city file</param>
         /// <returns>A base64 string of the file</returns>
-        [HttpGet("FileBase64")]
+        [HttpGet("FileBase64/{fileName}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetFileBase64(string fileName)
         {
