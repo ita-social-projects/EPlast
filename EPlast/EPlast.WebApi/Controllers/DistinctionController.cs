@@ -67,7 +67,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns> object</returns>
         /// <response code="200">An instance of distinction type</response>
         /// <response code="404">The distinction type with this id does not exist</response>
-        [HttpGet("Distinction/{id:int}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetDistinction(int id)
         {
             DistinctionDTO distinction = await _distinctionService.GetDistinctionAsync(id);
@@ -85,6 +85,22 @@ namespace EPlast.WebApi.Controllers
         {
             IEnumerable<DistinctionDTO> distinctions = await _distinctionService.GetAllDistinctionAsync();
             return Ok(distinctions);
+        }
+
+        /// <summary>
+        /// Get distinction of user with this id
+        /// </summary>
+        /// <param name="id">User id</param>
+        /// <returns> All distinctions of user </returns>
+        /// <response code="200"> Array of user distinctions</response>
+        /// <response code="404">User does not exist</response>
+        [HttpGet("User/Distinctions/{id:string}")]
+        public async Task<IActionResult> GetDistinctionOfGivenUser(string id)
+        {
+            var userDistinctions = await _userDistinctionService.GetUserDistinctionsOfGivenUser(id);
+            if (userDistinctions == null)
+                return NotFound();
+            return Ok(userDistinctions);
         }
         /// <summary>
         /// Delete distinction type by id
@@ -114,7 +130,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns> Answer from backend </returns>
         /// <response code="200">User distinction was successfully deleted</response>
         /// <response code="404">User distinction does not exist</response>
-        [HttpDelete("Delete/Distinction/{id:int}")]
+        [HttpDelete("UserDistinction/Delete/{id:int}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUserDistinction(int id)
         {
@@ -136,7 +152,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">User distinction was successfully created</response>
         /// <response code="404">User does not exist</response>
         /// <response code="400">Model is not valid</response>
-        [HttpPost]
+        [HttpPost("UserDistinction/Create/{userId}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddUserDistinction(UserDistinctionDTO userDistinctionDTO)
         {
@@ -161,7 +177,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns> Answer from backend </returns>
         /// <response code="200">Distinction type was successfully created</response>
         /// <response code="400">Model is not valid</response>
-        [HttpPost("Distinction/Create")]
+        [HttpPost("Create")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddDistinction(DistinctionDTO distinctionDTO)
         {
@@ -180,7 +196,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">User distinction was successfully edited</response>
         /// <response code="404">User distinction does not exist</response>
         /// <response code="400">Model is not valid</response>
-        [HttpPut]
+        [HttpPut("UserDistinction/Edit/{userDistinctionId}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditUserDistinction(UserDistinctionDTO userDistinctionDTO)
         {
@@ -206,7 +222,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Distinction type was successfully edited</response>
         /// <response code="404">Distinction type does not exist</response>
         /// <response code="400">Model is not valid</response>
-        [HttpPut("Distinction/Edit")]
+        [HttpPut("Edit/{distinctionId}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditDistinction(DistinctionDTO distinctionDTO)
         {
@@ -224,20 +240,6 @@ namespace EPlast.WebApi.Controllers
             }
             return BadRequest(ModelState);
         }
-        /// <summary>
-        /// Get distinction of user with this id
-        /// </summary>
-        /// <param name="id">User id</param>
-        /// <returns> All distinctions of user </returns>
-        /// <response code="200"> Array of user distinctions</response>
-        /// <response code="404">User does not exist</response>
-        [HttpGet("User/Distinctions/{id:string}")]
-        public async Task<IActionResult> GetDistinctionOfGivenUser(string id)
-        {
-            var userDistinctions = await _userDistinctionService.GetUserDistinctionsOfGivenUser(id);
-            if (userDistinctions == null)
-                return NotFound();
-            return Ok(userDistinctions);
-        }
+
     }
 }
