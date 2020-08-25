@@ -166,9 +166,9 @@ namespace EPlast.BLL.Services.Club
 
         public async Task<bool> VerifyClubNameIsNotChanged(ClubDTO club)
         {
-            var editedClub = await _repoWrapper.Club.GetFirstOrDefaultAsync(x => x.ID == club.ID);
+            var originClub = await _repoWrapper.Club.GetFirstOrDefaultAsync(x => x.ID == club.ID);
 
-            var isTheSameClubName = editedClub.ClubName == club.ClubName;
+            var isTheSameClubName = originClub.ClubName == club.ClubName;
 
             return isTheSameClubName;
         }
