@@ -19,7 +19,7 @@ namespace EPlast.BLL
             _mapper = mapper;
             _repoWrapper = repoWrapper;
         }
-        public async Task AddDistinction(DistinctionDTO distinctionDTO, ClaimsPrincipal user)
+        public async Task AddDistinctionAsync(DistinctionDTO distinctionDTO, ClaimsPrincipal user)
         {
             if (!user.IsInRole("Admin"))
                 throw new UnauthorizedAccessException();
@@ -28,7 +28,7 @@ namespace EPlast.BLL
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task ChangeDistinction(DistinctionDTO distinctionDTO, ClaimsPrincipal user)
+        public async Task ChangeDistinctionAsync(DistinctionDTO distinctionDTO, ClaimsPrincipal user)
         {
             if (!user.IsInRole("Admin"))
                 throw new UnauthorizedAccessException();
@@ -38,7 +38,7 @@ namespace EPlast.BLL
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task DeleteDistinction(int id, ClaimsPrincipal user)
+        public async Task DeleteDistinctionAsync(int id, ClaimsPrincipal user)
         {
             if (!user.IsInRole("Admin"))
                 throw new UnauthorizedAccessException();

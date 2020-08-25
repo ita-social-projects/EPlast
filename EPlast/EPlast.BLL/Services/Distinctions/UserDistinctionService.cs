@@ -18,7 +18,7 @@ namespace EPlast.BLL.Services.Distinctions
             _mapper = mapper;
             _repoWrapper = repoWrapper;
         }
-        public async Task AddUserDistinction(UserDistinctionDTO userDistinctionDTO, ClaimsPrincipal user)
+        public async Task AddUserDistinctionAsync(UserDistinctionDTO userDistinctionDTO, ClaimsPrincipal user)
         {
             if (!user.IsInRole("Admin"))
                 throw new UnauthorizedAccessException();
@@ -27,7 +27,7 @@ namespace EPlast.BLL.Services.Distinctions
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task ChangeUserDistinction(UserDistinctionDTO userDistinctionDTO, ClaimsPrincipal user)
+        public async Task ChangeUserDistinctionAsync(UserDistinctionDTO userDistinctionDTO, ClaimsPrincipal user)
         {
             if (!user.IsInRole("Admin"))
                 throw new UnauthorizedAccessException();
@@ -36,7 +36,7 @@ namespace EPlast.BLL.Services.Distinctions
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task DeleteUserDistinction(int id, ClaimsPrincipal user)
+        public async Task DeleteUserDistinctionAsync(int id, ClaimsPrincipal user)
         {
             if (!user.IsInRole("Admin"))
                 throw new UnauthorizedAccessException();
@@ -45,7 +45,6 @@ namespace EPlast.BLL.Services.Distinctions
                 throw new NotImplementedException();
             _repoWrapper.UserDistinction.Delete(userDistinction);
             await _repoWrapper.SaveAsync();
-
         }
 
         public async Task<IEnumerable<UserDistinctionDTO>> GetAllUsersDistinctionAsync()
@@ -54,13 +53,13 @@ namespace EPlast.BLL.Services.Distinctions
             return _mapper.Map<IEnumerable<UserDistinction>, IEnumerable<UserDistinctionDTO>>(userDistinctions);
         }
 
-        public async Task<UserDistinctionDTO> GetUserDistinction(int id)
+        public async Task<UserDistinctionDTO> GetUserDistinctionAsync(int id)
         {
             var userDistinction = await _repoWrapper.UserDistinction.GetFirstOrDefaultAsync(d => d.Id == id);
             return _mapper.Map<UserDistinction, UserDistinctionDTO>(userDistinction);
         }
 
-        public async Task<IEnumerable<UserDistinctionDTO>> GetUserDistinctionsOfGivenUser(string UserId)
+        public async Task<IEnumerable<UserDistinctionDTO>> GetUserDistinctionsOfUserAsync(string UserId)
         {
             var userDistinctions = await _repoWrapper.UserDistinction.GetAllAsync(u => u.UserId == UserId);
             return _mapper.Map<IEnumerable<UserDistinction>, IEnumerable<UserDistinctionDTO>>(userDistinctions);

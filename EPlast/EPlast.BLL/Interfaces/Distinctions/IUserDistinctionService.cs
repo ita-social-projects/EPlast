@@ -7,10 +7,10 @@ namespace EPlast.BLL
     public interface IUserDistinctionService
     {
         Task<IEnumerable<UserDistinctionDTO>> GetAllUsersDistinctionAsync();
-        Task<UserDistinctionDTO> GetUserDistinction(int id);
-        Task AddUserDistinction(UserDistinctionDTO userDistinctionDTO, ClaimsPrincipal user);
-        Task ChangeUserDistinction(UserDistinctionDTO userDistinctionDTO, ClaimsPrincipal user);
-        Task DeleteUserDistinction(int id, ClaimsPrincipal user);
-        Task<IEnumerable<UserDistinctionDTO>> GetUserDistinctionsOfGivenUser(string UserId);
+        Task<UserDistinctionDTO> GetUserDistinctionAsync(int id);
+        Task AddUserDistinctionAsync(UserDistinctionDTO userDistinctionDTO, ClaimsPrincipal user);
+        Task ChangeUserDistinctionAsync(UserDistinctionDTO userDistinctionDTO, ClaimsPrincipal user);
+        Task DeleteUserDistinctionAsync(int id, ClaimsPrincipal user);
+        Task<IEnumerable<UserDistinctionDTO>> GetUserDistinctionsOfUserAsync(string UserId);
     }
 }

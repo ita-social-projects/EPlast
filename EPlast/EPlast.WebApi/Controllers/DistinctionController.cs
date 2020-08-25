@@ -35,7 +35,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetUserDistinction(int id)
         {
-            UserDistinctionDTO userDistinction = await _userDistinctionService.GetUserDistinction(id);
+            UserDistinctionDTO userDistinction = await _userDistinctionService.GetUserDistinctionAsync(id);
             if (userDistinction == null)
                 return NotFound();
             return Ok(userDistinction);
@@ -88,7 +88,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("User/Distinctions/{id:string}")]
         public async Task<IActionResult> GetDistinctionOfGivenUser(string id)
         {
-            var userDistinctions = await _userDistinctionService.GetUserDistinctionsOfGivenUser(id);
+            var userDistinctions = await _userDistinctionService.GetUserDistinctionsOfUserAsync(id);
             if (userDistinctions == null)
                 return NotFound();
             return Ok(userDistinctions);
@@ -98,7 +98,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="id">Distinction type id</param>
         /// <returns> Answer from backend </returns>
-        /// <response code="200">Distinction type was successfully deleted</response>
+        /// <response code="204">Distinction type was successfully deleted</response>
         /// <response code="404">Distinction type does not exist</response>
         [HttpDelete("Delete/{id:int}")]
         [Authorize(Roles = "Admin")]
@@ -106,8 +106,8 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                await _distinctionService.DeleteDistinction(id, User);
-                return Ok();
+                await _distinctionService.DeleteDistinctionAsync(id, User);
+                return NoContent();
             }
             catch (NullReferenceException) 
             {
@@ -119,7 +119,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="id">User distinction id</param>
         /// <returns> Answer from backend </returns>
-        /// <response code="200">User distinction was successfully deleted</response>
+        /// <response code="204">User distinction was successfully deleted</response>
         /// <response code="404">User distinction does not exist</response>
         [HttpDelete("UserDistinction/Delete/{id:int}")]
         [Authorize(Roles = "Admin")]
@@ -127,8 +127,8 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                await _userDistinctionService.DeleteUserDistinction(id, User);
-                return Ok();
+                await _userDistinctionService.DeleteUserDistinctionAsync(id, User);
+                return NoContent();
             }
             catch (NullReferenceException)
             {
@@ -140,7 +140,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="userDistinctionDTO">User Distinction model</param>
         /// <returns> Answer from backend </returns>
-        /// <response code="200">User distinction was successfully created</response>
+        /// <response code="204">User distinction was successfully created</response>
         /// <response code="404">User does not exist</response>
         /// <response code="400">Model is not valid</response>
         [HttpPost("UserDistinction/Create/{userId}")]
@@ -151,8 +151,8 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    await _userDistinctionService.AddUserDistinction(userDistinctionDTO, User);
-                    return Ok();
+                    await _userDistinctionService.AddUserDistinctionAsync(userDistinctionDTO, User);
+                    return NoContent();
                 }
                 catch (NullReferenceException)
                 {
@@ -166,7 +166,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="distinctionDTO">Distinction model</param>
         /// <returns> Answer from backend </returns>
-        /// <response code="200">Distinction type was successfully created</response>
+        /// <response code="204">Distinction type was successfully created</response>
         /// <response code="400">Model is not valid</response>
         [HttpPost("Create")]
         [Authorize(Roles = "Admin")]
@@ -174,8 +174,8 @@ namespace EPlast.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _distinctionService.AddDistinction(distinctionDTO, User);
-                return Ok();
+                await _distinctionService.AddDistinctionAsync(distinctionDTO, User);
+                return NoContent();
             }
             return BadRequest(ModelState);
         }
@@ -184,7 +184,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="userDistinctionDTO">User Distinction model</param>
         /// <returns> Answer from backend </returns>
-        /// <response code="200">User distinction was successfully edited</response>
+        /// <response code="204">User distinction was successfully edited</response>
         /// <response code="404">User distinction does not exist</response>
         /// <response code="400">Model is not valid</response>
         [HttpPut("UserDistinction/Edit/{userDistinctionId}")]
@@ -195,8 +195,8 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    await _userDistinctionService.ChangeUserDistinction(userDistinctionDTO, User);
-                    return Ok();
+                    await _userDistinctionService.ChangeUserDistinctionAsync(userDistinctionDTO, User);
+                    return NoContent();
                 }
                 catch (NullReferenceException)
                 {
@@ -210,7 +210,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="distinctionDTO">Distinction type model</param>
         /// <returns> Answer from backend </returns>
-        /// <response code="200">Distinction type was successfully edited</response>
+        /// <response code="204">Distinction type was successfully edited</response>
         /// <response code="404">Distinction type does not exist</response>
         /// <response code="400">Model is not valid</response>
         [HttpPut("Edit/{distinctionId}")]
@@ -221,8 +221,8 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    await _distinctionService.ChangeDistinction(distinctionDTO, User);
-                    return Ok();
+                    await _distinctionService.ChangeDistinctionAsync(distinctionDTO, User);
+                    return NoContent();
                 }
                 catch (NullReferenceException)
                 {
