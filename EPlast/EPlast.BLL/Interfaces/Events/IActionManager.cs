@@ -75,6 +75,15 @@ namespace EPlast.BLL.Interfaces.Events
         Task<int> UnSubscribeOnEventAsync(int id, ClaimsPrincipal user);
 
         /// <summary>
+        /// Set an estimate of the participant's event.
+        /// </summary>
+        /// <returns>Status code of the setting an estimate of the participant's event operation.</returns>
+        /// <param name="eventId">The Id of event</param>
+        /// <param name="user">ClaimsPrincipal of logged in user</param>
+        /// <param name="estimate">The value of estimate</param>
+        Task<int> EstimateEventAsync(int eventId, ClaimsPrincipal user, double estimate);
+
+        /// <summary>
         /// Change event participant status to approved.
         /// </summary>
         /// <returns>Status code of the changing event participant status operation.</returns>

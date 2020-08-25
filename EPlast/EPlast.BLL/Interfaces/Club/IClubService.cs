@@ -57,5 +57,8 @@ namespace EPlast.BLL.Interfaces.Club
         /// <param name="imageName">Image name in blob storage</param>
         /// <returns>File as base64</returns>
         Task<string> GetImageBase64Async(string imageName);
+
+        Task<bool> ValidateAsync(ClubDTO club);
+        Task<bool> VerifyClubNameIsNotChangedAsync(ClubDTO club);
     }
 }

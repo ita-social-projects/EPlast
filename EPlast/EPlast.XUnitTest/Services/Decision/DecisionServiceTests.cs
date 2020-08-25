@@ -12,10 +12,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using EPlast.BLL.Interfaces.Logging;
-using EPlast.BLL.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace EPlast.XUnitTest
@@ -52,13 +49,14 @@ namespace EPlast.XUnitTest
             _repository.Setup(rep => rep.Decesion.Create(new Decesion()));
             _repository.Setup(rep => rep.Decesion.Update(new Decesion()));
             _repository.Setup(rep => rep.SaveAsync());
-
+            _repository.Setup(rep => rep.DecesionTarget.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DecesionTarget, bool>>>(),
+                   It.IsAny<Func<IQueryable<DecesionTarget>, IIncludableQueryable<DecesionTarget, object>>>())).ReturnsAsync(new DecesionTarget());
             mapper.Setup(m => m.Map<IEnumerable<DecisionTargetDTO>>(It.IsAny<IEnumerable<DecesionTarget>>()))
                 .Returns(GetTestDecisionTargetsDtoList);
             mapper.Setup(m => m.Map<DecisionDTO>(It.IsAny<Decesion>()))
                 .Returns(() => GetTestDecisionsDtoListElement(decisionId));
             mapper.Setup(m => m.Map<IEnumerable<DecisionDTO>>(It.IsAny<IEnumerable<Decesion>>())).Returns(GetTestDecisionsDtoList);
-            return new DecisionService(_repository.Object, mapper.Object, decisionVmCreator.Object, logger.Object, null);
+            return new DecisionService(_repository.Object, mapper.Object, decisionVmCreator.Object, null);
         }
 
         [Fact]
@@ -73,19 +71,7 @@ namespace EPlast.XUnitTest
 
             Assert.IsType<DecisionWrapperDTO>(decision);
         }
-/*
-        [Fact]
-        public async Task CreateDecisionDecisionTargetsCountTest()
-        {
-            _decisionService = CreateDecisionService();
-            _repository.Setup(rep => rep.DecesionTarget.GetAllAsync(It.IsAny<Expression<Func<DecesionTarget, bool>>>(),
-                    It.IsAny<Func<IQueryable<DecesionTarget>, IIncludableQueryable<DecesionTarget, object>>>()))
-                .ReturnsAsync(GetTestDecisionTargetsQueryable);
-            var decision = await _decisionService.CreateDecisionAsync();
 
-            Assert.Equal(GetTestDecisionTargetsDtoList().Count, decision.DecisionTargets.Count());
-        }
-        */
         [Theory]
         [InlineData(1)]
         [InlineData(2)]
@@ -99,17 +85,7 @@ namespace EPlast.XUnitTest
             Assert.Equal(decisionId, decision.ID);
         }
 
-        [Fact]
-        public async Task GetDecisionTestForNull()
-        {
-            const int decisionId = 0;
 
-            _decisionService = CreateDecisionService(decisionId);
-
-            var decision = await _decisionService.GetDecisionAsync(decisionId);
-
-            Assert.Null(decision);
-        }
 
         [Fact]
         public async Task GetDecisionListTest()
@@ -137,40 +113,40 @@ namespace EPlast.XUnitTest
         }
 
         [Theory]
-        [InlineData(1, "new name", "new text")]
-        [InlineData(1, "", "new text")]
-        [InlineData(1, "new name", "")]
-        [InlineData(1, "", "")]
-        public async Task ChangeDecisionTest(int decisionId, string decisionNewName, string decisionNewDescription)
+        [InlineData("new name", "new text")]
+        [InlineData("", "new text")]
+        [InlineData("new name", "")]
+        [InlineData("", "")]
+        public async Task ChangeDecisionTest(string decisionNewName, string decisionNewDescription)
         {
             _decisionService = CreateDecisionService();
             _repository.Setup(rep => rep.Decesion.GetFirstAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
                     It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
                 .ReturnsAsync(GetTestDecesionQueryable().FirstOrDefault());
+            var changingDecisionDto = new DecisionDTO();
 
-            var changingDecisionDto = await _decisionService.GetDecisionAsync(decisionId);
             changingDecisionDto.Name = decisionNewName;
             changingDecisionDto.Description = decisionNewDescription;
-            var changeDecisionState = await _decisionService.ChangeDecisionAsync(changingDecisionDto);
+            await _decisionService.ChangeDecisionAsync(changingDecisionDto);
 
-            Assert.True(changeDecisionState);
+            _repository.Verify(rep => rep.Decesion.GetFirstAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
+                   It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()), Times.Once);
         }
 
         [Theory]
-        [InlineData(-1, false)]
-        [InlineData(0, false)]
-        [InlineData(1, true)]
-        [InlineData(2, true)]
-        public async Task DeleteDecisionTest(int decisionId, bool expected)
+        [InlineData(1)]
+        [InlineData(2)]
+        public async Task DeleteDecisionTest(int decisionId)
         {
             _decisionService = CreateDecisionService();
             _repository.Setup(rep => rep.Decesion.GetFirstAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
                     It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
                 .ReturnsAsync(GetTestDecesionQueryable().FirstOrDefault(d => d.ID == decisionId));
 
-            var actual = await _decisionService.DeleteDecisionAsync(decisionId);
+            await _decisionService.DeleteDecisionAsync(decisionId);
 
-            Assert.Equal(expected, actual);
+            _repository.Verify(rep => rep.Decesion.GetFirstAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
+                    It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()), Times.Once);
         }
 
         [Theory]
@@ -184,25 +160,21 @@ namespace EPlast.XUnitTest
 
             var decision = new DecisionWrapperDTO
             {
-                Decision = GetTestDecisionsDtoListElement(decisionId),
+                Decision = new DecisionDTO
+                {
+                    ID = decisionId,
+                    DecisionTarget = new DecisionTargetDTO
+                    {
+                        ID = new Random().Next(),
+                        TargetName = Guid.NewGuid().ToString()
+                    }
+                },
             };
             var actualReturn = await _decisionService.SaveDecisionAsync(decision);
 
             Assert.Equal(decisionId, actualReturn);
         }
-        /*
-        [Theory]
-        [InlineData(1, new byte[] { 1, 2, 3, 4, 5 })]
-        [InlineData(3, new byte[] { 5, 4, 3, 2, 1 })]
-        public async Task DownloadDecisionFileTest(int decisionId, byte[] exceptedBytesCount)
-        {
-            _decisionService = CreateDecisionService();
 
-            var result = await _decisionService.DownloadDecisionFileAsync(decisionId);
-
-            Assert.Equal(exceptedBytesCount.Length, result.Length);
-        }
-        */
         private static IQueryable<DecesionTarget> GetTestDecisionTargetsQueryable()
         {
             return new List<DecesionTarget>

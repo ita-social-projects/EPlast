@@ -183,7 +183,7 @@ namespace EPlast.BLL.Services
         private async Task ChangeCityAdministrationAsync(AnnualReport annualReport)
         {
             var oldCityAdministration = await _repositoryWrapper.CityAdministration.GetFirstOrDefaultAsync(
-                predicate: c => c.CityId == annualReport.CityId && c.EndDate == null && c.AdminTypeId == _cityAdminType.ID);
+                predicate: c => c.CityId == annualReport.CityId && (c.EndDate == null || c.EndDate > DateTime.Now) && c.AdminTypeId == _cityAdminType.ID);
             if (oldCityAdministration != null && oldCityAdministration.UserId != annualReport.CityManagement.UserId)
             {
                 var user = await _userManager.FindByIdAsync(oldCityAdministration.UserId);
@@ -209,7 +209,7 @@ namespace EPlast.BLL.Services
         private async Task ChangeCityLegalStatusAsync(AnnualReport annualReport)
         {
             var oldCityLegalStatus = await _repositoryWrapper.CityLegalStatuses.GetFirstOrDefaultAsync(
-                predicate: c => c.CityId == annualReport.CityId && c.DateFinish == null);
+                predicate: c => c.CityId == annualReport.CityId && (c.DateFinish == null || c.DateFinish > DateTime.Now));
             if (oldCityLegalStatus != null && oldCityLegalStatus.LegalStatusType != annualReport.CityManagement.CityLegalStatusNew)
             {
                 oldCityLegalStatus.DateFinish = DateTime.Now;

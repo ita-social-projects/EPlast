@@ -7,6 +7,7 @@ using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.AzureStorage.Base;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
+using EPlast.BLL.Interfaces.EducatorsStaff;
 using EPlast.BLL.Interfaces.EventCalendar;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
@@ -22,6 +23,7 @@ using EPlast.BLL.Services.AzureStorage.Base;
 using EPlast.BLL.Services.City;
 using EPlast.BLL.Services.City.CityAccess;
 using EPlast.BLL.Services.Club;
+using EPlast.BLL.Services.EducatorsStaff;
 using EPlast.BLL.Services.Events;
 using EPlast.BLL.Services.EventUser;
 using EPlast.BLL.Services.Interfaces;
@@ -112,7 +114,9 @@ namespace EPlast.WebApi
                     {
                         ValidIssuer = Configuration["Jwt:Issuer"],
                         ValidAudience = Configuration["Jwt:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                        ValidateLifetime = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"])),
+                        ClockSkew = TimeSpan.Zero
                     };
                 });
 
@@ -230,8 +234,10 @@ namespace EPlast.WebApi
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddScoped<IAccessLevelService, AccessLevelService>();
             services.AddScoped<IPlastDegreeService, PlastDegreeService>();
+            services.AddScoped<IKadraService, KadraService>();
+            services.AddScoped<IKadrasTypeService, KadrasTypesService>();
             services.AddLogging();
-            
+
             services.AddAuthorization();
 
             services.Configure<RequestLocalizationOptions>(

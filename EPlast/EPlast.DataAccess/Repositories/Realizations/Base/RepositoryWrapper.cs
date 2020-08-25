@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
+using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Repositories.Contracts;
 using EPlast.DataAccess.Repositories.Interfaces.Events;
+using EPlast.DataAccess.Repositories.Realizations.EducatorsStaff;
 using EPlast.DataAccess.Repositories.Realizations.Events;
 
 namespace EPlast.DataAccess.Repositories.Realizations.Base
@@ -51,6 +53,34 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IEventAdministrationTypeRepository _eventAdministrationType;
         private IEventCategoryTypeRepository _eventCategoryTypeRepository;
         private IPlastDegreeRepository _plastDegree;
+        private IKadrassRepository _KVs;
+        private IKadraTypesRepository _KVtypes;
+
+
+        public IKadraTypesRepository KVTypes
+        {
+            get
+            {
+                if (_KVtypes == null)
+                {
+                    _KVtypes = new KadraTypesRepository(_dbContext);
+                }
+                return _KVtypes;
+            }
+        }
+
+        public IKadrassRepository KVs
+        {
+            get
+            {
+                if (_KVs == null)
+                {
+                    _KVs = new KadrasRepository(_dbContext);
+                }
+                return _KVs;
+            }
+        }
+
         public IDecesionRepository Decesion
         {
             get
