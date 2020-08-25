@@ -145,11 +145,11 @@ namespace EPlast.WebApi.Controllers
         {
             var mappedClub = _mapper.Map<ClubViewModel, ClubDTO>(club);
 
-            var isClubNameNotChanged = await _clubService.VerifyClubNameIsNotChanged(mappedClub);
+            var isClubNameNotChanged = await _clubService.VerifyClubNameIsNotChangedAsync(mappedClub);
 
             if (!isClubNameNotChanged)
             {
-                var isValid = await _clubService.Validate(mappedClub);
+                var isValid = await _clubService.ValidateAsync(mappedClub);
 
                 if (!isValid)
                 {
@@ -171,7 +171,7 @@ namespace EPlast.WebApi.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> Create(ClubViewModel club)
         {
-            var isValid =  await _clubService.Validate(_mapper.Map<ClubViewModel, ClubDTO>(club));
+            var isValid =  await _clubService.ValidateAsync(_mapper.Map<ClubViewModel, ClubDTO>(club));
 
             if (!isValid)
             {

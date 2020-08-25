@@ -157,14 +157,14 @@ namespace EPlast.BLL.Services.Club
                 : fileName);
         }
 
-        public async Task<bool> Validate(ClubDTO club)
+        public async Task<bool> ValidateAsync(ClubDTO club)
         {
             var isClubNameNotUnique = await _repoWrapper.Club.FindAll().AnyAsync(x => x.ClubName == club.ClubName);
 
             return !isClubNameNotUnique;
         }
 
-        public async Task<bool> VerifyClubNameIsNotChanged(ClubDTO club)
+        public async Task<bool> VerifyClubNameIsNotChangedAsync(ClubDTO club)
         {
             var originClub = await _repoWrapper.Club.GetFirstOrDefaultAsync(x => x.ID == club.ID);
 
