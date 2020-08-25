@@ -3,6 +3,7 @@
     public class EventDTO
     {
         public EventInfoDTO Event { get; set; }
+        public double ParticipantAssessment { get; set; }
         public bool IsUserEventAdmin { get; set; }
         public bool IsUserParticipant { get; set; }
         public bool IsUserApprovedParticipant { get; set; }

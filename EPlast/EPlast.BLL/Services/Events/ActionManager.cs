@@ -151,6 +151,7 @@ namespace EPlast.BLL.Services.Events
                 && (DateTime.Now < targetEvent.EventDateEnd.Add(new TimeSpan(3, 0, 0, 0))))
             {
                 dto.CanEstimate = true;
+                dto.ParticipantAssessment = targetEvent.Participants.First(p => p.UserId == _userManager.GetUserId(user)).Estimate;
             }
 
             return dto;
