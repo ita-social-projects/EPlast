@@ -56,7 +56,6 @@ namespace EPlast.BLL.Services.Distinctions
 
         public async Task<UserDistinctionDTO> GetUserDistinction(int id)
         {
-                throw new UnauthorizedAccessException();
             var userDistinction = await _repoWrapper.UserDistinction.GetFirstOrDefaultAsync(d => d.Id == id);
             return _mapper.Map<UserDistinction, UserDistinctionDTO>(userDistinction);
         }
