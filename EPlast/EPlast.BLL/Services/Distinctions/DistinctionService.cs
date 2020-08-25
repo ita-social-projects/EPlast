@@ -19,11 +19,11 @@ namespace EPlast.BLL
             _mapper = mapper;
             _repoWrapper = repoWrapper;
         }
-        public async Task AddDistinction(DistinctionDTO distinctionDto, ClaimsPrincipal user)
+        public async Task AddDistinction(DistinctionDTO distinctionDTO, ClaimsPrincipal user)
         {
             if (!user.IsInRole("Admin"))
                 throw new UnauthorizedAccessException();
-            var distinction = _mapper.Map<DistinctionDTO, Distinction>(distinctionDto);
+            var distinction = _mapper.Map<DistinctionDTO, Distinction>(distinctionDTO);
             await _repoWrapper.Distinction.CreateAsync(distinction);
             await _repoWrapper.SaveAsync();
         }
