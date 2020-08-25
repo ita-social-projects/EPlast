@@ -2,7 +2,6 @@
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Services.Interfaces;
-using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Controllers;
 using EPlast.WebApi.Models.Club;
 using Microsoft.AspNetCore.Http;
@@ -222,6 +221,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             var isValid = true;
+            var isClubNameNotChanged = true;
 
             var expectedValue = "Updated";
             _mapper
@@ -231,8 +231,11 @@ namespace EPlast.Tests.Controllers
                 .Setup(x => x.UpdateAsync(It.IsAny<ClubDTO>()))
                 .ReturnsAsync(It.IsAny<ClubDTO>);
             _clubService
-                .Setup(x => x.Validate(It.IsAny<ClubDTO>()))
+                .Setup(x => x.ValidateAsync(It.IsAny<ClubDTO>()))
                 .ReturnsAsync(isValid);
+            _clubService
+                .Setup(x => x.VerifyClubNameIsNotChangedAsync(It.IsAny<ClubDTO>()))
+                .ReturnsAsync(isClubNameNotChanged);
 
             //Act
             var result = await _clubController.Edit(It.IsAny<ClubViewModel>());
@@ -253,12 +256,17 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var isValid = false;
 
+            var isClubNameNotChanged = false;
+
             _mapper
                 .Setup(m => m.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
                 .Returns(new ClubDTO());
             _clubService
-                .Setup(x => x.Validate(It.IsAny<ClubDTO>()))
+                .Setup(x => x.ValidateAsync(It.IsAny<ClubDTO>()))
                 .ReturnsAsync(isValid);
+            _clubService
+                .Setup(x => x.VerifyClubNameIsNotChangedAsync(It.IsAny<ClubDTO>()))
+                .ReturnsAsync(isClubNameNotChanged);
 
             var expected = StatusCodes.Status422UnprocessableEntity;
 
@@ -285,7 +293,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(x => x.CreateAsync(It.IsAny<ClubDTO>()))
                 .ReturnsAsync(new ClubDTO());
             _clubService
-                .Setup(x => x.Validate(It.IsAny<ClubDTO>()))
+                .Setup(x => x.ValidateAsync(It.IsAny<ClubDTO>()))
                 .ReturnsAsync(isValid);
 
             //Act
@@ -311,7 +319,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(m => m.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
                 .Returns(new ClubDTO());
             _clubService
-                .Setup(x => x.Validate(It.IsAny<ClubDTO>()))
+                .Setup(x => x.ValidateAsync(It.IsAny<ClubDTO>()))
                 .ReturnsAsync(isValid);
 
             var expected = StatusCodes.Status422UnprocessableEntity;
