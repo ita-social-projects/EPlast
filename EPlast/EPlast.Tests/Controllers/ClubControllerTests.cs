@@ -231,10 +231,10 @@ namespace EPlast.Tests.Controllers
                 .Setup(x => x.UpdateAsync(It.IsAny<ClubDTO>()))
                 .ReturnsAsync(It.IsAny<ClubDTO>);
             _clubService
-                .Setup(x => x.Validate(It.IsAny<ClubDTO>()))
+                .Setup(x => x.ValidateAsync(It.IsAny<ClubDTO>()))
                 .ReturnsAsync(isValid);
             _clubService
-                .Setup(x => x.VerifyClubNameIsNotChanged(It.IsAny<ClubDTO>()))
+                .Setup(x => x.VerifyClubNameIsNotChangedAsync(It.IsAny<ClubDTO>()))
                 .ReturnsAsync(isClubNameNotChanged);
 
             //Act
@@ -262,10 +262,10 @@ namespace EPlast.Tests.Controllers
                 .Setup(m => m.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
                 .Returns(new ClubDTO());
             _clubService
-                .Setup(x => x.Validate(It.IsAny<ClubDTO>()))
+                .Setup(x => x.ValidateAsync(It.IsAny<ClubDTO>()))
                 .ReturnsAsync(isValid);
             _clubService
-                .Setup(x => x.VerifyClubNameIsNotChanged(It.IsAny<ClubDTO>()))
+                .Setup(x => x.VerifyClubNameIsNotChangedAsync(It.IsAny<ClubDTO>()))
                 .ReturnsAsync(isClubNameNotChanged);
 
             var expected = StatusCodes.Status422UnprocessableEntity;
@@ -293,7 +293,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(x => x.CreateAsync(It.IsAny<ClubDTO>()))
                 .ReturnsAsync(new ClubDTO());
             _clubService
-                .Setup(x => x.Validate(It.IsAny<ClubDTO>()))
+                .Setup(x => x.ValidateAsync(It.IsAny<ClubDTO>()))
                 .ReturnsAsync(isValid);
 
             //Act
@@ -319,7 +319,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(m => m.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
                 .Returns(new ClubDTO());
             _clubService
-                .Setup(x => x.Validate(It.IsAny<ClubDTO>()))
+                .Setup(x => x.ValidateAsync(It.IsAny<ClubDTO>()))
                 .ReturnsAsync(isValid);
 
             var expected = StatusCodes.Status422UnprocessableEntity;
