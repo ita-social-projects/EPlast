@@ -146,6 +146,13 @@ namespace EPlast.BLL.Services.Events
                 dto.Event.EventParticipants = dto.Event.EventParticipants.Where(p => p.StatusId == approvedStatus);
             }
 
+            if (dto.IsUserApprovedParticipant
+                && dto.IsEventFinished
+                && (DateTime.Now < targetEvent.EventDateEnd.Add(new TimeSpan(3, 0, 0, 0))))
+            {
+                dto.CanEstimate = true;
+            }
+
             return dto;
         }
 
@@ -201,6 +208,25 @@ namespace EPlast.BLL.Services.Events
                 var userId = _userManager.GetUserId(user);
                 int result = await _participantManager.UnSubscribeOnEventAsync(targetEvent, userId);
                 return result;
+            }
+            catch
+            {
+                return StatusCodes.Status400BadRequest;
+            }
+        }
+
+        public async Task<int> EstimateEventAsync(int eventId, ClaimsPrincipal user, double estimate)
+        {
+            try
+            {
+                var userId = _userManager.GetUserId(user);
+                var newRating = await _participantManager.EstimateEventByParticipantAsync(eventId, userId, estimate);
+                var targetEvent = await _repoWrapper.Event.GetFirstAsync(e => e.ID == eventId);
+                targetEvent.Rating = newRating;
+                _repoWrapper.Event.Update(targetEvent);
+                await _repoWrapper.SaveAsync();
+
+                return StatusCodes.Status200OK;
             }
             catch
             {
