@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
-using EPlast.BLL.DTO.UserProfiles;
-using EPlast.BLL.Interfaces.Logging;
-using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
-
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -24,7 +20,8 @@ namespace EPlast.BLL.Services.Distinctions
         }
         public async Task AddUserDistinction(UserDistinctionDTO userDistinctionDTO, ClaimsPrincipal user)
         {
-            userDistinctionDTO.CanChange = user.IsInRole("Admin");
+            if (!user.IsInRole("Admin"))
+                throw new UnauthorizedAccessException();
             var userDistinction = _mapper.Map<UserDistinctionDTO, UserDistinction>(userDistinctionDTO);
             await _repoWrapper.UserDistinction.CreateAsync(userDistinction);
             await _repoWrapper.SaveAsync();
@@ -32,6 +29,8 @@ namespace EPlast.BLL.Services.Distinctions
 
         public async Task ChangeUserDistinction(UserDistinctionDTO userDistinctionDTO, ClaimsPrincipal user)
         {
+            if (!user.IsInRole("Admin"))
+                throw new UnauthorizedAccessException();
             var userDistinction  = await _repoWrapper.UserDistinction.GetFirstAsync(x => x.Id == userDistinctionDTO.Id);
                 _repoWrapper.UserDistinction.Update(userDistinction);
             await _repoWrapper.SaveAsync();
@@ -39,6 +38,8 @@ namespace EPlast.BLL.Services.Distinctions
 
         public async Task DeleteUserDistinction(int id, ClaimsPrincipal user)
         {
+            if (!user.IsInRole("Admin"))
+                throw new UnauthorizedAccessException();
             var userDistinction = await _repoWrapper.UserDistinction.GetFirstOrDefaultAsync(d => d.Id == id);
             if (userDistinction == null)
                 throw new NotImplementedException();
@@ -55,6 +56,7 @@ namespace EPlast.BLL.Services.Distinctions
 
         public async Task<UserDistinctionDTO> GetUserDistinction(int id)
         {
+                throw new UnauthorizedAccessException();
             var userDistinction = await _repoWrapper.UserDistinction.GetFirstOrDefaultAsync(d => d.Id == id);
             return _mapper.Map<UserDistinction, UserDistinctionDTO>(userDistinction);
         }

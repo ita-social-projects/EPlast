@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using EPlast.BLL.Interfaces.Logging;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
 using System;
@@ -22,6 +21,8 @@ namespace EPlast.BLL
         }
         public async Task AddDistinction(DistinctionDTO distinctionDto, ClaimsPrincipal user)
         {
+            if (!user.IsInRole("Admin"))
+                throw new UnauthorizedAccessException();
             var distinction = _mapper.Map<DistinctionDTO, Distinction>(distinctionDto);
             await _repoWrapper.Distinction.CreateAsync(distinction);
             await _repoWrapper.SaveAsync();
@@ -29,6 +30,8 @@ namespace EPlast.BLL
 
         public async Task ChangeDistinction(DistinctionDTO distinctionDTO, ClaimsPrincipal user)
         {
+            if (!user.IsInRole("Admin"))
+                throw new UnauthorizedAccessException();
             var distinction = await _repoWrapper.Distinction.GetFirstAsync(x => x.Id == distinctionDTO.Id);
             distinction.Name = distinctionDTO.Name;
             _repoWrapper.Distinction.Update(distinction);
@@ -37,6 +40,8 @@ namespace EPlast.BLL
 
         public async Task DeleteDistinction(int id, ClaimsPrincipal user)
         {
+            if (!user.IsInRole("Admin"))
+                throw new UnauthorizedAccessException();
             var distinction = (await _repoWrapper.Distinction.GetFirstAsync(d => d.Id == id));
             if (distinction == null)
                 throw new ArgumentNullException($"Distinction with {id} not found");
