@@ -156,9 +156,6 @@ namespace EPlast.BLL.Services
                 return null;
             }
 
-            var cityHead = city.CityAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Станиці"
-                    && (DateTime.Now < a.EndDate || a.EndDate == null));
             var members = city.CityMembers
                 .Where(m => m.IsApproved)
                 .ToList();
@@ -181,9 +178,6 @@ namespace EPlast.BLL.Services
                 return null;
             }
 
-            var cityHead = city.CityAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Станиці"
-                    && (DateTime.Now < a.EndDate || a.EndDate == null));
             var followers = city.CityMembers
                 .Where(m => !m.IsApproved)
                 .ToList();
@@ -193,7 +187,7 @@ namespace EPlast.BLL.Services
                 City = city,
                 Followers = followers
             };
- 
+
             return cityProfileDto;
         }
 
@@ -233,9 +227,6 @@ namespace EPlast.BLL.Services
                 return null;
             }
 
-            var cityHead = city.CityAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Станиці"
-                    && (a.EndDate < DateTime.Now || a.EndDate == null));
             var cityDoc = city.CityDocuments.ToList();
 
             var cityProfileDto = new CityProfileDTO
