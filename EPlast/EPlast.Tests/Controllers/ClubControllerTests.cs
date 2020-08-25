@@ -222,6 +222,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             var isValid = true;
+            var isClubNameNotChanged = true;
 
             var expectedValue = "Updated";
             _mapper
@@ -233,6 +234,9 @@ namespace EPlast.Tests.Controllers
             _clubService
                 .Setup(x => x.Validate(It.IsAny<ClubDTO>()))
                 .ReturnsAsync(isValid);
+            _clubService
+                .Setup(x => x.VerifyClubNameIsNotChanged(It.IsAny<ClubDTO>()))
+                .ReturnsAsync(isClubNameNotChanged);
 
             //Act
             var result = await _clubController.Edit(It.IsAny<ClubViewModel>());
@@ -253,12 +257,17 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var isValid = false;
 
+            var isClubNameNotChanged = false;
+
             _mapper
                 .Setup(m => m.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
                 .Returns(new ClubDTO());
             _clubService
                 .Setup(x => x.Validate(It.IsAny<ClubDTO>()))
                 .ReturnsAsync(isValid);
+            _clubService
+                .Setup(x => x.VerifyClubNameIsNotChanged(It.IsAny<ClubDTO>()))
+                .ReturnsAsync(isClubNameNotChanged);
 
             var expected = StatusCodes.Status422UnprocessableEntity;
 
