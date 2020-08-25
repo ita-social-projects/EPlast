@@ -17,7 +17,7 @@ namespace EPlast.WebApi.Controllers
             _accessLevelService = accessLevelService;
         }
 
-        [HttpGet("dergees")]
+        [HttpGet("dergee")]
         public async Task<IActionResult> GetAllDergees()
         {
             return Ok(await _plastDegreeService.GetDergeesAsync());
@@ -29,13 +29,13 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _accessLevelService.GetUserAccessLevelsAsync(userId));
         }
 
-        [HttpGet("dergees/{userId}")]
+        [HttpGet("dergee/{userId}")]
         public async Task<IActionResult> GetUserDegrees(string userId)
         {
             return Ok(await _plastDegreeService.GetUserPlastDegreesAsync(userId));
         }
 
-        [HttpPost("dergees")]
+        [HttpPost("dergee")]
         public async Task<IActionResult> AddPlastDegreeForUser(UserPlastDegreePostDTO userPlastDegreePostDTO)
         {
             if (await _plastDegreeService.AddPlastDegreeForUserAsync(userPlastDegreePostDTO))
@@ -46,7 +46,7 @@ namespace EPlast.WebApi.Controllers
             return BadRequest();
         }
 
-        [HttpDelete("dergees/{userId}/{plastDegreeId}")]
+        [HttpDelete("dergee/{userId}/{plastDegreeId}")]
         public async Task<IActionResult> DeletePlastDegreeForUser(string userId, int plastDegreeId)
         {
             if (await _plastDegreeService.DeletePlastDegreeForUserAsync(userId, plastDegreeId))
