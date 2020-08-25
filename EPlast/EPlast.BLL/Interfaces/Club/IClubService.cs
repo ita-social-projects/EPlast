@@ -59,6 +59,6 @@ namespace EPlast.BLL.Interfaces.Club
         Task<string> GetImageBase64Async(string imageName);
 
         Task<bool> Validate(ClubDTO club);
-        Task<bool> VerifyClubNameIsNotChanged(ClubDTO clubDTO);
+        Task<bool> VerifyClubNameIsNotChanged(ClubDTO club);
     }
 }
