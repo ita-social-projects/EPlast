@@ -143,14 +143,21 @@ namespace EPlast.WebApi.Controllers
         //[Authorize]
         public async Task<IActionResult> Edit(ClubViewModel club)
         {
-            var isValid = await _clubService.Validate(_mapper.Map<ClubViewModel, ClubDTO>(club));
+            var mappedClub = _mapper.Map<ClubViewModel, ClubDTO>(club);
 
-            if (!isValid)
+            var isClubNameNotChanged = await _clubService.VerifyClubNameIsNotChangedAsync(mappedClub);
+
+            if (!isClubNameNotChanged)
             {
-                return StatusCode((int)HttpStatusCode.UnprocessableEntity);
+                var isValid = await _clubService.ValidateAsync(mappedClub);
+
+                if (!isValid)
+                {
+                    return StatusCode((int)HttpStatusCode.UnprocessableEntity);
+                }
             }
 
-            await _clubService.UpdateAsync(_mapper.Map<ClubViewModel, ClubDTO>(club));
+            await _clubService.UpdateAsync(mappedClub);
 
             return Ok("Updated");
         }
@@ -164,7 +171,7 @@ namespace EPlast.WebApi.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> Create(ClubViewModel club)
         {
-            var isValid =  await _clubService.Validate(_mapper.Map<ClubViewModel, ClubDTO>(club));
+            var isValid =  await _clubService.ValidateAsync(_mapper.Map<ClubViewModel, ClubDTO>(club));
 
             if (!isValid)
             {
