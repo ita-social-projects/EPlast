@@ -4,7 +4,9 @@ using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Events
@@ -105,6 +107,21 @@ namespace EPlast.BLL.Services.Events
             {
                 return StatusCodes.Status400BadRequest;
             }
+        }
+
+        /// <inheritdoc />
+        public async Task<double> EstimateEventByParticipantAsync(int eventId, string userId, double estimate)
+        {
+            var participant = await _repoWrapper.Participant
+                .GetFirstAsync(predicate: p => p.EventId == eventId && p.UserId == userId);
+            participant.Estimate = estimate;
+            _repoWrapper.Participant.Update(participant);
+            await _repoWrapper.SaveAsync();
+            var eventParticipants = await _repoWrapper.Participant
+                .GetAllAsync(predicate: p => p.EventId == eventId && p.Estimate > 0);
+            var eventRating = Math.Round(eventParticipants.Sum(p => p.Estimate) / eventParticipants.Count(), 2, MidpointRounding.AwayFromZero);
+
+            return eventRating;
         }
 
         /// <inheritdoc />

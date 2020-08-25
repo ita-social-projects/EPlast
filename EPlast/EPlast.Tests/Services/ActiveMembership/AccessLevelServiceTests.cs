@@ -109,7 +109,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             RegistredOn = UserDateOfEntry,
             UserPlastDegrees = new List<UserPlastDegreeDTO>
             {
-                new UserPlastDegreeDTO{PlastDegreeId = 1}
+                new UserPlastDegreeDTO()
             }
         };
         private IEnumerable<string> GetUserRolesAsPlastun()
