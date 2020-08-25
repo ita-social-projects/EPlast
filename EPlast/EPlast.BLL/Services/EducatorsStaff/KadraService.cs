@@ -75,11 +75,7 @@ namespace EPlast.BLL.Services.EducatorsStaff
 
         public async Task<IEnumerable<KadraVykhovnykivDTO>> GetKVsWithKVType(int kvType_Id)
         {
-            var kvType = await _repositoryWrapper.KVTypes.GetFirstAsync(x => x.ID == kvType_Id);
-            if (kvType == null)
-            {
-                throw new InvalidOperationException();
-            }
+           
             var KVs = _mapper.Map<IEnumerable<KadraVykhovnykiv>, IEnumerable<KadraVykhovnykivDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.KVTypesID == kvType_Id));
             return KVs;
         }
