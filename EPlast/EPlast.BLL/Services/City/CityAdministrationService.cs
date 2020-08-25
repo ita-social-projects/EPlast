@@ -58,7 +58,6 @@ namespace EPlast.BLL.Services.City
             var user = await _userManager.FindByIdAsync(adminDTO.UserId);
             var role = adminType.AdminTypeName == "Голова Станиці" ? "Голова Станиці" : "Діловод Станиці";
             await _userManager.AddToRoleAsync(user, role);
-            await CheckPreviousAdminEndDate(role, adminDTO);
 
             _repositoryWrapper.CityAdministration.Attach(admin);
             await _repositoryWrapper.CityAdministration.CreateAsync(admin);
@@ -88,7 +87,6 @@ namespace EPlast.BLL.Services.City
             admin.EndDate = adminDTO.EndDate;
             admin.AdminTypeId = adminType.ID;
             admin.AdminType = _mapper.Map<AdminTypeDTO, AdminType>(adminType);
-            await CheckPreviousAdminEndDate(role, adminDTO);
 
             _repositoryWrapper.CityAdministration.Attach(admin);
             _repositoryWrapper.CityAdministration.Update(admin);
@@ -110,24 +108,6 @@ namespace EPlast.BLL.Services.City
 
             _repositoryWrapper.CityAdministration.Update(admin);
             await _repositoryWrapper.SaveAsync();
-        }
-
-        private async Task CheckPreviousAdminEndDate(string role, CityAdministrationDTO adminDTO)
-        {
-            if (role == "Голова Станиці")
-            {
-                var lastHead = await _repositoryWrapper.CityAdministration
-                    .GetLastOrDefaultAsync(a => a.AdminType.AdminTypeName == "Голова Станиці"
-                        && a.CityId == adminDTO.CityId);
-
-                if (lastHead?.EndDate > adminDTO.StartDate || lastHead?.EndDate == null)
-                {
-                    lastHead.EndDate = adminDTO.StartDate;
-                    _repositoryWrapper.CityAdministration.Attach(lastHead);
-                    _repositoryWrapper.CityAdministration.Update(lastHead);
-                    await _repositoryWrapper.SaveAsync();
-                }
-            }
         }
     }
 }
