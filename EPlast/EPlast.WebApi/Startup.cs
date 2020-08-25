@@ -223,6 +223,7 @@ namespace EPlast.WebApi
             services.AddScoped<IUserBlobStorageRepository, UserBlobStorageRepository>();
             services.AddScoped<IDecisionBlobStorageRepository, DecisionBlobStorageRepository>();
             services.AddScoped<ICityBlobStorageRepository, CityBlobStorageRepository>();
+            services.AddScoped<ICityFilesBlobStorageRepository, CityFilesBlobStorageRepository>();
             services.AddScoped<IRegionBlobStorageRepository, RegionBlobStorageRepository>();
             services.AddScoped<IClubBlobStorageRepository, ClubBlobStorageRepository>();
             services.AddScoped<IEventBlobStorageRepository, EventBlobStorageRepository>();

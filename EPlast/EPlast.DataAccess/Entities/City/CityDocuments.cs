@@ -8,7 +8,9 @@ namespace EPlast.DataAccess.Entities
         public int ID { get; set; }
         public DateTime? SubmitDate { get; set; }
         [Required, MaxLength(64)]
-        public string Name { get; set; }
+        public string BlobName { get; set; }
+        [Required, MaxLength(120)]
+        public string FileName { get; set; }
         [Required]
         public int CityDocumentTypeId { get; set; }
         public CityDocumentType CityDocumentType { get; set; }

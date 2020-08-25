@@ -22,7 +22,7 @@ namespace EPlast.Tests.Controllers
         private readonly Mock<ILoggerService<CitiesController>> _logger;
         private readonly Mock<ICityAdministrationService> _cityAdministrationService;
         private readonly Mock<ICityAccessService> _cityAccessService;
-       
+        private readonly Mock<ICityDocumentsService> _cityDocumentsService;
 
         public CityControllerTests()
         {
@@ -32,6 +32,7 @@ namespace EPlast.Tests.Controllers
             _mapper = new Mock<IMapper>();
             _logger = new Mock<ILoggerService<CitiesController>>();
             _cityAdministrationService = new Mock<ICityAdministrationService>();
+            _cityDocumentsService = new Mock<ICityDocumentsService>();
         }
 
         private CitiesController CreateCityController => new CitiesController(_logger.Object,
@@ -40,6 +41,7 @@ namespace EPlast.Tests.Controllers
            _cityService.Object,
            _cityMembersService.Object,
            _cityAdministrationService.Object,
+           _cityDocumentsService.Object,
            _cityAccessService.Object
           );
 

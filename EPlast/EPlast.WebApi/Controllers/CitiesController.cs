@@ -23,6 +23,7 @@ namespace EPlast.WebApi.Controllers
         private readonly ICityService _cityService;
         private readonly ICityMembersService _cityMembersService;
         private readonly ICityAdministrationService _cityAdministrationService;
+        private readonly ICityDocumentsService _cityDocumentsService;
         private readonly ICityAccessService _cityAccessService;
 
         public CitiesController(ILoggerService<CitiesController> logger,
@@ -30,6 +31,7 @@ namespace EPlast.WebApi.Controllers
             ICityService cityService,
             ICityMembersService cityMembersService,
             ICityAdministrationService cityAdministrationService,
+            ICityDocumentsService cityDocumentsService,
             ICityAccessService cityAccessService)
         {
             _logger = logger;
@@ -37,6 +39,7 @@ namespace EPlast.WebApi.Controllers
             _cityService = cityService;
             _cityMembersService = cityMembersService;
             _cityAdministrationService = cityAdministrationService;
+            _cityDocumentsService = cityDocumentsService;
             _cityAccessService = cityAccessService;
         }
 
@@ -356,6 +359,60 @@ namespace EPlast.WebApi.Controllers
             _logger.LogInformation($"Admin with User-ID {{{admin.UserId}}} was edited.");
 
             return Ok(adminDTO);
+        }
+
+        /// <summary>
+        /// Add a document to the city
+        /// </summary>
+        /// <param name="document">An information about a specific document</param>
+        /// <returns>A newly created document</returns>
+        [HttpPost("AddDocument/{cityId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> AddDocument(CityDocumentsViewModel document)
+        {
+            var documentDTO = _mapper.Map<CityDocumentsViewModel, CityDocumentsDTO>(document);
+
+            await _cityDocumentsService.AddDocumentAsync(documentDTO);
+            _logger.LogInformation($"Document with id {{{documentDTO.ID}}} was added.");
+
+            return Ok(documentDTO);
+        }
+
+        /// <summary>
+        /// Get a file in base64 format
+        /// </summary>
+        /// <param name="fileName">The name of a city file</param>
+        /// <returns>A base64 string of the file</returns>
+        [HttpGet("FileBase64")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetFileBase64(string fileName)
+        {
+            var fileBase64 = await _cityDocumentsService.DownloadFileAsync(fileName);
+
+            return Ok(fileBase64);
+        }
+
+        /// <summary>
+        /// Remove a specific document
+        /// </summary>
+        /// <param name="documentId">The id of a specific document</param>
+        [HttpDelete("RemoveDocument/{documentId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> RemoveDocument(int documentId)
+        {
+            await _cityDocumentsService.DeleteFileAsync(documentId);
+            _logger.LogInformation($"Document with id {{{documentId}}} was deleted.");
+
+            return Ok();
+        }
+
+        [HttpGet("GetDocumentTypes")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetDocumentTypesAsync()
+        {
+            var documentTypes = await _cityDocumentsService.GetAllCityDocumentTypesAsync();
+
+            return Ok(documentTypes);
         }
 
         /// <summary>
