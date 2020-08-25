@@ -24,14 +24,13 @@ namespace EPlast.XUnitTest.Services.City
         private readonly Mock<IMapper> _mapper = new Mock<IMapper>();
         private readonly Mock<IAdminTypeService> _adminTypeService = new Mock<IAdminTypeService>();
         private readonly ICityAdministrationService _cityAdministrationService;
-        private readonly Mock<UserManager<User>> _userManager;
 
         public CityAdministrationServiceTests()
         {
             _cityAdministrationService = new CityAdministrationService(_repositoryWrapper.Object,
                 _mapper.Object,
                 _adminTypeService.Object,
-                _userManager.Object);
+                null);
         }
 
         [Fact]
