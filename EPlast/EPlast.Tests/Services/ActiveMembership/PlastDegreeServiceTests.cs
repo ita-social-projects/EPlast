@@ -86,7 +86,7 @@ namespace EPlast.Tests.Services.ActiveMembership
 
         }
 
-        
+
         [Test]
         public async Task AddPlastDegreeForUserAsync_UserDoesNotExist_ReturnsFalse()
         {
@@ -111,10 +111,7 @@ namespace EPlast.Tests.Services.ActiveMembership
                 .Returns(GetTestUserPlastDegrees());
 
             //Act
-            var result = await _activeMembershipService.AddPlastDegreeForUserAsync(new UserPlastDegreePostDTO
-            {
-                PlastDegreeId = UserDTO.UserPlastDegrees.ToList()[0].PlastDegreeId
-            });
+            var result = await _activeMembershipService.AddPlastDegreeForUserAsync(new UserPlastDegreePostDTO { PlastDegreeId = 1});
 
             // Assert
             Assert.IsFalse(result);
@@ -281,10 +278,10 @@ namespace EPlast.Tests.Services.ActiveMembership
             RegistredOn = UserDateOfEntry,
             UserPlastDegrees = new List<UserPlastDegreeDTO>
             {
-                new UserPlastDegreeDTO{PlastDegreeId = 1}
+                new UserPlastDegreeDTO()
             }
         };
-       
+
         private IEnumerable<UserPlastDegree> GetTestUserPlastDegrees()
         {
             return new List<UserPlastDegree>
@@ -315,17 +312,14 @@ namespace EPlast.Tests.Services.ActiveMembership
             {
                new  UserPlastDegreeDTO
                {
-                   PlastDegreeId = GetTestPlastDegreesDTO().ToList()[0].Id,
                    PlastDegree = GetTestPlastDegreesDTO().ToList()[0]
                },
                new  UserPlastDegreeDTO
                {
-                   PlastDegreeId = GetTestPlastDegreesDTO().ToList()[1].Id,
                    PlastDegree = GetTestPlastDegreesDTO().ToList()[1]
                },
                new  UserPlastDegreeDTO
                {
-                   PlastDegreeId = GetTestPlastDegreesDTO().ToList()[2].Id,
                    PlastDegree = GetTestPlastDegreesDTO().ToList()[2]
                }
             }.AsEnumerable();
