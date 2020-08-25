@@ -260,6 +260,8 @@ namespace EPlast.BLL.Services
         {
             var city = await _repoWrapper.City.GetFirstOrDefaultAsync(c => c.ID == cityId);
 
+            await _cityBlobStorage.DeleteBlobAsync(city.Logo);
+
             _repoWrapper.City.Delete(city);
             await _repoWrapper.SaveAsync();
         }
