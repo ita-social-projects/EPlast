@@ -50,8 +50,8 @@ namespace EPlast.DataAccess.Repositories
         IEventAdministrationRepository EventAdministration { get; }
         IEventCategoryTypeRepository EventCategoryType { get; }
         IPlastDegreeRepository PlastDegrees { get; }
-        IKVsRepository KVs { get; }
-        IKVTypesRepository KVTypes { get; }
+        IKadrassRepository KVs { get; }
+        IKadraTypesRepository KVTypes { get; }
         void Save();
         Task SaveAsync();
     }

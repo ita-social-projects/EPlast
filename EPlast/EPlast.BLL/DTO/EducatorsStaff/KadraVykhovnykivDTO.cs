@@ -3,14 +3,14 @@ using System;
 
 namespace EPlast.BLL.DTO.EducatorsStaff
 {
-    public class KadrasDTO
+    public class KadraVykhovnykivDTO
     {
         public int ID { get; set; }
 
         public string UserId { get; set; }
-        public UserDTO user { get; set; }
+        public UserDTO User { get; set; }
         public int KVTypesID { get; set; }
-        public KVTypeDTO kvTypes { get; set; }
+        public KadraVykhovnykivTypesDTO KadraVykhovnykivTypes { get; set; }
 
         public DateTime DateOfGranting { get; set; }
 
