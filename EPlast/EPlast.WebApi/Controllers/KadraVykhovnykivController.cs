@@ -134,11 +134,10 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="403">User is not admin</response>
         ///  <response code="404"> param is not valid</response>
-        [HttpGet("{kvtype_id:int}")]
+        [HttpGet("{kvTypeId}")]
         public async Task<IActionResult> GetKVsWithType(int kvTypeId)
         {
-            if (User.IsInRole("Admin"))
-            {
+          
                 try
                 {
                     var Kadras = await _kvService.GetKVsWithKVType(kvTypeId);
@@ -149,12 +148,7 @@ namespace EPlast.WebApi.Controllers
                     _logger.LogError(e.Message);
                     return StatusCode(StatusCodes.Status404NotFound);
                 } 
-            }
-            else
-            {
-                _logger.LogError("Current user is not an admin");
-                return StatusCode(StatusCodes.Status403Forbidden);
-            }
+ 
         }
 
 
@@ -183,20 +177,15 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("kadras")]
         public async Task<IActionResult> GetAllKVs()
         {
-            if (User.IsInRole("Admin"))
-            {
+           
                 var KVs = await _kvService.GetAllKVsAsync();
                 if (KVs == null)
                 {
                     return StatusCode(StatusCodes.Status404NotFound);
                 }
                 return Ok(KVs);
-            }
-            else
-            {
-                _logger.LogError("Current user is not an admin");
-                return StatusCode(StatusCodes.Status403Forbidden);
-            }
+            
+            
         }
 
 
