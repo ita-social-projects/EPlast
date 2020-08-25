@@ -2,7 +2,6 @@
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Services.Interfaces;
-using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Controllers;
 using EPlast.WebApi.Models.Club;
 using Microsoft.AspNetCore.Http;
