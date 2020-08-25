@@ -9,5 +9,6 @@
         public bool IsUserUndeterminedParticipant { get; set; }
         public bool IsUserRejectedParticipant { get; set; }
         public bool IsEventFinished { get; set; }
+        public bool CanEstimate { get; set; }
     }
 }
