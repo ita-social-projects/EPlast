@@ -5,7 +5,7 @@ using System.Text;
 
 namespace EPlast.DataAccess.Repositories
 {
-    public interface IKVTypesRepository : IRepositoryBase<KVTypes>
+    public interface IKadraTypesRepository : IRepositoryBase<KadraVykhovnykivTypes>
     {
     }
 }
