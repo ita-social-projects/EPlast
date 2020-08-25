@@ -44,7 +44,7 @@ namespace EPlast.BLL.Services.ActiveMembership
         /// <inheritdoc />
         public async Task<IEnumerable<UserPlastDegreeDTO>> GetUserPlastDegreesAsync(string userId)
         {
-            var userPlastDegrees = await _repoWrapper.UserPlastDegrees.GetAllAsync(upd => upd.UserId == userId, include : pd => pd.Include(d => d.PlastDegree));
+            var userPlastDegrees = await _repoWrapper.UserPlastDegrees.GetAllAsync(upd => upd.UserId == userId, include: pd => pd.Include(d => d.PlastDegree));
 
             return _mapper.Map<IEnumerable<UserPlastDegreeDTO>>(userPlastDegrees);
         }
@@ -129,7 +129,7 @@ namespace EPlast.BLL.Services.ActiveMembership
             bool isAdded = false;
             UserPlastDegree userPlastDegree = await _repoWrapper.UserPlastDegrees
                .GetFirstOrDefaultAsync(upd => upd.PlastDegreeId == plastDegreeId && upd.UserId == userId);
-            if(userPlastDegree != null)
+            if (userPlastDegree != null)
             {
                 await SetDegreeAsCurrent(true);
                 userPlastDegree.IsCurrent = true;
