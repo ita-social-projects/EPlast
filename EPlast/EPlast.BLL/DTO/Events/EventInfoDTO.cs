@@ -17,6 +17,7 @@ namespace EPlast.BLL.DTO.Events
         public string EventStatus { get; set; }
         public string FormOfHolding { get; set; }
         public string ForWhom { get; set; }
+        public double Rating { get; set; }
         public List<EventAdminDTO> EventAdmins { get; set; }
         public IEnumerable<EventParticipantDTO> EventParticipants { get; set; }
     }
