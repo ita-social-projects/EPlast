@@ -1,5 +1,4 @@
-﻿
-namespace EPlast.BLL
+﻿namespace EPlast.BLL
 {
     public class DistinctionDTO
     {

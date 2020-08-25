@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using EPlast.BLL;
-using EPlast.BLL.Interfaces.Logging;
 using Microsoft.AspNetCore.Authorization;
-using EPlast.DataAccess.Entities.UserEntities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EPlast.WebApi.Controllers
@@ -18,19 +13,15 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly IDistinctionService _distinctionService;
         private readonly IUserDistinctionService _userDistinctionService;
-        private readonly IMapper _mapper;
-        private readonly ILoggerService<DistinctionController> _loggerService;
 
 
-        public DistinctionController(IDistinctionService distinctionService, 
-            IUserDistinctionService userDistinctionService,
-            IMapper mapper, 
-            ILoggerService<DistinctionController> loggerService)
+        public DistinctionController(
+            IDistinctionService distinctionService, 
+            IUserDistinctionService userDistinctionService
+            )
         {
             _distinctionService = distinctionService;
             _userDistinctionService = userDistinctionService;
-            _mapper = mapper;
-            _loggerService = loggerService;
         }
 
         /// <summary>
