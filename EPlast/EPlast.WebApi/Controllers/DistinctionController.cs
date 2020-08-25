@@ -9,6 +9,7 @@ namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class DistinctionController : ControllerBase
     {
         private readonly IDistinctionService _distinctionService;
