@@ -23,6 +23,7 @@ using EPlast.BLL.Services.AzureStorage.Base;
 using EPlast.BLL.Services.City;
 using EPlast.BLL.Services.City.CityAccess;
 using EPlast.BLL.Services.Club;
+using EPlast.BLL.Services.Distinctions;
 using EPlast.BLL.Services.EducatorsStaff;
 using EPlast.BLL.Services.Events;
 using EPlast.BLL.Services.EventUser;
@@ -234,6 +235,8 @@ namespace EPlast.WebApi
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddScoped<IAccessLevelService, AccessLevelService>();
             services.AddScoped<IPlastDegreeService, PlastDegreeService>();
+            services.AddScoped<IUserDistinctionService, UserDistinctionService>();
+            services.AddScoped<IDistinctionService, DistinctionService>();
             services.AddScoped<IKadraService, KadraService>();
             services.AddScoped<IKadrasTypeService, KadrasTypesService>();
             services.AddLogging();

@@ -15,6 +15,8 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private INationalityRepository _nationality;
         private IOrganizationRepository _organization;
         private IDecesionTargetRepository _decesionTarget;
+        private IDistinctionRepository _distinction;
+        private IUserDistinctionRepository _userDistinction;
         private IDocumentTemplateRepository _documentTemplate;
         private IDecesionRepository _decesion;
         private IEventRepository _event;
@@ -616,6 +618,30 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 return _cityManagements;
             }
         }
+
+        public IDistinctionRepository Distinction
+        {
+            get
+            {
+                if (_distinction == null)
+                {
+                    _distinction = new DistinctionRepository(_dbContext);
+                }
+                return _distinction;
+            }
+        }
+        public IUserDistinctionRepository UserDistinction
+        {
+            get
+            {
+                if (_userDistinction == null)
+                {
+                    _userDistinction = new UserDistinctionRepository(_dbContext);
+                }
+                return _userDistinction;
+            }
+        }
+
         public IPlastDegreeRepository PlastDegrees
         {
             get
