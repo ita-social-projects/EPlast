@@ -23,13 +23,15 @@ namespace EPlast.WebApi.Controllers
         private readonly ICityService _cityService;
         private readonly ICityMembersService _cityMembersService;
         private readonly ICityAdministrationService _cityAdministrationService;
+        private readonly ICityDocumentsService _cityDocumentsService;
         private readonly ICityAccessService _cityAccessService;
-        
+
         public CitiesController(ILoggerService<CitiesController> logger,
             IMapper mapper,
             ICityService cityService,
             ICityMembersService cityMembersService,
             ICityAdministrationService cityAdministrationService,
+            ICityDocumentsService cityDocumentsService,
             ICityAccessService cityAccessService)
         {
             _logger = logger;
@@ -37,6 +39,7 @@ namespace EPlast.WebApi.Controllers
             _cityService = cityService;
             _cityMembersService = cityMembersService;
             _cityAdministrationService = cityAdministrationService;
+            _cityDocumentsService = cityDocumentsService;
             _cityAccessService = cityAccessService;
         }
 
@@ -89,16 +92,16 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetMembers(int cityId)
         {
-            var cityProfileDto = await _cityService.GetCityMembersAsync(cityId, User);
+            var cityProfileDto = await _cityService.GetCityMembersAsync(cityId);
             if (cityProfileDto == null)
             {
                 return NotFound();
             }
 
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
+            cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(User, cityId);
 
-            return Ok(cityProfile.Members);
-
+            return Ok(new { cityProfile.Members, cityProfile.CanEdit });
         }
 
         /// <summary>
@@ -112,16 +115,16 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetFollowers(int cityId)
         {
-            var cityProfileDto = await _cityService.GetCityFollowersAsync(cityId, User);
+            var cityProfileDto = await _cityService.GetCityFollowersAsync(cityId);
             if (cityProfileDto == null)
             {
                 return NotFound();
             }
 
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
+            cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(User, cityId);
 
-            return Ok(cityProfile.Followers);
-
+            return Ok(new { cityProfile.Followers, cityProfile.CanEdit });
         }
 
         /// <summary>
@@ -135,15 +138,16 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetAdmins(int cityId)
         {
-            var cityProfileDto = await _cityService.GetCityAdminsAsync(cityId, User);
+            var cityProfileDto = await _cityService.GetCityAdminsAsync(cityId);
             if (cityProfileDto == null)
             {
                 return NotFound();
             }
 
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
+            cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(User, cityId);
 
-            return Ok(new { cityProfile.Administration, cityProfile.Head });
+            return Ok(new { cityProfile.Administration, cityProfile.Head, cityProfile.CanEdit });
         }
 
         /// <summary>
@@ -164,8 +168,9 @@ namespace EPlast.WebApi.Controllers
             }
 
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
+            cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(User, cityId);
 
-            return Ok(cityProfile.Documents);
+            return Ok(new { cityProfile.Documents, cityProfile.CanEdit });
         }
 
         /// <summary>
@@ -329,7 +334,7 @@ namespace EPlast.WebApi.Controllers
         /// Remove a specific administrator from the city
         /// </summary>
         /// <param name="adminId">The id of the administrator</param>
-        [HttpDelete("RemoveAdmin/{adminId}")]
+        [HttpPut("RemoveAdmin/{adminId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RemoveAdmin(int adminId)
         {
@@ -354,6 +359,60 @@ namespace EPlast.WebApi.Controllers
             _logger.LogInformation($"Admin with User-ID {{{admin.UserId}}} was edited.");
 
             return Ok(adminDTO);
+        }
+
+        /// <summary>
+        /// Add a document to the city
+        /// </summary>
+        /// <param name="document">An information about a specific document</param>
+        /// <returns>A newly created document</returns>
+        [HttpPost("AddDocument/{cityId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> AddDocument(CityDocumentsViewModel document)
+        {
+            var documentDTO = _mapper.Map<CityDocumentsViewModel, CityDocumentsDTO>(document);
+
+            await _cityDocumentsService.AddDocumentAsync(documentDTO);
+            _logger.LogInformation($"Document with id {{{documentDTO.ID}}} was added.");
+
+            return Ok(documentDTO);
+        }
+
+        /// <summary>
+        /// Get a file in base64 format
+        /// </summary>
+        /// <param name="fileName">The name of a city file</param>
+        /// <returns>A base64 string of the file</returns>
+        [HttpGet("FileBase64/{fileName}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetFileBase64(string fileName)
+        {
+            var fileBase64 = await _cityDocumentsService.DownloadFileAsync(fileName);
+
+            return Ok(fileBase64);
+        }
+
+        /// <summary>
+        /// Remove a specific document
+        /// </summary>
+        /// <param name="documentId">The id of a specific document</param>
+        [HttpDelete("RemoveDocument/{documentId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> RemoveDocument(int documentId)
+        {
+            await _cityDocumentsService.DeleteFileAsync(documentId);
+            _logger.LogInformation($"Document with id {{{documentId}}} was deleted.");
+
+            return Ok();
+        }
+
+        [HttpGet("GetDocumentTypes")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetDocumentTypesAsync()
+        {
+            var documentTypes = await _cityDocumentsService.GetAllCityDocumentTypesAsync();
+
+            return Ok(documentTypes);
         }
 
         /// <summary>

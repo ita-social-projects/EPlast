@@ -7,9 +7,15 @@ namespace EPlast.DataAccess.Entities
     {
         public int ID { get; set; }
         public DateTime? SubmitDate { get; set; }
-        [Required, MaxLength(256, ErrorMessage = "Document url cannot exceed 256 characters")]
-        public string DocumentURL { get; set; }
+        [Required, MaxLength(64)]
+        public string BlobName { get; set; }
+        [Required, MaxLength(120)]
+        public string FileName { get; set; }
+        [Required]
+        public int CityDocumentTypeId { get; set; }
         public CityDocumentType CityDocumentType { get; set; }
+        [Required]
+        public int CityId { get; set; }
         public City City { get; set; }
     }
 }
