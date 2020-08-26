@@ -12,6 +12,8 @@
   <ItemGroup>
     <Compile Remove="Migrations\20200413203808_add-foreign-key.cs" />
     <Compile Remove="Migrations\20200413203808_add-foreign-key.Designer.cs" />
+    <Compile Remove="Migrations\20200825075232_somethingChanged.cs" />
+    <Compile Remove="Migrations\20200825075232_somethingChanged.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
