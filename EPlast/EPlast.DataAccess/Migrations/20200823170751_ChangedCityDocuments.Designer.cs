@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20200823170751_ChangedCityDocuments")]
+    partial class ChangedCityDocuments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,12 +55,10 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ImprovementNeeds")
-                        .HasColumnType("nvarchar(2000)")
-                        .HasMaxLength(2000);
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ListProperty")
-                        .HasColumnType("nvarchar(2000)")
-                        .HasMaxLength(2000);
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("NumberOfAdministrators")
                         .HasColumnType("int");
@@ -249,21 +249,16 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("BlobName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
-
                     b.Property<int>("CityDocumentTypeId")
                         .HasColumnType("int");
 
                     b.Property<int>("CityId")
                         .HasColumnType("int");
 
-                    b.Property<string>("FileName")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(120)")
-                        .HasMaxLength(120);
+                        .HasColumnType("nvarchar(64)")
+                        .HasMaxLength(64);
 
                     b.Property<DateTime?>("SubmitDate")
                         .HasColumnType("datetime2");
@@ -604,62 +599,6 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("Educations");
                 });
 
-            modelBuilder.Entity("EPlast.DataAccess.Entities.EducatorsStaff.KadraVykhovnykiv", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("BasisOfGranting")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
-                    b.Property<DateTime>("DateOfGranting")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("KVTypesID")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("KadraVykhovnykivTypesID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Link")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("NumberInRegister")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("KadraVykhovnykivTypesID");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("KVs");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.EducatorsStaff.KadraVykhovnykivTypes", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(20)")
-                        .HasMaxLength(20);
-
-                    b.HasKey("ID");
-
-                    b.ToTable("KVTypes");
-                });
-
             modelBuilder.Entity("EPlast.DataAccess.Entities.Event.Event", b =>
                 {
                     b.Property<int>("ID")
@@ -711,9 +650,6 @@ namespace EPlast.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
-
-                    b.Property<double>("Rating")
-                        .HasColumnType("float");
 
                     b.HasKey("ID");
 
@@ -983,9 +919,6 @@ namespace EPlast.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<double>("Estimate")
-                        .HasColumnType("float");
 
                     b.Property<int>("EventId")
                         .HasColumnType("int");
@@ -1627,17 +1560,6 @@ namespace EPlast.DataAccess.Migrations
                         .HasForeignKey("OrganizationID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.EducatorsStaff.KadraVykhovnykiv", b =>
-                {
-                    b.HasOne("EPlast.DataAccess.Entities.EducatorsStaff.KadraVykhovnykivTypes", "KadraVykhovnykivTypes")
-                        .WithMany("UsersKadras")
-                        .HasForeignKey("KadraVykhovnykivTypesID");
-
-                    b.HasOne("EPlast.DataAccess.Entities.User", "User")
-                        .WithMany("UsersKadras")
-                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Event.Event", b =>
