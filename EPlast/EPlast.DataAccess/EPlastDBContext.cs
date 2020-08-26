@@ -1,6 +1,7 @@
 ﻿using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Entities.Event;
+using EPlast.DataAccess.Entities.UserEntities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -142,6 +143,15 @@ namespace EPlast.DataAccess
                .WithOne(x => x.User)
                .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<User>()
+                .HasMany(x => x.UserDistinctions)
+                .WithOne(x => x.User)
+                .OnDelete(DeleteBehavior.Cascade);  
+
+            modelBuilder.Entity<Distinction>()
+                .HasMany(x => x.UserDistinctions)
+                .WithOne(x => x.Distinction)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         public DbSet<DocumentTemplate> DocumentTemplates { get; set; }
@@ -167,5 +177,7 @@ namespace EPlast.DataAccess
         public DbSet<PlastDegree> PlastDegrees { get; set; }
         public DbSet<KadraVykhovnykiv> KVs { get; set; }
         public DbSet<KadraVykhovnykivTypes> KVTypes { get; set; }
+        public DbSet<Distinction> Distinctions { get; set; }
+        public DbSet<UserDistinction> UserDistinctions { get; set; }
     }
 }
