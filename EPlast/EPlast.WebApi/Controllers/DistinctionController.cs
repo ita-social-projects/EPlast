@@ -32,7 +32,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns> object</returns>
         /// <response code="200">An instance of user distinction</response>
         /// <response code="404">The user distinction does not exist</response>
-        [HttpGet("UserDistinction/{id:int}")]
+        [HttpGet("UserDistinction/{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetUserDistinction(int id)
         {
@@ -59,7 +59,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns> object</returns>
         /// <response code="200">An instance of distinction type</response>
         /// <response code="404">The distinction type with this id does not exist</response>
-        [HttpGet("{id:int}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetDistinction(int id)
         {
             DistinctionDTO distinction = await _distinctionService.GetDistinctionAsync(id);
@@ -101,7 +101,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns> Answer from backend </returns>
         /// <response code="204">Distinction type was successfully deleted</response>
         /// <response code="404">Distinction type does not exist</response>
-        [HttpDelete("Delete/{id:int}")]
+        [HttpDelete("Delete/{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteDistinction(int id)
         {
@@ -122,7 +122,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns> Answer from backend </returns>
         /// <response code="204">User distinction was successfully deleted</response>
         /// <response code="404">User distinction does not exist</response>
-        [HttpDelete("UserDistinction/Delete/{id:int}")]
+        [HttpDelete("UserDistinction/Delete/{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUserDistinction(int id)
         {

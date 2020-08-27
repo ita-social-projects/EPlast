@@ -42,7 +42,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         [HttpGet("usersTable")]
         public async Task<IActionResult> UsersTable()
-        {
+       {
             var result = await _adminService.UsersTableAsync();
             return Ok(result);
         }
