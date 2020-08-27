@@ -86,7 +86,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns> All distinctions of user </returns>
         /// <response code="200"> Array of user distinctions</response>
         /// <response code="404">User does not exist</response>
-        [HttpGet("User/Distinctions/{id:string}")]
+        [HttpGet("User/Distinctions/{id}")]
         public async Task<IActionResult> GetDistinctionOfGivenUser(string id)
         {
             var userDistinctions = await _userDistinctionService.GetUserDistinctionsOfUserAsync(id);
