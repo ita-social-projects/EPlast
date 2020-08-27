@@ -53,7 +53,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="403">User is not admin</response>
         ///  <response code="404">kadra with this id doesn't exist</response>
-        [HttpDelete("RemoveKadra/{kadra_id:int}")]
+        [HttpDelete("RemoveKadra/{kadra_id}")]
         public async Task<IActionResult> Remove(int kadraId)
         {
             try
