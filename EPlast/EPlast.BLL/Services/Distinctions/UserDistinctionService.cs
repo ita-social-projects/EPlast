@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -49,19 +50,29 @@ namespace EPlast.BLL.Services.Distinctions
 
         public async Task<IEnumerable<UserDistinctionDTO>> GetAllUsersDistinctionAsync()
         {
-            var userDistinctions = await _repoWrapper.UserDistinction.GetAllAsync();
+            var userDistinctions = await _repoWrapper.UserDistinction.GetAllAsync(include:
+                source => source
+                .Include(c => c.User)
+                .Include(d => d.Distinction)
+                );
             return _mapper.Map<IEnumerable<UserDistinction>, IEnumerable<UserDistinctionDTO>>(userDistinctions);
         }
 
         public async Task<UserDistinctionDTO> GetUserDistinctionAsync(int id)
         {
-            var userDistinction = await _repoWrapper.UserDistinction.GetFirstOrDefaultAsync(d => d.Id == id);
+            var userDistinction = await _repoWrapper.UserDistinction.GetFirstOrDefaultAsync(d => d.Id == id, include:
+                source => source
+                .Include(c => c.User)
+                .Include(d => d.Distinction));
             return _mapper.Map<UserDistinction, UserDistinctionDTO>(userDistinction);
         }
 
         public async Task<IEnumerable<UserDistinctionDTO>> GetUserDistinctionsOfUserAsync(string UserId)
         {
-            var userDistinctions = await _repoWrapper.UserDistinction.GetAllAsync(u => u.UserId == UserId);
+            var userDistinctions = await _repoWrapper.UserDistinction.GetAllAsync(u => u.UserId == UserId, 
+                include: source => source
+                .Include(c => c.User)
+                .Include(d => d.Distinction));
             return _mapper.Map<IEnumerable<UserDistinction>, IEnumerable<UserDistinctionDTO>>(userDistinctions);
         }
     }
