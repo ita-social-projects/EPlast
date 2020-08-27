@@ -9,6 +9,7 @@ namespace EPlast.BLL.Mapping.User
         {
             CreateMap<DataAccess.Entities.User, ShortUserInformationDTO>().
                 ForMember(x => x.Birthday, q => q.MapFrom(w => w.UserProfile.Birthday)).
+                ForMember(g => g.Gender, q => q.MapFrom(w => w.UserProfile.Gender)).
                 ReverseMap();
         }
     }
