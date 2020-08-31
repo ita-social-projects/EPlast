@@ -3,6 +3,7 @@ using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.WebApi.Models.Club;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Net;
@@ -45,6 +46,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>All clubs in object array</returns>
         /// <response code="200">Object array of all clubs</response>
         [HttpGet]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Get()
         {
             var clubs = await _clubService.GetAllClubsAsync();
@@ -57,12 +59,48 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Gets a specific number of clubs.
+        /// </summary>
+        /// <param name="pageNumber">A number of the page.</param>
+        /// <param name="pageSize">A count of clubs to display.</param>
+        /// <returns>Returns a specific number of clubs.</returns>
+        /// <response code="200">Object array of a specific number of clubs.</response>
+        [HttpGet("page/{pageNumber:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetPartOfClubs(int pageNumber, int pageSize)
+        {
+            var sampleClubs = await _clubService.GetPartOfClubsAsync(pageNumber, pageSize);
+
+            foreach (var club in sampleClubs)
+            {
+                club.Logo = await _clubService.GetImageBase64Async(club.Logo);
+            }
+
+            return Ok(sampleClubs);
+        }
+
+        /// <summary>
+        /// Gets a general count of clubs.
+        /// </summary>
+        /// <returns>Returns count of clubs.</returns>
+        /// <response code="200">Count of clubs.</response>
+        [HttpGet("count")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetClubsCount()
+        {
+            var clubsCount = await _clubService.GetClubsCountAsync();
+
+            return Ok(clubsCount);
+        }
+
+        /// <summary>
         /// Get image in base64 format
         /// </summary>
         /// <param name="imageName">Image name</param>
         /// <returns>Image in base64 format</returns>
         /// <response code="200">An base64 image</response>
         [HttpGet("getImage/{imageName}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<string> GetImage(string imageName)
         {
             return await _clubService.GetImageBase64Async(imageName);
@@ -75,7 +113,8 @@ namespace EPlast.WebApi.Controllers
         /// <returns>Club object</returns>
         /// <response code="200">An instance of club</response>
         [HttpGet("{clubId:int}")]
-        public async Task<IActionResult> Club(int clubId)
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetClub(int clubId)
         {
             var viewModel =
                 _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(
@@ -94,6 +133,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>Object array with club members</returns>
         /// <response code="200">An instance of club members</response>
         [HttpGet("{clubId:int}/members")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetClubMembers(int clubId)
         {
             var viewModel =
@@ -111,6 +151,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>Object array with club followers</returns>
         /// <response code="200">An instance of club followers</response>
         [HttpGet("{clubId:int}/followers")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetClubFollowers(int clubId)
         {
             var viewModel =
@@ -128,7 +169,8 @@ namespace EPlast.WebApi.Controllers
         /// <returns>Club object</returns>
         /// <response code="200">An instance of club</response>
         [HttpGet("{clubId:int}/description")]
-        public async Task<IActionResult> ClubDescription(int clubId)
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetClubDescription(int clubId)
         {
             return Ok(await _clubService.GetClubInfoByIdAsync(clubId));
         }
@@ -140,7 +182,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>Info that club was updated</returns>
         /// <response code="200">An instance of club was updated</response>
         [HttpPost("edit")]
-        //[Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Edit(ClubViewModel club)
         {
             var mappedClub = _mapper.Map<ClubViewModel, ClubDTO>(club);
@@ -169,6 +211,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>Info that club was created</returns>
         /// <response code="200">An instance of club was created</response>
         [HttpPost("create")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Create(ClubViewModel club)
         {
             var isValid =  await _clubService.ValidateAsync(_mapper.Map<ClubViewModel, ClubDTO>(club));
@@ -188,6 +231,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns></returns>
         /// <response code="200">An instance of club</response>
         [HttpGet("{clubId:int}/administration")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetClubAdministration(int clubId)
         {
             var viewModel =
@@ -205,6 +249,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>Info that the administrator was deleted</returns>
         /// <response code="200">The club administration deleted</response>
         [HttpDelete("administration/{adminId:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> DeleteAdministration(int adminId)
         {
             await _clubAdministrationService.DeleteClubAdminAsync(adminId);
@@ -220,6 +265,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>Object array of club members</returns>
         /// <response code="200">The club member approve changed</response>
         [HttpPut("{clubId:int}/member/{memberId:int}/change-status")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> ChangeApproveStatus(int clubId, int memberId)
         {
             return Ok(_mapper.Map<ClubMembersDTO, ClubMembersViewModel>(
@@ -234,6 +280,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>New club administrator object</returns>
         /// <response code="200">The club administrator date changed</response>
         [HttpPut("administration/{clubAdministrationId:int}/change-end-date")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> SetClubAdministratorEndDate(int clubAdministrationId, DateTime endDate)
         {
             return Ok(await _clubAdministrationService.SetAdminEndDateAsync(clubAdministrationId, endDate));
@@ -247,6 +294,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>New club administrator object</returns>
         /// <response code="200">A new club administrator added</response>
         [HttpPost("{clubId:int}/add-administration")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> AddAdmin(int clubId, ClubAdministrationViewModel createdAdmin)
         {
             var club = await _clubService.GetClubInfoByIdAsync(clubId);
@@ -266,6 +314,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>New club follower object</returns>
         ///<response code="200">A new club follower added</response>
         [HttpPost("{clubId:int}/add-follower/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> AddFollower(int clubId, string userId)
         {
             userId = User.IsInRole("Admin") ? userId : await _userManagerService.GetUserIdAsync(User);
