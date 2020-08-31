@@ -56,5 +56,15 @@ namespace EPlast.WebApi.Controllers
 
             return BadRequest();
         }
+        [HttpPut("degree")]
+        public async Task<IActionResult> SetPlastDegreeAsCurrent(string userId, int plastDegreeId)
+        {
+            if(await _plastDegreeService.SetPlastDegreeForUserAsCurrentAsync(userId, plastDegreeId))
+            {
+                return NoContent();
+            }
+
+            return BadRequest();
+        }
     }
 }
