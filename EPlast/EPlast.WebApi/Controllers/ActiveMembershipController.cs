@@ -1,6 +1,7 @@
 ﻿using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
@@ -56,7 +57,7 @@ namespace EPlast.WebApi.Controllers
 
             return BadRequest();
         }
-        [HttpPut("degree")]
+        [HttpPut("degree/setAsCurrent/{userId}/{plastDegreeId}")]
         public async Task<IActionResult> SetPlastDegreeAsCurrent(string userId, int plastDegreeId)
         {
             if(await _plastDegreeService.SetPlastDegreeForUserAsCurrentAsync(userId, plastDegreeId))
@@ -66,5 +67,16 @@ namespace EPlast.WebApi.Controllers
 
             return BadRequest();
         }
+        [HttpPut("degree/endDate")]
+        public async Task<IActionResult> AddEndDatePlastDegreeForUser(UserPlastDegreePutDTO userPlastDegreePutDTO)
+        {
+            if (await _plastDegreeService.AddEndDateForUserPlastDegreeAsync(userPlastDegreePutDTO))
+            {
+                return NoContent();
+            }
+
+            return BadRequest();
+        }
+
     }
 }
