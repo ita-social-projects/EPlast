@@ -565,7 +565,7 @@ namespace EPlast.Tests.Controllers
         private LocalizedString GetResetPasswordConfirmation()
         {
             var localizedString = new LocalizedString("ResetPasswordConfirmation",
-                "Ваш пароль скинутий. Для входу в систему натисніть Увійти/Зареєструватись.");
+                "Ваш пароль успішно скинутий.");
             return localizedString;
         }
 
