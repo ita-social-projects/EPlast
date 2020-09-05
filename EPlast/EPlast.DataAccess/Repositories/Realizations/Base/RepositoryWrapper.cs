@@ -1,9 +1,8 @@
-﻿using System.Threading.Tasks;
-using EPlast.DataAccess.Entities.EducatorsStaff;
-using EPlast.DataAccess.Repositories.Contracts;
+﻿using EPlast.DataAccess.Repositories.Contracts;
 using EPlast.DataAccess.Repositories.Interfaces.Events;
 using EPlast.DataAccess.Repositories.Realizations.EducatorsStaff;
 using EPlast.DataAccess.Repositories.Realizations.Events;
+using System.Threading.Tasks;
 
 namespace EPlast.DataAccess.Repositories.Realizations.Base
 {
@@ -50,7 +49,6 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IMembersStatisticsRepository _membersStatistics;
         private ICityLegalStatusesRepository _cityLegalStatuses;
         private IUserPlastDegreesRepository _userPlastDegrees;
-        private ICityManagementsRepository _cityManagements;
         private IEventAdministrationRepository _eventAdministration;
         private IEventAdministrationTypeRepository _eventAdministrationType;
         private IEventCategoryTypeRepository _eventCategoryTypeRepository;
@@ -604,18 +602,6 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                     _userPlastDegrees = new UserPlastDegreesRepository(_dbContext);
                 }
                 return _userPlastDegrees;
-            }
-        }
-
-        public ICityManagementsRepository CityManagements
-        {
-            get
-            {
-                if (_cityManagements == null)
-                {
-                    _cityManagements = new CityManagementsRepository(_dbContext);
-                }
-                return _cityManagements;
             }
         }
 

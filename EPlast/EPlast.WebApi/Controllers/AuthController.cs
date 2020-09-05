@@ -91,7 +91,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">Problems with registration</response>
         [HttpPost("signup")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody]RegisterDto registerDto)
+        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
             if (!ModelState.IsValid)
             {
@@ -222,11 +222,7 @@ namespace EPlast.WebApi.Controllers
                     return BadRequest(_resourceForErrors["Forgot-NotRegisteredUser"]);
                 }
                 string token = await _authService.GenerateResetTokenAsync(userDto);
-                string confirmationLink = Url.Action(
-                    nameof(ResetPassword),
-                    "Auth",
-                    new { userId = userDto.Id, token = HttpUtility.UrlEncode(token) },
-                    protocol: HttpContext.Request.Scheme);
+                var confirmationLink = string.Format("https://eplastua.azurewebsites.net/resetPassword?token={0}", HttpUtility.UrlEncode(token));
                 await _authService.SendEmailReseting(confirmationLink, forgotpasswordDto);
                 return Ok(_resourceForErrors["ForgotPasswordConfirmation"]);
             }
@@ -243,9 +239,10 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">Problems with resetting password</response>
         [HttpGet("resetPassword")]
         [AllowAnonymous]
-        public async Task<IActionResult> ResetPassword(string userId, string token = null)
+        public async Task<IActionResult> ResetPassword([FromQuery(Name = "userId")] string userId, [FromQuery(Name = "token")] string token)
         {
             var userDto = await _authService.FindByIdAsync(userId);
+            var model = new ResetPasswordDto { Code = token, Email = userDto.Email };
             if (userDto == null)
             {
                 return BadRequest();
@@ -259,7 +256,7 @@ namespace EPlast.WebApi.Controllers
                 }
                 else
                 {
-                    return Ok("ResetPassword");
+                    return Ok(model);
                 }
             }
             else

@@ -48,7 +48,6 @@ namespace EPlast.BLL
             _repoWrapper.Distinction.Delete(distinction);
             await _repoWrapper.SaveAsync();
         }
-
         public async Task<IEnumerable<DistinctionDTO>> GetAllDistinctionAsync()
         {
             return _mapper.Map<IEnumerable<Distinction>, IEnumerable<DistinctionDTO>>(await _repoWrapper.Distinction.GetAllAsync());

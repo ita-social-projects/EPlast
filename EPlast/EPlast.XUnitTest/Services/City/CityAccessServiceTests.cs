@@ -33,6 +33,8 @@ namespace EPlast.XUnitTest.Services.City
         {
             var userStore = new Mock<IUserStore<DatabaseEntities.User>>();
             _userManager = new Mock<UserManager<DatabaseEntities.User>>(userStore.Object, null, null, null, null, null, null, null, null);
+            _repositoryWrapper.Setup(r => r.AdminType.GetFirstAsync(It.IsAny<Expression<Func<DatabaseEntities.AdminType, bool>>>(), null))
+                .ReturnsAsync(new DatabaseEntities.AdminType());
             var cityAccessSettings = new CityAccessSettings(_repositoryWrapper.Object);
             _cityAccessService = new CityAccessService(cityAccessSettings, _userManager.Object, _mapper.Object);
         }
