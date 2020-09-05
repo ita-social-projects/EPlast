@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20200831083043_Kadra")]
+    partial class Kadra
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -619,7 +621,7 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<DateTime>("DateOfGranting")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("KadraVykhovnykivTypeId")
+                    b.Property<int?>("KadraVykhovnykivTypeID")
                         .HasColumnType("int");
 
                     b.Property<string>("Link")
@@ -629,12 +631,11 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("KadraVykhovnykivTypeId");
+                    b.HasIndex("KadraVykhovnykivTypeID");
 
                     b.HasIndex("UserId");
 
@@ -1679,15 +1680,11 @@ namespace EPlast.DataAccess.Migrations
                 {
                     b.HasOne("EPlast.DataAccess.Entities.EducatorsStaff.KadraVykhovnykivTypes", "KadraVykhovnykivType")
                         .WithMany("UsersKadras")
-                        .HasForeignKey("KadraVykhovnykivTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("KadraVykhovnykivTypeID");
 
                     b.HasOne("EPlast.DataAccess.Entities.User", "User")
                         .WithMany("UsersKadras")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Event.Event", b =>

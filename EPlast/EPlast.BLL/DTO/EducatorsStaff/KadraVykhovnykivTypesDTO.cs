@@ -7,6 +7,5 @@ namespace EPlast.BLL.DTO.EducatorsStaff
     {
         public int ID { get; set; }
         public string Name { get; set; }
-        public ICollection<KadraVykhovnykiv> UsersKadras { get; set; }
     }
 }

@@ -7,11 +7,11 @@ namespace EPlast.DataAccess.Entities.EducatorsStaff
     {
         [Key]
         public int ID { get; set; }
-
+        [Required]
         public string UserId { get; set; }
        public User User { get; set; }
-        public int KVTypesID { get; set; }
-        public KadraVykhovnykivTypes KadraVykhovnykivTypes { get; set; }
+        public int KadraVykhovnykivTypeId { get; set; }
+        public KadraVykhovnykivTypes KadraVykhovnykivType { get; set; }
         
         public DateTime DateOfGranting { get; set; }
 

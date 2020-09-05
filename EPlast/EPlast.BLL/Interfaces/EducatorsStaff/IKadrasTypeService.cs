@@ -13,5 +13,6 @@ namespace EPlast.BLL.Interfaces.EducatorsStaff
         Task<KadraVykhovnykivTypesDTO> CreateKVType(KadraVykhovnykivTypesDTO kvTypeDTO);
 
         Task<IEnumerable<KadraVykhovnykivDTO>> GetKadrasWithSuchType(KadraVykhovnykivTypesDTO kvTypeDTO);
+        Task<int> GetIdWithKVType(string detectname);
     }
 }
