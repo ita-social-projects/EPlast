@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace EPlast.DataAccess.Migrations
 {
-    public partial class Kadra : Migration
+    public partial class KadraEntityAdding : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -27,7 +27,8 @@ namespace EPlast.DataAccess.Migrations
                     ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(nullable: true),
-                    KadraVykhovnykivTypeID = table.Column<int>(nullable: true),
+                    KVTypesID = table.Column<int>(nullable: false),
+                    KadraVykhovnykivTypesID = table.Column<int>(nullable: true),
                     DateOfGranting = table.Column<DateTime>(nullable: false),
                     NumberInRegister = table.Column<int>(nullable: false),
                     BasisOfGranting = table.Column<string>(maxLength: 100, nullable: false),
@@ -37,8 +38,8 @@ namespace EPlast.DataAccess.Migrations
                 {
                     table.PrimaryKey("PK_KVs", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_KVs_KVTypes_KadraVykhovnykivTypeID",
-                        column: x => x.KadraVykhovnykivTypeID,
+                        name: "FK_KVs_KVTypes_KadraVykhovnykivTypesID",
+                        column: x => x.KadraVykhovnykivTypesID,
                         principalTable: "KVTypes",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
@@ -51,9 +52,9 @@ namespace EPlast.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_KVs_KadraVykhovnykivTypeID",
+                name: "IX_KVs_KadraVykhovnykivTypesID",
                 table: "KVs",
-                column: "KadraVykhovnykivTypeID");
+                column: "KadraVykhovnykivTypesID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_KVs_UserId",

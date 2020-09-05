@@ -619,7 +619,10 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<DateTime>("DateOfGranting")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("KadraVykhovnykivTypeId")
+                    b.Property<int>("KVTypesID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("KadraVykhovnykivTypesID")
                         .HasColumnType("int");
 
                     b.Property<string>("Link")
@@ -629,12 +632,11 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("KadraVykhovnykivTypeId");
+                    b.HasIndex("KadraVykhovnykivTypesID");
 
                     b.HasIndex("UserId");
 
@@ -1677,17 +1679,13 @@ namespace EPlast.DataAccess.Migrations
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.EducatorsStaff.KadraVykhovnykiv", b =>
                 {
-                    b.HasOne("EPlast.DataAccess.Entities.EducatorsStaff.KadraVykhovnykivTypes", "KadraVykhovnykivType")
+                    b.HasOne("EPlast.DataAccess.Entities.EducatorsStaff.KadraVykhovnykivTypes", "KadraVykhovnykivTypes")
                         .WithMany("UsersKadras")
-                        .HasForeignKey("KadraVykhovnykivTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("KadraVykhovnykivTypesID");
 
                     b.HasOne("EPlast.DataAccess.Entities.User", "User")
                         .WithMany("UsersKadras")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Event.Event", b =>
