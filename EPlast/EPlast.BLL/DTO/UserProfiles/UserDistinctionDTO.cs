@@ -1,4 +1,5 @@
-﻿using EPlast.BLL.DTO.UserProfiles;
+﻿using EPlast.BLL.DTO.City;
+using EPlast.BLL.DTO.UserProfiles;
 using System;
 
 namespace EPlast.BLL
@@ -12,6 +13,6 @@ namespace EPlast.BLL
         public string Reason { get; set; }
         public DateTime Date { get; set; }
         public string UserId { get; set; }
-        public UserDTO User { get; set; }
+        public CityUserDTO User { get; set; }
     }
 }
