@@ -246,433 +246,86 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         }
 
         [Fact]
-        public async Task ConfirmAsyncCorrectWithoutAdmins()
+        public async Task Confirm_Correct_SaveChanges()
         {
             // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
-               It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
-                   .ReturnsAsync(new DatabaseEntities.AnnualReport { CityManagement = new DatabaseEntities.CityManagement() });
-            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .ReturnsAsync(true);
-            _repositoryWrapper.Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityAdministration, bool>>>(), null))
-                .ReturnsAsync((DatabaseEntities.CityAdministration)null);
-            _repositoryWrapper.Setup(r => r.CityLegalStatuses.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityLegalStatus, bool>>>(), null))
-                .ReturnsAsync((DatabaseEntities.CityLegalStatus)null);
-
-            // Act
-            await _annualReportService.ConfirmAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>());
-
-            // Assert
-            _repositoryWrapper.Verify(r => r.AnnualReports.Update(It.IsAny<DatabaseEntities.AnnualReport>()));
-            _repositoryWrapper.Verify(r => r.SaveAsync());
-            _repositoryWrapper.Verify(r => r.CityAdministration.Update(It.IsAny<DatabaseEntities.CityAdministration>()), Times.Never);
-            _userManager.Verify(u => u.RemoveFromRoleAsync(It.IsAny<DatabaseEntities.User>(), It.IsAny<string>()), Times.Never);
-            _repositoryWrapper.Verify(r => r.CityAdministration.CreateAsync(It.IsAny<DatabaseEntities.CityAdministration>()), Times.Never);
-            _userManager.Verify(u => u.AddToRoleAsync(It.IsAny<DatabaseEntities.User>(), It.IsAny<string>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task ConfirmAsyncCorrectOldAdmin()
-        {
-            // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
-               It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
-                   .ReturnsAsync(new DatabaseEntities.AnnualReport { CityManagement = new DatabaseEntities.CityManagement() });
-            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .ReturnsAsync(true);
-            _repositoryWrapper.Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityAdministration, bool>>>(), null))
-                .ReturnsAsync(new DatabaseEntities.CityAdministration());
-            _repositoryWrapper.Setup(r => r.CityLegalStatuses.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityLegalStatus, bool>>>(), null))
-                .ReturnsAsync((DatabaseEntities.CityLegalStatus)null);
-
-            // Act
-            await _annualReportService.ConfirmAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>());
-
-            // Assert
-            _repositoryWrapper.Verify(r => r.AnnualReports.Update(It.IsAny<DatabaseEntities.AnnualReport>()));
-            _repositoryWrapper.Verify(r => r.SaveAsync());
-            _repositoryWrapper.Verify(r => r.CityAdministration.Update(It.IsAny<DatabaseEntities.CityAdministration>()), Times.Never);
-            _userManager.Verify(u => u.RemoveFromRoleAsync(It.IsAny<DatabaseEntities.User>(), It.IsAny<string>()), Times.Never);
-            _repositoryWrapper.Verify(r => r.CityAdministration.CreateAsync(It.IsAny<DatabaseEntities.CityAdministration>()), Times.Never);
-            _userManager.Verify(u => u.AddToRoleAsync(It.IsAny<DatabaseEntities.User>(), It.IsAny<string>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task ConfirmAsyncCorrectNewAdmin()
-        {
-            // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
-               It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
-                   .ReturnsAsync(new DatabaseEntities.AnnualReport { CityManagement = new DatabaseEntities.CityManagement { UserId = "1" } });
-            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .ReturnsAsync(true);
-            _repositoryWrapper.Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityAdministration, bool>>>(), null))
-                .ReturnsAsync((DatabaseEntities.CityAdministration)null);
-            _userManager.Setup(u => u.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(new DatabaseEntities.User());
-            _repositoryWrapper.Setup(r => r.CityLegalStatuses.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityLegalStatus, bool>>>(), null))
-                .ReturnsAsync((DatabaseEntities.CityLegalStatus)null);
-
-            // Act
-            await _annualReportService.ConfirmAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>());
-
-            // Assert
-            _repositoryWrapper.Verify(r => r.AnnualReports.Update(It.IsAny<DatabaseEntities.AnnualReport>()));
-            _repositoryWrapper.Verify(r => r.SaveAsync());
-            _repositoryWrapper.Verify(r => r.CityAdministration.Update(It.IsAny<DatabaseEntities.CityAdministration>()), Times.Never);
-            _userManager.Verify(u => u.RemoveFromRoleAsync(It.IsAny<DatabaseEntities.User>(), It.IsAny<string>()), Times.Never);
-            _repositoryWrapper.Verify(r => r.CityAdministration.CreateAsync(It.IsAny<DatabaseEntities.CityAdministration>()));
-            _userManager.Verify(u => u.AddToRoleAsync(It.IsAny<DatabaseEntities.User>(), It.IsAny<string>()));
-        }
-
-        [Fact]
-        public async Task ConfirmAsyncCorrectOldAdminEqualNewAdmin()
-        {
-            // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
-               It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
-                   .ReturnsAsync(new DatabaseEntities.AnnualReport { CityManagement = new DatabaseEntities.CityManagement { UserId = "1" } });
-            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .ReturnsAsync(true);
-            _repositoryWrapper.Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityAdministration, bool>>>(), null))
-                .ReturnsAsync(new DatabaseEntities.CityAdministration { UserId = "1" });
-            _repositoryWrapper.Setup(r => r.CityLegalStatuses.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityLegalStatus, bool>>>(), null))
-                .ReturnsAsync((DatabaseEntities.CityLegalStatus)null);
-
-            // Act
-            await _annualReportService.ConfirmAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>());
-
-            // Assert
-            _repositoryWrapper.Verify(r => r.AnnualReports.Update(It.IsAny<DatabaseEntities.AnnualReport>()));
-            _repositoryWrapper.Verify(r => r.SaveAsync());
-            _repositoryWrapper.Verify(r => r.CityAdministration.Update(It.IsAny<DatabaseEntities.CityAdministration>()), Times.Never);
-            _userManager.Verify(u => u.RemoveFromRoleAsync(It.IsAny<DatabaseEntities.User>(), It.IsAny<string>()), Times.Never);
-            _repositoryWrapper.Verify(r => r.CityAdministration.CreateAsync(It.IsAny<DatabaseEntities.CityAdministration>()), Times.Never);
-            _userManager.Verify(u => u.AddToRoleAsync(It.IsAny<DatabaseEntities.User>(), It.IsAny<string>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task ConfirmAsyncCorrectOldAdminNotEqualNewAdmin()
-        {
-            // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
-               It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
-                   .ReturnsAsync(new DatabaseEntities.AnnualReport { CityManagement = new DatabaseEntities.CityManagement { UserId = "1" } });
-            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .ReturnsAsync(true);
-            _repositoryWrapper.Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityAdministration, bool>>>(), null))
-                .ReturnsAsync(new DatabaseEntities.CityAdministration { UserId = "2" });
-            _userManager.Setup(u => u.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(new DatabaseEntities.User());
-            _repositoryWrapper.Setup(r => r.CityLegalStatuses.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityLegalStatus, bool>>>(), null))
-                .ReturnsAsync((DatabaseEntities.CityLegalStatus)null);
-
-            // Act
-            await _annualReportService.ConfirmAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>());
-
-            // Assert
-            _repositoryWrapper.Verify(r => r.AnnualReports.Update(It.IsAny<DatabaseEntities.AnnualReport>()));
-            _repositoryWrapper.Verify(r => r.SaveAsync());
-            _repositoryWrapper.Verify(r => r.CityAdministration.Update(It.IsAny<DatabaseEntities.CityAdministration>()));
-            _userManager.Verify(u => u.RemoveFromRoleAsync(It.IsAny<DatabaseEntities.User>(), It.IsAny<string>()));
-            _repositoryWrapper.Verify(r => r.CityAdministration.CreateAsync(It.IsAny<DatabaseEntities.CityAdministration>()));
-            _userManager.Verify(u => u.AddToRoleAsync(It.IsAny<DatabaseEntities.User>(), It.IsAny<string>()));
-        }
-
-        [Fact]
-        public async Task ConfirmAsyncCorrectWithoutOldStatus()
-        {
-            // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
-               It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
-                   .ReturnsAsync(new DatabaseEntities.AnnualReport { CityManagement = new DatabaseEntities.CityManagement() });
-            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .ReturnsAsync(true);
-            _repositoryWrapper.Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityAdministration, bool>>>(), null))
-                .ReturnsAsync((DatabaseEntities.CityAdministration)null);
-            _repositoryWrapper.Setup(r => r.CityLegalStatuses.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityLegalStatus, bool>>>(), null))
-                .ReturnsAsync((DatabaseEntities.CityLegalStatus)null);
-
-            // Act
-            await _annualReportService.ConfirmAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>());
-
-            // Assert
-            _repositoryWrapper.Verify(r => r.AnnualReports.Update(It.IsAny<DatabaseEntities.AnnualReport>()));
-            _repositoryWrapper.Verify(r => r.SaveAsync());
-            _repositoryWrapper.Verify(r => r.CityLegalStatuses.Update(It.IsAny<DatabaseEntities.CityLegalStatus>()), Times.Never);
-            _repositoryWrapper.Verify(r => r.CityLegalStatuses.CreateAsync(It.IsAny<DatabaseEntities.CityLegalStatus>()));
-        }
-
-        [Fact]
-        public async Task ConfirmAsyncCorrectOldStatusEqualNewStatus()
-        {
-            // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
-               It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
-                   .ReturnsAsync(new DatabaseEntities.AnnualReport
-                   {
-                       CityManagement = new DatabaseEntities.CityManagement { CityLegalStatusNew = DatabaseEntities.CityLegalStatusType.InTheProcessOfLegalization }
-                   });
-            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .ReturnsAsync(true);
-            _repositoryWrapper.Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityAdministration, bool>>>(), null))
-                .ReturnsAsync((DatabaseEntities.CityAdministration)null);
-            _repositoryWrapper.Setup(r => r.CityLegalStatuses.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityLegalStatus, bool>>>(), null))
-                .ReturnsAsync(new DatabaseEntities.CityLegalStatus { LegalStatusType = DatabaseEntities.CityLegalStatusType.InTheProcessOfLegalization });
-
-            // Act
-            await _annualReportService.ConfirmAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>());
-
-            // Assert
-            _repositoryWrapper.Verify(r => r.AnnualReports.Update(It.IsAny<DatabaseEntities.AnnualReport>()));
-            _repositoryWrapper.Verify(r => r.SaveAsync());
-            _repositoryWrapper.Verify(r => r.CityLegalStatuses.Update(It.IsAny<DatabaseEntities.CityLegalStatus>()), Times.Never);
-            _repositoryWrapper.Verify(r => r.CityLegalStatuses.CreateAsync(It.IsAny<DatabaseEntities.CityLegalStatus>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task ConfirmAsyncCorrectOldStatusNotEqualNewStatus()
-        {
-            // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
-               It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
-                   .ReturnsAsync(new DatabaseEntities.AnnualReport
-                   {
-                       CityManagement = new DatabaseEntities.CityManagement { CityLegalStatusNew = DatabaseEntities.CityLegalStatusType.LegalizedByMessage }
-                   });
-            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .ReturnsAsync(true);
-            _repositoryWrapper.Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityAdministration, bool>>>(), null))
-                .ReturnsAsync((DatabaseEntities.CityAdministration)null);
-            _repositoryWrapper.Setup(r => r.CityLegalStatuses.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityLegalStatus, bool>>>(), null))
-                .ReturnsAsync(new DatabaseEntities.CityLegalStatus { LegalStatusType = DatabaseEntities.CityLegalStatusType.InTheProcessOfLegalization });
-
-            // Act
-            await _annualReportService.ConfirmAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>());
-
-            // Assert
-            _repositoryWrapper.Verify(r => r.AnnualReports.Update(It.IsAny<DatabaseEntities.AnnualReport>()));
-            _repositoryWrapper.Verify(r => r.SaveAsync());
-            _repositoryWrapper.Verify(r => r.CityLegalStatuses.Update(It.IsAny<DatabaseEntities.CityLegalStatus>()));
-            _repositoryWrapper.Verify(r => r.CityLegalStatuses.CreateAsync(It.IsAny<DatabaseEntities.CityLegalStatus>()));
-        }
-
-        [Fact]
-        public async Task ConfirmAsyncCorrectSaveLastConfirmed()
-        {
-            // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
-               It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
-                   .ReturnsAsync(new DatabaseEntities.AnnualReport { CityManagement = new DatabaseEntities.CityManagement() });
             _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
                 .ReturnsAsync(new DatabaseEntities.AnnualReport());
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .ReturnsAsync(true);
-            _repositoryWrapper.Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityAdministration, bool>>>(), null))
-                .ReturnsAsync((DatabaseEntities.CityAdministration)null);
-            _repositoryWrapper.Setup(r => r.CityLegalStatuses.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityLegalStatus, bool>>>(), null))
-                .ReturnsAsync((DatabaseEntities.CityLegalStatus)null);
 
             // Act
             await _annualReportService.ConfirmAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>());
 
             // Assert
-            _repositoryWrapper.Verify(r => r.AnnualReports.Update(It.IsAny<DatabaseEntities.AnnualReport>()), Times.Exactly(2));
-            _repositoryWrapper.Verify(r => r.SaveAsync());
+            _repositoryWrapper.Verify(r => r.SaveAsync(), Times.Once);
         }
 
         [Fact]
-        public async Task ConfirmAsyncCorrectLastConfirmedNotFound()
+        public async Task Confirm_NotExist_NullReferenceException()
         {
             // Arrange
-            _repositoryWrapper.SetupSequence(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
-               It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
-                   .ReturnsAsync(new DatabaseEntities.AnnualReport { CityManagement = new DatabaseEntities.CityManagement() })
-                   .ReturnsAsync(default(DatabaseEntities.AnnualReport));
-            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .ReturnsAsync(true);
-            _repositoryWrapper.Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityAdministration, bool>>>(), null))
-                .ReturnsAsync((DatabaseEntities.CityAdministration)null);
-            _repositoryWrapper.Setup(r => r.CityLegalStatuses.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityLegalStatus, bool>>>(), null))
-                .ReturnsAsync((DatabaseEntities.CityLegalStatus)null);
+            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
+                .ReturnsAsync((DatabaseEntities.AnnualReport)null);
 
-            // Act
-            await _annualReportService.ConfirmAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>());
-
-            // Assert
-            _repositoryWrapper.Verify(r => r.AnnualReports.Update(It.IsAny<DatabaseEntities.AnnualReport>()), Times.Once);
-            _repositoryWrapper.Verify(r => r.SaveAsync());
-        }
-
-        [Fact]
-        public async Task ConfirmAsyncUnauthorizedAccessException()
-        {
-            // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
-               It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
-                   .ReturnsAsync(new DatabaseEntities.AnnualReport());
-            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .ReturnsAsync(false);
-
-            // Act
-            var result = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.ConfirmAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()));
-
-            // Assert
-            _repositoryWrapper.Verify(r => r.SaveAsync(), Times.Never);
-        }
-
-        [Fact]
-        public async Task ConfirmAsyncNullReferenceException()
-        {
-            // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
-               It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
-                   .ReturnsAsync((DatabaseEntities.AnnualReport)null);
-
-            // Act
+            // Act & Assert
             await Assert.ThrowsAsync<NullReferenceException>(() => _annualReportService.ConfirmAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()));
-
-            // Assert
             _repositoryWrapper.Verify(r => r.SaveAsync(), Times.Never);
         }
 
         [Fact]
-        public async Task CancelAsyncCorrectAdminRevertPointNull()
+        public async Task Confirm_NoAccess_NullReferenceException()
         {
             // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
-               It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
-                   .ReturnsAsync(new DatabaseEntities.AnnualReport { CityManagement = new DatabaseEntities.CityManagement() });
-            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .ReturnsAsync(true);
-            _repositoryWrapper.Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.CityAdministration, bool>>>(), null))
-                .ReturnsAsync(new List<DatabaseEntities.CityAdministration> { new DatabaseEntities.CityAdministration() });
-            _repositoryWrapper.Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityAdministration, bool>>>(), null))
-                .ReturnsAsync((DatabaseEntities.CityAdministration)null);
-            _repositoryWrapper.Setup(r => r.CityLegalStatuses.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.CityLegalStatus, bool>>>(), null))
-                .ReturnsAsync(new List<DatabaseEntities.CityLegalStatus> { new DatabaseEntities.CityLegalStatus() });
-            _repositoryWrapper.Setup(r => r.CityLegalStatuses.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityLegalStatus, bool>>>(), null))
-                .ReturnsAsync((DatabaseEntities.CityLegalStatus)null);
-
-            // Act
-            await _annualReportService.CancelAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>());
-
-            // Assert
-            _repositoryWrapper.Verify(r => r.SaveAsync());
-            _repositoryWrapper.Verify(r => r.CityAdministration.Update(It.IsAny<DatabaseEntities.CityAdministration>()), Times.Never);
-            _userManager.Verify(u => u.AddToRoleAsync(It.IsAny<DatabaseEntities.User>(), It.IsAny<string>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task CancelAsyncCorrectAdminRevertPointNotNull()
-        {
-            // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
-               It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
-                   .ReturnsAsync(new DatabaseEntities.AnnualReport { CityManagement = new DatabaseEntities.CityManagement() });
-            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .ReturnsAsync(true);
-            _repositoryWrapper.Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.CityAdministration, bool>>>(), null))
-                .ReturnsAsync(new List<DatabaseEntities.CityAdministration> { new DatabaseEntities.CityAdministration() });
-            _repositoryWrapper.Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityAdministration, bool>>>(), null))
-                .ReturnsAsync(new DatabaseEntities.CityAdministration());
-            _userManager.Setup(u => u.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(new DatabaseEntities.User());
-            _repositoryWrapper.Setup(r => r.CityLegalStatuses.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.CityLegalStatus, bool>>>(), null))
-                .ReturnsAsync(new List<DatabaseEntities.CityLegalStatus> { new DatabaseEntities.CityLegalStatus() });
-            _repositoryWrapper.Setup(r => r.CityLegalStatuses.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityLegalStatus, bool>>>(), null))
-                .ReturnsAsync((DatabaseEntities.CityLegalStatus)null);
-
-            // Act
-            await _annualReportService.CancelAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>());
-
-            // Assert
-            _repositoryWrapper.Verify(r => r.SaveAsync());
-            _repositoryWrapper.Verify(r => r.CityAdministration.Update(It.IsAny<DatabaseEntities.CityAdministration>()));
-            _userManager.Verify(u => u.AddToRoleAsync(It.IsAny<DatabaseEntities.User>(), It.IsAny<string>()));
-        }
-
-        [Fact]
-        public async Task CancelAsyncCorrectStatusRevertPointNull()
-        {
-            // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
-               It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
-                   .ReturnsAsync(new DatabaseEntities.AnnualReport { CityManagement = new DatabaseEntities.CityManagement() });
-            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .ReturnsAsync(true);
-            _repositoryWrapper.Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.CityAdministration, bool>>>(), null))
-                .ReturnsAsync(new List<DatabaseEntities.CityAdministration> { new DatabaseEntities.CityAdministration() });
-            _repositoryWrapper.Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityAdministration, bool>>>(), null))
-                .ReturnsAsync((DatabaseEntities.CityAdministration)null);
-            _repositoryWrapper.Setup(r => r.CityLegalStatuses.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.CityLegalStatus, bool>>>(), null))
-                .ReturnsAsync(new List<DatabaseEntities.CityLegalStatus> { new DatabaseEntities.CityLegalStatus() });
-            _repositoryWrapper.Setup(r => r.CityLegalStatuses.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityLegalStatus, bool>>>(), null))
-                .ReturnsAsync((DatabaseEntities.CityLegalStatus)null);
-
-            // Act
-            await _annualReportService.CancelAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>());
-
-            // Assert
-            _repositoryWrapper.Verify(r => r.SaveAsync());
-            _repositoryWrapper.Verify(r => r.CityLegalStatuses.Update(It.IsAny<DatabaseEntities.CityLegalStatus>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task CancelAsyncCorrectStatusRevertPointNotNull()
-        {
-            // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
-               It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
-                   .ReturnsAsync(new DatabaseEntities.AnnualReport { CityManagement = new DatabaseEntities.CityManagement() });
-            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
-                .ReturnsAsync(true);
-            _repositoryWrapper.Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.CityAdministration, bool>>>(), null))
-                .ReturnsAsync(new List<DatabaseEntities.CityAdministration> { new DatabaseEntities.CityAdministration() });
-            _repositoryWrapper.Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityAdministration, bool>>>(), null))
-                .ReturnsAsync((DatabaseEntities.CityAdministration)null);
-            _repositoryWrapper.Setup(r => r.CityLegalStatuses.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.CityLegalStatus, bool>>>(), null))
-                .ReturnsAsync(new List<DatabaseEntities.CityLegalStatus> { new DatabaseEntities.CityLegalStatus() });
-            _repositoryWrapper.Setup(r => r.CityLegalStatuses.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityLegalStatus, bool>>>(), null))
-                .ReturnsAsync(new DatabaseEntities.CityLegalStatus());
-
-            // Act
-            await _annualReportService.CancelAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>());
-
-            // Assert
-            _repositoryWrapper.Verify(r => r.SaveAsync());
-            _repositoryWrapper.Verify(r => r.CityLegalStatuses.Update(It.IsAny<DatabaseEntities.CityLegalStatus>()));
-        }
-
-        [Fact]
-        public async Task CancelAsyncUnauthorizedAccessException()
-        {
-            // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
-               It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
-                   .ReturnsAsync(new DatabaseEntities.AnnualReport());
+            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
+                .ReturnsAsync(new DatabaseEntities.AnnualReport());
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
                 .ReturnsAsync(false);
 
-            // Act
-            var result = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.CancelAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()));
-
-            // Assert
+            // Act & Assert
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.ConfirmAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()));
             _repositoryWrapper.Verify(r => r.SaveAsync(), Times.Never);
         }
 
         [Fact]
-        public async Task CancelAsyncNullReferenceException()
+        public async Task Cancel_Correct_SaveChanges()
         {
             // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
-               It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
-                   .ReturnsAsync((DatabaseEntities.AnnualReport)null);
+            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
+                .ReturnsAsync(new DatabaseEntities.AnnualReport());
+            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
+                .ReturnsAsync(true);
 
             // Act
-            await Assert.ThrowsAsync<NullReferenceException>(() => _annualReportService.CancelAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()));
+            await _annualReportService.CancelAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>());
 
             // Assert
+            _repositoryWrapper.Verify(r => r.SaveAsync(), Times.Once);
+        }
+
+        [Fact]
+        public async Task Cancel_NotExist_NullReferenceException()
+        {
+            // Arrange
+            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
+                .ReturnsAsync((DatabaseEntities.AnnualReport)null);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<NullReferenceException>(() => _annualReportService.CancelAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()));
+            _repositoryWrapper.Verify(r => r.SaveAsync(), Times.Never);
+        }
+
+        [Fact]
+        public async Task Cancel_NoAccess_NullReferenceException()
+        {
+            // Arrange
+            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
+                .ReturnsAsync(new DatabaseEntities.AnnualReport());
+            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
+                .ReturnsAsync(false);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.CancelAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()));
             _repositoryWrapper.Verify(r => r.SaveAsync(), Times.Never);
         }
 

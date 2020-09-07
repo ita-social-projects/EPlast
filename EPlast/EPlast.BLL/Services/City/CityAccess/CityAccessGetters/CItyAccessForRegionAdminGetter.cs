@@ -1,4 +1,5 @@
-﻿using EPlast.DataAccess.Repositories;
+﻿using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -11,16 +12,19 @@ namespace EPlast.BLL.Services.City.CityAccess.CityAccessGetters
     public class CItyAccessForRegionAdminGetter : ICItyAccessGetter
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
+        private readonly AdminType _regionAdminType;
 
         public CItyAccessForRegionAdminGetter(IRepositoryWrapper repositoryWrapper)
         {
             _repositoryWrapper = repositoryWrapper;
+            _regionAdminType = _repositoryWrapper.AdminType.GetFirstAsync(
+                    predicate: a => a.AdminTypeName == "Голова Округу").Result;
         }
 
         public async Task<IEnumerable<DatabaseEntities.City>> GetCities(string userId)
         {
             var regionAdministration = await _repositoryWrapper.RegionAdministration.GetFirstOrDefaultAsync(
-                    predicate: r => r.User.Id == userId && (r.EndDate == null || r.EndDate > DateTime.Now),
+                    predicate: r => r.User.Id == userId && (r.EndDate == null || r.EndDate > DateTime.Now) && r.AdminTypeId == _regionAdminType.ID,
                     include: source => source
                         .Include(r => r.Region));
             return regionAdministration != null ? await _repositoryWrapper.City.GetAllAsync(

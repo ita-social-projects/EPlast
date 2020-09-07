@@ -145,7 +145,7 @@ namespace EPlast.BLL.Services
         public async Task<IdentityResult> ResetPasswordAsync(string userId, ResetPasswordDto resetPasswordDto)
         {
             var user = await _userManager.FindByIdAsync(userId);
-            var result = await _userManager.ResetPasswordAsync(user, HttpUtility.UrlDecode(resetPasswordDto.Code), resetPasswordDto.Password);
+            var result = await _userManager.ResetPasswordAsync(user, resetPasswordDto.Code, resetPasswordDto.Password);
             return result;
         }
 
