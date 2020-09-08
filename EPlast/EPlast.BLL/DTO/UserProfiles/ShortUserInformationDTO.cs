@@ -8,7 +8,6 @@ namespace EPlast.BLL.DTO.UserProfiles
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTime? Birthday { get; set; }
-        public int? GenderID { get; set; }
         public GenderDTO Gender { get; set; }
     }
 }
