@@ -4,6 +4,7 @@ using EPlast.BLL.Interfaces.EducatorsStaff;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace EPlast.BLL.Services.EducatorsStaff
         private readonly IMapper _mapper;
        
 
-        public KadraService(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService<KadraService> loggerService)
+        public KadraService(IRepositoryWrapper repositoryWrapper, IMapper mapper)
         {
             
             _repositoryWrapper = repositoryWrapper;
@@ -37,14 +38,11 @@ namespace EPlast.BLL.Services.EducatorsStaff
         {
 
                 var deletedKadra = (await _repositoryWrapper.KVs.GetFirstAsync(d => d.ID == kadra_id));
-            if (deletedKadra != null)
-            {
+           
                 _repositoryWrapper.KVs.Delete(deletedKadra);
                 await _repositoryWrapper.SaveAsync();
-            }
-            else {
-                throw new InvalidOperationException();
-            }
+            
+            
                    
         }
 
@@ -76,7 +74,9 @@ namespace EPlast.BLL.Services.EducatorsStaff
         public async Task<IEnumerable<KadraVykhovnykivDTO>> GetKVsWithKVType(int kvType_Id)
         {
            
-            var KVs = _mapper.Map<IEnumerable<KadraVykhovnykiv>, IEnumerable<KadraVykhovnykivDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.KVTypesID == kvType_Id));
+            var KVs = _mapper.Map<IEnumerable<KadraVykhovnykiv>, IEnumerable<KadraVykhovnykivDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.KadraVykhovnykivType.ID == kvType_Id,
+                include:
+                source=>source.Include(c=>c.User)));
             return KVs;
         }
 
@@ -86,7 +86,7 @@ namespace EPlast.BLL.Services.EducatorsStaff
            
                 editedKadra.NumberInRegister = kadrasDTO.NumberInRegister;
                 editedKadra.Link = kadrasDTO.Link;
-                editedKadra.UserId = kadrasDTO.UserId;
+            editedKadra.KadraVykhovnykivTypeId = kadrasDTO.KadraVykhovnykivTypeId;
                 editedKadra.BasisOfGranting = kadrasDTO.BasisOfGranting;
                 editedKadra.DateOfGranting = kadrasDTO.DateOfGranting;
 

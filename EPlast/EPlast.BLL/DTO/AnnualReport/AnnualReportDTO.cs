@@ -75,10 +75,14 @@ namespace EPlast.BLL.DTO.AnnualReport
 
         public MembersStatisticDTO MembersStatistic { get; set; }
 
-        public CityManagementDTO CityManagement { get; set; }
+        public string CreatorId { get; set; }
+        public UserDTO Creator { get; set; }
 
-        public string UserId { get; set; }
-        public UserDTO User { get; set; }
+        public string NewCityAdminId { get; set; }
+        public UserDTO NewCityAdmin { get; set; }
+
+        [Required]
+        public CityLegalStatusTypeDTO NewCityLegalStatusType { get; set; }
 
         public int CityId { get; set; }
         public CityDTO City { get; set; }

@@ -75,10 +75,14 @@ namespace EPlast.DataAccess.Entities
 
         public MembersStatistic MembersStatistic { get; set; }
 
-        public CityManagement CityManagement { get; set; }
+        public string CreatorId { get; set; }
+        public User Creator { get; set; }
 
-        public string UserId { get; set; }
-        public User User { get; set; }
+        public string NewCityAdminId { get; set; }
+        public User NewCityAdmin { get; set; }
+
+        [Required]
+        public CityLegalStatusType NewCityLegalStatusType { get; set; }
 
         public int CityId { get; set; }
         public City City { get; set; }

@@ -152,6 +152,16 @@ namespace EPlast.DataAccess
                 .HasMany(x => x.UserDistinctions)
                 .WithOne(x => x.Distinction)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AnnualReport>(annualReport =>
+            {
+                annualReport.HasOne(a => a.Creator)
+                    .WithMany(u => u.CreatedAnnualReports)
+                    .HasForeignKey(a => a.CreatorId);
+                annualReport.HasOne(a => a.NewCityAdmin)
+                    .WithMany(u => u.NewCityAdminAnnualReports)
+                    .HasForeignKey(a => a.NewCityAdminId);
+            });
         }
 
         public DbSet<DocumentTemplate> DocumentTemplates { get; set; }
@@ -160,7 +170,6 @@ namespace EPlast.DataAccess
         public DbSet<Decesion> Decesions { get; set; }
         public DbSet<AnnualReport> AnnualReports { get; set; }
         public DbSet<MembersStatistic> MembersStatistics { get; set; }
-        public DbSet<CityManagement> CityManagements { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<CityAdministration> CityAdministrations { get; set; }
         public DbSet<CityDocuments> CityDocuments { get; set; }
