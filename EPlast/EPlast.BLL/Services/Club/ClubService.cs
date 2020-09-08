@@ -190,5 +190,14 @@ namespace EPlast.BLL.Services.Club
 
             return isTheSameClubName;
         }
+
+        public async Task<bool> VerifyUserCanJoinToClubAsync(int clubId, string userId)
+        {
+            var clubMember = await _repoWrapper.ClubMembers
+                .GetFirstOrDefaultAsync(u => u.User.Id == userId && u.ClubId == clubId);
+            var canJoin = clubMember == null;
+
+            return canJoin;
+        }
     }
 }

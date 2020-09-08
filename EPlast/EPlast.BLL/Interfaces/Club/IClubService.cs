@@ -85,5 +85,13 @@ namespace EPlast.BLL.Interfaces.Club
         /// <param name="club">ClubDTO with club data.</param>
         /// <returns>Returns true if the club's name is not changed, otherwise - false.</returns>
         Task<bool> VerifyClubNameIsNotChangedAsync(ClubDTO club);
+
+        /// <summary>
+        /// Verifies whether the a user is able to join a club.
+        /// </summary>
+        /// <param name="clubId">Id of a club</param>
+        /// <param name="userId">Id of a user</param>
+        /// <returns>Returns true if the user is able to join, otherwise - false.</returns>
+        Task<bool> VerifyUserCanJoinToClubAsync(int clubId, string userId);
     }
 }

@@ -36,6 +36,7 @@ namespace EPlast.WebApi.Controllers
             var userId = await _userManagerService.GetUserIdAsync(User);
             viewModel.IsCurrentUserClubAdmin = userId != null && userId == viewModel.ClubAdmin?.Id;
             viewModel.IsCurrentUserAdmin = User.IsInRole("Admin");
+            viewModel.CanJoin = await _clubService.VerifyUserCanJoinToClubAsync(viewModel.Club.ID, userId);
 
             return viewModel;
         }
@@ -321,6 +322,19 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(_mapper.Map<ClubMembersDTO, ClubMembersViewModel>(
                 await _clubMembersService.AddFollowerAsync(clubId, userId)));
+        }
+
+        /// <summary>
+        /// Remove a specific member from the club
+        /// </summary>
+        /// <param name="memberId">The id of the member</param>
+        [HttpDelete("remove-member/{memberId:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> RemoveMember(int memberId)
+        {
+            await _clubMembersService.RemoveMemberAsync(memberId);
+
+            return Ok();
         }
     }
 }
