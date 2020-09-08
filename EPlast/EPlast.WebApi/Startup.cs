@@ -338,6 +338,11 @@ namespace EPlast.WebApi
              "59 23 * * *",
              TimeZoneInfo.Local
              );
+            recurringJobManager.AddOrUpdate("Check and change event status",
+               () => serviceProvider.GetService<IActionManager>().CheckEventsStatusesAsync(),
+            "59 23 * * *",
+            TimeZoneInfo.Local
+            );
             CreateRoles(serviceProvider).Wait();
         }
         private async Task CreateRoles(IServiceProvider serviceProvider)
