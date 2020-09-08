@@ -20,5 +20,11 @@ namespace EPlast.BLL.Interfaces.Club
         /// <param name="userId">Person userId</param>
         /// <returns>Updated ClubMembersDTO</returns>
         Task<ClubMembersDTO> AddFollowerAsync(int clubId, string userId);
+
+        /// <summary>
+        /// Removes member from the club
+        /// </summary>
+        /// <param name="memberId">The id of the member</param>
+        Task RemoveMemberAsync(int memberId);
     }
 }
