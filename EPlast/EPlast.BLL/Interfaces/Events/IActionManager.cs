@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using EPlast.BLL.DTO.Events;
+﻿using EPlast.BLL.DTO.Events;
 using EPlast.BLL.DTO.EventUser;
 using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace EPlast.BLL.Interfaces.Events
 {
