@@ -12,6 +12,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
@@ -116,7 +117,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync("string");
 
             //Act
-            var result = await _clubController.Club(clubID);
+            var result = await _clubController.GetClub(clubID);
             var resultValue = (result as OkObjectResult).Value;
 
             //Assert
@@ -197,7 +198,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task ClubDesctription_ReturnsOkObjectResult()
+        public async Task GetClubDesctription_ReturnsOkObjectResult()
         {
             //Arrange
             _clubService
@@ -205,7 +206,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(new ClubDTO());
 
             //Act
-            var result = await _clubController.ClubDescription(It.IsAny<int>());
+            var result = await _clubController.GetClubDescription(It.IsAny<int>());
             var resultValue = (result as OkObjectResult).Value as ClubDTO;
 
             //Assert
@@ -214,6 +215,76 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(resultValue);
             Assert.IsInstanceOf<ClubDTO>(resultValue);
+        }
+
+        [Test]
+        public async Task GetPartOfClubs_ReturnsOkObjectResult()
+        {
+            //Arrange
+            var listOfClubs = new List<ClubDTO>()
+            {
+                new ClubDTO()
+                {
+                    Logo = null,
+                }
+            };
+
+            _clubService
+                .Setup(x => x.GetPartOfClubsAsync(It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(listOfClubs);
+
+            //Act
+            var result = await _clubController.GetPartOfClubs(It.IsAny<int>(), It.IsAny<int>());
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetPartOfClubs_LogoNameString_LogoNameStringIsSet()
+        {
+            //Arrange
+            var logoName = "SomeLogoInBase64";
+
+            var listOfClubs = new List<ClubDTO>()
+            {
+                new ClubDTO()
+                {
+                    Logo = null,
+                }
+            };
+
+            var expected = logoName;
+
+            _clubService
+                .Setup(x => x.GetPartOfClubsAsync(It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(listOfClubs);
+            _clubService
+                .Setup(x => x.GetImageBase64Async(It.IsAny<string>()))
+                .ReturnsAsync(logoName);
+
+            //Act
+            var result = await _clubController.GetPartOfClubs(It.IsAny<int>(), It.IsAny<int>());
+            var actual = ((result as ObjectResult).Value as List<ClubDTO>).First();
+
+            //Assert
+            Assert.NotNull(actual);
+            Assert.AreEqual(expected, actual.Logo);
+        }
+
+        [Test]
+        public async Task GetClubsCount_ReturnsOkObjectResult()
+        {
+            //Arrange
+            _clubService
+                .Setup(x => x.GetClubsCountAsync())
+                .ReturnsAsync(It.IsAny<int>());
+
+            //Act
+            var result = await _clubController.GetClubsCount();
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
         [Test]

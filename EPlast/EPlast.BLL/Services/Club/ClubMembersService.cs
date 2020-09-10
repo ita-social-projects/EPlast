@@ -4,6 +4,7 @@ using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
 
@@ -28,9 +29,16 @@ namespace EPlast.BLL.Services.Club
         /// <inheritdoc />
         public async Task<ClubMembersDTO> ToggleIsApprovedInClubMembersAsync(int memberId, int clubId)
         {
-            var person =
-                await _repoWrapper.ClubMembers.GetFirstOrDefaultAsync(u => u.ID == memberId && u.ClubId == clubId) ??
+            var person = await _repoWrapper.ClubMembers
+                .GetFirstOrDefaultAsync(
+                    u => u.ID == memberId && u.ClubId == clubId,
+                    u => u.Include((x) => x.User));
+
+            if (person == null)
+            {
                 throw new ArgumentNullException($"User with id={memberId} not found");
+            }
+
             person.IsApproved = !person.IsApproved;
             _repoWrapper.ClubMembers.Update(person);
             await _repoWrapper.SaveAsync();
@@ -59,6 +67,16 @@ namespace EPlast.BLL.Services.Club
             await _repoWrapper.SaveAsync();
 
             return _mapper.Map<ClubMembers, ClubMembersDTO>(newMember);
+        }
+
+        /// <inheritdoc />
+        public async Task RemoveMemberAsync(int memberId)
+        {
+            var clubMember = await _repoWrapper.ClubMembers
+                .GetFirstOrDefaultAsync(u => u.ID == memberId);
+
+            _repoWrapper.ClubMembers.Delete(clubMember);
+            await _repoWrapper.SaveAsync();
         }
     }
 }
