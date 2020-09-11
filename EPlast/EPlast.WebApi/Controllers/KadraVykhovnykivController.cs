@@ -1,6 +1,7 @@
 ﻿using EPlast.BLL.DTO.EducatorsStaff;
 using EPlast.BLL.Interfaces.EducatorsStaff;
 using EPlast.BLL.Interfaces.Logging;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -10,6 +11,7 @@ namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
     public class KadraVykhovnykivController : ControllerBase
     {
         private readonly ILoggerService<KadraVykhovnykivController> _logger;
@@ -32,18 +34,10 @@ namespace EPlast.WebApi.Controllers
         [HttpPost("CreateKadra")]
         public async Task<IActionResult> CreateKadra(KadraVykhovnykivDTO kvDTO)
         {
-                if (User.IsInRole("Admin"))
-                {
                     var newKadra=await _kvService.CreateKadra(kvDTO);
-                    _logger.LogInformation($"User {{{kvDTO.UserId}}} gained Kadra Vykhovnykiv of type: {{{kvDTO.KVTypesID}}}");
+                   
                 return Ok(newKadra);
-                }
-                else
-                {
-                _logger.LogError("Current user is not an admin");
-                return StatusCode(StatusCodes.Status403Forbidden);
-                }
-              
+                   
         }
 
         /// <summary>
@@ -53,28 +47,13 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="403">User is not admin</response>
         ///  <response code="404">kadra with this id doesn't exist</response>
-        [HttpDelete("RemoveKadra/{kadra_id}")]
+        [HttpDelete("RemoveKadra/{kadraId}")]
         public async Task<IActionResult> Remove(int kadraId)
         {
-            try
-            {
-                if (User.IsInRole("Admin"))
-                {
+            
                     await _kvService.DeleteKadra(kadraId);
                     return StatusCode(StatusCodes.Status200OK);
-                }
-                else
-                {
-                    _logger.LogError("Current user is not an admin");
-                    return StatusCode(StatusCodes.Status403Forbidden);
-                }
-            }
-            catch( InvalidOperationException e)
-            {
-                _logger.LogError(e.Message);
-                return StatusCode(StatusCodes.Status404NotFound);
-            }
-           
+
         }
 
 
@@ -88,16 +67,11 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> Update( KadraVykhovnykivDTO kadrasDTO)
         {
            
-            if (User.IsInRole("Admin"))
-            {
+            
                 await _kvService.UpdateKadra(kadrasDTO);
                 return StatusCode(StatusCodes.Status200OK);
-            }
-            else
-            {
-                _logger.LogError("Current user is not an admin");
-                return StatusCode(StatusCodes.Status403Forbidden);
-            } 
+            
+           
         }
 
 
@@ -138,16 +112,11 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetKVsWithType(int kvTypeId)
         {
           
-                try
-                {
+               
                     var Kadras = await _kvService.GetKVsWithKVType(kvTypeId);
                     return Ok(Kadras);
-                }
-                catch (InvalidOperationException e)
-                {
-                    _logger.LogError(e.Message);
-                    return StatusCode(StatusCodes.Status404NotFound);
-                } 
+                
+               
  
         }
 

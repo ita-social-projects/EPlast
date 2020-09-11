@@ -12,5 +12,6 @@ namespace EPlast.WebApi.Models.Club
         public IEnumerable<ClubAdministrationViewModel> ClubAdministration { get; set; }
         public bool IsCurrentUserClubAdmin { get; set; }
         public bool IsCurrentUserAdmin { get; set; }
+        public bool CanJoin { get; set; }
     }
 }
