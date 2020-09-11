@@ -46,35 +46,6 @@ namespace EPlast.BLL.Services.EventUser
             _eventAdministrationTypeManager = eventAdministrationTypeManager;
             _eventAdmininistrationManager = eventAdmininistrationManager;
         }
-        public async Task<EventUserDTO> GetCreatedArchivedEvents(string userId, ClaimsPrincipal user)
-        {
-            var currentUserId = _userManager.GetUserId(user);
-            if (string.IsNullOrEmpty(userId))
-            {
-                userId = currentUserId;
-            }
-
-            var targetUser = await _repoWrapper.User.GetFirstAsync(predicate: q => q.Id == userId);
-            var model = new EventUserDTO
-            {
-                User = _mapper.Map<User, UserDTO>(targetUser)
-            };
-
-            var eventAdmins = await _eventAdmininistrationManager.GetEventAdmininistrationByUserIdAsync(userId);
-
-            model.CreatedEvents = new List<EventGeneralInfoDTO>();
-            foreach (var eventAdmin in eventAdmins)
-            {
-                var eventToAdd = _mapper.Map<Event, EventGeneralInfoDTO>(eventAdmin.Event);
-                if (!(eventToAdd.EventDateEnd > DateTime.Now))
-                {
-                    eventToAdd.EventStatusID = 1;
-                    model.CreatedEvents.Add(eventToAdd);
-                }
-            }
-
-            return model;
-        }
 
         public async Task<EventUserDTO> EventUserAsync(string userId, ClaimsPrincipal user)
         {

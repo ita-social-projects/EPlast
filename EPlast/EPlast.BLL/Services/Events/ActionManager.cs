@@ -74,7 +74,6 @@ namespace EPlast.BLL.Services.Events
             int approvedEvent = await _eventStatusManager.GetStatusIdAsync("Затверджений(-на)");
             int finishedEvent = await _eventStatusManager.GetStatusIdAsync("Завершений(-на)");
             int notApprovedEvent = await _eventStatusManager.GetStatusIdAsync("Не затверджені");
-            await CheckEventsStatusesAsync(categoryId, eventTypeId, finishedEvent);
 
             var events = await _repoWrapper.Event
                 .GetAllAsync(
@@ -111,7 +110,6 @@ namespace EPlast.BLL.Services.Events
             int rejectedStatus = await _participantStatusManager.GetStatusIdAsync("Відмовлено");
             int finishedEvent = await _eventStatusManager.GetStatusIdAsync("Завершений(-на)");
             bool isUserGlobalEventAdmin = user?.IsInRole("Адміністратор подій") ?? false;
-            await CheckEventStatusAsync(id, finishedEvent);
 
             var targetEvent = await _repoWrapper.Event
                 .GetFirstAsync(
@@ -270,33 +268,17 @@ namespace EPlast.BLL.Services.Events
             return result;
         }
 
-
-        private async Task CheckEventsStatusesAsync(int id, int actionId, int finishedEvent)
+        public async Task CheckEventsStatusesAsync()
         {
+            int finishedEventStatus = 1;
             var eventsToCheck = await _repoWrapper.Event
-                .GetAllAsync(e => e.EventCategoryID == id && e.EventTypeID == actionId);
+                .GetAllAsync(e => e.EventStatusID != finishedEventStatus && e.EventDateStart.Date <= DateTime.Now.Date);
             foreach (var eventToCheck in eventsToCheck)
             {
-                if (eventToCheck.EventDateEnd.Date <= DateTime.Now.Date && eventToCheck.EventStatusID != finishedEvent)
-                {
-                    eventToCheck.EventStatusID = finishedEvent;
+                    eventToCheck.EventStatusID = finishedEventStatus;
                     _repoWrapper.Event.Update(eventToCheck);
-                }
             }
             await _repoWrapper.SaveAsync();
         }
-
-        private async Task CheckEventStatusAsync(int id, int finishedEvent)
-        {
-            var eventToCheck = await _repoWrapper.Event
-                .GetFirstAsync(e => e.ID == id);
-            if (eventToCheck.EventDateEnd.Date <= DateTime.Now.Date && eventToCheck.EventStatusID != finishedEvent)
-            {
-                eventToCheck.EventStatusID = finishedEvent;
-                _repoWrapper.Event.Update(eventToCheck);
-                await _repoWrapper.SaveAsync();
-            }
-        }
-
     }
 }
