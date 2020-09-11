@@ -39,7 +39,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
         {
             //Arrange
             _repoWrapper
-                .Setup(s => s.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(), null))
+                .Setup(s => s.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(), It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
                 .ReturnsAsync(new ClubMembers());
 
             //Act

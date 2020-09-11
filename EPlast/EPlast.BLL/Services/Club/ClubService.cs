@@ -34,6 +34,24 @@ namespace EPlast.BLL.Services.Club
         }
 
         /// <inheritdoc />
+        public async Task<IEnumerable<ClubDTO>> GetPartOfClubsAsync( int pageNumber, int pageSize)
+        {
+            var sampleOfClubs = await _repoWrapper.Club.FindAll().Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            var mappedClubs = _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubDTO>>(sampleOfClubs);
+
+            return mappedClubs;
+        }
+
+        /// <inheritdoc />
+        public async Task<int> GetClubsCountAsync()
+        {
+            var clubsCount = await _repoWrapper.Club.FindAll().CountAsync();
+
+            return clubsCount;
+        }
+
+        /// <inheritdoc />
         public async Task<ClubProfileDTO> GetClubProfileAsync(int clubId)
         {
             var club = await GetByIdWithDetailsAsync(clubId);
@@ -171,6 +189,15 @@ namespace EPlast.BLL.Services.Club
             var isTheSameClubName = originClub.ClubName == club.ClubName;
 
             return isTheSameClubName;
+        }
+
+        public async Task<bool> VerifyUserCanJoinToClubAsync(int clubId, string userId)
+        {
+            var clubMember = await _repoWrapper.ClubMembers
+                .GetFirstOrDefaultAsync(u => u.User.Id == userId && u.ClubId == clubId);
+            var canJoin = clubMember == null;
+
+            return canJoin;
         }
     }
 }
