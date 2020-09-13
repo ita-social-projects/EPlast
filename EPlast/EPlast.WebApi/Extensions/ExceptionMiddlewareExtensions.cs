@@ -1,5 +1,6 @@
 ﻿using EPlast.WebApi.CustomExceptionMiddleware;
 using Microsoft.AspNetCore.Builder;
+using System;
 
 namespace EPlast.WebApi.Extensions
 {
@@ -9,5 +10,7 @@ namespace EPlast.WebApi.Extensions
         {
             app.UseMiddleware<ExceptionMiddleware>();
         }
+
+      
     }
 }
