@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using EPlast.BLL.DTO.Events;
+﻿using EPlast.BLL.DTO.Events;
 using EPlast.BLL.DTO.EventUser;
 using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace EPlast.BLL.Interfaces.Events
 {
@@ -118,5 +118,7 @@ namespace EPlast.BLL.Interfaces.Events
         /// <returns>Status code of the picture deleting operation.</returns>
         /// <param name="id">The Id of picture</param>
         Task<int> DeletePictureAsync(int id);
+
+        Task CheckEventsStatusesAsync();
     }
 }
