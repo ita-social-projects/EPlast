@@ -5,6 +5,7 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -16,14 +17,17 @@ namespace EPlast.BLL.Services.City
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
+        private readonly ICityAdministrationService _cityAdministrationService;
 
         public CityMembersService(IRepositoryWrapper repositoryWrapper,
             IMapper mapper,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            ICityAdministrationService cityAdministrationService)
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
             _userManager = userManager;
+            _cityAdministrationService = cityAdministrationService;
         }
 
         /// <inheritdoc />
@@ -48,12 +52,11 @@ namespace EPlast.BLL.Services.City
                 await _repositoryWrapper.SaveAsync();
             }
 
-            var oldCityAdmin = await _repositoryWrapper.CityAdministration
-                .GetFirstOrDefaultAsync(i => i.UserId == userId);
-            if (oldCityAdmin != null)
+            var oldCityAdmins = await _repositoryWrapper.CityAdministration
+                .GetAllAsync(i => i.UserId == userId && (DateTime.Now < i.EndDate || i.EndDate == null));
+            foreach (var admin in oldCityAdmins)
             {
-                _repositoryWrapper.CityAdministration.Delete(oldCityAdmin);
-                await _repositoryWrapper.SaveAsync();
+                await _cityAdministrationService.RemoveAdministratorAsync(admin.ID);
             }
 
             var cityMember = new CityMembers()

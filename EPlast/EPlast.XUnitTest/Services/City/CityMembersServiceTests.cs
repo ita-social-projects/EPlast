@@ -24,7 +24,7 @@ namespace EPlast.XUnitTest.Services.City
         
         public CityMembersServiceTests()
         {
-            _cityMembersService = new CityMembersService(_repositoryWrapper.Object, _mapper.Object, null);
+            _cityMembersService = new CityMembersService(_repositoryWrapper.Object, _mapper.Object, null, null);
         }
 
         [Fact]
