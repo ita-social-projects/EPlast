@@ -5,6 +5,7 @@ using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
+using EPlast.BLL.Services.Url;
 using EPlast.Controllers;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -47,6 +48,7 @@ namespace EPlast.XUnitTest
         private Mock<IMapper> _mapper;
         private Mock<ILoggerService<AuthController>> _loggerService;
         private Mock<IAuthService> _AuthService;
+        private Mock<UrlOptions> _urlOptions;
 
         public AuthControllerTests()
         {
@@ -70,6 +72,7 @@ namespace EPlast.XUnitTest
             _mapper = new Mock<IMapper>();
             _loggerService = new Mock<ILoggerService<AuthController>>();
             _AuthService = new Mock<IAuthService>();
+            _urlOptions = new Mock<UrlOptions>();
         }
         [Fact]
         public async Task UserProfileTest()
