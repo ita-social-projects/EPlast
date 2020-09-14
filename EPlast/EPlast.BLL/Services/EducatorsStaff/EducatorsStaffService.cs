@@ -1,0 +1,159 @@
+﻿using AutoMapper;
+using EPlast.BLL.DTO.EducatorsStaff;
+using EPlast.BLL.Interfaces.EducatorsStaff;
+using EPlast.DataAccess.Entities.EducatorsStaff;
+using EPlast.DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace EPlast.BLL
+{
+    public class EducatorsStaffService:IEducatorsStaffService
+    {
+        
+        private readonly IRepositoryWrapper _repositoryWrapper;
+        private readonly IMapper _mapper;
+       
+
+        public EducatorsStaffService(IRepositoryWrapper repositoryWrapper, IMapper mapper)
+        {
+            
+            _repositoryWrapper = repositoryWrapper;
+            _mapper = mapper;
+            
+        }
+
+        public async Task<EducatorsStaffDTO> CreateKadra(EducatorsStaffDTO kadrasDTO)
+        {
+            var newKV = _mapper.Map<EducatorsStaffDTO, EducatorsStaff>(kadrasDTO);
+            await _repositoryWrapper.KVs.CreateAsync(newKV);
+            await _repositoryWrapper.SaveAsync();
+            return _mapper.Map<EducatorsStaff,EducatorsStaffDTO>(newKV); 
+        }
+
+        public async Task DeleteKadra(int kadra_id)
+        {
+
+                var deletedKadra = (await _repositoryWrapper.KVs.GetFirstAsync(d => d.ID == kadra_id));
+           
+                _repositoryWrapper.KVs.Delete(deletedKadra);
+                await _repositoryWrapper.SaveAsync();
+            
+            
+                   
+        }
+
+        public async Task<IEnumerable<EducatorsStaffDTO>> GetAllKVsAsync()
+        {
+            return _mapper.Map<IEnumerable<EducatorsStaff>, IEnumerable<EducatorsStaffDTO>>(
+                 await _repositoryWrapper.KVs.GetAllAsync());
+          
+        }
+
+        public async Task<EducatorsStaffDTO> GetKadraById(int KadraID)
+        {
+            var KV = _mapper.Map<EducatorsStaff, EducatorsStaffDTO>(await _repositoryWrapper.KVs.GetFirstOrDefaultAsync(c => c.ID == KadraID));
+            return KV;
+        }
+
+        public async Task<EducatorsStaffDTO> GetKadraByRegisterNumber(int KadrasRegisterNumber)
+        {
+            var KV = _mapper.Map<EducatorsStaff, EducatorsStaffDTO>(await _repositoryWrapper.KVs.GetFirstOrDefaultAsync(c => c.NumberInRegister == KadrasRegisterNumber));
+            return KV;
+        }
+
+        public async Task<IEnumerable<EducatorsStaffDTO>> GetKVsOfGivenUser(string UserId)
+        {
+            var Kadras = _mapper.Map<IEnumerable<EducatorsStaff>,IEnumerable<EducatorsStaffDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.UserId == UserId));
+            return Kadras;
+        }
+
+        public async Task<IEnumerable<EducatorsStaffDTO>> GetKVsWithKVType(int kvType_Id)
+        {
+           
+            var KVs = _mapper.Map<IEnumerable<EducatorsStaff>, IEnumerable<EducatorsStaffDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.KadraVykhovnykivType.ID == kvType_Id,
+                include:
+                source=>source.Include(c=>c.User)));
+            return KVs;
+        }
+
+        public async Task<bool> UserHasSuchStaff(string UserId ,int kadraId)
+        {
+            var edustaff = (await _repositoryWrapper.KVs.GetFirstOrDefaultAsync(x => x.KadraVykhovnykivTypeId == kadraId && x.UserId == UserId));
+            if (edustaff  == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+            
+        }
+
+        public async Task UpdateKadra(EducatorsStaffDTO kadrasDTO)
+        {
+           var  editedKadra = await _repositoryWrapper.KVs.GetFirstAsync(x => x.ID == kadrasDTO.ID);
+           
+                editedKadra.NumberInRegister = kadrasDTO.NumberInRegister;
+                editedKadra.Link = kadrasDTO.Link;
+                editedKadra.BasisOfGranting = kadrasDTO.BasisOfGranting;
+                editedKadra.DateOfGranting = kadrasDTO.DateOfGranting;
+
+                _repositoryWrapper.KVs.Update(editedKadra);
+                await _repositoryWrapper.SaveAsync();
+            
+        }
+
+        public async Task<bool> StaffWithRegisternumberExists(int numberInRegister)
+        {
+            var staffwithnum = (await _repositoryWrapper.KVs.GetFirstOrDefaultAsync(x => x.NumberInRegister == numberInRegister));
+            if (staffwithnum == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+
+
+
+        public async Task<bool> StaffWithRegisternumberExistsEdit(int kadraId, int numberInRegister)
+        {
+            var staffwithnum = (await _repositoryWrapper.KVs.GetFirstOrDefaultAsync(x => x.NumberInRegister == numberInRegister && x.ID != kadraId));
+            if (staffwithnum == null )
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+
+
+
+        public async Task<bool> UserHasSuchStaffEdit(string UserId, int kadraId)
+        {
+            var edustaff = (await _repositoryWrapper.KVs.GetAllAsync(x => x.KadraVykhovnykivTypeId == kadraId && x.UserId == UserId));
+            if (edustaff.ToArray().Count() >=1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+
+
+    }
+}

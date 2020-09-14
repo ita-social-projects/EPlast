@@ -42,4 +42,6 @@
     <ProjectReference Include="..\EPlast.BLL\EPlast.BLL.csproj" />
     <ProjectReference Include="..\EPlast.Resources\EPlast.Resources.csproj" />
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 </Project>
