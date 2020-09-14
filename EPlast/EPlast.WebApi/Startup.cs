@@ -1,7 +1,6 @@
 ﻿using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Services.Jwt;
-using EPlast.BLL.Services.Url;
 using EPlast.BLL.Settings;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
@@ -52,7 +51,6 @@ namespace EPlast.WebApi
             services.AddLogging();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
             services.Configure<JwtOptions>(Configuration.GetSection("Jwt"));
-            services.Configure<UrlOptions>(Configuration.GetSection("Url"));
             services.AddAuthorization();
             services.AddLocalization();
             services.AddRequestLocalizationOptions();
