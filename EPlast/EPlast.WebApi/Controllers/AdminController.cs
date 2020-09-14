@@ -42,7 +42,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         [HttpGet("usersTable")]
         public async Task<IActionResult> UsersTable()
-       {
+        {
             var result = await _adminService.UsersTableAsync();
             return Ok(result);
         }
@@ -56,7 +56,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">User not found</response>
         [HttpGet("editRole/{userId}")]
         public async Task<IActionResult> Edit(string userId)
-            {
+        {
             if (!string.IsNullOrEmpty(userId))
             {
                 var user = await _userManagerService.FindByIdAsync(userId);
@@ -90,7 +90,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">User not found</response>
         [HttpPut("editedRole/{userId}")]
-        public async Task<IActionResult> Edit(string userId, [FromBody]List<string> roles)
+        public async Task<IActionResult> Edit(string userId, [FromBody] List<string> roles)
         {
             if (!string.IsNullOrEmpty(userId))
             {
