@@ -1,6 +1,7 @@
 ﻿using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
@@ -17,7 +18,7 @@ namespace EPlast.WebApi.Controllers
             _accessLevelService = accessLevelService;
         }
 
-        [HttpGet("dergee")]
+        [HttpGet("degree")]
         public async Task<IActionResult> GetAllDergees()
         {
             return Ok(await _plastDegreeService.GetDergeesAsync());
@@ -29,13 +30,13 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _accessLevelService.GetUserAccessLevelsAsync(userId));
         }
 
-        [HttpGet("dergee/{userId}")]
+        [HttpGet("degree/{userId}")]
         public async Task<IActionResult> GetUserDegrees(string userId)
         {
             return Ok(await _plastDegreeService.GetUserPlastDegreesAsync(userId));
         }
 
-        [HttpPost("dergee")]
+        [HttpPost("degree")]
         public async Task<IActionResult> AddPlastDegreeForUser(UserPlastDegreePostDTO userPlastDegreePostDTO)
         {
             if (await _plastDegreeService.AddPlastDegreeForUserAsync(userPlastDegreePostDTO))
@@ -46,7 +47,7 @@ namespace EPlast.WebApi.Controllers
             return BadRequest();
         }
 
-        [HttpDelete("dergee/{userId}/{plastDegreeId}")]
+        [HttpDelete("degree/{userId}/{plastDegreeId}")]
         public async Task<IActionResult> DeletePlastDegreeForUser(string userId, int plastDegreeId)
         {
             if (await _plastDegreeService.DeletePlastDegreeForUserAsync(userId, plastDegreeId))
@@ -56,5 +57,26 @@ namespace EPlast.WebApi.Controllers
 
             return BadRequest();
         }
+        [HttpPut("degree/setAsCurrent/{userId}/{plastDegreeId}")]
+        public async Task<IActionResult> SetPlastDegreeAsCurrent(string userId, int plastDegreeId)
+        {
+            if(await _plastDegreeService.SetPlastDegreeForUserAsCurrentAsync(userId, plastDegreeId))
+            {
+                return NoContent();
+            }
+
+            return BadRequest();
+        }
+        [HttpPut("degree/endDate")]
+        public async Task<IActionResult> AddEndDatePlastDegreeForUser(UserPlastDegreePutDTO userPlastDegreePutDTO)
+        {
+            if (await _plastDegreeService.AddEndDateForUserPlastDegreeAsync(userPlastDegreePutDTO))
+            {
+                return NoContent();
+            }
+
+            return BadRequest();
+        }
+
     }
 }

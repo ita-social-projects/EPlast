@@ -59,9 +59,9 @@ namespace EPlast.BLL.Services.City
             var role = adminType.AdminTypeName == "Голова Станиці" ? "Голова Станиці" : "Діловод Станиці";
             await _userManager.AddToRoleAsync(user, role);
 
-            _repositoryWrapper.CityAdministration.Attach(admin);
             await _repositoryWrapper.CityAdministration.CreateAsync(admin);
             await _repositoryWrapper.SaveAsync();
+            adminDTO.ID = admin.ID;
 
             return adminDTO;
         }
@@ -69,28 +69,22 @@ namespace EPlast.BLL.Services.City
         /// <inheritdoc />
         public async Task<CityAdministrationDTO> EditAdministratorAsync(CityAdministrationDTO adminDTO)
         {
-            var user = await _userManager.FindByIdAsync(adminDTO.UserId);
-            var adminType = await _adminTypeService.GetAdminTypeByIdAsync(adminDTO.AdminTypeId);
-            var role = adminType.AdminTypeName == "Голова Станиці" ? "Голова Станиці" : "Діловод Станиці";
-
-            if (adminType.AdminTypeName != adminDTO.AdminType.AdminTypeName)
-            {
-                await _userManager.RemoveFromRoleAsync(user, role);
-            }
-
-            adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
-            role = adminType.AdminTypeName == "Голова Станиці" ? "Голова Станиці" : "Діловод Станиці";
-            await _userManager.AddToRoleAsync(user, role);
-            
             var admin = await _repositoryWrapper.CityAdministration.GetFirstOrDefaultAsync(a => a.ID == adminDTO.ID);
-            admin.StartDate = adminDTO.StartDate ?? DateTime.Now;
-            admin.EndDate = adminDTO.EndDate;
-            admin.AdminTypeId = adminType.ID;
-            admin.AdminType = _mapper.Map<AdminTypeDTO, AdminType>(adminType);
+            var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
+            
+            if (adminType.ID == admin.AdminTypeId)
+            {
+                admin.StartDate = adminDTO.StartDate ?? DateTime.Now;
+                admin.EndDate = adminDTO.EndDate;
 
-            _repositoryWrapper.CityAdministration.Attach(admin);
-            _repositoryWrapper.CityAdministration.Update(admin);
-            await _repositoryWrapper.SaveAsync();
+                _repositoryWrapper.CityAdministration.Update(admin);
+                await _repositoryWrapper.SaveAsync();
+            }
+            else
+            {
+                await RemoveAdministratorAsync(adminDTO.ID);
+                adminDTO = await AddAdministratorAsync(adminDTO);
+            }
 
             return adminDTO;
         }
