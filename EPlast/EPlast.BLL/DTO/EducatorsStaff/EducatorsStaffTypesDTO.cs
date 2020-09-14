@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace EPlast.BLL.DTO.EducatorsStaff
 {
-    public class KadraVykhovnykivTypesDTO
+    public class EducatorsStaffTypesDTO
     {
         public int ID { get; set; }
         public string Name { get; set; }
-        public ICollection<KadraVykhovnykiv> UsersKadras { get; set; }
+        public ICollection<DataAccess.Entities.EducatorsStaff.EducatorsStaff> UsersKadras { get; set; }
     }
 }

@@ -184,8 +184,8 @@ namespace EPlast.DataAccess
         public DbSet<CityLegalStatus> CityLegalStatuses { get; set; }
         public DbSet<UserPlastDegree> UserPlastDegrees { get; set; }
         public DbSet<PlastDegree> PlastDegrees { get; set; }
-        public DbSet<KadraVykhovnykiv> KVs { get; set; }
-        public DbSet<KadraVykhovnykivTypes> KVTypes { get; set; }
+        public DbSet<EducatorsStaff> KVs { get; set; }
+        public DbSet<EducatorsStaffTypes> KVTypes { get; set; }
         public DbSet<Distinction> Distinctions { get; set; }
         public DbSet<UserDistinction> UserDistinctions { get; set; }
     }

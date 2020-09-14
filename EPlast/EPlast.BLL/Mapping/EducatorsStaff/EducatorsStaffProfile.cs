@@ -4,11 +4,11 @@ using EPlast.DataAccess.Entities.EducatorsStaff;
 
 namespace EPlast.BLL.Mapping.EducationsStaff
 {
-    public class KadrassProfile:Profile
+    public class EducatorsStaffProfile:Profile
     {
-        public KadrassProfile()
+        public EducatorsStaffProfile()
         {
-            CreateMap<KadraVykhovnykiv, KadraVykhovnykivDTO>().ReverseMap();
+            CreateMap<EducatorsStaff, EducatorsStaffDTO>().ReverseMap();
         }
         
     }

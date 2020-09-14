@@ -11,14 +11,15 @@ namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    
-    public class KadraVykhovnykivController : ControllerBase
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin")]
+
+    public class EducatorsStaffController : ControllerBase
     {
-        private readonly ILoggerService<KadraVykhovnykivController> _logger;
-        private readonly IKadraService _kvService;
-        private readonly IKadrasTypeService _kvTypeService;
+        private readonly ILoggerService<EducatorsStaffController> _logger;
+        private readonly IEducatorsStaffService _kvService;
+        private readonly IEducatorsStaffTypesService _kvTypeService;
      
-        public KadraVykhovnykivController(ILoggerService<KadraVykhovnykivController> logger,  IKadraService kvService, IKadrasTypeService kvTypeService)
+        public EducatorsStaffController(ILoggerService<EducatorsStaffController> logger,  IEducatorsStaffService kvService, IEducatorsStaffTypesService kvTypeService)
         {
             _logger = logger;
             _kvService = kvService;
@@ -32,7 +33,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="403">User is not admin</response>
         [HttpPost("CreateKadra")]
-        public async Task<IActionResult> CreateKadra(KadraVykhovnykivDTO kvDTO)
+        public async Task<IActionResult> CreateKadra(EducatorsStaffDTO kvDTO)
         {
                     var newKadra=await _kvService.CreateKadra(kvDTO);
                    
@@ -64,7 +65,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="403">User is not admin</response>
         [HttpPut("EditKadra")]
-        public async Task<IActionResult> Update( KadraVykhovnykivDTO kadrasDTO)
+        public async Task<IActionResult> Update( EducatorsStaffDTO kadrasDTO)
         {
            
             
@@ -140,7 +141,6 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Returns all kadras 
         /// </summary>
-        /// <response code="200">Successful operation</response>
         /// <response code="403">User is not admin</response>
         ///  <response code="404"> no kadras yet in database</response>
         [HttpGet("kadras")]
@@ -158,6 +158,57 @@ namespace EPlast.WebApi.Controllers
         }
 
 
+
+        /// <summary>
+        /// Detects if user has such type of educators staff
+        /// </summary>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("{UserId}/{kadraId}")]
+        public async Task<bool> GetUserStaff(string UserId, int kadraId)
+        {
+            bool hasstaff = await _kvService.UserHasSuchStaff(UserId, kadraId);
+            return hasstaff;
+
+        }
+
+
+        /// <summary>
+        /// Detects if theres already a staff with such register number
+        /// </summary>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("registerexist/{numberInRegister}")]
+        public async Task<bool> GetStaffWithRegisternumber(int numberInRegister)
+        {
+            bool hasstaff = await _kvService.StaffWithRegisternumberExists(numberInRegister);
+            return hasstaff;
+
+        }
+
+        /// <summary>
+        /// Detects if user except this one has such type of educators staff 
+        /// </summary>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("edit/{UserId}/{kadraId}")]
+        public async Task<bool> GetUserStaffEdit(string UserId, int kadraId)
+        {
+            bool hasstaff = await _kvService.UserHasSuchStaffEdit(UserId, kadraId);
+            return hasstaff;
+
+        }
+
+
+        /// <summary>
+        /// Detects if edu staff with such register number except this one is already in database
+        /// </summary>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("edit/registerexist/{kadraId}/{numberInRegister}")]
+        public async Task<bool> GetStaffWithRegisternumberEdit( int kadraId, int numberInRegister)
+        {
+
+            bool hasstaff = await _kvService.StaffWithRegisternumberExistsEdit(kadraId, numberInRegister);
+            return hasstaff;
+
+        }
 
 
     }

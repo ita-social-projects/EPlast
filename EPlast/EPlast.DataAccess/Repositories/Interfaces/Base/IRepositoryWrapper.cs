@@ -52,8 +52,8 @@ namespace EPlast.DataAccess.Repositories
 
 
         IPlastDegreeRepository PlastDegrees { get; }
-        IKadrassRepository KVs { get; }
-        IKadraTypesRepository KVTypes { get; }
+        IEducatorsStaffRepository KVs { get; }
+        IEducatorsStaffTypesRepository KVTypes { get; }
         void Save();
         Task SaveAsync();
     }
