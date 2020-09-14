@@ -3,6 +3,7 @@ using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Services.Url;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -23,13 +24,15 @@ namespace EPlast.WebApi.Controllers
         private readonly IStringLocalizer<AuthenticationErrors> _resourceForErrors;
         private readonly IJwtService _jwtService;
         private readonly IHomeService _homeService;
+        private readonly UrlOptions _urlOptions;
 
         public AuthController(IAuthService authService,
             IMapper mapper,
             ILoggerService<AuthController> loggerService,
             IStringLocalizer<AuthenticationErrors> resourceForErrors,
             IJwtService jwtService,
-            IHomeService homeService)
+            IHomeService homeService,
+            UrlOptions urlOptions)
         {
             _authService = authService;
             _mapper = mapper;
@@ -37,6 +40,7 @@ namespace EPlast.WebApi.Controllers
             _resourceForErrors = resourceForErrors;
             _jwtService = jwtService;
             _homeService = homeService;
+            _urlOptions = urlOptions;
         }
 
         /// <summary>
@@ -153,7 +157,7 @@ namespace EPlast.WebApi.Controllers
 
                 if (result.Succeeded)
                 {
-                    return Redirect("https://eplastua.azurewebsites.net/");
+                    return Redirect(_urlOptions.Path);
                 }
                 else
                 {
@@ -222,7 +226,7 @@ namespace EPlast.WebApi.Controllers
                     return BadRequest(_resourceForErrors["Forgot-NotRegisteredUser"]);
                 }
                 string token = await _authService.GenerateResetTokenAsync(userDto);
-                var confirmationLink = string.Format("https://eplastua.azurewebsites.net/resetPassword?token={0}", HttpUtility.UrlEncode(token));
+                var confirmationLink = string.Format(_urlOptions.ConfirmationLink, HttpUtility.UrlEncode(token));
                 await _authService.SendEmailReseting(confirmationLink, forgotpasswordDto);
                 return Ok(_resourceForErrors["ForgotPasswordConfirmation"]);
             }
