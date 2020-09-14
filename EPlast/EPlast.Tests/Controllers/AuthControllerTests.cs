@@ -332,49 +332,49 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
         }
 
-        [Test]
-        public async Task Test_ForgotPost_ForgotPasswordConfirmation()
-        {
-            //Arrange
-            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController, urlOptions) = CreateAuthController();
+        //[Test]
+        //public async Task Test_ForgotPost_ForgotPasswordConfirmation()
+        //{
+        //    //Arrange
+        //    var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController, urlOptions) = CreateAuthController();
 
-            mockAuthService
-                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetTestUserDtoWithAllFields());
+        //    mockAuthService
+        //        .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
+        //        .ReturnsAsync(GetTestUserDtoWithAllFields());
 
-            mockAuthService
-                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
-                .ReturnsAsync(GetTestUserWithEmailConfirmed().EmailConfirmed);
+        //    mockAuthService
+        //        .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
+        //        .ReturnsAsync(GetTestUserWithEmailConfirmed().EmailConfirmed);
 
-            mockAuthService
-                .Setup(i => i.GenerateResetTokenAsync(It.IsAny<UserDTO>()))
-                .ReturnsAsync(GetTestCodeForResetPasswordAndConfirmEmail());
+        //    mockAuthService
+        //        .Setup(i => i.GenerateResetTokenAsync(It.IsAny<UserDTO>()))
+        //        .ReturnsAsync(GetTestCodeForResetPasswordAndConfirmEmail());
 
-            var mockUrlHelper = new Mock<IUrlHelper>(MockBehavior.Strict);
-            mockUrlHelper
-                .Setup(
-                    x => x.Action(
-                        It.IsAny<UrlActionContext>()
-                    )
-                )
-                .Returns("callbackUrl")
-                .Verifiable();
+        //    var mockUrlHelper = new Mock<IUrlHelper>(MockBehavior.Strict);
+        //    mockUrlHelper
+        //        .Setup(
+        //            x => x.Action(
+        //                It.IsAny<UrlActionContext>()
+        //            )
+        //        )
+        //        .Returns("callbackUrl")
+        //        .Verifiable();
 
-            AuthController.Url = mockUrlHelper.Object;
-            AuthController.ControllerContext.HttpContext = new DefaultHttpContext();
+        //    AuthController.Url = mockUrlHelper.Object;
+        //    AuthController.ControllerContext.HttpContext = new DefaultHttpContext();
 
-            mockStringLocalizer
-                .Setup(s => s["ForgotPasswordConfirmation"])
-                .Returns(GetForgotPasswordConfirmation());
+        //    mockStringLocalizer
+        //        .Setup(s => s["ForgotPasswordConfirmation"])
+        //        .Returns(GetForgotPasswordConfirmation());
 
-            //Act
-            var result = await AuthController.ForgotPassword(GetTestForgotPasswordDto()) as ObjectResult;
+        //    //Act
+        //    var result = await AuthController.ForgotPassword(GetTestForgotPasswordDto()) as ObjectResult;
 
-            //Assert
-            Assert.IsInstanceOf<ObjectResult>(result);
-            Assert.AreEqual(GetForgotPasswordConfirmation().ToString(), result.Value.ToString());
-            Assert.NotNull(result);
-        }
+        //    //Assert
+        //    Assert.IsInstanceOf<ObjectResult>(result);
+        //    Assert.AreEqual(GetForgotPasswordConfirmation().ToString(), result.Value.ToString());
+        //    Assert.NotNull(result);
+        //}
 
         //ResetPassword
         [Test]
