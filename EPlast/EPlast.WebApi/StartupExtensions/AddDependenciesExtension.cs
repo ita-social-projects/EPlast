@@ -23,7 +23,7 @@ using EPlast.BLL.Services.City;
 using EPlast.BLL.Services.City.CityAccess;
 using EPlast.BLL.Services.Club;
 using EPlast.BLL.Services.Distinctions;
-using EPlast.BLL.Services.EducatorsStaff;
+
 using EPlast.BLL.Services.Events;
 using EPlast.BLL.Services.EventUser;
 using EPlast.BLL.Services.Interfaces;
@@ -32,6 +32,7 @@ using EPlast.BLL.Services.Logging;
 using EPlast.BLL.Services.Region;
 using EPlast.BLL.Services.UserProfiles;
 using EPlast.BLL.Settings;
+using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Repositories;
 using EPlast.DataAccess.Repositories.Realizations.Base;
 using Microsoft.Extensions.DependencyInjection;
@@ -104,8 +105,8 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IPlastDegreeService, PlastDegreeService>();
             services.AddScoped<IUserDistinctionService, UserDistinctionService>();
             services.AddScoped<IDistinctionService, DistinctionService>();
-            services.AddScoped<IKadraService, KadraService>();
-            services.AddScoped<IKadrasTypeService, KadrasTypesService>();
+            services.AddScoped<IEducatorsStaffService, EducatorsStaffService>();
+            services.AddScoped<IEducatorsStaffTypesService, EducatorsStaffTypesService>();
 
             return services;
         }

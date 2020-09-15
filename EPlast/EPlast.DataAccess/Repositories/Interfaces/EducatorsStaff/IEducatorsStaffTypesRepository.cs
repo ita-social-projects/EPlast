@@ -5,7 +5,7 @@ using System.Text;
 
 namespace EPlast.DataAccess.Repositories
 {
-    public interface IKadrassRepository:IRepositoryBase<KadraVykhovnykiv>
+    public interface IEducatorsStaffTypesRepository : IRepositoryBase<EducatorsStaffTypes>
     {
     }
 }
