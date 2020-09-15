@@ -79,17 +79,10 @@ namespace EPlast.BLL
             return KVs;
         }
 
-        public async Task<bool> UserHasSuchStaff(string UserId ,int kadraId)
+        public async Task<bool> DoesUserHaveSuchStaff(string UserId ,int kadraId)
         {
             var edustaff = (await _repositoryWrapper.KVs.GetFirstOrDefaultAsync(x => x.KadraVykhovnykivTypeId == kadraId && x.UserId == UserId));
-            if (edustaff  == null)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return !(edustaff == null);
             
         }
 
@@ -110,14 +103,7 @@ namespace EPlast.BLL
         public async Task<bool> StaffWithRegisternumberExists(int numberInRegister)
         {
             var staffwithnum = (await _repositoryWrapper.KVs.GetFirstOrDefaultAsync(x => x.NumberInRegister == numberInRegister));
-            if (staffwithnum == null)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return !(staffwithnum == null);
         }
 
 
@@ -126,23 +112,14 @@ namespace EPlast.BLL
         public async Task<bool> StaffWithRegisternumberExistsEdit(int kadraId, int numberInRegister)
         {
             var staffwithnum = (await _repositoryWrapper.KVs.GetFirstOrDefaultAsync(x => x.NumberInRegister == numberInRegister && x.ID != kadraId));
-            if (staffwithnum == null )
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return !(staffwithnum == null);
         }
-
-
 
 
         public async Task<bool> UserHasSuchStaffEdit(string UserId, int kadraId)
         {
             var edustaff = (await _repositoryWrapper.KVs.GetAllAsync(x => x.KadraVykhovnykivTypeId == kadraId && x.UserId == UserId));
-            if (edustaff.ToArray().Count() >=1)
+            if (edustaff.Count() >=1)
             {
                 return true;
             }

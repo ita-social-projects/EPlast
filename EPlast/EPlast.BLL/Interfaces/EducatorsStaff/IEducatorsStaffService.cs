@@ -19,7 +19,7 @@ namespace EPlast.BLL.Interfaces.EducatorsStaff
         Task<EducatorsStaffDTO> GetKadraByRegisterNumber(int KadrasRegisterNumber);
 
         Task<bool> StaffWithRegisternumberExists(int registerNumber);
-        Task<bool> UserHasSuchStaff(string UserId , int kadraId);
+        Task<bool> DoesUserHaveSuchStaff(string UserId , int kadraId);
 
 
         Task<bool> StaffWithRegisternumberExistsEdit(int kadraId, int numberInRegister);
