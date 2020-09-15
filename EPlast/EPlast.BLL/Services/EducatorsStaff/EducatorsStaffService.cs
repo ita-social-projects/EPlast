@@ -70,10 +70,10 @@ namespace EPlast.BLL
             return Kadras;
         }
 
-        public async Task<IEnumerable<EducatorsStaffDTO>> GetKVsWithKVType(int kvType_Id)
+        public async Task<IEnumerable<EducatorsStaffDTO>> GetKVsWithKVType(int kvTypeId)
         {
            
-            var KVs = _mapper.Map<IEnumerable<EducatorsStaff>, IEnumerable<EducatorsStaffDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.KadraVykhovnykivType.ID == kvType_Id,
+            var KVs = _mapper.Map<IEnumerable<EducatorsStaff>, IEnumerable<EducatorsStaffDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.KadraVykhovnykivType.ID == kvTypeId,
                 include:
                 source=>source.Include(c=>c.User)));
             return KVs;
@@ -82,7 +82,7 @@ namespace EPlast.BLL
         public async Task<bool> DoesUserHaveSuchStaff(string UserId ,int kadraId)
         {
             var edustaff = (await _repositoryWrapper.KVs.GetFirstOrDefaultAsync(x => x.KadraVykhovnykivTypeId == kadraId && x.UserId == UserId));
-            return !(edustaff == null);
+            return edustaff != null;
             
         }
 
@@ -100,10 +100,10 @@ namespace EPlast.BLL
             
         }
 
-        public async Task<bool> StaffWithRegisternumberExists(int numberInRegister)
+        public async Task<bool> StaffWithRegisternumberExists(int registerNumber)
         {
-            var staffwithnum = (await _repositoryWrapper.KVs.GetFirstOrDefaultAsync(x => x.NumberInRegister == numberInRegister));
-            return !(staffwithnum == null);
+            var staffwithnum = (await _repositoryWrapper.KVs.GetFirstOrDefaultAsync(x => x.NumberInRegister == registerNumber));
+            return staffwithnum != null;
         }
 
 
@@ -112,22 +112,15 @@ namespace EPlast.BLL
         public async Task<bool> StaffWithRegisternumberExistsEdit(int kadraId, int numberInRegister)
         {
             var staffwithnum = (await _repositoryWrapper.KVs.GetFirstOrDefaultAsync(x => x.NumberInRegister == numberInRegister && x.ID != kadraId));
-            return !(staffwithnum == null);
+            return staffwithnum != null;
         }
 
 
         public async Task<bool> UserHasSuchStaffEdit(string UserId, int kadraId)
         {
             var edustaff = (await _repositoryWrapper.KVs.GetAllAsync(x => x.KadraVykhovnykivTypeId == kadraId && x.UserId == UserId));
-            if (edustaff.Count() >=1)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-
+            
+                return edustaff.Any();
         }
 
 
