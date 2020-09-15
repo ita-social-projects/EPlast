@@ -166,7 +166,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("{UserId}/{kadraId}")]
         public async Task<bool> GetUserStaff(string UserId, int kadraId)
         {
-            bool hasstaff = await _kvService.UserHasSuchStaff(UserId, kadraId);
+            bool hasstaff = await _kvService.DoesUserHaveSuchStaff(UserId, kadraId);
             return hasstaff;
 
         }
