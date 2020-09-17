@@ -32,5 +32,10 @@ namespace EPlast.BLL.Interfaces.City
         /// </summary>
         /// <param name="adminId">The id of the administrator</param>
         Task RemoveAdministratorAsync(int adminId);
+
+        /// <summary>
+        /// Removes roles from previous administrators
+        /// </summary>
+        Task CheckPreviousAdministratorsToDelete();
     }
 }
