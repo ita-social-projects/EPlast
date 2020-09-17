@@ -23,7 +23,14 @@ namespace EPlast.BLL.Services.Distinctions
         {
             if (!user.IsInRole("Admin"))
                 throw new UnauthorizedAccessException();
-            var userDistinction = _mapper.Map<UserDistinctionDTO, UserDistinction>(userDistinctionDTO);
+            var userDistinction = new UserDistinction()
+            {
+                UserId = userDistinctionDTO.UserId,
+                DistinctionId = userDistinctionDTO.DistinctionId,
+                Date = userDistinctionDTO.Date,
+                Reason = userDistinctionDTO.Reason,
+                Reporter = userDistinctionDTO.Reporter
+            };
             await _repoWrapper.UserDistinction.CreateAsync(userDistinction);
             await _repoWrapper.SaveAsync();
         }
