@@ -1,4 +1,5 @@
 ﻿using EPlast.BLL.Interfaces.ActiveMembership;
+using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Services.Jwt;
 using EPlast.BLL.Settings;
@@ -123,6 +124,11 @@ namespace EPlast.WebApi
              );
             recurringJobManager.AddOrUpdate("Check and change event status",
                () => serviceProvider.GetService<IActionManager>().CheckEventsStatusesAsync(),
+            "59 23 * * *",
+            TimeZoneInfo.Local
+            );
+            recurringJobManager.AddOrUpdate("Remove roles from previous admins",
+                () => serviceProvider.GetService<ICityAdministrationService>().CheckPreviousAdministratorsToDelete(),
             "59 23 * * *",
             TimeZoneInfo.Local
             );

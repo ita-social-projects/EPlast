@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
@@ -9,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.City
@@ -102,6 +102,29 @@ namespace EPlast.BLL.Services.City
 
             _repositoryWrapper.CityAdministration.Update(admin);
             await _repositoryWrapper.SaveAsync();
+        }
+
+        /// <inheritdoc />
+        public async Task CheckPreviousAdministratorsToDelete()
+        {
+            var admins = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.EndDate <= DateTime.Now);
+            var cityHeadType = await _adminTypeService.GetAdminTypeByNameAsync("Голова Станиці");
+
+            foreach (var admin in admins)
+            {
+                var role = admin.AdminTypeId == cityHeadType.ID ? "Голова Станиці" : "Діловод Станиці";
+
+                var currentAdministration = await _repositoryWrapper.CityAdministration
+                    .GetAllAsync(a => (a.EndDate > DateTime.Now || a.EndDate == null) && a.UserId == admin.UserId);
+
+                if (currentAdministration.All(a => (a.AdminTypeId == cityHeadType.ID ? "Голова Станиці" : "Діловод Станиці") != role)
+                    || currentAdministration.Count() == 0)
+                {
+                    var user = await _userManager.FindByIdAsync(admin.UserId);
+
+                    await _userManager.RemoveFromRoleAsync(user, role);
+                }
+            }
         }
     }
 }
