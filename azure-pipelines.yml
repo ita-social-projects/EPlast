@@ -106,8 +106,9 @@ stages:
       displayName: 'Publish Quality Gate Result'
 - stage: Deploy
   displayName: Deploy stage
-  dependsOn: Build
-
+  dependsOn:
+  - Build
+  - Test
   jobs:
   - deployment: Deploy
     condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')))
