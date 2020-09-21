@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: eplastapi 
-          image: eplast.azurecr.io/eplastapi
+          image: ___containerRegistry___/eplastapi
           ports:
           - containerPort: 5000
           env:
