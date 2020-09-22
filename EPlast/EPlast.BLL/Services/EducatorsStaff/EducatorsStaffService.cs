@@ -123,7 +123,10 @@ namespace EPlast.BLL
                 return edustaff.Any();
         }
 
-
-
+        public async Task<string> GetUserByEduStaff(int EduStaffId)
+        {
+            var eduStaff= (await _repositoryWrapper.KVs.GetFirstAsync(x => x.ID == EduStaffId));
+            return eduStaff.UserId;
+        }
     }
 }
