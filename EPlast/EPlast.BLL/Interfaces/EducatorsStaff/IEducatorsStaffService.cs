@@ -27,6 +27,7 @@ namespace EPlast.BLL.Interfaces.EducatorsStaff
 
         Task UpdateKadra( EducatorsStaffDTO kadrasDTO);
 
+        Task<string> GetUserByEduStaff(int EduStaffId);
         Task DeleteKadra(int kadra_id);
     }
 }
