@@ -1,35 +1,35 @@
 ![ASP.NET Core CI](https://github.com/IrynaZavushchak/EPlast/workflows/ASP.NET%20Core%20CI/badge.svg)
 
 # EPlast
-<img src="https://github.com/IrynaZavushchak/EPlast/blob/master/EPlast/EPlast/wwwroot/images/homepage/ePlastLogotype.png"  width="150" height="150" />
+<img src="https://github.com/ITA-Social-Projects/EPlast/blob/master/EPlast/EPlast/wwwroot/images/homepage/ePlastLogotype.png"  width="150" height="150" />
 
 # 1. About the project
 **EPlast** is project to provide web-based multi-user system solution for digitize and automate Plast organization. The system makes it easy to access Plast's internal data, such as events, reports and document, etc. Information and location of their affiliates and clubs throughout Ukraine. Any interested person can join this system or become a full member of Plast.
 
 # 2. Main parts of the project and technologies.
-This project contains  4 main parts: client frontend, backend, and database. All parts of the project are at **https://github.com/IrynaZavushchak/EPlast**
+This project contains  4 main parts: client frontend, backend, and database. All parts of the project are at **https://github.com/ITA-Social-Projects/EPlast**
 
 Let's take a closer look at the technologies of each part.
 
-**Client Frontend** - You can see [here](https://github.com/IrynaZavushchak/EPlast-Client/). We using React, Ant Design
+**Client Frontend** - You can see [here](https://github.com/ITA-Social-Projects/EPlast-Client/). We using React, Ant Design
 
 **Backend** - ASP.NET Core 3.1.0
 
 **Database** -  Microsoft SQL Server and hosted on Microsoft Azure.
 
-**Code quality** - [SonarCloud](https://sonarcloud.io/dashboard?id=IrynaZavushchak_EPlast)   [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=IrynaZavushchak_EPlast&metric=alert_status)](https://sonarcloud.io/dashboard?id=IrynaZavushchak_EPlast)
+**Code quality** - [SonarCloud](https://sonarcloud.io/dashboard?id=ita-social-projects-eplast)   [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ita-social-projects-eplast&metric=alert_status)](https://sonarcloud.io/dashboard?id=ita-social-projects-eplast) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ita-social-projects-eplast&metric=coverage)](https://sonarcloud.io/dashboard?id=ita-social-projects-eplast)[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=ita-social-projects-eplast&metric=bugs)](https://sonarcloud.io/dashboard?id=ita-social-projects-eplast)[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=ita-social-projects-eplast&metric=code_smells)](https://sonarcloud.io/dashboard?id=ita-social-projects-eplast)[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=ita-social-projects-eplast&metric=security_rating)](https://sonarcloud.io/dashboard?id=ita-social-projects-eplast)
 
 **Testing** - xUnit, NUnit, Selenium, Moq
 
 **SDLC** - Scrum/Kanban 
 
 # 3. How to contribute
-You're encouraged to contribute to our project if you've found any issues or missing functionality that you would want to see.  [**Here**](https://github.com/IrynaZavushchak/EPlast/issues) you can see the list of issues and [**here**](https://github.com/IrynaZavushchak/EPlast/issues/new) you can create a new issue.
+You're encouraged to contribute to our project if you've found any issues or missing functionality that you would want to see.  [**Here**](https://github.com/ITA-Social-Projects/EPlast/issues) you can see the list of issues and [**here**](https://github.com/ITA-Social-Projects/EPlast/issues/new) you can create a new issue.
 
 Before sending any pull request, please discuss requirements/changes to be implemented using an existing issue or by creating a new one. All pull requests should be done into the development branch.
 
 # 4. How to start the project locally.
-4.1. Clone or download the project from **https://github.com/IrynaZavushchak/EPlast.git**
+4.1. Clone or download the project from **https://github.com/ITA-Social-Projects/EPlast.git**
 
 4.2 Install [ASP.NET Core Runtime 3.1.0](https://dotnet.microsoft.com/download/dotnet-core/3.1) and [ASP.NET Core SDK 3.1.0](https://dotnet.microsoft.com/download/dotnet-core/3.1)
 
@@ -51,8 +51,8 @@ The instructions below will allow you to run application locally in the containe
      - Access to the Azure Storage.
      
 5.2. Clone repository from GitHub with:<br/>
-     - git clone https://github.com/IrynaZavushchak/EPlast.git     
-     - git clone https://github.com/IrynaZavushchak/EPlast-Client.git
+     - git clone https://github.com/ITA-Social-Projects/EPlast.git     
+     - git clone https://github.com/ITA-Social-Projects/EPlast-Client.git
      
 5.3. Go to the EPlast directory and create the environment file, named .env with following parameters:<br/>
        ConnectionStrings__EPlastDBConnection={Full connection string to the MSSQL}       
@@ -66,4 +66,4 @@ The instructions below will allow you to run application locally in the containe
 
 # 6. Project Deploy
 
-Our project deployed at **https://eplastua.azurewebsites.net/**
+Our project deployed at **https://eplast.westeurope.cloudapp.azure.com/**
