@@ -338,14 +338,5 @@ namespace EPlast.WebApi.Controllers
         }
 
 
-
-        /*[HttpGet("GetUserClubDeals/{UserId}")]
-        public async Task<IActionResult> GetUserClubDeals(int memberId)
-        {
-            await _clubMembersService.GetUserClubDeals(memberId);
-
-            return Ok();
-        }*/
-
     }
 }

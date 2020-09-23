@@ -36,7 +36,7 @@ namespace EPlast.BLL.Interfaces.Club
         /// <returns>Updated ClubAdministrationDTO</returns>
         Task<ClubAdministrationDTO> AddClubAdminAsync(ClubAdministrationDTO createdAdmin);
 
-        Task<IEnumerable<ClubAdministrationDTO>> GetUsersAdministrations(string UserId);
+        Task<IEnumerable<ClubAdministrationDTO>> GetUsersAdministrationsAsync(string UserId);
 
     }
 }
