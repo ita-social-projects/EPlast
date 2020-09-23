@@ -6,6 +6,7 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Club
@@ -92,6 +93,12 @@ namespace EPlast.BLL.Services.Club
             await _repoWrapper.SaveAsync();
 
             return _mapper.Map<ClubAdministration, ClubAdministrationDTO>(newClubAdmin);
+        }
+
+        public async Task<IEnumerable<ClubAdministrationDTO>> GetUsersAdministrations(string UserId)
+        {
+            var Administrations = await _repoWrapper.ClubAdministration.GetAllAsync(i => i.ClubMembers.UserId == UserId);
+            return (IEnumerable<ClubAdministrationDTO>)Administrations;
         }
     }
 }
