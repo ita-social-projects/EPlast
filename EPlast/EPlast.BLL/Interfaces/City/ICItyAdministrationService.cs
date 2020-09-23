@@ -37,5 +37,10 @@ namespace EPlast.BLL.Interfaces.City
         /// Removes roles from previous administrators
         /// </summary>
         Task CheckPreviousAdministratorsToDelete();
+
+        /// <summary>
+        ///returns administrations of given user
+        /// </summary>
+        Task<IEnumerable<CityAdministrationDTO>> GetAdministrationsOfUser(string UserId);
     }
 }
