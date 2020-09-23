@@ -127,7 +127,7 @@ namespace EPlast.BLL.Services.City
             }
         }
 
-        public async Task<IEnumerable<CityAdministrationDTO>> GetAdministrationsOfUser(string UserId)
+        public async Task<IEnumerable<CityAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId)
         {
             var admins = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.UserId == UserId,
                  include:

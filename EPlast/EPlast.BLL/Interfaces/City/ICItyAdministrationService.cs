@@ -41,6 +41,6 @@ namespace EPlast.BLL.Interfaces.City
         /// <summary>
         ///returns administrations of given user
         /// </summary>
-        Task<IEnumerable<CityAdministrationDTO>> GetAdministrationsOfUser(string UserId);
+        Task<IEnumerable<CityAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId);
     }
 }
