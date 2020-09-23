@@ -39,7 +39,7 @@ namespace EPlast.BLL.Services
 
         /// <inheritdoc />
         public async Task EditAsync(string userId, List<string> roles)
-            {
+        {
             User user = await _userManager.FindByIdAsync(userId);
             var userRoles = await _userManager.GetRolesAsync(user);
             var addedRoles = roles.Except(userRoles);
@@ -85,9 +85,10 @@ namespace EPlast.BLL.Services
         public async Task<IEnumerable<UserTableDTO>> UsersTableAsync()
         {
             var users = await _repoWrapper.User.GetAllAsync(null,
-                i => i.Include(x => x.UserProfile).
-                        ThenInclude(x => x.Gender).
-                    Include(x => x.UserPlastDegrees));
+                i => i.Include(x => x.UserProfile)
+                        .ThenInclude(x => x.Gender)
+                      .Include(x => x.UserPlastDegrees)
+                        .ThenInclude(x => x.PlastDegree));
 
             var cities = await _repoWrapper.City.
                 GetAllAsync(null, x => x.Include(i => i.Region));
@@ -96,6 +97,7 @@ namespace EPlast.BLL.Services
             var cityMembers = await _repoWrapper.CityMembers.
                 GetAllAsync(null, x => x.Include(i => i.City));
             List<UserTableDTO> userTable = new List<UserTableDTO>();
+
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);

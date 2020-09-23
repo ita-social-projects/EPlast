@@ -441,5 +441,19 @@ namespace EPlast.WebApi.Controllers
         {
             return Ok(new { cities = await _cityAccessService.GetCitiesAsync(User) });
         }
+
+
+
+        [HttpGet("GetUserAdmins/{UserId}")]
+        
+        public async Task<IActionResult> GetUserAdministrations(string  UserId)
+        {
+            var userAdmins = await _cityAdministrationService.GetAdministrationsOfUserAsync(UserId);
+            
+            return Ok(userAdmins);
+        }
+
+
+
     }
 }
