@@ -1,5 +1,6 @@
 using EPlast.BLL.DTO.Club;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Interfaces.Club
@@ -34,5 +35,8 @@ namespace EPlast.BLL.Interfaces.Club
         /// <param name="createdAdmin"></param>
         /// <returns>Updated ClubAdministrationDTO</returns>
         Task<ClubAdministrationDTO> AddClubAdminAsync(ClubAdministrationDTO createdAdmin);
+
+        Task<IEnumerable<ClubAdministrationDTO>> GetUsersAdministrationsAsync(string UserId);
+
     }
 }

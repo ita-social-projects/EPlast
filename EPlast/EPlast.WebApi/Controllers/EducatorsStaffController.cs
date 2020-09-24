@@ -11,8 +11,8 @@ namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Bearer")]
 
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class EducatorsStaffController : ControllerBase
     {
         private readonly ILoggerService<EducatorsStaffController> _logger;
@@ -113,7 +113,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User is not admin</response>
         ///  <response code="404"> param is not valid</response>
         [HttpGet("{kvTypeId}")]
-        [Authorize(Roles = "Admin")]
+        
         public async Task<IActionResult> GetKVsWithType(int kvTypeId)
         {
 
