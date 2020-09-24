@@ -172,7 +172,7 @@ namespace EPlast.WebApi.Controllers
         {
             var model = new CitiesAdminsViewModel()
             {
-                Cities = await _cityService.GetAllDTOAsync(null)
+                Cities = await _cityService.GetAllDTOAsync()
             };
 
             return Ok(model);
