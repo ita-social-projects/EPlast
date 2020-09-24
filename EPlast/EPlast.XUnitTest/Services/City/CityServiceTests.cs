@@ -78,7 +78,7 @@ namespace EPlast.XUnitTest.Services.City
         {
             CityService cityService = CreateCityService();
 
-            var result = await cityService.GetAllDTOAsync();
+            var result = await cityService.GetAllDTOAsync(null);
 
             Assert.NotNull(result);
         }
