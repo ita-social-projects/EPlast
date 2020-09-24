@@ -43,10 +43,10 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<DataAccessCity.City>> GetAllAsync()
+        public async Task<IEnumerable<DataAccessCity.City>> GetAllAsync(string cityName = null)
         {
-            var cities = await _repoWrapper.City.GetAllAsync(
-                    include: source => source
+            var cities = await _repoWrapper.City.GetAllAsync(c => c.Name.ToLower().Contains(cityName), 
+                        source => source
                        .Include(c => c.CityAdministration)
                            .ThenInclude(t => t.AdminType)
                        .Include(k => k.CityAdministration)
@@ -61,9 +61,9 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<CityDTO>> GetAllDTOAsync()
+        public async Task<IEnumerable<CityDTO>> GetAllDTOAsync(string cityName = null)
         {
-            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(await GetAllAsync());
+            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(await GetAllAsync(cityName));
         }
 
         /// <inheritdoc />
