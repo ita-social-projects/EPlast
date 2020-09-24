@@ -12,12 +12,14 @@ namespace EPlast.BLL.Interfaces.City
         /// <summary>
         /// Get all cities
         /// </summary>
+        /// <param name="cityName">Optional param to find cities by name</param>
         /// <returns>All cities of type City</returns>
         Task<IEnumerable<DataAccessCity.City>> GetAllAsync(string cityName = null);
 
         /// <summary>
         /// Get all cities
         /// </summary>
+        /// <param name="cityName">Optional param to find cities by name</param>
         /// <returns>All cities of type CityDTO</returns>
         Task<IEnumerable<CityDTO>> GetAllDTOAsync(string cityName = null);
 
