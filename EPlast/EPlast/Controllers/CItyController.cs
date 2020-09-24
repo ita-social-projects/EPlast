@@ -31,7 +31,7 @@ namespace EPlast.Controllers
 
         public async Task<IActionResult> Index()
         {
-            return View(_mapper.Map<IEnumerable<CityDTO>, IEnumerable<CityViewModel>>(await _cityService.GetAllDTOAsync()));
+            return View(_mapper.Map<IEnumerable<CityDTO>, IEnumerable<CityViewModel>>(await _cityService.GetAllDTOAsync(null)));
         }
 
         public async Task<IActionResult> CityProfile(int cityId)

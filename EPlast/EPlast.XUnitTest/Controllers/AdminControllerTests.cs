@@ -145,7 +145,7 @@ namespace EPlast.XUnitTest
         [Fact]
         public async Task RegionsAdminsTest()
         {
-            _cityService.Setup(x => x.GetAllDTOAsync()).ReturnsAsync(new List<CityDTO>());
+            _cityService.Setup(x => x.GetAllDTOAsync(null)).ReturnsAsync(new List<CityDTO>());
             var controller = new AdminController(_logger.Object, _userManagerService.Object, _adminService.Object, _mapper.Object,
                 _cityService.Object, _cityAdministrationService.Object);
             // Act

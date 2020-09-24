@@ -40,7 +40,7 @@ namespace EPlast.XUnitTest
         public async Task IndexTest()
         {
             // Arrange
-            _cityService.Setup(c => c.GetAllDTOAsync())
+            _cityService.Setup(c => c.GetAllDTOAsync(null))
                 .ReturnsAsync(new List<CityDTO>());
             _mapper.Setup(m => m.Map<IEnumerable<CityDTO>, IEnumerable<CityViewModel>>(It.IsAny<IEnumerable<CityDTO>>()))
                 .Returns(() => new List<CityViewModel>());
