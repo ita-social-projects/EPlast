@@ -43,7 +43,7 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<DataAccessCity.City>> GetAllAsync()
+        public async Task<IEnumerable<DataAccessCity.City>> GetAllAsync(string cityName = null)
         {
             var cities = await _repoWrapper.City.GetAllAsync(
                     include: source => source
@@ -57,13 +57,15 @@ namespace EPlast.BLL.Services
                            .ThenInclude(d => d.CityDocumentType)
                        .Include(r => r.Region));
 
-            return cities;
+            return string.IsNullOrEmpty(cityName)
+                ? cities
+                : cities.Where(c => c.Name.ToLower().Contains(cityName.ToLower()));
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<CityDTO>> GetAllDTOAsync()
+        public async Task<IEnumerable<CityDTO>> GetAllDTOAsync(string cityName = null)
         {
-            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(await GetAllAsync());
+            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(await GetAllAsync(cityName));
         }
 
         /// <inheritdoc />
@@ -425,15 +427,11 @@ namespace EPlast.BLL.Services
 
                 await _cityBlobStorage.UploadBlobForBase64Async(logoBase64Parts[1], fileName);
                 city.Logo = fileName;
-
-                if (!string.IsNullOrEmpty(oldImageName))
-                {
-                    await _cityBlobStorage.DeleteBlobAsync(oldImageName);
-                }
             }
-            else
+
+            if (!string.IsNullOrEmpty(oldImageName))
             {
-                city.Logo = oldImageName ?? null;
+                await _cityBlobStorage.DeleteBlobAsync(oldImageName);
             }
         }
     }

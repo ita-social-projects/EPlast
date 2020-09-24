@@ -153,7 +153,7 @@ namespace EPlast.WebApi.Controllers
 
                 if (result.Succeeded)
                 {
-                    return Redirect("https://eplastua.azurewebsites.net/");
+                    return Redirect("https://eplast.westeurope.cloudapp.azure.com/signin");
                 }
                 else
                 {
@@ -222,7 +222,7 @@ namespace EPlast.WebApi.Controllers
                     return BadRequest(_resourceForErrors["Forgot-NotRegisteredUser"]);
                 }
                 string token = await _authService.GenerateResetTokenAsync(userDto);
-                var confirmationLink = string.Format("https://eplastua.azurewebsites.net/resetPassword?token={0}", HttpUtility.UrlEncode(token));
+                var confirmationLink = string.Format("https://eplast.westeurope.cloudapp.azure.com/resetPassword?token={0}", HttpUtility.UrlEncode(token));
                 await _authService.SendEmailReseting(confirmationLink, forgotpasswordDto);
                 return Ok(_resourceForErrors["ForgotPasswordConfirmation"]);
             }
