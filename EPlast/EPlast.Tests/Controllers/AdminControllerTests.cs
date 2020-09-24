@@ -177,7 +177,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task RegionsAdmins_Valid_Test()
         {
-            _cityService.Setup(c => c.GetAllDTOAsync())
+            _cityService.Setup(c => c.GetAllDTOAsync(null))
                 .ReturnsAsync(It.IsAny<IEnumerable<CityDTO>>());
 
             AdminController adminController = CreateAdminController;
@@ -194,7 +194,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task RegionsAdmins_Invalid_Test()
         {
-            _cityService.Setup(c => c.GetAllDTOAsync())
+            _cityService.Setup(c => c.GetAllDTOAsync(null))
                 .ReturnsAsync(() => null);
 
             AdminController adminController = CreateAdminController;

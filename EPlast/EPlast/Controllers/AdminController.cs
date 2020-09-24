@@ -131,7 +131,7 @@ namespace EPlast.Controllers
         {
             var model = new RegionsAdminsViewModel
             {
-                Cities = _mapper.Map<IEnumerable<CityDTO>, IEnumerable<CityViewModel>>(await _cityService.GetAllDTOAsync())
+                Cities = _mapper.Map<IEnumerable<CityDTO>, IEnumerable<CityViewModel>>(await _cityService.GetAllDTOAsync(null))
             };
             return View(model);
         }
