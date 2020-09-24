@@ -48,6 +48,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="page">A number of the page</param>
         /// <param name="pageSize">A count of cities to display</param>
+        /// <param name="cityName">Optional param to find cities by name</param>
         /// <returns>A specific number of cities</returns>
         [HttpGet("Profiles/{page}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
