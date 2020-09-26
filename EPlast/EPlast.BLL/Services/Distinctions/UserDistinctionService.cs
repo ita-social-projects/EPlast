@@ -29,7 +29,8 @@ namespace EPlast.BLL.Services.Distinctions
                 DistinctionId = userDistinctionDTO.DistinctionId,
                 Date = userDistinctionDTO.Date,
                 Reason = userDistinctionDTO.Reason,
-                Reporter = userDistinctionDTO.Reporter
+                Reporter = userDistinctionDTO.Reporter,
+                Number = userDistinctionDTO.Number,
             };
             await _repoWrapper.UserDistinction.CreateAsync(userDistinction);
             await _repoWrapper.SaveAsync();
@@ -46,7 +47,8 @@ namespace EPlast.BLL.Services.Distinctions
                 DistinctionId = userDistinctionDTO.DistinctionId,
                 Date = userDistinctionDTO.Date,
                 Reason = userDistinctionDTO.Reason,
-                Reporter = userDistinctionDTO.Reporter
+                Reporter = userDistinctionDTO.Reporter,
+                Number = userDistinctionDTO.Number
             };
             _repoWrapper.UserDistinction.Update(userDistinction);
             await _repoWrapper.SaveAsync();
@@ -90,5 +92,11 @@ namespace EPlast.BLL.Services.Distinctions
                 .Include(d => d.Distinction));
             return _mapper.Map<IEnumerable<UserDistinction>, IEnumerable<UserDistinctionDTO>>(userDistinctions);
         }
+        public async Task<bool> IsNumberExistAsync(int number) 
+        {
+            var distNum = await _repoWrapper.UserDistinction.GetFirstOrDefaultAsync(x => x.Number == number);
+            return distNum != null;
+        }
+
     }
 }

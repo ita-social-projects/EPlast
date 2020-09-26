@@ -232,6 +232,19 @@ namespace EPlast.WebApi.Controllers
             }
             return BadRequest(ModelState);
         }
+        /// <summary>
+        /// Checks if theres already a Distinction with such number
+        /// </summary>
+        /// <param name="number">Number which checking</param>
+        /// <returns>True if exist</returns>
+        /// <response code="200">Check was successfull</response>
+        [HttpGet("numberExist")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CheckNumberExisting(int number)
+        {
+            bool distNumber = await _userDistinctionService.IsNumberExistAsync(number);
+            return Ok(distNumber);
+        }
 
     }
 }
