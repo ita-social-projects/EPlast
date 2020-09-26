@@ -12,5 +12,6 @@ namespace EPlast.BLL
         Task ChangeUserDistinctionAsync(UserDistinctionDTO userDistinctionDTO, ClaimsPrincipal user);
         Task DeleteUserDistinctionAsync(int id, ClaimsPrincipal user);
         Task<IEnumerable<UserDistinctionDTO>> GetUserDistinctionsOfUserAsync(string UserId);
+        Task<bool> IsNumberExistAsync(int number);
     }
 }
