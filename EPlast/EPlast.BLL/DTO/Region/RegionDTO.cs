@@ -11,6 +11,6 @@ namespace EPlast.BLL.DTO.Region
         public string Description { get; set; }
         public string Logo { get; set; }
         public IEnumerable<RegionAdministrationDTO> Administration { get; set; }
-        public IEnumerable<CityDTO> Cities { get; set; }
+       // public IEnumerable<CityDTO> Cities { get; set; }
     }
 }
