@@ -2,6 +2,8 @@
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Region;
+using EPlast.DataAccess.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -15,6 +17,7 @@ namespace EPlast.WebApi.Controllers
         private readonly ILoggerService<CitiesController> _logger;
         private readonly IRegionService _regionService;
         private readonly IRegionAdministrationService _regionAdministrationService;
+        private readonly UserManager<User> _userManager;
 
         public RegionsController(ILoggerService<CitiesController> logger,
             IRegionService regionService,
@@ -72,5 +75,25 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest();
             }
         }
+
+
+        [HttpDelete("RemoveRegion/{Id}")]
+        public async Task<IActionResult> Remove(int Id)
+        {
+            await _regionService.DeleteRegionByIdAsync(Id);
+            return Ok();
+        }
+
+
+
+
+        [HttpPost("AddFollower/{regionId}/{cityId}")]
+        public async Task<IActionResult> AddFollower(int regionId, int cityId)
+        {
+            await _regionService.AddFollowerAsync(regionId, cityId);
+            return Ok();
+        }
+
+
     }
 }

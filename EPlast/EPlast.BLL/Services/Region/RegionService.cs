@@ -1,11 +1,15 @@
 ﻿using AutoMapper;
+using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.DataAccess.Repositories;
+using EPlast.DataAccess.Repositories.Realizations.Base;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using DataAccessCity = EPlast.DataAccess.Entities;
 
@@ -60,5 +64,25 @@ namespace EPlast.BLL.Services.Region
 
             return regionProfile;
         }
+
+        public async Task DeleteRegionByIdAsync(int regionId)
+        {
+            var region = (await _repoWrapper.Region.GetFirstAsync(d=>d.ID == regionId));
+            _repoWrapper.Region.Delete(region);
+            await _repoWrapper.SaveAsync();
+        }
+
+
+        /// <inheritdoc />
+        public async Task AddFollowerAsync(int RegionId, int cityId)
+        {
+            var region = (await _repoWrapper.Region.GetFirstAsync(d => d.ID == RegionId));
+            var city = (await _repoWrapper.City.GetFirstAsync(d=>d.ID==cityId));
+
+            city.Region = region;
+            await _repoWrapper.SaveAsync();
+        }
+
+
     }
 }
