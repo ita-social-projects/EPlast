@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    [Migration("20200927182103_Regions")]
-    partial class Regions
+    [Migration("20200929084851_Region")]
+    partial class Region
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -1021,9 +1021,6 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(1024)")
                         .HasMaxLength(1024);
-
-                    b.Property<string>("Logo")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RegionName")
                         .IsRequired()

@@ -12,8 +12,17 @@ namespace EPlast.DataAccess.Entities
 
         [MaxLength(1024, ErrorMessage = "Region description cannot exceed 1024 characters")]
         public string Description { get; set; }
-        public string Logo { get; set; }
+        
         public ICollection<RegionAdministration> RegionAdministration { get; set; }
         public ICollection<City> Cities { get; set; }
+
+        public string PhoneNumber { get; set; }
+        public string Email { get; set; }
+        public string Link { get; set; }
+
+        public string Street { get; set; }
+        public string HouseNumber { get; set; }
+        public string OfficeNumber { get; set; }
+        public int PostIndex { get; set; }
     }
 }
