@@ -1,4 +1,5 @@
-﻿using EPlast.BLL.DTO.Region;
+﻿using EPlast.BLL.DTO.City;
+using EPlast.BLL.DTO.Region;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,5 +12,8 @@ namespace EPlast.BLL.Interfaces.Region
         Task<RegionProfileDTO> GetRegionProfileByIdAsync(int regionId);
         Task DeleteRegionByIdAsync(int cityId);
         Task AddFollowerAsync(int regionId, int cityId);
+        Task<IEnumerable<CityDTO>> GetMembers(int regionId);
+        Task AddRegion(RegionDTO region);
+        Task<IEnumerable<RegionAdministrationDTO>> GetAdministration(int regionId);
     }
 }
