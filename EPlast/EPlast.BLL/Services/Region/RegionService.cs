@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
+using EPlast.BLL.DTO.Statistics;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Region;
+using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.DataAccess.Repositories.Realizations.Base;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +34,16 @@ namespace EPlast.BLL.Services.Region
             _regionBlobStorage = regionBlobStorage;
             _cityService = cityService;
         }
+
+        public async Task AddRegion(RegionDTO region)
+        {
+
+            var newRegion = _mapper.Map<RegionDTO, DataAccessCity.Region>(region);
+
+            await _repoWrapper.Region.CreateAsync(newRegion);
+            await _repoWrapper.SaveAsync();
+        }
+
 
         public async Task<IEnumerable<RegionDTO>> GetAllRegionsAsync()
         {
@@ -83,6 +95,22 @@ namespace EPlast.BLL.Services.Region
             await _repoWrapper.SaveAsync();
         }
 
+        public async Task<IEnumerable<CityDTO>> GetMembers(int regionId)
+        {
+            var cities = await _repoWrapper.City.GetAllAsync(d => d.RegionId == regionId);
+            return _mapper.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDTO>>(cities);
+        }
 
+        public async Task<IEnumerable<RegionAdministrationDTO>> GetAdministration(int regionId)
+        {
+            var admins =await  _repoWrapper.RegionAdministration.GetAllAsync(d => d.RegionId == regionId,
+                include: source => source
+                    .Include(t => t.User)
+                        .Include(t => t.Region)
+                        .Include(t => t.AdminType));
+            return _mapper.Map< IEnumerable < RegionAdministration >,IEnumerable< RegionAdministrationDTO>> (admins);
+        }
+
+        
     }
 }

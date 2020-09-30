@@ -1020,13 +1020,31 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("nvarchar(1024)")
                         .HasMaxLength(1024);
 
-                    b.Property<string>("Logo")
+                    b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HouseNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Link")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OfficeNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PostIndex")
+                        .HasColumnType("int");
 
                     b.Property<string>("RegionName")
                         .IsRequired()
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
+
+                    b.Property<string>("Street")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
