@@ -64,6 +64,17 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _actionManager.GetEventsAsync(categoryId, typeId, User));
         }
 
+
+
+        [HttpGet("~/api/types/{typeId:int}/categories/{categoryId:int}/events/{status}")]
+       
+        public async Task<IActionResult> GetEventsByCategory(int typeId, int categoryId, int status)
+        {
+            return Ok(await _actionManager.GetEventsByStatusAsync(categoryId, typeId, status, User));
+        }
+
+
+
         /// <summary>
         /// Get detailed information about specific event.
         /// </summary>
@@ -224,5 +235,9 @@ namespace EPlast.WebApi.Controllers
         {
                 return Ok(await _actionManager.FillEventGalleryAsync(eventId, files));      
         }
+
+
+
+
     }
 }
