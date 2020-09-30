@@ -280,5 +280,72 @@ namespace EPlast.BLL.Services.Events
             }
             await _repoWrapper.SaveAsync();
         }
+
+        public async Task<List<GeneralEventDTO>> GetEventsByStatusAsync(int categoryId, int typeId, int status, ClaimsPrincipal User)
+        {
+            int approvedStatus = await _participantStatusManager.GetStatusIdAsync("Учасник");
+            int undeterminedStatus = await _participantStatusManager.GetStatusIdAsync("Розглядається");
+            int rejectedStatus = await _participantStatusManager.GetStatusIdAsync("Відмовлено");
+            int approvedEvent = await _eventStatusManager.GetStatusIdAsync("Затверджений(-на)");
+            int finishedEvent = await _eventStatusManager.GetStatusIdAsync("Завершений(-на)");
+            int notApprovedEvent = await _eventStatusManager.GetStatusIdAsync("Не затверджені");
+
+            if (status == 1)
+            {
+                var events = await _repoWrapper.Event
+                   .GetAllAsync(
+                       e => e.EventCategoryID == categoryId && e.EventTypeID == typeId && e.EventStatus.ID == status,
+                       source => source
+                           .Include(e => e.EventAdministrations)
+                           .Include(e => e.Participants)
+                   );
+
+                var dto = events
+                    .Select(ev => new GeneralEventDTO
+                    {
+                        EventId = ev.ID,
+                        EventName = ev.EventName,
+                        IsUserEventAdmin = (ev.EventAdministrations.Any(e => e.UserID == _userManager.GetUserId(User))) || User.IsInRole("Адміністратор подій"),
+                        IsUserParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(User)),
+                        IsUserApprovedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(User) && p.ParticipantStatusId == approvedStatus),
+                        IsUserUndeterminedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(User) && p.ParticipantStatusId == undeterminedStatus),
+                        IsUserRejectedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(User) && p.ParticipantStatusId == rejectedStatus),
+                        IsEventApproved = ev.EventStatusID == approvedEvent,
+                        IsEventNotApproved = ev.EventStatusID == notApprovedEvent,
+                        IsEventFinished = ev.EventStatusID == finishedEvent
+                    })
+                    .ToList();
+
+                return dto;
+            }
+            else
+            {
+                var events = await _repoWrapper.Event
+                  .GetAllAsync(
+                      e => e.EventCategoryID == categoryId && e.EventTypeID == typeId ,
+                      source => source
+                          .Include(e => e.EventAdministrations)
+                          .Include(e => e.Participants)
+                  );
+
+                var dto = events
+                    .Select(ev => new GeneralEventDTO
+                    {
+                        EventId = ev.ID,
+                        EventName = ev.EventName,
+                        IsUserEventAdmin = (ev.EventAdministrations.Any(e => e.UserID == _userManager.GetUserId(User))) || User.IsInRole("Адміністратор подій"),
+                        IsUserParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(User)),
+                        IsUserApprovedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(User) && p.ParticipantStatusId == approvedStatus),
+                        IsUserUndeterminedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(User) && p.ParticipantStatusId == undeterminedStatus),
+                        IsUserRejectedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(User) && p.ParticipantStatusId == rejectedStatus),
+                        IsEventApproved = ev.EventStatusID == approvedEvent,
+                        IsEventNotApproved = ev.EventStatusID == notApprovedEvent,
+                        IsEventFinished = ev.EventStatusID == finishedEvent
+                    })
+                    .ToList();
+
+                return dto;
+            }
+        }
     }
 }

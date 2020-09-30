@@ -120,5 +120,7 @@ namespace EPlast.BLL.Interfaces.Events
         Task<int> DeletePictureAsync(int id);
 
         Task CheckEventsStatusesAsync();
+
+        Task<List<GeneralEventDTO>> GetEventsByStatusAsync(int categoryId, int typeId, int status, ClaimsPrincipal User);
     }
 }

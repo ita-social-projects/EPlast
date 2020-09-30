@@ -19,6 +19,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IRegionAdministrationService _regionAdministrationService;
         private readonly UserManager<User> _userManager;
 
+
         public RegionsController(ILoggerService<CitiesController> logger,
             IRegionService regionService,
             IRegionAdministrationService regionAdministrationService)
@@ -35,6 +36,28 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(regions);
         }
+
+        [HttpPost("AddRegion")]
+        public async Task<IActionResult> CreateRegion(RegionDTO region)
+        {
+
+           await  _regionService.AddRegion(region);
+
+            return Ok();
+        }
+
+       
+
+
+        [HttpGet("GetAdministration/{regionId}")]
+        public async Task<IActionResult> GetRegionAdmins(int regionId)
+        {
+            var Admins = await _regionService.GetAdministration(regionId);
+            return Ok(Admins);
+        }
+
+
+
 
         [HttpGet("Profile/{regionId}")]
         public async Task<IActionResult> GetProfile(int regionId)
@@ -92,6 +115,14 @@ namespace EPlast.WebApi.Controllers
         {
             await _regionService.AddFollowerAsync(regionId, cityId);
             return Ok();
+        }
+
+
+        [HttpGet("GetMembers/{regionId}")]
+        public async Task<IActionResult> GetMembers(int regionId)
+        {
+          var members =   await _regionService.GetMembers(regionId);
+            return Ok(members);
         }
 
 
