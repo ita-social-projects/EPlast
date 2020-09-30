@@ -237,8 +237,9 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="number">Number which checking</param>
         /// <returns>True if exist</returns>
+        /// <returns>False if doesn't exist</returns>
         /// <response code="200">Check was successfull</response>
-        [HttpGet("numberExist")]
+        [HttpGet("numberExist/{number}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CheckNumberExisting(int number)
         {
