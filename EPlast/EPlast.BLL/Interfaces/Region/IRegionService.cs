@@ -14,6 +14,8 @@ namespace EPlast.BLL.Interfaces.Region
         Task AddFollowerAsync(int regionId, int cityId);
         Task<IEnumerable<CityDTO>> GetMembers(int regionId);
         Task AddRegion(RegionDTO region);
+        Task EditRegion(int regId, RegionDTO region);
+        Task<RegionDTO> GetRegionByName(string Name);
         Task<IEnumerable<RegionAdministrationDTO>> GetAdministration(int regionId);
     }
 }
