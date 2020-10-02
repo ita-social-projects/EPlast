@@ -36,7 +36,7 @@ namespace EPlast.BLL.Services.Region
             _cityService = cityService;
         }
 
-        public async Task AddRegion(RegionDTO region)
+        public async Task AddRegionAsync(RegionDTO region)
         {
 
             var newRegion = _mapper.Map<RegionDTO, DataAccessCity.Region>(region);
@@ -96,13 +96,13 @@ namespace EPlast.BLL.Services.Region
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task<IEnumerable<CityDTO>> GetMembers(int regionId)
+        public async Task<IEnumerable<CityDTO>> GetMembersAsync(int regionId)
         {
             var cities = await _repoWrapper.City.GetAllAsync(d => d.RegionId == regionId);
             return _mapper.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDTO>>(cities);
         }
 
-        public async Task<IEnumerable<RegionAdministrationDTO>> GetAdministration(int regionId)
+        public async Task<IEnumerable<RegionAdministrationDTO>> GetAdministrationAsync(int regionId)
         {
             var admins =await  _repoWrapper.RegionAdministration.GetAllAsync(d => d.RegionId == regionId,
                 include: source => source
@@ -112,14 +112,14 @@ namespace EPlast.BLL.Services.Region
             return _mapper.Map< IEnumerable < RegionAdministration >,IEnumerable< RegionAdministrationDTO>> (admins);
         }
 
-        public async Task<RegionDTO> GetRegionByName(string Name)
+        public async Task<RegionDTO> GetRegionByNameAsync(string Name)
         {
             var region = await _repoWrapper.Region.GetFirstAsync(d => d.RegionName == Name);
             return _mapper.Map<DataAccessCity.Region, RegionDTO>(region);
         }
 
 
-        public async Task EditRegion(int regId, RegionDTO region)
+        public async Task EditRegionAsync(int regId, RegionDTO region)
         {
             var ChangedRegion = await _repoWrapper.Region.GetFirstAsync(d => d.ID == regId);
             ChangedRegion.Link = region.Link;
