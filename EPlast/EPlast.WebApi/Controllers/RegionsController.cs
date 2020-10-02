@@ -17,7 +17,7 @@ namespace EPlast.WebApi.Controllers
         private readonly ILoggerService<CitiesController> _logger;
         private readonly IRegionService _regionService;
         private readonly IRegionAdministrationService _regionAdministrationService;
-        private readonly UserManager<User> _userManager;
+
 
 
         public RegionsController(ILoggerService<CitiesController> logger,
@@ -46,7 +46,15 @@ namespace EPlast.WebApi.Controllers
             return Ok();
         }
 
-       
+        [HttpPut("EditRegion/{regId}")]
+        public async Task<IActionResult> EditRegion(int regId, RegionDTO region)
+        {
+            await _regionService.EditRegion(regId, region);
+
+            return Ok();
+        }
+
+
 
 
         [HttpGet("GetAdministration/{regionId}")]

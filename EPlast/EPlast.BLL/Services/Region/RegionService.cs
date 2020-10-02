@@ -8,6 +8,7 @@ using EPlast.BLL.Interfaces.Region;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.DataAccess.Repositories.Realizations.Base;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -111,6 +112,26 @@ namespace EPlast.BLL.Services.Region
             return _mapper.Map< IEnumerable < RegionAdministration >,IEnumerable< RegionAdministrationDTO>> (admins);
         }
 
-        
+        public async Task<RegionDTO> GetRegionByName(string Name)
+        {
+            var region = await _repoWrapper.Region.GetFirstAsync(d => d.RegionName == Name);
+            return _mapper.Map<DataAccessCity.Region, RegionDTO>(region);
+        }
+
+
+        public async Task EditRegion(int regId, RegionDTO region)
+        {
+            var ChangedRegion = await _repoWrapper.Region.GetFirstAsync(d => d.ID == regId);
+            ChangedRegion.Link = region.Link;
+            ChangedRegion.Email = region.Email;
+            ChangedRegion.OfficeNumber = region.OfficeNumber;
+            ChangedRegion.PhoneNumber = region.PhoneNumber;
+            ChangedRegion.PostIndex = region.PostIndex;
+            ChangedRegion.RegionName = region.RegionName;
+            ChangedRegion.Description = region.Description;
+            ChangedRegion.Street = region.Street;
+            ChangedRegion.HouseNumber = ChangedRegion.HouseNumber;
+            await _repoWrapper.SaveAsync();
+        }
     }
 }
