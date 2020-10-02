@@ -12,10 +12,10 @@ namespace EPlast.BLL.Interfaces.Region
         Task<RegionProfileDTO> GetRegionProfileByIdAsync(int regionId);
         Task DeleteRegionByIdAsync(int cityId);
         Task AddFollowerAsync(int regionId, int cityId);
-        Task<IEnumerable<CityDTO>> GetMembers(int regionId);
-        Task AddRegion(RegionDTO region);
-        Task EditRegion(int regId, RegionDTO region);
-        Task<RegionDTO> GetRegionByName(string Name);
-        Task<IEnumerable<RegionAdministrationDTO>> GetAdministration(int regionId);
+        Task<IEnumerable<CityDTO>> GetMembersAsync(int regionId);
+        Task AddRegionAsync(RegionDTO region);
+        Task EditRegionAsync(int regId, RegionDTO region);
+        Task<RegionDTO> GetRegionByNameAsync(string Name);
+        Task<IEnumerable<RegionAdministrationDTO>> GetAdministrationAsync(int regionId);
     }
 }

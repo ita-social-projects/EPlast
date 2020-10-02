@@ -41,7 +41,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> CreateRegion(RegionDTO region)
         {
 
-           await  _regionService.AddRegion(region);
+           await  _regionService.AddRegionAsync(region);
 
             return Ok();
         }
@@ -49,7 +49,7 @@ namespace EPlast.WebApi.Controllers
         [HttpPut("EditRegion/{regId}")]
         public async Task<IActionResult> EditRegion(int regId, RegionDTO region)
         {
-            await _regionService.EditRegion(regId, region);
+            await _regionService.EditRegionAsync(regId, region);
 
             return Ok();
         }
@@ -60,7 +60,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("GetAdministration/{regionId}")]
         public async Task<IActionResult> GetRegionAdmins(int regionId)
         {
-            var Admins = await _regionService.GetAdministration(regionId);
+            var Admins = await _regionService.GetAdministrationAsync(regionId);
             return Ok(Admins);
         }
 
@@ -129,7 +129,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("GetMembers/{regionId}")]
         public async Task<IActionResult> GetMembers(int regionId)
         {
-          var members =   await _regionService.GetMembers(regionId);
+          var members =   await _regionService.GetMembersAsync(regionId);
             return Ok(members);
         }
 
