@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using EPlast.DataAccess.Repositories.Interfaces.Events;
 using EPlast.DataAccess.Repositories.Interfaces.Region;
+using EPlast.DataAccess.Repositories.Interfaces.Blank;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -51,6 +52,8 @@ namespace EPlast.DataAccess.Repositories
         IEventCategoryTypeRepository EventCategoryType { get; }
         IDistinctionRepository Distinction { get; }
         IUserDistinctionRepository UserDistinction { get; }
+        IBlankBiographyDocumentsRepository  BiographyDocumentsRepository { get; }
+        IBlankBiographyDocumentsTypeRepository BiographyDocumentsTypeRepository { get; }
 
 
         IPlastDegreeRepository PlastDegrees { get; }
