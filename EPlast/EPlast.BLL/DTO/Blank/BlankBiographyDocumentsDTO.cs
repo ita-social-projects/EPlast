@@ -15,6 +15,5 @@ namespace EPlast.BLL.DTO.Blank
         public BlankBiographyDocumentsTypeDTO BlankBiographyDocumentsTypeDTO { get; set; }
         [Required]
         public int UserId { get; set; }
-        public User User { get; set; }
     }
 }
