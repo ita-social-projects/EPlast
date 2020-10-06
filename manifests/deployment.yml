@@ -24,3 +24,13 @@ spec:
             value: ___ConnectionStrings__EPlastDBConnection___
           - name: StorageConnectionString
             value: ___StorageConnectionString___
+          - name: EmailServiceSettings__SMTPServerLogin
+            value: ___EmailServiceSettings__SMTPServerLogin___
+          - name: EmailServiceSettings__SMTPServerPassword
+            value: ___EmailServiceSettings__SMTPServerPassword___
+          - name: Admin__Email
+            value: ___Admin__Email___
+          - name: Admin__Password
+            value: ___Admin__Password___
+            
+            

@@ -17,7 +17,7 @@ namespace EPlast.WebApi.Controllers
         private readonly ILoggerService<CitiesController> _logger;
         private readonly IRegionService _regionService;
         private readonly IRegionAdministrationService _regionAdministrationService;
-        private readonly UserManager<User> _userManager;
+
 
 
         public RegionsController(ILoggerService<CitiesController> logger,
@@ -41,18 +41,26 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> CreateRegion(RegionDTO region)
         {
 
-           await  _regionService.AddRegion(region);
+           await  _regionService.AddRegionAsync(region);
 
             return Ok();
         }
 
-       
+        [HttpPut("EditRegion/{regId}")]
+        public async Task<IActionResult> EditRegion(int regId, RegionDTO region)
+        {
+            await _regionService.EditRegionAsync(regId, region);
+
+            return Ok();
+        }
+
+
 
 
         [HttpGet("GetAdministration/{regionId}")]
         public async Task<IActionResult> GetRegionAdmins(int regionId)
         {
-            var Admins = await _regionService.GetAdministration(regionId);
+            var Admins = await _regionService.GetAdministrationAsync(regionId);
             return Ok(Admins);
         }
 
@@ -121,7 +129,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("GetMembers/{regionId}")]
         public async Task<IActionResult> GetMembers(int regionId)
         {
-          var members =   await _regionService.GetMembers(regionId);
+          var members =   await _regionService.GetMembersAsync(regionId);
             return Ok(members);
         }
 
