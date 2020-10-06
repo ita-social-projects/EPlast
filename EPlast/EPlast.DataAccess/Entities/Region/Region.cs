@@ -15,11 +15,11 @@ namespace EPlast.DataAccess.Entities
         
         public ICollection<RegionAdministration> RegionAdministration { get; set; }
         public ICollection<City> Cities { get; set; }
-
+        public ICollection<RegionDocuments> Documents { get; set; }
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
         public string Link { get; set; }
-
+        public string Logo { get; set; }
         public string Street { get; set; }
         public string HouseNumber { get; set; }
         public string OfficeNumber { get; set; }
