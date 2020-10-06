@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    [Migration("20201005131757_Add_Blank_Document_Biography")]
+    [Migration("20201005200115_Add_Blank_Document_Biography")]
     partial class Add_Blank_Document_Biography
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1616,8 +1616,7 @@ namespace EPlast.DataAccess.Migrations
 
                     b.HasOne("EPlast.DataAccess.Entities.User", "User")
                         .WithMany("BlankBiographyDocuments")
-                        .HasForeignKey("UserId1")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId1");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.City", b =>
