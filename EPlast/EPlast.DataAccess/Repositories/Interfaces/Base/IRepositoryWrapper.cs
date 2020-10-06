@@ -1,6 +1,7 @@
 ﻿using EPlast.DataAccess.Repositories.Contracts;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Repositories.Interfaces.Events;
+using EPlast.DataAccess.Repositories.Interfaces.Region;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -32,6 +33,7 @@ namespace EPlast.DataAccess.Repositories
         IApproverRepository Approver { get; }
         ICityAdministrationRepository CityAdministration { get; }
         ICityDocumentsRepository CityDocuments { get; }
+        IRegionDocumentRepository RegionDocument { get; }
         ICityDocumentTypeRepository CityDocumentType { get; }
         ICityMembersRepository CityMembers { get; }
         ICityRepository City { get; }
