@@ -36,7 +36,6 @@ namespace EPlast.BLL.Services.Blank
             var documentTypes = await GetAllBlankDocumentTypesAsync();
             biographyDocumentDTO.BlankBiographyDocumentsTypeDTO = documentTypes
                 .FirstOrDefault(dt => dt.Name == biographyDocumentDTO.BlankBiographyDocumentsTypeDTO.Name);
-
             biographyDocumentDTO.BlankDocumentTypeId = biographyDocumentDTO.BlankBiographyDocumentsTypeDTO.ID;
 
             var document = _mapper.Map<BlankBiographyDocumentsDTO, BlankBiographyDocuments>(biographyDocumentDTO);

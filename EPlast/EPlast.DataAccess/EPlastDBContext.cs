@@ -1,4 +1,5 @@
 ﻿using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Blank;
 using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Entities.Event;
@@ -128,11 +129,6 @@ namespace EPlast.DataAccess
                 .HasMany(x => x.BlankBiographyDocuments)
                 .WithOne(x => x.BlankBiographyDocumentsType)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<User>()
-               .HasMany(x => x.BlankBiographyDocuments)
-               .WithOne(x => x.User)
-               .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<User>()
                .HasMany(x => x.Participants)

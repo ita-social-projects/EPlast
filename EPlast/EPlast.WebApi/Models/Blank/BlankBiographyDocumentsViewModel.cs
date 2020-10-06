@@ -11,7 +11,7 @@ namespace EPlast.WebApi.Models.Blank
         public int ID { get; set; }
         public string BlobName { get; set; }
         public string FileName { get; set; }
-        public BlankBiographyDocumentsType BlankBiographyDocumentsType { get; set; }
+        public BlankBiographyDocumentsTypeViewModel BlankBiographyDocumentsTypeViewModel { get; set; }
         public int UserId { get; set; }
     }
 }
