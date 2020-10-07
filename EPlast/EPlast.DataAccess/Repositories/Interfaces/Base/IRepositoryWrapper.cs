@@ -51,8 +51,6 @@ namespace EPlast.DataAccess.Repositories
         IEventCategoryTypeRepository EventCategoryType { get; }
         IDistinctionRepository Distinction { get; }
         IUserDistinctionRepository UserDistinction { get; }
-
-
         IPlastDegreeRepository PlastDegrees { get; }
         IEducatorsStaffRepository KVs { get; }
         IEducatorsStaffTypesRepository KVTypes { get; }
