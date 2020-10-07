@@ -98,6 +98,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<ICityBlobStorageRepository, CityBlobStorageRepository>();
             services.AddScoped<ICityFilesBlobStorageRepository, CityFilesBlobStorageRepository>();
             services.AddScoped<IRegionBlobStorageRepository, RegionBlobStorageRepository>();
+            services.AddScoped<IRegionFilesBlobStorageRepository, RegionFilesBlobStorageRepository>();
             services.AddScoped<IClubBlobStorageRepository, ClubBlobStorageRepository>();
             services.AddScoped<IEventBlobStorageRepository, EventBlobStorageRepository>();
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
