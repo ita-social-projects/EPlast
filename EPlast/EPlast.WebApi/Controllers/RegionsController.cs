@@ -1,9 +1,6 @@
-﻿using AutoMapper;
-using EPlast.BLL.DTO.Region;
+﻿using EPlast.BLL.DTO.Region;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Region;
-using EPlast.DataAccess.Entities;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -16,17 +13,14 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly ILoggerService<CitiesController> _logger;
         private readonly IRegionService _regionService;
-        private readonly IRegionAdministrationService _regionAdministrationService;
-
 
 
         public RegionsController(ILoggerService<CitiesController> logger,
-            IRegionService regionService,
-            IRegionAdministrationService regionAdministrationService)
+            IRegionService regionService)
         {
             _logger = logger;
             _regionService = regionService;
-            _regionAdministrationService = regionAdministrationService;
+
         }
 
         [HttpGet("Profiles")]
