@@ -9,10 +9,7 @@ namespace EPlast.DataAccess.Entities.Blank
         [Required, MaxLength(120)]
         public string FileName { get; set; }
         [Required]
-        public int BlankDocumentTypeId { get; set; }
-        public BlankBiographyDocumentsType BlankBiographyDocumentsType { get; set; }
-        [Required]
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public User User { get; set; }
     }
 }
