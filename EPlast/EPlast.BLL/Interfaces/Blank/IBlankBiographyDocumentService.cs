@@ -23,15 +23,11 @@ namespace EPlast.BLL.Interfaces.Blank
         Task<string> DownloadFileAsync(string fileName);
 
         /// <summary>
-        /// Get all biography blank document types
-        /// </summary>
-        /// <returns>All biography blank document types</returns>
-        Task<IEnumerable<BlankBiographyDocumentsTypeDTO>> GetAllBlankDocumentTypesAsync();
-
-        /// <summary>
         /// Delete a specific document by id
         /// </summary>
         /// <param name="documentId">The id of a specific document</param>
         Task DeleteFileAsync(int documentId);
+
+        Task<IEnumerable<BlankBiographyDocumentsDTO>> GetDocumentByUserId(string userid);
     }
 }

@@ -11,9 +11,6 @@ namespace EPlast.BLL.DTO.Blank
         [Required, MaxLength(120)]
         public string FileName { get; set; }
         [Required]
-        public int BlankDocumentTypeId { get; set; }
-        public BlankBiographyDocumentsTypeDTO BlankBiographyDocumentsTypeDTO { get; set; }
-        [Required]
-        public int UserId { get; set; }
+        public string UserId { get; set; }
     }
 }

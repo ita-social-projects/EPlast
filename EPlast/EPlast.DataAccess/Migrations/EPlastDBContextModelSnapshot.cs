@@ -146,12 +146,6 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("BlankBiographyDocumentsTypeID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BlankDocumentTypeId")
-                        .HasColumnType("int");
-
                     b.Property<string>("BlobName")
                         .HasColumnType("nvarchar(max)");
 
@@ -160,36 +154,15 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("nvarchar(120)")
                         .HasMaxLength(120);
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId1")
+                    b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("BlankBiographyDocumentsTypeID");
-
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("BlankBiographyDocuments");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.Blank.BlankBiographyDocumentsType", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
-
-                    b.HasKey("ID");
-
-                    b.ToTable("BlankBiographyDocumentsType");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.City", b =>
@@ -1607,14 +1580,11 @@ namespace EPlast.DataAccess.Migrations
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Blank.BlankBiographyDocuments", b =>
                 {
-                    b.HasOne("EPlast.DataAccess.Entities.Blank.BlankBiographyDocumentsType", "BlankBiographyDocumentsType")
-                        .WithMany("BlankBiographyDocuments")
-                        .HasForeignKey("BlankBiographyDocumentsTypeID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("EPlast.DataAccess.Entities.User", "User")
                         .WithMany("BlankBiographyDocuments")
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.City", b =>

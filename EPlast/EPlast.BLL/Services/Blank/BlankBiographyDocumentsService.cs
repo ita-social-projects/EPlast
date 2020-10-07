@@ -4,6 +4,7 @@ using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.Blank;
 using EPlast.DataAccess.Entities.Blank;
 using EPlast.DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Blank
 {
-    class BlankBiographyDocumentsService : IBlankBiographyDocumentService
+   public class BlankBiographyDocumentsService : IBlankBiographyDocumentService
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
@@ -32,11 +33,6 @@ namespace EPlast.BLL.Services.Blank
             var fileName = Guid.NewGuid() + extension;
             await _blankFilesBlobStorage.UploadBlobForBase64Async(fileBase64, fileName);
             biographyDocumentDTO.BlobName = fileName;
-
-            var documentTypes = await GetAllBlankDocumentTypesAsync();
-            biographyDocumentDTO.BlankBiographyDocumentsTypeDTO = documentTypes
-                .FirstOrDefault(dt => dt.Name == biographyDocumentDTO.BlankBiographyDocumentsTypeDTO.Name);
-            biographyDocumentDTO.BlankDocumentTypeId = biographyDocumentDTO.BlankBiographyDocumentsTypeDTO.ID;
 
             var document = _mapper.Map<BlankBiographyDocumentsDTO, BlankBiographyDocuments>(biographyDocumentDTO);
             _repositoryWrapper.BiographyDocumentsRepository.Attach(document);
@@ -64,14 +60,13 @@ namespace EPlast.BLL.Services.Blank
             return fileBase64;
         }
 
-        public async Task<IEnumerable<BlankBiographyDocumentsTypeDTO>> GetAllBlankDocumentTypesAsync()
-        {
-            var documentsTypes = _mapper.Map<IEnumerable<BlankBiographyDocumentsType>, 
-                IEnumerable<BlankBiographyDocumentsTypeDTO>>(
-                await _repositoryWrapper.BiographyDocumentsTypeRepository.GetAllAsync()
-                );
 
-            return documentsTypes;
+        public async Task<IEnumerable<BlankBiographyDocumentsDTO>> GetDocumentByUserId(string userid)
+        {
+            var document = _mapper.Map<IEnumerable<BlankBiographyDocuments>, IEnumerable<BlankBiographyDocumentsDTO>>(
+                await _repositoryWrapper.BiographyDocumentsRepository.FindByCondition(expression: i => i.UserId == userid)
+                .ToListAsync());
+            return document;
         }
     }
 }

@@ -61,7 +61,6 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IEducatorsStaffTypesRepository _KVtypes;
         private IRegionDocumentRepository _regionDocs;
         private IBlankBiographyDocumentsRepository _biographyDocumentsRepository;
-        private IBlankBiographyDocumentsTypeRepository _biographyDocumentsTypeRepository;
 
 
         public IEducatorsStaffTypesRepository KVTypes
@@ -669,18 +668,6 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                     _biographyDocumentsRepository = new BlankBiographyDocumentsRepository(_dbContext);
                 }
                 return _biographyDocumentsRepository;
-            }
-        }
-
-        public IBlankBiographyDocumentsTypeRepository BiographyDocumentsTypeRepository
-        {
-            get
-            {
-                if (_biographyDocumentsTypeRepository == null)
-                {
-                    _biographyDocumentsTypeRepository = new BlankBiographyDocumentsTypeRepository(_dbContext);
-                }
-                return _biographyDocumentsTypeRepository;
             }
         }
 
