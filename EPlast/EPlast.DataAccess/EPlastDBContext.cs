@@ -185,6 +185,7 @@ namespace EPlast.DataAccess
         public DbSet<ClubAdministration> ClubAdministrations { get; set; }
         public DbSet<Club> Clubs { get; set; }
         public DbSet<Region> Regions { get; set; }
+        public DbSet<RegionDocuments> RegionDocs { get; set; }
         public DbSet<RegionAdministration> RegionAdministrations { get; set; }
         public DbSet<CityLegalStatus> CityLegalStatuses { get; set; }
         public DbSet<UserPlastDegree> UserPlastDegrees { get; set; }

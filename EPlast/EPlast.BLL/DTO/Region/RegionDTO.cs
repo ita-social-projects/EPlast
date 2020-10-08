@@ -10,12 +10,11 @@ namespace EPlast.BLL.DTO.Region
         public string RegionName { get; set; }
         public string Description { get; set; }
         public IEnumerable<RegionAdministrationDTO> Administration { get; set; }
-        // public IEnumerable<CityDTO> Cities { get; set; }
-
+        public IEnumerable<RegionDocumentDTO> Documents { get; set; }
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
+        public string Logo { get; set; }
         public string Link { get; set; }
-
         public string Street { get; set; }
         public string HouseNumber { get; set; }
         public string OfficeNumber { get; set; }

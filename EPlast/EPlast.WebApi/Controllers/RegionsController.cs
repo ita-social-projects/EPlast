@@ -17,7 +17,7 @@ namespace EPlast.WebApi.Controllers
         private readonly ILoggerService<CitiesController> _logger;
         private readonly IRegionService _regionService;
         private readonly IRegionAdministrationService _regionAdministrationService;
-        private readonly UserManager<User> _userManager;
+
 
 
         public RegionsController(ILoggerService<CitiesController> logger,
@@ -41,18 +41,26 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> CreateRegion(RegionDTO region)
         {
 
-           await  _regionService.AddRegion(region);
+           await  _regionService.AddRegionAsync(region);
 
             return Ok();
         }
 
-       
+        [HttpPut("EditRegion/{regId}")]
+        public async Task<IActionResult> EditRegion(int regId, RegionDTO region)
+        {
+            await _regionService.EditRegionAsync(regId, region);
+
+            return Ok();
+        }
+
+
 
 
         [HttpGet("GetAdministration/{regionId}")]
         public async Task<IActionResult> GetRegionAdmins(int regionId)
         {
-            var Admins = await _regionService.GetAdministration(regionId);
+            var Admins = await _regionService.GetAdministrationAsync(regionId);
             return Ok(Admins);
         }
 
@@ -80,34 +88,79 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPost("AddAdministrator/{regionId}")]
+        [HttpPost("AddAdministrator")]
         public async Task<IActionResult> AddAdministrator(RegionAdministrationDTO admin)
         {
-            try
-            {
-                await _regionAdministrationService.AddAdministratorAsync(admin);
-                _logger.LogInformation($"User {{{admin.UserId}}} became admin for region {{{admin.CityId}}}" +
-                    $" with role {{{admin.AdminType.AdminTypeName}}}.");
+                await _regionService.AddRegionAdministrator(admin);
 
                 return Ok();
-            }
-            catch(Exception e)
-            {
-                _logger.LogError($"Exception :{e.Message}");
+            
+        }
 
-                return BadRequest();
-            }
+
+        [HttpDelete("RemoveAdministration/{Id}")]
+        public async Task<IActionResult> Remove(int Id)
+        {
+            await _regionService.DeleteAdminByIdAsync(Id);
+            return Ok();
+        }
+
+
+        [HttpPost("AddDocument")]
+        public async Task<IActionResult> AddDocument(RegionDocumentDTO document)
+        {
+            await _regionService.AddDocumentAsync(document);
+            _logger.LogInformation($"Document with id {{{document.ID}}} was added.");
+
+            return Ok(document);
         }
 
 
         [HttpDelete("RemoveRegion/{Id}")]
-        public async Task<IActionResult> Remove(int Id)
+        public async Task<IActionResult> RemoveAdmin(int Id)
         {
             await _regionService.DeleteRegionByIdAsync(Id);
             return Ok();
         }
 
+        [HttpGet("GetUserAdministrations/{userId}")]
+        public async Task<IActionResult> GetUserAdministrations(string userId)
+        {
+           var secretaries=await _regionService.GetUsersAdministrations(userId);
+            return Ok(secretaries);
 
+        }
+
+
+        [HttpDelete("RemoveDocument/{documentId}")]
+        public async Task<IActionResult> RemoveDocument(int documentId)
+        {
+            await _regionService.DeleteFileAsync(documentId);
+            _logger.LogInformation($"Document with id {{{documentId}}} was deleted.");
+
+            return Ok();
+        }
+
+
+
+
+        [HttpGet("FileBase64/{fileName}")]
+        public async Task<IActionResult> GetFileBase64(string fileName)
+        {
+            var fileBase64 = await _regionService.DownloadFileAsync(fileName);
+
+            return Ok(fileBase64);
+        }
+
+
+
+        [HttpGet("getDocs/{regionId}")]
+        public async Task<IActionResult> GetRegionDocs(int regionId)
+        {
+            var secretaries = await _regionService.GetRegionDocsAsync(regionId);
+            return Ok(secretaries);
+
+        }
 
 
         [HttpPost("AddFollower/{regionId}/{cityId}")]
@@ -121,10 +174,16 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("GetMembers/{regionId}")]
         public async Task<IActionResult> GetMembers(int regionId)
         {
-          var members =   await _regionService.GetMembers(regionId);
+          var members =   await _regionService.GetMembersAsync(regionId);
             return Ok(members);
         }
 
+        [HttpGet("GetAdminTypes")]
+        public async Task<IActionResult> GetAdminTypes()
+        {
+            var types = await _regionService.GetAdminTypes();
+            return Ok(types);
+        }
 
     }
 }

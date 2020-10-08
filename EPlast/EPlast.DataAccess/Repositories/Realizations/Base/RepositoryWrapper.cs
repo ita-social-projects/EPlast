@@ -1,7 +1,9 @@
 ﻿using EPlast.DataAccess.Repositories.Contracts;
 using EPlast.DataAccess.Repositories.Interfaces.Events;
+using EPlast.DataAccess.Repositories.Interfaces.Region;
 using EPlast.DataAccess.Repositories.Realizations.EducatorsStaff;
 using EPlast.DataAccess.Repositories.Realizations.Events;
+using EPlast.DataAccess.Repositories.Realizations.Region;
 using System.Threading.Tasks;
 
 namespace EPlast.DataAccess.Repositories.Realizations.Base
@@ -56,7 +58,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IPlastDegreeRepository _plastDegree;
         private IEducatorsStaffRepository _KVs;
         private IEducatorsStaffTypesRepository _KVtypes;
-
+        private IRegionDocumentRepository _regionDocs;
 
         public IEducatorsStaffTypesRepository KVTypes
         {
@@ -440,6 +442,19 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 return _cityDocuments;
             }
         }
+
+        public IRegionDocumentRepository RegionDocument
+        {
+            get
+            {
+                if (_regionDocs == null)
+                {
+                    _regionDocs = new RegionDocumentRepository(_dbContext);
+                }
+                return _regionDocs;
+            }
+        }
+
 
         public ICityDocumentTypeRepository CityDocumentType
         {
