@@ -1,7 +1,5 @@
-﻿using AutoMapper;
-using EPlast.BLL.DTO.Blank;
+﻿using EPlast.BLL.DTO.Blank;
 using EPlast.BLL.Interfaces.Blank;
-using EPlast.BLL.Interfaces.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
