@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using EPlast.DataAccess.Entities.Blank;
 using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Entities.UserEntities;
@@ -29,7 +30,7 @@ namespace EPlast.DataAccess.Entities
             ErrorMessage = "По-батькові має містити тільки літери")]
         [StringLength(25, MinimumLength = 2, ErrorMessage = "Поле по-батькові повинне складати від 2 до 25 символів")]
         public string FatherName { get; set; }
-        [StringLength(18, MinimumLength = 18, ErrorMessage ="Номер телефону повинен містити 10 цифр")]
+        [StringLength(18, MinimumLength = 18, ErrorMessage = "Номер телефону повинен містити 10 цифр")]
         public override string PhoneNumber { get => base.PhoneNumber; set => base.PhoneNumber = value; }
         public DateTime RegistredOn { get; set; }
         public DateTime EmailSendedOnRegister { get; set; }
@@ -50,6 +51,7 @@ namespace EPlast.DataAccess.Entities
         public ICollection<UserPlastDegree> UserPlastDegrees { get; set; }
         public ICollection<EducatorsStaff.EducatorsStaff> UsersKadras { get; set; }
         public ICollection<UserDistinction> UserDistinctions { get; set; }
+        public ICollection<BlankBiographyDocuments> BlankBiographyDocuments { get; set; }
         public User()
         {
             Approvers = new List<Approver>();
