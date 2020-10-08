@@ -84,6 +84,10 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("dates/{userId}")]
         public async Task<IActionResult> GetUserDates(string userId)
         {
+            if (userId == null)
+            {
+                return BadRequest("User Id is null!");
+            }
             return Ok(await _userDatesService.GetUserMembershipDatesAsync(userId));
         }
 
@@ -92,7 +96,7 @@ namespace EPlast.WebApi.Controllers
         {
             if (await _userDatesService.ChangeUserMembershipDatesAsync(userMembershipDatesDTO))
             {
-                return Ok(userMembershipDatesDTO.UserId);
+                return Ok(userMembershipDatesDTO);
             }
 
             return BadRequest();

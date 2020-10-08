@@ -32,12 +32,15 @@ namespace EPlast.BLL.Services.ActiveMembership
             {
                 UserMembershipDates userMembershipDates = await _repoWrapper.UserMembershipDates.GetFirstOrDefaultAsync(umd => umd.UserId == userDto.Id);
                 if(userMembershipDates != null)
-                userMembershipDates.DateEntry = userMembershipDatesDTO.DateEntry;
-                userMembershipDates.DateOath = userMembershipDatesDTO.DateOath;
-                userMembershipDates.DateEnd = userMembershipDatesDTO.DateEnd;
-                _repoWrapper.UserMembershipDates.Update(userMembershipDates);
-                await _repoWrapper.SaveAsync();
-                isChanged = true;
+                {
+                    userMembershipDates.DateEntry = userMembershipDatesDTO.DateEntry;
+                    userMembershipDates.DateOath = userMembershipDatesDTO.DateOath;
+                    userMembershipDates.DateEnd = userMembershipDatesDTO.DateEnd;
+                    _repoWrapper.UserMembershipDates.Update(userMembershipDates);
+                    await _repoWrapper.SaveAsync();
+                    isChanged = true;
+                }
+
             }
             return isChanged;
         }
