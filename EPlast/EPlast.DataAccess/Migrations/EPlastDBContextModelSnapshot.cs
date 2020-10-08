@@ -1152,6 +1152,33 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("UserDistinctions");
                 });
 
+            modelBuilder.Entity("EPlast.DataAccess.Entities.UserMembershipDates", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime?>("DateEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateEntry")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateOath")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserMembershipDates");
+                });
+
             modelBuilder.Entity("EPlast.DataAccess.Entities.UserPlastDegree", b =>
                 {
                     b.Property<int>("Id")
@@ -1814,6 +1841,15 @@ namespace EPlast.DataAccess.Migrations
 
                     b.HasOne("EPlast.DataAccess.Entities.User", "User")
                         .WithMany("UserDistinctions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.UserMembershipDates", b =>
+                {
+                    b.HasOne("EPlast.DataAccess.Entities.User", "User")
+                        .WithMany("UserMembershipDates")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

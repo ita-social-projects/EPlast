@@ -12,10 +12,13 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly IPlastDegreeService _plastDegreeService;
         private readonly IAccessLevelService _accessLevelService;
-        public ActiveMembershipController(IPlastDegreeService plastDegreeService, IAccessLevelService accessLevelService)
+        private readonly IUserDatesService _userDatesService;
+
+        public ActiveMembershipController(IPlastDegreeService plastDegreeService, IAccessLevelService accessLevelService, IUserDatesService userDatesService)
         {
             _plastDegreeService = plastDegreeService;
             _accessLevelService = accessLevelService;
+            _userDatesService = userDatesService;
         }
 
         [HttpGet("degree")]
@@ -78,5 +81,32 @@ namespace EPlast.WebApi.Controllers
             return BadRequest();
         }
 
+        [HttpGet("dates/{userId}")]
+        public async Task<IActionResult> GetUserDates(string userId)
+        {
+            return Ok(await _userDatesService.GetUserMembershipDatesAsync(userId));
+        }
+
+        [HttpPost("dates")]
+        public async Task<IActionResult> ChangeUserDates(UserMembershipDatesDTO userMembershipDatesDTO)
+        {
+            if (await _userDatesService.ChangeUserMembershipDatesAsync(userMembershipDatesDTO))
+            {
+                return Ok(userMembershipDatesDTO.UserId);
+            }
+
+            return BadRequest();
+        }
+
+        [HttpPut("dates/AddNew/{userId}")]
+        public async Task<IActionResult> InitializeUserDates(string userId)
+        {
+            if (await _userDatesService.AddDateEntryAsync(userId))
+            {
+                return Ok(userId);
+            }
+
+            return BadRequest();
+        }
     }
 }
