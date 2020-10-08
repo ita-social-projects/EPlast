@@ -45,17 +45,7 @@ namespace EPlast.BLL.Services
         /// <inheritdoc />
         public async Task<IEnumerable<DataAccessCity.City>> GetAllAsync(string cityName = null)
         {
-            var cities = await _repoWrapper.City.GetAllAsync(
-                    include: source => source
-                       .Include(c => c.CityAdministration)
-                           .ThenInclude(t => t.AdminType)
-                       .Include(k => k.CityAdministration)
-                           .ThenInclude(a => a.User)
-                       .Include(m => m.CityMembers)
-                           .ThenInclude(u => u.User)
-                       .Include(l => l.CityDocuments)
-                           .ThenInclude(d => d.CityDocumentType)
-                       .Include(r => r.Region));
+            var cities = await _repoWrapper.City.GetAllAsync();
 
             return string.IsNullOrEmpty(cityName)
                 ? cities
