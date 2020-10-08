@@ -116,7 +116,7 @@ namespace EPlast.Tests.Services.Blank
         private BlankBiographyDocuments BlankBiographyDocuments => new BlankBiographyDocuments
         {
             ID = 1,
-            BlobName = BlobNameF,
+            BlobName = "newBlob,lastBlob",
             FileName = "FileName",
             UserId = "fgh123",
         };
@@ -124,7 +124,7 @@ namespace EPlast.Tests.Services.Blank
         private BlankBiographyDocumentsDTO BlankBiographyDocumentsDTO => new BlankBiographyDocumentsDTO
         {
             ID = 1,
-            BlobName = BlobNameF,
+            BlobName = "newBlob,LastBlob",
             FileName = "FileName",
             UserId = "fgh123",
         };
