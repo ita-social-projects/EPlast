@@ -4,6 +4,7 @@ using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.Blank;
 using EPlast.DataAccess.Entities.Blank;
 using EPlast.DataAccess.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -42,7 +43,7 @@ namespace EPlast.BLL.Services.Blank
             return biographyDocumentDTO;
         }
 
-        public async Task DeleteFileAsync(int documentId)
+        public async Task<int> DeleteFileAsync(int documentId)
         {
             var document = await _repositoryWrapper.BiographyDocumentsRepository
                 .GetFirstOrDefaultAsync(d => d.ID == documentId);
@@ -51,21 +52,21 @@ namespace EPlast.BLL.Services.Blank
 
             _repositoryWrapper.BiographyDocumentsRepository.Delete(document);
             await _repositoryWrapper.SaveAsync();
+
+            return StatusCodes.Status200OK;
         }
 
         public async Task<string> DownloadFileAsync(string fileName)
         {
-            var fileBase64 = await _blankFilesBlobStorage.GetBlobBase64Async(fileName);
-
-            return fileBase64;
+            return await _blankFilesBlobStorage.GetBlobBase64Async(fileName); 
         }
 
 
-        public async Task<IEnumerable<BlankBiographyDocumentsDTO>> GetDocumentByUserId(string userid)
+        public async Task<BlankBiographyDocumentsDTO> GetDocumentByUserId(string userid)
         {
-            var document = _mapper.Map<IEnumerable<BlankBiographyDocuments>, IEnumerable<BlankBiographyDocumentsDTO>>(
-                await _repositoryWrapper.BiographyDocumentsRepository.FindByCondition(expression: i => i.UserId == userid)
-                .ToListAsync());
+            var document = _mapper.Map<BlankBiographyDocuments, BlankBiographyDocumentsDTO>(
+                await _repositoryWrapper.BiographyDocumentsRepository.GetFirstOrDefaultAsync(i => i.UserId == userid));
+
             return document;
         }
     }

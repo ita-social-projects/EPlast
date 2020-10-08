@@ -26,8 +26,8 @@ namespace EPlast.BLL.Interfaces.Blank
         /// Delete a specific document by id
         /// </summary>
         /// <param name="documentId">The id of a specific document</param>
-        Task DeleteFileAsync(int documentId);
+        Task<int> DeleteFileAsync(int documentId);
 
-        Task<IEnumerable<BlankBiographyDocumentsDTO>> GetDocumentByUserId(string userid);
+        Task<BlankBiographyDocumentsDTO> GetDocumentByUserId(string userid);
     }
 }
