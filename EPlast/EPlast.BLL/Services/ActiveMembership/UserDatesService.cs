@@ -58,7 +58,7 @@ namespace EPlast.BLL.Services.ActiveMembership
                     return _mapper.Map<UserMembershipDatesDTO>(userMembershipDates);
                 }
             }
-            return null;
+            throw new InvalidOperationException();
         }
 
         public async Task<bool> AddDateEntryAsync(string userId)

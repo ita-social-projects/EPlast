@@ -84,11 +84,14 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("dates/{userId}")]
         public async Task<IActionResult> GetUserDates(string userId)
         {
-            if (userId == null)
+            try
             {
-                return BadRequest("User Id is null!");
+                return Ok(await _userDatesService.GetUserMembershipDatesAsync(userId));
             }
-            return Ok(await _userDatesService.GetUserMembershipDatesAsync(userId));
+            catch (InvalidOperationException)
+            {
+                return BadRequest(userId);
+            }
         }
 
         [HttpPost("dates")]

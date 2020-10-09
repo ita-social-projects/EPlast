@@ -122,23 +122,21 @@ namespace EPlast.Tests.Services.ActiveMembership
         }
 
         [Test]
-        public async Task GetUserMembershipDatesAsync_UserNotFind_ReturnsNull()
+        public async Task GetUserMembershipDatesAsync_UserNotFind_ThrowException()
         {
             //Arrange
             _userManagerService.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync((UserDTO)null);
 
             UserDatesService userDatesService = _userDatesService;
 
-            //Act
-            var result = await userDatesService.GetUserMembershipDatesAsync(" ");
-            //Assert
-            Assert.IsNull(result);
+            //Assert & Act 
+            Assert.ThrowsAsync<InvalidOperationException>(() => userDatesService.GetUserMembershipDatesAsync(" "));
 
             _userManagerService.Verify(f => f.FindByIdAsync(It.IsAny<string>()));
         }
 
         [Test]
-        public async Task GetUserMembershipDatesAsync_UserMembershipDatesNotFind_ReturnsNull()
+        public async Task GetUserMembershipDatesAsync_UserMembershipDatesNotFind_ThrowException()
         {
             //Arrange
             _userManagerService.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new UserDTO());
@@ -148,10 +146,8 @@ namespace EPlast.Tests.Services.ActiveMembership
 
             UserDatesService userDatesService = _userDatesService;
 
-            //Act
-            var result = await userDatesService.GetUserMembershipDatesAsync(" ");
-            //Assert
-            Assert.IsNull(result);
+            //Assert & Act 
+            Assert.ThrowsAsync<InvalidOperationException>(() => userDatesService.GetUserMembershipDatesAsync(" "));
 
             _userManagerService.Verify(f => f.FindByIdAsync(It.IsAny<string>()));
             _repoWrapper.Verify(f => f.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),

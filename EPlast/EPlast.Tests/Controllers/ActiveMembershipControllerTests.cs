@@ -199,7 +199,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [TestCase("2")]
-        public async Task GetUserDates_Valid_Test(string id)
+        public async Task GetUserDates_Valid_ReturnsOK(string id)
         {
             //Arrange
             _userDatesService.Setup(cs => cs.GetUserMembershipDatesAsync(It.IsAny<string>())).ReturnsAsync(new UserMembershipDatesDTO());
@@ -215,10 +215,10 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetUserDates_InValid_Test()
+        public async Task GetUserDates_InValid_ThrowException()
         {
             //Arrange
-            _userDatesService.Setup(cs => cs.GetUserMembershipDatesAsync(It.IsAny<string>())).ReturnsAsync(new UserMembershipDatesDTO());
+            _userDatesService.Setup(cs => cs.GetUserMembershipDatesAsync(It.IsAny<string>())).ThrowsAsync(new InvalidOperationException());
 
             ActiveMembershipController activeMembershipController = _activeMembershipController;
 
