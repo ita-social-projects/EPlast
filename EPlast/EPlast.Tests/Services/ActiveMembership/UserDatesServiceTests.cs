@@ -1,20 +1,14 @@
 ﻿using AutoMapper;
 using Moq;
-using EPlast.BLL.DTO;
-using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using EPlast.BLL.Services.ActiveMembership;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using EPlast.BLL.Services;
 using EPlast.BLL.DTO.ActiveMembership;
 using System.Linq.Expressions;
-using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using Microsoft.EntityFrameworkCore.Query;
 using EPlast.BLL.DTO.UserProfiles;
@@ -122,7 +116,7 @@ namespace EPlast.Tests.Services.ActiveMembership
         }
 
         [Test]
-        public async Task GetUserMembershipDatesAsync_UserNotFind_ThrowException()
+        public void GetUserMembershipDatesAsync_UserNotFind_ThrowException()
         {
             //Arrange
             _userManagerService.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync((UserDTO)null);
@@ -136,7 +130,7 @@ namespace EPlast.Tests.Services.ActiveMembership
         }
 
         [Test]
-        public async Task GetUserMembershipDatesAsync_UserMembershipDatesNotFind_ThrowException()
+        public void GetUserMembershipDatesAsync_UserMembershipDatesNotFind_ThrowException()
         {
             //Arrange
             _userManagerService.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new UserDTO());
