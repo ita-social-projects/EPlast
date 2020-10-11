@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.Region;
+using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.DataAccess.Entities;
@@ -34,13 +36,14 @@ namespace EPlast.BLL.Services.Region
 
         public async Task<RegionAdministrationDTO> AddAdministratorAsync(RegionAdministrationDTO adminDTO)
         {
-            var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
-            adminDTO.AdminTypeId = adminType.ID;
+            var adminType = await _repositoryWrapper.AdminType.GetFirstAsync(r => r.ID == adminDTO.AdminTypeId);
+           
+            adminDTO.AdminType = _mapper.Map<AdminType, AdminTypeDTO>( adminType);
 
             var admin = _mapper.Map<RegionAdministrationDTO, RegionAdministration>(adminDTO);
-            
-            await _repositoryWrapper.RegionAdministration.CreateAsync(admin);
-            await _repositoryWrapper.SaveAsync();
+
+            _repositoryWrapper.RegionAdministration.Create(admin);
+             _repositoryWrapper.Save();
 
             return adminDTO;
         }
