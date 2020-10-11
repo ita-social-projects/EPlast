@@ -112,7 +112,6 @@ namespace EPlast.Tests.Controllers
             // Arange
             int kadraId = 1;
             _educatorsStaffService.Setup(x => x.DeleteKadra(kadraId));
-            int expected = 200;
 
             // Act
             var result = await _educatorsStaffController.Remove(kadraId);
