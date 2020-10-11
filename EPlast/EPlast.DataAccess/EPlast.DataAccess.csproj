@@ -14,6 +14,10 @@
     <Compile Remove="Migrations\20200413203808_add-foreign-key.Designer.cs" />
     <Compile Remove="Migrations\20200825075232_somethingChanged.cs" />
     <Compile Remove="Migrations\20200825075232_somethingChanged.Designer.cs" />
+    <Compile Remove="Migrations\20201007144938_Remove_Unused_Fields_Blank_Biography.cs" />
+    <Compile Remove="Migrations\20201007144938_Remove_Unused_Fields_Blank_Biography.Designer.cs" />
+    <Compile Remove="Migrations\20201007150230_Remove_Unused_Fields_Blank_Biography.cs" />
+    <Compile Remove="Migrations\20201007150230_Remove_Unused_Fields_Blank_Biography.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
