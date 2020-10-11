@@ -6,7 +6,6 @@ using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using EPlast.DataAccess.Repositories.Contracts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
@@ -107,7 +106,7 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
-        public async Task GetByIdAsync_ReturnCity()
+        public async Task GetByIdAsync_ReturnsCity()
         {
             // Arrange
             _repoWrapper
@@ -129,7 +128,7 @@ namespace EPlast.Tests.Services.City
 
 
         [Test]
-        public async Task GetCityProfileAsync_ReturnCityProfile()
+        public async Task GetCityProfileAsync_ReturnsCityProfile()
         {
             //// Arrange
             CityService cityService = CreateCityService();
@@ -143,7 +142,7 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
-        public async Task GetCityMembersAsync_ReturnCityMembers()
+        public async Task GetCityMembersAsync_ReturnsCityMembers()
         {
             //// Arrange
             CityService cityService = CreateCityService();
@@ -157,7 +156,7 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
-        public async Task GetCityFollowersAsync_ReturnCityFollowers()
+        public async Task GetCityFollowersAsync_ReturnsCityFollowers()
         {
             //// Arrange
             CityService cityService = CreateCityService();
@@ -171,7 +170,7 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
-        public async Task GetCityAdminsAsync_ReturnCityAdmins()
+        public async Task GetCityAdminsAsync_ReturnsCityAdmins()
         {
             //// Arrange
             CityService cityService = CreateCityService();
@@ -185,7 +184,7 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
-        public async Task GetCityDocumentsAsync_ReturnCityDocuments()
+        public async Task GetCityDocumentsAsync_ReturnsCityDocuments()
         {
             //// Arrange
             CityService cityService = CreateCityService();
@@ -199,7 +198,7 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
-        public async Task EditAsync_ReturnCityEdited()
+        public async Task EditAsync_ReturnsCityEdited()
         {
             //// Arrange
             CityService cityService = CreateCityService();
