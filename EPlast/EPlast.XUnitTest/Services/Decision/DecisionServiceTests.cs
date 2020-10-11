@@ -187,7 +187,7 @@ namespace EPlast.XUnitTest
         [Theory]
         [InlineData(null)]
         [InlineData("")]
-        public async Task GetDecisionOrganizationAsyncWithEmptyOrNullParameterTest(string? organizationName)
+        public async Task GetDecisionOrganizationAsyncWithEmptyOrNullParameterTest(string organizationName)
         {
             _decisionService = CreateDecisionService();
             OrganizationDTO organization = GetTestOrganizationDtoList()[0];
