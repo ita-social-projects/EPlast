@@ -66,7 +66,10 @@ namespace EPlast.BLL.Services.ActiveMembership
             {
                 UserMembershipDates userMembershipDates = new UserMembershipDates() 
                 {
-                    UserId = userId, DateEntry = userDto.RegistredOn
+                    UserId = userId, 
+                    DateEntry = userDto.RegistredOn,
+                    DateOath = default, 
+                    DateEnd = default
                 };
 
                 await _repoWrapper.UserMembershipDates.CreateAsync(userMembershipDates);
