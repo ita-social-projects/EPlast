@@ -112,7 +112,6 @@ namespace EPlast.Tests.Controllers
             // Arange
             int kadraId = 1;
             _educatorsStaffService.Setup(x => x.DeleteKadra(kadraId));
-            int expected = 200;
 
             // Act
             var result = await _educatorsStaffController.Remove(kadraId);
@@ -314,23 +313,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             _educatorsStaffService.Verify(x => x.DoesUserHaveSuchStaff(It.IsAny<string>(), It.IsAny<int>()));
         }
-
-        //[Test]
-        //public async Task GetUserStaff_ReturnsFalse()
-        //{
-        //    // Arange
-        //    string userId = "1";
-        //    int kadraId = 1;
-        //    _educatorsStaffService.
-        //        Setup(x => x.DoesUserHaveSuchStaff(userId, kadraId)).
-        //        ReturnsAsync(It.IsAny<bool>);
-
-        //    // Act
-        //    var result = await _educatorsStaffController.GetUserStaff(userId, kadraId);
-
-        //    // Assert
-        //    _educatorsStaffService.Verify(x => x.DoesUserHaveSuchStaff(It.IsAny<string>(), It.IsAny<int>()));
-        //}
 
         [Test]
         public async Task GetStaffWithRegisternumber_CallsStaffWithRegisternumberExists()
