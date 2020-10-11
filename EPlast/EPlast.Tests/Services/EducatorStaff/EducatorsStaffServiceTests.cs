@@ -311,6 +311,46 @@ namespace EPlast.Tests.Services.EducatorStaff
             Assert.AreEqual(eduStaff.UserId, result);
         }
 
+        [Test]
+        public async Task GetKVsWithKVType_ReturnsEducatorsStaffDTO()
+        {
+            // Arrange
+            _repositoryWrapper.
+                Setup(r => r.KVs.GetAllAsync(It.IsAny<Expression<Func<EducatorsStaff, bool>>>(),
+                It.IsAny<Func<IQueryable<EducatorsStaff>, IIncludableQueryable<EducatorsStaff, object>>>())).
+                ReturnsAsync(GetTestEducatorsStaff());
+            _mapper.
+                Setup(m => m.Map<IEnumerable<EducatorsStaffDTO>>(It.IsAny<EducatorsStaff>())).
+                Returns(GetTestEducatorsStaffDTO());
+
+            // Act
+            var result = await _educatorsStaffService.GetKVsWithKVType(It.IsAny<int>());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsAssignableFrom<EducatorsStaffDTO[]>(result);
+        }
+
+        [Test]
+        public async Task UpdateKadra_Test()
+        {
+            // Arrange
+            _repositoryWrapper.
+                Setup(r => r.KVs.GetFirstAsync(It.IsAny<Expression<Func<EducatorsStaff, bool>>>(),
+                It.IsAny<Func<IQueryable<EducatorsStaff>, IIncludableQueryable<EducatorsStaff, object>>>())).
+                ReturnsAsync(new EducatorsStaff());
+            _repositoryWrapper.
+                Setup(r => r.KVs.Update(It.IsAny<EducatorsStaff>()));
+            _repositoryWrapper.
+                Setup(r => r.SaveAsync());
+
+            // Act
+            await _educatorsStaffService.UpdateKadra(staffDTO);
+
+            // Assert
+            _repositoryWrapper.VerifyAll();
+        }
+
         private IEnumerable<EducatorsStaffDTO> GetTestEducatorsStaffDTO()
         {
             return new List<EducatorsStaffDTO>
@@ -334,6 +374,14 @@ namespace EPlast.Tests.Services.EducatorStaff
         {
             ID = 1,
             UserId = "2"
+        };
+
+        private EducatorsStaffDTO staffDTO => new EducatorsStaffDTO
+        {
+            ID = 1,
+            NumberInRegister = 2,
+            BasisOfGranting = "sdfghj",
+            Link = "eytfcvbnm"
         };
     }
 }
