@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
+using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.BLL
 {
@@ -41,12 +42,12 @@ namespace EPlast.BLL
             return null;
         }
 
-        public async Task<byte[]> DecisionCreatePDFAsync(int DecisionId)
+        public async Task<byte[]> DecisionCreatePDFAsync(int decisionId)
         {
             try
             {
-                var decision = _repoWrapper.Decesion.Include(x => x.DecesionTarget, x => x.Organization)
-                    .FirstOrDefault(x => x.ID == DecisionId);
+                var decision = await _repoWrapper.Decesion.GetFirstAsync(x => x.ID == decisionId, include: dec =>
+                    dec.Include(d => d.DecesionTarget).Include(d => d.Organization));
                 if (decision != null)
                 {
                     var base64 = await _decisionBlobStorage.GetBlobBase64Async("dafaultPhotoForPdf.jpg");
