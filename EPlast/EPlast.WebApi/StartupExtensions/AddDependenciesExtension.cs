@@ -105,6 +105,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IClubBlobStorageRepository, ClubBlobStorageRepository>();
             services.AddScoped<IEventBlobStorageRepository, EventBlobStorageRepository>();
             services.AddScoped<IBlankFilesBlobStorageRepository, BlankFilesBlobStorageRepository>();
+            services.AddScoped<IBlankAchievementBlobStorageRepository, BlankAchievementBlobStorageRepository>();
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddScoped<IAccessLevelService, AccessLevelService>();
             services.AddScoped<IPlastDegreeService, PlastDegreeService>();
@@ -113,6 +114,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IEducatorsStaffService, EducatorsStaffService>();
             services.AddScoped<IEducatorsStaffTypesService, EducatorsStaffTypesService>();
             services.AddScoped<IBlankBiographyDocumentService, BlankBiographyDocumentsService>();
+            services.AddScoped<IBlankAchievementDocumentService, AchievementDocumentService>();
 ;
             return services;
         }
