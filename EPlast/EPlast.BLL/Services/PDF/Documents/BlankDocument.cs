@@ -161,11 +161,11 @@ namespace EPlast.BLL
         }
 
         private static Paragraph SetParagraph(Section section, string paragraphText, Font paragraphFont,
-            string spaceBefore = "", string spaceAfter = "", string leftIndent = "",
-            string rightIndent = "", ParagraphAlignment paragraphAlignment = ParagraphAlignment.Left)
+            string spaceBefore = "0", string spaceAfter = "0", string leftIndent = "0",
+            string rightIndent = "0", ParagraphAlignment paragraphAlignment = ParagraphAlignment.Left)
         {
             var paragraph = section.AddParagraph(paragraphText);
-            paragraph.Format = new ParagraphFormat
+            paragraph.Format = new ParagraphFormat()
             {
                 Font = paragraphFont,
                 Alignment = paragraphAlignment,
@@ -174,6 +174,7 @@ namespace EPlast.BLL
                 SpaceBefore = spaceBefore,
                 SpaceAfter = spaceAfter
             };
+
             return paragraph;
         }
 
