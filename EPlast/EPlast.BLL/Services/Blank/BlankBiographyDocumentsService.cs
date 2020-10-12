@@ -28,9 +28,8 @@ namespace EPlast.BLL.Services.Blank
         public async Task<BlankBiographyDocumentsDTO> AddDocumentAsync(BlankBiographyDocumentsDTO biographyDocumentDTO)
         {
             var fileBase64 = biographyDocumentDTO.BlobName.Split(',')[1];
-            var name = biographyDocumentDTO.FileName.Split('.')[0];
             var extension = "." + biographyDocumentDTO.FileName.Split('.').LastOrDefault();
-            var fileName = name + extension;
+            var fileName = Guid.NewGuid() + extension;
             await _blankFilesBlobStorage.UploadBlobForBase64Async(fileBase64, fileName);
             biographyDocumentDTO.BlobName = fileName;
 
