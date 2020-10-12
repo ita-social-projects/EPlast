@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace EPlast.BLL.Interfaces.ActiveMembership
 {
     /// <summary>
-    /// Implement  operations for work with access levels
+    /// Implement  operations for work with user dates
     /// </summary>
     public interface IUserDatesService
     {
@@ -25,6 +25,11 @@ namespace EPlast.BLL.Interfaces.ActiveMembership
         /// <returns>bool if changing is successful</returns>
         public Task<bool> ChangeUserMembershipDatesAsync(UserMembershipDatesDTO userMembershipDatesDTO);
 
+        /// <summary>
+        /// Returns boolean, if dates is correct and they was added to DB return true, else false
+        /// </summary>
+        /// <param name="userId">User id</param>
+        /// <returns>bool if adding is successful</returns>
         public Task<bool> AddDateEntryAsync(string userId);
     }
 

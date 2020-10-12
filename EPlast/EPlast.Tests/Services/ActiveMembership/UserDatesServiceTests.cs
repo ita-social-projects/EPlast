@@ -147,10 +147,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             _repoWrapper.Verify(f => f.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
             It.IsAny<Func<IQueryable<UserMembershipDates>, IIncludableQueryable<UserMembershipDates, object>>>()));
         }
-        /// <summary>
-        /// ///////////////
-        /// </summary>
-        /// <returns></returns>
+
         [Test]
         public async Task AddDateEntryAsync_Valid_ReturnsTrue()
         {
