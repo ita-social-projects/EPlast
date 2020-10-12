@@ -74,7 +74,7 @@ namespace EPlast.Tests.Services.PDF
 
             var actualReturn = _pdfService.BlankCreatePDFAsync(userId);
             _logger.Verify();
-            Assert.AreEqual(null,actualReturn.Result);
+            Assert.Null(actualReturn.Result);
         }
 
         [TestCase(1)]
@@ -86,7 +86,7 @@ namespace EPlast.Tests.Services.PDF
             var actualReturn = _pdfService.DecisionCreatePDFAsync(decisionId);
             _repository.Verify(rep => rep.Decesion, Times.Once);
             _logger.Verify();
-            Assert.AreEqual(null, actualReturn.Result);
+            Assert.Null(actualReturn.Result);
         }
         private static IQueryable<User> GetTestUsersQueryable()
         {
