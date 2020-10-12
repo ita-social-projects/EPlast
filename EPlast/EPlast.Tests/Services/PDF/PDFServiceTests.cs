@@ -8,6 +8,7 @@ using EPlast.BLL.Interfaces.Logging;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
 
@@ -39,6 +40,22 @@ namespace EPlast.Tests.Services.PDF
             _pdfService = new PdfService(_repository.Object,_logger.Object,_decisionBlobStorage.Object);
         }
 
+        [TestCase(1)]
+        [TestCase(546546)]
+        public void DecisionCreatePDFAsync_ReturnsByteArray_Test(int decisionId)
+        {
+
+            _repository.Setup(rep => rep.Decesion.GetFirstAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
+                    It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
+                .ReturnsAsync(Decesions.FirstOrDefault());
+            _decisionBlobStorage.Setup(blob => blob.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync("Blank");
+           
+            var actualReturn = _pdfService.DecisionCreatePDFAsync(decisionId);
+
+            _repository.Verify(rep => rep.Decesion.GetFirstAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
+                It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()), Times.Once);
+            Assert.IsInstanceOf<byte[]>(actualReturn.Result);
+        }
         [TestCase("1")] 
         [TestCase("546546")]
         public void BlankCreatePdfAsync_ReturnsByteArray_Test(string userId)
@@ -103,5 +120,20 @@ namespace EPlast.Tests.Services.PDF
                 new ClubMembers(){ UserId ="546546", Club = new Club()}
             }.AsQueryable();
         }
+
+        private IQueryable<Decesion> Decesions => new List<Decesion>()
+        {
+            new Decesion()
+            {
+                ID = 1, DecesionStatusType = DecesionStatusType.Confirmed, Date = new DateTime(), Description = "FDS",
+                Name = "FS", FileName = "dsf", DecesionTarget = new DecesionTarget(), Organization = new Organization()
+            },
+            new Decesion()
+            {
+                ID = 546546, DecesionStatusType = DecesionStatusType.Confirmed, Date = new DateTime(),
+                Description = "FDS", Name = "FS", FileName = "dsf", DecesionTarget = new DecesionTarget(),
+                Organization = new Organization()
+            }
+        }.AsQueryable();
     }
 }
