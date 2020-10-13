@@ -134,9 +134,9 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
             //Assert
             Assert.IsEmpty(result);
         }
-                
+
         [Test]
-        public async Task DeleteDistinctionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
+        public void DeleteDistinctionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
         {
             //Arrange
             mockRepoWrapper
@@ -157,7 +157,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         }
 
         [Test]
-        public async Task DeleteDistinctionAsync_IfAdmin_ThrowsArgumentNullException()
+        public void DeleteDistinctionAsync_IfAdmin_ThrowsArgumentNullException()
         {
             //Arrange
             mockRepoWrapper
@@ -178,7 +178,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         }
 
         [Test]
-        public async Task DeleteDistinctionAsync_IfAdmin_WorksCorrectly()
+        public void DeleteDistinctionAsync_IfAdmin_WorksCorrectly()
         {
             //Arrange
             mockRepoWrapper
@@ -197,7 +197,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         }
 
         [Test]
-        public async Task ChangeDistinctionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
+        public void ChangeDistinctionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
         {
             //Arrange
             mockRepoWrapper
@@ -218,7 +218,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         }
 
         [Test]
-        public async Task ChangeDistinctionAsync_IfAdmin_WorksCorrectly()
+        public void ChangeDistinctionAsync_IfAdmin_WorksCorrectly()
         {
             //Arrange
             mockRepoWrapper
@@ -237,7 +237,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         }
 
         [Test]
-        public async Task AddDistinctionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
+        public void AddDistinctionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
         {
             //Arrange
             mockRepoWrapper
@@ -256,7 +256,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         }
 
         [Test]
-        public async Task AddDistinctionAsync_IfAdmin_WorksCorrectly()
+        public void AddDistinctionAsync_IfAdmin_WorksCorrectly()
         {
             //Arrange
             mockRepoWrapper
@@ -269,9 +269,9 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
             Admin.AddIdentity(claimsIdentity);
 
             //Assert
-            Assert.DoesNotThrowAsync( async () => { await distinctionService.AddDistinctionAsync(It.IsAny<DistinctionDTO>(), Admin); } );
+            Assert.DoesNotThrowAsync(async () => { await distinctionService.AddDistinctionAsync(It.IsAny<DistinctionDTO>(), Admin); });
         }
-        
+
         Distinction nullDistinction = null;
         DistinctionDTO nullDistinctionDTO = null;
         List<DistinctionDTO> nullListDistinctionDTO = null;
