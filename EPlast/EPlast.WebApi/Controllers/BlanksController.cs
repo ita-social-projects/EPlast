@@ -67,11 +67,28 @@ namespace EPlast.WebApi.Controllers
             return NoContent();
         }
 
+        [HttpDelete("RemoveAchievementDocument/{documentId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> RemoveAchievementDocument(int documentId)
+        {
+            await _blankAchievementDocumentService.DeleteFileAsync(documentId);
+
+            return NoContent();
+        }
+
         [HttpGet("BiographyDocumentBase64/{fileName}")]
-        //[Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetFileBase64(string fileName)
         {
             return Ok(await _blankBiographyDocumentService.DownloadFileAsync(fileName));
         }
+
+        [HttpGet("AchievementDocumentBase64/{fileName}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetFileAchievementBase64(string fileName)
+        {
+            return Ok(await _blankAchievementDocumentService.DownloadFileAsync(fileName));
+        }
+
     }
 }
