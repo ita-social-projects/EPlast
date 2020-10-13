@@ -34,9 +34,9 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
             mockRepoWrapper = new Mock<IRepositoryWrapper>();
             distinctionService = new UserDistinctionService(mockMapper.Object, mockRepoWrapper.Object);
         }
-       
+
         [Test]
-        public async Task DeleteUserDistinctionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
+        public void DeleteUserDistinctionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
         {
             //Arrange
             mockRepoWrapper
@@ -55,9 +55,9 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                 async () => { await distinctionService.DeleteUserDistinctionAsync(It.IsAny<int>(), notAdmin); });
             Assert.AreEqual("Attempted to perform an unauthorized operation.", exception.Message);
         }
-                
+
         [Test]
-        public async Task DeleteUserDistinctionAsync_IfAdmin_ThrowsNotImplementedException()
+        public void DeleteUserDistinctionAsync_IfAdmin_ThrowsNotImplementedException()
         {
             //Arrange
             mockRepoWrapper
@@ -78,7 +78,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         }
 
         [Test]
-        public async Task DeleteUserDistinctionAsync_IfAdmin_WorksCorrectly()
+        public void DeleteUserDistinctionAsync_IfAdmin_WorksCorrectly()
         {
             //Arrange
             mockRepoWrapper
@@ -97,7 +97,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         }
 
         [Test]
-        public async Task ChangeUserDistinctionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
+        public void ChangeUserDistinctionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
         {
             //Arrange
             mockRepoWrapper
@@ -118,7 +118,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         }
 
         [Test]
-        public async Task ChangeUserDistinctionAsync_IfAdmin_WorksCorrectly()
+        public void ChangeUserDistinctionAsync_IfAdmin_WorksCorrectly()
         {
             //Arrange
             mockRepoWrapper
@@ -137,7 +137,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         }
 
         [Test]
-        public async Task AddUserDistinctionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
+        public void AddUserDistinctionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
         {
             //Arrange
             mockRepoWrapper
@@ -156,7 +156,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         }
 
         [Test]
-        public async Task AddUserDistinctionAsync_IfAdmin_WorksCorrectly()
+        public void AddUserDistinctionAsync_IfAdmin_WorksCorrectly()
         {
             //Arrange
             mockRepoWrapper
@@ -171,7 +171,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
             //Assert
             Assert.DoesNotThrowAsync(async () => { await distinctionService.AddUserDistinctionAsync(userDistinctionDTO, Admin); });
         }
-                
+
         [Test]
         public async Task IsNumberExistAsync_True()
         {
