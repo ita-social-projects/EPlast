@@ -52,7 +52,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         }
 
         [Test]
-        public async Task GetDistinctionAsync_ById_IsWrigthType()
+        public async Task GetDistinctionAsync_ById_IsInstanceOf()
         {
             //Arrange
             mockRepoWrapper
@@ -104,7 +104,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         }
 
         [Test]
-        public async Task GetAllDistinctionAsync_IsWrigthType()
+        public async Task GetAllDistinctionAsync_IsInstanceOf()
         {
             //Arrange
             mockRepoWrapper.Setup(x => x.Distinction.GetAllAsync(It.IsAny<Expression<Func<Distinction, bool>>>(),
@@ -140,22 +140,20 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         {
             //Arrange
             mockRepoWrapper
-               .Setup(x => x.Distinction.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Distinction, bool>>>(),
+               .Setup(x => x.Distinction.GetFirstAsync(It.IsAny<Expression<Func<Distinction, bool>>>(),
                    It.IsAny<Func<IQueryable<Distinction>, IIncludableQueryable<Distinction, object>>>()))
-               .ReturnsAsync(new Distinction());
+               .ReturnsAsync(distinction);
 
             //Act
+            ClaimsIdentity claimsIdentity = new ClaimsIdentity();
+            ClaimsPrincipal notAdmin = new ClaimsPrincipal();
             claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "Htos`"));
             notAdmin.AddIdentity(claimsIdentity);
-            try
-            {
-                await distinctionService.DeleteDistinctionAsync(It.IsAny<int>(), notAdmin);
-            }
-            catch (UnauthorizedAccessException) { exceptions++; }
 
             //Assert
-            Assert.AreEqual(1, exceptions);
-            exceptions = 0;
+            Exception exception = Assert.ThrowsAsync(typeof(UnauthorizedAccessException),
+                async () => { await distinctionService.DeleteDistinctionAsync(It.IsAny<int>(), notAdmin); });
+            Assert.AreEqual("Attempted to perform an unauthorized operation.", exception.Message);
         }
 
         [Test]
@@ -163,22 +161,20 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         {
             //Arrange
             mockRepoWrapper
-               .Setup(x => x.Distinction.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Distinction, bool>>>(),
+               .Setup(x => x.Distinction.GetFirstAsync(It.IsAny<Expression<Func<Distinction, bool>>>(),
                    It.IsAny<Func<IQueryable<Distinction>, IIncludableQueryable<Distinction, object>>>()))
-               .ReturnsAsync(() => null);
+               .ReturnsAsync(nullDistinction);
 
             //Act
+            ClaimsIdentity claimsIdentity = new ClaimsIdentity();
+            ClaimsPrincipal Admin = new ClaimsPrincipal();
             claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "Admin"));
             Admin.AddIdentity(claimsIdentity);
-            try
-            {
-                await distinctionService.DeleteDistinctionAsync(It.IsAny<int>(), Admin);
-            }
-            catch (ArgumentNullException) { exceptions++; }
 
             //Assert
-            Assert.AreEqual(1, exceptions);
-            exceptions = 0;
+            Exception exception = Assert.ThrowsAsync(typeof(ArgumentNullException),
+                async () => { await distinctionService.DeleteDistinctionAsync(It.IsAny<int>(), Admin); });
+            Assert.AreEqual("Value cannot be null. (Parameter 'Distinction with 0 not found')", exception.Message);
         }
 
         [Test]
@@ -191,16 +187,13 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                .ReturnsAsync(new Distinction());
 
             //Act
+            ClaimsIdentity claimsIdentity = new ClaimsIdentity();
+            ClaimsPrincipal Admin = new ClaimsPrincipal();
             claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "Admin"));
             Admin.AddIdentity(claimsIdentity);
-            try
-            {
-                await distinctionService.DeleteDistinctionAsync(It.IsAny<int>(), Admin);
-            }
-            catch (Exception) { exceptions++; }
 
             //Assert
-            Assert.AreEqual(0, exceptions);
+            Assert.DoesNotThrowAsync(async () => { await distinctionService.DeleteDistinctionAsync(It.IsAny<int>(), Admin); });
         }
 
         [Test]
@@ -208,22 +201,20 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         {
             //Arrange
             mockRepoWrapper
-               .Setup(x => x.Distinction.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Distinction, bool>>>(),
+               .Setup(x => x.Distinction.GetFirstAsync(It.IsAny<Expression<Func<Distinction, bool>>>(),
                    It.IsAny<Func<IQueryable<Distinction>, IIncludableQueryable<Distinction, object>>>()))
-               .ReturnsAsync(new Distinction());
+               .ReturnsAsync(distinction);
 
             //Act
+            ClaimsIdentity claimsIdentity = new ClaimsIdentity();
+            ClaimsPrincipal notAdmin = new ClaimsPrincipal();
             claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "Htos`"));
             notAdmin.AddIdentity(claimsIdentity);
-            try
-            {
-                await distinctionService.ChangeDistinctionAsync(It.IsAny<DistinctionDTO>(), notAdmin);
-            }
-            catch (UnauthorizedAccessException) { exceptions++; }
 
             //Assert
-            Assert.AreEqual(1, exceptions);
-            exceptions = 0;
+            Exception exception = Assert.ThrowsAsync(typeof(UnauthorizedAccessException),
+                async () => { await distinctionService.ChangeDistinctionAsync(distinctionDTO, notAdmin); });
+            Assert.AreEqual("Attempted to perform an unauthorized operation.", exception.Message);
         }
 
         [Test]
@@ -234,20 +225,15 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                .Setup(x => x.Distinction.GetFirstAsync(It.IsAny<Expression<Func<Distinction, bool>>>(),
                    It.IsAny<Func<IQueryable<Distinction>, IIncludableQueryable<Distinction, object>>>()))
                .ReturnsAsync(new Distinction());
-            mockMapper.Setup(m => m.Map<DistinctionDTO>(It.IsAny<Distinction>()))
-                .Returns(new DistinctionDTO());
 
             //Act
+            ClaimsIdentity claimsIdentity = new ClaimsIdentity();
+            ClaimsPrincipal Admin = new ClaimsPrincipal();
             claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "Admin"));
             Admin.AddIdentity(claimsIdentity);
-            try
-            {
-                await distinctionService.ChangeDistinctionAsync(DistinctionDTO, Admin);
-            }
-            catch (Exception) { exceptions++; }
 
             //Assert
-            Assert.AreEqual(0, exceptions);
+            Assert.DoesNotThrowAsync(async () => { await distinctionService.ChangeDistinctionAsync(distinctionDTO, Admin); });
         }
 
         [Test]
@@ -258,17 +244,15 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                .Setup(x => x.Distinction.CreateAsync(It.IsAny<Distinction>()));
 
             //Act
+            ClaimsIdentity claimsIdentity = new ClaimsIdentity();
+            ClaimsPrincipal notAdmin = new ClaimsPrincipal();
             claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "Htos`"));
             notAdmin.AddIdentity(claimsIdentity);
-            try
-            {
-                await distinctionService.AddDistinctionAsync(It.IsAny<DistinctionDTO>(), notAdmin);
-            }
-            catch (UnauthorizedAccessException) { exceptions++; }
 
             //Assert
-            Assert.AreEqual(1, exceptions);
-            exceptions = 0;
+            Exception exception = Assert.ThrowsAsync(typeof(UnauthorizedAccessException),
+                async () => { await distinctionService.AddDistinctionAsync(It.IsAny<DistinctionDTO>(), notAdmin); });
+            Assert.AreEqual("Attempted to perform an unauthorized operation.", exception.Message);
         }
 
         [Test]
@@ -279,27 +263,21 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                .Setup(x => x.Distinction.CreateAsync(It.IsAny<Distinction>()));
 
             //Act
+            ClaimsIdentity claimsIdentity = new ClaimsIdentity();
+            ClaimsPrincipal Admin = new ClaimsPrincipal();
             claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "Admin"));
             Admin.AddIdentity(claimsIdentity);
-            try
-            {
-                await distinctionService.AddDistinctionAsync(It.IsAny<DistinctionDTO>(), Admin);
-            }
-            catch (Exception) { exceptions++; }
 
             //Assert
-            Assert.AreEqual(0, exceptions);
+            Assert.DoesNotThrowAsync( async () => { await distinctionService.AddDistinctionAsync(It.IsAny<DistinctionDTO>(), Admin); } );
         }
-
-        int exceptions = 0;
-        ClaimsIdentity claimsIdentity = new ClaimsIdentity();
-        ClaimsPrincipal notAdmin = new ClaimsPrincipal();
-        ClaimsPrincipal Admin = new ClaimsPrincipal();
+        
         Distinction nullDistinction = null;
         DistinctionDTO nullDistinctionDTO = null;
         List<DistinctionDTO> nullListDistinctionDTO = null;
         List<Distinction> nullListDistinction = null;
-        DistinctionDTO DistinctionDTO = new DistinctionDTO { Id = 1, Name = "За силу" };
+        DistinctionDTO distinctionDTO = new DistinctionDTO { Id = 1, Name = "За силу" };
+        Distinction distinction = new Distinction { Id = 1, Name = "За силу" };
 
         private IEnumerable<Distinction> GetTestPlastDistinction()
         {
