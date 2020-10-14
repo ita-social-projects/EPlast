@@ -44,14 +44,14 @@ namespace EPlast.Tests.Services.City
             // Arrange
             _repoWrapper.Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
                  It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
-                     .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = 3 } });
+                     .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = Id } });
 
             // Act
             var result = await _cityAdministrationService.GetAdministrationByIdAsync(It.IsAny<int>());
 
             // Assert
             Assert.NotNull(result);
-            Assert.AreEqual(result.FirstOrDefault().ID, 3);
+            Assert.AreEqual(result.FirstOrDefault().ID, Id);
         }
 
         [Test]
@@ -163,7 +163,7 @@ namespace EPlast.Tests.Services.City
             //Arrange
             _repoWrapper.Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
                  It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
-                     .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = 3 } });
+                     .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = Id } });
             _adminTypeService
                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                .ReturnsAsync(new AdminTypeDTO
@@ -254,5 +254,7 @@ namespace EPlast.Tests.Services.City
             User = new CityUserDTO(),
             UserId = "Голова Станиці"
         };
+
+        private int Id => 3;
     }
 }

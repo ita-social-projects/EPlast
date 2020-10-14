@@ -116,10 +116,8 @@ namespace EPlast.Tests.Services.City
                 .Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
                 .Returns( new CityDTO());
             
-
             // Act
             var result = await _cityService.GetByIdAsync(Id);
-
 
             // Assert
             Assert.NotNull(result);
@@ -273,19 +271,17 @@ namespace EPlast.Tests.Services.City
         }
 
 
-        public IQueryable<DataAccessCity.City> CreateFakeCities(int count)
+        private IQueryable<DataAccessCity.City> CreateFakeCities(int count)
         {
             List<DataAccessCity.City> cities = new List<DataAccessCity.City>();
-
             for (int i = 0; i < count; i++)
             {
                 cities.Add(new DataAccessCity.City());
             }
-
             return cities.AsQueryable();
         }
 
-        public IQueryable<CityDTO> CreateFakeCityDto(int count)
+        private IQueryable<CityDTO> CreateFakeCityDto(int count)
         {
             List<CityDTO> cities = new List<CityDTO>();
 
@@ -297,12 +293,10 @@ namespace EPlast.Tests.Services.City
                     {
                         new CityAdministrationDTO
                         {
-
                            AdminType = new AdminTypeDTO
                            {
                                AdminTypeName = "Голова Станиці"
                            }
-
                         },
                         new CityAdministrationDTO
                         {
@@ -343,31 +337,26 @@ namespace EPlast.Tests.Services.City
                     }
                 });
             }
-
             return cities.AsQueryable();
         }
 
-        public Region GetTestRegion()
+        private Region GetTestRegion()
         {
-            var region = new Region()
+            return new Region()
             {
                 ID = 1,
                 RegionName = "Lviv",
                 Description = "Lviv region"
             };
-
-            return region;
         }
 
-        public DataAccessCity.City GetTestNewCity()
+        private DataAccessCity.City GetTestNewCity()
         {
-            var city = new DataAccessCity.City
+            return new DataAccessCity.City
             {
                 Name = "city",
                 Logo = "710b8b06-6869-45db-894f-7a0b131e6c6b.jpg"
             };
-
-            return city;
         }
     }
 }
