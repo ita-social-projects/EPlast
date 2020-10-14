@@ -11,7 +11,9 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.Logging;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Query;
 using Xunit;
 
@@ -21,16 +23,19 @@ namespace EPlast.XUnitTest
     {
         private DecisionService _decisionService;
         private static Mock<IRepositoryWrapper> _repository;
+        private static Mock<IDecisionBlobStorageRepository> _decisionBlobStorage;
+        private static Mock<IDecisionVmInitializer> _decisionVmCreator;
 
         private static DecisionService CreateDecisionService(int decisionId = 1)
         {
+            _decisionBlobStorage = new Mock<IDecisionBlobStorageRepository>();
             _repository = new Mock<IRepositoryWrapper>();
             var hostingEnvironment = new Mock<IWebHostEnvironment>();
             var directoryManager = new Mock<IDirectoryManager>();
             var fileManager = new Mock<IFileManager>();
             var fileStreamManager = new Mock<IFileStreamManager>();
             var mapper = new Mock<IMapper>();
-            var decisionVmCreator = new Mock<IDecisionVmInitializer>();
+            _decisionVmCreator = new Mock<IDecisionVmInitializer>();
             var logger = new Mock<ILoggerService<DecisionService>>();
             directoryManager.Setup(dir => dir.Exists(It.IsAny<string>())).Returns(true);
             directoryManager.Setup(dir => dir.GetFiles(It.IsAny<string>())).Returns(new[] { "yes", "stonks", "files" });
@@ -56,7 +61,11 @@ namespace EPlast.XUnitTest
             mapper.Setup(m => m.Map<DecisionDTO>(It.IsAny<Decesion>()))
                 .Returns(() => GetTestDecisionsDtoListElement(decisionId));
             mapper.Setup(m => m.Map<IEnumerable<DecisionDTO>>(It.IsAny<IEnumerable<Decesion>>())).Returns(GetTestDecisionsDtoList);
-            return new DecisionService(_repository.Object, mapper.Object, decisionVmCreator.Object, null);
+            mapper.Setup(m => m.Map<OrganizationDTO>(It.IsAny<Organization>()))
+                .Returns(GetTestOrganizationDtoList()[0]);
+            mapper.Setup(m => m.Map<IEnumerable<OrganizationDTO>>(It.IsAny<IEnumerable<Organization>>()))
+                .Returns(GetTestOrganizationDtoList());
+            return new DecisionService(_repository.Object, mapper.Object, _decisionVmCreator.Object, _decisionBlobStorage.Object);
         }
 
         [Fact]
@@ -175,6 +184,84 @@ namespace EPlast.XUnitTest
             Assert.Equal(decisionId, actualReturn);
         }
 
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        public async Task GetDecisionOrganizationAsyncWithEmptyOrNullParameterTest(string organizationName)
+        {
+            _decisionService = CreateDecisionService();
+            OrganizationDTO organization = GetTestOrganizationDtoList()[0];
+            organization.OrganizationName = organizationName;
+            _repository.Setup(rep => rep.Organization.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+                It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new Organization() { ID = organization.ID });
+
+            var actualReturn = await _decisionService.GetDecisionOrganizationAsync(organization);
+
+            Assert.Equal(organization.ID, actualReturn.ID);
+        }
+
+        [Fact]
+        public async Task GetDecisionOrganizationAsyncWithRightParameterTest()
+        {
+            _decisionService = CreateDecisionService();
+            OrganizationDTO organization = GetTestOrganizationDtoList()[0];
+            _repository.Setup(rep => rep.Organization.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+                It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new Organization() { OrganizationName = organization.OrganizationName });
+
+            var actualReturn = await _decisionService.GetDecisionOrganizationAsync(organization);
+
+            Assert.Equal(organization.OrganizationName, actualReturn.OrganizationName);
+        }
+        [Theory]
+        [InlineData("filename1")]
+        [InlineData("filename2")]
+        public async Task DownloadDecisionFileFromBlobAsyncTest(string fileName)
+        {
+            _decisionService = CreateDecisionService();
+            _decisionBlobStorage.Setup(blobStorage => blobStorage.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync(fileName);
+
+
+            var actualReturn = await _decisionService.DownloadDecisionFileFromBlobAsync(fileName);
+
+            Assert.Equal(fileName, actualReturn);
+        }
+
+        [Fact]
+        public async Task GetOrganizationListAsyncTest()
+        {
+            _decisionService = CreateDecisionService();
+            List<OrganizationDTO> organizations = GetTestOrganizationDtoList();
+            _repository.Setup(rep => rep.Organization.GetAllAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+                It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new List<Organization>());
+
+            var actualReturn = await _decisionService.GetOrganizationListAsync();
+
+            Assert.Equal(organizations.Aggregate("", (x, y) => x += y.OrganizationName), actualReturn.Aggregate("", (x, y) => x += y.OrganizationName));
+        }
+
+        [Fact]
+        public async Task GetDecisionTargetListAsyncTest()
+        {
+            _decisionService = CreateDecisionService();
+            List<DecisionTargetDTO> decisionTargets = GetTestDecisionTargetsDtoList();
+            _repository.Setup(rep => rep.DecesionTarget.GetAllAsync(It.IsAny<Expression<Func<DecesionTarget, bool>>>(),
+                It.IsAny<Func<IQueryable<DecesionTarget>, IIncludableQueryable<DecesionTarget, object>>>())).ReturnsAsync(new List<DecesionTarget>());
+
+            var actualReturn = await _decisionService.GetDecisionTargetListAsync();
+
+            Assert.Equal(decisionTargets.Aggregate("", (x, y) => x += y.TargetName), actualReturn.Aggregate("", (x, y) => x += y.TargetName));
+        }
+
+        [Fact]
+        public void GetDecisionStatusTypesTest()
+        {
+            _decisionService = CreateDecisionService();
+            _decisionVmCreator.Setup(vm => vm.GetDecesionStatusTypes()).Returns(new List<SelectListItem>());
+            var actualReturn = _decisionService.GetDecisionStatusTypes();
+
+            _decisionVmCreator.Verify();
+            Assert.IsType<List<SelectListItem>>(actualReturn);
+        }
         private static IQueryable<DecesionTarget> GetTestDecisionTargetsQueryable()
         {
             return new List<DecesionTarget>
@@ -220,6 +307,14 @@ namespace EPlast.XUnitTest
         private static DecisionDTO GetTestDecisionsDtoListElement(int id)
         {
             return GetTestDecisionsDtoList().First(x => x.ID == id);
+        }
+        private static List<OrganizationDTO> GetTestOrganizationDtoList()
+        {
+            return new List<OrganizationDTO>
+            {
+                new OrganizationDTO {ID = 1,OrganizationName = "Organization1"},
+                new OrganizationDTO {ID = 2,OrganizationName = "Organization2"},
+            };
         }
     }
 }
