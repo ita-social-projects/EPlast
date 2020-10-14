@@ -21,8 +21,7 @@ namespace EPlast.BLL
         }
         public async Task AddDistinctionAsync(DistinctionDTO distinctionDTO, ClaimsPrincipal user)
         {
-            if (!user.IsInRole("Admin"))
-                throw new UnauthorizedAccessException();
+            CheckIfAdmin(user);
             var distinction = _mapper.Map<DistinctionDTO, Distinction>(distinctionDTO);
             await _repoWrapper.Distinction.CreateAsync(distinction);
             await _repoWrapper.SaveAsync();
@@ -30,8 +29,7 @@ namespace EPlast.BLL
 
         public async Task ChangeDistinctionAsync(DistinctionDTO distinctionDTO, ClaimsPrincipal user)
         {
-            if (!user.IsInRole("Admin"))
-                throw new UnauthorizedAccessException();
+            CheckIfAdmin(user);
             var distinction = await _repoWrapper.Distinction.GetFirstAsync(x => x.Id == distinctionDTO.Id);
             distinction.Name = distinctionDTO.Name;
             _repoWrapper.Distinction.Update(distinction);
@@ -40,8 +38,7 @@ namespace EPlast.BLL
 
         public async Task DeleteDistinctionAsync(int id, ClaimsPrincipal user)
         {
-            if (!user.IsInRole("Admin"))
-                throw new UnauthorizedAccessException();
+            CheckIfAdmin(user);
             var distinction = (await _repoWrapper.Distinction.GetFirstAsync(d => d.Id == id));
             if (distinction == null)
                 throw new ArgumentNullException($"Distinction with {id} not found");
@@ -57,6 +54,12 @@ namespace EPlast.BLL
         {
             var distinction = _mapper.Map<DistinctionDTO>(await _repoWrapper.Distinction.GetFirstAsync(d => d.Id == id));
             return distinction;
+        }
+
+        public void CheckIfAdmin(ClaimsPrincipal user)
+        {
+            if (!user.IsInRole("Admin"))
+                throw new UnauthorizedAccessException();
         }
     }
 }

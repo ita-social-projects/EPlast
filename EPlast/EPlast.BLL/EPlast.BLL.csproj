@@ -21,4 +21,8 @@
   <ItemGroup>
     <ProjectReference Include="..\EPlast.DataAccess\EPlast.DataAccess.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
 </Project>
