@@ -58,7 +58,6 @@ namespace EPlast.Tests.Services.City
             // Act
             var result = await _cityMembersService.GetMembersByCityIdAsync(It.IsAny<int>());
 
-
             // Assert
             Assert.NotNull(result);
             _mapper.Verify(m => m.Map<IEnumerable<DataAccessCity.CityMembers>, IEnumerable<CityMembersDTO>>(It.IsAny<IEnumerable<DataAccessCity.CityMembers>>()));
