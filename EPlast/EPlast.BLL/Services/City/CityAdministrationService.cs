@@ -40,8 +40,7 @@ namespace EPlast.BLL.Services.City
                 include: x => x.Include(q => q.User).
                      Include(q => q.AdminType));
 
-            var result = _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(cityAdministration);
-            return result;
+            return  _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(cityAdministration);
         }
 
         /// <inheritdoc />
