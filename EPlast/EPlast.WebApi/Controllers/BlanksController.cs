@@ -35,8 +35,13 @@ namespace EPlast.WebApi.Controllers
             return Created("", biographyDocument);
         }
 
+        /// <summary>
+        /// Add a document to the achievement blank
+        /// </summary>
+        /// <param name="achievementDocuments">An information about a specific document</param>
+        /// <returns>A newly created Blank achievement document</returns>
         [HttpPost("AddAchievementDocumet/{userId}")]
-
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> AddAchievementDocument(List<AchievementDocumentsDTO> achievementDocuments)
         {
             await _blankAchievementDocumentService.AddDocumentAsync(achievementDocuments);
@@ -44,6 +49,11 @@ namespace EPlast.WebApi.Controllers
             return Created("AchievementDocument", achievementDocuments);
         }
 
+        /// <summary>
+        /// Get a document by User ID
+        /// </summary>
+        /// <param Id="userId">An Id of user</param>
+        /// <returns>A blank document that attached to user</returns>
         [HttpGet("GetDocumentByUserId/{userId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetDocumentByUserId(string userId)
@@ -51,13 +61,22 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _blankBiographyDocumentService.GetDocumentByUserId(userId));
         }
 
+        /// <summary>
+        /// Get a list of achievement documents by User ID
+        /// </summary>
+        /// <param Id="userId">An Id of user</param>
+        /// <returns>A achievement documents that attached to user</returns>
         [HttpGet("GetAchievementDocumentsByUserId/{userId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetDocumentsByUserId(string userId)
+        public async Task<IActionResult> GetAchievementDocumentsByUserId(string userId)
         {
             return Ok(await _blankAchievementDocumentService.GetDocumentsByUserId(userId));
         }
 
+        /// <summary>
+        /// Delete the document by document ID
+        /// </summary>
+        /// <param Id="documentId">An Id of document</param>
         [HttpDelete("RemoveBiographyDocument/{documentId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RemoveDocument(int documentId)
@@ -67,6 +86,10 @@ namespace EPlast.WebApi.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Delete the achievement document by document ID
+        /// </summary>
+        /// <param Id="documentId">An Id of document</param>
         [HttpDelete("RemoveAchievementDocument/{documentId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RemoveAchievementDocument(int documentId)
@@ -76,6 +99,11 @@ namespace EPlast.WebApi.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Download  document by file name
+        /// </summary>
+        /// <param name="fileName">A file blob name</param>
+        /// <returns>A Base64 format of biography document</returns>
         [HttpGet("BiographyDocumentBase64/{fileName}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetFileBase64(string fileName)
@@ -83,6 +111,11 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _blankBiographyDocumentService.DownloadFileAsync(fileName));
         }
 
+        /// <summary>
+        /// Download  document by file name
+        /// </summary>
+        /// <param name="fileName">A file blob name</param>
+        /// <returns>A Base64 format of Achievement document</returns>
         [HttpGet("AchievementDocumentBase64/{fileName}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetFileAchievementBase64(string fileName)
