@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
 
+
 namespace EPlast.Tests.Services.PDF
 {
     [TestFixture]
@@ -108,8 +109,8 @@ namespace EPlast.Tests.Services.PDF
         {
             return new List<CityMembers>
             {
-                new CityMembers(){ UserId ="1",CityId=3,City = new City()},
-                new CityMembers(){ UserId ="546546",CityId=3,City = new City()}
+                new CityMembers(){ UserId ="1",CityId=3,City = new DataAccess.Entities.City()},
+                new CityMembers(){ UserId ="546546",CityId=3,City = new DataAccess.Entities.City()}
             }.AsQueryable();
         }
         private static IQueryable<ClubMembers> GetTestClubMembersQueryable()
