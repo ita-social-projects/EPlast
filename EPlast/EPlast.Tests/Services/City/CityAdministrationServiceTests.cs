@@ -42,16 +42,20 @@ namespace EPlast.Tests.Services.City
         public async Task GetAdministrationByIdAsync_ReturnsAdministrations()
         {
             // Arrange
-            _repoWrapper.Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+            _repoWrapper
+                .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
                  It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
-                     .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = Id } });
+                     .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId} });
+            _mapper
+                .Setup(m => m.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(It.IsAny<IEnumerable<CityAdministration>>()))
+                .Returns(new List<CityAdministrationDTO> { new CityAdministrationDTO { ID = fakeId } });
 
             // Act
             var result = await _cityAdministrationService.GetAdministrationByIdAsync(It.IsAny<int>());
 
             // Assert
             Assert.NotNull(result);
-            Assert.AreEqual(result.FirstOrDefault().ID, Id);
+            Assert.AreEqual(result.FirstOrDefault().ID, fakeId);
         }
 
         [Test]
@@ -163,7 +167,7 @@ namespace EPlast.Tests.Services.City
             //Arrange
             _repoWrapper.Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
                  It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
-                     .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = Id } });
+                     .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId } });
             _adminTypeService
                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                .ReturnsAsync(new AdminTypeDTO
@@ -255,6 +259,6 @@ namespace EPlast.Tests.Services.City
             UserId = "Голова Станиці"
         };
 
-        private int Id => 3;
+        private int fakeId = 3;
     }
 }
