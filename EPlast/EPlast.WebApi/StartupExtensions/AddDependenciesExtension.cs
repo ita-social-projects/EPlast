@@ -4,6 +4,7 @@ using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.AzureStorage.Base;
+using EPlast.BLL.Interfaces.Blank;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.EducatorsStaff;
@@ -19,6 +20,7 @@ using EPlast.BLL.Services.ActiveMembership;
 using EPlast.BLL.Services.Admin;
 using EPlast.BLL.Services.AzureStorage;
 using EPlast.BLL.Services.AzureStorage.Base;
+using EPlast.BLL.Services.Blank;
 using EPlast.BLL.Services.City;
 using EPlast.BLL.Services.City.CityAccess;
 using EPlast.BLL.Services.Club;
@@ -34,6 +36,7 @@ using EPlast.BLL.Services.UserProfiles;
 using EPlast.BLL.Settings;
 using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Repositories;
+using EPlast.DataAccess.Repositories.Interfaces.Blank;
 using EPlast.DataAccess.Repositories.Realizations.Base;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -98,8 +101,10 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<ICityBlobStorageRepository, CityBlobStorageRepository>();
             services.AddScoped<ICityFilesBlobStorageRepository, CityFilesBlobStorageRepository>();
             services.AddScoped<IRegionBlobStorageRepository, RegionBlobStorageRepository>();
+            services.AddScoped<IRegionFilesBlobStorageRepository, RegionFilesBlobStorageRepository>();
             services.AddScoped<IClubBlobStorageRepository, ClubBlobStorageRepository>();
             services.AddScoped<IEventBlobStorageRepository, EventBlobStorageRepository>();
+            services.AddScoped<IBlankFilesBlobStorageRepository, BlankFilesBlobStorageRepository>();
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddScoped<IAccessLevelService, AccessLevelService>();
             services.AddScoped<IPlastDegreeService, PlastDegreeService>();
@@ -107,7 +112,8 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IDistinctionService, DistinctionService>();
             services.AddScoped<IEducatorsStaffService, EducatorsStaffService>();
             services.AddScoped<IEducatorsStaffTypesService, EducatorsStaffTypesService>();
-
+            services.AddScoped<IBlankBiographyDocumentService, BlankBiographyDocumentsService>();
+;
             return services;
         }
     }
