@@ -20,6 +20,7 @@ namespace EPlast.BLL.Services.City
         private readonly IAdminTypeService _adminTypeService;
         private readonly UserManager<User> _userManager;
 
+
         public CityAdministrationService(IRepositoryWrapper repositoryWrapper,
             IMapper mapper,
             IAdminTypeService adminTypeService,
@@ -39,7 +40,7 @@ namespace EPlast.BLL.Services.City
                 include: x => x.Include(q => q.User).
                      Include(q => q.AdminType));
 
-            return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(cityAdministration);
+            return  _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(cityAdministration);
         }
 
         /// <inheritdoc />
@@ -71,7 +72,7 @@ namespace EPlast.BLL.Services.City
         {
             var admin = await _repositoryWrapper.CityAdministration.GetFirstOrDefaultAsync(a => a.ID == adminDTO.ID);
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
-            
+
             if (adminType.ID == admin.AdminTypeId)
             {
                 admin.StartDate = adminDTO.StartDate ?? DateTime.Now;
@@ -131,8 +132,8 @@ namespace EPlast.BLL.Services.City
         {
             var admins = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.UserId == UserId,
                  include:
-                 source => source.Include(c => c.User).Include(c => c.AdminType).Include(a=>a.City)
-                 ); ;
+                 source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.City)
+                 );
             return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(admins);
         }
     }

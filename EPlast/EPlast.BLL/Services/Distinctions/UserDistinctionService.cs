@@ -21,8 +21,7 @@ namespace EPlast.BLL.Services.Distinctions
         }
         public async Task AddUserDistinctionAsync(UserDistinctionDTO userDistinctionDTO, ClaimsPrincipal user)
         {
-            if (!user.IsInRole("Admin"))
-                throw new UnauthorizedAccessException();
+            CheckIfAdmin(user);
             var userDistinction = new UserDistinction()
             {
                 UserId = userDistinctionDTO.UserId,
@@ -38,8 +37,7 @@ namespace EPlast.BLL.Services.Distinctions
 
         public async Task ChangeUserDistinctionAsync(UserDistinctionDTO userDistinctionDTO, ClaimsPrincipal user)
         {
-            if (!user.IsInRole("Admin"))
-                throw new UnauthorizedAccessException();
+            CheckIfAdmin(user);
             var userDistinction = new UserDistinction()
             {
                 Id = userDistinctionDTO.Id,
@@ -56,8 +54,7 @@ namespace EPlast.BLL.Services.Distinctions
 
         public async Task DeleteUserDistinctionAsync(int id, ClaimsPrincipal user)
         {
-            if (!user.IsInRole("Admin"))
-                throw new UnauthorizedAccessException();
+            CheckIfAdmin(user);
             var userDistinction = await _repoWrapper.UserDistinction.GetFirstOrDefaultAsync(d => d.Id == id);
             if (userDistinction == null)
                 throw new NotImplementedException();
@@ -96,6 +93,12 @@ namespace EPlast.BLL.Services.Distinctions
         {
             var distNum = await _repoWrapper.UserDistinction.GetFirstOrDefaultAsync(x => x.Number == number);
             return distNum != null;
+        }
+
+        public void CheckIfAdmin(ClaimsPrincipal user)
+        {
+            if (!user.IsInRole("Admin"))
+                throw new UnauthorizedAccessException();
         }
 
     }
