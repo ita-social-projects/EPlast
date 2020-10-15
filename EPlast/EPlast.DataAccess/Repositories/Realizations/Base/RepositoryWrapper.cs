@@ -53,6 +53,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IMembersStatisticsRepository _membersStatistics;
         private ICityLegalStatusesRepository _cityLegalStatuses;
         private IUserPlastDegreesRepository _userPlastDegrees;
+        private IUserMembershipDatesRepository _userMembershipDates;
         private IEventAdministrationRepository _eventAdministration;
         private IEventAdministrationTypeRepository _eventAdministrationType;
         private IEventCategoryTypeRepository _eventCategoryTypeRepository;
@@ -609,6 +610,18 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                     _cityLegalStatuses = new CityLegalStatusesRepository(_dbContext);
                 }
                 return _cityLegalStatuses;
+            }
+        }
+
+        public IUserMembershipDatesRepository UserMembershipDates
+        {
+            get
+            {
+                if (_userMembershipDates == null)
+                {
+                    _userMembershipDates = new UserMembershipDatesRepository(_dbContext);
+                }
+                return _userMembershipDates;
             }
         }
 
