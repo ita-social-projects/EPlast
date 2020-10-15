@@ -50,12 +50,31 @@ namespace EPlast.WebApi.Controllers
 
 
 
+        [HttpGet("LogoBase64")]
+        public async Task<IActionResult> GetPhotoBase64(string logoName)
+        {
+            var logoBase64 = await _regionService.GetLogoBase64(logoName);
+
+            return Ok(logoBase64);
+        }
+
+
 
         [HttpGet("GetAdministration/{regionId}")]
         public async Task<IActionResult> GetRegionAdmins(int regionId)
         {
             var Admins = await _regionService.GetAdministrationAsync(regionId);
             return Ok(Admins);
+        }
+
+
+
+        [HttpGet("GetHead/{regionId}")]
+        public async Task<IActionResult> GetRegionHead(int regionId)
+        {
+            var Head = await _regionService.GetHead(regionId);
+
+            return Ok(Head);
         }
 
 
