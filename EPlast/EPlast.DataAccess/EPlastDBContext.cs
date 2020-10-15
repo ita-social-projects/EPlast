@@ -198,5 +198,7 @@ namespace EPlast.DataAccess
         public DbSet<Distinction> Distinctions { get; set; }
         public DbSet<UserDistinction> UserDistinctions { get; set; }
         public DbSet<BlankBiographyDocuments> BlankBiographyDocuments { get; set; }
+        public DbSet<NotificationType> NotificationTypes { get; set; }
+        public DbSet<UserNotification> UserNotifications { get; set; }
     }
 }
