@@ -2,6 +2,9 @@
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Services.City;
+using EPlast.BLL.Services.Interfaces;
+using EPlast.BLL.DTO.UserProfiles;
+using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
