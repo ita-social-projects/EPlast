@@ -2,13 +2,11 @@
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
-using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -53,7 +51,7 @@ namespace EPlast.BLL.Services.Region
         {
             var newRegionAdmin = _mapper.Map<RegionAdministrationDTO, RegionAdministration>(regionAdministrationDTO);
 
-            var oldAdmin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(d => d.AdminTypeId == newRegionAdmin.AdminTypeId && d.RegionId == newRegionAdmin.RegionId && d.Status==true);
+            var oldAdmin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(d => d.AdminTypeId == newRegionAdmin.AdminTypeId && d.RegionId == newRegionAdmin.RegionId && d.Status);
 
             if (oldAdmin != null)
             {
@@ -148,7 +146,7 @@ namespace EPlast.BLL.Services.Region
 
         public async Task<IEnumerable<RegionAdministrationDTO>> GetAdministrationAsync(int regionId)
         {
-            var admins =await  _repoWrapper.RegionAdministration.GetAllAsync(d => d.RegionId == regionId && d.Status==true,
+            var admins =await  _repoWrapper.RegionAdministration.GetAllAsync(d => d.RegionId == regionId && d.Status,
                 include: source => source
                     .Include(t => t.User)
                         .Include(t => t.Region)
@@ -247,7 +245,7 @@ namespace EPlast.BLL.Services.Region
 
         public async Task<RegionAdministrationDTO> GetHead(int regionId)
         {
-            var head = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(d => d.RegionId == regionId && d.AdminType.AdminTypeName == "Голова Округу" && DateTime.Compare((DateTime)d.EndDate, DateTime.Now)>0&& d.Status==true,
+            var head = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(d => d.RegionId == regionId && d.AdminType.AdminTypeName == "Голова Округу" && DateTime.Compare((DateTime)d.EndDate, DateTime.Now)>0&& d.Status,
                 include: source => source
                 .Include(
                 d => d.User));
