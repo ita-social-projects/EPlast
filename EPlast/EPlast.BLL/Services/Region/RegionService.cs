@@ -51,8 +51,31 @@ namespace EPlast.BLL.Services.Region
         {
             var newRegionAdmin = _mapper.Map<RegionAdministrationDTO, RegionAdministration>(regionAdministrationDTO);
 
-            await _repoWrapper.RegionAdministration.CreateAsync(newRegionAdmin);
-            await _repoWrapper.SaveAsync();
+            var oldAdmin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(d => d.AdminTypeId == newRegionAdmin.AdminTypeId && d.RegionId == newRegionAdmin.RegionId && d.Status);
+
+            if (oldAdmin != null)
+            {
+                if (DateTime.Compare((DateTime)regionAdministrationDTO.EndDate, DateTime.Now) > 0)
+                {
+                    newRegionAdmin.Status = true;
+                    oldAdmin.Status = false;
+                }
+                else
+                {
+                    newRegionAdmin.Status = false;
+                }
+                _repoWrapper.RegionAdministration.Update(oldAdmin);
+                await _repoWrapper.SaveAsync();
+                await _repoWrapper.RegionAdministration.CreateAsync(newRegionAdmin);
+                await _repoWrapper.SaveAsync();
+            }
+            else
+            {
+                newRegionAdmin.Status = true;
+                await _repoWrapper.SaveAsync();
+                await _repoWrapper.RegionAdministration.CreateAsync(newRegionAdmin);
+                await _repoWrapper.SaveAsync();
+            }
         }
 
 
@@ -65,6 +88,15 @@ namespace EPlast.BLL.Services.Region
 
             return _mapper.Map<IEnumerable<DataAccessCity.Region>, IEnumerable<RegionDTO>>(regions);
         }
+
+
+        public async Task<string> GetLogoBase64(string logoName)
+        {
+            var logoBase64 = await _regionBlobStorage.GetBlobBase64Async(logoName);
+
+            return logoBase64;
+        }
+
 
         public async Task<RegionDTO> GetRegionByIdAsync(int regionId)
         {
@@ -114,7 +146,7 @@ namespace EPlast.BLL.Services.Region
 
         public async Task<IEnumerable<RegionAdministrationDTO>> GetAdministrationAsync(int regionId)
         {
-            var admins =await  _repoWrapper.RegionAdministration.GetAllAsync(d => d.RegionId == regionId,
+            var admins =await  _repoWrapper.RegionAdministration.GetAllAsync(d => d.RegionId == regionId && d.Status,
                 include: source => source
                     .Include(t => t.User)
                         .Include(t => t.Region)
@@ -141,6 +173,8 @@ namespace EPlast.BLL.Services.Region
             ChangedRegion.Description = region.Description;
             ChangedRegion.Street = region.Street;
             ChangedRegion.HouseNumber = ChangedRegion.HouseNumber;
+
+             _repoWrapper.Region.Update(ChangedRegion);
             await _repoWrapper.SaveAsync();
         }
 
@@ -209,5 +243,14 @@ namespace EPlast.BLL.Services.Region
             await _repoWrapper.SaveAsync();
         }
 
+        public async Task<RegionAdministrationDTO> GetHead(int regionId)
+        {
+            var head = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(d => d.RegionId == regionId && d.AdminType.AdminTypeName == "Голова Округу" && DateTime.Compare((DateTime)d.EndDate, DateTime.Now)>0&& d.Status,
+                include: source => source
+                .Include(
+                d => d.User));
+
+            return _mapper.Map<RegionAdministration, RegionAdministrationDTO>(head);
+        }
     }
 }

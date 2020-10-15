@@ -1,6 +1,8 @@
 ﻿using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
+using EPlast.BLL.DTO.UserProfiles;
+using EPlast.DataAccess.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -27,6 +29,7 @@ namespace EPlast.BLL.Interfaces.Region
         Task<string> DownloadFileAsync(string fileName);
         Task DeleteFileAsync(int documentId);
 
-
+        Task<string> GetLogoBase64(string logoName);
+        Task<RegionAdministrationDTO> GetHead(int regionId);
     }
 }
