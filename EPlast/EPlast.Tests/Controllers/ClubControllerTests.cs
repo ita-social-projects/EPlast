@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Club;
+using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.WebApi.Controllers;
 using EPlast.WebApi.Models.Club;
@@ -13,6 +14,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
@@ -20,570 +22,523 @@ namespace EPlast.Tests.Controllers
     [TestFixture]
     class ClubControllerTests
     {
-        ClubController _clubController;
-        Mock<IClubService> _clubService;
-        Mock<IClubAdministrationService> _clubAdministrationService;
-        Mock<IClubMembersService> _clubMembersService;
-        Mock<IUserManagerService> _userManagerService;
-        Mock<IMapper> _mapper;
+        private readonly Mock<IClubService> _ClubService;
+        private readonly Mock<IClubMembersService> _ClubMembersService;
+        private readonly Mock<IMapper> _mapper;
+        private readonly Mock<ILoggerService<ClubController>> _logger;
+        private readonly Mock<IClubAdministrationService> _ClubAdministrationService;
+        private readonly Mock<IClubAccessService> _ClubAccessService;
+        private readonly Mock<IClubDocumentsService> _ClubDocumentsService;
 
-        [SetUp]
-        public void SetUp()
+        public ClubControllerTests()
         {
-            _clubService = new Mock<IClubService>();
-            _clubAdministrationService = new Mock<IClubAdministrationService>();
-            _clubMembersService = new Mock<IClubMembersService>();
-            _userManagerService = new Mock<IUserManagerService>();
+            _ClubAccessService = new Mock<IClubAccessService>();
+            _ClubService = new Mock<IClubService>();
+            _ClubMembersService = new Mock<IClubMembersService>();
             _mapper = new Mock<IMapper>();
-
-            _clubController = new ClubController(
-                _clubService.Object,
-                _clubAdministrationService.Object,
-                _clubMembersService.Object,
-                _userManagerService.Object,
-                _mapper.Object
-                );
+            _logger = new Mock<ILoggerService<ClubController>>();
+            _ClubAdministrationService = new Mock<IClubAdministrationService>();
+            _ClubDocumentsService = new Mock<IClubDocumentsService>();
         }
 
-        [Test]
-        public async Task Get_ReturnsOkObjectResult()
+        private ClubController CreateClubController => new ClubController(_logger.Object,
+
+             _mapper.Object,
+           _ClubService.Object,
+           _ClubMembersService.Object,
+           _ClubAdministrationService.Object,
+           _ClubDocumentsService.Object,
+           _ClubAccessService.Object
+          );
+
+
+
+
+        [TestCase(2)]
+        public async Task GetMembers_Valid_Test(int id)
         {
-            //Arrange
-            var clubs = new List<ClubDTO>() {
-                    new ClubDTO()
-                    {
-                        Logo = "logo"
-                    }
-            };
-            _clubService
-                .Setup(x => x.GetAllClubsAsync())
-                .ReturnsAsync(clubs);
-            _clubService
-                .Setup(x => x.GetImageBase64Async(clubs[0].Logo))
-                .ReturnsAsync(clubs[0].Logo);
-
-            //Act
-            var result = await _clubController.Get();
-            var resultValue = (result as OkObjectResult).Value;
-
-            //Assert
-            _clubService.Verify();
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<List<ClubDTO>>(resultValue);
-        }
-
-        [Test]
-        public async Task GetImage_ReturnsImageName()
-        {
-            //Arrange
-            var imageName = "string";
-            _clubService
-                .Setup(x => x.GetImageBase64Async(imageName))
-                .ReturnsAsync(imageName);
-
-            //Act
-            var result = await _clubController.GetImage(imageName);
-
-            //Assert
-            _clubService.Verify();
-            Assert.IsNotNull(result);
-            Assert.AreEqual(imageName, result);
-        }
-
-        [Test]
-        public async Task Club_ReturnsOkObjectResult()
-        {
-            //Arrange
-            var httpContext = new Mock<HttpContext>();
-            httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
-                .Returns(true);
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            _clubController.ControllerContext = context;
-            var clubID = GetClubId();
-            _mapper
-                .Setup(m => m.Map<ClubProfileDTO, ClubProfileViewModel>(It.IsAny<ClubProfileDTO>()))
-                .Returns(new ClubProfileViewModel() { Club = new ClubViewModel() });
-            _clubService
-                .Setup(x => x.GetClubProfileAsync(clubID))
-                .ReturnsAsync(new ClubProfileDTO());
-            _clubService
-                .Setup(x => x.GetImageBase64Async(It.IsAny<string>()))
-                .ReturnsAsync("string");
-
-            //Act
-            var result = await _clubController.GetClub(clubID);
-            var resultValue = (result as OkObjectResult).Value;
-
-            //Assert
-            _clubService.Verify();
-            _mapper.Verify();
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<ClubProfileViewModel>(resultValue);
-        }
-
-        [Test]
-        public async Task GetCLubMembers_ReturnsOkObjectResult()
-        {
-            //Arrange
-            var clubId = GetClubId();
-            var httpContext = new Mock<HttpContext>();
-            httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
-                .Returns(true);
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            _clubController.ControllerContext = context;
-            _mapper
-                .Setup(m => m.Map<ClubProfileDTO, ClubProfileViewModel>(It.IsAny<ClubProfileDTO>()))
-                .Returns(new ClubProfileViewModel() { Club = new ClubViewModel() });
-            _clubService
-                .Setup(x => x.GetClubMembersOrFollowersAsync(clubId, true))
+            _ClubService.Setup(cs => cs.GetClubMembersAsync(It.IsAny<int>()))
                 .ReturnsAsync(new ClubProfileDTO());
 
-            //Act
-            var result = await _clubController.GetClubMembers(clubId);
-            var resultValue = (result as OkObjectResult).Value;
+            _mapper.Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
+                .Returns(new ClubViewModel());
 
-            //Assert
-            _mapper.Verify();
-            _clubService.Verify();
-            Assert.IsNotNull(result);
+            ClubController ClubController = CreateClubController;
+
+
+            var result = await ClubController.GetMembers(id);
+
+
+            _mapper.Verify(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()));
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<ClubProfileViewModel>(resultValue);
+            Assert.NotNull(result);
         }
 
-        [Test]
-        public async Task GetClubFollowers_ReturnsOkObjectResult()
+
+
+        [TestCase(2)]
+        public async Task GetProfile_Valid_Test(int id)
         {
-            //Arrange
-            var clubId = GetClubId();
-            var httpContext = new Mock<HttpContext>();
-            httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
-                .Returns(true);
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            _clubController.ControllerContext = context;
-            _mapper
-                .Setup(m => m.Map<ClubProfileDTO, ClubProfileViewModel>(It.IsAny<ClubProfileDTO>()))
-                .Returns(new ClubProfileViewModel() { Club = new ClubViewModel() });
-            _clubService
-                .Setup(x => x.GetClubMembersOrFollowersAsync(clubId, true))
+
+            _ClubService.Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(new ClubProfileDTO());
 
-            //Act
-            var result = await _clubController.GetClubFollowers(clubId);
-            var resultValue = (result as OkObjectResult).Value;
+            _mapper.Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
+                .Returns(new ClubViewModel());
 
-            //Assert
-            _mapper.Verify();
-            _clubService.Verify();
-            Assert.IsNotNull(result);
+            ClubController Clubcon = CreateClubController;
+
+            var result = await Clubcon.GetProfile(id);
+
+
+            _mapper.Verify(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()));
+            Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<ClubProfileViewModel>(resultValue);
         }
 
-        [Test]
-        public async Task GetClubDesctription_ReturnsOkObjectResult()
+        [TestCase(2)]
+        public async Task GetFollowers_Valid_Test(int id)
         {
-            //Arrange
-            _clubService
-                .Setup(x => x.GetClubInfoByIdAsync(It.IsAny<int>()))
+
+            _ClubService.Setup(c => c.GetClubFollowersAsync(It.IsAny<int>()))
+                .ReturnsAsync(new ClubProfileDTO());
+
+            _mapper.Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
+                .Returns(new ClubViewModel());
+
+            ClubController Clubcon = CreateClubController;
+
+            var result = await Clubcon.GetFollowers(id);
+            _mapper.Verify(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()));
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+
+        [TestCase(2)]
+        public async Task GetFollowers_Invalid_Test(int id)
+        {
+
+            _ClubService.Setup(c => c.GetClubFollowersAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+
+            _mapper.Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
+                .Returns(new ClubViewModel());
+
+            ClubController Clubcon = CreateClubController;
+
+            var result = await Clubcon.GetFollowers(id);
+
+
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+
+        [TestCase(2)]
+        public async Task GetProfile_Invalid_Test(int id)
+        {
+
+            _ClubService.Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(() => null);
+
+            _mapper.Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
+                .Returns(new ClubViewModel());
+
+            ClubController Clubcon = CreateClubController;
+
+            var result = await Clubcon.GetProfile(id);
+
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [TestCase(2)]
+        public async Task GetMembers_Invalid_Test(int id)
+        {
+            _ClubService.Setup(cs => cs.GetClubMembersAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+
+            _mapper.Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
+                .Returns(new ClubViewModel());
+
+            ClubController ClubController = CreateClubController;
+
+
+            var result = await ClubController.GetMembers(id);
+
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+
+        [Test]
+        public async Task GetProfile_Invalid_Test()
+        {
+
+            _ClubService.Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(() => null);
+
+            ClubController Clubcon = CreateClubController;
+
+            var result = await Clubcon.GetProfile(GetFakeID());
+
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+
+
+
+
+        [TestCase(2)]
+        public async Task GetAdmins_Valid_Test(int id)
+        {
+            _ClubService.Setup(c => c.GetClubAdminsAsync(It.IsAny<int>()))
+                .ReturnsAsync(new ClubProfileDTO());
+
+            _mapper.Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
+                .Returns(new ClubViewModel());
+
+            ClubController Clubcon = CreateClubController;
+
+            var result = await Clubcon.GetAdmins(id);
+
+            _mapper.Verify(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()));
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+
+        [TestCase(2)]
+        public async Task GetAdmins_Invalid_Test(int id)
+        {
+
+            _ClubService.Setup(c => c.GetClubAdminsAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+
+            _mapper.Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
+                .Returns(new ClubViewModel());
+
+            ClubController Clubcon = CreateClubController;
+
+            var result = await Clubcon.GetAdmins(id);
+
+
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+
+        [TestCase(2)]
+        public async Task GetDocuments_Valid_Test(int id)
+        {
+
+            _ClubService.Setup(c => c.GetClubDocumentsAsync(It.IsAny<int>()))
+                .ReturnsAsync(new ClubProfileDTO());
+
+            _mapper.Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
+                .Returns(new ClubViewModel());
+
+            ClubController Clubcon = CreateClubController;
+
+            var result = await Clubcon.GetDocuments(id);
+
+
+            _mapper.Verify(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()));
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+
+        [Test]
+        public async Task GetDocumentsInvalidCheck()
+        {
+
+            _ClubService.Setup(c => c.GetClubDocumentsAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+
+            _mapper.Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
+                .Returns(new ClubViewModel());
+
+            ClubController Clubcon = CreateClubController;
+
+            var result = await Clubcon.GetDocuments(GetFakeID());
+
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+
+        [Test]
+        public async Task Details_Valid_Test()
+        {
+            _ClubService.Setup(c => c.GetByIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(new ClubDTO());
 
-            //Act
-            var result = await _clubController.GetClubDescription(It.IsAny<int>());
-            var resultValue = (result as OkObjectResult).Value as ClubDTO;
+            _mapper.Setup(m => m.Map<ClubDTO, ClubViewModel>(It.IsAny<ClubDTO>()))
+                .Returns(new ClubViewModel());
 
-            //Assert
-            _clubService.Verify();
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<ClubDTO>(resultValue);
-        }
+            ClubController Clubcon = CreateClubController;
 
-        [Test]
-        public async Task GetPartOfClubs_ReturnsOkObjectResult()
-        {
-            //Arrange
-            var listOfClubs = new List<ClubDTO>()
-            {
-                new ClubDTO()
-                {
-                    Logo = null,
-                }
-            };
+            var result = await Clubcon.Details(GetFakeID());
 
-            _clubService
-                .Setup(x => x.GetPartOfClubsAsync(It.IsAny<int>(), It.IsAny<int>()))
-                .ReturnsAsync(listOfClubs);
-
-            //Act
-            var result = await _clubController.GetPartOfClubs(It.IsAny<int>(), It.IsAny<int>());
-
-            //Assert
+            Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
+
         [Test]
-        public async Task GetPartOfClubs_LogoNameString_LogoNameStringIsSet()
+        public async Task Details_Invalid_Test()
         {
-            //Arrange
-            var logoName = "SomeLogoInBase64";
+            _ClubService.Setup(c => c.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
 
-            var listOfClubs = new List<ClubDTO>()
-            {
-                new ClubDTO()
-                {
-                    Logo = null,
-                }
-            };
+            _mapper.Setup(m => m.Map<ClubDTO, ClubViewModel>(It.IsAny<ClubDTO>()))
+                .Returns(new ClubViewModel());
 
-            var expected = logoName;
+            ClubController Clubcon = CreateClubController;
 
-            _clubService
-                .Setup(x => x.GetPartOfClubsAsync(It.IsAny<int>(), It.IsAny<int>()))
-                .ReturnsAsync(listOfClubs);
-            _clubService
-                .Setup(x => x.GetImageBase64Async(It.IsAny<string>()))
-                .ReturnsAsync(logoName);
+            var result = await Clubcon.Details(GetFakeID());
 
-            //Act
-            var result = await _clubController.GetPartOfClubs(It.IsAny<int>(), It.IsAny<int>());
-            var actual = ((result as ObjectResult).Value as List<ClubDTO>).First();
-
-            //Assert
-            Assert.NotNull(actual);
-            Assert.AreEqual(expected, actual.Logo);
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
-        [Test]
-        public async Task GetClubsCount_ReturnsOkObjectResult()
+
+        [TestCase("logoName")]
+        public async Task GetPhotoBase64_Valid_Test(string logoName)
         {
-            //Arrange
-            _clubService
-                .Setup(x => x.GetClubsCountAsync())
-                .ReturnsAsync(It.IsAny<int>());
+            _ClubService.Setup(c => c.GetLogoBase64(It.IsAny<string>()))
+                .ReturnsAsync(new string("some string"));
 
-            //Act
-            var result = await _clubController.GetClubsCount();
+            ClubController Clubcon = CreateClubController;
 
-            //Assert
+            var result = await Clubcon.GetPhotoBase64(logoName);
+
+            Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
         [Test]
-        public async Task Edit_ReturnsOkObjectResult()
+        public async Task Create_Valid_Test()
         {
-            //Arrange
-            var isValid = true;
-            var isClubNameNotChanged = true;
+            ClubViewModel TestVM = new ClubViewModel();
 
-            var expectedValue = "Updated";
-            _mapper
-                .Setup(m => m.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
+            _ClubService.Setup(c => c.CreateAsync(It.IsAny<ClubDTO>()))
+                .ReturnsAsync(new int());
+
+            _mapper.Setup(m => m.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
                 .Returns(new ClubDTO());
-            _clubService
-                .Setup(x => x.UpdateAsync(It.IsAny<ClubDTO>()))
-                .ReturnsAsync(It.IsAny<ClubDTO>);
-            _clubService
-                .Setup(x => x.ValidateAsync(It.IsAny<ClubDTO>()))
-                .ReturnsAsync(isValid);
-            _clubService
-                .Setup(x => x.VerifyClubNameIsNotChangedAsync(It.IsAny<ClubDTO>()))
-                .ReturnsAsync(isClubNameNotChanged);
 
-            //Act
-            var result = await _clubController.Edit(It.IsAny<ClubViewModel>());
-            var resultValue = (result as OkObjectResult).Value;
+            _logger.Setup(l => l.LogInformation(It.IsAny<string>()));
 
-            //Assert
-            _mapper.Verify();
-            _clubService.Verify();
-            Assert.IsNotNull(result);
+            ClubController Clubcon = CreateClubController;
+
+            var result = await Clubcon.Create(TestVM);
+
+            Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(resultValue);
-            Assert.AreEqual(expectedValue, resultValue);
         }
 
+
+
         [Test]
-        public async Task Edit_ValidationFailed_ReturnsStatus422UnprocessableEntity()
+        public async Task Create_InvalidModelState_Valid_Test()
         {
-            //Arrange
-            var isValid = false;
+            ClubViewModel TestVM = new ClubViewModel();
 
-            var isClubNameNotChanged = false;
+            _ClubService.Setup(c => c.CreateAsync(It.IsAny<ClubDTO>()))
+                .ReturnsAsync(new int());
 
-            _mapper
-                .Setup(m => m.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
+            _mapper.Setup(m => m.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
                 .Returns(new ClubDTO());
-            _clubService
-                .Setup(x => x.ValidateAsync(It.IsAny<ClubDTO>()))
-                .ReturnsAsync(isValid);
-            _clubService
-                .Setup(x => x.VerifyClubNameIsNotChangedAsync(It.IsAny<ClubDTO>()))
-                .ReturnsAsync(isClubNameNotChanged);
 
-            var expected = StatusCodes.Status422UnprocessableEntity;
+            _logger.Setup(l => l.LogInformation(It.IsAny<string>()));
 
-            //Act
-            var result = await _clubController.Edit(It.IsAny<ClubViewModel>());
-            var actual = (result as StatusCodeResult).StatusCode;
+            ClubController Clubcon = CreateClubController;
+            Clubcon.ModelState.AddModelError("NameError", "Required");
 
-            //Assert
-            _mapper.Verify();
-            _clubService.Verify();
-            Assert.AreEqual(expected, actual);
+            var result = await Clubcon.Create(TestVM);
+
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
 
-        [Test]
-        public async Task Create_ReturnsOkObjectResult()
-        {
-            //Arrange
-            var isValid = true;
 
-            _mapper
-                .Setup(m => m.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
+
+        [Test]
+        public async Task Edit_InvalidModelState_Valid_Test()
+        {
+            ClubViewModel TestVM = new ClubViewModel();
+
+            _ClubService.Setup(c => c.EditAsync(It.IsAny<ClubDTO>()));
+
+            _mapper.Setup(m => m.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
                 .Returns(new ClubDTO());
-            _clubService
-                .Setup(x => x.CreateAsync(It.IsAny<ClubDTO>()))
-                .ReturnsAsync(new ClubDTO());
-            _clubService
-                .Setup(x => x.ValidateAsync(It.IsAny<ClubDTO>()))
-                .ReturnsAsync(isValid);
 
-            //Act
-            var result = await _clubController.Create(It.IsAny<ClubViewModel>());
-            var resultValue = (result as OkObjectResult).Value;
+            _logger.Setup(l => l.LogInformation(It.IsAny<string>()));
 
-            //Assert
-            _mapper.Verify();
-            _clubService.Verify();
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<ClubDTO>(resultValue);
+            ClubController Clubcon = CreateClubController;
+            Clubcon.ModelState.AddModelError("NameError", "Required");
+
+
+            var result = await Clubcon.Edit(TestVM);
+
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
 
-        [Test]
-        public async Task Create_ValidationFailed_ReturnsStatus422UnprocessableEntity()
-        {
-            //Arrange
-            var isValid = false;
 
-            _mapper
-                .Setup(m => m.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
+
+        [Test]
+        public async Task Edit_Valid_Test()
+        {
+            ClubViewModel TestVM = new ClubViewModel();
+
+            _ClubService.Setup(c => c.EditAsync(It.IsAny<ClubDTO>()));
+
+            _mapper.Setup(m => m.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
                 .Returns(new ClubDTO());
-            _clubService
-                .Setup(x => x.ValidateAsync(It.IsAny<ClubDTO>()))
-                .ReturnsAsync(isValid);
 
-            var expected = StatusCodes.Status422UnprocessableEntity;
+            _logger.Setup(l => l.LogInformation(It.IsAny<string>()));
 
-            //Act
-            var result = await _clubController.Create(It.IsAny<ClubViewModel>());
-            var actual = (result as StatusCodeResult).StatusCode;
+            ClubController Clubcon = CreateClubController;
 
-            //Assert
-            _mapper.Verify();
-            _clubService.Verify();
-            Assert.AreEqual(expected, actual);
+            var result = await Clubcon.Edit(TestVM);
+
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
         }
 
-        [Test]
-        public async Task GetClubAdministrator_ReturnsOkObjectResult()
-        {
-            //Arrange
-            var clubId = GetClubId();
-            var httpContext = new Mock<HttpContext>();
-            httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
-                .Returns(true);
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            _clubController.ControllerContext = context;
-            _mapper
-                .Setup(m => m.Map<ClubProfileDTO, ClubProfileViewModel>(It.IsAny<ClubProfileDTO>()))
-                .Returns(new ClubProfileViewModel() { Club = new ClubViewModel() });
-            _clubAdministrationService
-                .Setup(x => x.GetClubAdministrationByIdAsync(clubId))
-                .ReturnsAsync(new ClubProfileDTO());
 
-            //Act
-            var result = await _clubController.GetClubAdministration(clubId);
-            var resultValue = (result as OkObjectResult).Value;
-
-            //Assert
-            _mapper.Verify();
-            _clubAdministrationService.Verify();
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<ClubProfileViewModel>(resultValue);
-        }
 
         [Test]
-        public async Task DeleteAdministration_ReturnsOkObjectResult()
+        public async Task AddFollower_Valid_Test()
         {
-            //Arrange
-            var adminId = GetClubId();
-            var expectedValue = $"Club Administrator with id={adminId} deleted.";
-            _clubAdministrationService
-                .Setup(x => x.DeleteClubAdminAsync(adminId))
-                .ReturnsAsync(true);
-
-            //Act
-            var result = await _clubController.DeleteAdministration(adminId);
-            var resultValue = (result as OkObjectResult).Value;
-
-            //Assert
-            _clubAdministrationService.Verify();
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(resultValue);
-            Assert.AreEqual(expectedValue, resultValue);
-        }
-
-        [Test]
-        public async Task ChangeApproveStatus_ReturnsOkObjectResult()
-        {
-            //Arrange
-            var memberId = GetClubId();
-            var clubId = GetClubId();
-            _mapper
-                .Setup(m => m.Map<ClubMembersDTO, ClubMembersViewModel>(It.IsAny<ClubMembersDTO>()))
-                .Returns(new ClubMembersViewModel());
-            _clubMembersService
-                .Setup(x => x.ToggleIsApprovedInClubMembersAsync(memberId, clubId))
+            _ClubMembersService.Setup(c => c.AddFollowerAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(new ClubMembersDTO());
 
-            //Act
-            var result = await _clubController.ChangeApproveStatus(clubId, memberId);
-            var resultValue = (result as OkObjectResult).Value;
+            _logger.Setup(l => l.LogInformation(It.IsAny<string>()));
 
-            //Assert
-            _mapper.Verify();
-            _clubMembersService.Verify();
-            Assert.IsNotNull(result);
+            ClubController Clubcon = CreateClubController;
+
+            var result = await Clubcon.AddFollower(GetFakeID());
+
+            Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<ClubMembersViewModel>(resultValue);
+        }
+
+
+        [Test]
+        public async Task Remove_Valid_Test()
+        {
+
+            _ClubService.Setup(c => c.RemoveAsync(It.IsAny<int>()));
+
+            ClubController Clubcon = CreateClubController;
+
+            var result = await Clubcon.Remove(GetFakeID());
+
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
+        }
+
+
+
+        [Test]
+        public async Task RemoveFollower_Valid_Test()
+        {
+            _ClubMembersService.Setup(c => c.RemoveFollowerAsync(It.IsAny<int>()));
+
+            _logger.Setup(l => l.LogInformation(It.IsAny<string>()));
+
+            ClubController Clubcon = CreateClubController;
+
+            var result = await Clubcon.RemoveFollower(GetFakeID());
+
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
         }
 
         [Test]
-        public async Task SetClubAdministratorEndDate_ReturnsOkObjectResult()
+        public async Task ChangeApproveStatus_Valid_Test()
         {
-            //Arrange
-            _clubAdministrationService
-                .Setup(x => x.SetAdminEndDateAsync(It.IsAny<int>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(new ClubAdministrationDTO());
-
-            //Act
-            var result = await _clubController.SetClubAdministratorEndDate(It.IsAny<int>(), It.IsAny<DateTime>());
-            var resultValue = (result as OkObjectResult).Value;
-
-            //Assert
-            _clubAdministrationService.Verify();
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<ClubAdministrationDTO>(resultValue);
-        }
-
-        [Test]
-        public async Task AddAdmin_ReturnsOkObjectResult()
-        {
-            //Arrange
-            var clubId = GetClubId();
-            _clubService
-                .Setup(x => x.GetClubInfoByIdAsync(clubId))
-                .ReturnsAsync(new ClubDTO());
-            _mapper
-                .Setup(m => m.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(
-                    It.IsAny<ClubAdministrationViewModel>()))
-                .Returns(new ClubAdministrationDTO() { ClubId = clubId });
-            _mapper
-               .Setup(m => m.Map<ClubAdministrationDTO, ClubAdministrationViewModel>(
-                   It.IsAny<ClubAdministrationDTO>()))
-               .Returns(new ClubAdministrationViewModel());
-            _clubAdministrationService
-                .Setup(x => x.AddClubAdminAsync(It.IsAny<ClubAdministrationDTO>()))
-                .ReturnsAsync(new ClubAdministrationDTO());
-
-            //Act
-            var result = await _clubController.AddAdmin(clubId, It.IsAny<ClubAdministrationViewModel>());
-            var resultValue = (result as OkObjectResult).Value;
-
-            //Assert
-            _clubService.Verify();
-            _mapper.Verify();
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<ClubAdministrationViewModel>(resultValue);
-
-        }
-
-        [Test]
-        public async Task AddFollower_ReturnsOkObjectResult()
-        {
-            //Arrange
-            var clubId = GetClubId();
-            var httpContext = new Mock<HttpContext>();
-            httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
-                .Returns(true);
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            _clubController.ControllerContext = context;
-            _userManagerService
-                .Setup(x => x.GetUserIdAsync(httpContext.Object.User))
-                .ReturnsAsync(It.IsAny<string>());
-            _mapper
-                .Setup(m => m.Map<ClubMembersDTO, ClubMembersViewModel>(It.IsAny<ClubMembersDTO>()))
-                .Returns(new ClubMembersViewModel());
-            _clubMembersService
-                .Setup(x => x.AddFollowerAsync(clubId, It.IsAny<string>()))
+            _ClubMembersService.Setup(c => c.ToggleApproveStatusAsync(It.IsAny<int>()))
                 .ReturnsAsync(new ClubMembersDTO());
 
-            //Act
-            var result = await _clubController.AddFollower(clubId, It.IsAny<string>());
-            var resultValue = (result as OkObjectResult).Value;
+            _logger.Setup(l => l.LogInformation(It.IsAny<string>()));
 
-            //Assert
-            _mapper.Verify();
-            _userManagerService.Verify();
-            _clubMembersService.Verify();
-            Assert.IsNotNull(result);
+            ClubController Clubcon = CreateClubController;
+
+            var result = await Clubcon.ChangeApproveStatus(GetFakeID());
+
+            Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<ClubMembersViewModel>(resultValue);
         }
 
-        //Fakes
-        private int GetClubId()
+        [Test]
+        public async Task EditAdmin_Valid_Test()
         {
-            int clubId = 2;
-            return clubId;
+            ClubAdministrationViewModel admin = new ClubAdministrationViewModel();
+
+            _mapper.Setup(m => m.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(It.IsAny<ClubAdministrationViewModel>()))
+                .Returns(new ClubAdministrationDTO());
+
+            _ClubAdministrationService.Setup(c => c.EditAdministratorAsync(It.IsAny<ClubAdministrationDTO>()));
+
+            _logger.Setup(l => l.LogInformation(It.IsAny<string>()));
+
+            ClubController Clubcon = CreateClubController;
+
+            var result = await Clubcon.EditAdmin(admin);
+
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
         }
+
+        [Test]
+        public async Task RemoveAdmin_Valid_Test()
+        {
+
+
+            _mapper.Setup(m => m.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(It.IsAny<ClubAdministrationViewModel>()))
+                .Returns(new ClubAdministrationDTO());
+
+            _ClubAdministrationService.Setup(c => c.RemoveAdministratorAsync(It.IsAny<int>()));
+
+            _logger.Setup(l => l.LogInformation(It.IsAny<string>()));
+
+            ClubController Clubcon = CreateClubController;
+
+            var result = await Clubcon.RemoveAdmin(GetFakeID());
+
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
+        }
+
+
+        [Test]
+        public async Task GetClubThatUserHasAccessTo_Valid_Test()
+        {
+
+            _ClubAccessService.Setup(c => c.GetClubsAsync(It.IsAny<ClaimsPrincipal>()));
+
+            ClubController Clubcon = CreateClubController;
+
+            var result = await Clubcon.GetClubsThatUserHasAccessTo();
+
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+
+
+        private int GetFakeID()
+        {
+            return 1;
+        }
+
+
     }
 }

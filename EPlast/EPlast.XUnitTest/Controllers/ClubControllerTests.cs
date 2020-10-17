@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -21,298 +22,367 @@ namespace EPlast.XUnitTest.Controllers
 {
     public class ClubControllerTests
     {
+        private readonly Mock<IClubService> _ClubService;
+        private readonly Mock<IClubMembersService> _ClubMembersService;
         private readonly Mock<IMapper> _mapper;
-        private readonly Mock<IClubService> _clubService;
-        private readonly Mock<IClubMembersService> _clubMembersService;
-        private readonly Mock<IClubAdministrationService> _clubAdministrationService;
-        private readonly Mock<IUserManagerService> _userManagerService;
-        private readonly ClubController controller;
+        private readonly Mock<ILoggerService<ClubController>> _logger;
+
+        private ClubController CreateClubController => new ClubController(_logger.Object,
+            _ClubService.Object,
+            _ClubMembersService.Object,
+            _mapper.Object);
 
         public ClubControllerTests()
         {
+            _ClubService = new Mock<IClubService>();
+            _ClubMembersService = new Mock<IClubMembersService>();
             _mapper = new Mock<IMapper>();
-            var loggerService = new Mock<ILoggerService<ClubController>>();
-            _clubService = new Mock<IClubService>();
-            _clubMembersService = new Mock<IClubMembersService>();
-            _clubAdministrationService = new Mock<IClubAdministrationService>();
-
-            var user = new UserDTO();
-            _userManagerService = new Mock<IUserManagerService>();
-            _userManagerService.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(user);
-            _userManagerService.Setup(x => x.GetRolesAsync(It.IsAny<UserDTO>())).ReturnsAsync(new List<string>());
-            _userManagerService.Setup(x => x.GetUserIdAsync(It.IsAny<ClaimsPrincipal>()))
-                .ReturnsAsync(It.IsAny<string>());
-
-            controller = new ClubController(_clubService.Object,
-                _clubAdministrationService.Object,
-                _clubMembersService.Object,
-                _mapper.Object,
-                loggerService.Object,
-                _userManagerService.Object);
-
-            var context = new Mock<HttpContext>();
-            var identity = new GenericIdentity("username");
-            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, "1"));
-            var principal = new GenericPrincipal(identity, new[] { "user" });
-            context.Setup(s => s.User).Returns(principal);
-            controller.ControllerContext.HttpContext = context.Object;
+            _logger = new Mock<ILoggerService<ClubController>>();
         }
 
         [Fact]
-        public async Task Index_ReturnsAViewResult_WithAListOfClubs()
+        public async Task IndexTest()
         {
-            //arrange
-            _clubService.Setup(c => c.GetAllClubsAsync())
+            // Arrange
+            _ClubService.Setup(c => c.GetAllDTOAsync(null))
                 .ReturnsAsync(new List<ClubDTO>());
-            _mapper.Setup(
-                    m => m.Map<IEnumerable<ClubDTO>, IEnumerable<ClubViewModel>>(It.IsAny<IEnumerable<ClubDTO>>()))
+            _mapper.Setup(m => m.Map<IEnumerable<ClubDTO>, IEnumerable<ClubViewModel>>(It.IsAny<IEnumerable<ClubDTO>>()))
                 .Returns(() => new List<ClubViewModel>());
+            ClubController ClubController = CreateClubController;
 
-            //action
-            var result = await controller.Index();
+            // Act
+            var result = await ClubController.Index();
 
-            //assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.IsAssignableFrom<List<ClubViewModel>>(viewResult.Model);
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsType<ViewResult>(result);
         }
 
         [Fact]
-        public async Task Club_FindByID_ReturnsAView()
+        public async Task ClubProfileTests()
         {
-            _clubService.Setup(c => c.GetClubProfileAsync(It.IsAny<int>()))
-                .ReturnsAsync(() => new ClubProfileDTO { Club = new ClubDTO() });
+            // Arrange
+            _ClubService.Setup(c => c.GetClubProfileAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => new ClubProfileDTO());
             _mapper.Setup(c => c.Map<ClubProfileDTO, ClubProfileViewModel>(It.IsAny<ClubProfileDTO>()))
                 .Returns(new ClubProfileViewModel());
+            ClubController ClubController = CreateClubController;
 
-            //action
-            var result = await controller.Club(It.IsAny<int>());
+            // Act
+            var result = await ClubController.ClubProfile(FakeId);
 
-            //assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.IsAssignableFrom<ClubProfileViewModel>(viewResult.Model);
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsType<ViewResult>(result);
         }
 
         [Fact]
-        public async Task Club_InvalidID_ReturnsHandleError()
+        public async Task ClubProfileInvalidIdTests()
         {
-            //arrange
-            _clubService.Setup(c => c.GetClubProfileAsync(It.IsAny<int>()))
+            // Arrange
+            _ClubService.Setup(c => c.GetClubProfileAsync(It.IsAny<int>()))
                 .ReturnsAsync(() => null);
+            ClubController ClubController = CreateClubController;
 
-            //action
-            var result = await controller.Club(It.IsAny<int>());
+            // Act
+            var result = await ClubController.ClubProfile(FakeId);
 
-            //assert
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsType<RedirectToActionResult>(result);
+        }
+
+        [Fact]
+        public async Task ClubProfileExceptionTests()
+        {
+            // Arrange
+            _ClubService.Setup(c => c.GetClubProfileAsync(It.IsAny<int>()))
+                .ThrowsAsync(new ArgumentException("some message"));
+            ClubController ClubController = CreateClubController;
+
+            // Act
+            var result = await ClubController.ClubProfile(FakeId);
+
+            // Assert
+            Assert.NotNull(result);
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
             Assert.Equal("HandleError", viewResult.ActionName);
             Assert.Equal("Error", viewResult.ControllerName);
         }
 
         [Fact]
-        public async Task ClubAdminsReturnsView()
+        public async Task ClubMembersCorrectTest()
         {
-            //Arrange
-            _mapper
-                .Setup(s => s.Map<ClubProfileDTO>(It.IsAny<ClubProfileViewModel>()))
+            // Arrange
+            _mapper.Setup(c => c.Map<ClubProfileDTO, ClubProfileViewModel>(It.IsAny<ClubProfileDTO>()))
+                .Returns(() => new ClubProfileViewModel());
+            _ClubService.Setup(c => c.GetClubMembersAsync(It.IsAny<int>()))
+                .ReturnsAsync(new ClubProfileDTO());
+            ClubController ClubController = CreateClubController;
+
+            // Act
+            var result = await ClubController.ClubMembers(FakeId);
+
+            // Assert
+            Assert.IsType<ViewResult>(result);
+        }
+
+        [Fact]
+        public async Task ClubMembersInvalidIdTest()
+        {
+            // Arrange
+            _mapper.Setup(c => c.Map<ClubProfileDTO, ClubProfileViewModel>(It.IsAny<ClubProfileDTO>()))
+                .Returns(() => new ClubProfileViewModel());
+            _ClubService.Setup(c => c.GetClubMembersAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            ClubController ClubController = CreateClubController;
+
+            // Act
+            var result = await ClubController.ClubMembers(FakeId);
+
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task ClubMembersExceptionTest()
+        {
+            // Arrange
+            _ClubService.Setup(c => c.GetClubMembersAsync(It.IsAny<int>()))
+                .ThrowsAsync(new ArgumentException("some message"));
+            ClubController ClubController = CreateClubController;
+
+            // Act
+            var result = await ClubController.ClubMembers(FakeId);
+
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task ClubFollowersCorrectTest()
+        {
+            // Arrange
+            _mapper.Setup(c => c.Map<ClubProfileDTO, ClubProfileViewModel>(It.IsAny<ClubProfileDTO>()))
+                .Returns(() => new ClubProfileViewModel());
+            _ClubService.Setup(c => c.GetClubFollowersAsync(It.IsAny<int>()))
+                .ReturnsAsync(new ClubProfileDTO());
+            ClubController ClubController = CreateClubController;
+
+            // Act
+            var result = await ClubController.ClubFollowers(FakeId);
+
+            // Assert
+            Assert.IsType<ViewResult>(result);
+        }
+
+        [Fact]
+        public async Task ClubFollowersInvalidIdTest()
+        {
+            // Arrange
+            _ClubService.Setup(c => c.GetClubFollowersAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            ClubController ClubController = CreateClubController;
+
+            // Act
+            var result = await ClubController.ClubFollowers(FakeId);
+
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task ClubFollowersExceptionTest()
+        {
+            // Arrange
+            _ClubService.Setup(c => c.GetClubFollowersAsync(It.IsAny<int>()))
+                .ThrowsAsync(new ArgumentException("some message"));
+            ClubController ClubController = CreateClubController;
+
+            // Act
+            var result = await ClubController.ClubFollowers(FakeId);
+
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task ClubAdminsCorrectTest()
+        {
+            // Arrange
+            _mapper.Setup(c => c.Map<ClubProfileDTO, ClubProfileViewModel>(It.IsAny<ClubProfileDTO>()))
+                .Returns(() => new ClubProfileViewModel());
+            _ClubService.Setup(c => c.GetClubAdminsAsync(It.IsAny<int>()))
+                .ReturnsAsync(new ClubProfileDTO());
+            ClubController ClubController = CreateClubController;
+
+            // Act
+            var result = await ClubController.ClubAdmins(FakeId);
+
+            // Assert
+            Assert.IsType<ViewResult>(result);
+        }
+
+        [Fact]
+        public async Task ClubAdminsInvalidIdTest()
+        {
+            // Arrange
+            _ClubService.Setup(c => c.GetClubAdminsAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            ClubController ClubController = CreateClubController;
+
+            // Act
+            var result = await ClubController.ClubAdmins(FakeId);
+
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task ClubAdminsExceptionTest()
+        {
+            // Arrange
+            _ClubService.Setup(c => c.GetClubAdminsAsync(It.IsAny<int>()))
+                .ThrowsAsync(new ArgumentException("some message"));
+            ClubController ClubController = CreateClubController;
+
+            // Act
+            var result = await ClubController.ClubAdmins(FakeId);
+
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task EditGetCorrectTest()
+        {
+            // Arrange
+            _mapper.Setup(c => c.Map<ClubProfileDTO, ClubProfileViewModel>(It.IsAny<ClubProfileDTO>()))
+                .Returns(() => new ClubProfileViewModel());
+            _ClubService.Setup(c => c.EditAsync(It.IsAny<int>()))
+                .ReturnsAsync(new ClubProfileDTO());
+            ClubController ClubController = CreateClubController;
+
+            // Act
+            var result = await ClubController.Edit(FakeId);
+
+            // Assert
+            Assert.IsType<ViewResult>(result);
+        }
+
+        [Fact]
+        public async Task EditGetInvalidIdTest()
+        {
+            // Arrange
+            _ClubService.Setup(c => c.EditAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            ClubController ClubController = CreateClubController;
+
+            // Act
+            var result = await ClubController.Edit(FakeId);
+
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task EditGetExceptionTest()
+        {
+            // Arrange
+            _ClubService.Setup(c => c.EditAsync(It.IsAny<int>()))
+                .ThrowsAsync(new ArgumentException("some message"));
+            ClubController ClubController = CreateClubController;
+
+            // Act
+            var result = await ClubController.Edit(1);
+
+            // Asser
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task EditWithValidModelStateTest()
+        {
+            // Arrange
+            ClubProfileViewModel model = CreateFakeClubProfileViewModels(1).First();
+            IFormFile file = new FormFile(null, 1234, 1134, "fdd", "dfsdf");
+            _mapper.Setup(m => m.Map<ClubProfileViewModel, ClubProfileDTO>(It.IsAny<ClubProfileViewModel>()))
                 .Returns(new ClubProfileDTO());
-
-            //Act
-            var result = await controller.ClubAdmins(It.IsAny<int>());
-
-            //Assert
-            Assert.NotNull(result);
-        }
-
-        [Fact]
-        public async Task ClubAdminsReturnsHandleError()
-        {
-            //Arrange
-            _mapper
-                .Setup(s => s.Map<ClubProfileDTO>(It.IsAny<ClubProfileViewModel>()))
-                .Returns((ClubProfileDTO)null);
-
-            //Act
-            var result = await controller.ClubAdmins(1);
-
-            //Assert
-            Assert.NotNull(result);
-        }
-
-        [Fact]
-        public async Task ClubMembers_Correct_ReturnsAView()
-        {
-            //Arrange
-            _clubService.Setup(c => c.GetClubMembersOrFollowersAsync(It.IsAny<int>(), true))
-                .ReturnsAsync(() => new ClubProfileDTO());
-            _mapper.Setup(c => c.Map<ClubProfileDTO, ClubProfileViewModel>(It.IsAny<ClubProfileDTO>()))
-                .Returns(new ClubProfileViewModel());
-
-            //Act
-            var result = await controller.ClubMembers(It.IsAny<int>());
-
-            //Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.IsAssignableFrom<ClubProfileViewModel>(viewResult.Model);
-        }
-
-        [Fact]
-        public async Task ClubMembers_InvalidID_ReturnsHandleError()
-        {
-            //Arrange
-            _clubService.Setup(c => c.GetClubMembersOrFollowersAsync(It.IsAny<int>(), true))
-                .ReturnsAsync(() => null);
-            _mapper.Setup(c => c.Map<ClubProfileDTO, ClubProfileViewModel>(null))
-                .Returns((ClubProfileViewModel)null);
-
-            //Act
-            var result = await controller.ClubMembers(It.IsAny<int>());
-
-            //Assert
-            var viewResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.NotNull(viewResult);
-            Assert.Equal("HandleError", viewResult.ActionName);
-            Assert.Equal("Error", viewResult.ControllerName);
-        }
-
-        [Fact]
-        public async Task ClubFollowers_Correct_ReturnsAView()
-        {
-            //Arrange
-            _clubService.Setup(c => c.GetClubMembersOrFollowersAsync(It.IsAny<int>(), false))
-                .ReturnsAsync(() => new ClubProfileDTO());
-            _mapper.Setup(c => c.Map<ClubProfileDTO, ClubProfileViewModel>(It.IsAny<ClubProfileDTO>()))
-                .Returns(new ClubProfileViewModel());
-
-            //Act
-            var result = await controller.ClubFollowers(It.IsAny<int>());
-
-            //Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.IsAssignableFrom<ClubProfileViewModel>(viewResult.Model);
-        }
-
-        [Fact]
-        public async Task ClubFollowers_InvalidID_ReturnsHandleError()
-        {
-            //Arrange
-            _clubService.Setup(c => c.GetClubMembersOrFollowersAsync(It.IsAny<int>(), false))
-                .ReturnsAsync(() => null);
-            _mapper.Setup(c => c.Map<ClubProfileDTO, ClubProfileViewModel>(null))
-                .Returns((ClubProfileViewModel)null);
-
-            //Act
-            var result = await controller.ClubFollowers(It.IsAny<int>());
-
-            //Assert
-            var viewResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.NotNull(viewResult);
-            Assert.Equal("HandleError", viewResult.ActionName);
-            Assert.Equal("Error", viewResult.ControllerName);
-        }
-
-        [Fact]
-        public async Task ClubDescription_Correct_ReturnsAView()
-        {
-            //Arrange
-            _clubService.Setup(c => c.GetClubInfoByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(() => new ClubDTO());
-            _mapper.Setup(c => c.Map<ClubDTO, ClubViewModel>(It.IsAny<ClubDTO>()))
-                .Returns(new ClubViewModel());
-
-            //Act
-            var result = await controller.ClubDescription(It.IsAny<int>());
-
-            //Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.IsAssignableFrom<ClubViewModel>(viewResult.Model);
-        }
-
-        [Fact]
-        public async Task ClubDescription_InvalidID_ReturnsHandleError()
-        {
-            //Arrange
-            _clubService.Setup(c => c.GetClubInfoByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(() => null);
-            _mapper.Setup(c => c.Map<ClubDTO, ClubViewModel>(null))
-                .Returns((ClubViewModel)null);
-
-            //Act
-            var result = await controller.ClubDescription(It.IsAny<int>());
-
-            //Assert
-            var viewResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.NotNull(viewResult);
-            Assert.Equal("HandleError", viewResult.ActionName);
-            Assert.Equal("Error", viewResult.ControllerName);
-        }
-
-        [Fact]
-        public async Task EditGet_Correct_ReturnsAView()
-        {
-            //Arrange
-            _clubService.Setup(c => c.GetClubInfoByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(() => new ClubDTO());
-            _mapper.Setup(c => c.Map<ClubDTO, ClubViewModel>(It.IsAny<ClubDTO>()))
-                .Returns(new ClubViewModel());
-
-            //Act
-            var result = await controller.EditClub(It.IsAny<int>());
-
-            //Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.IsAssignableFrom<ClubViewModel>(viewResult.Model);
-        }
-
-        [Fact]
-        public async Task EditGet_InvalidID_ReturnsHandleError()
-        {
-            //Arrange
-            _clubService.Setup(c => c.GetClubInfoByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(() => null);
-            _mapper.Setup(c => c.Map<ClubDTO, ClubViewModel>(null))
-                .Returns((ClubViewModel)null);
-
-            //Act
-            var result = await controller.EditClub(It.IsAny<int>());
-
-            //Assert
-            var viewResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.NotNull(viewResult);
-            Assert.Equal("HandleError", viewResult.ActionName);
-            Assert.Equal("Error", viewResult.ControllerName);
-        }
-
-        [Fact]
-        public async Task EditPost_Correct_ReturnsAView()
-        {
-            //Arrange
-            _clubService.Setup(c => c.UpdateAsync(It.IsAny<ClubDTO>()))
+            _ClubService.Setup(c => c.EditAsync(It.IsAny<ClubProfileDTO>(), It.IsAny<IFormFile>()))
                 .Verifiable();
-            _mapper.Setup(c => c.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
-                .Returns(new ClubDTO());
+            ClubController ClubController = CreateClubController;
 
-            //Act
-            var result = await controller.EditClub(new ClubViewModel());
+            // Act
+            var result = await ClubController.Edit(model, file);
 
-            //Assert
+            // Assert
             Assert.NotNull(result);
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Club", viewResult.ActionName);
+            Assert.Equal("ClubProfile", viewResult.ActionName);
+            Assert.Equal("Club", viewResult.ControllerName);
         }
 
         [Fact]
-        public async Task EditPost_InvalidModel_ReturnsHandleError()
+        public async Task EditWithInvalidModelStateTest()
         {
-            //Arrange
-            _clubService.Setup(c => c.UpdateAsync(It.IsAny<ClubDTO>()))
+            // Arrange
+            ClubProfileViewModel model = CreateFakeClubProfileViewModels(1).First();
+            IFormFile file = new FormFile(null, 1234, 1134, "fdd", "dfsdf");
+            _mapper.Setup(m => m.Map<ClubProfileViewModel, ClubProfileDTO>(It.IsAny<ClubProfileViewModel>()))
+                .Returns(new ClubProfileDTO());
+            _ClubService.Setup(c => c.EditAsync(It.IsAny<ClubProfileDTO>(), It.IsAny<IFormFile>()))
                 .Verifiable();
-            _mapper.Setup(c => c.Map<ClubViewModel, ClubDTO>(null))
-                .Returns((ClubDTO)null);
+            ClubController ClubController = CreateClubController;
+            ClubController.ModelState.AddModelError("NameError", "Required");
 
-            //Act
-            var result = await controller.EditClub(It.IsAny<ClubViewModel>());
+            // Act
+            var result = await ClubController.Edit(model, file);
 
-            //Assert
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsType<ViewResult>(result);
+        }
+
+        [Fact]
+        public async Task EditWithExceptionTest()
+        {
+            // Arrange
+            ClubProfileViewModel model = CreateFakeClubProfileViewModels(1).First();
+            model.Club = null;
+            IFormFile file = new FormFile(null, 1234, 1134, "fdd", "dfsdf");
+            _ClubService.Setup(c => c.EditAsync(It.IsAny<ClubProfileDTO>(), It.IsAny<IFormFile>()))
+                .ThrowsAsync(new ArgumentException("some message"));
+            ClubController ClubController = CreateClubController;
+
+            // Act
+            var result = await ClubController.Edit(model, file);
+
+            // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.NotNull(viewResult);
             Assert.Equal("HandleError", viewResult.ActionName);
@@ -320,213 +390,203 @@ namespace EPlast.XUnitTest.Controllers
         }
 
         [Fact]
-        public async Task ChangeIsApprovedStatusClubReturnClub()
+        public void CreateGetCorrectTest()
         {
-            //Act
-            var result = await controller.ChangeIsApprovedStatusClub(1, 1);
+            // Arrange
+            ClubController ClubController = CreateClubController;
 
-            //Assert
-            var viewResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.NotNull(viewResult);
-            Assert.Equal("Club", viewResult.ActionName);
+            // Act
+            var result = ClubController.Create();
+
+            // Assert
+            Assert.IsType<ViewResult>(result);
         }
 
         [Fact]
-        public async Task ChangeIsApprovedStatusClubReturnHandleError()
+        public async Task ClubDocumentsCorrectTest()
         {
-            //Arrange
-            _clubMembersService
-                .Setup(s => s.ToggleIsApprovedInClubMembersAsync(1, 1))
-                .Throws<ArgumentNullException>();
+            // Arrange
+            _ClubService.Setup(c => c.GetClubDocumentsAsync(It.IsAny<int>()))
+                .ReturnsAsync(new ClubProfileDTO());
+            _mapper.Setup(m => m.Map<ClubProfileDTO, ClubProfileViewModel>(It.IsAny<ClubProfileDTO>()))
+                .Returns(new ClubProfileViewModel());
+            ClubController ClubController = CreateClubController;
 
-            //Act
-            var result = await controller.ChangeIsApprovedStatusClub(1, 1);
+            // Act
+            var result = await ClubController.ClubDocuments(FakeId);
 
-            //Assert
-            var viewResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.NotNull(viewResult);
-            Assert.Equal("HandleError", viewResult.ActionName);
+            // Assert
+            Assert.IsType<ViewResult>(result);
         }
 
         [Fact]
-        public async Task DeleteFromAdminsReturnsClubAdmins()
+        public async Task ClubDocumentsInvalidIdTest()
         {
-            //Arrange
-            _clubAdministrationService
-                .Setup(s => s.DeleteClubAdminAsync(It.IsAny<int>()))
-                .ReturnsAsync(true);
+            // Arrange
+            _ClubService.Setup(c => c.GetClubDocumentsAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            ClubController ClubController = CreateClubController;
 
-            //Act
-            var result = await controller.DeleteFromAdmins(1, 1);
+            // Act
+            var result = await ClubController.ClubDocuments(FakeId);
 
-            //Assert
-            var viewResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.NotNull(viewResult);
-            Assert.Equal("ClubAdmins", viewResult.ActionName);
-        }
-
-        [Fact]
-        public async Task DeleteFromAdminsReturnsHandleError()
-        {
-            //Arrange
-            _clubAdministrationService
-                .Setup(s => s.DeleteClubAdminAsync(It.IsAny<int>()))
-                .ReturnsAsync(false);
-
-            //Act
-            var result = await controller.DeleteFromAdmins(1, 1);
-
-            //Assert
+            // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.NotNull(viewResult);
             Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
         }
 
         [Fact]
-        public async Task AddEndDateReturns1()
+        public async Task ClubDocumentsExceptionTest()
         {
-            //Act
-            var result = await controller.AddEndDate(1, DateTime.Now);
+            // Arrange
+            _ClubService.Setup(c => c.GetClubDocumentsAsync(It.IsAny<int>()))
+                .ThrowsAsync(new ArgumentException("some message"));
+            ClubController ClubController = CreateClubController;
 
-            //Assert
-            Assert.Equal(1, result);
-        }
+            // Act
+            var result = await ClubController.ClubDocuments(FakeId);
 
-        [Fact]
-        public async Task AddEndDateReturns0()
-        {
-            //Arrange
-            _clubAdministrationService
-                .Setup(s => s.SetAdminEndDateAsync(It.IsAny<int>(), It.IsAny<DateTime>()))
-                .Throws<ArgumentNullException>();
-
-            //Act
-            var result = await controller.AddEndDate(It.IsAny<int>(), It.IsAny<DateTime>());
-
-            //Assert
-            Assert.Equal(0, result);
-        }
-
-        [Fact]
-        public async Task AddToClubAdministrationReturnJsonTrue()
-        {
-            //Act
-            var result = await controller.AddToClubAdministration(It.IsAny<int>(), new ClubAdministrationDTO());
-
-            //Assert
-            var jsonResult = Assert.IsType<JsonResult>(result);
-            Assert.Contains("True", jsonResult.Value.ToString());
-        }
-
-        [Fact]
-        public async Task AddToClubAdministrationReturnJsonFalse()
-        {
-            //Arrange
-            _clubAdministrationService
-                .Setup(s => s.AddClubAdminAsync(It.IsAny<ClubAdministrationDTO>()))
-                .Throws<ArgumentNullException>();
-
-            //Act
-            var result = await controller.AddToClubAdministration(It.IsAny<int>(), new ClubAdministrationDTO());
-
-            //Assert
-            var jsonResult = Assert.IsType<JsonResult>(result);
-            Assert.Contains("False", jsonResult.Value.ToString());
-        }
-
-        [Fact]
-        public async Task ChooseAClub_Correct_ReturnsAView()
-        {
-            //Arrange
-            _clubService.Setup(c => c.GetAllClubsAsync())
-                .ReturnsAsync(() => new List<ClubDTO>());
-            _mapper.Setup(
-                    c => c.Map<IEnumerable<ClubDTO>, IEnumerable<ClubViewModel>>(It.IsAny<IEnumerable<ClubDTO>>()))
-                .Returns(new List<ClubViewModel>());
-
-            //Act
-            var result = await controller.ChooseAClub(It.IsAny<string>());
-
-            //Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.IsAssignableFrom<ClubChooseAClubViewModel>(viewResult.Model);
-        }
-
-        [Fact]
-        public async Task AddAsClubFollowerReturnsUserProfile()
-        {
-            //Arrange
-            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-            {
-                new Claim(ClaimTypes.Name, "example name"),
-                new Claim(ClaimTypes.NameIdentifier, "1"),
-                new Claim("custom-claim", "example claim value"),
-            }, "mock"));
-
-            controller.ControllerContext = new ControllerContext()
-            {
-                HttpContext = new DefaultHttpContext() { User = user }
-            };
-
-            _userManagerService
-                .Setup(s => s.GetUserIdAsync(It.IsAny<ClaimsPrincipal>()))
-                .ReturnsAsync("aaaa-bbbb-cccc");
-
-            //Act
-            var result = await controller.AddAsClubFollower(1, "aaaa-bbbb-cccc");
-
-            //Assert
+            // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.NotNull(viewResult);
-            Assert.Equal("UserProfile", viewResult.ActionName);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
         }
 
         [Fact]
-        public void CreateGet_Correct_ReturnsAView()
+        public async Task DetailsCorrectTest()
         {
-            //Act
-            var result = controller.CreateClub();
-
-            //Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.IsAssignableFrom<ClubViewModel>(viewResult.Model);
-        }
-
-        [Fact]
-        public async Task CreatePost_Correct_ReturnsAView()
-        {
-            //Arrange
-            _clubService.Setup(c => c.CreateAsync(It.IsAny<ClubDTO>()))
+            // Arrange
+            _ClubService.Setup(c => c.GetByIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(new ClubDTO());
-            _mapper.Setup(c => c.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
-                .Returns(new ClubDTO());
+            _mapper.Setup(m => m.Map<ClubDTO, ClubViewModel>(It.IsAny<ClubDTO>()))
+                .Returns(new ClubViewModel());
+            ClubController ClubController = CreateClubController;
 
-            //Act
-            var result = await controller.CreateClub(new ClubViewModel());
+            // Act
+            var result = await ClubController.Details(3);
 
-            //Assert
-            Assert.NotNull(result);
-            var viewResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Club", viewResult.ActionName);
+            // Assert
+            Assert.IsType<ViewResult>(result);
         }
 
         [Fact]
-        public async Task CreatePost_InvalidModel_ReturnsHandleError()
+        public async Task DetailsInvalidIdTest()
         {
-            //Arrange
-            _clubService.Setup(c => c.CreateAsync(It.IsAny<ClubDTO>()))
-                .ReturnsAsync((ClubDTO)null);
-            _mapper.Setup(c => c.Map<ClubViewModel, ClubDTO>(null))
-                .Returns((ClubDTO)null);
+            // Arrange
+            _ClubService.Setup(c => c.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            ClubController ClubController = CreateClubController;
 
-            //Act
-            var result = await controller.EditClub(It.IsAny<ClubViewModel>());
+            // Act
+            var result = await ClubController.Details(3);
 
-            //Assert
+            // Assert
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.NotNull(viewResult);
             Assert.Equal("HandleError", viewResult.ActionName);
             Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task DetailsExceptionTest()
+        {
+            // Arrange
+            _ClubService.Setup(c => c.GetByIdAsync(It.IsAny<int>()))
+                .ThrowsAsync(new ArgumentException("some message"));
+            ClubController ClubController = CreateClubController;
+
+            // Act
+            var result = await ClubController.Details(3);
+
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task CreateWithValidModelStateTest()
+        {
+            // Arrange
+            ClubProfileViewModel model = CreateFakeClubProfileViewModels(1).First();
+            IFormFile file = new FormFile(null, 1234, 1134, "fdd", "dfsdf");
+            _mapper.Setup(m => m.Map<ClubProfileViewModel, ClubProfileDTO>(It.IsAny<ClubProfileViewModel>()))
+                .Returns(new ClubProfileDTO());
+            _ClubService.Setup(c => c.CreateAsync(It.IsAny<ClubProfileDTO>(), It.IsAny<IFormFile>()))
+                .ReturnsAsync(3);
+            ClubController ClubController = CreateClubController;
+
+            // Act
+            var result = await ClubController.Create(model, file);
+
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("ClubProfile", viewResult.ActionName);
+            Assert.Equal("Club", viewResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task CreateWithInvalidModelStateTest()
+        {
+            // Arrange
+            ClubProfileViewModel model = CreateFakeClubProfileViewModels(1).First();
+            IFormFile file = new FormFile(null, 1234, 1134, "fdd", "dfsdf");
+            _mapper.Setup(m => m.Map<ClubProfileViewModel, ClubProfileDTO>(It.IsAny<ClubProfileViewModel>()))
+                .Returns(new ClubProfileDTO());
+            _ClubService.Setup(c => c.CreateAsync(It.IsAny<ClubProfileDTO>(), It.IsAny<IFormFile>()))
+                .ReturnsAsync(3);
+            ClubController ClubController = CreateClubController;
+            ClubController.ModelState.AddModelError("NameError", "Required");
+
+            // Act
+            var result = await ClubController.Create(model, file);
+
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            Assert.NotNull(viewResult);
+        }
+
+        [Fact]
+        public async Task CreateWithExceptionTest()
+        {
+            // Arrange
+            ClubProfileViewModel model = CreateFakeClubProfileViewModels(1).First();
+            IFormFile file = new FormFile(null, 1234, 1134, "fdd", "dfsdf");
+            _ClubService.Setup(c => c.CreateAsync(It.IsAny<ClubProfileDTO>(), It.IsAny<IFormFile>()))
+                .ThrowsAsync(new ArgumentException("some message"));
+            ClubController ClubController = CreateClubController;
+
+            // Act
+            var result = await ClubController.Create(model, file);
+
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.NotNull(viewResult);
+            Assert.Equal("HandleError", viewResult.ActionName);
+            Assert.Equal("Error", viewResult.ControllerName);
+        }
+
+        private int FakeId => 1;
+        private IQueryable<ClubProfileViewModel> CreateFakeClubProfileViewModels(int count)
+        {
+            List<ClubProfileViewModel> ClubProfilesDto = new List<ClubProfileViewModel>();
+            for (int i = 0; i < count; i++)
+            {
+                ClubProfilesDto.Add(new ClubProfileViewModel
+                {
+                    Club = new ClubViewModel
+                    {
+                        ID = i,
+                        Name = "Name " + i
+                    }
+                });
+            }
+            return ClubProfilesDto.AsQueryable();
         }
     }
 }

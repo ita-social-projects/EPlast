@@ -111,7 +111,7 @@ namespace EPlast.BLL
                 paragraphAlignment: ParagraphAlignment.Center);
 
             SetParagraph(section,
-                    $"Я, {blank.CityAdmin.UserPlastDegrees}, {blank.CityAdmin.FirstName}, {blank.CityAdmin.FatherName}, {blank.ClubMembers.Club.ClubName} {blank.CityAdmin.UserPlastDegrees} " +
+                    $"Я, {blank.CityAdmin.UserPlastDegrees}, {blank.CityAdmin.FirstName}, {blank.CityAdmin.FatherName}, {blank.ClubMembers.Club.Name} {blank.CityAdmin.UserPlastDegrees} " +
                     "поручаюся за кандидата в дійсні члени Пласту.Підверджую, що за час випробувального терміну " +
                     "кандидатом було виказано гідну пластову поставу, відповідність пластовим цінностям та " +
                     "проявлено відповідальність у взятих на себе пластових обов'язках @[ ] виховника; " + // ????

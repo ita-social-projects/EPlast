@@ -8,8 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\**" />
     <Compile Remove="NewFolder\**" />
+    <EmbeddedResource Remove="Controllers\**" />
     <EmbeddedResource Remove="NewFolder\**" />
+    <None Remove="Controllers\**" />
     <None Remove="NewFolder\**" />
   </ItemGroup>
 
@@ -34,6 +37,6 @@
     <ProjectReference Include="..\EPlast.BLL\EPlast.BLL.csproj" />
     <ProjectReference Include="..\EPlast.DataAccess\EPlast.DataAccess.csproj" />
     <ProjectReference Include="..\EPlast.Resources\EPlast.Resources.csproj" />
-    <ProjectReference Include="..\EPlast\EPlast.csproj" />
+    <ProjectReference Include="..\EPlast.WebApi\EPlast.WebApi.csproj" />
   </ItemGroup>
 </Project>

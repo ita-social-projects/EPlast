@@ -4,79 +4,106 @@ using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Club
 {
     public class ClubMembersService : IClubMembersService
     {
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
-        private readonly IClubService _clubService;
-        private readonly IUserManagerService _userManagerService;
+        private readonly UserManager<User> _userManager;
+        private readonly IClubAdministrationService _ClubAdministrationService;
 
-        public ClubMembersService(IRepositoryWrapper repoWrapper, IMapper mapper, IClubService clubService,
-            IUserManagerService userManagerService)
+        public ClubMembersService(IRepositoryWrapper repositoryWrapper,
+            IMapper mapper,
+            UserManager<User> userManager,
+            IClubAdministrationService ClubAdministrationService)
         {
-            _repoWrapper = repoWrapper;
+            _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
-            _clubService = clubService;
-            _userManagerService = userManagerService;
+            _userManager = userManager;
+            _ClubAdministrationService = ClubAdministrationService;
         }
 
         /// <inheritdoc />
-        public async Task<ClubMembersDTO> ToggleIsApprovedInClubMembersAsync(int memberId, int clubId)
+        public async Task<IEnumerable<ClubMembersDTO>> GetMembersByClubIdAsync(int ClubId)
         {
-            var person = await _repoWrapper.ClubMembers
-                .GetFirstOrDefaultAsync(
-                    u => u.ID == memberId && u.ClubId == clubId,
-                    u => u.Include((x) => x.User));
+            var ClubMembers = await _repositoryWrapper.ClubMembers.GetAllAsync(
+                    predicate: c => c.ClubId == ClubId && c.EndDate == null,
+                    include: source => source
+                        .Include(c => c.User));
 
-            if (person == null)
+            return _mapper.Map<IEnumerable<ClubMembers>, IEnumerable<ClubMembersDTO>>(ClubMembers);
+        }
+
+        /// <inheritdoc />
+        public async Task<ClubMembersDTO> AddFollowerAsync(int ClubId, string userId)
+        {
+            var oldClubMember = await _repositoryWrapper.ClubMembers
+                .GetFirstOrDefaultAsync(i => i.UserId == userId);
+            if (oldClubMember != null)
             {
-                throw new ArgumentNullException($"User with id={memberId} not found");
+                _repositoryWrapper.ClubMembers.Delete(oldClubMember);
+                await _repositoryWrapper.SaveAsync();
             }
 
-            person.IsApproved = !person.IsApproved;
-            _repoWrapper.ClubMembers.Update(person);
-            await _repoWrapper.SaveAsync();
-
-            return _mapper.Map<ClubMembers, ClubMembersDTO>(person);
-        }
-
-        /// <inheritdoc />
-        public async Task<ClubMembersDTO> AddFollowerAsync(int clubId, string userId)
-        {
-            var club = await _clubService.GetClubInfoByIdAsync(clubId);
-            var userDto = await _userManagerService.FindByIdAsync(userId) ??
-                          throw new ArgumentNullException($"User with {userId} id not found");
-
-            var oldMember = await _repoWrapper.ClubMembers.GetFirstOrDefaultAsync(i => i.UserId == userId);
-
-            if (oldMember != null)
+            var oldClubAdmins = await _repositoryWrapper.ClubAdministration
+                .GetAllAsync(i => i.UserId == userId && (DateTime.Now < i.EndDate || i.EndDate == null));
+            foreach (var admin in oldClubAdmins)
             {
-                _repoWrapper.ClubMembers.Delete(oldMember);
-                await _repoWrapper.SaveAsync();
+                await _ClubAdministrationService.RemoveAdministratorAsync(admin.ID);
             }
 
-            ClubMembers newMember = new ClubMembers() { ClubId = club.ID, IsApproved = false, UserId = userDto.Id };
+            var ClubMember = new ClubMembers()
+            {
+                ClubId = ClubId,
+                IsApproved = false,
+                UserId = userId,
+                User = await _userManager.FindByIdAsync(userId)
+            };
 
-            await _repoWrapper.ClubMembers.CreateAsync(newMember);
-            await _repoWrapper.SaveAsync();
+            await _repositoryWrapper.ClubMembers.CreateAsync(ClubMember);
+            await _repositoryWrapper.SaveAsync();
 
-            return _mapper.Map<ClubMembers, ClubMembersDTO>(newMember);
+            return _mapper.Map<ClubMembers, ClubMembersDTO>(ClubMember);
         }
 
         /// <inheritdoc />
-        public async Task RemoveMemberAsync(int memberId)
+        public async Task<ClubMembersDTO> AddFollowerAsync(int ClubId, ClaimsPrincipal user)
         {
-            var clubMember = await _repoWrapper.ClubMembers
-                .GetFirstOrDefaultAsync(u => u.ID == memberId);
+            var userId = _userManager.GetUserId(user);
 
-            _repoWrapper.ClubMembers.Delete(clubMember);
-            await _repoWrapper.SaveAsync();
+            return await AddFollowerAsync(ClubId, userId);
+        }
+
+        /// <inheritdoc />
+        public async Task<ClubMembersDTO> ToggleApproveStatusAsync(int memberId)
+        {
+            var ClubMember = await _repositoryWrapper.ClubMembers
+                .GetFirstOrDefaultAsync(u => u.ID == memberId, m => m.Include(u => u.User));
+
+            ClubMember.IsApproved = !ClubMember.IsApproved;
+
+            _repositoryWrapper.ClubMembers.Update(ClubMember);
+            await _repositoryWrapper.SaveAsync();
+
+            return _mapper.Map<ClubMembers, ClubMembersDTO>(ClubMember);
+        }
+
+        /// <inheritdoc />
+        public async Task RemoveFollowerAsync(int followerId)
+        {
+            var ClubMember = await _repositoryWrapper.ClubMembers
+                .GetFirstOrDefaultAsync(u => u.ID == followerId);
+
+            _repositoryWrapper.ClubMembers.Delete(ClubMember);
+            await _repositoryWrapper.SaveAsync();
         }
     }
 }
