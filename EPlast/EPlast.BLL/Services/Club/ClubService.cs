@@ -60,13 +60,7 @@ namespace EPlast.BLL.Services.Club
             return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubDTO>>(await GetAllAsync(ClubName));
         }
 
-        /// <inheritdoc />
-        //public async Task<IEnumerable<ClubDTO>> GetCitiesByRegionAsync(int regionId)
-        //{
-        //    var cities = await _repoWrapper.Club.GetAllAsync(c => c.RegionId == regionId);
 
-        //    return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubDTO>>(cities);
-        //}
 
         /// <inheritdoc />
         public async Task<ClubDTO> GetByIdAsync(int ClubId)
@@ -96,10 +90,10 @@ namespace EPlast.BLL.Services.Club
             }
 
             var ClubHead = Club.ClubAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Станиці"
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Куреня"
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
             var ClubAdmins = Club.ClubAdministration
-                .Where(a => a.AdminType.AdminTypeName != "Голова Станиці"
+                .Where(a => a.AdminType.AdminTypeName != "Голова Куреня"
                     && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .Take(6)
                 .ToList();
@@ -194,10 +188,10 @@ namespace EPlast.BLL.Services.Club
             }
 
             var ClubHead = Club.ClubAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Станиці"
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Куреня"
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
             var ClubAdmins = Club.ClubAdministration
-                .Where(a => a.AdminType.AdminTypeName != "Голова Станиці"
+                .Where(a => a.AdminType.AdminTypeName != "Голова Куреня"
                     && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .ToList();
 
@@ -336,21 +330,6 @@ namespace EPlast.BLL.Services.Club
             var ClubDto = model.Club;
 
             var Club = _mapper.Map<ClubDTO, DataAccessClub.Club>(ClubDto);
-            //var region = await _repoWrapper.Region.GetFirstOrDefaultAsync(r => r.RegionName == Club.Region.RegionName);
-
-            //if (region == null)
-            //{
-            //    region = new DataAccessClub.Region
-            //    {
-            //        RegionName = Club.Region.RegionName
-            //    };
-
-            //    await _repoWrapper.Region.CreateAsync(region);
-            //    await _repoWrapper.SaveAsync();
-            //}
-
-            //Club.RegionId = region.ID;
-            //Club.Region = region;
 
             return Club;
         }
@@ -358,10 +337,7 @@ namespace EPlast.BLL.Services.Club
         private async Task<DataAccessClub.Club> CreateClubAsync(ClubDTO model)
         {
             var Club = _mapper.Map<ClubDTO, DataAccessClub.Club>(model);
-            //var region = await _repoWrapper.Region.GetFirstOrDefaultAsync(r => r.RegionName == Club.Region.RegionName);
 
-            //Club.RegionId = region.ID;
-            //Club.Region = region;
 
             return Club;
         }
@@ -377,7 +353,7 @@ namespace EPlast.BLL.Services.Club
             {
                 using (var img = Image.FromStream(file.OpenReadStream()))
                 {
-                    var uploads = Path.Combine(_env.WebRootPath, "images\\Cities");
+                    var uploads = Path.Combine(_env.WebRootPath, "images\\Clubs");
                     if (!string.IsNullOrEmpty(oldImageName))
                     {
                         var oldPath = Path.Combine(uploads, oldImageName);
