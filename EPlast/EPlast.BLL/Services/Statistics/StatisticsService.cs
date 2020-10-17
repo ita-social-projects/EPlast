@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EPlast.BLL.DTO.AnnualReport;
 using EPlast.BLL.DTO.Statistics;
 using EPlast.BLL.Interfaces.Statistics;
 using EPlast.BLL.Services.Statistics.StatisticsItems.Interfaces;
@@ -97,6 +98,24 @@ namespace EPlast.BLL.Services.Statistics
                 regionStatistics.Add(await GetRegionStatisticsAsync(regionId, minYear, maxYear));
             }
             return regionStatistics;
+        }
+
+        public async Task<IEnumerable<MembersStatistic>> GetAllCitiesStatisticsAsync()
+        {
+            var annualReports = await _repositoryWrapper.AnnualReports.GetAllAsync(
+                    include: source => source
+                        .Include(ar => ar.Creator)
+                        .Include(ar => ar.MembersStatistic)
+                        .Include(ar => ar.Date)
+                        .Include(ar => ar.City)
+                            .ThenInclude(c => c. Region));
+
+            var membersStatistics = new List<MembersStatistic>();
+            foreach (var report in annualReports)
+            {
+                membersStatistics.Add(report.MembersStatistic);
+            }
+            return membersStatistics;
         }
 
         private void SelectStatisticsItems(IEnumerable<StatisticsItemIndicator> indicators)
