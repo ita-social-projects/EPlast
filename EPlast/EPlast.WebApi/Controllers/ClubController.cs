@@ -46,7 +46,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="ClubName">Optional param to find Clubs by name</param>
         /// <returns>A specific number of Clubs</returns>
         [HttpGet("Profiles/{page}")]
-        //[Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetClubs(int page, int pageSize, string ClubName = null)
         {
             var clubs = await _ClubService.GetAllDTOAsync(ClubName);
