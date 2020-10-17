@@ -100,7 +100,7 @@ namespace EPlast.BLL.Services.Statistics
             return regionStatistics;
         }
 
-        public async Task<IEnumerable<MembersStatistic>> GetAllCitiesStatisticsAsync()
+        public async Task<IEnumerable<MembersStatisticDTO>> GetAllCitiesStatisticsAsync()
         {
             var annualReports = await _repositoryWrapper.AnnualReports.GetAllAsync(
                     include: source => source
@@ -109,13 +109,8 @@ namespace EPlast.BLL.Services.Statistics
                         .Include(ar => ar.Date)
                         .Include(ar => ar.City)
                             .ThenInclude(c => c. Region));
-
-            var membersStatistics = new List<MembersStatistic>();
-            foreach (var report in annualReports)
-            {
-                membersStatistics.Add(report.MembersStatistic);
-            }
-            return membersStatistics;
+            var annualReportsDTO = _mapper.Map<IEnumerable<AnnualReport>, IEnumerable<AnnualReportDTO>>(annualReports);
+            return annualReportsDTO.Select(report => report.MembersStatistic);
         }
 
         private void SelectStatisticsItems(IEnumerable<StatisticsItemIndicator> indicators)
