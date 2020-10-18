@@ -45,6 +45,9 @@ namespace EPlast.BLL.Services.Club
         /// <inheritdoc />
         public async Task<ClubDocumentsDTO> AddDocumentAsync(ClubDocumentsDTO documentsDTO)
         {
+            try
+            {
+
             var fileBase64 = documentsDTO.BlobName.Split(',')[1];
             var extension = "." + documentsDTO.FileName.Split('.').LastOrDefault();
             var fileName = Guid.NewGuid() + extension;
@@ -60,6 +63,12 @@ namespace EPlast.BLL.Services.Club
             _repositoryWrapper.ClubDocuments.Attach(document);
             await _repositoryWrapper.ClubDocuments.CreateAsync(document);
             await _repositoryWrapper.SaveAsync();
+            }
+            catch (Exception e)
+            {
+
+                Console.WriteLine(e.Message); ;
+            }
 
             return documentsDTO;
         }
