@@ -71,10 +71,9 @@ namespace EPlast.Tests.Services.Blank
             _repoWrapper.Setup(rw => rw.SaveAsync());
 
             //Act
-            var result = await _achievementDocumentService.DeleteFileAsync(AchievementDocuments.ID);
+             await _achievementDocumentService.DeleteFileAsync(AchievementDocuments.ID);
             //Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(StatusCodes.Status204NoContent, result);
+            _repoWrapper.Verify();
 
         }
 
