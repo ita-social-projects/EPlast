@@ -71,11 +71,9 @@ namespace EPlast.Tests.Services.Blank
             _repoWrapper.Setup(rw => rw.SaveAsync());
 
             //Act
-            var result = await _blankBiographyService.DeleteFileAsync(BlankBiographyDocuments.ID);
+            await _blankBiographyService.DeleteFileAsync(BlankBiographyDocuments.ID);
             //Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(StatusCodes.Status204NoContent, result);
-
+            _repoWrapper.Verify();
         }
 
         [Test]
