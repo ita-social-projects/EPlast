@@ -61,6 +61,13 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _blankBiographyDocumentService.GetDocumentByUserId(userId));
         }
 
+        [HttpGet("InfinityScroll/{pageNumber:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetPartOfAchievement(int pageNumber, int pageSize, string userId)
+        {
+            return Ok(await _blankAchievementDocumentService.GetPartOfAchievement(pageNumber, pageSize, userId));
+        }
+
         /// <summary>
         /// Get a list of achievement documents by User ID
         /// </summary>
