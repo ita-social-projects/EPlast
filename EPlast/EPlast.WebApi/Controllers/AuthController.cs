@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using System.Threading.Tasks;
 using System.Web;
+using Google.Apis.Auth;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Auth.OAuth2.Flows;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -82,6 +85,40 @@ namespace EPlast.WebApi.Controllers
             return Ok(_resourceForErrors["ModelIsNotValid"]);
         }
 
+        [HttpPost("signin/google")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GoogleLogin(string googleToken)
+        {
+
+                 await _authService.GetGoogleUserInfoAsync(googleToken);
+               
+            
+            return Ok(_resourceForErrors["ModelIsNotValid"]);
+        }
+
+        //[HttpPost("signin/google")]
+        //[ProducesDefaultResponseType]
+        //public async Task<JsonResult> GoogleLogin(string request)
+        //{
+        //    //GoogleJsonWebSignature.Payload payload;
+        //    //try
+        //    //{
+        //    //    payload = await ValidateAsync(request.IdToken, new GoogleJsonWebSignature.ValidationSettings
+        //    //    {
+        //    //        Audience = new[] { "YOUR_CLIENT_ID" }
+        //    //    });
+        //    //    // It is important to add your ClientId as an audience in order to make sure
+        //    //    // that the token is for your application!
+        //    //}
+        //    //catch
+        //    //{
+        //    //    // Invalid token
+        //    //}
+
+        //    //var user = await GetOrCreateExternalLoginUser("google", payload.Subject, payload.Email, payload.GivenName, payload.FamilyName);
+        //    //var token = await GenerateToken(user);
+        //    //return new JsonResult(token);
+        //}
         /// <summary>
         /// Method for registering in system
         /// </summary>

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Interfaces
 {
@@ -202,5 +203,7 @@ namespace EPlast.BLL.Interfaces
         /// <param name="externalLoginInfo"></param>
         /// <returns>Result of Facebook authentication</returns>
         Task FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo);
+
+        Task GetGoogleUserInfoAsync(string providerToken);
     }
 }

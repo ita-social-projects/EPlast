@@ -8,9 +8,14 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
+using EPlast.BLL.Models;
+using Newtonsoft.Json;
+using NLog.Fluent;
 
 namespace EPlast.BLL.Services
 {
@@ -240,7 +245,59 @@ namespace EPlast.BLL.Services
             await _emailConfirmation.SendEmailAsync(forgotPasswordDto.Email, "Скидування пароля",
                 $"Для скидування пароля перейдіть за : <a href='{confirmationLink}'>посиланням</a>", "Адміністрація сайту EPlast");
         }
+        public async Task GetGoogleUserInfoAsync(string providerToken)
+        {
+            string GoogleApiTokenInfoUrl = "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token={0}";
+            var httpClient = new HttpClient();
+            var requestUri = new Uri(string.Format(GoogleApiTokenInfoUrl, providerToken));
 
+            HttpResponseMessage httpResponseMessage;
+            try
+            {
+                httpResponseMessage = httpClient.GetAsync(requestUri).Result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
+
+            if (httpResponseMessage.StatusCode != HttpStatusCode.OK)
+            {
+                throw new Exception();
+            }
+
+            var response = httpResponseMessage.Content.ReadAsStringAsync().Result;
+            var googleApiTokenInfo = JsonConvert.DeserializeObject<GoogleApiTokenInfo>(response);
+
+            //if (await _userManager.FindByEmailAsync(googleApiTokenInfo.aud)!=null)
+            //{
+            //    Log.WarnFormat("Google API Token Info aud field ({0}) not containing the required client id", googleApiTokenInfo.aud);
+            //    return null;
+            //}
+            var user = await _userManager.FindByEmailAsync(googleApiTokenInfo.email);
+            if (user == null)
+            {
+                user = new User
+                {
+                    UserName = googleApiTokenInfo.name,
+                    Email = googleApiTokenInfo.email,
+                    FirstName = googleApiTokenInfo.given_name,
+                    LastName = googleApiTokenInfo.family_name,
+                    SocialNetworking = true,
+                    ImagePath = googleApiTokenInfo.picture,
+                    EmailConfirmed = true,
+                    RegistredOn = DateTime.Now,
+                    UserProfile = new UserProfile()
+                };
+                await _userManager.CreateAsync(user);
+                await _emailConfirmation.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
+                    "Ви зареєструвались в системі EPlast використовуючи свій Google-акаунт ", "Адміністрація сайту EPlast");
+            }
+            await _userManager.AddToRoleAsync(user, "Прихильник");
+            await _userManager.AddLoginAsync(user, new UserLoginInfo( user.Email, Guid.NewGuid().ToString(),user.UserName));
+            await _signInManager.SignInAsync(user, isPersistent: false);
+      
+        }
         ///<inheritdoc/>
         public async Task GoogleAuthentication(string email, ExternalLoginInfo externalLoginInfo)
         {
