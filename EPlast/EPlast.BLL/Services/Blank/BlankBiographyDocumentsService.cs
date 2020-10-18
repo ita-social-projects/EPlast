@@ -41,7 +41,7 @@ namespace EPlast.BLL.Services.Blank
             return biographyDocumentDTO;
         }
 
-        public async Task<int> DeleteFileAsync(int documentId)
+        public async Task DeleteFileAsync(int documentId)
         {
             var document = await _repositoryWrapper.BiographyDocumentsRepository
                 .GetFirstOrDefaultAsync(d => d.ID == documentId);
@@ -51,7 +51,6 @@ namespace EPlast.BLL.Services.Blank
             _repositoryWrapper.BiographyDocumentsRepository.Delete(document);
             await _repositoryWrapper.SaveAsync();
 
-            return StatusCodes.Status204NoContent;
         }
 
         public async Task<string> DownloadFileAsync(string fileName)
