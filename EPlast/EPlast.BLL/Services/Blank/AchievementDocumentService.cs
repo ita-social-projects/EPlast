@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Blank;
 using EPlast.BLL.Interfaces.AzureStorage;
-using EPlast.BLL.Interfaces.AzureStorage.Base;
 using EPlast.BLL.Interfaces.Blank;
-using EPlast.BLL.Services.AzureStorage;
 using EPlast.DataAccess.Entities.Blank;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Http;
@@ -51,7 +49,7 @@ namespace EPlast.BLL.Services.Blank
             return listAchievementDocumentsDTO;
         }
 
-        public async Task DeleteFileAsync(int documentId)
+        public async Task<int> DeleteFileAsync(int documentId)
         {
             var document = await _repositoryWrapper.AchievementDocumentsRepository
                 .GetFirstOrDefaultAsync(d => d.ID == documentId);
@@ -60,6 +58,8 @@ namespace EPlast.BLL.Services.Blank
 
             _repositoryWrapper.AchievementDocumentsRepository.Delete(document);
             await _repositoryWrapper.SaveAsync();
+
+            return StatusCodes.Status204NoContent;
         }
 
         public async Task<string> DownloadFileAsync(string fileName)

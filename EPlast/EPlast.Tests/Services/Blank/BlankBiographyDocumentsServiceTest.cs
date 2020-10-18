@@ -56,7 +56,7 @@ namespace EPlast.Tests.Services.Blank
         }
 
         [Test]
-        public async Task DeleteFileAsync_ReturnStatusCode200OK()
+        public async Task DeleteFileAsync_ReturnStatusCode204NoContent()
         {
             //Arrange
             _repoWrapper
@@ -74,7 +74,7 @@ namespace EPlast.Tests.Services.Blank
             var result = await _blankBiographyService.DeleteFileAsync(BlankBiographyDocuments.ID);
             //Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(StatusCodes.Status200OK, result);
+            Assert.AreEqual(StatusCodes.Status204NoContent, result);
 
         }
 
