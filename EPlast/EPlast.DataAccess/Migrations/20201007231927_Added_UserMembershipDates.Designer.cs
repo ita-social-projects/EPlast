@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20201007231927_Added_UserMembershipDates")]
+    partial class Added_UserMembershipDates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -137,58 +139,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("UserID");
 
                     b.ToTable("Approvers");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.Blank.AchievementDocuments", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("BlobName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(120)")
-                        .HasMaxLength(120);
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AchievementDocuments");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.Blank.BlankBiographyDocuments", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("BlobName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(120)")
-                        .HasMaxLength(120);
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("BlankBiographyDocuments");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.City", b =>
@@ -1081,9 +1031,6 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<string>("Link")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Logo")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("OfficeNumber")
                         .HasColumnType("nvarchar(max)");
 
@@ -1125,9 +1072,6 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -1141,32 +1085,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("RegionAdministrations");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.RegionDocuments", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("BlobName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("RegionId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("SubmitDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("RegionId");
-
-                    b.ToTable("RegionDocs");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Religion", b =>
@@ -1634,24 +1552,6 @@ namespace EPlast.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("EPlast.DataAccess.Entities.Blank.AchievementDocuments", b =>
-                {
-                    b.HasOne("EPlast.DataAccess.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.Blank.BlankBiographyDocuments", b =>
-                {
-                    b.HasOne("EPlast.DataAccess.Entities.User", "User")
-                        .WithMany("BlankBiographyDocuments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("EPlast.DataAccess.Entities.City", b =>
                 {
                     b.HasOne("EPlast.DataAccess.Entities.Region", "Region")
@@ -1929,15 +1829,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasOne("EPlast.DataAccess.Entities.User", "User")
                         .WithMany("RegionAdministrations")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.RegionDocuments", b =>
-                {
-                    b.HasOne("EPlast.DataAccess.Entities.Region", null)
-                        .WithMany("Documents")
-                        .HasForeignKey("RegionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
