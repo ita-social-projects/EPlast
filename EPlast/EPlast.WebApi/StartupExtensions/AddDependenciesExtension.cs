@@ -109,6 +109,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddScoped<IAccessLevelService, AccessLevelService>();
             services.AddScoped<IPlastDegreeService, PlastDegreeService>();
+            services.AddScoped<IUserDatesService, UserDatesService>();
             services.AddScoped<IUserDistinctionService, UserDistinctionService>();
             services.AddScoped<IDistinctionService, DistinctionService>();
             services.AddScoped<IEducatorsStaffService, EducatorsStaffService>();

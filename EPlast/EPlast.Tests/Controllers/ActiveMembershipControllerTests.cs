@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using Moq;
@@ -15,14 +14,16 @@ namespace EPlast.Tests.Controllers
     {
         private Mock<IPlastDegreeService> _plastDegreeService;
         private Mock<IAccessLevelService> _accessLevelService;
+        private Mock<IUserDatesService> _userDatesService;
 
         private ActiveMembershipController _activeMembershipController =>
-            new ActiveMembershipController(_plastDegreeService.Object, _accessLevelService.Object);
+            new ActiveMembershipController(_plastDegreeService.Object, _accessLevelService.Object, _userDatesService.Object);
 
         public ActiveMembershipControllerTests()
         {
             _plastDegreeService = new Mock<IPlastDegreeService>();
             _accessLevelService = new Mock<IAccessLevelService>();
+            _userDatesService = new Mock<IUserDatesService>();
         }
 
         [Test]
@@ -192,6 +193,108 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await activeMembershipController.AddEndDatePlastDegreeForUser(new UserPlastDegreePutDTO());
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
+        }
+
+        [TestCase("2")]
+        public async Task GetUserDates_Valid_ReturnsOK(string id)
+        {
+            //Arrange
+            _userDatesService.Setup(cs => cs.GetUserMembershipDatesAsync(It.IsAny<string>())).ReturnsAsync(new UserMembershipDatesDTO());
+
+            ActiveMembershipController activeMembershipController = _activeMembershipController;
+
+            //Act
+            var result = await activeMembershipController.GetUserDates(id);
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(((OkObjectResult)result).Value);
+            Assert.IsInstanceOf<UserMembershipDatesDTO>(((OkObjectResult)result).Value);
+        }
+
+        [Test]
+        public async Task GetUserDates_InValid_ThrowException()
+        {
+            //Arrange
+            _userDatesService.Setup(cs => cs.GetUserMembershipDatesAsync(It.IsAny<string>())).ThrowsAsync(new InvalidOperationException());
+
+            ActiveMembershipController activeMembershipController = _activeMembershipController;
+
+            //Act
+            var result = await activeMembershipController.GetUserDates(null);
+            //Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        }
+
+        [Test]
+        public async Task ChangeUserDates_Valid_Test()
+        {
+            //Arrange
+            bool successfulChangedDates = true;
+            //Arrange
+            _userDatesService.Setup(cs => cs.ChangeUserMembershipDatesAsync(It.IsAny<UserMembershipDatesDTO>()))
+                             .ReturnsAsync(successfulChangedDates);
+
+            ActiveMembershipController activeMembershipController = _activeMembershipController;
+
+            //Act
+            var result = await activeMembershipController.ChangeUserDates(new UserMembershipDatesDTO());
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(((OkObjectResult)result).Value);
+            Assert.IsInstanceOf<UserMembershipDatesDTO>(((OkObjectResult)result).Value);
+        }
+
+        [Test]
+        public async Task ChangeUserDates_InValid_Test()
+        {
+            //Arrange
+            bool successfulChangedDates = false;
+            //Arrange
+            _userDatesService.Setup(cs => cs.ChangeUserMembershipDatesAsync(It.IsAny<UserMembershipDatesDTO>()))
+                             .ReturnsAsync(successfulChangedDates);
+
+            ActiveMembershipController activeMembershipController = _activeMembershipController;
+
+            //Act
+            var result = await activeMembershipController.ChangeUserDates(new UserMembershipDatesDTO());
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
+        }
+
+        [TestCase("2")]
+        public async Task InitializeUserDates_Valid_Test(string userId)
+        {
+            //Arrange
+            bool successfulInitedDates = true;
+            //Arrange
+            _userDatesService.Setup(cs => cs.AddDateEntryAsync(It.IsAny<string>()))
+                             .ReturnsAsync(successfulInitedDates);
+
+            ActiveMembershipController activeMembershipController = _activeMembershipController;
+
+            //Act
+            var result = await activeMembershipController.InitializeUserDates("2");
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(((OkObjectResult)result).Value);
+            Assert.IsInstanceOf<string>(((OkObjectResult)result).Value);
+        }
+
+        [Test]
+        public async Task InitializeUserDates_InValid_Test()
+        {
+            //Arrange
+            bool successfulInitedDates = false;
+            //Arrange
+            _userDatesService.Setup(cs => cs.AddDateEntryAsync(It.IsAny<string>()))
+                             .ReturnsAsync(successfulInitedDates);
+
+            ActiveMembershipController activeMembershipController = _activeMembershipController;
+
+            //Act
+            var result = await activeMembershipController.InitializeUserDates("");
             //Assert
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
