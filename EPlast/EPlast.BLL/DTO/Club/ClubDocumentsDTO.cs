@@ -14,6 +14,6 @@ namespace EPlast.BLL.DTO.Club
         public string FileName { get; set; }
         public int ClubDocumentTypeId { get; set; }
         public ClubDocumentTypeDTO ClubDocumentType { get; set; }
-        public int CityId { get; set; }
+        public int ClubId { get; set; }
     }
 }

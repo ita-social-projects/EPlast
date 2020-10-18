@@ -8,6 +8,7 @@ namespace EPlast.WebApi.Mapping.Club
     {
         public ClubDocumentsProfile()
         {
+            CreateMap<ClubDocumentsViewModel, ClubDocumentsDTO>().ReverseMap();
             CreateMap<ClubDocumentTypeViewModel, ClubDocumentTypeDTO>().ReverseMap();
         }
     }
