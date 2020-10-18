@@ -4,12 +4,10 @@ using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.Blank;
 using EPlast.DataAccess.Entities.Blank;
 using EPlast.DataAccess.Repositories;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Blank
@@ -30,26 +28,26 @@ namespace EPlast.BLL.Services.Blank
         }
 
 
-        public async Task<List<AchievementDocumentsDTO>> AddDocumentAsync(List<AchievementDocumentsDTO> listAchievementDocumentsDTO)
+        public async Task<List<AchievementDocumentsDTO>> AddDocumentAsync(List<AchievementDocumentsDTO> achievementDocumentsDTO)
         {
-            foreach (AchievementDocumentsDTO achievementDocumentsDTO in listAchievementDocumentsDTO)
+            foreach (AchievementDocumentsDTO achievementDocumentDTO in achievementDocumentsDTO)
             {
-                var fileBase64 = achievementDocumentsDTO.BlobName.Split(',')[1];
-                var extension = "." + achievementDocumentsDTO.FileName.Split('.').LastOrDefault();
+                var fileBase64 = achievementDocumentDTO.BlobName.Split(',')[1];
+                var extension = "." + achievementDocumentDTO.FileName.Split('.').LastOrDefault();
                 var fileName = Guid.NewGuid() + extension;
                 await _blobStorageRepo.UploadBlobForBase64Async(fileBase64, fileName);
-                achievementDocumentsDTO.BlobName = fileName;
+                achievementDocumentDTO.BlobName = fileName;
 
-                var document = _mapper.Map<AchievementDocumentsDTO, AchievementDocuments>(achievementDocumentsDTO);
+                var document = _mapper.Map<AchievementDocumentsDTO, AchievementDocuments>(achievementDocumentDTO);
                 _repositoryWrapper.AchievementDocumentsRepository.Attach(document);
                 await _repositoryWrapper.AchievementDocumentsRepository.CreateAsync(document);
                 await _repositoryWrapper.SaveAsync();
             }
 
-            return listAchievementDocumentsDTO;
+            return achievementDocumentsDTO;
         }
 
-        public async Task<int> DeleteFileAsync(int documentId)
+        public async Task DeleteFileAsync(int documentId)
         {
             var document = await _repositoryWrapper.AchievementDocumentsRepository
                 .GetFirstOrDefaultAsync(d => d.ID == documentId);
@@ -59,7 +57,6 @@ namespace EPlast.BLL.Services.Blank
             _repositoryWrapper.AchievementDocumentsRepository.Delete(document);
             await _repositoryWrapper.SaveAsync();
 
-            return StatusCodes.Status204NoContent;
         }
 
         public async Task<string> DownloadFileAsync(string fileName)
@@ -69,19 +66,17 @@ namespace EPlast.BLL.Services.Blank
 
         public async Task<List<AchievementDocumentsDTO>> GetDocumentsByUserId(string userid)
         {
-            var document = _mapper.Map<IEnumerable<AchievementDocuments>, List<AchievementDocumentsDTO>>(
+            return _mapper.Map<IEnumerable<AchievementDocuments>, List<AchievementDocumentsDTO>>(
                 await _repositoryWrapper.AchievementDocumentsRepository.FindByCondition(i => i.UserId == userid)
                 .ToListAsync());
-
-            return document;
         }
 
         public async Task<List<AchievementDocumentsDTO>> GetPartOfAchievement(int pageNumber, int pageSize, string userid)
         {
             var partOfAchievements = await _repositoryWrapper.AchievementDocumentsRepository.FindByCondition(i => i.UserId == userid).Skip(pageSize * pageNumber).Take(pageSize).ToListAsync();
-            var mappedAchievements = _mapper.Map<List<AchievementDocuments>, List<AchievementDocumentsDTO>>(partOfAchievements);
 
-            return mappedAchievements;
+            return _mapper.Map<List<AchievementDocuments>, List<AchievementDocumentsDTO>>(partOfAchievements);
+            
         }
     }
 }
