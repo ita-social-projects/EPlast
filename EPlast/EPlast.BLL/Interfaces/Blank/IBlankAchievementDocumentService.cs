@@ -1,6 +1,5 @@
 ﻿using EPlast.BLL.DTO.Blank;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Interfaces.Blank
@@ -25,7 +24,7 @@ namespace EPlast.BLL.Interfaces.Blank
         /// Delete a specific document by id
         /// </summary>
         /// <param name="documentId">The id of a specific document</param>
-        Task DeleteFileAsync(int documentId);
+        Task<int> DeleteFileAsync(int documentId);
 
         Task<List<AchievementDocumentsDTO>> GetDocumentsByUserId(string userid);
 

@@ -51,7 +51,7 @@ namespace EPlast.BLL.Services.Blank
             _repositoryWrapper.BiographyDocumentsRepository.Delete(document);
             await _repositoryWrapper.SaveAsync();
 
-            return StatusCodes.Status200OK;
+            return StatusCodes.Status204NoContent;
         }
 
         public async Task<string> DownloadFileAsync(string fileName)
