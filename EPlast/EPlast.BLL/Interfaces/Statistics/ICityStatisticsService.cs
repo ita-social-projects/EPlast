@@ -1,4 +1,6 @@
-﻿using EPlast.BLL.DTO.Statistics;
+﻿using EPlast.BLL.DTO.AnnualReport;
+using EPlast.BLL.DTO.Statistics;
+using EPlast.DataAccess.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,5 +12,6 @@ namespace EPlast.BLL.Interfaces.Statistics
         Task<CityStatistics> GetCityStatisticsAsync(int cityId, int minYear, int maxYear, IEnumerable<StatisticsItemIndicator> indicators);
         Task<IEnumerable<CityStatistics>> GetCityStatisticsAsync(IEnumerable<int> citiesIds, int year, IEnumerable<StatisticsItemIndicator> indicators);
         Task<IEnumerable<CityStatistics>> GetCityStatisticsAsync(IEnumerable<int> citiesIds, int minYear, int maxYear, IEnumerable<StatisticsItemIndicator> indicators);
+        Task<IEnumerable<MembersStatisticDTO>> GetAllCitiesStatisticsAsync();
     }
 }
