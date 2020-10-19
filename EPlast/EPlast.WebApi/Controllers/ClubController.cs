@@ -1,12 +1,10 @@
 using AutoMapper;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Club;
-using EPlast.BLL.Services.Interfaces;
+using EPlast.BLL.Interfaces.Logging;
 using EPlast.WebApi.Models.Club;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
@@ -15,327 +13,442 @@ namespace EPlast.WebApi.Controllers
     [ApiController]
     public class ClubController : ControllerBase
     {
-        private readonly IClubService _clubService;
-        private readonly IClubAdministrationService _clubAdministrationService;
-        private readonly IClubMembersService _clubMembersService;
-        private readonly IUserManagerService _userManagerService;
+        private readonly ILoggerService<ClubController> _logger;
         private readonly IMapper _mapper;
+        private readonly IClubService _ClubService;
+        private readonly IClubMembersService _ClubMembersService;
+        private readonly IClubAdministrationService _ClubAdministrationService;
+        private readonly IClubDocumentsService _ClubDocumentsService;
+        private readonly IClubAccessService _ClubAccessService;
 
-        public ClubController(IClubService clubService, IClubAdministrationService clubAdministrationService,
-            IClubMembersService clubMembersService, IUserManagerService userManagerService, IMapper mapper)
+        public ClubController(ILoggerService<ClubController> logger,
+            IMapper mapper,
+            IClubService ClubService,
+            IClubMembersService ClubMembersService,
+            IClubAdministrationService ClubAdministrationService,
+            IClubDocumentsService ClubDocumentsService,
+            IClubAccessService ClubAccessService)
         {
-            _clubService = clubService;
-            _clubAdministrationService = clubAdministrationService;
-            _clubMembersService = clubMembersService;
-            _userManagerService = userManagerService;
+            _logger = logger;
             _mapper = mapper;
-        }
-
-        private async Task<ClubProfileViewModel> CheckCurrentUserRoles(ClubProfileViewModel viewModel)
-        {
-            var userId = await _userManagerService.GetUserIdAsync(User);
-            viewModel.IsCurrentUserClubAdmin = userId != null && userId == viewModel.ClubAdmin?.Id;
-            viewModel.IsCurrentUserAdmin = User.IsInRole("Admin");
-            viewModel.CanJoin = await _clubService.VerifyUserCanJoinToClubAsync(viewModel.Club.ID, userId);
-
-            return viewModel;
+            _ClubService = ClubService;
+            _ClubMembersService = ClubMembersService;
+            _ClubAdministrationService = ClubAdministrationService;
+            _ClubDocumentsService = ClubDocumentsService;
+            _ClubAccessService = ClubAccessService;
         }
 
         /// <summary>
-        /// Get all clubs
+        /// Get a specific number of Clubs 
         /// </summary>
-        /// <returns>All clubs in object array</returns>
-        /// <response code="200">Object array of all clubs</response>
-        [HttpGet]
+        /// <param name="page">A number of the page</param>
+        /// <param name="pageSize">A count of Clubs to display</param>
+        /// <param name="ClubName">Optional param to find Clubs by name</param>
+        /// <returns>A specific number of Clubs</returns>
+        [HttpGet("Profiles/{page}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetClubs(int page, int pageSize, string ClubName = null)
         {
-            var clubs = await _clubService.GetAllClubsAsync();
-            foreach (var club in clubs)
+            var clubs = await _ClubService.GetAllDTOAsync(ClubName);
+            var ClubsViewModel = new ClubsViewModel(page, pageSize, clubs, User.IsInRole("Admin"));
+
+            return Ok(ClubsViewModel);
+        }
+
+        /// <summary>
+        /// Get a specific Club
+        /// </summary>
+        /// <param name="ClubId">The id of the Club</param>
+        /// <returns>A specific Club</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Club not found</response>
+        [HttpGet("Profile/{ClubId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetProfile(int ClubId)
+        {
+            var ClubProfileDto = await _ClubService.GetClubProfileAsync(ClubId, User);
+            if (ClubProfileDto == null)
             {
-                club.Logo = await _clubService.GetImageBase64Async(club.Logo);
+                return NotFound();
             }
 
-            return Ok(clubs);
+            var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
+
+            return Ok(ClubProfile);
         }
 
         /// <summary>
-        /// Gets a specific number of clubs.
+        /// Get all members of a specific Club
         /// </summary>
-        /// <param name="pageNumber">A number of the page.</param>
-        /// <param name="pageSize">A count of clubs to display.</param>
-        /// <returns>Returns a specific number of clubs.</returns>
-        /// <response code="200">Object array of a specific number of clubs.</response>
-        [HttpGet("page/{pageNumber:int}")]
+        /// <param name="ClubId">The id of the Club</param>
+        /// <returns>All members of a specific Club</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Club not found</response>
+        [HttpGet("Members/{ClubId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetPartOfClubs(int pageNumber, int pageSize)
+        public async Task<IActionResult> GetMembers(int ClubId)
         {
-            var sampleClubs = await _clubService.GetPartOfClubsAsync(pageNumber, pageSize);
-
-            foreach (var club in sampleClubs)
+            var ClubProfileDto = await _ClubService.GetClubMembersAsync(ClubId);
+            if (ClubProfileDto == null)
             {
-                club.Logo = await _clubService.GetImageBase64Async(club.Logo);
+                return NotFound();
             }
 
-            return Ok(sampleClubs);
+            var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
+            ClubProfile.CanEdit = await _ClubAccessService.HasAccessAsync(User, ClubId);
+
+            return Ok(new { ClubProfile.Members, ClubProfile.CanEdit });
         }
 
         /// <summary>
-        /// Gets a general count of clubs.
+        /// Get all followers of a specific Club
         /// </summary>
-        /// <returns>Returns count of clubs.</returns>
-        /// <response code="200">Count of clubs.</response>
-        [HttpGet("count")]
+        /// <param name="ClubId">The id of the Club</param>
+        /// <returns>All followers of a specific Club</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Club not found</response>
+        [HttpGet("Followers/{ClubId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetClubsCount()
+        public async Task<IActionResult> GetFollowers(int ClubId)
         {
-            var clubsCount = await _clubService.GetClubsCountAsync();
-
-            return Ok(clubsCount);
-        }
-
-        /// <summary>
-        /// Get image in base64 format
-        /// </summary>
-        /// <param name="imageName">Image name</param>
-        /// <returns>Image in base64 format</returns>
-        /// <response code="200">An base64 image</response>
-        [HttpGet("getImage/{imageName}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<string> GetImage(string imageName)
-        {
-            return await _clubService.GetImageBase64Async(imageName);
-        }
-
-        /// <summary>
-        /// Get club by id
-        /// </summary>
-        /// <param name="clubId">Club id</param>
-        /// <returns>Club object</returns>
-        /// <response code="200">An instance of club</response>
-        [HttpGet("{clubId:int}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetClub(int clubId)
-        {
-            var viewModel =
-                _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(
-                    await _clubService.GetClubProfileAsync(clubId));
-            viewModel = await CheckCurrentUserRoles(viewModel);
-            viewModel.Club.Logo = await _clubService.GetImageBase64Async(viewModel.Club.Logo);
-
-            return Ok(viewModel);
-
-        }
-
-        /// <summary>
-        /// Get all club members by club id
-        /// </summary>
-        /// <param name="clubId">Club id</param>
-        /// <returns>Object array with club members</returns>
-        /// <response code="200">An instance of club members</response>
-        [HttpGet("{clubId:int}/members")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetClubMembers(int clubId)
-        {
-            var viewModel =
-                _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(
-                    await _clubService.GetClubMembersOrFollowersAsync(clubId, true));
-            viewModel = await CheckCurrentUserRoles(viewModel);
-
-            return Ok(viewModel);
-        }
-
-        /// <summary>
-        /// Get all club followers by club id
-        /// </summary>
-        /// <param name="clubId">Club id</param>
-        /// <returns>Object array with club followers</returns>
-        /// <response code="200">An instance of club followers</response>
-        [HttpGet("{clubId:int}/followers")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetClubFollowers(int clubId)
-        {
-            var viewModel =
-                _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(
-                    await _clubService.GetClubMembersOrFollowersAsync(clubId, false));
-            viewModel = await CheckCurrentUserRoles(viewModel);
-
-            return Ok(viewModel);
-        }
-
-        /// <summary>
-        /// Get club info by id
-        /// </summary>
-        /// <param name="clubId">Club id</param>
-        /// <returns>Club object</returns>
-        /// <response code="200">An instance of club</response>
-        [HttpGet("{clubId:int}/description")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetClubDescription(int clubId)
-        {
-            return Ok(await _clubService.GetClubInfoByIdAsync(clubId));
-        }
-
-        /// <summary>
-        /// Updated club
-        /// </summary>
-        /// <param name="club">Club</param>
-        /// <returns>Info that club was updated</returns>
-        /// <response code="200">An instance of club was updated</response>
-        [HttpPost("edit")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> Edit(ClubViewModel club)
-        {
-            var mappedClub = _mapper.Map<ClubViewModel, ClubDTO>(club);
-
-            var isClubNameNotChanged = await _clubService.VerifyClubNameIsNotChangedAsync(mappedClub);
-
-            if (!isClubNameNotChanged)
+            var ClubProfileDto = await _ClubService.GetClubFollowersAsync(ClubId);
+            if (ClubProfileDto == null)
             {
-                var isValid = await _clubService.ValidateAsync(mappedClub);
-
-                if (!isValid)
-                {
-                    return StatusCode((int)HttpStatusCode.UnprocessableEntity);
-                }
+                return NotFound();
             }
 
-            await _clubService.UpdateAsync(mappedClub);
+            var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
+            ClubProfile.CanEdit = await _ClubAccessService.HasAccessAsync(User, ClubId);
 
-            return Ok("Updated");
+            return Ok(new { ClubProfile.Followers, ClubProfile.CanEdit });
         }
 
         /// <summary>
-        /// Create club
+        /// Get all administrators of a specific Club
         /// </summary>
-        /// <param name="club">Club</param>
-        /// <returns>Info that club was created</returns>
-        /// <response code="200">An instance of club was created</response>
-        [HttpPost("create")]
+        /// <param name="ClubId">The id of the Club</param>
+        /// <returns>All administrators of a specific Club</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Club not found</response>
+        [HttpGet("Admins/{ClubId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> Create(ClubViewModel club)
+        public async Task<IActionResult> GetAdmins(int ClubId)
         {
-            var isValid =  await _clubService.ValidateAsync(_mapper.Map<ClubViewModel, ClubDTO>(club));
-
-            if (!isValid)
+            var ClubProfileDto = await _ClubService.GetClubAdminsAsync(ClubId);
+            if (ClubProfileDto == null)
             {
-                return StatusCode((int)HttpStatusCode.UnprocessableEntity);
+                return NotFound();
             }
 
-            return Ok(await _clubService.CreateAsync(_mapper.Map<ClubViewModel, ClubDTO>(club)));
+            var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
+            ClubProfile.CanEdit = await _ClubAccessService.HasAccessAsync(User, ClubId);
+
+            return Ok(new { ClubProfile.Administration, ClubProfile.Head, ClubProfile.CanEdit });
         }
 
         /// <summary>
-        /// Get club administration
+        /// Get all documents of a specific Club
         /// </summary>
-        /// <param name="clubId">Club id</param>
-        /// <returns></returns>
-        /// <response code="200">An instance of club</response>
-        [HttpGet("{clubId:int}/administration")]
+        /// <param name="ClubId">The id of the Club</param>
+        /// <returns>All documents of a specific Club</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Club not found</response>
+        [HttpGet("Documents/{ClubId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetClubAdministration(int clubId)
+        public async Task<IActionResult> GetDocuments(int ClubId)
         {
-            var viewModel =
-                _mapper.Map<ClubProfileDTO, ClubProfileViewModel>(
-                    await _clubAdministrationService.GetClubAdministrationByIdAsync(clubId));
-            viewModel = await CheckCurrentUserRoles(viewModel);
+            var ClubProfileDto = await _ClubService.GetClubDocumentsAsync(ClubId);
+            if (ClubProfileDto == null)
+            {
+                return NotFound();
+            }
 
-            return Ok(viewModel);
+            var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
+            ClubProfile.CanEdit = await _ClubAccessService.HasAccessAsync(User, ClubId);
+
+            return Ok(new { ClubProfile.Documents, ClubProfile.CanEdit });
         }
 
         /// <summary>
-        /// Delete administrator from club
+        /// Get an information about a specific Club
         /// </summary>
-        /// <param name="adminId">admin id</param>
-        /// <returns>Info that the administrator was deleted</returns>
-        /// <response code="200">The club administration deleted</response>
-        [HttpDelete("administration/{adminId:int}")]
+        /// <param name="ClubId">The id of the Club</param>
+        /// <returns>An information about a specific Club</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Club not found</response>
+        [HttpGet("Details/{ClubId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> DeleteAdministration(int adminId)
+        public async Task<IActionResult> Details(int ClubId)
         {
-            await _clubAdministrationService.DeleteClubAdminAsync(adminId);
+            var ClubDto = await _ClubService.GetByIdAsync(ClubId);
+            if (ClubDto == null)
+            {
+                return NotFound();
+            }
 
-            return Ok($"Club Administrator with id={adminId} deleted.");
+            return Ok(_mapper.Map<ClubDTO, ClubViewModel>(ClubDto));
         }
 
         /// <summary>
-        /// Change club member approve status
+        /// Get a photo in base64 format
         /// </summary>
-        /// <param name="clubId">Club id</param>
-        /// <param name="memberId">Club member id</param>
-        /// <returns>Object array of club members</returns>
-        /// <response code="200">The club member approve changed</response>
-        [HttpPut("{clubId:int}/member/{memberId:int}/change-status")]
+        /// <param name="logoName">The name of a Club logo</param>
+        /// <returns>A base64 string of the Club logo</returns>
+        [HttpGet("LogoBase64")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> ChangeApproveStatus(int clubId, int memberId)
+        public async Task<IActionResult> GetPhotoBase64(string logoName)
         {
-            return Ok(_mapper.Map<ClubMembersDTO, ClubMembersViewModel>(
-                await _clubMembersService.ToggleIsApprovedInClubMembersAsync(memberId, clubId)));
+            var logoBase64 = await _ClubService.GetLogoBase64(logoName);
+
+            return Ok(logoBase64);
         }
 
         /// <summary>
-        /// Set club administrator privilege end date
+        /// Create a new Club
         /// </summary>
-        /// <param name="clubAdministrationId">Club administrator id</param>
-        /// <param name="endDate">End date</param>
-        /// <returns>New club administrator object</returns>
-        /// <response code="200">The club administrator date changed</response>
-        [HttpPut("administration/{clubAdministrationId:int}/change-end-date")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> SetClubAdministratorEndDate(int clubAdministrationId, DateTime endDate)
+        /// <param name="Club">An information about a new Club</param>
+        /// <returns>An id of a new Club</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="400">Wrong input</response>
+        [HttpPost("CreateClub")]
+        //[Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> Create(ClubViewModel Club)
         {
-            return Ok(await _clubAdministrationService.SetAdminEndDateAsync(clubAdministrationId, endDate));
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var ClubDTO = _mapper.Map<ClubViewModel, ClubDTO>(Club);
+
+            ClubDTO.ID = await _ClubService.CreateAsync(ClubDTO);
+            _logger.LogInformation($"Club {{{ClubDTO.Name}}} was created.");
+
+            return Ok(ClubDTO.ID);
         }
 
         /// <summary>
-        /// Add new administrator to club
+        /// Edit a specific Club
         /// </summary>
-        /// <param name="clubId">Club id</param>
-        /// <param name="createdAdmin">New administrator</param>
-        /// <returns>New club administrator object</returns>
-        /// <response code="200">A new club administrator added</response>
-        [HttpPost("{clubId:int}/add-administration")]
+        /// <param name="Club">An information about an edited Club</param>
+        /// <response code="200">Successful operation</response>
+        /// <response code="400">Wrong input</response>
+        [HttpPut("EditClub/{ClubId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> AddAdmin(int clubId, ClubAdministrationViewModel createdAdmin)
+        public async Task<IActionResult> Edit(ClubViewModel Club)
         {
-            var club = await _clubService.GetClubInfoByIdAsync(clubId);
-            var clubAdministration = _mapper.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(createdAdmin);
-            clubAdministration.ClubId = club.ID;
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            return Ok(_mapper.Map<ClubAdministrationDTO, ClubAdministrationViewModel>(
-                await _clubAdministrationService.AddClubAdminAsync(clubAdministration)));
+            var ClubDTO = _mapper.Map<ClubViewModel, ClubDTO>(Club);
 
-        }
-
-        /// <summary>
-        /// Add new follower to club
-        /// </summary>
-        /// <param name="clubId">Club id</param>
-        /// <param name="userId">User id</param>
-        /// <returns>New club follower object</returns>
-        ///<response code="200">A new club follower added</response>
-        [HttpPost("{clubId:int}/add-follower/{userId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> AddFollower(int clubId, string userId)
-        {
-            userId = User.IsInRole("Admin") ? userId : await _userManagerService.GetUserIdAsync(User);
-
-            return Ok(_mapper.Map<ClubMembersDTO, ClubMembersViewModel>(
-                await _clubMembersService.AddFollowerAsync(clubId, userId)));
-        }
-
-        /// <summary>
-        /// Remove a specific member from the club
-        /// </summary>
-        /// <param name="memberId">The id of the member</param>
-        [HttpDelete("remove-member/{memberId:int}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> RemoveMember(int memberId)
-        {
-            await _clubMembersService.RemoveMemberAsync(memberId);
+            await _ClubService.EditAsync(ClubDTO);
+            _logger.LogInformation($"Club {{{ClubDTO.Name}}} was edited.");
 
             return Ok();
         }
+
+        /// <summary>
+        /// Remove a specific Club
+        /// </summary>
+        /// <param name="ClubId">The id of the Club</param>
+        [HttpDelete("RemoveClub/{ClubId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> Remove(int ClubId)
+        {
+            await _ClubService.RemoveAsync(ClubId);
+            _logger.LogInformation($"Club with id {{{ClubId}}} was deleted.");
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Add a current user to followers
+        /// </summary>
+        /// <param name="ClubId">An id of the Club</param>
+        /// <returns>An information about a new follower</returns>
+        [HttpPost("AddFollower/{ClubId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> AddFollower(int ClubId)
+        {
+            var follower = await _ClubMembersService.AddFollowerAsync(ClubId, User);
+            _logger.LogInformation($"User {{{follower.UserId}}} became a follower of Club {{{ClubId}}}.");
+
+            return Ok(follower);
+        }
+
+        /// <summary>
+        /// Remove a specific follower from the Club
+        /// </summary>
+        /// <param name="followerId">The id of the follower</param>
+        [HttpDelete("RemoveFollower/{followerId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> RemoveFollower(int followerId)
+        {
+            await _ClubMembersService.RemoveFollowerAsync(followerId);
+            _logger.LogInformation($"Follower with ID {{{followerId}}} was removed.");
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Toggle an approve status for member
+        /// </summary>
+        /// <param name="memberId">The id of the member</param>
+        /// <returns>An information about a specific member</returns>
+        [HttpPut("ChangeApproveStatus/{memberId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> ChangeApproveStatus(int memberId)
+        {
+            var member = await _ClubMembersService.ToggleApproveStatusAsync(memberId);
+            _logger.LogInformation($"Status of member with ID {{{memberId}}} was changed.");
+
+            return Ok(member);
+        }
+
+        /// <summary>
+        /// Add a new administrator to the Club
+        /// </summary>
+        /// <param name="newAdmin">An information about a new administrator</param>
+        /// <returns>An information about a new administrator</returns>
+        [HttpPost("AddAdmin/{ClubId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> AddAdmin(ClubAdministrationViewModel newAdmin)
+        {
+            var admin = _mapper.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(newAdmin);
+            await _ClubAdministrationService.AddAdministratorAsync(admin);
+
+            _logger.LogInformation($"User {{{admin.UserId}}} became admin for Club {{{admin.ClubId}}}" +
+                $" with role {{{admin.AdminType.AdminTypeName}}}.");
+
+            return Ok(admin);
+        }
+
+        /// <summary>
+        /// Remove a specific administrator from the Club
+        /// </summary>
+        /// <param name="adminId">The id of the administrator</param>
+        [HttpPut("RemoveAdmin/{adminId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> RemoveAdmin(int adminId)
+        {
+            await _ClubAdministrationService.RemoveAdministratorAsync(adminId);
+            _logger.LogInformation($"Admin with ID {{{adminId}}} was removed.");
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Edit an information about a specific admininstrator
+        /// </summary>
+        /// <param name="admin">An information about a new administrator</param>
+        /// <returns>An information about a specific admininstrator</returns>
+        [HttpPut("EditAdmin/{adminId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> EditAdmin(ClubAdministrationViewModel admin)
+        {
+            var adminDTO = _mapper.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(admin);
+
+            await _ClubAdministrationService.EditAdministratorAsync(adminDTO);
+            _logger.LogInformation($"Admin with User-ID {{{admin.UserId}}} was edited.");
+
+            return Ok(adminDTO);
+        }
+
+        /// <summary>
+        /// Add a document to the Club
+        /// </summary>
+        /// <param name="document">An information about a specific document</param>
+        /// <returns>A newly created document</returns>
+        [HttpPost("AddDocument/{ClubId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> AddDocument(ClubDocumentsViewModel document)
+        {
+            var documentDTO = _mapper.Map<ClubDocumentsViewModel, ClubDocumentsDTO>(document);
+
+            await _ClubDocumentsService.AddDocumentAsync(documentDTO);
+            _logger.LogInformation($"Document with id {{{documentDTO.ID}}} was added.");
+
+            return Ok(documentDTO);
+        }
+
+        /// <summary>
+        /// Get a file in base64 format
+        /// </summary>
+        /// <param name="fileName">The name of a Club file</param>
+        /// <returns>A base64 string of the file</returns>
+        [HttpGet("FileBase64/{fileName}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetFileBase64(string fileName)
+        {
+            var fileBase64 = await _ClubDocumentsService.DownloadFileAsync(fileName);
+
+            return Ok(fileBase64);
+        }
+
+        /// <summary>
+        /// Remove a specific document
+        /// </summary>
+        /// <param name="documentId">The id of a specific document</param>
+        [HttpDelete("RemoveDocument/{documentId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> RemoveDocument(int documentId)
+        {
+            await _ClubDocumentsService.DeleteFileAsync(documentId);
+            _logger.LogInformation($"Document with id {{{documentId}}} was deleted.");
+
+            return Ok();
+        }
+
+        [HttpGet("GetDocumentTypes")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetDocumentTypesAsync()
+        {
+            var documentTypes = await _ClubDocumentsService.GetAllClubDocumentTypesAsync();
+
+            return Ok(documentTypes);
+        }
+
+        /// <summary>
+        /// Get all legal statuses
+        /// </summary>
+        /// <returns>List of legal statuses</returns>
+        //[HttpGet("getLegalStatuses")]
+        //public IActionResult GetLegalStatuses()
+        //{
+        //    var legalStatuses = new List<string>();
+        //    foreach (var enumValue in Enum.GetValues(typeof(AnnualReportDTO.ClubLegalStatusTypeDTO)).Cast<AnnualReportDTOs.ClubLegalStatusTypeDTO>())
+        //    {
+        //        legalStatuses.Add(enumValue.GetDescription());
+        //    }
+
+        //    return Ok(new { legalStatuses });
+        //}
+
+        /// <summary>
+        /// Get all Clubs that the user has access to
+        /// </summary>
+        /// <returns>List of Clubs</returns>
+        [HttpGet]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetClubsThatUserHasAccessTo()
+        {
+            return Ok(new { Clubs = await _ClubAccessService.GetClubsAsync(User) });
+        }
+
+
+
+        [HttpGet("GetUserAdmins/{UserId}")]
+
+        public async Task<IActionResult> GetUserAdministrations(string UserId)
+        {
+            var userAdmins = await _ClubAdministrationService.GetAdministrationsOfUserAsync(UserId);
+
+            return Ok(userAdmins);
+        }
+
 
 
     }
