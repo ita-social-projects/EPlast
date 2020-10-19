@@ -665,9 +665,8 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 {
                     _userMembershipDates = new UserMembershipDatesRepository(_dbContext);
                 }
-                return _userMembershipDates;
-
             }
+            return _userMembershipDates;
         }
 
         public IUserPlastDegreesRepository UserPlastDegrees
