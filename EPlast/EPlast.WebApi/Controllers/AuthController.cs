@@ -1,4 +1,5 @@
-﻿using System.Security.Policy;
+﻿using System;
+using System.Security.Policy;
 using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
@@ -92,48 +93,30 @@ namespace EPlast.WebApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GoogleLogin(string googleToken)
         {
-            var user = await _authService.GetGoogleUserInfoAsync(googleToken);
-            //var result = await _authService.SignInAsync(new LoginDto(){Email = user.Email,Password = user.PasswordHash});
-            //if (result.IsLockedOut)
-            //{
-            //    return BadRequest(_resourceForErrors["Account-Locked"]);
-            //}
-            //if (result.Succeeded)
-            //{
-            await _authService.GoogleSignInAsync(user);
-            var generatedToken = await _jwtService.GenerateJWTTokenAsync(_mapper.Map<User, UserDTO>(user));
-                //await _authService.GoogleSignInAsync(user);
-                //await _authService.SignInAsync(new LoginDto() { Email = user.Email, Password = user.PasswordHash });
-            return Ok(new { token = generatedToken });
-            //}
-          
-            //return BadRequest(_resourceForErrors["Login-InCorrectPassword"]);
+            try
+            {
+                var user = await _authService.GetGoogleUserAsync(googleToken);
+                if (user == null)
+                {
+                    return BadRequest();
+                }
+
+                await _authService.GoogleSignInAsync(user);
+
+                var generatedToken = await _jwtService.GenerateJWTTokenAsync(_mapper.Map<User, UserDTO>(user));
+
+                return Ok(new {token = generatedToken});
+            }
+            catch (Exception exc)
+            {
+                _loggerService.LogError(exc.Message);
+            }
             
-    }
+            return BadRequest();
+            
 
-        //[HttpPost("signin/google")]
-        //[ProducesDefaultResponseType]
-        //public async Task<JsonResult> GoogleLogin(string request)
-        //{
-        //    //GoogleJsonWebSignature.Payload payload;
-        //    //try
-        //    //{
-        //    //    payload = await ValidateAsync(request.IdToken, new GoogleJsonWebSignature.ValidationSettings
-        //    //    {
-        //    //        Audience = new[] { "YOUR_CLIENT_ID" }
-        //    //    });
-        //    //    // It is important to add your ClientId as an audience in order to make sure
-        //    //    // that the token is for your application!
-        //    //}
-        //    //catch
-        //    //{
-        //    //    // Invalid token
-        //    //}
+        }
 
-        //    //var user = await GetOrCreateExternalLoginUser("google", payload.Subject, payload.Email, payload.GivenName, payload.FamilyName);
-        //    //var token = await GenerateToken(user);
-        //    //return new JsonResult(token);
-        //}
         /// <summary>
         /// Method for registering in system
         /// </summary>
