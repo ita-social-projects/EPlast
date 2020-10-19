@@ -28,7 +28,7 @@ namespace EPlast.BLL.Services.Blank
         }
 
 
-        public async Task<List<AchievementDocumentsDTO>> AddDocumentAsync(List<AchievementDocumentsDTO> achievementDocumentsDTO)
+        public async Task<IEnumerable<AchievementDocumentsDTO>> AddDocumentAsync(IEnumerable<AchievementDocumentsDTO> achievementDocumentsDTO)
         {
             foreach (AchievementDocumentsDTO achievementDocumentDTO in achievementDocumentsDTO)
             {
@@ -64,18 +64,18 @@ namespace EPlast.BLL.Services.Blank
             return await _blobStorageRepo.GetBlobBase64Async(fileName);
         }
 
-        public async Task<List<AchievementDocumentsDTO>> GetDocumentsByUserId(string userid)
+        public async Task<IEnumerable<AchievementDocumentsDTO>> GetDocumentsByUserId(string userid)
         {
-            return _mapper.Map<IEnumerable<AchievementDocuments>, List<AchievementDocumentsDTO>>(
+            return _mapper.Map<IEnumerable<AchievementDocuments>,IEnumerable<AchievementDocumentsDTO>>(
                 await _repositoryWrapper.AchievementDocumentsRepository.FindByCondition(i => i.UserId == userid)
                 .ToListAsync());
         }
 
-        public async Task<List<AchievementDocumentsDTO>> GetPartOfAchievement(int pageNumber, int pageSize, string userid)
+        public async Task<IEnumerable<AchievementDocumentsDTO>> GetPartOfAchievement(int pageNumber, int pageSize, string userid)
         {
             var partOfAchievements = await _repositoryWrapper.AchievementDocumentsRepository.FindByCondition(i => i.UserId == userid).Skip(pageSize * pageNumber).Take(pageSize).ToListAsync();
 
-            return _mapper.Map<List<AchievementDocuments>, List<AchievementDocumentsDTO>>(partOfAchievements);
+            return _mapper.Map<IEnumerable<AchievementDocuments>, IEnumerable<AchievementDocumentsDTO>>(partOfAchievements);
             
         }
     }
