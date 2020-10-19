@@ -42,7 +42,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>A newly created Blank achievement document</returns>
         [HttpPost("AddAchievementDocumet/{userId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> AddAchievementDocument(List<AchievementDocumentsDTO> achievementDocuments)
+        public async Task<IActionResult> AddAchievementDocument(IEnumerable<AchievementDocumentsDTO> achievementDocuments)
         {
             await _blankAchievementDocumentService.AddDocumentAsync(achievementDocuments);
 
@@ -61,7 +61,7 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _blankBiographyDocumentService.GetDocumentByUserId(userId));
         }
 
-        [HttpGet("InfinityScroll/{pageNumber:int}")]
+        [HttpGet("InfinityScroll")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetPartOfAchievement(int pageNumber, int pageSize, string userId)
         {
