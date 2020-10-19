@@ -100,9 +100,10 @@ namespace EPlast.WebApi.Controllers
             //}
             //if (result.Succeeded)
             //{
-                var generatedToken = await _jwtService.GenerateJWTTokenAsync(_mapper.Map<User, UserDTO>(user));
-                await _authService.GoogleSignInAsync(user);
-                await _authService.SignInAsync(new LoginDto() { Email = user.Email, Password = user.PasswordHash });
+            await _authService.GoogleSignInAsync(user);
+            var generatedToken = await _jwtService.GenerateJWTTokenAsync(_mapper.Map<User, UserDTO>(user));
+                //await _authService.GoogleSignInAsync(user);
+                //await _authService.SignInAsync(new LoginDto() { Email = user.Email, Password = user.PasswordHash });
             return Ok(new { token = generatedToken });
             //}
           
