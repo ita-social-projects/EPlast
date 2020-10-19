@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Security.Policy;
+using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Jwt;
@@ -10,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using System.Threading.Tasks;
 using System.Web;
+using EPlast.BLL.DTO.UserProfiles;
+using EPlast.DataAccess.Entities;
 using Google.Apis.Auth;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
@@ -89,12 +92,23 @@ namespace EPlast.WebApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GoogleLogin(string googleToken)
         {
-
-                 await _authService.GetGoogleUserInfoAsync(googleToken);
-               
+            var user = await _authService.GetGoogleUserInfoAsync(googleToken);
+            //var result = await _authService.SignInAsync(new LoginDto(){Email = user.Email,Password = user.PasswordHash});
+            //if (result.IsLockedOut)
+            //{
+            //    return BadRequest(_resourceForErrors["Account-Locked"]);
+            //}
+            //if (result.Succeeded)
+            //{
+                var generatedToken = await _jwtService.GenerateJWTTokenAsync(_mapper.Map<User, UserDTO>(user));
+                await _authService.GoogleSignInAsync(user);
+                await _authService.SignInAsync(new LoginDto() { Email = user.Email, Password = user.PasswordHash });
+            return Ok(new { token = generatedToken });
+            //}
+          
+            //return BadRequest(_resourceForErrors["Login-InCorrectPassword"]);
             
-            return Ok(_resourceForErrors["ModelIsNotValid"]);
-        }
+    }
 
         //[HttpPost("signin/google")]
         //[ProducesDefaultResponseType]
