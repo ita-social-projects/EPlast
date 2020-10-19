@@ -279,19 +279,22 @@ namespace EPlast.BLL.Services
             {
                 user = new User
                 {
-                    UserName = googleApiTokenInfo.name,
+                    UserName = googleApiTokenInfo.email,
                     Email = googleApiTokenInfo.email,
                     FirstName = googleApiTokenInfo.given_name,
                     LastName = googleApiTokenInfo.family_name,
                     SocialNetworking = true,
-                    ImagePath = googleApiTokenInfo.picture,
+                    ImagePath = "default_user_image.png"/*googleApiTokenInfo.picture*/,
                     EmailConfirmed = true,
                     RegistredOn = DateTime.Now,
                     UserProfile = new UserProfile(),
                 };
-                await _userManager.CreateAsync(user,user.PasswordHash);
-                await _emailConfirmation.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
+               var createResult = await _userManager.CreateAsync(user);
+                //_userManager.Users.
+                if(createResult.Succeeded)
+                    await _emailConfirmation.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
                     "Ви зареєструвались в системі EPlast використовуючи свій Google-акаунт ", "Адміністрація сайту EPlast");
+
             }
 
             //var loginInfo = new UserLoginInfo(user.Email, Guid.NewGuid().ToString(), user.UserName);
