@@ -60,6 +60,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private ICityLegalStatusesRepository _cityLegalStatuses;
         private IClubLegalStatusesRepository _clubLegalStatuses;
         private IUserPlastDegreesRepository _userPlastDegrees;
+        private IUserMembershipDatesRepository _userMembershipDates;
         private IEventAdministrationRepository _eventAdministration;
         private IEventAdministrationTypeRepository _eventAdministrationType;
         private IEventCategoryTypeRepository _eventCategoryTypeRepository;
@@ -68,6 +69,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IEducatorsStaffTypesRepository _KVtypes;
         private IRegionDocumentRepository _regionDocs;
         private IBlankBiographyDocumentsRepository _biographyDocumentsRepository;
+        private IAchievementDocumentsRepository _achievementDocumentsRepository;
 
 
         public IEducatorsStaffTypesRepository KVTypes
@@ -642,7 +644,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 return _cityLegalStatuses;
             }
         }
-
+        
         public IClubLegalStatusesRepository ClubLegalStatuses
         {
             get
@@ -651,7 +653,20 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 {
                     _clubLegalStatuses = new ClubLegalStatusesRepository(_dbContext);
                 }
+             }
                 return _clubLegalStatuses;
+         }
+
+        public IUserMembershipDatesRepository UserMembershipDates
+        {
+            get
+            {
+                if (_userMembershipDates == null)
+                {
+                    _userMembershipDates = new UserMembershipDatesRepository(_dbContext);
+                }
+                return _userMembershipDates;
+
             }
         }
 
@@ -711,6 +726,18 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                     _biographyDocumentsRepository = new BlankBiographyDocumentsRepository(_dbContext);
                 }
                 return _biographyDocumentsRepository;
+            }
+        }
+
+        public IAchievementDocumentsRepository AchievementDocumentsRepository
+        {
+            get
+            {
+                if (_achievementDocumentsRepository == null)
+                {
+                    _achievementDocumentsRepository = new AchievementDocumentsRepository(_dbContext);
+                }
+                return _achievementDocumentsRepository;
             }
         }
 

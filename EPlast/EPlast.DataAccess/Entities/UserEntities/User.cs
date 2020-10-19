@@ -50,6 +50,7 @@ namespace EPlast.DataAccess.Entities
         public ICollection<AnnualReport> CreatedAnnualReports { get; set; }
         public ICollection<AnnualReport> NewCityAdminAnnualReports { get; set; }
         public ICollection<UserPlastDegree> UserPlastDegrees { get; set; }
+        public ICollection<UserMembershipDates> UserMembershipDates { get; set; }
         public ICollection<EducatorsStaff.EducatorsStaff> UsersKadras { get; set; }
         public ICollection<UserDistinction> UserDistinctions { get; set; }
         public ICollection<BlankBiographyDocuments> BlankBiographyDocuments { get; set; }

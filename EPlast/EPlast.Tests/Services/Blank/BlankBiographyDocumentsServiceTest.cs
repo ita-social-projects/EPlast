@@ -4,7 +4,6 @@ using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Services.Blank;
 using EPlast.DataAccess.Entities.Blank;
 using EPlast.DataAccess.Repositories;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
@@ -56,7 +55,7 @@ namespace EPlast.Tests.Services.Blank
         }
 
         [Test]
-        public async Task DeleteFileAsync_ReturnStatusCode200OK()
+        public async Task DeleteFileAsync_ReturnStatusCode204NoContent()
         {
             //Arrange
             _repoWrapper
@@ -71,11 +70,9 @@ namespace EPlast.Tests.Services.Blank
             _repoWrapper.Setup(rw => rw.SaveAsync());
 
             //Act
-            var result = await _blankBiographyService.DeleteFileAsync(BlankBiographyDocuments.ID);
+            await _blankBiographyService.DeleteFileAsync(BlankBiographyDocuments.ID);
             //Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(StatusCodes.Status200OK, result);
-
+            _repoWrapper.Verify();
         }
 
         [Test]

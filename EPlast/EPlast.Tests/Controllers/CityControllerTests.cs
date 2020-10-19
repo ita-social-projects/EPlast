@@ -4,9 +4,14 @@ using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.WebApi.Controllers;
 using EPlast.WebApi.Models.City;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Routing;
 using Moq;
 using NUnit.Framework;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -36,7 +41,6 @@ namespace EPlast.Tests.Controllers
         }
 
         private CitiesController CreateCityController => new CitiesController(_logger.Object,
-
              _mapper.Object,
            _cityService.Object,
            _cityMembersService.Object,
@@ -527,14 +531,44 @@ namespace EPlast.Tests.Controllers
         }
 
 
-       
+       [TestCase(1,1,"Львів")]
+        public async Task GetCities_Valid_Test(int page, int pageSize, string cityName)
+        {
+            CitiesController citycon = CreateCityController;
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole("Admin"))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            citycon.ControllerContext = context;
+            _cityService.Setup(c => c.GetAllDTOAsync(It.IsAny<string>())).ReturnsAsync(GetCitiesBySearch());
+
+            var result = await citycon.GetCities(page, pageSize, cityName);
+
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(((result as ObjectResult).Value as CitiesViewModel)
+                .Cities.Where(c => c.Name.Equals("Львів")));
+        }
+
         private int GetFakeID()
         {
             return 1;
         }
-      
 
-
+        private List<CityDTO> GetCitiesBySearch()
+        {
+            return new List<CityDTO>()
+            {
+                new CityDTO()
+                {
+                    Name = "Львів",
+                }
+            };
+        }
     }
 }
 
