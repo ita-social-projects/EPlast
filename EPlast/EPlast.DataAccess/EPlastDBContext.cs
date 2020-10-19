@@ -112,6 +112,11 @@ namespace EPlast.DataAccess
                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<User>()
+               .HasMany(x => x.UserMembershipDates)
+               .WithOne(x => x.User)
+               .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>()
                .HasMany(x => x.RegionAdministrations)
                .WithOne(x => x.User)
                .OnDelete(DeleteBehavior.Cascade);
@@ -208,11 +213,13 @@ namespace EPlast.DataAccess
         public DbSet<CityLegalStatus> CityLegalStatuses { get; set; }
         public DbSet<ClubLegalStatus> ClubLegalStatuses { get; set; }
         public DbSet<UserPlastDegree> UserPlastDegrees { get; set; }
+        public DbSet<UserMembershipDates> UserMembershipDates { get; set; }
         public DbSet<PlastDegree> PlastDegrees { get; set; }
         public DbSet<EducatorsStaff> KVs { get; set; }
         public DbSet<EducatorsStaffTypes> KVTypes { get; set; }
         public DbSet<Distinction> Distinctions { get; set; }
         public DbSet<UserDistinction> UserDistinctions { get; set; }
         public DbSet<BlankBiographyDocuments> BlankBiographyDocuments { get; set; }
+        public DbSet<AchievementDocuments> AchievementDocuments { get; set; }
     }
 }

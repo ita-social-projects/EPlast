@@ -58,11 +58,13 @@ namespace EPlast.DataAccess.Repositories
         IClubLegalStatusesRepository ClubLegalStatuses { get; }
 
         IUserPlastDegreesRepository UserPlastDegrees { get; }
+        IUserMembershipDatesRepository UserMembershipDates { get; }
         IEventAdministrationRepository EventAdministration { get; }
         IEventCategoryTypeRepository EventCategoryType { get; }
         IDistinctionRepository Distinction { get; }
         IUserDistinctionRepository UserDistinction { get; }
         IBlankBiographyDocumentsRepository  BiographyDocumentsRepository { get; }
+        IAchievementDocumentsRepository AchievementDocumentsRepository { get; }
         IPlastDegreeRepository PlastDegrees { get; }
         IEducatorsStaffRepository KVs { get; }
         IEducatorsStaffTypesRepository KVTypes { get; }
