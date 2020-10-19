@@ -14,6 +14,7 @@ using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Region;
+using EPlast.BLL.Interfaces.Statistics;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services;
 using EPlast.BLL.Services.ActiveMembership;
@@ -25,13 +26,13 @@ using EPlast.BLL.Services.City;
 using EPlast.BLL.Services.City.CityAccess;
 using EPlast.BLL.Services.Club;
 using EPlast.BLL.Services.Distinctions;
-
 using EPlast.BLL.Services.Events;
 using EPlast.BLL.Services.EventUser;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.Jwt;
 using EPlast.BLL.Services.Logging;
 using EPlast.BLL.Services.Region;
+using EPlast.BLL.Services.Statistics;
 using EPlast.BLL.Services.UserProfiles;
 using EPlast.BLL.Settings;
 using EPlast.DataAccess.Entities.EducatorsStaff;
@@ -116,7 +117,10 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IEducatorsStaffTypesService, EducatorsStaffTypesService>();
             services.AddScoped<IBlankBiographyDocumentService, BlankBiographyDocumentsService>();
             services.AddScoped<IBlankAchievementDocumentService, AchievementDocumentService>();
-;
+            services.AddScoped<ICityStatisticsService, StatisticsService>();
+            services.AddScoped<IRegionStatisticsService, StatisticsService>();
+            services.AddScoped<StatisticsServiceSettings>();
+
             return services;
         }
     }
