@@ -189,14 +189,6 @@ namespace EPlast.BLL.Interfaces
         Task SendEmailReseting(string confirmationLink, ForgotPasswordDto forgotPasswordDto);
 
         /// <summary>
-        /// Sign in using Google
-        /// </summary>
-        /// <param name="email"></param>
-        /// <param name="externalLoginInfo"></param>
-        /// <returns>Result of Google authentication</returns>
-        Task GoogleAuthentication(string email, ExternalLoginInfo externalLoginInfo);
-
-        /// <summary>
         /// Sign in using Facebook
         /// </summary>
         /// <param name="email"></param>
@@ -204,7 +196,16 @@ namespace EPlast.BLL.Interfaces
         /// <returns>Result of Facebook authentication</returns>
         Task FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo);
 
-        Task<User> GetGoogleUserInfoAsync(string providerToken);
+        /// <summary>
+        ///  Validates google token and gets user information
+        /// </summary>
+        /// <param name="providerToken"></param>
+        /// <returns>Returns Google user information</returns>
+        Task<User> GetGoogleUserAsync(string providerToken);
+        /// <summary>
+        /// Sign in using Google
+        /// </summary>
+        /// <param name="user"></param>
         Task GoogleSignInAsync(User user);
     }
 }
