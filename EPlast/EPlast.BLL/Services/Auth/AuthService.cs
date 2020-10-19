@@ -245,7 +245,7 @@ namespace EPlast.BLL.Services
             await _emailConfirmation.SendEmailAsync(forgotPasswordDto.Email, "Скидування пароля",
                 $"Для скидування пароля перейдіть за : <a href='{confirmationLink}'>посиланням</a>", "Адміністрація сайту EPlast");
         }
-        public async Task GetGoogleUserInfoAsync(string providerToken)
+        public async Task<User> GetGoogleUserInfoAsync(string providerToken)
         {
             string GoogleApiTokenInfoUrl = "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token={0}";
             var httpClient = new HttpClient();
@@ -287,16 +287,27 @@ namespace EPlast.BLL.Services
                     ImagePath = googleApiTokenInfo.picture,
                     EmailConfirmed = true,
                     RegistredOn = DateTime.Now,
-                    UserProfile = new UserProfile()
+                    UserProfile = new UserProfile(),
                 };
-                await _userManager.CreateAsync(user);
+                await _userManager.CreateAsync(user,user.PasswordHash);
                 await _emailConfirmation.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
                     "Ви зареєструвались в системі EPlast використовуючи свій Google-акаунт ", "Адміністрація сайту EPlast");
             }
+
+            //var loginInfo = new UserLoginInfo(user.Email, Guid.NewGuid().ToString(), user.UserName);
+            //await _userManager.AddToRoleAsync(user, "Прихильник");
+            //await _userManager.AddLoginAsync(user, loginInfo);
+            //await _signInManager.SignInAsync(user, isPersistent: false);
+            return user;
+
+        }
+        public async Task GoogleSignInAsync(User user)
+        {
+            var loginInfo = new UserLoginInfo(user.Email, Guid.NewGuid().ToString(), user.UserName);
             await _userManager.AddToRoleAsync(user, "Прихильник");
-            await _userManager.AddLoginAsync(user, new UserLoginInfo( user.Email, Guid.NewGuid().ToString(),user.UserName));
-            await _signInManager.SignInAsync(user, isPersistent: false);
-      
+            await _userManager.AddLoginAsync(user, loginInfo);
+             await _signInManager.SignInAsync(user, isPersistent: false);
+           
         }
         ///<inheritdoc/>
         public async Task GoogleAuthentication(string email, ExternalLoginInfo externalLoginInfo)

@@ -204,6 +204,7 @@ namespace EPlast.BLL.Interfaces
         /// <returns>Result of Facebook authentication</returns>
         Task FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo);
 
-        Task GetGoogleUserInfoAsync(string providerToken);
+        Task<User> GetGoogleUserInfoAsync(string providerToken);
+        Task GoogleSignInAsync(User user);
     }
 }
