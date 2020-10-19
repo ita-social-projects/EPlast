@@ -153,7 +153,7 @@ namespace EPlast.DataAccess
             modelBuilder.Entity<User>()
                 .HasMany(x => x.UserDistinctions)
                 .WithOne(x => x.User)
-                .OnDelete(DeleteBehavior.Cascade);  
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Distinction>()
                 .HasMany(x => x.UserDistinctions)
@@ -199,5 +199,6 @@ namespace EPlast.DataAccess
         public DbSet<UserDistinction> UserDistinctions { get; set; }
         public DbSet<BlankBiographyDocuments> BlankBiographyDocuments { get; set; }
         public DbSet<AchievementDocuments> AchievementDocuments { get; set; }
+        public DbSet<ExtractFromUPUDocuments> ExtractFromUPUDocuments { get; set; }
     }
 }
