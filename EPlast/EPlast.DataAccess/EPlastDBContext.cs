@@ -200,5 +200,6 @@ namespace EPlast.DataAccess
         public DbSet<BlankBiographyDocuments> BlankBiographyDocuments { get; set; }
         public DbSet<NotificationType> NotificationTypes { get; set; }
         public DbSet<UserNotification> UserNotifications { get; set; }
+        public DbSet<AchievementDocuments> AchievementDocuments { get; set; }
     }
 }
