@@ -1,6 +1,4 @@
-﻿using EPlast.BLL.Services.Club.ClubAccess.ClubAccessGetters;
 using EPlast.DataAccess.Repositories;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DatabaseEntities = EPlast.DataAccess.Entities;
