@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.AzureStorage
 {
-    public class BlankFilesBlobStorageRepository : BlobStorageRepository, IBlankFilesBlobStorageRepository
+   public class BlankAchievementBlobStorageRepository: BlobStorageRepository,IBlankAchievementBlobStorageRepository
     {
-        private const string CONTAINER = "BlankImages";
-        public BlankFilesBlobStorageRepository(IAzureBlobConnectionFactory connectionFactory) : base(connectionFactory)
+        private const string CONTAINER = "AchievementContainer";
+        public BlankAchievementBlobStorageRepository(IAzureBlobConnectionFactory connectionFactory) : base(connectionFactory)
         {
         }
         public async Task<CloudBlockBlob> GetBlobAsync(string blobName)
