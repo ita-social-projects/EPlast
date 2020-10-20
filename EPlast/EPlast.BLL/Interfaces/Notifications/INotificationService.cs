@@ -1,7 +1,5 @@
 ﻿using EPlast.BLL.DTO.Notification;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Interfaces.Notifications
@@ -33,7 +31,7 @@ namespace EPlast.BLL.Interfaces.Notifications
         /// </summary>
         /// <param name="userNotificationsDTO">List of userNotificationDTO</param>
         /// <returns>Returns bool</returns>
-        public Task<bool> AddListUserNotificationAsync(IEnumerable<UserNotificationDTO> userNotificationsDTO);
+        public Task<IEnumerable<UserNotificationDTO>> AddListUserNotificationAsync(IEnumerable<UserNotificationDTO> userNotificationsDTO);
         /// <summary>
         /// Returns bool, if check set successfull, return true, else false
         /// </summary>

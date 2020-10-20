@@ -7,30 +7,6 @@ namespace EPlast.DataAccess.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<DateTime>(
-                name: "DateOath",
-                table: "UserMembershipDates",
-                nullable: false,
-                oldClrType: typeof(DateTime),
-                oldType: "datetime2",
-                oldNullable: true);
-
-            migrationBuilder.AlterColumn<DateTime>(
-                name: "DateEntry",
-                table: "UserMembershipDates",
-                nullable: false,
-                oldClrType: typeof(DateTime),
-                oldType: "datetime2",
-                oldNullable: true);
-
-            migrationBuilder.AlterColumn<DateTime>(
-                name: "DateEnd",
-                table: "UserMembershipDates",
-                nullable: false,
-                oldClrType: typeof(DateTime),
-                oldType: "datetime2",
-                oldNullable: true);
-
             migrationBuilder.CreateTable(
                 name: "NotificationTypes",
                 columns: table => new
@@ -56,7 +32,8 @@ namespace EPlast.DataAccess.Migrations
                     Message = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     CheckedAt = table.Column<DateTime>(nullable: true),
-                    SenderUserId = table.Column<string>(nullable: true)
+                    SenderLink = table.Column<string>(nullable: true),
+                    SenderName = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -77,32 +54,12 @@ namespace EPlast.DataAccess.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+
             migrationBuilder.DropTable(
                 name: "UserNotifications");
 
             migrationBuilder.DropTable(
                 name: "NotificationTypes");
-
-            migrationBuilder.AlterColumn<DateTime>(
-                name: "DateOath",
-                table: "UserMembershipDates",
-                type: "datetime2",
-                nullable: true,
-                oldClrType: typeof(DateTime));
-
-            migrationBuilder.AlterColumn<DateTime>(
-                name: "DateEntry",
-                table: "UserMembershipDates",
-                type: "datetime2",
-                nullable: true,
-                oldClrType: typeof(DateTime));
-
-            migrationBuilder.AlterColumn<DateTime>(
-                name: "DateEnd",
-                table: "UserMembershipDates",
-                type: "datetime2",
-                nullable: true,
-                oldClrType: typeof(DateTime));
         }
     }
 }

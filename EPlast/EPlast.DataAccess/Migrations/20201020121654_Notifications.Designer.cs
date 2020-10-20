@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    [Migration("20201015221819_Notifications")]
+    [Migration("20201020121654_Notifications")]
     partial class Notifications
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1281,7 +1281,10 @@ namespace EPlast.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SenderUserId")
+                    b.Property<string>("SenderLink")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SenderName")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

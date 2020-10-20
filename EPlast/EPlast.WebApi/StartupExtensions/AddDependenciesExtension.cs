@@ -13,6 +13,7 @@ using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Interfaces.Notifications;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services;
@@ -31,6 +32,7 @@ using EPlast.BLL.Services.EventUser;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.Jwt;
 using EPlast.BLL.Services.Logging;
+using EPlast.BLL.Services.Notifications;
 using EPlast.BLL.Services.Region;
 using EPlast.BLL.Services.UserProfiles;
 using EPlast.BLL.Settings;
@@ -114,7 +116,9 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IEducatorsStaffService, EducatorsStaffService>();
             services.AddScoped<IEducatorsStaffTypesService, EducatorsStaffTypesService>();
             services.AddScoped<IBlankBiographyDocumentService, BlankBiographyDocumentsService>();
-;
+            services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IConnectionManagerService, ConnectionManagerService>();
+            ;
             return services;
         }
     }
