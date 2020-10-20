@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using EPlast.BLL.DTO.AnnualReport;
 using EPlast.BLL.DTO.Statistics;
 using EPlast.BLL.Interfaces.Statistics;
 using EPlast.BLL.Services.Statistics.StatisticsItems.Interfaces;
@@ -100,17 +99,27 @@ namespace EPlast.BLL.Services.Statistics
             return regionStatistics;
         }
 
-        public async Task<IEnumerable<MembersStatisticDTO>> GetAllCitiesStatisticsAsync()
+        public async Task<IEnumerable<CityStatistics>> GetAllCitiesStatisticsAsync()
         {
-            var annualReports = await _repositoryWrapper.AnnualReports.GetAllAsync(
-                    include: source => source
-                        .Include(ar => ar.Creator)
-                        .Include(ar => ar.MembersStatistic)
-                        .Include(ar => ar.Date)
-                        .Include(ar => ar.City)
-                            .ThenInclude(c => c. Region));
-            var annualReportsDTO = _mapper.Map<IEnumerable<AnnualReport>, IEnumerable<AnnualReportDTO>>(annualReports);
-            return annualReportsDTO.Select(report => report.MembersStatistic);
+            var annualReports = await _repositoryWrapper.AnnualReports.GetAllAsync();
+            var allCityStatistics = new List<CityStatistics>();
+            foreach (var report in annualReports)
+            {
+                allCityStatistics.Add(await GetCityStatisticsAsync(report.CityId, report.Date.Year));
+            }
+            return allCityStatistics;
+        }
+
+        public async Task<IEnumerable<RegionStatistics>> GetAllRegionsStatisticsAsync()
+        {
+            var annualReports = await _repositoryWrapper.AnnualReports.GetAllAsync();
+            var allRegionsStatistics = new List<RegionStatistics>();
+            foreach (var report in annualReports)
+            {
+                if(!allRegionsStatistics.Any(x => x.Region.ID == report.City.RegionId))
+                    allRegionsStatistics.Add(await GetRegionStatisticsAsync(report.City.RegionId, report.Date.Year));
+            }
+            return allRegionsStatistics;
         }
 
         private void SelectStatisticsItems(IEnumerable<StatisticsItemIndicator> indicators)

@@ -51,7 +51,5 @@ namespace EPlast.BLL.DTO.AnnualReport
         public int NumberOfSeigneurMembers { get; set; }
 
         public int AnnualReportId { get; set; }
-
-        public AnnualReportDTO AnnualReport { get; set; }
     }
 }
