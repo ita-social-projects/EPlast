@@ -32,9 +32,9 @@ namespace EPlast.BLL.Services.Notifications
 
         public async Task<IEnumerable<UserNotificationDTO>> GetAllUserNotificationsAsync(string userId)
         {
-            var userNotitfication = await _repoWrapper.UserNotifications.GetAllAsync();
+            var userNotitfications = await _repoWrapper.UserNotifications.GetAllAsync(un => un.OwnerUserId == userId);
 
-            return _mapper.Map<IEnumerable<UserNotificationDTO>>(userNotitfication);
+            return _mapper.Map<IEnumerable<UserNotificationDTO>>(userNotitfications.OrderByDescending(d => d.CreatedAt));
         }
 
         public async Task<bool> AddUserNotificationAsync(UserNotificationDTO userNotificationDTO)
@@ -43,7 +43,7 @@ namespace EPlast.BLL.Services.Notifications
             if((await _userManagerService.FindByIdAsync(userNotificationDTO.OwnerUserId)) != null)
             {
                 UserNotification userNotification = _mapper.Map<UserNotification>(userNotificationDTO);
-                NotificationType notificationType = await _repoWrapper.NotificationTypes.GetFirstOrDefaultAsync(nt => nt.Id == userNotificationDTO.NotificationType.Id);
+                NotificationType notificationType = await _repoWrapper.NotificationTypes.GetFirstOrDefaultAsync(nt => nt.Id == userNotificationDTO.NotificationTypeId);
                 if (notificationType != null)
                 {
                     userNotification.NotificationType = notificationType;
@@ -57,34 +57,39 @@ namespace EPlast.BLL.Services.Notifications
             return addedSuccessfully;
         }
 
-        public async Task<bool> AddListUserNotificationAsync(IEnumerable<UserNotificationDTO> userNotificationsDTO)
+        public async Task<IEnumerable<UserNotificationDTO>> AddListUserNotificationAsync(IEnumerable<UserNotificationDTO> userNotificationsDTO)
         {
             bool addedSuccessfully = true;
+            var resultUserNotifications = new List<UserNotification>(); 
             foreach (var userNotificationDTO in userNotificationsDTO)
             {
                 if ((await _userManagerService.FindByIdAsync(userNotificationDTO.OwnerUserId)) != null)
                 {
                     UserNotification userNotification = _mapper.Map<UserNotification>(userNotificationDTO);
-                    NotificationType notificationType = await _repoWrapper.NotificationTypes.GetFirstOrDefaultAsync(nt => nt.Id == userNotificationDTO.NotificationType.Id);
+                    NotificationType notificationType = await _repoWrapper.NotificationTypes.GetFirstOrDefaultAsync(nt => nt.Id == userNotificationDTO.NotificationTypeId);
                     if (notificationType != null)
                     {
-                        userNotification.NotificationType = notificationType;
                         userNotification.Checked = false;
                         userNotification.CreatedAt = DateTime.Now;
+                        resultUserNotifications.Add(userNotification);
                         await _repoWrapper.UserNotifications.CreateAsync(userNotification);
                     }
                     else
                     {
-                        return false;
+                        addedSuccessfully = false;
                     }
                 }
                 else
                 {
-                    return false;
+                    addedSuccessfully = false;
                 }
             }
-            await _repoWrapper.SaveAsync();
-            return addedSuccessfully;
+            if (addedSuccessfully)
+            {
+                await _repoWrapper.SaveAsync();
+                return _mapper.Map<IEnumerable<UserNotificationDTO>>(resultUserNotifications);
+            }
+            throw new InvalidOperationException();
         }
 
         public async Task<bool> SetCheckForNotificationAsync(int notificationId)
