@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Club;
-using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.AzureStorage;
-using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
