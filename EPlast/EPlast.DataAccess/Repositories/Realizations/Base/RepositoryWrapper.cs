@@ -63,6 +63,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IRegionDocumentRepository _regionDocs;
         private IBlankBiographyDocumentsRepository _biographyDocumentsRepository;
         private IAchievementDocumentsRepository _achievementDocumentsRepository;
+        private IExtractFromUPUDocumentsRepository _extractFromUPUDocumentsRepository;
 
 
         public IEducatorsStaffTypesRepository KVTypes
@@ -694,6 +695,18 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                     _achievementDocumentsRepository = new AchievementDocumentsRepository(_dbContext);
                 }
                 return _achievementDocumentsRepository;
+            }
+        }
+
+        public IExtractFromUPUDocumentsRepository ExtractFromUPUDocumentsRepository
+        {
+            get
+            {
+                if(_extractFromUPUDocumentsRepository == null)
+                {
+                    _extractFromUPUDocumentsRepository = new ExtractFromUPUDocumentsRepository(_dbContext);
+                }
+                return _extractFromUPUDocumentsRepository;
             }
         }
 
