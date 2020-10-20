@@ -1,10 +1,5 @@
 ﻿using EPlast.BLL.Interfaces.Notifications;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.SignalR;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace EPlast.BLL.Services.Notifications
 {
@@ -43,7 +38,7 @@ namespace EPlast.BLL.Services.Notifications
 
         public HashSet<string> GetConnections(string userId)
         {
-            var connections = new HashSet<string>();
+            HashSet<string> connections;
             lock (userMap)
             {
                 if (userMap.ContainsKey(userId))
