@@ -411,26 +411,7 @@ namespace EPlast.WebApi.Controllers
             return Ok(documentTypes);
         }
 
-        /// <summary>
-        /// Get all legal statuses
-        /// </summary>
-        /// <returns>List of legal statuses</returns>
-        //[HttpGet("getLegalStatuses")]
-        //public IActionResult GetLegalStatuses()
-        //{
-        //    var legalStatuses = new List<string>();
-        //    foreach (var enumValue in Enum.GetValues(typeof(AnnualReportDTO.ClubLegalStatusTypeDTO)).Cast<AnnualReportDTOs.ClubLegalStatusTypeDTO>())
-        //    {
-        //        legalStatuses.Add(enumValue.GetDescription());
-        //    }
 
-        //    return Ok(new { legalStatuses });
-        //}
-
-        /// <summary>
-        /// Get all Clubs that the user has access to
-        /// </summary>
-        /// <returns>List of Clubs</returns>
         [HttpGet]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetClubsThatUserHasAccessTo()
