@@ -15,7 +15,7 @@ namespace EPlast.WebApi.Controllers
     [ApiController]
     public class NotificationBoxController : ControllerBase
     {
-        private IConnectionManagerService _connectionManagerService;
+        private readonly IConnectionManagerService _connectionManagerService;
         private readonly IHubContext<NotificationHub> _notificationHub;
         private readonly INotificationService _notificationService;
 
@@ -86,7 +86,7 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest();
             }
 
-            var tasks = GetOnlineUserFromList(AddedUserNotifications).ToList().Select(un => SendPrivateNotification(un));
+            var tasks = GetOnlineUserFromList(AddedUserNotifications).Select(un => SendPrivateNotification(un));
             await Task.WhenAll(tasks);
             return NoContent();
         }
