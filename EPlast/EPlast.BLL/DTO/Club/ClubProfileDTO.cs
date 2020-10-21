@@ -6,9 +6,10 @@ namespace EPlast.BLL.DTO.Club
     public class ClubProfileDTO
     {
         public ClubDTO Club { get; set; }
-        public UserDTO ClubAdmin { get; set; }
-        public IEnumerable<ClubMembersDTO> Members { get; set; }
-        public IEnumerable<ClubMembersDTO> Followers { get; set; }
-        public IEnumerable<ClubAdministrationDTO> ClubAdministration { get; set; }
+        public ClubAdministrationDTO Head { get; set; }
+        public List<ClubAdministrationDTO> Admins { get; set; }
+        public List<ClubMembersDTO> Members { get; set; }
+        public List<ClubMembersDTO> Followers { get; set; }
+        public List<ClubDocumentsDTO> Documents { get; set; }
     }
 }
