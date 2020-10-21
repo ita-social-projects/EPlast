@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using EPlast.DataAccess.Repositories.Interfaces.Events;
 using EPlast.DataAccess.Repositories.Interfaces.Region;
 using EPlast.DataAccess.Repositories.Interfaces.Blank;
+using EPlast.DataAccess.Repositories.Interfaces.Club;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -32,21 +33,30 @@ namespace EPlast.DataAccess.Repositories
         IWorkRepository Work { get; }
         IConfirmedUserRepository ConfirmedUser { get; }
         IApproverRepository Approver { get; }
+
         ICityAdministrationRepository CityAdministration { get; }
         ICityDocumentsRepository CityDocuments { get; }
         IRegionDocumentRepository RegionDocument { get; }
         ICityDocumentTypeRepository CityDocumentType { get; }
         ICityMembersRepository CityMembers { get; }
         ICityRepository City { get; }
+
         IAdminTypeRepository AdminType { get; }
-        IClubRepository Club { get; }
-        IClubMembersRepository ClubMembers { get; }
+
         IClubAdministrationRepository ClubAdministration { get; }
+        IClubDocumentsRepository ClubDocuments { get; }
+        IClubDocumentTypeRepository ClubDocumentType { get; }
+        IClubMembersRepository ClubMembers { get; }
+        IClubRepository Club { get; }
+
         IRegionRepository Region { get; }
         IRegionAdministrationRepository RegionAdministration { get; }
         IAnnualReportsRepository AnnualReports { get; }
         IMembersStatisticsRepository MembersStatistics { get; }
+
         ICityLegalStatusesRepository CityLegalStatuses { get; }
+        IClubLegalStatusesRepository ClubLegalStatuses { get; }
+
         IUserPlastDegreesRepository UserPlastDegrees { get; }
         IUserMembershipDatesRepository UserMembershipDates { get; }
         IEventAdministrationRepository EventAdministration { get; }
