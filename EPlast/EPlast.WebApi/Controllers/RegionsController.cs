@@ -49,6 +49,13 @@ namespace EPlast.WebApi.Controllers
         }
 
 
+        [HttpPut("RedirectCities/{prevRegId}/{nextRegId}")]
+        public async Task<IActionResult> RedirectCities(int prevRegId, int nextRegId)
+        {
+            await _regionService.RedirectMembers(prevRegId, nextRegId);
+            return Ok();
+        }
+
 
         [HttpGet("LogoBase64")]
         public async Task<IActionResult> GetPhotoBase64(string logoName)
@@ -140,6 +147,14 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetUserAdministrations(string userId)
         {
            var secretaries=await _regionService.GetUsersAdministrations(userId);
+            return Ok(secretaries);
+
+        }
+
+        [HttpGet("GetUserPreviousAdministrations/{userId}")]
+        public async Task<IActionResult> GetUserPrevAdministrations(string userId)
+        {
+            var secretaries = await _regionService.GetUsersPreviousAdministrations(userId);
             return Ok(secretaries);
 
         }
