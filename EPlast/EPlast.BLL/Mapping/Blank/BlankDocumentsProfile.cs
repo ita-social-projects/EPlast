@@ -9,6 +9,8 @@ namespace EPlast.BLL.Mapping.Blank
         public BlankDocumentsProfile()
         {
             CreateMap<BlankBiographyDocuments, BlankBiographyDocumentsDTO>().ReverseMap();
+            CreateMap<AchievementDocuments, AchievementDocumentsDTO>().ReverseMap();
+            CreateMap<ExtractFromUPUDocuments, ExtractFromUPUDocumentsDTO>().ReverseMap();
         }
     }
 }

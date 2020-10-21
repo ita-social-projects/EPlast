@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.AzureStorage.Base;
 using Xunit;
+using Microsoft.AspNetCore.Hosting;
 
 namespace EPlast.XUnitTest.Services.ClubTests
 {
@@ -23,103 +24,257 @@ namespace EPlast.XUnitTest.Services.ClubTests
     {
         private readonly Mock<IRepositoryWrapper> _repoWrapper;
         private readonly Mock<IMapper> _mapper;
-        private readonly Mock<IClubBlobStorageRepository> _blob;
-        private readonly IClubService _clubService;
+        private readonly Mock<IWebHostEnvironment> _env;
+        private readonly Mock<IClubBlobStorageRepository> _ClubBlobStorage;
+        private readonly Mock<IClubAccessService> _ClubAccessService;
 
         public ClubServiceTests()
         {
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _mapper = new Mock<IMapper>();
-            _blob = new Mock<IClubBlobStorageRepository>();
-            _clubService = new ClubService(_repoWrapper.Object, _mapper.Object, _blob.Object);
+            _env = new Mock<IWebHostEnvironment>();
+            _ClubBlobStorage = new Mock<IClubBlobStorageRepository>();
+            _ClubAccessService = new Mock<IClubAccessService>();
+        }
+
+        private ClubService CreateClubService()
+        {
+            _mapper.Setup(m => m.Map<IEnumerable<DataAccess.Entities.Club>,
+                    IEnumerable<ClubDTO>>(It.IsAny<IEnumerable<DataAccess.Entities.Club>>()))
+                .Returns(CreateFakeClubDto(10));
+            _mapper.Setup(m => m.Map<DataAccess.Entities.Club, ClubDTO>(It.IsAny<DataAccess.Entities.Club>()))
+                .Returns(CreateFakeClubDto(10).FirstOrDefault());
+            _mapper.Setup(m => m.Map<ClubDTO, DataAccess.Entities.Club>(It.IsAny<ClubDTO>()))
+                .Returns(() => new DataAccess.Entities.Club());
+            _repoWrapper.Setup(r => r.Club.FindAll())
+                .Returns(CreateFakeCities(10));
+            _repoWrapper.Setup(r => r.Club.FindByCondition(It.IsAny<Expression<Func<DataAccess.Entities.Club, bool>>>()))
+                .Returns((Expression<Func<DataAccess.Entities.Club, bool>> condition) =>
+                    CreateFakeCities(10).Where(condition));
+            _repoWrapper.Setup(r => r.Region.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Region, bool>>>(), null))
+               .ReturnsAsync(GetTestRegion());
+            _repoWrapper.Setup(r => r.Club.Update(It.IsAny<DataAccess.Entities.Club>()))
+                .Verifiable();
+            _repoWrapper.Setup(r => r.Club.Create(It.IsAny<DataAccess.Entities.Club>()))
+                .Verifiable();
+            _repoWrapper.Setup(r => r.Save())
+                .Verifiable();
+            _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.Club, bool>>>(), null))
+                .ReturnsAsync(GetTestClub());
+
+            return new ClubService(_repoWrapper.Object, _mapper.Object, _env.Object, _ClubBlobStorage.Object, _ClubAccessService.Object, null);
         }
 
         [Fact]
-        public async Task GetAllClubsAsync_ReturnsListOfClubDto()
+        public async Task GetAllTest()
         {
-            //arrange
-            _repoWrapper.Setup(r => r.Club.GetAllAsync(null,
-                    It.IsAny<Func<IQueryable<Club>, IIncludableQueryable<Club, object>>>()))
-                .ReturnsAsync(new List<Club> { new Club() });
+            ClubService ClubService = CreateClubService();
 
-            //act
-            await _clubService.GetAllClubsAsync();
+            var result = await ClubService.GetAllAsync();
 
-            //assert
-            _mapper.Verify(m => m.Map<IEnumerable<Club>, IEnumerable<ClubDTO>>(It.IsAny<IEnumerable<Club>>()));
+            Assert.NotNull(result);
         }
 
         [Fact]
-        public async Task GetClubProfileAsync_ReturnsClubProfileDto()
+        public async Task GetAllDtoTest()
         {
-            //arrange
-            _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Club, bool>>>(),
-                    It.IsAny<Func<IQueryable<Club>, IIncludableQueryable<Club, object>>>()))
-                .ReturnsAsync(new Club());
-            _mapper.Setup(m => m.Map<Club, ClubDTO>(It.IsAny<Club>()))
-                .Returns(() => new ClubDTO()
-                {
-                    ID = It.IsAny<int>(),
-                    ClubMembers = new List<ClubMembersDTO>()
-                    {
-                        new ClubMembersDTO
-                        {
-                            User = new UserDTO(),
-                            IsApproved = It.IsAny<bool>(),
-                        }
-                    },
-                    ClubAdministration = new List<ClubAdministrationDTO>()
-                    {
-                        new ClubAdministrationDTO
-                        {
-                            AdminType = new AdminTypeDTO(),
-                            StartDate = It.IsAny<DateTime>(),
-                            ClubMembers = new ClubMembersDTO
-                            {
-                                User = new UserDTO(),
-                                IsApproved = It.IsAny<bool>(),
-                            }
-                        }
-                    }
-                });
+            ClubService ClubService = CreateClubService();
 
-            //act
-            var result = await _clubService.GetClubProfileAsync(It.IsAny<int>());
+            var result = await ClubService.GetAllDTOAsync(null);
 
-            //assert
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task GetByIdTest()
+        {
+            ClubService ClubService = CreateClubService();
+
+            var result = await ClubService.GetByIdAsync(GetIdForSearch);
+
+            Assert.NotNull(result);
+            Assert.IsType<ClubDTO>(result);
+        }
+
+        [Fact]
+        public async Task ClubProfileTest()
+        {
+            ClubService ClubService = CreateClubService();
+
+            var result = await ClubService.GetClubProfileAsync(GetIdForSearch);
+
             Assert.NotNull(result);
             Assert.IsType<ClubProfileDTO>(result);
         }
 
         [Fact]
-        public async Task GetClubInfoByIdAsync_ReturnsClubDto()
+        public async Task ClubMembersTest()
         {
-            //arrange
-            _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Club, bool>>>(),
-                    It.IsAny<Func<IQueryable<Club>, IIncludableQueryable<Club, object>>>()))
-                .ReturnsAsync(new Club());
+            ClubService ClubService = CreateClubService();
 
-            //act
-            await _clubService.GetClubInfoByIdAsync(It.IsAny<int>());
+            var result = await ClubService.GetClubMembersAsync(GetIdForSearch);
 
-            //assert
-            _mapper.Verify(m => m.Map<Club, ClubDTO>(It.IsAny<Club>()));
+            Assert.NotNull(result);
+            Assert.IsType<ClubProfileDTO>(result);
         }
 
         [Fact]
-        public async Task GetClubInfoByIdAsync_NotFound_ReturnsArgumentNullException()
+        public async Task ClubFollowersTest()
         {
-            //arrange
-            _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Club, bool>>>(),
-                    It.IsAny<Func<IQueryable<Club>, IIncludableQueryable<Club, object>>>()))
-                .ReturnsAsync((Club)null);
+            ClubService ClubService = CreateClubService();
 
-            //act
-            async Task Act() => await _clubService.GetClubInfoByIdAsync(It.IsAny<int>());
+            var result = await ClubService.GetClubFollowersAsync(GetIdForSearch);
 
-            //assert
-            await Assert.ThrowsAsync<ArgumentNullException>(Act);
-            _mapper.Verify(m => m.Map<Club, ClubDTO>(new Club()), Times.Never);
+            Assert.NotNull(result);
+            Assert.IsType<ClubProfileDTO>(result);
+        }
+
+        [Fact]
+        public async Task ClubAdminsTest()
+        {
+            ClubService ClubService = CreateClubService();
+
+            var result = await ClubService.GetClubAdminsAsync(GetIdForSearch);
+
+            Assert.NotNull(result);
+            Assert.IsType<ClubProfileDTO>(result);
+        }
+
+        [Fact]
+        public async Task ClubDocumentsTest()
+        {
+            ClubService ClubService = CreateClubService();
+
+            var result = await ClubService.GetClubDocumentsAsync(GetIdForSearch);
+
+            Assert.NotNull(result);
+            Assert.IsType<ClubProfileDTO>(result);
+        }
+
+        [Fact]
+        public async Task EditGetTest()
+        {
+            ClubService ClubService = CreateClubService();
+
+            var result = await ClubService.EditAsync(GetIdForSearch);
+
+            Assert.NotNull(result);
+            Assert.IsType<ClubProfileDTO>(result);
+        }
+
+        [Fact]
+        public async Task CreateTest()
+        {
+            ClubService ClubService = CreateClubService();
+            ClubProfileDTO ClubProfileDto = new ClubProfileDTO
+            {
+                Club = new ClubDTO
+                {
+                    ID = 0
+                }
+            };
+
+            var result = await ClubService.CreateAsync(ClubProfileDto, null);
+
+            Assert.Equal(ClubProfileDto.Club.ID, result);
+        }
+
+        private static int GetIdForSearch => 1;
+        public IQueryable<DataAccess.Entities.Club> CreateFakeCities(int count)
+        {
+            List<DataAccess.Entities.Club> cities = new List<DataAccess.Entities.Club>();
+
+            for (int i = 0; i < count; i++)
+            {
+                cities.Add(new DataAccess.Entities.Club());
+            }
+
+            return cities.AsQueryable();
+        }
+
+        public Region GetTestRegion()
+        {
+            var region = new Region()
+            {
+                ID = 1,
+                RegionName = "Lviv",
+                Description = "Lviv region"
+            };
+
+            return region;
+        }
+
+        public DataAccess.Entities.Club GetTestClub()
+        {
+            var Club = new DataAccess.Entities.Club
+            {
+                Name = "Club",
+                Logo = "710b8b06-6869-45db-894f-7a0b131e6c6b.jpg"
+            };
+
+            return Club;
+        }
+
+        public IQueryable<ClubDTO> CreateFakeClubDto(int count)
+        {
+            List<ClubDTO> cities = new List<ClubDTO>();
+
+            for (int i = 0; i < count; i++)
+            {
+                cities.Add(new ClubDTO
+                {
+                    ClubAdministration = new List<ClubAdministrationDTO>
+                    {
+                        new ClubAdministrationDTO
+                        {
+
+                           AdminType = new AdminTypeDTO
+                           {
+                               AdminTypeName = "Голова Станиці"
+                           }
+
+                        },
+                        new ClubAdministrationDTO
+                        {
+                            AdminType = new AdminTypeDTO
+                            {
+                                AdminTypeName = "----------"
+                            }
+                        },
+                        new ClubAdministrationDTO
+                        {
+                            AdminType = new AdminTypeDTO
+                            {
+                                AdminTypeName = "Голова Станиці"
+                            }
+                        },
+                        new ClubAdministrationDTO
+                        {
+                            AdminType = new AdminTypeDTO
+                            {
+                                AdminTypeName = "----------"
+                            }
+                        }
+                    },
+                    ClubMembers = new List<ClubMembersDTO>
+                    {
+                        new ClubMembersDTO
+                        {
+                            StartDate = new Random().Next(0,1) ==1 ? DateTime.Today : (DateTime?) null
+                        }
+                    },
+                    ClubDocuments = new List<ClubDocumentsDTO>
+                    {
+                        new ClubDocumentsDTO(),
+                        new ClubDocumentsDTO(),
+                        new ClubDocumentsDTO(),
+                        new ClubDocumentsDTO(),
+                        new ClubDocumentsDTO()
+                    }
+                });
+            }
+
+            return cities.AsQueryable();
         }
 
     }
