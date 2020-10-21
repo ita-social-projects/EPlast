@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Club;
-using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.AzureStorage;
-using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
@@ -281,7 +279,7 @@ namespace EPlast.BLL.Services.Club
         public async Task EditAsync(ClubProfileDTO model, IFormFile file)
         {
             await UploadPhotoAsync(model.Club, file);
-            var Club = await CreateClubAndRegionAsync(model);
+            var Club = CreateClubFromProfileAsync(model);
 
             _repoWrapper.Club.Attach(Club);
             _repoWrapper.Club.Update(Club);
@@ -292,7 +290,7 @@ namespace EPlast.BLL.Services.Club
         public async Task EditAsync(ClubDTO model)
         {
             await UploadPhotoAsync(model);
-            var Club = await CreateClubAsync(model);
+            var Club =  CreateClubAsync(model);
 
             _repoWrapper.Club.Attach(Club);
             _repoWrapper.Club.Update(Club);
@@ -303,7 +301,7 @@ namespace EPlast.BLL.Services.Club
         public async Task<int> CreateAsync(ClubProfileDTO model, IFormFile file)
         {
             await UploadPhotoAsync(model.Club, file);
-            var Club = await CreateClubAndRegionAsync(model);
+            var Club =  CreateClubFromProfileAsync(model);
 
             _repoWrapper.Club.Attach(Club);
             await _repoWrapper.Club.CreateAsync(Club);
@@ -316,7 +314,7 @@ namespace EPlast.BLL.Services.Club
         public async Task<int> CreateAsync(ClubDTO model)
         {
             await UploadPhotoAsync(model);
-            var Club = await CreateClubAsync(model);
+            var Club =  CreateClubAsync(model);
 
             _repoWrapper.Club.Attach(Club);
             await _repoWrapper.Club.CreateAsync(Club);
@@ -325,7 +323,7 @@ namespace EPlast.BLL.Services.Club
             return Club.ID;
         }
 
-        private async Task<DataAccessClub.Club> CreateClubAndRegionAsync(ClubProfileDTO model)
+        private DataAccessClub.Club CreateClubFromProfileAsync(ClubProfileDTO model)
         {
             var ClubDto = model.Club;
 
@@ -334,10 +332,9 @@ namespace EPlast.BLL.Services.Club
             return Club;
         }
 
-        private async Task<DataAccessClub.Club> CreateClubAsync(ClubDTO model)
+        private DataAccessClub.Club CreateClubAsync(ClubDTO model)
         {
             var Club = _mapper.Map<ClubDTO, DataAccessClub.Club>(model);
-
 
             return Club;
         }
