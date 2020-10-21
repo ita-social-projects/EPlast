@@ -1,11 +1,13 @@
 ﻿using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Services.Jwt;
 using EPlast.BLL.Settings;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Extensions;
+using EPlast.WebApi.SignalRHubs;
 using EPlast.WebApi.StartupExtensions;
 using Hangfire;
 using Microsoft.AspNetCore.Builder;
@@ -56,6 +58,10 @@ namespace EPlast.WebApi
             services.AddLocalization();
             services.AddRequestLocalizationOptions();
             services.AddIdentityOptions();
+            services.AddSignalR().AddHubOptions<NotificationHub>(options =>
+            {
+                options.EnableDetailedErrors = true; // temporarily
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -64,13 +70,6 @@ namespace EPlast.WebApi
                               IRecurringJobManager recurringJobManager,
                               IServiceProvider serviceProvider)
         {
-            app.UseCors(builder =>
-            {
-                builder
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-            });
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>
@@ -109,12 +108,22 @@ namespace EPlast.WebApi
             //app.UseAntiforgeryTokens();
             app.UseStatusCodePages();
             app.UseHttpsRedirection();
+
             app.UseRouting();
+            app.UseCors(builder =>
+            {
+                builder
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .SetIsOriginAllowed(_ => true)
+                .AllowCredentials();
+            });
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<NotificationHub>("/notifications");
             });
             app.UseHangfireDashboard();
             recurringJobManager.AddOrUpdate("Run every day",
@@ -129,6 +138,11 @@ namespace EPlast.WebApi
             );
             recurringJobManager.AddOrUpdate("Remove roles from previous admins",
                 () => serviceProvider.GetService<ICityAdministrationService>().CheckPreviousAdministratorsToDelete(),
+            "59 23 * * *",
+            TimeZoneInfo.Local
+            );
+            recurringJobManager.AddOrUpdate("Remove roles from previous admins",
+                () => serviceProvider.GetService<IClubAdministrationService>().CheckPreviousAdministratorsToDelete(),
             "59 23 * * *",
             TimeZoneInfo.Local
             );
