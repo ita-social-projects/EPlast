@@ -1,6 +1,7 @@
 ﻿using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Events;
+using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Services.Jwt;
 using EPlast.BLL.Settings;
 using EPlast.DataAccess;
@@ -132,7 +133,13 @@ namespace EPlast.WebApi
             "59 23 * * *",
             TimeZoneInfo.Local
             );
-            CreateRoles(serviceProvider).Wait();
+            recurringJobManager.AddOrUpdate("Changes status of region admins when the date expires",
+              () => serviceProvider.GetService<IRegionService>().EndAdminsDueToDate(),
+           Cron.Daily(),
+           TimeZoneInfo.Local
+           );
+
+          CreateRoles(serviceProvider).Wait();
         }
         private async Task CreateRoles(IServiceProvider serviceProvider)
         {

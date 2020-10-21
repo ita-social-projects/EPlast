@@ -193,7 +193,7 @@ namespace EPlast.BLL.Services.Region
 
         public async Task<IEnumerable<RegionAdministrationDTO>> GetUsersAdministrations(string userId)
         {
-            var secretaries = await _repoWrapper.RegionAdministration.GetAllAsync(a => a.UserId == userId,
+            var secretaries = await _repoWrapper.RegionAdministration.GetAllAsync(a => a.UserId == userId&& a.Status,
                 include:source=>source
                 .Include(r=>r.User)
                 .Include(r=>r.Region)
@@ -201,7 +201,18 @@ namespace EPlast.BLL.Services.Region
             return _mapper.Map< IEnumerable < RegionAdministration > ,IEnumerable <RegionAdministrationDTO>>(secretaries);
         }
 
-         public async Task<RegionDocumentDTO> AddDocumentAsync(RegionDocumentDTO documentDTO)
+
+        public async Task<IEnumerable<RegionAdministrationDTO>> GetUsersPreviousAdministrations(string userId)
+        {
+            var secretaries = await _repoWrapper.RegionAdministration.GetAllAsync(a => a.UserId == userId && a.Status==false,
+                include: source => source
+                 .Include(r => r.User)
+                 .Include(r => r.Region)
+                 .Include(r => r.AdminType));
+            return _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(secretaries);
+        }
+
+        public async Task<RegionDocumentDTO> AddDocumentAsync(RegionDocumentDTO documentDTO)
          {
              var fileBase64 = documentDTO.BlobName.Split(',')[1];
              var extension = "." + documentDTO.FileName.Split('.').LastOrDefault();
@@ -251,6 +262,35 @@ namespace EPlast.BLL.Services.Region
                 d => d.User));
 
             return _mapper.Map<RegionAdministration, RegionAdministrationDTO>(head);
+        }
+
+        public async Task RedirectMembers(int prevRegId, int nextRegId)
+        {
+            var cities = await _repoWrapper.City.GetAllAsync(d => d.RegionId == prevRegId);
+            foreach(var city in cities)
+            {
+                city.RegionId = nextRegId;
+                _repoWrapper.City.Update(city);
+
+            }
+            await _repoWrapper.SaveAsync();
+
+        }
+
+        public async Task EndAdminsDueToDate()
+        {
+            var admins = await _repoWrapper.RegionAdministration.GetAllAsync();
+
+            foreach(var admin in admins)
+            {
+                if(DateTime.Compare((DateTime)admin.EndDate,DateTime.Now) < 0)
+                {
+                    admin.Status = false;
+                    _repoWrapper.RegionAdministration.Update(admin);
+                   
+                }
+            }
+            await _repoWrapper.SaveAsync();
         }
     }
 }
