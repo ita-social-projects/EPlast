@@ -16,6 +16,7 @@ namespace EPlast.Tests.Controllers
     {
         Mock<IBlankBiographyDocumentService> _mockBiographyService;
         Mock<IBlankAchievementDocumentService> _mockBlankAchievementDocumentService;
+        Mock<IBlankExtractFromUPUDocumentService> _mockBlankExtractFromUPUDocumentService;
         BlanksController _blanksController;
 
         [SetUp]
@@ -23,8 +24,9 @@ namespace EPlast.Tests.Controllers
         {
             _mockBiographyService = new Mock<IBlankBiographyDocumentService>();
             _mockBlankAchievementDocumentService = new Mock<IBlankAchievementDocumentService>();
+            _mockBlankExtractFromUPUDocumentService = new Mock<IBlankExtractFromUPUDocumentService>();
 
-            _blanksController = new BlanksController(_mockBiographyService.Object, _mockBlankAchievementDocumentService.Object);
+            _blanksController = new BlanksController(_mockBiographyService.Object, _mockBlankAchievementDocumentService.Object, _mockBlankExtractFromUPUDocumentService.Object);
         }
         
         [Test]
