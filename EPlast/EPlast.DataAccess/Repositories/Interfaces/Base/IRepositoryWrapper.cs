@@ -68,6 +68,7 @@ namespace EPlast.DataAccess.Repositories
         IUserDistinctionRepository UserDistinction { get; }
         IBlankBiographyDocumentsRepository  BiographyDocumentsRepository { get; }
         IAchievementDocumentsRepository AchievementDocumentsRepository { get; }
+        IExtractFromUPUDocumentsRepository ExtractFromUPUDocumentsRepository { get; }
         IPlastDegreeRepository PlastDegrees { get; }
         IEducatorsStaffRepository KVs { get; }
         IEducatorsStaffTypesRepository KVTypes { get; }
