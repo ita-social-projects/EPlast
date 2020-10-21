@@ -9,7 +9,6 @@ namespace EPlast.WebApi.Mapping.Club
     {
         public ClubAdministrationProfile()
         {
-            CreateMap<ClubAdministration, ClubAdministrationDTO>().ReverseMap();
             CreateMap<ClubAdministrationDTO, ClubAdministrationViewModel>().ReverseMap();
         }
     }
