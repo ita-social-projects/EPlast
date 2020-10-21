@@ -455,6 +455,16 @@ namespace EPlast.WebApi.Controllers
         }
 
 
+        /// <summary>
+        /// Get all cities 
+        /// </summary>
+        /// <returns>List of cities</returns>
+        [HttpGet("Cities")]
+        public async Task<IActionResult> GetCities()
+        {
+            var cities = await _cityService.GetCities();
+            return Ok(cities);
+        }
 
     }
 }
