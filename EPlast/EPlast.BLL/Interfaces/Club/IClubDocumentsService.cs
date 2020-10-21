@@ -12,7 +12,7 @@ namespace EPlast.BLL.Interfaces.Club
         /// </summary>
         /// <param name="document">An information about a specific document</param>
         /// <returns>A newly created document</returns>
-        Task<ClubDocumentsDTO> AddDocumentAsync(ClubDocumentsDTO documentDTO);
+        Task<ClubDocumentsDTO> AddDocumentAsync(ClubDocumentsDTO documentsDTO);
 
         /// <summary>
         /// Get a file in base64 format

@@ -302,7 +302,6 @@ namespace EPlast.BLL.Services.Club
         {
             await UploadPhotoAsync(model.Club, file);
             var Club =  CreateClubFromProfileAsync(model);
-
             _repoWrapper.Club.Attach(Club);
             await _repoWrapper.Club.CreateAsync(Club);
             await _repoWrapper.SaveAsync();
