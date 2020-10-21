@@ -27,10 +27,10 @@ namespace EPlast.BLL.Interfaces.Notifications
         /// <returns>Returns bool</returns>
         public Task<bool> AddUserNotificationAsync(UserNotificationDTO userNotificationDTO);
         /// <summary>
-        /// Returns bool, if list of notification added successfull, return true, else false
+        /// Returns list of added notifications
         /// </summary>
         /// <param name="userNotificationsDTO">List of userNotificationDTO</param>
-        /// <returns>Returns bool</returns>
+        /// <returns>Returns list of UserNotificationDTO</returns>
         public Task<IEnumerable<UserNotificationDTO>> AddListUserNotificationAsync(IEnumerable<UserNotificationDTO> userNotificationsDTO);
         /// <summary>
         /// Returns bool, if check set successfull, return true, else false
