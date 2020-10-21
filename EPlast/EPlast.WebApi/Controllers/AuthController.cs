@@ -17,6 +17,7 @@ using EPlast.DataAccess.Entities;
 using Google.Apis.Auth;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
+using NLog.Extensions.Logging;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -87,6 +88,13 @@ namespace EPlast.WebApi.Controllers
                 }
             }
             return Ok(_resourceForErrors["ModelIsNotValid"]);
+        }
+
+        [HttpGet("GoogleClientId")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GoogleClientId()
+        {
+            return Ok(new { id = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("GoogleAuthentication")["GoogleClientId"] });
         }
 
         [HttpPost("signin/google")]
