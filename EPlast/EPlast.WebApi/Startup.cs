@@ -1,5 +1,6 @@
 ﻿using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Services.Jwt;
@@ -140,6 +141,12 @@ namespace EPlast.WebApi
            );
 
           CreateRoles(serviceProvider).Wait();
+            recurringJobManager.AddOrUpdate("Remove roles from previous admins",
+                () => serviceProvider.GetService<IClubAdministrationService>().CheckPreviousAdministratorsToDelete(),
+            "59 23 * * *",
+            TimeZoneInfo.Local
+            );
+            CreateRoles(serviceProvider).Wait();
         }
         private async Task CreateRoles(IServiceProvider serviceProvider)
         {

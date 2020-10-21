@@ -99,6 +99,29 @@ namespace EPlast.BLL.Services.Statistics
             return regionStatistics;
         }
 
+        public async Task<IEnumerable<CityStatistics>> GetAllCitiesStatisticsAsync()
+        {
+            var annualReports = await _repositoryWrapper.AnnualReports.GetAllAsync();
+            var allCityStatistics = new List<CityStatistics>();
+            foreach (var report in annualReports)
+            {
+                allCityStatistics.Add(await GetCityStatisticsAsync(report.CityId, report.Date.Year));
+            }
+            return allCityStatistics;
+        }
+
+        public async Task<IEnumerable<RegionStatistics>> GetAllRegionsStatisticsAsync()
+        {
+            var annualReports = await _repositoryWrapper.AnnualReports.GetAllAsync();
+            var allRegionsStatistics = new List<RegionStatistics>();
+            foreach (var report in annualReports)
+            {
+                if(!allRegionsStatistics.Any(x => x.Region.ID == report.City.RegionId))
+                    allRegionsStatistics.Add(await GetRegionStatisticsAsync(report.City.RegionId, report.Date.Year));
+            }
+            return allRegionsStatistics;
+        }
+
         private void SelectStatisticsItems(IEnumerable<StatisticsItemIndicator> indicators)
         {
             foreach (var key in _minorStatisticsItems.Keys)
