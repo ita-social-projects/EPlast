@@ -7,7 +7,7 @@
     <div class="club-page-wrapper">
         <div class="main-info grid-block club-wrappers-radius">
             <h1 class="grid-header">
-                @Model.Club.ClubName
+                @Model.Club.Name
                 @if (Model.IsCurrentUserAdmin||Model.IsCurrentUserClubAdmin)
                 {
                     <a asp-controller="Club" asp-action="EditClub" asp-route-index="@Model.Club.ID" style="color: #3c5438;"><i class="material-icons">settings</i></a>

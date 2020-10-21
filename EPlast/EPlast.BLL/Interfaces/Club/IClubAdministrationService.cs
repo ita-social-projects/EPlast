@@ -8,35 +8,41 @@ namespace EPlast.BLL.Interfaces.Club
     public interface IClubAdministrationService
     {
         /// <summary>
-        /// Get club administration
+        /// Get an information about a specific administrator
         /// </summary>
-        /// <param name="clubId">Club id</param>
-        /// <returns>ClubProfileDTO with administration</returns>
-        Task<ClubProfileDTO> GetClubAdministrationByIdAsync(int clubId);
+        /// <param name="ClubId"></param>
+        /// <returns>An information about a specific administrator</returns>
+        Task<IEnumerable<ClubAdministrationDTO>> GetAdministrationByIdAsync(int ClubId);
 
         /// <summary>
-        /// Remove user from club administration
+        /// Add a new administrator to the Club
         /// </summary>
-        /// <param name="id">User-club id</param>
-        /// <returns>Bool value with status of operation</returns>
-        Task<bool> DeleteClubAdminAsync(int id);
+        /// <param name="adminDTO">An information about a new administrator</param>
+        /// <returns>An information about a specific administrator</returns>
+        Task<ClubAdministrationDTO> AddAdministratorAsync(ClubAdministrationDTO adminDTO);
 
         /// <summary>
-        /// Set admin qualification end date
+        /// Edit an information about a specific admininstrator
         /// </summary>
-        /// <param name="clubAdministrationId">User admin id</param>
-        /// <param name="endDate">End date</param>
-        /// <returns>Updated ClubAdministrationDTO</returns>
-        Task<ClubAdministrationDTO> SetAdminEndDateAsync(int clubAdministrationId, DateTime endDate);
+        /// <param name="adminDTO">An information about an edited administrator</param>
+        /// <returns>An information about a specific admininstrator</returns>
+        Task<ClubAdministrationDTO> EditAdministratorAsync(ClubAdministrationDTO adminDTO);
 
         /// <summary>
-        /// Add new admin to club
+        /// Remove a specific administrator from the Club
         /// </summary>
-        /// <param name="createdAdmin"></param>
-        /// <returns>Updated ClubAdministrationDTO</returns>
-        Task<ClubAdministrationDTO> AddClubAdminAsync(ClubAdministrationDTO createdAdmin);
+        /// <param name="adminId">The id of the administrator</param>
+        Task RemoveAdministratorAsync(int adminId);
 
-        Task<IEnumerable<ClubAdministrationDTO>> GetUsersAdministrationsAsync(string UserId);
+        /// <summary>
+        /// Removes roles from previous administrators
+        /// </summary>
+        Task CheckPreviousAdministratorsToDelete();
+
+        /// <summary>
+        ///returns administrations of given user
+        /// </summary>
+        Task<IEnumerable<ClubAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId);
 
     }
 }
