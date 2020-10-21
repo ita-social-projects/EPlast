@@ -6,6 +6,7 @@ using EPlast.BLL.Interfaces.EventUser;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -244,6 +245,25 @@ namespace EPlast.BLL.Services.EventUser
             eventToEdit.EventAdministrations = administrationList;
             _repoWrapper.Event.Update(eventToEdit);
             await _repoWrapper.SaveAsync();
+        }
+
+        public async Task<int> ApproveEventAsync(int id)
+        {
+            try
+            {
+                var eventToApprove = await _repoWrapper.Event.GetFirstAsync(r => r.ID == id);
+                var approvedStatus = await _eventStatusManager.GetStatusIdAsync("Затверджений(-на)");
+                eventToApprove.EventStatusID = approvedStatus;
+
+                _repoWrapper.Event.Update(eventToApprove);
+                await _repoWrapper.SaveAsync();
+
+                return StatusCodes.Status200OK;
+            }
+            catch
+            {
+                return StatusCodes.Status400BadRequest;
+            }
         }
     }
 }
