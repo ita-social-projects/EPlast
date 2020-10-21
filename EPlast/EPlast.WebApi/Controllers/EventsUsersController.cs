@@ -28,9 +28,9 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("eventsUsers/{userId}")]
         public async Task<IActionResult> GetEventUserByUserId(string userId)
         {
-                var eventUserModel = await _eventUserManager.EventUserAsync(userId, User);
+            var eventUserModel = await _eventUserManager.EventUserAsync(userId, User);
 
-                return Ok(eventUserModel);
+            return Ok(eventUserModel);
         }
 
         /// <summary>
@@ -43,9 +43,9 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = "Пластун,Admin")]
         public async Task<IActionResult> GetEventsDataForCreate()
         {
-                var eventCreateModel = await _eventUserManager.InitializeEventCreateDTOAsync();
+            var eventCreateModel = await _eventUserManager.InitializeEventCreateDTOAsync();
 
-                return Ok(eventCreateModel);
+            return Ok(eventCreateModel);
         }
 
         /// <summary>
@@ -59,9 +59,9 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = "Пластун,Admin")]
         public async Task<IActionResult> EventCreate([FromBody] EventCreateDTO createDTO)
         {
-                await _eventUserManager.CreateEventAsync(createDTO);
+            await _eventUserManager.CreateEventAsync(createDTO);
 
-                return Created(nameof(GetEventUserByUserId), createDTO);
+            return Created(nameof(GetEventUserByUserId), createDTO);
         }
 
         /// <summary>
@@ -75,9 +75,9 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = "Пластун,Admin")]
         public async Task<IActionResult> EventEdit(int eventId)
         {
-                var eventCreateModel = await _eventUserManager.InitializeEventEditDTOAsync(eventId);
+            var eventCreateModel = await _eventUserManager.InitializeEventEditDTOAsync(eventId);
 
-                return Ok(eventCreateModel);
+            return Ok(eventCreateModel);
         }
 
         /// <summary>
@@ -91,9 +91,25 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = "Пластун,Admin")]
         public async Task<IActionResult> EventEdit([FromBody] EventCreateDTO createDTO)
         {
-                await _eventUserManager.EditEventAsync((createDTO));
+            await _eventUserManager.EditEventAsync((createDTO));
 
-                return NoContent();
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Put approved event
+        /// </summary>
+        /// <returns>An approved event</returns>
+        /// <param name="eventId"></param>
+        /// <response code="204">Resource updated successfully</response>
+        /// <response code="400">When the Event is not approved</response>
+        [HttpPut("approveEvent/{eventId}")]
+        [Authorize(Roles = "Пластун,Admin")]
+        public async Task<IActionResult> ApproveEvent(int eventId)
+        {
+            var eventApproved = await _eventUserManager.ApproveEventAsync(eventId);
+
+            return Ok(eventApproved);
         }
 
     }

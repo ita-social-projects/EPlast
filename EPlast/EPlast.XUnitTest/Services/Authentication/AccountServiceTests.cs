@@ -4,7 +4,6 @@ using EPlast.BLL.DTO.Account;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Services;
-using EPlast.Controllers;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Authentication;
@@ -71,7 +70,6 @@ namespace EPlast.XUnitTest.Services
                            _contextAccessor.Object, _userPrincipalFactory.Object, null, null, null, null);
 
             Mock<IRepositoryWrapper> mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
-            Mock<ILogger<AuthController>> mockLogger = new Mock<ILogger<AuthController>>();
             Mock<IEmailConfirmation> mockEmailConfirmation = new Mock<IEmailConfirmation>();
             Mock<IMapper> mockMapper = new Mock<IMapper>();
             mockMapper

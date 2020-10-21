@@ -1,5 +1,4 @@
-﻿using EPlast.ViewModels.UserProfile;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.ViewModels
@@ -7,12 +6,11 @@ namespace EPlast.ViewModels
     public class ClubMembersViewModel
     {
         public int ID { get; set; }
-        public string UserId { get; set; }
-        public UserInfoViewModel User { get; set; }
-        public int ClubId { get; set; }
-        public ClubViewModel Club { get; set; }
+
         [Required]
-        public bool IsApproved { get; set; }
-        public IEnumerable<ClubAdministrationViewModel> ClubAdministration { get; set; }
+        public string UserId { get; set; }
+        public ClubUserViewModel User { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
     }
 }
