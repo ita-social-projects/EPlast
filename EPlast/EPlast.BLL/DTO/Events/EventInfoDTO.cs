@@ -13,6 +13,7 @@ namespace EPlast.BLL.DTO.Events
         public int EventTypeId { get; set; }
         public string EventType { get; set; }
         public int EventCategoryId { get; set; }
+        public int NumberOfPartisipants { get; set; }
         public string EventCategory { get; set; }
         public string EventStatus { get; set; }
         public string FormOfHolding { get; set; }
