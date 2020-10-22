@@ -56,7 +56,7 @@ namespace EPlast.BLL.Services.Club
             };
 
             var user = await _userManager.FindByIdAsync(adminDTO.UserId);
-            var role = adminType.AdminTypeName == "Голова Станиці" ? "Голова Станиці" : "Діловод Станиці";
+            var role = adminType.AdminTypeName == "Голова Куреня" ? "Голова Куреня" : "Діловод Куреня";
             await _userManager.AddToRoleAsync(user, role);
 
             await _repositoryWrapper.ClubAdministration.CreateAsync(admin);
