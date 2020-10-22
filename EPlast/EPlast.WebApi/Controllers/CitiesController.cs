@@ -51,7 +51,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="cityName">Optional param to find cities by name</param>
         /// <returns>A specific number of cities</returns>
         [HttpGet("Profiles/{page}")]
-        //[Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetCities(int page, int pageSize, string cityName = null)
         {
             var cities = await _cityService.GetAllDTOAsync(cityName);
@@ -216,7 +216,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="400">Wrong input</response>
         [HttpPost("CreateCity")]
-        //[Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Create(CityViewModel city)
         {
             if (!ModelState.IsValid)
@@ -437,7 +437,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <returns>List of cities</returns>
         [HttpGet]
-        //[Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetCitiesThatUserHasAccessTo()
         {
             return Ok(new { cities = await _cityAccessService.GetCitiesAsync(User) });

@@ -211,7 +211,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="400">Wrong input</response>
         [HttpPost("CreateClub")]
-        //[Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Create(ClubViewModel Club)
         {
             if (!ModelState.IsValid)
@@ -430,7 +430,16 @@ namespace EPlast.WebApi.Controllers
             return Ok(userAdmins);
         }
 
-
+        /// <summary>
+        /// Get all clubs 
+        /// </summary>
+        /// <returns>List of clubs</returns>
+        [HttpGet("Clubs")]
+        public async Task<IActionResult> GetClubs()
+        {
+            var cities = await _ClubService.GetClubs();
+            return Ok(cities);
+        }
 
     }
 }
