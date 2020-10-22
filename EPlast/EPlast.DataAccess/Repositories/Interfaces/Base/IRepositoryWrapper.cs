@@ -55,6 +55,9 @@ namespace EPlast.DataAccess.Repositories
         IMembersStatisticsRepository MembersStatistics { get; }
 
         ICityLegalStatusesRepository CityLegalStatuses { get; }
+
+        INotificationTypeRepository NotificationTypes { get; }
+        IUserNotificationRepository UserNotifications { get; }
         IClubLegalStatusesRepository ClubLegalStatuses { get; }
 
         IUserPlastDegreesRepository UserPlastDegrees { get; }
