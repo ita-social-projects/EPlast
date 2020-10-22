@@ -51,7 +51,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="cityName">Optional param to find cities by name</param>
         /// <returns>A specific number of cities</returns>
         [HttpGet("Profiles/{page}")]
-        //[Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetCities(int page, int pageSize, string cityName = null)
         {
             var cities = await _cityService.GetAllDTOAsync(cityName);
