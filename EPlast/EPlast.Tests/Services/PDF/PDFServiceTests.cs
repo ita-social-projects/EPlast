@@ -117,8 +117,8 @@ namespace EPlast.Tests.Services.PDF
         {
             return new List<ClubMembers>
             {
-                new ClubMembers(){ UserId ="1",Club = new Club()},
-                new ClubMembers(){ UserId ="546546", Club = new Club()}
+                new ClubMembers(){ UserId ="1",Club = new DataAccess.Entities.Club()},
+                new ClubMembers(){ UserId ="546546", Club = new DataAccess.Entities.Club()}
             }.AsQueryable();
         }
 

@@ -647,18 +647,6 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 return _cityLegalStatuses;
             }
         }
-        
-        public IClubLegalStatusesRepository ClubLegalStatuses
-        {
-            get
-            {
-                if (_clubLegalStatuses == null)
-                {
-                    _clubLegalStatuses = new ClubLegalStatusesRepository(_dbContext);
-                }
-                 return _clubLegalStatuses;
-             }
-         }
 
         public IUserMembershipDatesRepository UserMembershipDates
         {
@@ -668,7 +656,24 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 {
                     _userMembershipDates = new UserMembershipDatesRepository(_dbContext);
                 }
-                 return _userMembershipDates;
+
+                return _userMembershipDates;
+            }
+        }
+
+
+        
+        public IClubLegalStatusesRepository ClubLegalStatuses
+
+        {
+            get
+            {
+                if (_clubLegalStatuses == null)
+                {
+                    _clubLegalStatuses = new ClubLegalStatusesRepository(_dbContext);
+                }
+
+                return _clubLegalStatuses;
             }
         }
 
