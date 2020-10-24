@@ -56,7 +56,7 @@ namespace EPlast.BLL.Services.Club
             };
 
             var user = await _userManager.FindByIdAsync(adminDTO.UserId);
-            var role = adminType.AdminTypeName == "Голова Станиці" ? "Голова Станиці" : "Діловод Станиці";
+            var role = adminType.AdminTypeName == "Р“РѕР»РѕРІР° РљСѓСЂРµРЅСЏ" ? "Р“РѕР»РѕРІР° РљСѓСЂРµРЅСЏ" : "Р”С–Р»РѕРІРѕРґ РљСѓСЂРµРЅСЏ";
             await _userManager.AddToRoleAsync(user, role);
 
             await _repositoryWrapper.ClubAdministration.CreateAsync(admin);
@@ -97,7 +97,7 @@ namespace EPlast.BLL.Services.Club
 
             var adminType = await _adminTypeService.GetAdminTypeByIdAsync(admin.AdminTypeId);
             var user = await _userManager.FindByIdAsync(admin.UserId);
-            var role = adminType.AdminTypeName == "Голова Станиці" ? "Голова Станиці" : "Діловод Станиці";
+            var role = adminType.AdminTypeName == "Р“РѕР»РѕРІР° РљСѓСЂРµРЅСЏ" ? "Р“РѕР»РѕРІР° РљСѓСЂРµРЅСЏВі" : "Р”С–Р»РѕРІРѕРґ РљСѓСЂРµРЅСЏВі";
             await _userManager.RemoveFromRoleAsync(user, role);
 
             _repositoryWrapper.ClubAdministration.Update(admin);
@@ -108,16 +108,16 @@ namespace EPlast.BLL.Services.Club
         public async Task CheckPreviousAdministratorsToDelete()
         {
             var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.EndDate <= DateTime.Now);
-            var ClubHeadType = await _adminTypeService.GetAdminTypeByNameAsync("Голова Станиці");
+            var ClubHeadType = await _adminTypeService.GetAdminTypeByNameAsync("Р“РѕР»РѕРІР° РљСѓСЂРµРЅСЏ");
 
             foreach (var admin in admins)
             {
-                var role = admin.AdminTypeId == ClubHeadType.ID ? "Голова Станиці" : "Діловод Станиці";
+                var role = admin.AdminTypeId == ClubHeadType.ID ? "Р“РѕР»РѕРІР° РљСѓСЂРµРЅСЏ" : "Р”С–Р»РѕРІРѕРґ РљСѓСЂРµРЅСЏ";
 
                 var currentAdministration = await _repositoryWrapper.ClubAdministration
                     .GetAllAsync(a => (a.EndDate > DateTime.Now || a.EndDate == null) && a.UserId == admin.UserId);
 
-                if (currentAdministration.All(a => (a.AdminTypeId == ClubHeadType.ID ? "Голова Станиці" : "Діловод Станиці") != role)
+                if (currentAdministration.All(a => (a.AdminTypeId == ClubHeadType.ID ? "Р“РѕР»РѕРІР° РљСѓСЂРµРЅСЏ" : "Р”С–Р»РѕРІРѕРґ РљСѓСЂРµРЅСЏ") != role)
                     || currentAdministration.Count() == 0)
                 {
                     var user = await _userManager.FindByIdAsync(admin.UserId);
