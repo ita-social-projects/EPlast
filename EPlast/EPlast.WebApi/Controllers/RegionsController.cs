@@ -1,6 +1,7 @@
 ﻿using EPlast.BLL.DTO.Region;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Region;
+using EPlast.WebApi.Models.Region;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -116,6 +117,18 @@ namespace EPlast.WebApi.Controllers
                 return Ok();
             
         }
+
+
+        [HttpGet("Profiles/{page}")]
+        public async Task<IActionResult> GetRegions(int page, int pageSize, string regionName)
+        {
+            var regions = await _regionService.GetAllRegionsAsync();
+            var regionsViewModel = new RegionsViewModel(page, pageSize, regions, regionName);
+
+            return Ok(regionsViewModel);
+        }
+
+
 
 
         [HttpDelete("RemoveAdministration/{Id}")]

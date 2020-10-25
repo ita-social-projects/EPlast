@@ -164,6 +164,9 @@ namespace EPlast.BLL.Services.Region
         public async Task EditRegionAsync(int regId, RegionDTO region)
         {
             var ChangedRegion = await _repoWrapper.Region.GetFirstAsync(d => d.ID == regId);
+
+            ChangedRegion.Logo = region.Logo;
+            ChangedRegion.City = region.City;
             ChangedRegion.Link = region.Link;
             ChangedRegion.Email = region.Email;
             ChangedRegion.OfficeNumber = region.OfficeNumber;
@@ -292,5 +295,7 @@ namespace EPlast.BLL.Services.Region
             }
             await _repoWrapper.SaveAsync();
         }
+
+
     }
 }

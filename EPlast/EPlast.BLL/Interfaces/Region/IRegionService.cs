@@ -34,5 +34,6 @@ namespace EPlast.BLL.Interfaces.Region
         Task<string> GetLogoBase64(string logoName);
         Task<RegionAdministrationDTO> GetHead(int regionId);
         Task RedirectMembers(int prevRegId, int nextRegId);
+       
     }
 }
