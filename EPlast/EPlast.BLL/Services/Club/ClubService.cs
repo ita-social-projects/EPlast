@@ -301,8 +301,7 @@ namespace EPlast.BLL.Services.Club
         public async Task<int> CreateAsync(ClubProfileDTO model, IFormFile file)
         {
             await UploadPhotoAsync(model.Club, file);
-            var Club = CreateClubFromProfileAsync(model);
-
+            var Club =  CreateClubFromProfileAsync(model);
             _repoWrapper.Club.Attach(Club);
             await _repoWrapper.Club.CreateAsync(Club);
             await _repoWrapper.SaveAsync();
@@ -335,7 +334,6 @@ namespace EPlast.BLL.Services.Club
         private DataAccessClub.Club CreateClubAsync(ClubDTO model)
         {
             var Club = _mapper.Map<ClubDTO, DataAccessClub.Club>(model);
-
 
             return Club;
         }
