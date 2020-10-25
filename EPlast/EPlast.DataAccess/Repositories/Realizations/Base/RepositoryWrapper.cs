@@ -60,6 +60,8 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private ICityLegalStatusesRepository _cityLegalStatuses;
         private IClubLegalStatusesRepository _clubLegalStatuses;
         private IUserPlastDegreesRepository _userPlastDegrees;
+        private IUserNotificationRepository _userNotifications;
+        private INotificationTypeRepository _notificationTypes;
         private IUserMembershipDatesRepository _userMembershipDates;
         private IEventAdministrationRepository _eventAdministration;
         private IEventAdministrationTypeRepository _eventAdministrationType;
@@ -645,18 +647,6 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 return _cityLegalStatuses;
             }
         }
-        
-        public IClubLegalStatusesRepository ClubLegalStatuses
-        {
-            get
-            {
-                if (_clubLegalStatuses == null)
-                {
-                    _clubLegalStatuses = new ClubLegalStatusesRepository(_dbContext);
-                }
-                 return _clubLegalStatuses;
-             }
-         }
 
         public IUserMembershipDatesRepository UserMembershipDates
         {
@@ -666,7 +656,24 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 {
                     _userMembershipDates = new UserMembershipDatesRepository(_dbContext);
                 }
-                 return _userMembershipDates;
+
+                return _userMembershipDates;
+            }
+        }
+
+
+        
+        public IClubLegalStatusesRepository ClubLegalStatuses
+
+        {
+            get
+            {
+                if (_clubLegalStatuses == null)
+                {
+                    _clubLegalStatuses = new ClubLegalStatusesRepository(_dbContext);
+                }
+
+                return _clubLegalStatuses;
             }
         }
 
@@ -728,7 +735,31 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 return _biographyDocumentsRepository;
             }
         }
+        
+        public IUserNotificationRepository UserNotifications
+        {
+            get
+            {
+                if (_userNotifications == null)
+                {
+                    _userNotifications = new UserNotificationRepository(_dbContext);
+                }
+                return _userNotifications;
+            }
+        }
 
+        public INotificationTypeRepository NotificationTypes
+        {
+            get
+            {
+                if (_notificationTypes == null)
+                {
+                    _notificationTypes = new NotificationTypeRepository(_dbContext);
+                }
+                return _notificationTypes;
+            }
+        }
+        
         public IAchievementDocumentsRepository AchievementDocumentsRepository
         {
             get
