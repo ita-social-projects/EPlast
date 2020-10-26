@@ -34,7 +34,8 @@ namespace EPlast.DataAccess.Entities.Event
         public string FormOfHolding { get; set; }
         [Required(ErrorMessage = "Вам потрібно обрати для кого створена подія!")]
         public string ForWhom { get; set; }
-        [Required(ErrorMessage = "Вам потрібно вказати приблизну кількість людей!")]
+        [Required(ErrorMessage = "Вам потрібно вказати приблизну кількість учасників!")]
+        [MaxLength(6, ErrorMessage = "Приблизна кількість учасників не може перевищувати 6 символів")]
         public int NumberOfPartisipants { get; set; }
         public double Rating { get; set; }
         public EventType EventType { get; set; }

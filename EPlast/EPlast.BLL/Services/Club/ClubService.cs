@@ -86,7 +86,7 @@ namespace EPlast.BLL.Services.Club
             {
                 return null;
             }
-
+          
             var ClubHead = Club.ClubAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Куреня"
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
@@ -301,8 +301,7 @@ namespace EPlast.BLL.Services.Club
         public async Task<int> CreateAsync(ClubProfileDTO model, IFormFile file)
         {
             await UploadPhotoAsync(model.Club, file);
-            var Club = CreateClubFromProfileAsync(model);
-
+            var Club =  CreateClubFromProfileAsync(model);
             _repoWrapper.Club.Attach(Club);
             await _repoWrapper.Club.CreateAsync(Club);
             await _repoWrapper.SaveAsync();
@@ -323,6 +322,13 @@ namespace EPlast.BLL.Services.Club
             return Club.ID;
         }
 
+        /// <inheritdoc />
+        public async Task<IEnumerable<ClubForAdministrationDTO>> GetClubs()
+        {
+            var clubs = await _repoWrapper.Club.GetAllAsync();
+            return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubForAdministrationDTO>>(clubs);
+        }
+
         private DataAccessClub.Club CreateClubFromProfileAsync(ClubProfileDTO model)
         {
             var ClubDto = model.Club;
@@ -335,7 +341,6 @@ namespace EPlast.BLL.Services.Club
         private DataAccessClub.Club CreateClubAsync(ClubDTO model)
         {
             var Club = _mapper.Map<ClubDTO, DataAccessClub.Club>(model);
-
 
             return Club;
         }
