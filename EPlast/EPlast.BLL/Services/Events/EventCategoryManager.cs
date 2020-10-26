@@ -33,6 +33,20 @@ namespace EPlast.BLL.Services.Events
         }
 
         /// <inheritdoc />
+        public async Task<IEnumerable<EventCategoryDTO>> GetDTOByEventPageAsync(int eventTypeId, int page, int pageSize, string CategoryName = null)
+        {
+            var eventType = await _eventTypeManager.GetTypeByIdAsync(eventTypeId);
+            var dto = eventType.EventCategories
+                .Select(eventTypeCategory => new EventCategoryDTO()
+                {
+                    EventCategoryId = eventTypeCategory.EventCategoryId,
+                    EventCategoryName = eventTypeCategory.EventCategory.EventCategoryName
+                });
+
+            return dto;
+        }
+
+        /// <inheritdoc />
         public async Task<IEnumerable<EventCategoryDTO>> GetDTOByEventTypeIdAsync(int eventTypeId)
         {
             var eventType = await _eventTypeManager.GetTypeByIdAsync(eventTypeId);
