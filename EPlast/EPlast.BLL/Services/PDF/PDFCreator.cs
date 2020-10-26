@@ -7,7 +7,7 @@ namespace EPlast.BLL
     internal class PdfCreator : IPdfCreator
     {
         private readonly IPdfDocument document;
-        private PdfSharp.Pdf.PdfDocument pdf;
+        private PdfSharpCore.Pdf.PdfDocument pdf;
 
         public PdfCreator(IPdfDocument document)
         {
