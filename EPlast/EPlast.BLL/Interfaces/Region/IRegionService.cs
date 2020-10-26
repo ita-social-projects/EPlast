@@ -31,5 +31,11 @@ namespace EPlast.BLL.Interfaces.Region
 
         Task<string> GetLogoBase64(string logoName);
         Task<RegionAdministrationDTO> GetHead(int regionId);
+
+        /// <summary>
+        /// Get all Regions
+        /// </summary>
+        /// <returns>All Regions</returns>
+        Task<IEnumerable<RegionForAdministrationDTO>> GetRegions();
     }
 }

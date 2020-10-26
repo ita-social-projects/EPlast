@@ -59,6 +59,11 @@ namespace EPlast.BLL.Services.Club
             var role = adminType.AdminTypeName == "Голова Куреня" ? "Голова Куреня" : "Діловод Куреня";
             await _userManager.AddToRoleAsync(user, role);
 
+            if (role == "Голова Куреня")
+            {
+                await CheckClubHasHead(adminDTO.ClubId);
+            }
+
             await _repositoryWrapper.ClubAdministration.CreateAsync(admin);
             await _repositoryWrapper.SaveAsync();
             adminDTO.ID = admin.ID;
@@ -134,6 +139,19 @@ namespace EPlast.BLL.Services.Club
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.Club)
                  ); ;
             return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationDTO>>(admins);
+        }
+
+        private async Task CheckClubHasHead(int clubId)
+        {
+            var adminType = await _adminTypeService.GetAdminTypeByNameAsync("Голова Куреня");
+            var admin = await _repositoryWrapper.ClubAdministration.
+                GetFirstOrDefaultAsync(a => a.AdminTypeId == adminType.ID
+                    && (DateTime.Now < a.EndDate || a.EndDate == null));
+
+            if (admin != null)
+            {
+                await RemoveAdministratorAsync(admin.ID);
+            }
         }
     }
 }

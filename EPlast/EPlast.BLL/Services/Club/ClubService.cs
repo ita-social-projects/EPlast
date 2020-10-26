@@ -322,6 +322,13 @@ namespace EPlast.BLL.Services.Club
             return Club.ID;
         }
 
+        /// <inheritdoc />
+        public async Task<IEnumerable<ClubForAdministrationDTO>> GetClubs()
+        {
+            var clubs = await _repoWrapper.Club.GetAllAsync();
+            return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubForAdministrationDTO>>(clubs);
+        }
+
         private DataAccessClub.Club CreateClubFromProfileAsync(ClubProfileDTO model)
         {
             var ClubDto = model.Club;
