@@ -23,37 +23,6 @@ namespace EPlast.BLL
         {
             DrawText(gfx, decesion);
 
-            //paragraph.Format = new ParagraphFormat
-            //{
-            //    Font = new Font
-            //    {
-            //        Size = 14
-            //    },
-            //    SpaceAfter = "3cm",
-            //    SpaceBefore = "5cm",
-            //    Alignment = ParagraphAlignment.Right
-            //};
-
-            //paragraph = section.AddParagraph(decesion.Description);
-            //paragraph.Format = new ParagraphFormat
-            //{
-            //    Font = new Font
-            //    {
-            //        Size = 12
-            //    },
-            //    SpaceAfter = "1cm",
-            //};
-
-            //paragraph = section.AddParagraph($"Поточний статус: {decesion.DecesionStatusType.GetDescription()}");
-            //paragraph.Format = new ParagraphFormat
-            //{
-            //    Font = new Font
-            //    {
-            //        Size = 14
-            //    },
-            //    SpaceBefore = "5cm",
-            //    Alignment = ParagraphAlignment.Right
-            //};
         }
         protected void DrawText(XGraphics gfx, Decesion decesion)
         {

@@ -47,19 +47,13 @@ namespace EPlast.BLL
             document.Info.Subject = settings.Subject;
             document.Info.Author = settings.Author;
 
-            DefineStyles(document);
-
             XGraphics gfx = XGraphics.FromPdfPage(page);
 
-            //if (!settings.ImagePath.Contains("Blank"))
-            //{
-            //    string base64 = settings.ImagePath.Split(',')[1];
-            //    DrawImage(gfx, base64, 0, 0, 615, 205);
-            //}
-            //else
-            //{
-            //    DrawImage(gfx, settings.ImagePath, 40, 20, 84, 250);
-            //}
+            if (!settings.ImagePath.Contains("Blank"))
+            {
+                string base64 = settings.ImagePath.Split(',')[1];
+                DrawImage(gfx, base64, 0, 0, 615, 205);
+            }
             SetDocumentBody(page, gfx);
 
             return document;
@@ -67,10 +61,5 @@ namespace EPlast.BLL
 
         public abstract void SetDocumentBody(PdfPage page, XGraphics gfx);
 
-        public virtual void DefineStyles(PdfSharpCore.Pdf.PdfDocument document)
-        {
-            //var style = document.Styles[settings.StyleName];
-            //style.Font.Name = settings.FontName;
-        }
     }
 }

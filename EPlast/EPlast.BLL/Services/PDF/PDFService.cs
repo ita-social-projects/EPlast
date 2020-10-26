@@ -21,18 +21,21 @@ namespace EPlast.BLL
             _decisionBlobStorage = decisionBlobStorage;
         }
 
-        public async Task<byte[]> BlankCreatePDFAsync(string userId)
+        public async Task<string> BlankCreatePDFAsync(string userId)
         {
             try
             {
                 IPdfSettings pdfSettings = new PdfSettings
                 {
                     Title = "Бланк",
-                    ImagePath = "wwwroot/images/pdf/Header-Eplast-Blank.png"
+                    ImagePath = "Blank"
                 };
                 var blank = GetBlankData(userId);
                 IPdfCreator creator = new PdfCreator(new BlankDocument(blank, pdfSettings));
-                return await Task.Run(() => creator.GetPDFBytes());
+                var base64 = await Task.Run(() => creator.GetPDFBytes());
+                var azureBase64 = Convert.ToBase64String(base64);
+                var result = $"data:application/pdf;base64," + azureBase64;
+                return result;
             }
             catch (Exception e)
             {
@@ -50,11 +53,11 @@ namespace EPlast.BLL
                     dec.Include(d => d.DecesionTarget).Include(d => d.Organization));
                 if (decision != null)
                 {
-                    //var base64 = await _decisionBlobStorage.GetBlobBase64Async("dafaultPhotoForPdf.jpg");
+                    var base64 = await _decisionBlobStorage.GetBlobBase64Async("dafaultPhotoForPdf.jpg");
                     IPdfSettings pdfSettings = new PdfSettings
                     {
                         Title = $"Рішення {decision.Organization.OrganizationName}",
-                        //ImagePath = base64
+                        ImagePath = base64
                     };
                     IPdfCreator creator = new PdfCreator(new DecisionDocument(decision, pdfSettings));
                     return await Task.Run(() => creator.GetPDFBytes());
@@ -71,23 +74,23 @@ namespace EPlast.BLL
         private BlankModel GetBlankData(string userId)
         {
             var user = _repoWrapper.User.FindByCondition(x => x.Id.Equals(userId)).First();
-            var userProfile = _repoWrapper.UserProfile.FindByCondition(x => x.UserID.Equals(userId)).First();
-            var cityMembers = _repoWrapper.CityMembers
-                .FindByCondition(x => x.UserId.Equals(userId)).First();
-            var clubMembers = _repoWrapper.ClubMembers
-                .FindByCondition(x => x.UserId.Equals(userId)).First();
-            var cityAdmin = _repoWrapper.User.FindByCondition(x =>
-                x.Id.Equals(_repoWrapper.CityAdministration.FindByCondition(y => y.CityId == cityMembers.CityId)
-                    .Select(y => y.UserId)
-                    .First()))
-                .First();
+            //var userProfile = _repoWrapper.UserProfile.FindByCondition(x => x.UserID.Equals(userId)).First();
+            //var cityMembers = _repoWrapper.CityMembers
+            //    .FindByCondition(x => x.UserId.Equals(userId)).First();
+            //var clubMembers = _repoWrapper.ClubMembers
+            //    .FindByCondition(x => x.UserId.Equals(userId)).First();
+            //var cityAdmin = _repoWrapper.User.FindByCondition(x =>
+            //    x.Id.Equals(_repoWrapper.CityAdministration.FindByCondition(y => y.CityId == cityMembers.CityId)
+            //        .Select(y => y.UserId)
+            //        .First()))
+            //    .First();
             return new BlankModel
             {
                 User = user,
-                UserProfile = userProfile,
-                CityMembers = cityMembers,
-                ClubMembers = clubMembers,
-                CityAdmin = cityAdmin
+                //UserProfile = userProfile,
+                //CityMembers = cityMembers,
+                //ClubMembers = clubMembers,
+                //CityAdmin = cityAdmin
             };
         }
     }

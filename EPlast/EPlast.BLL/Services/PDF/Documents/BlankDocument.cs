@@ -216,7 +216,63 @@ namespace EPlast.BLL
 
         public override void SetDocumentBody(PdfPage page, XGraphics gfx)
         {
-            throw new NotImplementedException();
+            setText(gfx, "Для осіб, які хочуть стати дійсними членами Пласту", XFontStyle.Regular, 180,20);
+            setDashLine(gfx,40, 40, 560, 40);
+            setText(gfx, "форма №1", XFontStyle.Regular, 50, 50);
+            setText(gfx, "Крайовому коменданту УСП / УПС", XFontStyle.Regular, 400, 55);
+            setText(gfx, $"від {blank.User.FirstName} {blank.User.LastName}", XFontStyle.Underline, 400, 65);
+            setText(gfx, "Заява", XFontStyle.Bold, 280, 90);
+            setText(gfx, "Прошу прийняти мене в дійсні члени Пласту – Національної Скаутської Організації України, до Уладу Старших",
+                XFontStyle.Regular,70,110);
+            setText(gfx, "Пластунів / Уладу Пластунів Сеньйорів. Даю слово честі, що буду дотримуватися Трьох Головних Обов’язків пластуна",
+                XFontStyle.Regular, 50, 120);
+            setText(gfx, "та положень Статуту Пласту НСОУ.", XFontStyle.Regular, 50, 130);
+            setText(gfx, "Відповідно до Закону України „ Про захист персональних даних “ надаю згоду проводу Пласту на обробку та ",
+                XFontStyle.Regular, 60, 140);
+            setText(gfx, "використання моїх персональних даних(прізвище, ім'я, по-батькові, паспортні дані, ідентифікаційний номер, дані",
+                XFontStyle.Regular, 50, 150);
+            setText(gfx, "про освіту, дата народження, місце проживання, громадянство, стать, склад сім'ї, номери телефонів, електронні",
+                XFontStyle.Regular, 50, 160);
+            setText(gfx, "адреси, фотографії, інші персональні дані) з метою забезпечення реалізації відносин в сфері громадської діяльності.",
+                XFontStyle.Regular, 50, 170);
+            setText(gfx, "Також посвідчую, що повідомлення про включення даних про мене до бази персональних даних членів Пласту ",
+                XFontStyle.Regular, 60, 180);
+            setText(gfx, "отримав/ла, із правами, які я маю відповідно до змісту ст. 8 Закону України „Про захист персональних даних“,",
+                XFontStyle.Regular, 50, 190);
+            setText(gfx, "ознайомлений/на.", XFontStyle.Regular, 50, 200);
+
+            setText(gfx,$"{DateTime.Now.ToString("dd.MM.yyyy")}, Станиця", XFontStyle.Underline, 80, 290);
+            setLine(gfx);
+            setText(gfx, $"({blank.User.LastName} {blank.User.FirstName})", XFontStyle.Italic, 463, 290);
+            setText(gfx, "Підпис Заявника", XFontStyle.Italic, 410, 300);
+
+            setDashLine(gfx, 40, 330, 560, 330);
+
+
+
+        }
+
+        private static void setText(XGraphics gfx,string text, XFontStyle style, double x, double y)
+        {
+            const string facename = "Calibri";
+
+            XStringFormat format = new XStringFormat();
+            XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.Unicode);
+            XFont font = new XFont(facename, 10, style, options);
+
+            gfx.DrawString(text, font, XBrushes.Black, x, y, format);
+        }
+
+        private static void setDashLine(XGraphics gfx,double x1,double y1, double x2, double y2)
+        {
+            XPen pen = new XPen(XColors.Black, 0.5);
+            pen.DashStyle = XDashStyle.Dash;
+            gfx.DrawLine(pen, x1, y1, x2, y2);
+        }
+        private static void setLine(XGraphics gfx)
+        {
+            XPen pen = new XPen(XColors.Black);
+            gfx.DrawLine(pen, 370, 300, 460, 300);
         }
     }
 }
