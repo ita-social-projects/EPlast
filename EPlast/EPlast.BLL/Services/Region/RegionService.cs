@@ -304,5 +304,6 @@ namespace EPlast.BLL.Services.Region
             var regions = await _repoWrapper.Region.GetAllAsync();
             return _mapper.Map<IEnumerable<DataAccessCity.Region>, IEnumerable<RegionForAdministrationDTO>>(regions);
         }
+
     }
 }
