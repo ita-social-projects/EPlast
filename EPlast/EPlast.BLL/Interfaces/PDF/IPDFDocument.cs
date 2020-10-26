@@ -4,6 +4,6 @@ namespace EPlast.BLL
 {
     internal interface IPdfDocument
     {
-        PdfSharp.Pdf.PdfDocument GetDocument();
+        PdfSharpCore.Pdf.PdfDocument GetDocument();
     }
 }

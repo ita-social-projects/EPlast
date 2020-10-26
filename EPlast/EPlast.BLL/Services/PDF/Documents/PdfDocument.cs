@@ -1,7 +1,7 @@
-﻿using PdfSharp;
-using PdfSharp.Drawing;
-using PdfSharp.Pdf;
-using PdfSharp.Pdf.IO;
+﻿using PdfSharpCore;
+using PdfSharpCore.Drawing;
+using PdfSharpCore.Pdf;
+using PdfSharpCore.Pdf.IO;
 using System;
 using System.IO;
 
@@ -10,7 +10,7 @@ namespace EPlast.BLL
 {
     public abstract class PdfDocument : IPdfDocument
     {
-        protected PdfSharp.Pdf.PdfDocument document;
+        protected PdfSharpCore.Pdf.PdfDocument document;
         private XGraphicsState state;
         private readonly IPdfSettings settings;
 
@@ -21,24 +21,26 @@ namespace EPlast.BLL
         protected PdfDocument(IPdfSettings settings)
         {
             this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            document = new PdfSharp.Pdf.PdfDocument();
+            document = new PdfSharpCore.Pdf.PdfDocument();
         }
         protected void DrawImage(XGraphics gfx, string jpegSamplePath, int x, int y, int width, int height)
         {
             var bytes = Convert.FromBase64String(jpegSamplePath);
-            var ph = Convert.FromBase64String(jpegSamplePath);
+            //var ph = Convert.FromBase64String(jpegSamplePath);
             string path = "../decisiontmp.img";
-            using (var imageFile = new FileStream(path, FileMode.Create))
+            using (var imageFile = new FileStream(path, FileMode.OpenOrCreate))
             {
                 imageFile.Write(bytes, 0, bytes.Length);
                 imageFile.Flush();
+                imageFile.Close();
             }
 
             XImage image = XImage.FromFile(path);
             gfx.DrawImage(image, x, y, width, height);
+            File.Delete(path);
         }
 
-        public virtual PdfSharp.Pdf.PdfDocument GetDocument()
+        public virtual PdfSharpCore.Pdf.PdfDocument GetDocument()
         {
             PdfPage page = document.AddPage();
             document.Info.Title = settings.Title;
@@ -49,15 +51,15 @@ namespace EPlast.BLL
 
             XGraphics gfx = XGraphics.FromPdfPage(page);
 
-            if (!settings.ImagePath.Contains("Blank"))
-            {
-                string base64 = settings.ImagePath.Split(',')[1];
-                DrawImage(gfx, base64, 0, 0, 615, 205);
-            }
-            else
-            {
-                DrawImage(gfx, settings.ImagePath, 40, 20, 84, 250);
-            }
+            //if (!settings.ImagePath.Contains("Blank"))
+            //{
+            //    string base64 = settings.ImagePath.Split(',')[1];
+            //    DrawImage(gfx, base64, 0, 0, 615, 205);
+            //}
+            //else
+            //{
+            //    DrawImage(gfx, settings.ImagePath, 40, 20, 84, 250);
+            //}
             SetDocumentBody(page, gfx);
 
             return document;
@@ -65,7 +67,7 @@ namespace EPlast.BLL
 
         public abstract void SetDocumentBody(PdfPage page, XGraphics gfx);
 
-        public virtual void DefineStyles(PdfSharp.Pdf.PdfDocument document)
+        public virtual void DefineStyles(PdfSharpCore.Pdf.PdfDocument document)
         {
             //var style = document.Styles[settings.StyleName];
             //style.Font.Name = settings.FontName;

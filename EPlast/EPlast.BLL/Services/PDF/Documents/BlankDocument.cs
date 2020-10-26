@@ -2,8 +2,10 @@
 using System.Linq;
 //using MigraDoc.DocumentObjectModel;
 //using MigraDoc.DocumentObjectModel.Shapes;
-using PdfSharp.Drawing;
-using PdfSharp.Pdf;
+using PdfSharpCore.Drawing;
+using PdfSharpCore.Pdf;
+using PdfSharpCore.Drawing;
+using PdfSharpCore.Pdf;
 
 namespace EPlast.BLL
 {

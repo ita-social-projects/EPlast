@@ -1,8 +1,8 @@
 ﻿using EPlast.BLL.ExtensionMethods;
 using EPlast.DataAccess.Entities;
-using PdfSharp;
-using PdfSharp.Drawing;
-using PdfSharp.Pdf;
+using PdfSharpCore;
+using PdfSharpCore.Drawing;
+using PdfSharpCore.Pdf;
 
 namespace EPlast.BLL
 {
@@ -59,7 +59,7 @@ namespace EPlast.BLL
         {
             const string facename = "Times New Roman";
 
-            XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.Unicode, PdfFontEmbedding.Always);
+            XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.Unicode);
             XFont font = new XFont(facename, 12, XFontStyle.Regular, options);
 
             XStringFormat format = new XStringFormat();
