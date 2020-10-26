@@ -86,7 +86,7 @@ namespace EPlast.BLL.Services.Club
             {
                 return null;
             }
-
+          
             var ClubHead = Club.ClubAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Куреня"
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
