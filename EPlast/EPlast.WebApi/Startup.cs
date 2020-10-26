@@ -2,6 +2,7 @@
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Events;
+using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Services.Jwt;
 using EPlast.BLL.Settings;
 using EPlast.DataAccess;
@@ -141,6 +142,13 @@ namespace EPlast.WebApi
             "59 23 * * *",
             TimeZoneInfo.Local
             );
+            recurringJobManager.AddOrUpdate("Changes status of region admins when the date expires",
+              () => serviceProvider.GetService<IRegionService>().EndAdminsDueToDate(),
+           Cron.Daily(),
+           TimeZoneInfo.Local
+           );
+
+          CreateRoles(serviceProvider).Wait();
             recurringJobManager.AddOrUpdate("Remove roles from previous admins",
                 () => serviceProvider.GetService<IClubAdministrationService>().CheckPreviousAdministratorsToDelete(),
             "59 23 * * *",

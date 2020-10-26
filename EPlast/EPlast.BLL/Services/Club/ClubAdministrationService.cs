@@ -134,14 +134,25 @@ namespace EPlast.BLL.Services.Club
 
         public async Task<IEnumerable<ClubAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId)
         {
-            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == UserId,
+            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == UserId && a.Status==true,
                  include:
-                 source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.Club)
+                 source => source.Include(c => c.User).Include(a => a.Club).Include(c => c.AdminType)
                  ); ;
             return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationDTO>>(admins);
         }
 
-        private async Task CheckClubHasHead(int clubId)
+
+        public async Task<IEnumerable<ClubAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string UserId)
+        {
+            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == UserId && a.Status == false,
+                 include:
+                 source => source.Include(c => c.User).Include(c => c.AdminType).Include(c => c.Club)
+                 );
+            return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationDTO>>(admins);
+        }
+           
+
+        public async Task CheckClubHasHead(int clubId)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync("Голова Куреня");
             var admin = await _repositoryWrapper.ClubAdministration.
@@ -152,6 +163,7 @@ namespace EPlast.BLL.Services.Club
             {
                 await RemoveAdministratorAsync(admin.ID);
             }
+
         }
     }
 }
