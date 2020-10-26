@@ -46,6 +46,7 @@ namespace EPlast.BLL.Services.City
         /// <inheritdoc />
         public async Task<CityAdministrationDTO> AddAdministratorAsync(CityAdministrationDTO adminDTO)
         {
+            
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
             var admin = new CityAdministration()
             {
@@ -60,12 +61,18 @@ namespace EPlast.BLL.Services.City
             var role = adminType.AdminTypeName == "Голова Станиці" ? "Голова Станиці" : "Діловод Станиці";
             await _userManager.AddToRoleAsync(user, role);
 
+            if(role == "Голова Станиці")
+            {
+                await CheckCityHasHead(adminDTO.CityId);
+            }
+
             await _repositoryWrapper.CityAdministration.CreateAsync(admin);
             await _repositoryWrapper.SaveAsync();
             adminDTO.ID = admin.ID;
 
             return adminDTO;
         }
+        
 
         /// <inheritdoc />
         public async Task<CityAdministrationDTO> EditAdministratorAsync(CityAdministrationDTO adminDTO)
@@ -134,8 +141,10 @@ namespace EPlast.BLL.Services.City
                  include:
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.City)
                  );
+
             return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(admins);
         }
+
 
 
 
@@ -146,6 +155,20 @@ namespace EPlast.BLL.Services.City
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.City)
                  );
             return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(admins);
+        }
+
+
+        private async Task CheckCityHasHead(int cityId)
+        {
+            var adminType = await _adminTypeService.GetAdminTypeByNameAsync("Голова Станиці");
+            var admin = await _repositoryWrapper.CityAdministration.
+                GetFirstOrDefaultAsync(a => a.AdminTypeId == adminType.ID 
+                    && (DateTime.Now < a.EndDate || a.EndDate == null));
+
+            if (admin != null)
+            {
+                await RemoveAdministratorAsync(admin.ID);
+            }
         }
 
     }
