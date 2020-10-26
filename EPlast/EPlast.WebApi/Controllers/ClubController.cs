@@ -280,6 +280,22 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Add the user to followers
+        /// </summary>
+        /// <param name="clubId">An id of the city</param>
+        /// <param name="userId">An id of the user</param>
+        /// <returns>An information about a new follower</returns>
+        [HttpPost("AddFollowerWithId/{clubId}/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> AddFollowerWithId(int clubId, string userId)
+        {
+            var follower = await _ClubMembersService.AddFollowerAsync(clubId, userId);
+            _logger.LogInformation($"User {{{follower.UserId}}} became a follower of city {{{clubId}}}.");
+
+            return Ok(follower);
+        }
+
+        /// <summary>
         /// Remove a specific follower from the Club
         /// </summary>
         /// <param name="followerId">The id of the follower</param>
