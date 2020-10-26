@@ -2,6 +2,8 @@
 using System.Linq;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.DocumentObjectModel.Shapes;
+using PdfSharp.Drawing;
+using PdfSharp.Pdf;
 
 namespace EPlast.BLL
 {
@@ -15,7 +17,7 @@ namespace EPlast.BLL
             this.blank = blank;
         }
 
-        public override void SetDocumentBody(Section section)
+        public  void SetDocumentBody(Section section)
         {
             SetHorizontalLine(section);
 
@@ -208,6 +210,11 @@ namespace EPlast.BLL
                 },
                 Alignment = ParagraphAlignment.Left
             };
+        }
+
+        public override void SetDocumentBody(PdfPage page, XGraphics gfx)
+        {
+            throw new NotImplementedException();
         }
     }
 }
