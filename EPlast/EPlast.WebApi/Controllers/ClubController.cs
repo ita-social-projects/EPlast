@@ -211,7 +211,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="400">Wrong input</response>
         [HttpPost("CreateClub")]
-        //[Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Create(ClubViewModel Club)
         {
             if (!ModelState.IsValid)
@@ -275,6 +275,22 @@ namespace EPlast.WebApi.Controllers
         {
             var follower = await _ClubMembersService.AddFollowerAsync(ClubId, User);
             _logger.LogInformation($"User {{{follower.UserId}}} became a follower of Club {{{ClubId}}}.");
+
+            return Ok(follower);
+        }
+
+        /// <summary>
+        /// Add the user to followers
+        /// </summary>
+        /// <param name="clubId">An id of the city</param>
+        /// <param name="userId">An id of the user</param>
+        /// <returns>An information about a new follower</returns>
+        [HttpPost("AddFollowerWithId/{clubId}/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> AddFollowerWithId(int clubId, string userId)
+        {
+            var follower = await _ClubMembersService.AddFollowerAsync(clubId, userId);
+            _logger.LogInformation($"User {{{follower.UserId}}} became a follower of city {{{clubId}}}.");
 
             return Ok(follower);
         }
@@ -431,6 +447,26 @@ namespace EPlast.WebApi.Controllers
         }
 
 
+        [HttpGet("GetUserPreviousAdmins/{UserId}")]
+
+        public async Task<IActionResult> GetUserPreviousAdministrations(string UserId)
+        {
+            var userAdmins = await _ClubAdministrationService.GetPreviousAdministrationsOfUserAsync(UserId);
+
+            return Ok(userAdmins);
+        }
+
+        /// <summary>
+        /// Get all clubs 
+        /// </summary>
+        /// <returns>List of clubs</returns>
+        [HttpGet("Clubs")]
+        public async Task<IActionResult> GetClubs()
+        {
+            var cities = await _ClubService.GetClubs();
+            return Ok(cities);
+
+        }
 
     }
 }

@@ -1,6 +1,7 @@
 ﻿using EPlast.BLL.DTO.Region;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Region;
+using EPlast.WebApi.Models.Region;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -48,6 +49,13 @@ namespace EPlast.WebApi.Controllers
             return Ok();
         }
 
+
+        [HttpPut("RedirectCities/{prevRegId}/{nextRegId}")]
+        public async Task<IActionResult> RedirectCities(int prevRegId, int nextRegId)
+        {
+            await _regionService.RedirectMembers(prevRegId, nextRegId);
+            return Ok();
+        }
 
 
         [HttpGet("LogoBase64")]
@@ -111,6 +119,18 @@ namespace EPlast.WebApi.Controllers
         }
 
 
+        [HttpGet("Profiles/{page}")]
+        public async Task<IActionResult> GetRegions(int page, int pageSize, string regionName)
+        {
+            var regions = await _regionService.GetAllRegionsAsync();
+            var regionsViewModel = new RegionsViewModel(page, pageSize, regions, regionName);
+
+            return Ok(regionsViewModel);
+        }
+
+
+
+
         [HttpDelete("RemoveAdministration/{Id}")]
         public async Task<IActionResult> Remove(int Id)
         {
@@ -140,6 +160,14 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetUserAdministrations(string userId)
         {
            var secretaries=await _regionService.GetUsersAdministrations(userId);
+            return Ok(secretaries);
+
+        }
+
+        [HttpGet("GetUserPreviousAdministrations/{userId}")]
+        public async Task<IActionResult> GetUserPrevAdministrations(string userId)
+        {
+            var secretaries = await _regionService.GetUsersPreviousAdministrations(userId);
             return Ok(secretaries);
 
         }
@@ -191,12 +219,31 @@ namespace EPlast.WebApi.Controllers
             return Ok(members);
         }
 
+
         [HttpGet("GetAdminTypes")]
         public async Task<IActionResult> GetAdminTypes()
         {
-            var types = await _regionService.GetAdminTypes();
+            var types = await _regionService.GetAllAdminTypes();
             return Ok(types);
         }
 
+
+        [HttpGet("GetAdminTypeId/{name}")]
+        public async Task<int> GetAdminTypeId(string name)
+        {
+            var typeId = await _regionService.GetAdminType(name);
+            return typeId;
+        }
+
+        /// <summary>
+        /// Get all regions
+        /// </summary>
+        /// <returns>List of regions</returns>
+        [HttpGet("Regions")]
+        public async Task<IActionResult> GetCities()
+        {
+            var regions = await _regionService.GetRegions();
+            return Ok(regions);
+        }
     }
 }

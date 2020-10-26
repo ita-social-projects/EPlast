@@ -56,8 +56,13 @@ namespace EPlast.BLL.Services.Club
             };
 
             var user = await _userManager.FindByIdAsync(adminDTO.UserId);
-            var role = adminType.AdminTypeName == "√ÓÎÓ‚‡ —Ú‡ÌËˆ≥" ? "√ÓÎÓ‚‡ —Ú‡ÌËˆ≥" : "ƒ≥ÎÓ‚Ó‰ —Ú‡ÌËˆ≥";
+            var role = adminType.AdminTypeName == "–ì–æ–ª–æ–≤–∞ –ö—É—Ä–µ–Ω—è" ? "–ì–æ–ª–æ–≤–∞ –ö—É—Ä–µ–Ω—è" : "–î—ñ–ª–æ–≤–æ–¥ –ö—É—Ä–µ–Ω—è";
             await _userManager.AddToRoleAsync(user, role);
+
+            if (role == "–ì–æ–ª–æ–≤–∞ –ö—É—Ä–µ–Ω—è")
+            {
+                await CheckClubHasHead(adminDTO.ClubId);
+            }
 
             await _repositoryWrapper.ClubAdministration.CreateAsync(admin);
             await _repositoryWrapper.SaveAsync();
@@ -97,7 +102,7 @@ namespace EPlast.BLL.Services.Club
 
             var adminType = await _adminTypeService.GetAdminTypeByIdAsync(admin.AdminTypeId);
             var user = await _userManager.FindByIdAsync(admin.UserId);
-            var role = adminType.AdminTypeName == "√ÓÎÓ‚‡ —Ú‡ÌËˆ≥" ? "√ÓÎÓ‚‡ —Ú‡ÌËˆ≥" : "ƒ≥ÎÓ‚Ó‰ —Ú‡ÌËˆ≥";
+            var role = adminType.AdminTypeName == "–ì–æ–ª–æ–≤–∞ –ö—É—Ä–µ–Ω—è" ? "–ì–æ–ª–æ–≤–∞ –ö—É—Ä–µ–Ω—è¬≥" : "–î—ñ–ª–æ–≤–æ–¥ –ö—É—Ä–µ–Ω—è¬≥";
             await _userManager.RemoveFromRoleAsync(user, role);
 
             _repositoryWrapper.ClubAdministration.Update(admin);
@@ -108,16 +113,16 @@ namespace EPlast.BLL.Services.Club
         public async Task CheckPreviousAdministratorsToDelete()
         {
             var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.EndDate <= DateTime.Now);
-            var ClubHeadType = await _adminTypeService.GetAdminTypeByNameAsync("√ÓÎÓ‚‡ —Ú‡ÌËˆ≥");
+            var ClubHeadType = await _adminTypeService.GetAdminTypeByNameAsync("–ì–æ–ª–æ–≤–∞ –ö—É—Ä–µ–Ω—è");
 
             foreach (var admin in admins)
             {
-                var role = admin.AdminTypeId == ClubHeadType.ID ? "√ÓÎÓ‚‡ —Ú‡ÌËˆ≥" : "ƒ≥ÎÓ‚Ó‰ —Ú‡ÌËˆ≥";
+                var role = admin.AdminTypeId == ClubHeadType.ID ? "–ì–æ–ª–æ–≤–∞ –ö—É—Ä–µ–Ω—è" : "–î—ñ–ª–æ–≤–æ–¥ –ö—É—Ä–µ–Ω—è";
 
                 var currentAdministration = await _repositoryWrapper.ClubAdministration
                     .GetAllAsync(a => (a.EndDate > DateTime.Now || a.EndDate == null) && a.UserId == admin.UserId);
 
-                if (currentAdministration.All(a => (a.AdminTypeId == ClubHeadType.ID ? "√ÓÎÓ‚‡ —Ú‡ÌËˆ≥" : "ƒ≥ÎÓ‚Ó‰ —Ú‡ÌËˆ≥") != role)
+                if (currentAdministration.All(a => (a.AdminTypeId == ClubHeadType.ID ? "–ì–æ–ª–æ–≤–∞ –ö—É—Ä–µ–Ω—è" : "–î—ñ–ª–æ–≤–æ–¥ –ö—É—Ä–µ–Ω—è") != role)
                     || currentAdministration.Count() == 0)
                 {
                     var user = await _userManager.FindByIdAsync(admin.UserId);
@@ -129,11 +134,36 @@ namespace EPlast.BLL.Services.Club
 
         public async Task<IEnumerable<ClubAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId)
         {
-            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == UserId,
+            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == UserId && a.Status==true,
                  include:
-                 source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.Club)
+                 source => source.Include(c => c.User).Include(a => a.Club).Include(c => c.AdminType)
                  ); ;
             return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationDTO>>(admins);
+        }
+
+
+        public async Task<IEnumerable<ClubAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string UserId)
+        {
+            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == UserId && a.Status == false,
+                 include:
+                 source => source.Include(c => c.User).Include(c => c.AdminType).Include(c => c.Club)
+                 );
+            return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationDTO>>(admins);
+        }
+           
+
+        public async Task CheckClubHasHead(int clubId)
+        {
+            var adminType = await _adminTypeService.GetAdminTypeByNameAsync("–ì–æ–ª–æ–≤–∞ –ö—É—Ä–µ–Ω—è");
+            var admin = await _repositoryWrapper.ClubAdministration.
+                GetFirstOrDefaultAsync(a => a.AdminTypeId == adminType.ID
+                    && (DateTime.Now < a.EndDate || a.EndDate == null));
+
+            if (admin != null)
+            {
+                await RemoveAdministratorAsync(admin.ID);
+            }
+
         }
     }
 }
