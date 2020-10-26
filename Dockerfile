@@ -1,11 +1,21 @@
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS base
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS base
 WORKDIR /app
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libgdiplus libc6-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 ENV ASPNETCORE_ENVIRONMENT=Development
 ENV ASPNETCORE_URLS http://*:5000
 EXPOSE 5000
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS builder
 ARG Configuration=debug
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libgdiplus libc6-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /EPlast
 
 COPY ./EPlast/*.sln ./
@@ -33,4 +43,3 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
 ENTRYPOINT ["dotnet", "EPlast.WebApi.dll"]
-
