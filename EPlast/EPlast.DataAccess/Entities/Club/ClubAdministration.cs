@@ -15,7 +15,7 @@ namespace EPlast.DataAccess.Entities
         [Required]
         public string UserId { get; set; }
         public User User { get; set; }
-
+        public bool Status { get; set; }
         public int AdminTypeId { get; set; }
         public AdminType AdminType { get; set; }
     }

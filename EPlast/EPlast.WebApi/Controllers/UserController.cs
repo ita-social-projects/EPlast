@@ -239,6 +239,7 @@ namespace EPlast.WebApi.Controllers
         {
             if (userId != null)
             {
+
                 await _confirmedUserService.CreateAsync(User, userId, isClubAdmin, isCityAdmin);
 
                 return Ok();
