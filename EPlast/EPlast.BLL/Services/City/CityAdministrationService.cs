@@ -145,10 +145,7 @@ namespace EPlast.BLL.Services.City
             return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(admins);
         }
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 926f857ae5efcbb3bfa614c3e88eba0614bb8577
 
 
         public async Task<IEnumerable<CityAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string UserId)
@@ -160,10 +157,7 @@ namespace EPlast.BLL.Services.City
             return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(admins);
         }
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 926f857ae5efcbb3bfa614c3e88eba0614bb8577
         private async Task CheckCityHasHead(int cityId)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync("Голова Станиці");
@@ -176,9 +170,6 @@ namespace EPlast.BLL.Services.City
                 await RemoveAdministratorAsync(admin.ID);
             }
         }
-<<<<<<< HEAD
-=======
 
->>>>>>> 926f857ae5efcbb3bfa614c3e88eba0614bb8577
     }
 }
