@@ -22,45 +22,13 @@ namespace EPlast.BLL
         public override void SetDocumentBody(PdfPage page, XGraphics gfx)
         {
             DrawText(gfx, decesion);
-
-            //paragraph.Format = new ParagraphFormat
-            //{
-            //    Font = new Font
-            //    {
-            //        Size = 14
-            //    },
-            //    SpaceAfter = "3cm",
-            //    SpaceBefore = "5cm",
-            //    Alignment = ParagraphAlignment.Right
-            //};
-
-            //paragraph = section.AddParagraph(decesion.Description);
-            //paragraph.Format = new ParagraphFormat
-            //{
-            //    Font = new Font
-            //    {
-            //        Size = 12
-            //    },
-            //    SpaceAfter = "1cm",
-            //};
-
-            //paragraph = section.AddParagraph($"Поточний статус: {decesion.DecesionStatusType.GetDescription()}");
-            //paragraph.Format = new ParagraphFormat
-            //{
-            //    Font = new Font
-            //    {
-            //        Size = 14
-            //    },
-            //    SpaceBefore = "5cm",
-            //    Alignment = ParagraphAlignment.Right
-            //};
         }
         protected void DrawText(XGraphics gfx, Decesion decesion)
         {
-            const string facename = "Times New Roman";
+            const string fontName = "Times New Roman";
 
             XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.Unicode);
-            XFont font = new XFont(facename, 12, XFontStyle.Regular, options);
+            XFont font = new XFont(fontName, 12, XFontStyle.Regular, options);
 
             XStringFormat format = new XStringFormat();
             string text = $"{decesion.Description}";
@@ -68,7 +36,7 @@ namespace EPlast.BLL
             gfx.DrawString(text, font, XBrushes.Black, 70, 330, format);
 
             text = $"{decesion.Name} від {decesion.Date:dd/MM/yyyy}";
-            font = new XFont(facename, 14, XFontStyle.Regular, options);
+            font = new XFont(fontName, 14, XFontStyle.Regular, options);
             gfx.DrawString(text, font, XBrushes.Black, 375, 220, format);
 
             text = $"Поточний статус: {decesion.DecesionStatusType.GetDescription()}";
