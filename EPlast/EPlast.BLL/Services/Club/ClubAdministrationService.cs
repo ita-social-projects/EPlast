@@ -56,8 +56,13 @@ namespace EPlast.BLL.Services.Club
             };
 
             var user = await _userManager.FindByIdAsync(adminDTO.UserId);
-            var role = adminType.AdminTypeName == "Ãîëîâà Ñòàíèö³" ? "Ãîëîâà Ñòàíèö³" : "Ä³ëîâîä Ñòàíèö³";
+            var role = adminType.AdminTypeName == "Ð“Ð¾Ð»Ð¾Ð²Ð° ÐšÑƒÑ€ÐµÐ½Ñ" ? "Ð“Ð¾Ð»Ð¾Ð²Ð° ÐšÑƒÑ€ÐµÐ½Ñ" : "Ð”Ñ–Ð»Ð¾Ð²Ð¾Ð´ ÐšÑƒÑ€ÐµÐ½Ñ";
             await _userManager.AddToRoleAsync(user, role);
+
+            if (role == "Ð“Ð¾Ð»Ð¾Ð²Ð° ÐšÑƒÑ€ÐµÐ½Ñ")
+            {
+                await CheckClubHasHead(adminDTO.ClubId);
+            }
 
             await _repositoryWrapper.ClubAdministration.CreateAsync(admin);
             await _repositoryWrapper.SaveAsync();
@@ -97,7 +102,7 @@ namespace EPlast.BLL.Services.Club
 
             var adminType = await _adminTypeService.GetAdminTypeByIdAsync(admin.AdminTypeId);
             var user = await _userManager.FindByIdAsync(admin.UserId);
-            var role = adminType.AdminTypeName == "Ãîëîâà Ñòàíèö³" ? "Ãîëîâà Ñòàíèö³" : "Ä³ëîâîä Ñòàíèö³";
+            var role = adminType.AdminTypeName == "Ð“Ð¾Ð»Ð¾Ð²Ð° ÐšÑƒÑ€ÐµÐ½Ñ" ? "Ð“Ð¾Ð»Ð¾Ð²Ð° ÐšÑƒÑ€ÐµÐ½ÑÂ³" : "Ð”Ñ–Ð»Ð¾Ð²Ð¾Ð´ ÐšÑƒÑ€ÐµÐ½ÑÂ³";
             await _userManager.RemoveFromRoleAsync(user, role);
 
             _repositoryWrapper.ClubAdministration.Update(admin);
@@ -108,16 +113,16 @@ namespace EPlast.BLL.Services.Club
         public async Task CheckPreviousAdministratorsToDelete()
         {
             var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.EndDate <= DateTime.Now);
-            var ClubHeadType = await _adminTypeService.GetAdminTypeByNameAsync("Ãîëîâà Ñòàíèö³");
+            var ClubHeadType = await _adminTypeService.GetAdminTypeByNameAsync("Ð“Ð¾Ð»Ð¾Ð²Ð° ÐšÑƒÑ€ÐµÐ½Ñ");
 
             foreach (var admin in admins)
             {
-                var role = admin.AdminTypeId == ClubHeadType.ID ? "Ãîëîâà Ñòàíèö³" : "Ä³ëîâîä Ñòàíèö³";
+                var role = admin.AdminTypeId == ClubHeadType.ID ? "Ð“Ð¾Ð»Ð¾Ð²Ð° ÐšÑƒÑ€ÐµÐ½Ñ" : "Ð”Ñ–Ð»Ð¾Ð²Ð¾Ð´ ÐšÑƒÑ€ÐµÐ½Ñ";
 
                 var currentAdministration = await _repositoryWrapper.ClubAdministration
                     .GetAllAsync(a => (a.EndDate > DateTime.Now || a.EndDate == null) && a.UserId == admin.UserId);
 
-                if (currentAdministration.All(a => (a.AdminTypeId == ClubHeadType.ID ? "Ãîëîâà Ñòàíèö³" : "Ä³ëîâîä Ñòàíèö³") != role)
+                if (currentAdministration.All(a => (a.AdminTypeId == ClubHeadType.ID ? "Ð“Ð¾Ð»Ð¾Ð²Ð° ÐšÑƒÑ€ÐµÐ½Ñ" : "Ð”Ñ–Ð»Ð¾Ð²Ð¾Ð´ ÐšÑƒÑ€ÐµÐ½Ñ") != role)
                     || currentAdministration.Count() == 0)
                 {
                     var user = await _userManager.FindByIdAsync(admin.UserId);
@@ -134,6 +139,19 @@ namespace EPlast.BLL.Services.Club
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.Club)
                  ); ;
             return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationDTO>>(admins);
+        }
+
+        private async Task CheckClubHasHead(int clubId)
+        {
+            var adminType = await _adminTypeService.GetAdminTypeByNameAsync("Ð“Ð¾Ð»Ð¾Ð²Ð° ÐšÑƒÑ€ÐµÐ½Ñ");
+            var admin = await _repositoryWrapper.ClubAdministration.
+                GetFirstOrDefaultAsync(a => a.AdminTypeId == adminType.ID
+                    && (DateTime.Now < a.EndDate || a.EndDate == null));
+
+            if (admin != null)
+            {
+                await RemoveAdministratorAsync(admin.ID);
+            }
         }
     }
 }

@@ -66,6 +66,14 @@ namespace EPlast.BLL.Services.Events
         }
 
         /// <inheritdoc />
+        public async Task<IEnumerable<EventCategoryDTO>> GetCategoriesByPageAsync(int eventTypeId, int page, int pageSize, string CategoryName = null)
+        {
+            var dto = await _eventCategoryManager.GetDTOByEventPageAsync(eventTypeId, page, pageSize);
+
+            return dto;
+        }
+
+        /// <inheritdoc />
         public async Task<List<GeneralEventDTO>> GetEventsAsync(int categoryId, int eventTypeId, ClaimsPrincipal user)
         {
             int approvedStatus = await _participantStatusManager.GetStatusIdAsync("Учасник");

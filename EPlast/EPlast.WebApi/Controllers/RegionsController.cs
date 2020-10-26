@@ -198,5 +198,15 @@ namespace EPlast.WebApi.Controllers
             return Ok(types);
         }
 
+        /// <summary>
+        /// Get all regions
+        /// </summary>
+        /// <returns>List of regions</returns>
+        [HttpGet("Regions")]
+        public async Task<IActionResult> GetCities()
+        {
+            var regions = await _regionService.GetRegions();
+            return Ok(regions);
+        }
     }
 }
