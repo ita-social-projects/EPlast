@@ -181,10 +181,10 @@ namespace EPlast.BLL.Services.Region
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task<IEnumerable<AdminTypeDTO>> GetAdminTypes()
+        public async Task<int> GetAdminType(string name)
         {
-            var Admins = await _repoWrapper.AdminType.GetAllAsync();
-            return _mapper.Map<IEnumerable<AdminType>, IEnumerable<AdminTypeDTO>>(Admins);
+            var type = await _repoWrapper.AdminType.GetFirstAsync(a=>a.AdminTypeName==name);
+            return type.ID;
         }
 
         public async Task DeleteAdminByIdAsync(int Id)
@@ -305,5 +305,10 @@ namespace EPlast.BLL.Services.Region
             return _mapper.Map<IEnumerable<DataAccessCity.Region>, IEnumerable<RegionForAdministrationDTO>>(regions);
         }
 
+        public async Task<IEnumerable<AdminTypeDTO>> GetAllAdminTypes()
+        {
+            var types =await  _repoWrapper.AdminType.GetAllAsync();
+            return _mapper.Map<IEnumerable<AdminType>, IEnumerable<AdminTypeDTO>>(types);
+        }
     }
 }

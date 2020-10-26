@@ -219,11 +219,20 @@ namespace EPlast.WebApi.Controllers
             return Ok(members);
         }
 
+
         [HttpGet("GetAdminTypes")]
         public async Task<IActionResult> GetAdminTypes()
         {
-            var types = await _regionService.GetAdminTypes();
+            var types = await _regionService.GetAllAdminTypes();
             return Ok(types);
+        }
+
+
+        [HttpGet("GetAdminTypeId/{name}")]
+        public async Task<int> GetAdminTypeId(string name)
+        {
+            var typeId = await _regionService.GetAdminType(name);
+            return typeId;
         }
 
         /// <summary>
