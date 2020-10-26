@@ -20,7 +20,7 @@ namespace EPlast.BLL.Interfaces.Region
         Task EditRegionAsync(int regId, RegionDTO region);
         Task<RegionDTO> GetRegionByNameAsync(string Name);
         Task<IEnumerable<RegionAdministrationDTO>> GetAdministrationAsync(int regionId);
-        Task<IEnumerable<AdminTypeDTO>> GetAdminTypes();
+        Task<int> GetAdminType(string name);
         Task AddRegionAdministrator(RegionAdministrationDTO regionAdministrationDTO);
         Task DeleteAdminByIdAsync(int Id);
         Task<IEnumerable<RegionAdministrationDTO>> GetUsersAdministrations(string userId);
@@ -34,7 +34,7 @@ namespace EPlast.BLL.Interfaces.Region
         Task<string> GetLogoBase64(string logoName);
         Task<RegionAdministrationDTO> GetHead(int regionId);
         Task RedirectMembers(int prevRegId, int nextRegId);
-       
+        Task <IEnumerable<AdminTypeDTO>> GetAllAdminTypes();
 
         /// <summary>
         /// Get all Regions
