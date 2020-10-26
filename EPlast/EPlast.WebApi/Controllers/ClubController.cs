@@ -446,6 +446,16 @@ namespace EPlast.WebApi.Controllers
             return Ok(userAdmins);
         }
 
+
+        [HttpGet("GetUserPreviousAdmins/{UserId}")]
+
+        public async Task<IActionResult> GetUserPreviousAdministrations(string UserId)
+        {
+            var userAdmins = await _ClubAdministrationService.GetPreviousAdministrationsOfUserAsync(UserId);
+
+            return Ok(userAdmins);
+        }
+
         /// <summary>
         /// Get all clubs 
         /// </summary>
@@ -455,6 +465,7 @@ namespace EPlast.WebApi.Controllers
         {
             var cities = await _ClubService.GetClubs();
             return Ok(cities);
+
         }
 
     }
