@@ -8,7 +8,7 @@ namespace EPlast.BLL
     internal class PdfCreator : IPdfCreator
     {
         private readonly IPdfDocument document;
-        private PdfDocumentRenderer renderer;
+        private PdfSharp.Pdf.PdfDocument pdf;
 
         public PdfCreator(IPdfDocument document)
         {
@@ -22,7 +22,7 @@ namespace EPlast.BLL
             byte[] fileContents;
             using (var stream = new MemoryStream())
             {
-                renderer.PdfDocument.Save(stream, true);
+                pdf.Save(stream, true);
                 fileContents = stream.ToArray();
             }
 
@@ -31,12 +31,7 @@ namespace EPlast.BLL
 
         private void CreatePDF()
         {
-            renderer = new PdfDocumentRenderer(true)
-            {
-                Document = document.GetDocument()
-            };
-
-            renderer.RenderDocument();
+            pdf = document.GetDocument();
         }
     }
 }
