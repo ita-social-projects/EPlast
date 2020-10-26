@@ -35,5 +35,13 @@ namespace EPlast.BLL.Interfaces.Region
         Task<RegionAdministrationDTO> GetHead(int regionId);
         Task RedirectMembers(int prevRegId, int nextRegId);
        
+
+
+        /// <summary>
+        /// Get all Regions
+        /// </summary>
+        /// <returns>All Regions</returns>
+        Task<IEnumerable<RegionForAdministrationDTO>> GetRegions();
+
     }
 }
