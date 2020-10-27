@@ -45,11 +45,11 @@ namespace EPlast.BLL.Services.Club
         /// <inheritdoc />
         public async Task<IEnumerable<DataAccessClub.Club>> GetAllAsync(string ClubName = null)
         {
-            var cities = await _repoWrapper.Club.GetAllAsync();
+            var clubs = await _repoWrapper.Club.GetAllAsync();
 
             return string.IsNullOrEmpty(ClubName)
-                ? cities
-                : cities.Where(c => c.Name.ToLower().Contains(ClubName.ToLower()));
+                ? clubs
+                : clubs.Where(c => c.Name.ToLower().Contains(ClubName.ToLower()));
         }
 
         /// <inheritdoc />
@@ -88,10 +88,10 @@ namespace EPlast.BLL.Services.Club
             }
           
             var ClubHead = Club.ClubAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Куреня"
+                .FirstOrDefault(a => a.AdminTypeId==(int)TypesOfAdministration.ClubHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
             var ClubAdmins = Club.ClubAdministration
-                .Where(a => a.AdminType.AdminTypeName != "Голова Куреня"
+                .Where(a => a.AdminType.AdminTypeName != "Курінний"
                     && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .Take(6)
                 .ToList();
@@ -186,10 +186,10 @@ namespace EPlast.BLL.Services.Club
             }
 
             var ClubHead = Club.ClubAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Куреня"
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Курінний"
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
             var ClubAdmins = Club.ClubAdministration
-                .Where(a => a.AdminType.AdminTypeName != "Голова Куреня"
+                .Where(a => a.AdminType.AdminTypeName != "Курінний"
                     && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .ToList();
 
