@@ -37,5 +37,10 @@ namespace EPlast.BLL.Services.Interfaces
         /// </summary>
         /// <returns>Specify model with all users</returns>
         Task<IEnumerable<UserTableDTO>> UsersTableAsync();
+
+        /// <summary>
+        /// Change Current Role of user
+        /// </summary>
+        Task ChangeCurrentRole(string userId, string role);
     }
 }

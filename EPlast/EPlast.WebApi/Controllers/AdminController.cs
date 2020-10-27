@@ -122,6 +122,26 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Change current user role 
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <param name="role">The new current role of user</param>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">User not found</response>
+        [HttpPost("changeRole/{userId}/{role}")]
+        public async Task<IActionResult> ChangeCurrentUserRole(string userId, string role)
+        {
+            if (!string.IsNullOrEmpty(userId))
+            {
+                await _adminService.ChangeCurrentRole(userId, role);
+                _loggerService.LogInformation($"Successful change role for {userId}");
+                return Ok();
+            }
+            _loggerService.LogError("User id is null");
+            return NotFound();
+        }
+
+        /// <summary>
         /// Confirmation of delete a user
         /// </summary>
         /// <param name="userId">The id of the user</param>

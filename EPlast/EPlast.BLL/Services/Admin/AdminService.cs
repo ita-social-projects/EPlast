@@ -81,6 +81,12 @@ namespace EPlast.BLL.Services
             }
         }
 
+        public async Task ChangeCurrentRole(string userId, string role)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            await _userManager.AddToRoleAsync(user, role);
+        }
+
         /// <inheritdoc />
         public async Task<IEnumerable<UserTableDTO>> UsersTableAsync()
         {
