@@ -30,7 +30,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("getTypes")]
-        public async Task<IActionResult> GetAlltypes()
+        public async Task<IActionResult> GetAllTypes()
         {
             return Ok(await _notificationService.GetAllNotificationTypesAsync());
         }
@@ -53,7 +53,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpDelete("removeAllNotifications/{userId}")]
-        public async Task<IActionResult> RemoveUserNotification(string userId)
+        public async Task<IActionResult> RemoveAllUserNotifications(string userId)
         {
             if (await _notificationService.RemoveAllUserNotificationAsync(userId))
             {
