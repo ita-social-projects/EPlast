@@ -30,7 +30,7 @@ namespace EPlast.BLL
                     Title = "Бланк",
                     ImagePath = "Blank"
                 };
-                var blank = GetBlankData(userId);
+                var blank = await GetBlankDataAsync(userId);
                 IPdfCreator creator = new PdfCreator(new BlankDocument(blank, pdfSettings));
                 var base64 = await Task.Run(() => creator.GetPDFBytes());
                 var azureBase64 = Convert.ToBase64String(base64);
@@ -71,26 +71,28 @@ namespace EPlast.BLL
             return null;
         }
 
-        private BlankModel GetBlankData(string userId)
+        private async Task<BlankModel> GetBlankDataAsync(string userId)
         {
             var user = _repoWrapper.User.FindByCondition(x => x.Id.Equals(userId)).First();
-            //var userProfile = _repoWrapper.UserProfile.FindByCondition(x => x.UserID.Equals(userId)).First();
-            //var cityMembers = _repoWrapper.CityMembers
-            //    .FindByCondition(x => x.UserId.Equals(userId)).First();
-            //var clubMembers = _repoWrapper.ClubMembers
-            //    .FindByCondition(x => x.UserId.Equals(userId)).First();
-            //var cityAdmin = _repoWrapper.User.FindByCondition(x =>
-            //    x.Id.Equals(_repoWrapper.CityAdministration.FindByCondition(y => y.CityId == cityMembers.CityId)
-            //        .Select(y => y.UserId)
-            //        .First()))
-            //    .First();
+            var userProfile = await _repoWrapper.UserProfile
+                .GetFirstOrDefaultAsync(predicate: c => c.UserID == userId,
+                    include: source => source
+                       .Include(c => c.Education)
+                       .Include(c=>c.Work));
+            var cityMembers = await _repoWrapper.CityMembers
+                .GetFirstOrDefaultAsync(predicate: c => c.UserId == userId,
+                    include: source => source
+                       .Include(c => c.City));
+            var clubMembers = await _repoWrapper.ClubMembers
+                .GetFirstOrDefaultAsync(predicate: c => c.UserId == userId,
+                    include: source => source
+                       .Include(c => c.Club));
             return new BlankModel
             {
                 User = user,
-                //UserProfile = userProfile,
-                //CityMembers = cityMembers,
-                //ClubMembers = clubMembers,
-                //CityAdmin = cityAdmin
+                UserProfile = userProfile,
+                CityMembers = cityMembers,
+                ClubMembers = clubMembers,
             };
         }
     }
