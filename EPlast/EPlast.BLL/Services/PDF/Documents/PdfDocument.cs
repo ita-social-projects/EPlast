@@ -54,10 +54,7 @@ namespace EPlast.BLL
                 string base64 = settings.ImagePath.Split(',')[1];
                 DrawImage(gfx, base64, 0, 0, 615, 205);
             }
-            else
-            {
-                DrawImage(gfx, settings.ImagePath, 40, 20, 84, 250);
-            }
+       
             SetDocumentBody(page, gfx);
 
             return document;
