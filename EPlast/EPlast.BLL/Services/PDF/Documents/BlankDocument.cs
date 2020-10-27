@@ -216,7 +216,7 @@ namespace EPlast.BLL
 
         public override void SetDocumentBody(PdfPage page, XGraphics gfx)
         {
-            throw new NotImplementedException();
+            
         }
     }
 }
