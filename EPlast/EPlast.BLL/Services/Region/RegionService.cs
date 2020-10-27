@@ -2,11 +2,14 @@
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
+using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Region;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -23,18 +26,24 @@ namespace EPlast.BLL.Services.Region
         private readonly IRegionBlobStorageRepository _regionBlobStorage;
         private readonly IRegionFilesBlobStorageRepository _regionFilesBlobStorageRepository;
         private readonly ICityService _cityService;
+        private readonly IAdminTypeService _adminTypeService;
+        private readonly UserManager<User> _userManager;
 
         public RegionService(IRepositoryWrapper repoWrapper,
             IMapper mapper,
             IRegionFilesBlobStorageRepository regionFilesBlobStorageRepository,
             IRegionBlobStorageRepository regionBlobStorage,
-            ICityService cityService)
+            ICityService cityService,
+            IAdminTypeService adminTypeService,
+            UserManager<User> userManager)
         {
             _regionFilesBlobStorageRepository = regionFilesBlobStorageRepository;
             _repoWrapper = repoWrapper;
             _mapper = mapper;
             _regionBlobStorage = regionBlobStorage;
             _cityService = cityService;
+            _adminTypeService = adminTypeService;
+            _userManager = userManager;
         }
 
         public async Task AddRegionAsync(RegionDTO region)
@@ -51,9 +60,17 @@ namespace EPlast.BLL.Services.Region
         {
             var newRegionAdmin = _mapper.Map<RegionAdministrationDTO, RegionAdministration>(regionAdministrationDTO);
 
-            var oldAdmin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(d => d.AdminTypeId == newRegionAdmin.AdminTypeId && d.RegionId == newRegionAdmin.RegionId && d.Status);
+            var oldAdmin = await _repoWrapper.RegionAdministration.
+                GetFirstOrDefaultAsync(d => d.AdminTypeId == newRegionAdmin.AdminTypeId 
+                && d.RegionId == newRegionAdmin.RegionId && d.Status);
 
-            if (oldAdmin != null)
+            var adminType = await _adminTypeService.GetAdminTypeByIdAsync(regionAdministrationDTO.AdminTypeId);
+            var newUser = await _userManager.FindByIdAsync(newRegionAdmin.UserId);
+            
+            var role = adminType.AdminTypeName == "Голова Округу" ? "Голова Округу" : "Діловод Округу";
+            await _userManager.AddToRoleAsync(newUser, role);
+
+            if (oldAdmin != null && role == "Голова Округу")
             {
                 if (DateTime.Compare((DateTime)regionAdministrationDTO.EndDate, DateTime.Now) > 0)
                 {
@@ -64,6 +81,8 @@ namespace EPlast.BLL.Services.Region
                 {
                     newRegionAdmin.Status = false;
                 }
+                var oldUser = await _userManager.FindByIdAsync(oldAdmin.UserId);
+                await _userManager.RemoveFromRoleAsync(oldUser, role);
                 _repoWrapper.RegionAdministration.Update(oldAdmin);
                 await _repoWrapper.SaveAsync();
                 await _repoWrapper.RegionAdministration.CreateAsync(newRegionAdmin);
