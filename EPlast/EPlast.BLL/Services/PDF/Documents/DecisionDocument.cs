@@ -1,6 +1,8 @@
 ﻿using EPlast.BLL.ExtensionMethods;
 using EPlast.DataAccess.Entities;
-using MigraDoc.DocumentObjectModel;
+using PdfSharpCore;
+using PdfSharpCore.Drawing;
+using PdfSharpCore.Pdf;
 
 namespace EPlast.BLL
 {
@@ -17,41 +19,29 @@ namespace EPlast.BLL
             this.decesion = decesion;
         }
 
-        public override void SetDocumentBody(Section section)
+        public override void SetDocumentBody(PdfPage page, XGraphics gfx)
         {
-            var paragraph = section.AddParagraph($"{decesion.Name} від {decesion.Date:dd/MM/yyyy}");
+            DrawText(gfx, decesion);
+        }
+        protected void DrawText(XGraphics gfx, Decesion decesion)
+        {
+            const string fontName = "Times New Roman";
 
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Size = 14
-                },
-                SpaceAfter = "3cm",
-                SpaceBefore = "5cm",
-                Alignment = ParagraphAlignment.Right
-            };
+            XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.Unicode);
+            XFont font = new XFont(fontName, 12, XFontStyle.Regular, options);
 
-            paragraph = section.AddParagraph(decesion.Description);
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Size = 12
-                },
-                SpaceAfter = "1cm",
-            };
+            XStringFormat format = new XStringFormat();
+            string text = $"{decesion.Description}";
 
-            paragraph = section.AddParagraph($"Поточний статус: {decesion.DecesionStatusType.GetDescription()}");
-            paragraph.Format = new ParagraphFormat
-            {
-                Font = new Font
-                {
-                    Size = 14
-                },
-                SpaceBefore = "5cm",
-                Alignment = ParagraphAlignment.Right
-            };
+            gfx.DrawString(text, font, XBrushes.Black, 70, 330, format);
+
+            text = $"{decesion.Name} від {decesion.Date:dd/MM/yyyy}";
+            font = new XFont(fontName, 14, XFontStyle.Regular, options);
+            gfx.DrawString(text, font, XBrushes.Black, 375, 220, format);
+
+            text = $"Поточний статус: {decesion.DecesionStatusType.GetDescription()}";
+            gfx.DrawString(text, font, XBrushes.Black, 350, 480, format);
+
         }
     }
 }
