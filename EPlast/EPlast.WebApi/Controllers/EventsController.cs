@@ -1,4 +1,5 @@
 ﻿using EPlast.BLL.Interfaces.Events;
+using EPlast.WebApi.Models.Events;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -49,13 +50,35 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get event categories of the appropriate event type.
+        /// </summary>
+        /// <returns>List of event categories of the appropriate event type.</returns>
+        /// <param name="typeId">The Id of event type</param>
+        /// <param name="page">A number of the page</param>
+        /// <param name="pageSize">A count of categories to display</param>
+        /// <param name="CategoryName">Optional param to find categories by name</param>
+        /// <response code="200">List of event categories</response>
+        /// <response code="400">Server could not understand the request due to invalid syntax</response> 
+        /// <response code="404">Events does not exist</response> 
+        [HttpGet("types/{typeId:int}/categories/{page:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetCategoriesByPage(int typeId, int page, int pageSize, string CategoryName = null)
+        {
+            var categories = await _actionManager.GetActionCategoriesAsync();
+            var CategoriesViewModel = new EventsCategoryViewModel(page, pageSize, categories);
+
+            return Ok(CategoriesViewModel);
+        }
+
+        /// <summary>
         /// Get events of the appropriate event type and event category.
         /// </summary>
         /// <returns>List of events of the appropriate event type and event category.</returns>
         /// <param name="typeId">The Id of event type</param>
         /// <param name="categoryId">The Id of event category</param>
         /// <response code="200">List of events</response>
-        /// <response code="400">Server could not understand the request due to invalid syntax</response> 
+        /// <response code="400">Server could not understand the request due to i
+        /// nvalid syntax</response> 
         /// <response code="404">Events don't exist</response> 
         [HttpGet("~/api/types/{typeId:int}/categories/{categoryId:int}/events")]
         [Authorize(AuthenticationSchemes = "Bearer")]
