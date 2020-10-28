@@ -1,13 +1,12 @@
 ﻿using System;
+using System.Linq;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
-using Syncfusion.Pdf.Barcode;
 
 namespace EPlast.BLL
 {
     public class BlankDocument : PdfDocument
     {
-        private const string StatementPhoto = "wwwroot/images/pdf/Statement-photo.png";
         private readonly BlankModel blank;
 
         public BlankDocument(BlankModel blank, IPdfSettings settings) : base(settings)
@@ -44,9 +43,29 @@ namespace EPlast.BLL
             SetText(gfx, "ознайомлений/на.", XFontStyle.Regular, 50, 200);
 
             SetText(gfx, "Поручення дійсних членів Пласту:", XFontStyle.Bold, 50, 230);
-            SetText(gfx, $"1.", XFontStyle.Regular, 50, 250);
-            SetText(gfx, $"2.", XFontStyle.Regular, 50, 270);
-            SetText(gfx, $"3.", XFontStyle.Regular, 50, 290);
+
+            int count = blank.User.ConfirmedUsers.Count();
+            for (int i = 0, coordinates = 250; i < count; i++, coordinates += 20)
+            {
+                if (blank.User.ConfirmedUsers.ElementAt(i).isCityAdmin)
+                {
+                    SetText(gfx, $"{blank.User.ConfirmedUsers.ElementAt(i).Approver?.User?.FirstName} {blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.LastName} ",
+                        XFontStyle.Regular, 150, 643);
+                    SetText(gfx, $" {blank.User.ConfirmedUsers?.ElementAt(i)?.ConfirmDate:dd.MM.yyyy}", XFontStyle.Italic, 435, 643);
+                }
+                else if (blank.User.ConfirmedUsers.ElementAt(i).isClubAdmin)
+                {
+                    SetText(gfx, $", {blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.FirstName} {blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.LastName} ", 
+                        XFontStyle.Regular, 195, 543);
+                    SetText(gfx, $" {blank.User.ConfirmedUsers?.ElementAt(i)?.ConfirmDate:dd.MM.yyyy}", XFontStyle.Italic, 435, 568);
+                }
+                else
+                {
+                    SetText(gfx, $"{i + 1}. {blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.FirstName} {blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.LastName} " +
+                        $" {blank.User.ConfirmedUsers?.ElementAt(i)?.ConfirmDate:dd.MM.yyyy}",
+                        XFontStyle.Regular, 50, coordinates);
+                }
+            }
 
             SetText(gfx, $"{DateTime.Now:dd.MM.yyyy}, {blank?.CityMembers?.City?.Name}", XFontStyle.Underline, 80, 310);
             SetLine(gfx, 370, 310, 460, 310);
@@ -108,7 +127,8 @@ namespace EPlast.BLL
 
             SetDashLine(gfx, 40, 595, 560, 595);
 
-            SetText(gfx, "Поручення для прийняття в дійсні члени Пласту – НСОУ, на основі виконаних вимог кандидата.", XFontStyle.Bold, 50, 600);
+            SetText(gfx, "Поручення для прийняття в дійсні члени Пласту – НСОУ, на основі виконаних вимог кандидата.",
+                XFontStyle.Bold, 50, 600);
             SetText(gfx, "Осередковий", XFontStyle.Regular, 50, 615);
             SetText(gfx, "УСП / УПС", XFontStyle.Regular, 50, 625);
             SetLine(gfx, 120, 630, 390, 630);
@@ -125,14 +145,19 @@ namespace EPlast.BLL
             SetText(gfx, "Дата рішення Крайового органу про прийняття в дійсні члени", XFontStyle.Regular, 50, 680);
             SetLine(gfx, 350, 690, 500, 690);
             SetText(gfx, "Дата заприсяження, іменування", XFontStyle.Regular, 50, 700);
+            if (blank?.User?.UserMembershipDates?.FirstOrDefault().DateOath == DateTime.MinValue)
+            {
+                SetText(gfx, $"Без присяги", XFontStyle.Italic, 260, 698);
+            }
+            else
+            {
+                SetText(gfx, $"{blank?.User?.UserMembershipDates?.FirstOrDefault().DateOath.ToString("dd.MM.yyyy")}", XFontStyle.Italic, 260, 698);
+            }
             SetLine(gfx, 230, 710, 500, 710);
 
             SetDashLine(gfx, 40, 725, 560, 725);
 
             SetText(gfx, $"Номер користувача в системі - Random", XFontStyle.Regular, 50, 735);
-
-            QRCode(gfx);
-
         }
 
         private static void SetText(XGraphics gfx, string text, XFontStyle style, double x, double y)
@@ -156,36 +181,6 @@ namespace EPlast.BLL
         {
             XPen pen = new XPen(XColors.Black);
             gfx.DrawLine(pen, x1, y1, x2, y2);
-        }
-
-        private static void QRCode(XGraphics gfx)
-        {
-            //var myXSize = new XSize(100, 100);
-            //var cod = new PdfSharpCore.Drawing.BarCodes.CodeDataMatrix("google.com", 10, myXSize);
-            //var xPoint = new XPoint(200, 300);
-            //gfx.DrawMatrixCode(cod, xPoint);
-
-            PdfBarcode barcode = new PdfBarcode();
-
-            barcode.BarType = BarCodeType.QRCode;
-
-            // Input the barcode data content
-            barcode.Data = "xspdf123456789";
-
-            // Change foreground and background color of barcode
-            barcode.BarcodeColor = XColors.Black;
-            barcode.BackgroundColor = XColors.White;
-
-            // Set qrcode error correction level
-            barcode.QRCodeECL = ErrorCorrectionLevelMode.L;
-
-            // Set the barcode Position and location
-            barcode.Location = new XPoint(100, 100);
-
-            // Set the barcode width and height
-            barcode.Size = new XSize(200, 200);
-
-            barcode.DrawBarcode(g);
         }
     }
 }
