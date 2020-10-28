@@ -1,5 +1,4 @@
-﻿using EPlast.BLL;
-using EPlast.BLL.DTO.Blank;
+﻿using EPlast.BLL.DTO.Blank;
 using EPlast.BLL.Interfaces.Blank;
 using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Http;
@@ -18,7 +17,6 @@ namespace EPlast.Tests.Controllers
         Mock<IBlankBiographyDocumentService> _mockBiographyService;
         Mock<IBlankAchievementDocumentService> _mockBlankAchievementDocumentService;
         Mock<IBlankExtractFromUPUDocumentService> _mockBlankExtractFromUPUDocumentService;
-        Mock<IPdfService> _pdfService;
         BlanksController _blanksController;
 
         [SetUp]
@@ -27,12 +25,8 @@ namespace EPlast.Tests.Controllers
             _mockBiographyService = new Mock<IBlankBiographyDocumentService>();
             _mockBlankAchievementDocumentService = new Mock<IBlankAchievementDocumentService>();
             _mockBlankExtractFromUPUDocumentService = new Mock<IBlankExtractFromUPUDocumentService>();
-            _pdfService = new Mock<IPdfService>();
 
-            _blanksController = new BlanksController(_mockBiographyService.Object,
-                _mockBlankAchievementDocumentService.Object,
-                _mockBlankExtractFromUPUDocumentService.Object,
-                _pdfService.Object);
+            _blanksController = new BlanksController(_mockBiographyService.Object, _mockBlankAchievementDocumentService.Object, _mockBlankExtractFromUPUDocumentService.Object);
         }
 
         [Test]
