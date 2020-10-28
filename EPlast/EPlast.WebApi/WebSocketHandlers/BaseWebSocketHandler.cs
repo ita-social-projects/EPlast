@@ -37,7 +37,7 @@ namespace EPlast.WebApi.WebSocketHandlers
             List<Task> tasks = new List<Task>();
             foreach (var pair in WebSocketConnectionManager.GetAll())
             {
-                tasks.AddRange(pair.Value.Where(c => c.webSocket.State == WebSocketState.Open)
+                tasks.AddRange(pair.Value.Where(c => c.WebSocket.State == WebSocketState.Open)
                                          .Select(c => SendMessageAsync(pair.Key, message)));
                 
             }

@@ -2,20 +2,18 @@
 using EPlast.WebApi.WebSocketHandlers;
 using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace EPlast.WebApi.CustomMiddlewares
 {
-    public class NotificationWebSocketMiddleware
+    public class WebSocketMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly BaseWebSocketHandler _webSocketHandler;
 
-        public NotificationWebSocketMiddleware(RequestDelegate next,
+        public WebSocketMiddleware(RequestDelegate next,
                                             BaseWebSocketHandler webSocketHandler)
         {
             _next = next;

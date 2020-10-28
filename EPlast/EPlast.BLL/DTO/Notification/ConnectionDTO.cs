@@ -8,6 +8,6 @@ namespace EPlast.BLL.DTO.Notification
     public class ConnectionDTO
     {
         public string ConnectionId { get; set; }
-        public WebSocket webSocket { get; set; }
+        public WebSocket WebSocket { get; set; }
     }
 }

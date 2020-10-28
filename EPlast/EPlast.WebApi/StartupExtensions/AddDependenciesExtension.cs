@@ -127,7 +127,6 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IEducatorsStaffTypesService, EducatorsStaffTypesService>();
             services.AddScoped<IBlankBiographyDocumentService, BlankBiographyDocumentsService>();
             services.AddScoped<INotificationService, NotificationService>();
-            services.AddScoped<IConnectionManagerService, ConnectionManagerService>();
             services.AddScoped<IBlankAchievementDocumentService, AchievementDocumentService>();
             services.AddScoped<IBlankExtractFromUPUDocumentService, BlankExtractFromUPUDocumentService>();
             services.AddScoped<ICityStatisticsService, StatisticsService>();
