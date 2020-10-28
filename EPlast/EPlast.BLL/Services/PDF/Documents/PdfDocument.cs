@@ -26,8 +26,7 @@ namespace EPlast.BLL
         protected void DrawImage(XGraphics gfx, string jpegSamplePath, int x, int y, int width, int height)
         {
             var bytes = Convert.FromBase64String(jpegSamplePath);
-            //var ph = Convert.FromBase64String(jpegSamplePath);
-            string path = "../decisiontmp.img";
+            string path = "../decision-tmp.img";
             using (var imageFile = new FileStream(path, FileMode.OpenOrCreate))
             {
                 imageFile.Write(bytes, 0, bytes.Length);
@@ -47,13 +46,16 @@ namespace EPlast.BLL
             document.Info.Subject = settings.Subject;
             document.Info.Author = settings.Author;
 
+            DefineStyles(document);
+
             XGraphics gfx = XGraphics.FromPdfPage(page);
 
-            if (!settings.ImagePath.Contains("Blank"))
-            {
-                string base64 = settings.ImagePath.Split(',')[1];
-                DrawImage(gfx, base64, 0, 0, 615, 205);
-            }
+            //if (!settings.ImagePath.Contains("Blank"))
+            //{
+            //    string base64 = settings.ImagePath.Split(',')[1];
+            //    DrawImage(gfx, base64, 0, 0, 615, 205);
+            //}
+            
             SetDocumentBody(page, gfx);
 
             return document;
