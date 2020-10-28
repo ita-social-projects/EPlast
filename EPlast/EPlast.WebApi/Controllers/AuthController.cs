@@ -113,9 +113,7 @@ namespace EPlast.WebApi.Controllers
                     return BadRequest();
                 }
 
-                await _authService.GoogleSignInAsync(user);
-
-                var generatedToken = await _jwtService.GenerateJWTTokenAsync(_mapper.Map<User, UserDTO>(user));
+                var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
 
                 return Ok(new {token = generatedToken});
             }
