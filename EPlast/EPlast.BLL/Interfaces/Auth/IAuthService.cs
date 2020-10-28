@@ -210,7 +210,7 @@ namespace EPlast.BLL.Interfaces
         /// <param name="providerToken"></param>
         /// <returns>Returns Google user information</returns>
         /// 
-        Task<User> GetGoogleUserAsync(string providerToken);
+        Task<UserDTO> GetGoogleUserAsync(string providerToken);
         /// <summary>
         /// Sign in using Google
         /// </summary>
