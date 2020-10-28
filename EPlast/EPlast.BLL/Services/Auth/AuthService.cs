@@ -247,30 +247,30 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async Task<User> GetGoogleUserAsync(string providerToken)
+        public async Task<UserDTO> GetGoogleUserAsync(string providerToken)
         {
             string GoogleApiTokenInfoUrl = "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token={0}";
             var httpClient = new HttpClient();
             var requestUri = new Uri(string.Format(GoogleApiTokenInfoUrl, providerToken));
 
-            HttpResponseMessage httpResponseMessage = httpClient.GetAsync(requestUri).Result;
+            HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(requestUri);
 
             if (httpResponseMessage.StatusCode != HttpStatusCode.OK)
             {
                 throw new Exception();
             }
 
-            var response = httpResponseMessage.Content.ReadAsStringAsync().Result;
+            var response = await httpResponseMessage.Content.ReadAsStringAsync();
             var googleApiTokenInfo = JsonConvert.DeserializeObject<GoogleApiTokenInfo>(response);
-            var user = await _userManager.FindByEmailAsync(googleApiTokenInfo.email);
+            var user = await _userManager.FindByEmailAsync(googleApiTokenInfo.Email);
             if (user == null)
             {
                 user = new User
                 {
-                    UserName = googleApiTokenInfo.email,
-                    Email = googleApiTokenInfo.email,
-                    FirstName = googleApiTokenInfo.given_name,
-                    LastName = googleApiTokenInfo.family_name,
+                    UserName = googleApiTokenInfo.Email,
+                    Email = googleApiTokenInfo.Email,
+                    FirstName = googleApiTokenInfo.GivenName,
+                    LastName = googleApiTokenInfo.FamilyName,
                     SocialNetworking = true,
                     ImagePath = "default_user_image.png",
                     EmailConfirmed = true,
@@ -285,7 +285,9 @@ namespace EPlast.BLL.Services
                    throw new Exception("Failed creation of user");
 
             }
-            return user;
+
+            await GoogleSignInAsync(user);
+            return _mapper.Map<User, UserDTO>(user);
 
         }
 
