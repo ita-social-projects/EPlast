@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using System.Threading.Tasks;
 using System.Web;
+using EPlast.BLL.DTO.UserProfiles;
+using EPlast.DataAccess.Entities;
 using Google.Apis.Auth;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
@@ -111,7 +113,9 @@ namespace EPlast.WebApi.Controllers
                     return BadRequest();
                 }
 
-                var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
+                await _authService.GoogleSignInAsync(user);
+
+                var generatedToken = await _jwtService.GenerateJWTTokenAsync(_mapper.Map<User, UserDTO>(user));
 
                 return Ok(new {token = generatedToken});
             }
