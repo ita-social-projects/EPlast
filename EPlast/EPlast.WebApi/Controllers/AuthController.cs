@@ -92,7 +92,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpGet("GoogleClientId")]
         [AllowAnonymous]
-        public async Task<IActionResult> GoogleClientId()
+        public IActionResult GoogleClientId()
         {
             return Ok(new { id = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("GoogleAuthentication")["GoogleClientId"] });
         }
