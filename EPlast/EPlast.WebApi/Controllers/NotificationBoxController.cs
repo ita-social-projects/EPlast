@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 using EPlast.BLL.Interfaces.Notifications;
 using System.Collections.Generic;
 using EPlast.BLL.DTO.Notification;
-using Microsoft.AspNetCore.SignalR;
-using EPlast.WebApi.SignalRHubs;
 using System.Linq;
 using EPlast.WebApi.WebSocketHandlers;
 
@@ -16,7 +14,7 @@ namespace EPlast.WebApi.Controllers
     [ApiController]
     public class NotificationBoxController : ControllerBase
     {
-        private UserNotificationHandler _userNotificationHandler { get; set; }
+        private readonly UserNotificationHandler _userNotificationHandler;
         private readonly INotificationService _notificationService;
 
         public NotificationBoxController(

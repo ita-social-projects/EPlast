@@ -13,7 +13,7 @@ namespace EPlast.BLL.Services.Notifications
 {
     public class NotificationConnectionManager : INotificationConnectionManager
     {
-        private static ConcurrentDictionary<string, HashSet<ConnectionDTO>> userMap = new ConcurrentDictionary<string, HashSet<ConnectionDTO>>();
+        private static readonly ConcurrentDictionary<string, HashSet<ConnectionDTO>> userMap = new ConcurrentDictionary<string, HashSet<ConnectionDTO>>();
 
         public IEnumerable<string> OnlineUsers { get { return userMap.Keys; } }
 
@@ -24,7 +24,7 @@ namespace EPlast.BLL.Services.Notifications
                 var connection = item.Value.FirstOrDefault(conn => conn.ConnectionId == id);
                 if (connection != null)
                 {
-                    return connection.webSocket;
+                    return connection.WebSocket;
                 }
             }
             throw new InvalidOperationException();
@@ -42,14 +42,14 @@ namespace EPlast.BLL.Services.Notifications
 
         public string GetUserId(WebSocket socket)
         {
-            return userMap.FirstOrDefault(p => p.Value.FirstOrDefault(conn => conn.webSocket == socket) != null).Key;
+            return userMap.FirstOrDefault(p => p.Value.FirstOrDefault(conn => conn.WebSocket == socket) != null).Key;
         }
 
         public string GetConnectionId(WebSocket socket)
         {
             foreach (var item in userMap)
             {
-                var connection = item.Value.FirstOrDefault(conn => conn.webSocket == socket);
+                var connection = item.Value.FirstOrDefault(conn => conn.WebSocket == socket);
                 if (connection != null)
                 {
                     return connection.ConnectionId;
@@ -65,7 +65,7 @@ namespace EPlast.BLL.Services.Notifications
             {
                 userMap.TryAdd(userId, new HashSet<ConnectionDTO>());
             }
-            userMap[userId].Add(new ConnectionDTO {ConnectionId = connectionId, webSocket = socket });
+            userMap[userId].Add(new ConnectionDTO {ConnectionId = connectionId, WebSocket = socket });
             return connectionId;
         }
 
@@ -92,12 +92,11 @@ namespace EPlast.BLL.Services.Notifications
 
         public void RemoveAllUserIdSockets(string userId)
         {
-            HashSet<ConnectionDTO> connections;
 
-            if(userMap.TryRemove(userId, out connections))
+            if (userMap.TryRemove(userId, out HashSet<ConnectionDTO> connections))
             {
-                var tasks = connections.Select(c => 
-                c.webSocket.CloseAsync(closeStatus: WebSocketCloseStatus.NormalClosure,
+                var tasks = connections.Select(c =>
+                c.WebSocket.CloseAsync(closeStatus: WebSocketCloseStatus.NormalClosure,
                                         statusDescription: "Closed by the WebSocketManager",
                                         cancellationToken: CancellationToken.None)
                 );
@@ -119,9 +118,9 @@ namespace EPlast.BLL.Services.Notifications
 
                 var tasks = userMap[userId].Select(c =>
                 {
-                    if (c.webSocket.State == WebSocketState.Open)
+                    if (c.WebSocket.State == WebSocketState.Open)
                     {
-                        return c.webSocket.SendAsync(buffer: new ArraySegment<byte>(array: Encoding.ASCII.GetBytes(message),
+                        return c.WebSocket.SendAsync(buffer: new ArraySegment<byte>(array: Encoding.ASCII.GetBytes(message),
                                                                               offset: 0,
                                                                               count: message.Length),
                                                        messageType: WebSocketMessageType.Text,
@@ -136,18 +135,6 @@ namespace EPlast.BLL.Services.Notifications
 
                 await Task.WhenAll(tasks.Where(t => t != null));
 
-                //foreach (var socket in userMap[userId].Select(c => c.webSocket))
-                //{
-                //    if (socket.State == WebSocketState.Open)
-                //    {
-                //        await socket.SendAsync(buffer: new ArraySegment<byte>(array: Encoding.ASCII.GetBytes(message),
-                //                                                              offset: 0,
-                //                                                              count: message.Length),
-                //                               messageType: WebSocketMessageType.Text,
-                //                               endOfMessage: true,
-                //                               cancellationToken: CancellationToken.None);
-                //    }
-                //}
             }
 
         }
