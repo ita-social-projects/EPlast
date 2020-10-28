@@ -73,7 +73,12 @@ namespace EPlast.BLL
 
         private async Task<BlankModel> GetBlankDataAsync(string userId)
         {
-            var user = _repoWrapper.User.FindByCondition(x => x.Id.Equals(userId)).First();
+            var user = await _repoWrapper.User.GetFirstOrDefaultAsync(predicate: c => c.Id == userId,
+                    include: source => source
+                       .Include(c=>c.ConfirmedUsers)
+                            .ThenInclude(c=>c.Approver)
+                            .ThenInclude(c=>c.User)
+                       .Include(c=>c.UserMembershipDates));
             var userProfile = await _repoWrapper.UserProfile
                 .GetFirstOrDefaultAsync(predicate: c => c.UserID == userId,
                     include: source => source
