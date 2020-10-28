@@ -110,7 +110,7 @@ namespace EPlast.BLL.Services
                 {
                     User = _mapper.Map<User, ShortUserInformationDTO>(user),
                     ClubName = clubMembers.Where(x => x.UserId.Equals(user.Id) && x.IsApproved)
-                                          .Select(x => x.Club.ClubName).LastOrDefault() ?? string.Empty,
+                                          .Select(x => x.Club.Name).LastOrDefault() ?? string.Empty,
                     CityName = cityName,
                     RegionName = !string.IsNullOrEmpty(cityName) ? cities
                         .FirstOrDefault(x => x.Name.Equals(cityName))

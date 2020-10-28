@@ -234,11 +234,12 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">User not found</response>
         [HttpPost("approveUser/{userId}/{isClubAdmin}/{isCityAdmin}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Пластун, Голова Куреня, Голова Станиці, Голова Округу, Admin")]
         public async Task<IActionResult> ApproveUser(string userId, bool isClubAdmin = false, bool isCityAdmin = false)
         {
             if (userId != null)
             {
+
                 await _confirmedUserService.CreateAsync(User, userId, isClubAdmin, isCityAdmin);
 
                 return Ok();

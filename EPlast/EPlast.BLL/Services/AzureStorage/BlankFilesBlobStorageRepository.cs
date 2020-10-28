@@ -15,23 +15,23 @@ namespace EPlast.BLL.Services.AzureStorage
         }
         public async Task<CloudBlockBlob> GetBlobAsync(string blobName)
         {
-            return await this.GetBlobAsync(blobName, CONTAINER);
+            return await GetBlobAsync(blobName, CONTAINER);
         }
         public async Task<string> GetBlobBase64Async(string blobName)
         {
-            return await this.GetBlobBase64Async(blobName, CONTAINER);
+            return await GetBlobBase64Async(blobName, CONTAINER);
         }
         public async Task DeleteBlobAsync(string blobName)
         {
-            await this.DeleteBlobAsync(blobName, CONTAINER);
+            await DeleteBlobAsync(blobName, CONTAINER);
         }
         public async Task UploadBlobAsync(IFormFile blobfile, string fileName)
         {
-            await this.UploadBlobAsync(blobfile, fileName, CONTAINER);
+            await UploadBlobAsync(blobfile, fileName, CONTAINER);
         }
         public async Task UploadBlobForBase64Async(string base64, string fileName)
         {
-            await this.UploadBlobForBase64Async(base64, fileName, CONTAINER);
+            await UploadBlobForBase64Async(base64, fileName, CONTAINER);
         }
     }
 }
