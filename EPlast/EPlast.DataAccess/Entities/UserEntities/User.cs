@@ -44,11 +44,13 @@ namespace EPlast.DataAccess.Entities
         public ICollection<Participant> Participants { get; set; }
         public ICollection<CityMembers> CityMembers { get; set; }
         public ICollection<CityAdministration> CityAdministrations { get; set; }
+        public ICollection<ClubAdministration> ClubAdministrations { get; set; }
         public ICollection<ClubMembers> ClubMembers { get; set; }
         public ICollection<RegionAdministration> RegionAdministrations { get; set; }
         public ICollection<AnnualReport> CreatedAnnualReports { get; set; }
         public ICollection<AnnualReport> NewCityAdminAnnualReports { get; set; }
         public ICollection<UserPlastDegree> UserPlastDegrees { get; set; }
+        public ICollection<UserMembershipDates> UserMembershipDates { get; set; }
         public ICollection<EducatorsStaff.EducatorsStaff> UsersKadras { get; set; }
         public ICollection<UserDistinction> UserDistinctions { get; set; }
         public ICollection<BlankBiographyDocuments> BlankBiographyDocuments { get; set; }

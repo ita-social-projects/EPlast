@@ -16,5 +16,6 @@ namespace EPlast.BLL.DTO.Region
         public DateTime? EndDate { get; set; }
         public int RegionId { get; set; }
         public RegionDTO Region { get; set; }
+        public bool Status { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using EPlast.BLL.Interfaces.Events;
 using EPlast.DataAccess.Repositories;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Events
@@ -26,6 +27,20 @@ namespace EPlast.BLL.Services.Events
                 {
                     EventCategoryId = eventCategory.ID,
                     EventCategoryName = eventCategory.EventCategoryName
+                });
+
+            return dto;
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<EventCategoryDTO>> GetDTOByEventPageAsync(int eventTypeId, int page, int pageSize, string CategoryName = null)
+        {
+            var eventType = await _eventTypeManager.GetTypeByIdAsync(eventTypeId);
+            var dto = eventType.EventCategories
+                .Select(eventTypeCategory => new EventCategoryDTO()
+                {
+                    EventCategoryId = eventTypeCategory.EventCategoryId,
+                    EventCategoryName = eventTypeCategory.EventCategory.EventCategoryName
                 });
 
             return dto;

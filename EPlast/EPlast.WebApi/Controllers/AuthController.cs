@@ -3,6 +3,7 @@ using System.Security.Policy;
 using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.Resources;
@@ -31,13 +32,15 @@ namespace EPlast.WebApi.Controllers
         private readonly IStringLocalizer<AuthenticationErrors> _resourceForErrors;
         private readonly IJwtService _jwtService;
         private readonly IHomeService _homeService;
+        private readonly IUserDatesService _userDatesService;
 
         public AuthController(IAuthService authService,
             IMapper mapper,
             ILoggerService<AuthController> loggerService,
             IStringLocalizer<AuthenticationErrors> resourceForErrors,
             IJwtService jwtService,
-            IHomeService homeService)
+            IHomeService homeService,
+            IUserDatesService userDatesService)
         {
             _authService = authService;
             _mapper = mapper;
@@ -45,6 +48,7 @@ namespace EPlast.WebApi.Controllers
             _resourceForErrors = resourceForErrors;
             _jwtService = jwtService;
             _homeService = homeService;
+            _userDatesService = userDatesService;
         }
 
         /// <summary>
@@ -162,7 +166,7 @@ namespace EPlast.WebApi.Controllers
                         new { token = token, userId = userDto.Id },
                           protocol: HttpContext.Request.Scheme);
                     await _authService.SendEmailRegistr(confirmationLink, userDto);
-
+                    await _userDatesService.AddDateEntryAsync(userDto.Id);
                     return Ok(_resourceForErrors["Confirm-Registration"]);
                 }
             }

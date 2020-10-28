@@ -1,5 +1,6 @@
 ﻿using EPlast.DataAccess.Repositories.Contracts;
 using EPlast.DataAccess.Repositories.Interfaces.Blank;
+using EPlast.DataAccess.Repositories.Interfaces.Club;
 using EPlast.DataAccess.Repositories.Interfaces.Events;
 using EPlast.DataAccess.Repositories.Interfaces.Region;
 using EPlast.DataAccess.Repositories.Realizations.Blank;
@@ -38,21 +39,30 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IDegreeRepository _degree;
         private IConfirmedUserRepository _confirmedUser;
         private IApproverRepository _approver;
+
         private ICityAdministrationRepository _cityAdministration;
         private ICityDocumentsRepository _cityDocuments;
         private ICityDocumentTypeRepository _cityDocumentType;
         private ICityMembersRepository _cityMembers;
         private ICityRepository _city;
-        private IAdminTypeRepository _admintype;
-        private IClubRepository _club;
-        private IClubMembersRepository _clubMembers;
+
         private IClubAdministrationRepository _clubAdministration;
+        private IAdminTypeRepository _admintype;
+        private IClubDocumentsRepository _clubDocuments;
+        private IClubDocumentTypeRepository _clubDocumentType;
+        private IClubMembersRepository _clubMembers;
+        private IClubRepository _club;
+
         private IRegionRepository _region;
         private IRegionAdministrationRepository _regionAdministration;
         private IAnnualReportsRepository _annualReports;
         private IMembersStatisticsRepository _membersStatistics;
         private ICityLegalStatusesRepository _cityLegalStatuses;
+        private IClubLegalStatusesRepository _clubLegalStatuses;
         private IUserPlastDegreesRepository _userPlastDegrees;
+        private IUserNotificationRepository _userNotifications;
+        private INotificationTypeRepository _notificationTypes;
+        private IUserMembershipDatesRepository _userMembershipDates;
         private IEventAdministrationRepository _eventAdministration;
         private IEventAdministrationTypeRepository _eventAdministrationType;
         private IEventCategoryTypeRepository _eventCategoryTypeRepository;
@@ -61,6 +71,8 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IEducatorsStaffTypesRepository _KVtypes;
         private IRegionDocumentRepository _regionDocs;
         private IBlankBiographyDocumentsRepository _biographyDocumentsRepository;
+        private IAchievementDocumentsRepository _achievementDocumentsRepository;
+        private IExtractFromUPUDocumentsRepository _extractFromUPUDocumentsRepository;
 
 
         public IEducatorsStaffTypesRepository KVTypes
@@ -537,6 +549,30 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             }
         }
 
+        public IClubDocumentsRepository ClubDocuments
+        {
+            get
+            {
+                if (_clubDocuments == null)
+                {
+                    _clubDocuments = new ClubDocumentsRepository(_dbContext);
+                }
+
+                return _clubDocuments;
+            }
+        }
+        public IClubDocumentTypeRepository ClubDocumentType
+        {
+            get
+            {
+                if (_clubDocumentType == null)
+                {
+                    _clubDocumentType = new ClubDocumentTypeRepository(_dbContext);
+                }
+
+                return _clubDocumentType;
+            }
+        }
         public IClubAdministrationRepository ClubAdministration
         {
             get
@@ -612,6 +648,35 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             }
         }
 
+        public IUserMembershipDatesRepository UserMembershipDates
+        {
+            get
+            {
+                if (_userMembershipDates == null)
+                {
+                    _userMembershipDates = new UserMembershipDatesRepository(_dbContext);
+                }
+
+                return _userMembershipDates;
+            }
+        }
+
+
+        
+        public IClubLegalStatusesRepository ClubLegalStatuses
+
+        {
+            get
+            {
+                if (_clubLegalStatuses == null)
+                {
+                    _clubLegalStatuses = new ClubLegalStatusesRepository(_dbContext);
+                }
+
+                return _clubLegalStatuses;
+            }
+        }
+
         public IUserPlastDegreesRepository UserPlastDegrees
         {
             get
@@ -668,6 +733,54 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                     _biographyDocumentsRepository = new BlankBiographyDocumentsRepository(_dbContext);
                 }
                 return _biographyDocumentsRepository;
+            }
+        }
+        
+        public IUserNotificationRepository UserNotifications
+        {
+            get
+            {
+                if (_userNotifications == null)
+                {
+                    _userNotifications = new UserNotificationRepository(_dbContext);
+                }
+                return _userNotifications;
+            }
+        }
+
+        public INotificationTypeRepository NotificationTypes
+        {
+            get
+            {
+                if (_notificationTypes == null)
+                {
+                    _notificationTypes = new NotificationTypeRepository(_dbContext);
+                }
+                return _notificationTypes;
+            }
+        }
+        
+        public IAchievementDocumentsRepository AchievementDocumentsRepository
+        {
+            get
+            {
+                if (_achievementDocumentsRepository == null)
+                {
+                    _achievementDocumentsRepository = new AchievementDocumentsRepository(_dbContext);
+                }
+                return _achievementDocumentsRepository;
+            }
+        }
+
+        public IExtractFromUPUDocumentsRepository ExtractFromUPUDocumentsRepository
+        {
+            get
+            {
+                if(_extractFromUPUDocumentsRepository == null)
+                {
+                    _extractFromUPUDocumentsRepository = new ExtractFromUPUDocumentsRepository(_dbContext);
+                }
+                return _extractFromUPUDocumentsRepository;
             }
         }
 

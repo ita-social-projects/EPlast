@@ -330,6 +330,14 @@ namespace EPlast.BLL.Services
             return city.ID;
         }
 
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<CityForAdministrationDTO>> GetCities()
+        {
+            var cities = await _repoWrapper.City.GetAllAsync();
+            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityForAdministrationDTO>>(cities);
+        }
+
         private async Task<DataAccessCity.City> CreateCityAndRegionAsync(CityProfileDTO model)
         {
             var cityDto = model.City;
@@ -424,5 +432,6 @@ namespace EPlast.BLL.Services
                 await _cityBlobStorage.DeleteBlobAsync(oldImageName);
             }
         }
+
     }
 }
