@@ -11,7 +11,6 @@ namespace EPlast.BLL
     public abstract class PdfDocument : IPdfDocument
     {
         protected PdfSharpCore.Pdf.PdfDocument document;
-        private XGraphicsState state;
         private readonly IPdfSettings settings;
 
         protected PdfDocument() : this(new PdfSettings())
@@ -46,15 +45,14 @@ namespace EPlast.BLL
             document.Info.Subject = settings.Subject;
             document.Info.Author = settings.Author;
 
-            DefineStyles(document);
 
             XGraphics gfx = XGraphics.FromPdfPage(page);
 
-            //if (!settings.ImagePath.Contains("Blank"))
-            //{
-            //    string base64 = settings.ImagePath.Split(',')[1];
-            //    DrawImage(gfx, base64, 0, 0, 615, 205);
-            //}
+            if (!settings.ImagePath.Contains("Blank"))
+            {
+                string base64 = settings.ImagePath.Split(',')[1];
+                DrawImage(gfx, base64, 0, 0, 615, 205);
+            }
             
             SetDocumentBody(page, gfx);
 

@@ -57,6 +57,7 @@ namespace EPlast.BLL
                     IPdfSettings pdfSettings = new PdfSettings
                     {
                         Title = $"Decision of {decision.Organization.OrganizationName}",
+                        ImagePath = base64,
                     };
                     IPdfCreator creator = new PdfCreator(new DecisionDocument(decision, pdfSettings));
                     return await Task.Run(() => creator.GetPDFBytes());
