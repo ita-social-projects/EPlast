@@ -11,7 +11,8 @@ namespace EPlast.BLL
     public abstract class PdfDocument : IPdfDocument
     {
         protected PdfSharpCore.Pdf.PdfDocument document;
-          private readonly IPdfSettings settings;
+        private XGraphicsState state;
+        private readonly IPdfSettings settings;
 
         protected PdfDocument() : this(new PdfSettings())
         {
@@ -25,6 +26,7 @@ namespace EPlast.BLL
         protected void DrawImage(XGraphics gfx, string jpegSamplePath, int x, int y, int width, int height)
         {
             var bytes = Convert.FromBase64String(jpegSamplePath);
+            //var ph = Convert.FromBase64String(jpegSamplePath);
             string path = "../decisiontmp.img";
             using (var imageFile = new FileStream(path, FileMode.OpenOrCreate))
             {
