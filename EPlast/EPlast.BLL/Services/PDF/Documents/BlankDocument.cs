@@ -21,7 +21,7 @@ namespace EPlast.BLL
             SetDashLine(gfx, 40, 40, 560, 40);
             SetText(gfx, "форма №1", XFontStyle.Regular, 50, 50);
             SetText(gfx, "Крайовому коменданту УСП / УПС", XFontStyle.Regular, 400, 55);
-            SetText(gfx, $"від {blank.User.FirstName} {blank.User.LastName}", XFontStyle.Underline, 400, 65);
+            SetText(gfx, $"від {blank?.User?.FirstName} {blank?.User?.LastName}", XFontStyle.Underline, 400, 65);
             SetText(gfx, "Заява", XFontStyle.Bold, 280, 90);
             SetText(gfx, "Прошу прийняти мене в дійсні члени Пласту – Національної Скаутської Організації України, до Уладу Старших",
                 XFontStyle.Regular, 70, 110);
@@ -87,16 +87,16 @@ namespace EPlast.BLL
             SetText(gfx, $"{blank.User.FatherName}", XFontStyle.Italic, 160, 373);
             SetText(gfx, "Дата народження", XFontStyle.Regular, 300, 375);
             SetLine(gfx, 400, 385, 550, 385);
-            SetText(gfx, $"{blank.UserProfile.Birthday:dd.MM.yyyy}", XFontStyle.Italic, 440, 373);
+            SetText(gfx, $"{blank?.UserProfile?.Birthday:dd.MM.yyyy}", XFontStyle.Italic, 440, 373);
             SetText(gfx, "Домашня адреса, індекс", XFontStyle.Regular, 50, 390);
             SetLine(gfx, 160, 400, 550, 400);
-            SetText(gfx, $"{blank.UserProfile.Address}", XFontStyle.Italic, 280, 388);
+            SetText(gfx, $"{blank?.UserProfile?.Address}", XFontStyle.Italic, 280, 388);
             SetText(gfx, "Дом. тел", XFontStyle.Regular, 50, 405);
             SetLine(gfx, 110, 415, 290, 415);
-            SetText(gfx, $"{blank.User.PhoneNumber}", XFontStyle.Italic, 160, 403);
+            SetText(gfx, $"{blank?.User?.PhoneNumber}", XFontStyle.Italic, 160, 403);
             SetText(gfx, "Ел. пошта", XFontStyle.Regular, 300, 405);
             SetLine(gfx, 360, 415, 550, 415);
-            SetText(gfx, $"{blank.User.Email}", XFontStyle.Italic, 390, 403);
+            SetText(gfx, $"{blank?.User?.Email}", XFontStyle.Italic, 390, 403);
             SetText(gfx, "Місце навчання", XFontStyle.Regular, 50, 420);
             SetLine(gfx, 130, 430, 550, 430);
             SetText(gfx, $"{blank?.UserProfile?.Education?.PlaceOfStudy}", XFontStyle.Italic, 150, 418);
