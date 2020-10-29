@@ -84,11 +84,28 @@ namespace EPlast.BLL.Services
         public async Task ChangeCurrentRole(string userId, string role)
         {
             var user = await _userManager.FindByIdAsync(userId);
+            var roles = await _userManager.GetRolesAsync(user);
             switch (role)
             {
                 case "Прихильник":
                 case "Пластун":
                 case "Зацікавлений":
+                    if (roles.Contains("Прихильник"))
+                    {
+                        await _userManager.RemoveFromRoleAsync(user, "Прихильник");
+                    }
+                    else if (roles.Contains("Пластун"))
+                    {
+                        await _userManager.RemoveFromRoleAsync(user, "Пластун");
+                    }
+                    else if(roles.Contains("Пластун"))
+                    {
+                        await _userManager.RemoveFromRoleAsync(user, "Зацікавлений");
+                    }
+                    else
+                    {
+                        await _userManager.RemoveFromRoleAsync(user, "Колишній член пласту");
+                    }
                     await _userManager.AddToRoleAsync(user, role);
                     break;
                 case "Колишній член пласту":
@@ -106,8 +123,6 @@ namespace EPlast.BLL.Services
                             .ThenInclude(x => x.Gender)
                         .Include(x => x.UserPlastDegrees)
                             .ThenInclude(x => x.PlastDegree));
-
-
             var cities = await _repoWrapper.City.
                 GetAllAsync(null, x => x.Include(i => i.Region));
             var clubMembers = await _repoWrapper.ClubMembers.
@@ -119,11 +134,6 @@ namespace EPlast.BLL.Services
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
-                //if (roles.Count == 0)
-                //{
-                //    await _userManager.AddToRoleAsync(user, "Прихильник");
-                //}
-
                 var cityName = cityMembers.Where(x => x.UserId.Equals(user.Id) && x.EndDate == null)
                                           .Select(x => x.City.Name)
                                           .LastOrDefault() ?? string.Empty;
