@@ -174,6 +174,7 @@ namespace EPlast.BLL.Services.Club
                              );
             return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationStatusDTO>>(clubAdmins);
         }
+
         public async Task CheckClubHasHead(int clubId)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync("Голова Куреня");
