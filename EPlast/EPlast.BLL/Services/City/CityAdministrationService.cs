@@ -157,7 +157,14 @@ namespace EPlast.BLL.Services.City
             return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(admins);
         }
 
-
+        public async Task<IEnumerable<CityAdministrationStatusDTO>> GetAdministrationStatuses(string UserId)
+        {
+            var cityAdmins = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.UserId == UserId && a.Status == false,
+                             include:
+                             source => source.Include(c => c.User).Include(c => c.AdminType).Include(c => c.City)
+                             );
+            return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationStatusDTO>>(cityAdmins);
+        }
         private async Task CheckCityHasHead(int cityId)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync("Голова Станиці");
