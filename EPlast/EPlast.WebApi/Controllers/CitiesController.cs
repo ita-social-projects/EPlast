@@ -216,7 +216,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="400">Wrong input</response>
         [HttpPost("CreateCity")]
-        //[Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Create(CityViewModel city)
         {
             if (!ModelState.IsValid)
@@ -279,6 +279,22 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> AddFollower(int cityId)
         {
             var follower = await _cityMembersService.AddFollowerAsync(cityId, User);
+            _logger.LogInformation($"User {{{follower.UserId}}} became a follower of city {{{cityId}}}.");
+
+            return Ok(follower);
+        }
+
+        /// <summary>
+        /// Add the user to followers
+        /// </summary>
+        /// <param name="cityId">An id of the city</param>
+        /// <param name="userId">An id of the user</param>
+        /// <returns>An information about a new follower</returns>
+        [HttpPost("AddFollowerWithId/{cityId}/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> AddFollowerWithId(int cityId, string userId)
+        {
+            var follower = await _cityMembersService.AddFollowerAsync(cityId, userId);
             _logger.LogInformation($"User {{{follower.UserId}}} became a follower of city {{{cityId}}}.");
 
             return Ok(follower);
@@ -437,7 +453,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <returns>List of cities</returns>
         [HttpGet]
-        //[Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetCitiesThatUserHasAccessTo()
         {
             return Ok(new { cities = await _cityAccessService.GetCitiesAsync(User) });
@@ -454,6 +470,28 @@ namespace EPlast.WebApi.Controllers
             return Ok(userAdmins);
         }
 
+
+
+        [HttpGet("GetUserPreviousAdmins/{UserId}")]
+
+        public async Task<IActionResult> GetUsePreviousAdministrations(string UserId)
+        {
+            var userAdmins = await _cityAdministrationService.GetPreviousAdministrationsOfUserAsync(UserId);
+
+            return Ok(userAdmins);
+        }
+
+
+        /// <summary>
+        /// Get all cities 
+        /// </summary>
+        /// <returns>List of cities</returns>
+        [HttpGet("Cities")]
+        public async Task<IActionResult> GetCities()
+        {
+            var cities = await _cityService.GetCities();
+            return Ok(cities);
+        }
 
 
     }

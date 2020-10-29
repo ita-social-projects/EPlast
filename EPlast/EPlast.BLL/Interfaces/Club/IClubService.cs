@@ -133,5 +133,12 @@ namespace EPlast.BLL.Interfaces.Club
         /// <param name="logoName">The name of a Club logo</param>
         /// <returns>A base64 string of the Club logo</returns>
         Task<string> GetLogoBase64(string logoName);
+
+
+        /// <summary>
+        /// Get all clubs
+        /// </summary>
+        /// <returns>All clubs</returns>
+        Task<IEnumerable<ClubForAdministrationDTO>> GetClubs();
     }
 }

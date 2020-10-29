@@ -86,7 +86,7 @@ namespace EPlast.BLL.Services.Club
             {
                 return null;
             }
-
+          
             var ClubHead = Club.ClubAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Куреня"
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
@@ -320,6 +320,13 @@ namespace EPlast.BLL.Services.Club
             await _repoWrapper.SaveAsync();
 
             return Club.ID;
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<ClubForAdministrationDTO>> GetClubs()
+        {
+            var clubs = await _repoWrapper.Club.GetAllAsync();
+            return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubForAdministrationDTO>>(clubs);
         }
 
         private DataAccessClub.Club CreateClubFromProfileAsync(ClubProfileDTO model)
