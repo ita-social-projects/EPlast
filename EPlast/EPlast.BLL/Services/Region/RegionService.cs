@@ -209,15 +209,12 @@ namespace EPlast.BLL.Services.Region
         public async Task DeleteAdminByIdAsync(int Id)
         {
             var Admin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.ID == Id);
+            var adminType = await _adminTypeService.GetAdminTypeByIdAsync(Admin.AdminTypeId);
+
             var user = await _userManager.FindByIdAsync(Admin.UserId);
-            if(Admin.AdminType.AdminTypeName == "Голова Округу")
-            {
-                await _userManager.RemoveFromRoleAsync(user, "Голова Округу");
-            }
-            else
-            {
-                await _userManager.RemoveFromRoleAsync(user, "Діловод Округу");
-            }
+            var role = adminType.AdminTypeName == "Голова Округу" ? "Голова Округу" : "Діловод Округу";
+            await _userManager.RemoveFromRoleAsync(user, role);
+
             _repoWrapper.RegionAdministration.Delete(Admin);
             await _repoWrapper.SaveAsync();
         }
