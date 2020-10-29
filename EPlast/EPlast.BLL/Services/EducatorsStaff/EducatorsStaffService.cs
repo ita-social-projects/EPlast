@@ -54,7 +54,9 @@ namespace EPlast.BLL
 
         public async Task<EducatorsStaffDTO> GetKadraById(int KadraID)
         {
-            var KV = _mapper.Map<EducatorsStaff, EducatorsStaffDTO>(await _repositoryWrapper.KVs.GetFirstOrDefaultAsync(c => c.ID == KadraID));
+            var KV = _mapper.Map<EducatorsStaff, EducatorsStaffDTO>(await _repositoryWrapper.KVs.GetFirstAsync(c => c.ID == KadraID, 
+                include:
+                source=>source.Include(c=>c.User)));
             return KV;
         }
 
