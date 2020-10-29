@@ -219,6 +219,18 @@ namespace EPlast.WebApi.Controllers
 
 
 
+        [HttpGet("GetEduStaffById/{KadraID}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetEduStaffById(int KadraID)
+        {
+            var staff = await _kvService.GetKadraById(KadraID);
+            return Ok(staff);
+
+        }
+
+
+
+
         [HttpGet("findUserForRedirect/{EduStaffId}")]
         [Authorize(Roles = "Admin")]
         public async Task<string> GetUserByEduStaff(int EduStaffId)
