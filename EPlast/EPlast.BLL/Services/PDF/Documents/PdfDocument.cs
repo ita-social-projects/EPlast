@@ -1,12 +1,17 @@
-﻿using MigraDoc.DocumentObjectModel;
-using MigraDoc.DocumentObjectModel.Shapes;
+﻿using PdfSharpCore;
+using PdfSharpCore.Drawing;
+using PdfSharpCore.Pdf;
+using PdfSharpCore.Pdf.IO;
 using System;
+using System.IO;
+
 
 namespace EPlast.BLL
 {
     public abstract class PdfDocument : IPdfDocument
     {
-        protected readonly Document Document;
+        protected PdfSharpCore.Pdf.PdfDocument document;
+        private XGraphicsState state;
         private readonly IPdfSettings settings;
 
         protected PdfDocument() : this(new PdfSettings())
@@ -16,48 +21,47 @@ namespace EPlast.BLL
         protected PdfDocument(IPdfSettings settings)
         {
             this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            Document = new Document();
+            document = new PdfSharpCore.Pdf.PdfDocument();
+        }
+        protected void DrawImage(XGraphics gfx, string jpegSamplePath, int x, int y, int width, int height)
+        {
+            var bytes = Convert.FromBase64String(jpegSamplePath);
+            string path = "../decision-tmp.img";
+            using (var imageFile = new FileStream(path, FileMode.OpenOrCreate))
+            {
+                imageFile.Write(bytes, 0, bytes.Length);
+                imageFile.Flush();
+                imageFile.Close();
+            }
+
+            XImage image = XImage.FromFile(path);
+            gfx.DrawImage(image, x, y, width, height);
+            File.Delete(path);
         }
 
-        public virtual Document GetDocument()
+        public virtual PdfSharpCore.Pdf.PdfDocument GetDocument()
         {
-            Section section;
-            Document.Info.Title = settings.Title;
-            Document.Info.Subject = settings.Subject;
-            Document.Info.Author = settings.Author;
+            PdfPage page = document.AddPage();
+            document.Info.Title = settings.Title;
+            document.Info.Subject = settings.Subject;
+            document.Info.Author = settings.Author;
 
-            DefineStyles(Document);
 
-            section = Document.AddSection();
+            XGraphics gfx = XGraphics.FromPdfPage(page);
 
             if (!settings.ImagePath.Contains("Blank"))
             {
-                string base64 = "base64:" + settings.ImagePath.Split(',')[1];
-                Image image = section.AddImage(base64);
-                image.Width = 600;
-                image.RelativeHorizontal = RelativeHorizontal.Page;
-                image.RelativeVertical = RelativeVertical.Page;
+                string base64 = settings.ImagePath.Split(',')[1];
+                DrawImage(gfx, base64, 0, 0, 615, 205);
             }
-            else
-            {
-                Image image = section.AddImage(settings.ImagePath);
-                image.Width = 84;
-                image.Left = 40;
-                image.Top = 20;
-                image.RelativeHorizontal = RelativeHorizontal.Page;
-                image.RelativeVertical = RelativeVertical.Page;
-            }
-            SetDocumentBody(section);
+       
+            SetDocumentBody(page, gfx);
 
-            return Document;
+            return document;
         }
 
-        public abstract void SetDocumentBody(Section section);
+        public abstract void SetDocumentBody(PdfPage page, XGraphics gfx);
 
-        public virtual void DefineStyles(Document document)
-        {
-            var style = document.Styles[settings.StyleName];
-            style.Font.Name = settings.FontName;
-        }
+       
     }
 }
