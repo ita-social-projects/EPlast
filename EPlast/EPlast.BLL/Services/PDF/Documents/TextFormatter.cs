@@ -1,22 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Collections;
-using System.Text;
-using PdfSharp.Drawing;
-//using PdfSharp.Pdf.IO;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
 using PdfSharpCore.Pdf.IO;
 
-namespace PdfSharp.Drawing.Layout
+namespace PdfSharpCore.Drawing.Layout
 {
     /// <summary>
     /// Represents a very simple text formatter.
-    /// If this class does not satisfy your needs on formatting paragraphs I recommend to take a look
-    /// at MigraDoc Foundation. Alternatively you should copy this class in your own source code and modify it.
     /// </summary>
-    public class XTextFormatterEx2
+    public class TextFormatter
     {
         public enum SpacingMode
         {
@@ -52,7 +45,7 @@ namespace PdfSharp.Drawing.Layout
         /// <summary>
         /// Initializes a new instance of the <see cref="XTextFormatter"/> class.
         /// </summary>
-        public XTextFormatterEx2(XGraphics gfx)
+        public TextFormatter(XGraphics gfx)
             : this(gfx, new LayoutOptions { SpacingMode = SpacingMode.Relative, Spacing = 0 })
         {
         }
@@ -60,15 +53,15 @@ namespace PdfSharp.Drawing.Layout
         /// <summary>
         /// Initializes a new instance of the <see cref="XTextFormatter"/> class.
         /// </summary>
-        public XTextFormatterEx2(XGraphics gfx, LayoutOptions options)
+        public TextFormatter(XGraphics gfx, LayoutOptions options)
         {
             if (gfx == null)
                 throw new ArgumentNullException("gfx");
             _gfx = gfx;
             _layoutOptions = options;
         }
-        readonly private XGraphics _gfx;
-        readonly private LayoutOptions _layoutOptions;
+        private readonly XGraphics _gfx;
+        private readonly LayoutOptions _layoutOptions;
 
         /// <summary>
         /// Gets or sets the text.
@@ -76,8 +69,8 @@ namespace PdfSharp.Drawing.Layout
         /// <value>The text.</value>
         public string Text
         {
-            get { return _text; }
-            set { _text = value; }
+            get => _text;
+            set => _text = value;
         }
         string _text;
 
@@ -140,8 +133,8 @@ namespace PdfSharp.Drawing.Layout
         /// </summary>
         public XRect LayoutRectangle
         {
-            get { return _layoutRectangle; }
-            set { _layoutRectangle = value; }
+            get => _layoutRectangle;
+            set => _layoutRectangle = value;
         }
         XRect _layoutRectangle;
 
@@ -150,8 +143,8 @@ namespace PdfSharp.Drawing.Layout
         /// </summary>
         public XParagraphAlignment Alignment
         {
-            get { return _alignment; }
-            set { _alignment = value; }
+            get => _alignment;
+            set => _alignment = value;
         }
         XParagraphAlignment _alignment = XParagraphAlignment.Left;
 
@@ -205,7 +198,7 @@ namespace PdfSharp.Drawing.Layout
                         if (block2.EndIndex >= 0)
                         {
                             lastFittingChar = block2.EndIndex;
-                            neededHeight = dy + block2.Location.Y; // Test this!!!!!
+                            neededHeight = dy + block2.Location.Y; 
                             return;
                         }
                         --idx2;
@@ -214,8 +207,7 @@ namespace PdfSharp.Drawing.Layout
                 }
                 if (block.Type == BlockType.LineBreak)
                     continue;
-                //gfx.DrawString(block.Text, font, brush, dx + block.Location.x, dy + block.Location.y);
-                neededHeight = dy + block.Location.Y; // Test this!!!!! Performance optimization?
+                neededHeight = dy + block.Location.Y; 
             }
         }
 
@@ -378,11 +370,11 @@ namespace PdfSharp.Drawing.Layout
                 }
                 else
                 {
-                    double width = block.Width; //!!!modTHHO 19.11.09 don't add this.spaceWidth here
+                    double width = block.Width; 
                     if ((x + width <= rectWidth || x == 0) && block.Type != BlockType.LineBreak)
                     {
                         block.Location = new XPoint(x, y);
-                        x += width + _spaceWidth; //!!!modTHHO 19.11.09 add this.spaceWidth here
+                        x += width + _spaceWidth; 
                     }
                     else
                     {
@@ -395,7 +387,7 @@ namespace PdfSharp.Drawing.Layout
                             break;
                         }
                         block.Location = new XPoint(0, y);
-                        x = width + _spaceWidth; //!!!modTHHO 19.11.09 add this.spaceWidth here
+                        x = width + _spaceWidth; 
                     }
                 }
             }
@@ -421,7 +413,7 @@ namespace PdfSharp.Drawing.Layout
                 totalWidth += _blocks[idx].Width + _spaceWidth;
 
             double dx = Math.Max(layoutWidth - totalWidth, 0);
-            //Debug.Assert(dx >= 0);
+
             if (_alignment != XParagraphAlignment.Justify)
             {
                 if (_alignment == XParagraphAlignment.Center)
@@ -514,21 +506,5 @@ namespace PdfSharp.Drawing.Layout
             /// </summary>
             public bool Stop;
         }
-        // TODO:
-        // - more XStringFormat variations
-        // - calculate bounding box
-        // - left and right indent
-        // - first line indent
-        // - margins and paddings
-        // - background color
-        // - text background color
-        // - border style
-        // - hyphens, soft hyphens, hyphenation
-        // - kerning
-        // - change font, size, text color etc.
-        // - line spacing
-        // - underline and strike-out variation
-        // - super- and sub-script
-        // - ...
     }
 }
