@@ -60,6 +60,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<ClubAccessSettings, ClubAccessSettings>();
             services.AddScoped<IClubAccessService, ClubAccessService>();
             services.AddScoped<IAnnualReportService, AnnualReportService>();
+            services.AddScoped<IClubAnnualReportService, ClubAnnualReportService>();
             services.AddScoped<IPdfService, PdfService>();
             services.AddScoped<IDecisionService, DecisionService>();
             services.AddScoped<IDirectoryManager, DirectoryManager>();

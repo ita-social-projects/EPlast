@@ -98,7 +98,6 @@ namespace EPlast.BLL.Services
             var cityMembers = await _repoWrapper.CityMembers.
                 GetAllAsync(null, x => x.Include(i => i.City));
             List<UserTableDTO> userTable = new List<UserTableDTO>();
-
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
