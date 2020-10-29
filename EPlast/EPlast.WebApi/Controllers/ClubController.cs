@@ -4,7 +4,9 @@ using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.WebApi.Models.Club;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
@@ -20,6 +22,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IClubAdministrationService _ClubAdministrationService;
         private readonly IClubDocumentsService _ClubDocumentsService;
         private readonly IClubAccessService _ClubAccessService;
+        private readonly IClubAnnualReportService _ClubAnnualReportService;
 
         public ClubController(ILoggerService<ClubController> logger,
             IMapper mapper,
@@ -27,7 +30,8 @@ namespace EPlast.WebApi.Controllers
             IClubMembersService ClubMembersService,
             IClubAdministrationService ClubAdministrationService,
             IClubDocumentsService ClubDocumentsService,
-            IClubAccessService ClubAccessService)
+            IClubAccessService ClubAccessService,
+            IClubAnnualReportService ClubAnnualReportService)
         {
             _logger = logger;
             _mapper = mapper;
@@ -36,6 +40,7 @@ namespace EPlast.WebApi.Controllers
             _ClubAdministrationService = ClubAdministrationService;
             _ClubDocumentsService = ClubDocumentsService;
             _ClubAccessService = ClubAccessService;
+            _ClubAnnualReportService = ClubAnnualReportService;
         }
 
         /// <summary>
@@ -463,6 +468,48 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(userAdmins);
         }
+
+        /// <summary>
+        /// Method to get all club reports that the user has access to
+        /// </summary>
+        /// <returns>List of annual reports</returns>
+        /// <response code="200">Successful operation</response>
+
+        [HttpGet("GetAllClubAnnualReports")]
+        public async Task<IActionResult> GetAllClubAnnualReports()
+        {
+            return StatusCode(StatusCodes.Status200OK, new { annualReports = await _ClubAnnualReportService.GetAllAsync(User) });
+        }
+
+        /// <summary>
+        /// Method to get club annual report
+        /// </summary>
+        /// <param name="id">Club annual report identification number</param>
+        /// <returns>Annual report</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="403">User hasn't access to annual report</response>
+        /// <response code="404">The club annual report does not exist</response>
+
+        [HttpGet("GetClubAnnualReportById/{id:int}")]
+        public async Task<IActionResult> GetClubAnnualReportById(int id)
+        {
+            try
+            {
+                return StatusCode(StatusCodes.Status200OK, new { annualreport = await _ClubAnnualReportService.GetByIdAsync(User, id) });
+            }
+            catch (NullReferenceException)
+            {
+
+                return StatusCode(StatusCodes.Status404NotFound);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
+        }
+
+
+
         /// <summary>
         /// Get all clubs 
         /// </summary>
