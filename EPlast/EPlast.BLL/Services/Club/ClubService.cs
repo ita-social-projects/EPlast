@@ -45,11 +45,11 @@ namespace EPlast.BLL.Services.Club
         /// <inheritdoc />
         public async Task<IEnumerable<DataAccessClub.Club>> GetAllAsync(string ClubName = null)
         {
-            var clubs = await _repoWrapper.Club.GetAllAsync();
+            var cities = await _repoWrapper.Club.GetAllAsync();
 
             return string.IsNullOrEmpty(ClubName)
-                ? clubs
-                : clubs.Where(c => c.Name.ToLower().Contains(ClubName.ToLower()));
+                ? cities
+                : cities.Where(c => c.Name.ToLower().Contains(ClubName.ToLower()));
         }
 
         /// <inheritdoc />
@@ -86,12 +86,12 @@ namespace EPlast.BLL.Services.Club
             {
                 return null;
             }
-          
+
             var ClubHead = Club.ClubAdministration?
-                .FirstOrDefault(a => a.AdminTypeId==(int)TypesOfAdministration.ClubHead
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Куреня"
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
             var ClubAdmins = Club.ClubAdministration
-                .Where(a => a.AdminType.AdminTypeName != "Курінний"
+                .Where(a => a.AdminType.AdminTypeName != "Голова Куреня"
                     && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .Take(6)
                 .ToList();
@@ -186,10 +186,10 @@ namespace EPlast.BLL.Services.Club
             }
 
             var ClubHead = Club.ClubAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Курінний"
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Куреня"
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
             var ClubAdmins = Club.ClubAdministration
-                .Where(a => a.AdminType.AdminTypeName != "Курінний"
+                .Where(a => a.AdminType.AdminTypeName != "Голова Куреня"
                     && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .ToList();
 
@@ -290,7 +290,7 @@ namespace EPlast.BLL.Services.Club
         public async Task EditAsync(ClubDTO model)
         {
             await UploadPhotoAsync(model);
-            var Club =  CreateClubAsync(model);
+            var Club = CreateClubAsync(model);
 
             _repoWrapper.Club.Attach(Club);
             _repoWrapper.Club.Update(Club);
@@ -301,7 +301,7 @@ namespace EPlast.BLL.Services.Club
         public async Task<int> CreateAsync(ClubProfileDTO model, IFormFile file)
         {
             await UploadPhotoAsync(model.Club, file);
-            var Club =  CreateClubFromProfileAsync(model);
+            var Club = CreateClubFromProfileAsync(model);
             _repoWrapper.Club.Attach(Club);
             await _repoWrapper.Club.CreateAsync(Club);
             await _repoWrapper.SaveAsync();
@@ -313,7 +313,7 @@ namespace EPlast.BLL.Services.Club
         public async Task<int> CreateAsync(ClubDTO model)
         {
             await UploadPhotoAsync(model);
-            var Club =  CreateClubAsync(model);
+            var Club = CreateClubAsync(model);
 
             _repoWrapper.Club.Attach(Club);
             await _repoWrapper.Club.CreateAsync(Club);

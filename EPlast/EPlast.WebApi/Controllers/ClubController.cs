@@ -456,6 +456,13 @@ namespace EPlast.WebApi.Controllers
             return Ok(userAdmins);
         }
 
+        [HttpGet("GetAllAdministrationStatuses/{UserId}")]
+        public async Task<IActionResult> GetAllAdministrationStatuses(string UserId)
+        {
+            var userAdmins = await _ClubAdministrationService.GetAdministrationStatuses(UserId);
+
+            return Ok(userAdmins);
+        }
         /// <summary>
         /// Get all clubs 
         /// </summary>
