@@ -1,4 +1,5 @@
-﻿using EPlast.BLL.DTO.Blank;
+﻿using EPlast.BLL;
+using EPlast.BLL.DTO.Blank;
 using EPlast.BLL.Interfaces.Blank;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,14 +15,17 @@ namespace EPlast.WebApi.Controllers
         private readonly IBlankBiographyDocumentService _blankBiographyDocumentService;
         private readonly IBlankAchievementDocumentService _blankAchievementDocumentService;
         private readonly IBlankExtractFromUPUDocumentService _blankExtractFromUPUDocumentService;
+        private readonly IPdfService _pdfService;
 
         public BlanksController(IBlankBiographyDocumentService blankBiographyDocumentService,
            IBlankAchievementDocumentService blankAchievementDocumentService,
-           IBlankExtractFromUPUDocumentService blankExtractFromUPUDocumentService)
+           IBlankExtractFromUPUDocumentService blankExtractFromUPUDocumentService,
+           IPdfService pdfService)
         {
             _blankBiographyDocumentService = blankBiographyDocumentService;
             _blankAchievementDocumentService = blankAchievementDocumentService;
             _blankExtractFromUPUDocumentService = blankExtractFromUPUDocumentService;
+            _pdfService = pdfService;
         }
 
         /// <summary>
@@ -182,6 +186,18 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetFileExtractFromUPUBase64(string fileName)
         {
             return Ok(await _blankExtractFromUPUDocumentService.DownloadFileAsync(fileName));
+        }
+
+        /// <summary>
+        /// Generate user document by user Id
+        /// </summary>
+        /// <param name="userId">User ID</param>
+        /// <returns>A Base64 format Generated document</returns>
+        [HttpGet("getGenerationFile/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetGenerationFile(string userId)
+        {
+            return Ok(await _pdfService.BlankCreatePDFAsync(userId));
         }
 
     }
