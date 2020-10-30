@@ -69,17 +69,24 @@ namespace EPlast.BLL
             tfx.DrawString(_decision.Description, font, XBrushes.Black, middleRect, XStringFormats.TopLeft);
             if (lastCharIndex == -1)
             {
+                if (page.Height<neededHeight+300+70)
+                {
+                    PdfPage newPage = document.AddPage();
+                    gfx = XGraphics.FromPdfPage(newPage);
+                    middleRect = new XRect(LeftIndent, 0, TextWidth, 0);
+                }
                 DrawBottom(gfx, format, middleRect, font);
+                
             }
             else
             {
-                PdfPage newPage = document.AddPage();
-                DrawNextPage(newPage, _decision.Description.Substring(lastCharIndex + 1), font);
+                DrawNextPage(_decision.Description.Substring(lastCharIndex + 1), font);
             }
         }
 
-        void DrawNextPage(PdfPage page, string text, XFont font)
+        void DrawNextPage(string text, XFont font)
         {
+            PdfPage page = document.AddPage();
             XGraphics gfx = XGraphics.FromPdfPage(page);
             XStringFormat format = new XStringFormat();
             TextFormatter tfx = new TextFormatter(gfx);
@@ -100,12 +107,18 @@ namespace EPlast.BLL
 
             if (newIndexOfLastCharOnPage == -1)
             {
+                if (page.Height < newNeededHeight + 40 + 70)
+                {
+                    PdfPage newPage = document.AddPage();
+                    gfx = XGraphics.FromPdfPage(newPage);
+                    middleRect = new XRect(LeftIndent, 0, TextWidth, 0);
+                }
                 DrawBottom(gfx, format, middleRect, font);
+                
             }
             else
             {
-                PdfPage newPage = document.AddPage();
-                DrawNextPage(newPage, text.Substring(newIndexOfLastCharOnPage + 1), font);
+                DrawNextPage(text.Substring(newIndexOfLastCharOnPage + 1), font);
             }
         }
 
