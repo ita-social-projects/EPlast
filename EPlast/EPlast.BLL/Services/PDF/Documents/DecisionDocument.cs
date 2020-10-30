@@ -14,6 +14,8 @@ namespace EPlast.BLL
         private readonly Decesion _decision;
         private const int TextWidth = 510;
         private const int LeftIndent = 60;
+        private const int BottomRectHeightWithStock = 70;
+        private const int BottomRectHeight = 50;
         private const string FontName = "Times New Roman";
 
         public DecisionDocument(Decesion decision) : this(decision, new PdfSettings())
@@ -33,6 +35,7 @@ namespace EPlast.BLL
         protected void DrawText(XGraphics gfx, PdfPage page)
         {
             int rectHeight = 200;
+            int middleRectY = 300;
             XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.Unicode);
             XFont font = new XFont(FontName, 14, XFontStyle.Regular, options);
 
@@ -50,26 +53,26 @@ namespace EPlast.BLL
 
             TextFormatter tfx = new TextFormatter(gfx);
 
-            XRect middleRect = new XRect(LeftIndent, 300, TextWidth, rectHeight);
-            tfx.PrepareDrawString(_decision.Description, font, new XRect(60, 300, TextWidth, double.MaxValue),
+            XRect middleRect = new XRect(LeftIndent, middleRectY, TextWidth, rectHeight);
+            tfx.PrepareDrawString(_decision.Description, font, new XRect(LeftIndent, middleRectY, TextWidth, double.MaxValue),
                 out var lastCharIndex, out var neededHeight);
             if (neededHeight > rectHeight)
             {
-                middleRect = new XRect(LeftIndent, 300, TextWidth, neededHeight);
+                middleRect = new XRect(LeftIndent, middleRectY, TextWidth, neededHeight);
             }
 
             if (neededHeight > page.Height - rectHeight - middleRect.Y)
             {
-                middleRect = new XRect(LeftIndent, 300, TextWidth, page.Height - middleRect.Y - 30);
+                middleRect = new XRect(LeftIndent, middleRectY, TextWidth, page.Height - middleRect.Y - 30);
                 tfx.PrepareDrawString(_decision.Description, font, middleRect,
                     out lastCharIndex, out neededHeight);
-                middleRect = new XRect(LeftIndent, 300, TextWidth, neededHeight);
+                middleRect = new XRect(LeftIndent, middleRectY, TextWidth, neededHeight);
             }
 
             tfx.DrawString(_decision.Description, font, XBrushes.Black, middleRect, XStringFormats.TopLeft);
             if (lastCharIndex == -1)
             {
-                if (page.Height<neededHeight+300+70)
+                if (page.Height<neededHeight + middleRectY + BottomRectHeightWithStock)
                 {
                     PdfPage newPage = document.AddPage();
                     gfx = XGraphics.FromPdfPage(newPage);
@@ -86,21 +89,22 @@ namespace EPlast.BLL
 
         void DrawNextPage(string text, XFont font)
         {
+            int middleRectY = 40;
             PdfPage page = document.AddPage();
             XGraphics gfx = XGraphics.FromPdfPage(page);
             XStringFormat format = new XStringFormat();
             TextFormatter tfx = new TextFormatter(gfx);
-            XRect middleRect = new XRect(LeftIndent, 40, TextWidth, double.MaxValue);
+            XRect middleRect = new XRect(LeftIndent, middleRectY, TextWidth, double.MaxValue);
             tfx.PrepareDrawString(text, font, middleRect,
                 out var newIndexOfLastCharOnPage, out var newNeededHeight);
-            if (newNeededHeight > page.Height - 50)
+            if (newNeededHeight > page.Height - BottomRectHeight)
             {
-                middleRect = new XRect(LeftIndent, 40, TextWidth, page.Height - 50);
+                middleRect = new XRect(LeftIndent, middleRectY, TextWidth, page.Height - BottomRectHeight);
                 tfx.PrepareDrawString(text, font, middleRect,
                     out newIndexOfLastCharOnPage, out newNeededHeight);
             }
 
-            middleRect = new XRect(LeftIndent, 40, TextWidth, newNeededHeight);
+            middleRect = new XRect(LeftIndent, middleRectY, TextWidth, newNeededHeight);
 
 
             tfx.DrawString(text, font, XBrushes.Black, middleRect, format);
@@ -108,7 +112,7 @@ namespace EPlast.BLL
 
             if (newIndexOfLastCharOnPage == -1)
             {
-                if (page.Height < newNeededHeight + 40 + 70)
+                if (page.Height < newNeededHeight + middleRectY + BottomRectHeightWithStock)
                 {
                     PdfPage newPage = document.AddPage();
                     gfx = XGraphics.FromPdfPage(newPage);
@@ -125,7 +129,7 @@ namespace EPlast.BLL
 
         private void DrawBottom(XGraphics gfx, XStringFormat format, XRect middleRect, XFont font)
         {
-            XRect bottomRect = new XRect(LeftIndent, 10 + middleRect.Y + middleRect.Height, TextWidth, 50);
+            XRect bottomRect = new XRect(LeftIndent, 10 + middleRect.Y + middleRect.Height, TextWidth, BottomRectHeight);
             format.Alignment = XStringAlignment.Far;
             format.LineAlignment = XLineAlignment.Far;
             font = new XFont(font.Name, 14, XFontStyle.Regular, new XPdfFontOptions(PdfFontEncoding.Unicode));
