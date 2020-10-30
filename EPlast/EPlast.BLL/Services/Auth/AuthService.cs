@@ -262,15 +262,15 @@ namespace EPlast.BLL.Services
 
             var response = await httpResponseMessage.Content.ReadAsStringAsync();
             var googleApiTokenInfo = JsonConvert.DeserializeObject<GoogleApiTokenInfo>(response);
-            var user = await _userManager.FindByEmailAsync(googleApiTokenInfo.email);
+            var user = await _userManager.FindByEmailAsync(googleApiTokenInfo.Email);
             if (user == null)
             {
                 user = new User
                 {
-                    UserName = googleApiTokenInfo.email,
-                    Email = googleApiTokenInfo.email,
-                    FirstName = googleApiTokenInfo.given_name,
-                    LastName = googleApiTokenInfo.family_name,
+                    UserName = googleApiTokenInfo.Email,
+                    Email = googleApiTokenInfo.Email,
+                    FirstName = googleApiTokenInfo.GivenName,
+                    LastName = googleApiTokenInfo.FamilyName,
                     SocialNetworking = true,
                     ImagePath = "default_user_image.png",
                     EmailConfirmed = true,
