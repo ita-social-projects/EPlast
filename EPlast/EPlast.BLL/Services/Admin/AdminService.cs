@@ -117,7 +117,7 @@ namespace EPlast.BLL.Services
             }
         }
 
-        public async Task ChangeCurrentRole(string userId, string role)
+        public async Task ChangeCurrentRoleAsync(string userId, string role)
         {
             var user = await _userManager.FindByIdAsync(userId);
             var roles = await _userManager.GetRolesAsync(user);
