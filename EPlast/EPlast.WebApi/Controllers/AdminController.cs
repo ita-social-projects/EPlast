@@ -133,7 +133,7 @@ namespace EPlast.WebApi.Controllers
         {
             if (!string.IsNullOrEmpty(userId))
             {
-                await _adminService.ChangeCurrentRole(userId, role);
+                await _adminService.ChangeCurrentRoleAsync(userId, role);
                 _loggerService.LogInformation($"Successful change role for {userId}");
                 return Ok();
             }

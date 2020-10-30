@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Services.Interfaces;
+using EPlast.BLL.Services.Statistics.StatisticsItems.MinorStatisticsItems;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -117,34 +120,38 @@ namespace EPlast.BLL.Services
             }
         }
 
-        public async Task ChangeCurrentRole(string userId, string role)
+        public async Task ChangeCurrentRoleAsync(string userId, string role)
         {
+            const string supporter = "Прихильник";
+            const string plastun = "Пластун";
+            const string interested = "Зацікавлений";
+            const string formerMember = "Колишній член пласту";
             var user = await _userManager.FindByIdAsync(userId);
             var roles = await _userManager.GetRolesAsync(user);
             switch (role)
             {
-                case "Прихильник":
-                case "Пластун":
-                case "Зацікавлений":
-                    if (roles.Contains("Прихильник"))
+                case supporter:
+                case plastun:
+                case interested:
+                    if (roles.Contains(supporter))
                     {
-                        await _userManager.RemoveFromRoleAsync(user, "Прихильник");
+                        await _userManager.RemoveFromRoleAsync(user, supporter);
                     }
-                    else if (roles.Contains("Пластун"))
+                    else if (roles.Contains(plastun))
                     {
-                        await _userManager.RemoveFromRoleAsync(user, "Пластун");
+                        await _userManager.RemoveFromRoleAsync(user, plastun);
                     }
-                    else if(roles.Contains("Зацікавлений"))
+                    else if(roles.Contains(interested))
                     {
-                        await _userManager.RemoveFromRoleAsync(user, "Зацікавлений");
+                        await _userManager.RemoveFromRoleAsync(user, interested);
                     }
                     else
                     {
-                        await _userManager.RemoveFromRoleAsync(user, "Колишній член пласту");
+                        await _userManager.RemoveFromRoleAsync(user, formerMember);
                     }
                     await _userManager.AddToRoleAsync(user, role);
                     break;
-                case "Колишній член пласту":
+                case formerMember:
                     await ChangeAsync(userId);
                     break;
             }
