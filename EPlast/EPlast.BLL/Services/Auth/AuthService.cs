@@ -291,7 +291,7 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async Task GoogleSignInAsync(User user)
+        private async Task GoogleSignInAsync(User user)
         {
             var loginInfo = new UserLoginInfo(user.Email, Guid.NewGuid().ToString(), user.UserName);
             await _userManager.AddToRoleAsync(user, "Прихильник");
