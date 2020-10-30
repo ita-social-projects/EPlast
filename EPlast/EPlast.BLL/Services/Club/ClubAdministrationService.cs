@@ -102,7 +102,7 @@ namespace EPlast.BLL.Services.Club
 
             var adminType = await _adminTypeService.GetAdminTypeByIdAsync(admin.AdminTypeId);
             var user = await _userManager.FindByIdAsync(admin.UserId);
-            var role = adminType.AdminTypeName == "Голова Куреня" ? "Голова Куреня³" : "Діловод Куреня³";
+            var role = adminType.AdminTypeName == "Голова Куреня" ? "Голова Куреня" : "Діловод Куреня";
             await _userManager.RemoveFromRoleAsync(user, role);
 
             _repositoryWrapper.ClubAdministration.Update(admin);

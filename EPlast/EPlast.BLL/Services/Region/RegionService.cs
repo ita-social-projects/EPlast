@@ -70,7 +70,7 @@ namespace EPlast.BLL.Services.Region
             var role = adminType.AdminTypeName == "Голова Округу" ? "Голова Округу" : "Діловод Округу";
             await _userManager.AddToRoleAsync(newUser, role);
 
-            if (oldAdmin != null && role == "Голова Округу")
+            if (oldAdmin != null)
             {
                 if (DateTime.Compare((DateTime)regionAdministrationDTO.EndDate, DateTime.Now) > 0)
                 {
