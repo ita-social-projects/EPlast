@@ -95,6 +95,7 @@ namespace EPlast.BLL
 
             middleRect = new XRect(LeftIndent, 40, TextWidth, newNeededHeight);
 
+
             tfx.DrawString(text, font, XBrushes.Black, middleRect, format);
 
 
