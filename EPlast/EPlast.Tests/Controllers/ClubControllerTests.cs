@@ -29,6 +29,8 @@ namespace EPlast.Tests.Controllers
         private readonly Mock<IClubAdministrationService> _ClubAdministrationService;
         private readonly Mock<IClubAccessService> _ClubAccessService;
         private readonly Mock<IClubDocumentsService> _ClubDocumentsService;
+        private readonly Mock<IClubAnnualReportService> _ClubAnnualReportService;
+
 
         public ClubControllerTests()
         {
@@ -39,6 +41,7 @@ namespace EPlast.Tests.Controllers
             _logger = new Mock<ILoggerService<ClubController>>();
             _ClubAdministrationService = new Mock<IClubAdministrationService>();
             _ClubDocumentsService = new Mock<IClubDocumentsService>();
+            _ClubAnnualReportService = new Mock<IClubAnnualReportService>();
         }
 
         private ClubController CreateClubController => new ClubController(_logger.Object,
@@ -48,7 +51,8 @@ namespace EPlast.Tests.Controllers
            _ClubMembersService.Object,
            _ClubAdministrationService.Object,
            _ClubDocumentsService.Object,
-           _ClubAccessService.Object
+           _ClubAccessService.Object,
+           _ClubAnnualReportService.Object
           );
 
 
