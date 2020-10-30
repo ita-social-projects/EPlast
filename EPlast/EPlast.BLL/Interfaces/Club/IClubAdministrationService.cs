@@ -48,5 +48,7 @@ namespace EPlast.BLL.Interfaces.Club
         ///returns administrations of given user
         /// </summary>
         Task<IEnumerable<ClubAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string UserId);
+        Task<IEnumerable<ClubAdministrationStatusDTO>> GetAdministrationStatuses(string UserId);
+
     }
 }

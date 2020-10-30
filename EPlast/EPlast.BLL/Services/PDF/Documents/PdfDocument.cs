@@ -11,7 +11,6 @@ namespace EPlast.BLL
     public abstract class PdfDocument : IPdfDocument
     {
         protected PdfSharpCore.Pdf.PdfDocument document;
-        private XGraphicsState state;
         private readonly IPdfSettings settings;
 
         protected PdfDocument() : this(new PdfSettings())
@@ -54,7 +53,7 @@ namespace EPlast.BLL
                 string base64 = settings.ImagePath.Split(',')[1];
                 DrawImage(gfx, base64, 0, 0, 615, 205);
             }
-       
+            
             SetDocumentBody(page, gfx);
 
             return document;
@@ -62,6 +61,5 @@ namespace EPlast.BLL
 
         public abstract void SetDocumentBody(PdfPage page, XGraphics gfx);
 
-       
     }
 }
