@@ -61,9 +61,12 @@ namespace EPlast.Tests.Services.PDF
         [TestCase("546546")]
         public void BlankCreatePdfAsync_ReturnsByteArray_Test(string userId)
         {
+            _repository.Setup(repo => repo.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(new User() { Id=userId });
             var actualReturn = _pdfService.BlankCreatePDFAsync(userId);
             _repository.Verify();
-            Assert.IsInstanceOf<byte[]>(actualReturn.Result);
+            Assert.IsInstanceOf<string>(actualReturn.Result);
         }
 
         [TestCase("1")]
