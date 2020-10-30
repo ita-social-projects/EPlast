@@ -41,6 +41,6 @@ namespace EPlast.BLL.Services.Interfaces
         /// <summary>
         /// Change Current Role of user
         /// </summary>
-        Task ChangeCurrentRole(string userId, string role);
+        Task ChangeCurrentRoleAsync(string userId, string role);
     }
 }
