@@ -211,10 +211,6 @@ namespace EPlast.BLL.Interfaces
         /// <returns>Returns Google user information</returns>
         /// 
         Task<UserDTO> GetGoogleUserAsync(string providerToken);
-        /// <summary>
-        /// Sign in using Google
-        /// </summary>
-        /// <param name="user"></param>
-        Task GoogleSignInAsync(User user);
+       
     }
 }
