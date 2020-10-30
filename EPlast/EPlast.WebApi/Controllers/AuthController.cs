@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Security.Policy;
+using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
@@ -11,6 +13,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using System.Threading.Tasks;
 using System.Web;
+using Google.Apis.Auth;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Auth.OAuth2.Flows;
+using NLog.Extensions.Logging;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -84,6 +90,39 @@ namespace EPlast.WebApi.Controllers
                 }
             }
             return Ok(_resourceForErrors["ModelIsNotValid"]);
+        }
+
+        [HttpGet("GoogleClientId")]
+        [AllowAnonymous]
+        public IActionResult GoogleClientId()
+        {
+            return Ok(new { id = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("GoogleAuthentication")["GoogleClientId"] });
+        }
+
+        [HttpPost("signin/google")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GoogleLogin(string googleToken)
+        {
+            try
+            {
+                var user = await _authService.GetGoogleUserAsync(googleToken);
+                if (user == null)
+                {
+                    return BadRequest();
+                }
+
+                var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
+
+                return Ok(new {token = generatedToken});
+            }
+            catch (Exception exc)
+            {
+                _loggerService.LogError(exc.Message);
+            }
+            
+            return BadRequest();
+            
+
         }
 
         /// <summary>
