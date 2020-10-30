@@ -7,7 +7,6 @@ namespace EPlast.BLL
         public User User { get; set; }
         public UserProfile UserProfile { get; set; }
         public CityMembers CityMembers { get; set; }
-        public User CityAdmin { get; set; }
         public ClubMembers ClubMembers { get; set; }
     }
 }
