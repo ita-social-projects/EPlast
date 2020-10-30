@@ -180,6 +180,11 @@ namespace EPlast.DataAccess
                     .WithMany(u => u.NewCityAdminAnnualReports)
                     .HasForeignKey(a => a.NewCityAdminId);
             });
+
+            modelBuilder.Entity<ClubAnnualReport>(annualReport =>
+            {
+                annualReport.HasOne(a => a.Club);
+            });
         }
 
         public DbSet<DocumentTemplate> DocumentTemplates { get; set; }
@@ -187,6 +192,8 @@ namespace EPlast.DataAccess
         public DbSet<DecesionTarget> DecesionTargets { get; set; }
         public DbSet<Decesion> Decesions { get; set; }
         public DbSet<AnnualReport> AnnualReports { get; set; }
+        public DbSet<ClubAnnualReport> ClubAnnualReports { get; set; }
+
         public DbSet<MembersStatistic> MembersStatistics { get; set; }
 
 

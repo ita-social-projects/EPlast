@@ -280,7 +280,8 @@ namespace EPlast.BLL.Services.Events
         {
             int finishedEventStatus = 1;
             var eventsToCheck = await _repoWrapper.Event
-                .GetAllAsync(e => e.EventStatusID != finishedEventStatus && e.EventDateStart.Date <= DateTime.Now.Date);
+                .GetAllAsync(e => e.EventStatusID != finishedEventStatus && (DateTime.Compare(e.EventDateEnd, DateTime.Now) < 0));
+
             foreach (var eventToCheck in eventsToCheck)
             {
                     eventToCheck.EventStatusID = finishedEventStatus;
