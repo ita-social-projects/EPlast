@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.Club;
+using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -18,12 +21,25 @@ namespace EPlast.BLL.Services
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IMapper _mapper;
-        public AdminService(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IMapper mapper, RoleManager<IdentityRole> roleManager)
+        private readonly ICityMembersService _cityMembers;
+        private readonly IClubMembersService _clubMembers;
+        private readonly IRegionService _regionService;
+
+        public AdminService(IRepositoryWrapper repoWrapper, 
+            UserManager<User> userManager, 
+            IMapper mapper, 
+            RoleManager<IdentityRole> roleManager,
+            ICityMembersService cityMembers,
+            IClubMembersService clubMembers,
+            IRegionService regionService)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
             _mapper = mapper;
             _roleManager = roleManager;
+            _cityMembers = cityMembers;
+            _clubMembers = clubMembers;
+            _regionService = regionService;
         }
 
         /// <inheritdoc />
@@ -66,6 +82,26 @@ namespace EPlast.BLL.Services
                 var userRoles = await _userManager.GetRolesAsync(user);
                 await _userManager.RemoveFromRolesAsync(user, userRoles);
             }
+            
+            var cityMember = await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(m => m.UserId == userId);
+
+            if(cityMember != null)
+            {
+                await _cityMembers.RemoveMemberAsync(cityMember);
+            }
+
+            var clubMember = await _repoWrapper.ClubMembers.GetFirstOrDefaultAsync(m => m.UserId == userId);
+            if (clubMember != null)
+            {
+                await _clubMembers.RemoveMemberAsync(clubMember);
+            }
+
+            var regionAdmin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.UserId == userId);
+            if(regionAdmin != null)
+            {
+                await _regionService.DeleteAdminByIdAsync(regionAdmin.ID);
+            }
+
             await _userManager.AddToRoleAsync(user, "Колишній член пласту");
         }
 
@@ -98,7 +134,7 @@ namespace EPlast.BLL.Services
                     {
                         await _userManager.RemoveFromRoleAsync(user, "Пластун");
                     }
-                    else if(roles.Contains("Пластун"))
+                    else if(roles.Contains("Зацікавлений"))
                     {
                         await _userManager.RemoveFromRoleAsync(user, "Зацікавлений");
                     }
@@ -151,7 +187,7 @@ namespace EPlast.BLL.Services
                     UserPlastDegreeName = user.UserPlastDegrees.Count != 0 ? user.UserPlastDegrees
                         .FirstOrDefault(x => x.UserId == user.Id && x.DateFinish == null)
                         ?.PlastDegree.Name : string.Empty,
-                    UserRoles = string.Join(", ", await _userManager.GetRolesAsync(user))
+                    UserRoles = string.Join(", ", roles)
                 });
             }
             return userTable;
