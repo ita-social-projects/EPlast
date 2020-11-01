@@ -2,9 +2,9 @@
 using System.Linq;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
-using IronBarCode;
 using System.IO;
-using System.Collections.Generic;
+using QRCoder;
+using System.Drawing;
 
 namespace EPlast.BLL
 {
@@ -47,7 +47,7 @@ namespace EPlast.BLL
             SetText(gfx, "ознайомлений/на.", XFontStyle.Regular, 50, 200);
 
             SetText(gfx, "Поручення дійсних членів Пласту:", XFontStyle.Bold, 50, 230);
-            int count = blank.User.ConfirmedUsers.Count();
+            int count = blank.User?.ConfirmedUsers != null ? blank.User.ConfirmedUsers.Count() : 0;
             for (int i = 0, coordinates = 250; i < count; i++, coordinates += 20)
             {
                 if (blank.User.ConfirmedUsers.ElementAt(i).isCityAdmin)
@@ -147,13 +147,13 @@ namespace EPlast.BLL
             SetText(gfx, "Дата рішення Крайового органу про прийняття в дійсні члени", XFontStyle.Regular, 50, 680);
             SetLine(gfx, 350, 690, 500, 690);
             SetText(gfx, "Дата заприсяження, іменування", XFontStyle.Regular, 50, 700);
-            if (blank?.User?.UserMembershipDates?.FirstOrDefault().DateOath == DateTime.MinValue)
+            if (blank?.User?.UserMembershipDates?.FirstOrDefault()?.DateOath == DateTime.MinValue)
             {
                 SetText(gfx, $"Без присяги", XFontStyle.Italic, 260, 698);
             }
             else
             {
-                SetText(gfx, $"{blank?.User?.UserMembershipDates?.FirstOrDefault().DateOath.ToString("dd.MM.yyyy")}", XFontStyle.Italic, 260, 698);
+                SetText(gfx, $"{blank?.User?.UserMembershipDates?.FirstOrDefault()?.DateOath.ToString("dd.MM.yyyy")}", XFontStyle.Italic, 260, 698);
             }
             SetLine(gfx, 230, 710, 500, 710);
 
@@ -187,13 +187,16 @@ namespace EPlast.BLL
             gfx.DrawLine(pen, x1, y1, x2, y2);
         }
 
-        private  void DrawQRCode(XGraphics gfx)
+        private void DrawQRCode(XGraphics gfx)
         {
-            var MyQRWithLogo = QRCodeWriter.CreateQrCode("https://eplast.westeurope.cloudapp.azure.com/userpage/main/"+$"{blank.User.Id}", 150);
-            MyQRWithLogo.ChangeBarCodeColor(System.Drawing.Color.ForestGreen);
-           var image = MyQRWithLogo.ToPngBinaryData();
-            XImage xImage = XImage.FromStream(() => new MemoryStream(image));
-            gfx.DrawImage(xImage, 480,730);
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode("https://eplast.westeurope.cloudapp.azure.com/userpage/main/" + $"{blank.User.Id}", QRCodeGenerator.ECCLevel.Q);
+            QRCode qrCode = new QRCode(qrCodeData);
+            Bitmap qrCodeImage = qrCode.GetGraphic(2);
+            using var ms = new MemoryStream();
+            qrCodeImage.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            XImage xImage = XImage.FromStream(() => new MemoryStream(ms.ToArray()));
+            gfx.DrawImage(xImage, 480, 730);
         }
 
     }

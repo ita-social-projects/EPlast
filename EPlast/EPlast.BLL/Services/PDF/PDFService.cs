@@ -96,7 +96,6 @@ namespace EPlast.BLL
                     include: source => source
                        .Include(c => c.Club));
 
-
             return new BlankModel
             {
                 User = user,
