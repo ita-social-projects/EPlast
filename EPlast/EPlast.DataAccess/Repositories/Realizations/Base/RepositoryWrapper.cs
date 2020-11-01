@@ -4,6 +4,7 @@ using EPlast.DataAccess.Repositories.Interfaces.Club;
 using EPlast.DataAccess.Repositories.Interfaces.Events;
 using EPlast.DataAccess.Repositories.Interfaces.Region;
 using EPlast.DataAccess.Repositories.Realizations.Blank;
+using EPlast.DataAccess.Repositories.Realizations.Club;
 using EPlast.DataAccess.Repositories.Realizations.EducatorsStaff;
 using EPlast.DataAccess.Repositories.Realizations.Events;
 using EPlast.DataAccess.Repositories.Realizations.Region;
@@ -73,7 +74,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IBlankBiographyDocumentsRepository _biographyDocumentsRepository;
         private IAchievementDocumentsRepository _achievementDocumentsRepository;
         private IExtractFromUPUDocumentsRepository _extractFromUPUDocumentsRepository;
-
+        private IClubAnnualReportsRepository _clubAnnualReports;
 
         public IEducatorsStaffTypesRepository KVTypes
         {
@@ -621,6 +622,18 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                     _annualReports = new AnnualReportsRepository(_dbContext);
                 }
                 return _annualReports;
+            }
+        }
+
+        public IClubAnnualReportsRepository ClubAnnualReports
+        {
+            get
+            {
+                if (_clubAnnualReports == null)
+                {
+                    _clubAnnualReports = new ClubAnnualReportRepository(_dbContext);
+                }
+                return _clubAnnualReports;
             }
         }
 
