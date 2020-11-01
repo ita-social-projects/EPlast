@@ -3,9 +3,7 @@ using System.Linq;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
 using IronBarCode;
-using System.Drawing;
 using System.IO;
-using System.ComponentModel;
 using System.Collections.Generic;
 
 namespace EPlast.BLL
@@ -110,41 +108,6 @@ namespace EPlast.BLL
             SetLine(gfx, 130, 445, 550, 445);
             SetText(gfx, $"{blank?.UserProfile?.Work?.PlaceOfwork}", XFontStyle.Italic, 150, 433);
             SetText(gfx, "Вишкіл виховників", XFontStyle.Regular, 50, 450);
-
-            List<string> listOfUPUandUPN = new List<string>()
-            { 
-                "Рада Орлиної Спеціалізації (провідників вишколів)",
-                "Рада Орлиного Вогню (впорядників)",
-                "Рада Орлиної Спеціалізації (провідників таборів)",
-                "Рада Орлиного Вогню (гніздових)",
-                "Рада Орлиного Вогню (булавних)",
-                "Крайовий Вишкіл Виховників УПЮ (КВВ УПЮ)",
-                "Крайовий Вишкіл Звязкових",
-                "Крайовий Вишкіл Провідників Вишколів"
-            };
-
-            List<string> listOfUSPandUPS = new List<string>()
-            {
-                "Крайовий Вишкіл Дійсного Членства (КВДЧ)",
-                "Інструкторський Вишкіл (УСП)",
-            };
-
-            var participants = blank.User.Participants;
-            foreach (var participant in participants)
-            {
-                if (participant.ParticipantStatusId==1 &&
-                    participant.Event.EventDateEnd < DateTime.Now &&
-                  listOfUPUandUPN.Contains(participant.Event.EventCategory.EventCategoryName))
-                {
-                    SetText(gfx, $"{participant.Event.EventName}, {participant.Event.EventDateEnd}", XFontStyle.Regular, 180, 448);
-                }
-                if (participant.ParticipantStatusId == 1 &&
-                    participant.Event.EventDateEnd < DateTime.Now &&
-                  listOfUSPandUPS.Contains(participant.Event.EventCategory.EventCategoryName))
-                {
-                    SetText(gfx, $"{participant.Event.EventName}", XFontStyle.Regular, 180, 448);
-                }
-            }
             SetText(gfx, $"УПЮ/УПН", XFontStyle.Italic, 50, 460);
             SetLine(gfx, 165, 460, 550, 460);
             SetText(gfx, "Інші вишколи УСП/УПС", XFontStyle.Regular, 50, 475);
@@ -160,7 +123,6 @@ namespace EPlast.BLL
             SetText(gfx, "Поручення куреня УСП /", XFontStyle.Regular, 50, 540);
             SetText(gfx, "УПС (назва куреня і підпис", XFontStyle.Regular, 50, 550);
             SetText(gfx, "його представника)", XFontStyle.Regular, 50, 560);
-            SetText(gfx,$"", XFontStyle.Regular, 50, 560);
             SetLine(gfx, 165, 555, 550, 555);
             SetLine(gfx, 50, 580, 390, 580);
             SetText(gfx, "Дата", XFontStyle.Regular, 400, 570);
@@ -197,7 +159,7 @@ namespace EPlast.BLL
 
             SetDashLine(gfx, 40, 725, 560, 725);
 
-            SetText(gfx, $"Номер користувача в системі - {blank.UserProfile.ID}", XFontStyle.Regular, 50, 735);
+            SetText(gfx, $"Номер користувача в системі - {blank?.UserProfile?.ID}", XFontStyle.Regular, 50, 735);
 
             DrawQRCode(gfx);
         }
@@ -227,7 +189,7 @@ namespace EPlast.BLL
 
         private  void DrawQRCode(XGraphics gfx)
         {
-            var MyQRWithLogo = QRCodeWriter.CreateQrCodeWithLogo("https://eplast.westeurope.cloudapp.azure.com/userpage/main/"+$"{blank.User.Id}","Eplast_log.png", 150);
+            var MyQRWithLogo = QRCodeWriter.CreateQrCode("https://eplast.westeurope.cloudapp.azure.com/userpage/main/"+$"{blank.User.Id}", 150);
             MyQRWithLogo.ChangeBarCodeColor(System.Drawing.Color.ForestGreen);
            var image = MyQRWithLogo.ToPngBinaryData();
             XImage xImage = XImage.FromStream(() => new MemoryStream(image));
