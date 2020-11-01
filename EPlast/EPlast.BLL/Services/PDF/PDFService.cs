@@ -78,7 +78,10 @@ namespace EPlast.BLL
                     .Include(c => c.ConfirmedUsers)
                         .ThenInclude(c => c.Approver)
                             .ThenInclude(c => c.User)
-                    .Include(c => c.UserMembershipDates));
+                    .Include(c => c.UserMembershipDates)
+                    .Include(c=>c.Participants)
+                    .ThenInclude(c=>c.Event)
+                    .ThenInclude(c=>c.EventCategory));
             var userProfile = await _repoWrapper.UserProfile
                 .GetFirstOrDefaultAsync(predicate: c => c.UserID == userId,
                     include: source => source
@@ -92,6 +95,8 @@ namespace EPlast.BLL
                 .GetFirstOrDefaultAsync(predicate: c => c.UserId == userId,
                     include: source => source
                        .Include(c => c.Club));
+
+
             return new BlankModel
             {
                 User = user,
