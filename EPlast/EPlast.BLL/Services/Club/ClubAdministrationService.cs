@@ -46,6 +46,7 @@ namespace EPlast.BLL.Services.Club
         public async Task<ClubAdministrationDTO> AddAdministratorAsync(ClubAdministrationDTO adminDTO)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
+
             var admin = new ClubAdministration()
             {
                 StartDate = adminDTO.StartDate ?? DateTime.Now,
@@ -57,7 +58,16 @@ namespace EPlast.BLL.Services.Club
 
             var user = await _userManager.FindByIdAsync(adminDTO.UserId);
             var role = adminType.AdminTypeName == "Голова Куреня" ? "Голова Куреня" : "Діловод Куреня";
+            try
+            {
+
             await _userManager.AddToRoleAsync(user, role);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                throw e;
+            }
 
             if (role == "Голова Куреня")
             {
@@ -102,7 +112,7 @@ namespace EPlast.BLL.Services.Club
 
             var adminType = await _adminTypeService.GetAdminTypeByIdAsync(admin.AdminTypeId);
             var user = await _userManager.FindByIdAsync(admin.UserId);
-            var role = adminType.AdminTypeName == "Голова Куреня" ? "Голова Куреня³" : "Діловод Куреня³";
+            var role = adminType.AdminTypeName == "Голова Куреня" ? "Голова Куреня" : "Діловод Куреня";
             await _userManager.RemoveFromRoleAsync(user, role);
 
             _repositoryWrapper.ClubAdministration.Update(admin);
@@ -148,9 +158,22 @@ namespace EPlast.BLL.Services.Club
                  include:
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(c => c.Club)
                  );
+            var res = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == UserId && a.Status == false,
+                 include:
+                 source => source.Include(c => c.User).Include(c => c.AdminType).Include(c => c.Club)
+                 );
+            var resAdmins = _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationStatusDTO>>(res);
             return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationDTO>>(admins);
         }
-           
+
+        public async Task<IEnumerable<ClubAdministrationStatusDTO>> GetAdministrationStatuses(string UserId)
+        {
+            var clubAdmins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == UserId && a.Status == false,
+                             include:
+                             source => source.Include(c => c.User).Include(c => c.AdminType).Include(c => c.Club)
+                             );
+            return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationStatusDTO>>(clubAdmins);
+        }
 
         public async Task CheckClubHasHead(int clubId)
         {
