@@ -21,7 +21,7 @@ namespace EPlast.BLL
             _decisionBlobStorage = decisionBlobStorage;
         }
 
-        public async Task<string> BlankCreatePDFAsync(string userId)
+        public async Task<byte[]> BlankCreatePDFAsync(string userId)
         {
             try
             {
@@ -32,10 +32,7 @@ namespace EPlast.BLL
                 };
                 var blank = await GetBlankDataAsync(userId);
                 IPdfCreator creator = new PdfCreator(new BlankDocument(blank, pdfSettings));
-                var base64 = await Task.Run(() => creator.GetPDFBytes());
-                var azureBase64 = Convert.ToBase64String(base64);
-                var result = $"data:application/pdf;base64," + azureBase64;
-                return result;
+                return await Task.Run(() => creator.GetPDFBytes());
             }
             catch (Exception e)
             {
