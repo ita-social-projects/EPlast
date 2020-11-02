@@ -25,12 +25,12 @@ namespace EPlast.BLL
         {
             try
             {
+                var blank = await GetBlankDataAsync(userId);
                 IPdfSettings pdfSettings = new PdfSettings
                 {
-                    Title = "Бланк",
+                    Title = $"{blank.User.FirstName} {blank.User.LastName}",
                     ImagePath = "Blank"
                 };
-                var blank = await GetBlankDataAsync(userId);
                 IPdfCreator creator = new PdfCreator(new BlankDocument(blank, pdfSettings));
                 return await Task.Run(() => creator.GetPDFBytes());
             }
