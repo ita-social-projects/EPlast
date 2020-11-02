@@ -1,4 +1,5 @@
 ﻿using EPlast.BLL.DTO.City;
+using EPlast.DataAccess.Entities;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -44,5 +45,11 @@ namespace EPlast.BLL.Interfaces.City
         /// </summary>
         /// <param name="followerId">The id of the follower</param>
         Task RemoveFollowerAsync(int followerId);
+
+        /// <summary>
+        /// Remove a specific follower from the city
+        /// </summary>
+        /// <param name="member">Member of the city</param>
+        Task RemoveMemberAsync(CityMembers member);
     }
 }
