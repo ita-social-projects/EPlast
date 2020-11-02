@@ -83,7 +83,6 @@ namespace EPlast.BLL.Services.Notifications
                 if (removedSocket != null)
                 {
                     userMap[userId].Remove(removedSocket);
-
                     await socket.CloseAsync(closeStatus: WebSocketCloseStatus.NormalClosure,
                                             statusDescription: "Closed by the WebSocketManager",
                                             cancellationToken: CancellationToken.None);
@@ -127,11 +126,11 @@ namespace EPlast.BLL.Services.Notifications
                     if (c.WebSocket.State == WebSocketState.Open)
                     {
                         return c.WebSocket.SendAsync(buffer: new ArraySegment<byte>(array: Encoding.ASCII.GetBytes(message),
-                                                                              offset: 0,
-                                                                              count: message.Length),
-                                                       messageType: WebSocketMessageType.Text,
-                                                       endOfMessage: true,
-                                                       cancellationToken: CancellationToken.None);
+                                                                                    offset: 0,
+                                                                                    count: message.Length),
+                                                    messageType: WebSocketMessageType.Text,
+                                                    endOfMessage: true,
+                                                    cancellationToken: CancellationToken.None);
                     }
                     else
                     {
