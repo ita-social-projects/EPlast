@@ -59,7 +59,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = "Пластун,Admin")]
         public async Task<IActionResult> EventCreate([FromBody] EventCreateDTO createDTO)
         {
-            await _eventUserManager.CreateEventAsync(createDTO);
+            createDTO.Event.ID = await _eventUserManager.CreateEventAsync(createDTO);
 
             return Created(nameof(GetEventUserByUserId), createDTO);
         }
