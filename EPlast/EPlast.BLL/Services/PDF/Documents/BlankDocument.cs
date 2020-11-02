@@ -167,7 +167,7 @@ namespace EPlast.BLL
 
             XStringFormat format = new XStringFormat();
             XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.Unicode);
-            XFont font = new XFont(facename, 10, style, options);
+            XFont font = new XFont(facename, 8, style, options);
 
             gfx.DrawString(text, font, XBrushes.Black, x, y, format);
         }
