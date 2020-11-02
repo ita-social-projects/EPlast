@@ -542,7 +542,7 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<int>("ClubEnteredMembersCount")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ClubID")
+                    b.Property<int>("ClubId")
                         .HasColumnType("int");
 
                     b.Property<int>("ClubLeftMembersCount")
@@ -570,7 +570,7 @@ namespace EPlast.DataAccess.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("ClubID");
+                    b.HasIndex("ClubId");
 
                     b.ToTable("ClubAnnualReports");
                 });
@@ -2037,7 +2037,9 @@ namespace EPlast.DataAccess.Migrations
                 {
                     b.HasOne("EPlast.DataAccess.Entities.Club", "Club")
                         .WithMany()
-                        .HasForeignKey("ClubID");
+                        .HasForeignKey("ClubId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.ClubDocuments", b =>

@@ -37,8 +37,16 @@ namespace EPlast.BLL.Services.Club
             var clubAnnualReport = await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == id,
                     include: source => source
-                        .Include(a => a.Club));
-            return await _clubAccessService.HasAccessAsync(claimsPrincipal, clubAnnualReport.Club.ID) ? _mapper.Map<ClubAnnualReport, ClubAnnualReportDTO>(clubAnnualReport)
+                        .Include(a => a.Club)
+                            .ThenInclude(c => c.ClubAdministration)
+                                .ThenInclude(cb=>cb.AdminType)
+                        .Include(ad=>ad.Club)
+                            .ThenInclude(ac=>ac.ClubAdministration)
+                                .ThenInclude(ar=>ar.User)
+                        .Include(ca => ca.Club)
+                            .ThenInclude(cm => cm.ClubMembers)
+                                .ThenInclude(mc=>mc.User));
+            return await _clubAccessService.HasAccessAsync(claimsPrincipal, clubAnnualReport.ClubId) ? _mapper.Map<ClubAnnualReport, ClubAnnualReportDTO>(clubAnnualReport)
                 : throw new UnauthorizedAccessException();
         }
 
@@ -47,16 +55,19 @@ namespace EPlast.BLL.Services.Club
         {
             var annualReports = await _repositoryWrapper.ClubAnnualReports.GetAllAsync(
                     include: source => source
-                        .Include(ar => ar.Club));
-            var citiesDTO = await _clubAccessService.GetClubsAsync(claimsPrincipal);
-            var filteredAnnualReports = annualReports.Where(ar => citiesDTO.Any(c => c.ID == ar.Club.ID));
+                        .Include(ar => ar.Club)
+                            .ThenInclude(c=>c.ClubAdministration)
+                        .Include(ca=>ca.Club)
+                            .ThenInclude(cm=>cm.ClubMembers));
+            //var clubsDTO = await _clubAccessService.GetClubsAsync(claimsPrincipal);
+            //var filteredAnnualReports = annualReports.Where(ar => clubsDTO.Any(c => c.ID == ar.ClubId));
             return _mapper.Map<IEnumerable<ClubAnnualReport>, IEnumerable<ClubAnnualReportDTO>>(annualReports);
         }
 
         public async Task CreateAsync(ClaimsPrincipal claimsPrincipal, ClubAnnualReportDTO clubAnnualReportDTO)
         {
             var club = await _repositoryWrapper.Club.GetFirstOrDefaultAsync(
-                predicate: a => a.ID == clubAnnualReportDTO.Club.ID);
+                predicate: a => a.ID == clubAnnualReportDTO.ClubId);
             if (await CheckCreated(club.ID))
             {
                 throw new InvalidOperationException();
@@ -66,7 +77,7 @@ namespace EPlast.BLL.Services.Club
                 throw new UnauthorizedAccessException();
             }
             var clubAnnualReport = _mapper.Map<ClubAnnualReportDTO, ClubAnnualReport>(clubAnnualReportDTO);
-            clubAnnualReport.Date = DateTime.Now;
+
             await _repositoryWrapper.ClubAnnualReports.CreateAsync(clubAnnualReport);
             await _repositoryWrapper.SaveAsync();
 
