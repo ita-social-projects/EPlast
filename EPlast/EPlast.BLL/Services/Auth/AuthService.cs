@@ -8,9 +8,14 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
+using EPlast.BLL.Models;
+using Newtonsoft.Json;
+using NLog.Fluent;
 
 namespace EPlast.BLL.Services
 {
@@ -242,6 +247,60 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
+        public async Task<UserDTO> GetGoogleUserAsync(string providerToken)
+        {
+            string GoogleApiTokenInfoUrl = "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token={0}";
+            var httpClient = new HttpClient();
+            var requestUri = new Uri(string.Format(GoogleApiTokenInfoUrl, providerToken));
+
+            HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(requestUri);
+
+            if (httpResponseMessage.StatusCode != HttpStatusCode.OK)
+            {
+                throw new Exception();
+            }
+
+            var response = await httpResponseMessage.Content.ReadAsStringAsync();
+            var googleApiTokenInfo = JsonConvert.DeserializeObject<GoogleApiTokenInfo>(response);
+            var user = await _userManager.FindByEmailAsync(googleApiTokenInfo.Email);
+            if (user == null)
+            {
+                user = new User
+                {
+                    UserName = googleApiTokenInfo.Email,
+                    Email = googleApiTokenInfo.Email,
+                    FirstName = googleApiTokenInfo.GivenName,
+                    LastName = googleApiTokenInfo.FamilyName,
+                    SocialNetworking = true,
+                    ImagePath = "default_user_image.png",
+                    EmailConfirmed = true,
+                    RegistredOn = DateTime.Now,
+                    UserProfile = new UserProfile(),
+                };
+               var createResult = await _userManager.CreateAsync(user);
+               if(createResult.Succeeded)
+                    await _emailConfirmation.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
+                    "Ви зареєструвались в системі EPlast використовуючи свій Google-акаунт ", "Адміністрація сайту EPlast");
+               else 
+                   throw new Exception("Failed creation of user");
+
+            }
+            await GoogleSignInAsync(user);
+            return _mapper.Map<User, UserDTO>(user);
+
+        }
+
+        ///<inheritdoc/>
+        private async Task GoogleSignInAsync(User user)
+        {
+            var loginInfo = new UserLoginInfo(user.Email, Guid.NewGuid().ToString(), user.UserName);
+            await _userManager.AddToRoleAsync(user, "Прихильник");
+            await _userManager.AddLoginAsync(user, loginInfo);
+            await _signInManager.SignInAsync(user, isPersistent: false);
+           
+        }
+
+        ///<inheritdoc/>
         public async Task GoogleAuthentication(string email, ExternalLoginInfo externalLoginInfo)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -261,13 +320,12 @@ namespace EPlast.BLL.Services
                 };
                 await _userManager.CreateAsync(user);
                 await _emailConfirmation.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
-            "Ви зареєструвались в системі EPlast використовуючи свій Google-акаунт ", "Адміністрація сайту EPlast");
+                    "Ви зареєструвались в системі EPlast використовуючи свій Google-акаунт ", "Адміністрація сайту EPlast");
             }
             await _userManager.AddToRoleAsync(user, "Прихильник");
             await _userManager.AddLoginAsync(user, externalLoginInfo);
             await _signInManager.SignInAsync(user, isPersistent: false);
         }
-
         ///<inheritdoc/>
         public async Task FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo)
         {
