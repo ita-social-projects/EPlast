@@ -29,9 +29,7 @@ namespace EPlast.WebApi.CustomMiddlewares
             }
 
             var socket = await context.WebSockets.AcceptWebSocketAsync();
-
             var userId = context.Request.Query["userId"];
-
             var id = _webSocketHandler.OnConnected(userId, socket);
 
             await Receive(socket, async (result, buffer) =>
@@ -52,12 +50,10 @@ namespace EPlast.WebApi.CustomMiddlewares
         private async Task Receive(WebSocket socket, Action<WebSocketReceiveResult, byte[]> handleMessage)
         {
             var buffer = new byte[1024 * 4];
-
             while (socket.State == WebSocketState.Open)
             {
                 var result = await socket.ReceiveAsync(buffer: new ArraySegment<byte>(buffer),
                                                         cancellationToken: CancellationToken.None);
-
                 handleMessage(result, buffer);
             }
         }

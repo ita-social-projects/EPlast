@@ -41,7 +41,6 @@ namespace EPlast.WebApi.WebSocketHandlers
                                          .Select(c => SendMessageAsync(pair.Key, message)));
                 
             }
-
             await Task.WhenAll(tasks);
         }
 
