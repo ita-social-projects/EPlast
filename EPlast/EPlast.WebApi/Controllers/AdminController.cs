@@ -149,7 +149,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">User id is null</response>
         [HttpGet("confirmDelete/{userId}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [ActionName("Delete")]
         public ActionResult ConfirmDelete(string userId)
         {
@@ -167,7 +167,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="userId">The id of the user, which must be deleted</param>
         /// <response code="200">Successful operation</response>
         /// <response code="404">User id is null</response>
-        //  [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("deleteUser/{userId}")]
         public async Task<IActionResult> Delete(string userId)
         {
