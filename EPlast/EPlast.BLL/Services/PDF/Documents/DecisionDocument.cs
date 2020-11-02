@@ -17,6 +17,8 @@ namespace EPlast.BLL
         private const int BottomRectHeightWithStock = 70;
         private const int BottomRectHeight = 50;
         private const string FontName = "Times New Roman";
+        private const int BaseFontSize = 14;
+        private const int TextFontSize = 12;
 
         public DecisionDocument(Decesion decision) : this(decision, new PdfSettings())
         {
@@ -36,20 +38,22 @@ namespace EPlast.BLL
         {
             int rectHeight = 200;
             int middleRectY = 300;
+            int topRectY = 230;
+            int topRectHeight = 300;
             XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.Unicode);
-            XFont font = new XFont(FontName, 14, XFontStyle.Regular, options);
+            XFont font = new XFont(FontName, BaseFontSize, XFontStyle.Regular, options);
 
             XStringFormat format = new XStringFormat();
 
 
-            XRect topRect = new XRect(LeftIndent, 230, TextWidth, 300);
+            XRect topRect = new XRect(LeftIndent, topRectY, TextWidth, topRectHeight);
             gfx.DrawRectangle(XBrushes.White, topRect);
 
             format.Alignment = XStringAlignment.Far;
 
             gfx.DrawString($"{_decision.Name} від {_decision.Date:dd/MM/yyyy}", font, XBrushes.Black, topRect, format);
 
-            font = new XFont(FontName, 12, XFontStyle.Regular, options);
+            font = new XFont(FontName, TextFontSize, XFontStyle.Regular, options);
 
             TextFormatter tfx = new TextFormatter(gfx);
 
@@ -132,7 +136,7 @@ namespace EPlast.BLL
             XRect bottomRect = new XRect(LeftIndent, 10 + middleRect.Y + middleRect.Height, TextWidth, BottomRectHeight);
             format.Alignment = XStringAlignment.Far;
             format.LineAlignment = XLineAlignment.Far;
-            font = new XFont(font.Name, 14, XFontStyle.Regular, new XPdfFontOptions(PdfFontEncoding.Unicode));
+            font = new XFont(font.Name, BaseFontSize, XFontStyle.Regular, new XPdfFontOptions(PdfFontEncoding.Unicode));
             gfx.DrawString($"Поточний статус: {_decision.DecesionStatusType.GetDescription()}", font, XBrushes.Black,
                 bottomRect, format);
         }
