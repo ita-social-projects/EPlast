@@ -102,7 +102,7 @@ namespace EPlast.WebApi.Controllers
             var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
             ClubProfile.CanEdit = await _ClubAccessService.HasAccessAsync(User, ClubId);
 
-            return Ok(new { ClubProfile.Members, ClubProfile.CanEdit });
+            return Ok(new { ClubProfile.Members, ClubProfile.CanEdit, ClubProfile.Name });
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace EPlast.WebApi.Controllers
             var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
             ClubProfile.CanEdit = await _ClubAccessService.HasAccessAsync(User, ClubId);
 
-            return Ok(new { ClubProfile.Followers, ClubProfile.CanEdit });
+            return Ok(new { ClubProfile.Followers, ClubProfile.CanEdit, ClubProfile.Name});
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace EPlast.WebApi.Controllers
             var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
             ClubProfile.CanEdit = await _ClubAccessService.HasAccessAsync(User, ClubId);
 
-            return Ok(new { ClubProfile.Administration, ClubProfile.Head, ClubProfile.CanEdit });
+            return Ok(new { ClubProfile.Administration, ClubProfile.Head, ClubProfile.CanEdit, ClubProfile.Name });
         }
 
         /// <summary>
