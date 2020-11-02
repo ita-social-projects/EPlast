@@ -104,5 +104,11 @@ namespace EPlast.BLL.Services.City
             _repositoryWrapper.CityMembers.Delete(cityMember);
             await _repositoryWrapper.SaveAsync();
         }
+
+        public async Task RemoveMemberAsync(CityMembers member)
+        {
+            _repositoryWrapper.CityMembers.Delete(member);
+            await _repositoryWrapper.SaveAsync();
+        }
     }
 }
