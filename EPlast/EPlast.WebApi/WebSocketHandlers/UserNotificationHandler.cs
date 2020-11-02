@@ -2,9 +2,9 @@
 using EPlast.BLL.Interfaces.Notifications;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System;
 using System.Collections.Generic;
 using System.Net.WebSockets;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace EPlast.WebApi.WebSocketHandlers
@@ -42,9 +42,11 @@ namespace EPlast.WebApi.WebSocketHandlers
             return WebSocketConnectionManager.OnlineUsers;
         }
 
-        public override Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer)
+        public override async Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer)
         {
-            throw new NotImplementedException();
+            var userId = WebSocketConnectionManager.GetUserId(socket);
+            var message = $"{userId} send: {Encoding.UTF8.GetString(buffer, 0, result.Count)}";
+            await SendMessageAsync(userId, message);
         }
     }
 }

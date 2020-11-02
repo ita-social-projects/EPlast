@@ -32,7 +32,12 @@ namespace EPlast.BLL.Services.Notifications
 
         public HashSet<ConnectionDTO> GetConnectionsByUserId(string userId)
         {
-            return userMap.FirstOrDefault(p => p.Key == userId).Value;
+            HashSet<ConnectionDTO> connections;
+            if (userMap.TryGetValue(userId, out connections))
+            {
+                return connections;
+            }
+            return new HashSet<ConnectionDTO>();
         }
 
         public ConcurrentDictionary<string, HashSet<ConnectionDTO>> GetAll()
@@ -74,25 +79,29 @@ namespace EPlast.BLL.Services.Notifications
             try
             {
                 WebSocket socket = GetSocketByConnectionId(connectionId);
+                var removedSocket = userMap[userId].FirstOrDefault(e => e.ConnectionId == connectionId);
+                if (removedSocket != null)
+                {
+                    userMap[userId].Remove(removedSocket);
 
-                userMap[userId].Remove(userMap[userId].FirstOrDefault(e => e.ConnectionId == connectionId));
-
-                await socket.CloseAsync(closeStatus: WebSocketCloseStatus.NormalClosure,
-                                        statusDescription: "Closed by the WebSocketManager",
-                                        cancellationToken: CancellationToken.None);
-
-                return true;
+                    await socket.CloseAsync(closeStatus: WebSocketCloseStatus.NormalClosure,
+                                            statusDescription: "Closed by the WebSocketManager",
+                                            cancellationToken: CancellationToken.None);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             catch (Exception)
             {
                 return false;
             }
-
         }
 
         public void RemoveAllUserIdSockets(string userId)
         {
-
             if (userMap.TryRemove(userId, out HashSet<ConnectionDTO> connections))
             {
                 var tasks = connections.Select(c =>
@@ -102,7 +111,6 @@ namespace EPlast.BLL.Services.Notifications
                 );
                 Task.WhenAll(tasks);
             }
-
         }
 
         private string CreateConnectionId()
@@ -112,10 +120,8 @@ namespace EPlast.BLL.Services.Notifications
 
         public async Task SendMessageAsync(string userId, string message)
         {
-
             if (userMap.ContainsKey(userId))
             {
-
                 var tasks = userMap[userId].Select(c =>
                 {
                     if (c.WebSocket.State == WebSocketState.Open)
@@ -132,9 +138,7 @@ namespace EPlast.BLL.Services.Notifications
                         return null;
                     }
                 });
-
                 await Task.WhenAll(tasks.Where(t => t != null));
-
             }
 
         }

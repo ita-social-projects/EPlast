@@ -41,13 +41,11 @@ namespace EPlast.WebApi.CustomMiddlewares
                     await _webSocketHandler.ReceiveAsync(socket, result, buffer);
                     return;
                 }
-
                 else if (result.MessageType == WebSocketMessageType.Close)
                 {
                     await _webSocketHandler.OnDisconnected(userId, id);
                     return;
                 }
-
             });
         }
 
