@@ -104,5 +104,11 @@ namespace EPlast.BLL.Services.Club
             _repositoryWrapper.ClubMembers.Delete(ClubMember);
             await _repositoryWrapper.SaveAsync();
         }
+
+        public async Task RemoveMemberAsync(ClubMembers member)
+        {
+            _repositoryWrapper.ClubMembers.Delete(member);
+            await _repositoryWrapper.SaveAsync();
+        }
     }
 }
