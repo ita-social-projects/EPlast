@@ -69,10 +69,7 @@ namespace EPlast.BLL.Services.Club
                 throw e;
             }
 
-            if (role == "Голова Куреня")
-            {
-                await CheckClubHasHead(adminDTO.ClubId);
-            }
+            await CheckClubHasAdmin(adminDTO.ClubId, adminType.AdminTypeName);
 
             await _repositoryWrapper.ClubAdministration.CreateAsync(admin);
             await _repositoryWrapper.SaveAsync();
@@ -175,12 +172,12 @@ namespace EPlast.BLL.Services.Club
             return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationStatusDTO>>(clubAdmins);
         }
 
-        public async Task CheckClubHasHead(int clubId)
+        public async Task CheckClubHasAdmin(int clubId, string adminTypeName)
         {
-            var adminType = await _adminTypeService.GetAdminTypeByNameAsync("Голова Куреня");
+            var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminTypeName);
             var admin = await _repositoryWrapper.ClubAdministration.
                 GetFirstOrDefaultAsync(a => a.AdminTypeId == adminType.ID
-                    && (DateTime.Now < a.EndDate || a.EndDate == null));
+                    && (DateTime.Now < a.EndDate || a.EndDate == null) && a.ClubId == clubId);
 
             if (admin != null)
             {
