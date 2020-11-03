@@ -109,6 +109,23 @@ namespace EPlast.BLL
             SetText(gfx, $"{blank?.UserProfile?.Work?.PlaceOfwork}", XFontStyle.Italic, 150, 433);
             SetText(gfx, "Вишкіл виховників", XFontStyle.Regular, 50, 450);
             SetText(gfx, $"УПЮ/УПН", XFontStyle.Italic, 50, 460);
+            var participants = blank.User.Participants;
+            foreach (var participant in participants)
+            {
+                if (participant.Event.EventDateEnd < DateTime.Now &&
+                    participant.ParticipantStatusId == 1 &&
+                    (participant.Event.EventCategory.EventSection.EventSectionName=="УПЮ"||
+                    participant.Event.EventCategory.EventSection.EventSectionName == "УПН"))
+                {
+                    SetText(gfx, $"{participant.Event.EventName}", XFontStyle.Regular, 190, 450);
+                }else if (participant.Event.EventDateEnd < DateTime.Now &&
+                    participant.ParticipantStatusId == 1 &&
+                    participant.Event.EventCategory.EventSection.EventSectionName == "УСП/УПС")
+                {
+                    SetText(gfx, $"{participant.Event.EventName}", XFontStyle.Regular, 190, 475);
+                }
+            }
+
             SetLine(gfx, 165, 460, 550, 460);
             SetText(gfx, "Інші вишколи УСП/УПС", XFontStyle.Regular, 50, 475);
             SetText(gfx, "(назва, тип, число, дати)", XFontStyle.Regular, 50, 485);

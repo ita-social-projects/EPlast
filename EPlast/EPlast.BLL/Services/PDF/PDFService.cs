@@ -78,7 +78,8 @@ namespace EPlast.BLL
                     .Include(c => c.UserMembershipDates)
                     .Include(c=>c.Participants)
                     .ThenInclude(c=>c.Event)
-                    .ThenInclude(c=>c.EventCategory));
+                    .ThenInclude(c=>c.EventCategory)
+                    .ThenInclude(c=>c.EventSection));
             var userProfile = await _repoWrapper.UserProfile
                 .GetFirstOrDefaultAsync(predicate: c => c.UserID == userId,
                     include: source => source
