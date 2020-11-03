@@ -270,7 +270,7 @@ namespace EPlast.BLL.Services
                     UserName = googleApiTokenInfo.Email,
                     Email = googleApiTokenInfo.Email,
                     FirstName = googleApiTokenInfo.GivenName,
-                    LastName = googleApiTokenInfo.FamilyName,
+                    LastName = googleApiTokenInfo.FamilyName ?? googleApiTokenInfo.GivenName,
                     SocialNetworking = true,
                     ImagePath = "default_user_image.png",
                     EmailConfirmed = true,
@@ -279,25 +279,18 @@ namespace EPlast.BLL.Services
                 };
                var createResult = await _userManager.CreateAsync(user);
                if(createResult.Succeeded)
-                    await _emailConfirmation.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
-                    "Ви зареєструвались в системі EPlast використовуючи свій Google-акаунт ", "Адміністрація сайту EPlast");
+               {
+                   await _emailConfirmation.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
+                    "Ви зареєструвались в системі EPlast використовуючи свій Google-акаунт. ", "Адміністрація сайту EPlast");
+                   await _userManager.AddToRoleAsync(user, "Прихильник");
+               }
                else 
                    throw new Exception("Failed creation of user");
 
             }
-            await GoogleSignInAsync(user);
+            await _signInManager.SignInAsync(user, isPersistent: false);
             return _mapper.Map<User, UserDTO>(user);
 
-        }
-
-        ///<inheritdoc/>
-        private async Task GoogleSignInAsync(User user)
-        {
-            var loginInfo = new UserLoginInfo(user.Email, Guid.NewGuid().ToString(), user.UserName);
-            await _userManager.AddToRoleAsync(user, "Прихильник");
-            await _userManager.AddLoginAsync(user, loginInfo);
-            await _signInManager.SignInAsync(user, isPersistent: false);
-           
         }
 
         ///<inheritdoc/>
