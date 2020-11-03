@@ -5,6 +5,7 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Math.EC.Rfc7748;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,15 +60,24 @@ namespace EPlast.BLL.Services.Club
                             .ThenInclude(c=>c.ClubAdministration)
                         .Include(ca=>ca.Club)
                             .ThenInclude(cm=>cm.ClubMembers));
-            //var clubsDTO = await _clubAccessService.GetClubsAsync(claimsPrincipal);
-            //var filteredAnnualReports = annualReports.Where(ar => clubsDTO.Any(c => c.ID == ar.ClubId));
             return _mapper.Map<IEnumerable<ClubAnnualReport>, IEnumerable<ClubAnnualReportDTO>>(annualReports);
         }
 
         public async Task CreateAsync(ClaimsPrincipal claimsPrincipal, ClubAnnualReportDTO clubAnnualReportDTO)
         {
             var club = await _repositoryWrapper.Club.GetFirstOrDefaultAsync(
-                predicate: a => a.ID == clubAnnualReportDTO.ClubId);
+                predicate: a => a.ID == clubAnnualReportDTO.ClubId,
+                include:source=>source
+                .Include(a=>a.ClubMembers)
+                    .ThenInclude(ac=>ac.User)
+                        .ThenInclude(af=>af.UserPlastDegrees)
+                            .ThenInclude(ad=>ad.PlastDegree)
+                .Include(a=>a.ClubAdministration)
+                    .ThenInclude(ap=>ap.User)
+                        .ThenInclude(af => af.UserPlastDegrees)
+                            .ThenInclude(ad => ad.PlastDegree)
+
+                );
             if (await CheckCreated(club.ID))
             {
                 throw new InvalidOperationException();
@@ -75,6 +85,22 @@ namespace EPlast.BLL.Services.Club
             if (!await _clubAccessService.HasAccessAsync(claimsPrincipal, club.ID))
             {
                 throw new UnauthorizedAccessException();
+            }
+            foreach (var item in club.ClubMembers)
+            {
+                var cityMember = await _repositoryWrapper.CityMembers.GetFirstOrDefaultAsync(predicate: a => a.UserId == item.UserId,include:source=>source.Include(ar=>ar.City));
+                clubAnnualReportDTO.ClubMembersSummary += $"{item.User.UserPlastDegrees.FirstOrDefault(x=>x.UserId==item.User.Id).PlastDegree.Name}, " +
+                                                            $"{item.User.FirstName} {item.User.LastName}," +
+                                                            $"{item.IsApproved},"+
+                                                            $"{cityMember.City.Name};";
+            }
+            foreach(var item in club.ClubAdministration)
+            {
+
+                clubAnnualReportDTO.ClubAdminContacts += $"{item.User.UserPlastDegrees.FirstOrDefault(x=>x.UserId==item.User.Id).PlastDegree.Name}," +
+                                                            $"{item.User.FirstName} {item.User.LastName}," +
+                                                            $"{item.User.Email}," +
+                                                            $"{item.User.PhoneNumber}";
             }
             var clubAnnualReport = _mapper.Map<ClubAnnualReportDTO, ClubAnnualReport>(clubAnnualReportDTO);
 

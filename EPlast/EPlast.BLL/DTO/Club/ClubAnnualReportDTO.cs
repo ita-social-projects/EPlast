@@ -42,6 +42,11 @@ namespace EPlast.BLL.DTO.Club
 
         public ClubDTO Club { get; set; }
 
+        public string ClubMembersSummary { get; set; }
+        public string ClubAdminContacts { get; set; }
+
+
+
         public DateTime Date { get; set; }
     }
 }
