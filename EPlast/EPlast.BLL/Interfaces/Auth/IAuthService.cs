@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Interfaces
 {
@@ -188,6 +189,14 @@ namespace EPlast.BLL.Interfaces
         Task SendEmailReseting(string confirmationLink, ForgotPasswordDto forgotPasswordDto);
 
         /// <summary>
+        /// Sign in using Facebook
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="externalLoginInfo"></param>
+        /// <returns>Result of Facebook authentication</returns>
+        Task FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo);
+
+        /// <summary>
         /// Sign in using Google
         /// </summary>
         /// <param name="email"></param>
@@ -196,11 +205,12 @@ namespace EPlast.BLL.Interfaces
         Task GoogleAuthentication(string email, ExternalLoginInfo externalLoginInfo);
 
         /// <summary>
-        /// Sign in using Facebook
+        ///  Validates google token and gets user information
         /// </summary>
-        /// <param name="email"></param>
-        /// <param name="externalLoginInfo"></param>
-        /// <returns>Result of Facebook authentication</returns>
-        Task FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo);
+        /// <param name="providerToken"></param>
+        /// <returns>Returns Google user information</returns>
+        /// 
+        Task<UserDTO> GetGoogleUserAsync(string providerToken);
+       
     }
 }
