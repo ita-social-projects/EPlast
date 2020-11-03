@@ -61,10 +61,8 @@ namespace EPlast.BLL.Services.City
             var role = adminType.AdminTypeName == "Голова Станиці" ? "Голова Станиці" : "Діловод Станиці";
             await _userManager.AddToRoleAsync(user, role);
 
-            if(role == "Голова Станиці")
-            {
-                await CheckCityHasHead(adminDTO.CityId);
-            }
+            await CheckCityHasAdmin(adminDTO.CityId, adminType.AdminTypeName);
+            
 
             await _repositoryWrapper.CityAdministration.CreateAsync(admin);
             await _repositoryWrapper.SaveAsync();
@@ -165,12 +163,12 @@ namespace EPlast.BLL.Services.City
                              );
             return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationStatusDTO>>(cityAdmins);
         }
-        private async Task CheckCityHasHead(int cityId)
+        private async Task CheckCityHasAdmin(int cityId, string adminTypeName)
         {
-            var adminType = await _adminTypeService.GetAdminTypeByNameAsync("Голова Станиці");
+            var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminTypeName);
             var admin = await _repositoryWrapper.CityAdministration.
                 GetFirstOrDefaultAsync(a => a.AdminTypeId == adminType.ID 
-                    && (DateTime.Now < a.EndDate || a.EndDate == null));
+                    && (DateTime.Now < a.EndDate || a.EndDate == null) && a.CityId == cityId);
 
             if (admin != null)
             {
