@@ -21,21 +21,18 @@ namespace EPlast.BLL
             _decisionBlobStorage = decisionBlobStorage;
         }
 
-        public async Task<string> BlankCreatePDFAsync(string userId)
+        public async Task<byte[]> BlankCreatePDFAsync(string userId)
         {
             try
             {
+                var blank = await GetBlankDataAsync(userId);
                 IPdfSettings pdfSettings = new PdfSettings
                 {
-                    Title = "Бланк",
+                    Title = $"{blank.User.FirstName} {blank.User.LastName}",
                     ImagePath = "Blank"
                 };
-                var blank = await GetBlankDataAsync(userId);
                 IPdfCreator creator = new PdfCreator(new BlankDocument(blank, pdfSettings));
-                var base64 = await Task.Run(() => creator.GetPDFBytes());
-                var azureBase64 = Convert.ToBase64String(base64);
-                var result = $"data:application/pdf;base64," + azureBase64;
-                return result;
+                return await Task.Run(() => creator.GetPDFBytes());
             }
             catch (Exception e)
             {
@@ -81,7 +78,8 @@ namespace EPlast.BLL
                     .Include(c => c.UserMembershipDates)
                     .Include(c=>c.Participants)
                     .ThenInclude(c=>c.Event)
-                    .ThenInclude(c=>c.EventCategory));
+                    .ThenInclude(c=>c.EventCategory)
+                    .ThenInclude(c=>c.EventSection));
             var userProfile = await _repoWrapper.UserProfile
                 .GetFirstOrDefaultAsync(predicate: c => c.UserID == userId,
                     include: source => source

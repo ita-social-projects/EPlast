@@ -7,6 +7,6 @@ namespace EPlast.BLL
     {
         Task<byte[]> DecisionCreatePDFAsync(int decisionId);
 
-        Task<string> BlankCreatePDFAsync(string userId);
+        Task<byte[]> BlankCreatePDFAsync(string userId);
     }
 }
