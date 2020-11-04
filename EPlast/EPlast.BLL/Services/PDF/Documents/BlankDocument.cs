@@ -109,6 +109,8 @@ namespace EPlast.BLL
             SetText(gfx, $"{blank?.UserProfile?.Work?.PlaceOfwork}", XFontStyle.Italic, 150, 433);
             SetText(gfx, "Вишкіл виховників", XFontStyle.Regular, 50, 450);
             SetText(gfx, $"УПЮ/УПН", XFontStyle.Italic, 50, 460);
+            int upuCoordinate = 190;
+            int uspCoordinate = 190;
             var participants = blank?.User?.Participants;
             if (participants != null)
             {
@@ -119,13 +121,15 @@ namespace EPlast.BLL
                         (participant.Event.EventCategory.EventSection.EventSectionName == "УПЮ" ||
                         participant.Event.EventCategory.EventSection.EventSectionName == "УПН"))
                     {
-                        SetText(gfx, $"{participant.Event.EventName}", XFontStyle.Regular, 190, 450);
+                        SetText(gfx, $"{participant.Event.EventName},", XFontStyle.Regular, upuCoordinate, 450);
+                        upuCoordinate += 50;
                     }
                     else if (participant.Event.EventDateEnd < DateTime.Now &&
                        participant.ParticipantStatusId == 1 &&
                        participant.Event.EventCategory.EventSection.EventSectionName == "УСП/УПС")
                     {
-                        SetText(gfx, $"{participant.Event.EventName}", XFontStyle.Regular, 190, 475);
+                        SetText(gfx, $"{participant.Event.EventName},", XFontStyle.Regular, uspCoordinate, 475);
+                        uspCoordinate += 50;
                     }
                 }
             }
