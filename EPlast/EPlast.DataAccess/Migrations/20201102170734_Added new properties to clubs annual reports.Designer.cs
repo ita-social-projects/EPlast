@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20201102170734_Added new properties to clubs annual reports")]
+    partial class Addednewpropertiestoclubsannualreports
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -526,9 +528,6 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("ClubAdminContacts")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ClubCenters")
                         .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
@@ -540,7 +539,7 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<int>("ClubEnteredMembersCount")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ClubId")
+                    b.Property<int>("ClubId")
                         .HasColumnType("int");
 
                     b.Property<int>("ClubLeftMembersCount")
@@ -1027,14 +1026,10 @@ namespace EPlast.DataAccess.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("EventCategoryName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("EventSectionId")
-                        .HasColumnType("int");
-
                     b.HasKey("ID");
-
-                    b.HasIndex("EventSectionId");
 
                     b.ToTable("EventCategories");
                 });
@@ -1067,21 +1062,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("GallaryID");
 
                     b.ToTable("EventGallarys");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.Event.EventSection", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("EventSectionName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("EventSection");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Event.EventStatus", b =>
@@ -2049,7 +2029,9 @@ namespace EPlast.DataAccess.Migrations
                 {
                     b.HasOne("EPlast.DataAccess.Entities.Club", "Club")
                         .WithMany()
-                        .HasForeignKey("ClubID");
+                        .HasForeignKey("ClubId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.ClubDocuments", b =>
@@ -2189,15 +2171,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasOne("EPlast.DataAccess.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.Event.EventCategory", b =>
-                {
-                    b.HasOne("EPlast.DataAccess.Entities.Event.EventSection", "EventSection")
-                        .WithMany("EventCategories")
-                        .HasForeignKey("EventSectionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
