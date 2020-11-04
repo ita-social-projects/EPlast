@@ -165,10 +165,11 @@ namespace EPlast.BLL.Services.City
         }
         private async Task CheckCityHasAdmin(int cityId, string adminTypeName)
         {
+            DateTime dateTime = DateTime.Now.AddHours(2);
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminTypeName);
             var admin = await _repositoryWrapper.CityAdministration.
                 GetFirstOrDefaultAsync(a => a.AdminTypeId == adminType.ID 
-                    && (DateTime.Now < a.EndDate || a.EndDate == null) && a.CityId == cityId);
+                    && (dateTime < a.EndDate || a.EndDate == null) && a.CityId == cityId);
 
             if (admin != null)
             {
