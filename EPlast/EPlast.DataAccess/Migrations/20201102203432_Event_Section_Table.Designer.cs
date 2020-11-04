@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20201102203432_Event_Section_Table")]
+    partial class Event_Section_Table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -492,6 +494,9 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<int>("AdminTypeId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ClubAnnualReportID")
+                        .HasColumnType("int");
+
                     b.Property<int>("ClubId")
                         .HasColumnType("int");
 
@@ -512,6 +517,8 @@ namespace EPlast.DataAccess.Migrations
 
                     b.HasIndex("AdminTypeId");
 
+                    b.HasIndex("ClubAnnualReportID");
+
                     b.HasIndex("ClubId");
 
                     b.HasIndex("UserId");
@@ -526,9 +533,6 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("ClubAdminContacts")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ClubCenters")
                         .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
@@ -540,14 +544,11 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<int>("ClubEnteredMembersCount")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ClubId")
+                    b.Property<int>("ClubID")
                         .HasColumnType("int");
 
                     b.Property<int>("ClubLeftMembersCount")
                         .HasColumnType("int");
-
-                    b.Property<string>("ClubMembersSummary")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClubPage")
                         .HasColumnType("nvarchar(200)")
@@ -571,7 +572,7 @@ namespace EPlast.DataAccess.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("ClubId");
+                    b.HasIndex("ClubID");
 
                     b.ToTable("ClubAnnualReports");
                 });
@@ -666,6 +667,9 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int?>("ClubAnnualReportID")
+                        .HasColumnType("int");
+
                     b.Property<int>("ClubId")
                         .HasColumnType("int");
 
@@ -683,6 +687,8 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("ClubAnnualReportID");
 
                     b.HasIndex("ClubId");
 
@@ -2032,6 +2038,10 @@ namespace EPlast.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("EPlast.DataAccess.Entities.ClubAnnualReport", null)
+                        .WithMany("ClubAdministration")
+                        .HasForeignKey("ClubAnnualReportID");
+
                     b.HasOne("EPlast.DataAccess.Entities.Club", "Club")
                         .WithMany("ClubAdministration")
                         .HasForeignKey("ClubId")
@@ -2049,7 +2059,9 @@ namespace EPlast.DataAccess.Migrations
                 {
                     b.HasOne("EPlast.DataAccess.Entities.Club", "Club")
                         .WithMany()
-                        .HasForeignKey("ClubID");
+                        .HasForeignKey("ClubID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.ClubDocuments", b =>
@@ -2082,6 +2094,10 @@ namespace EPlast.DataAccess.Migrations
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.ClubMembers", b =>
                 {
+                    b.HasOne("EPlast.DataAccess.Entities.ClubAnnualReport", null)
+                        .WithMany("ClubMembers")
+                        .HasForeignKey("ClubAnnualReportID");
+
                     b.HasOne("EPlast.DataAccess.Entities.Club", "Club")
                         .WithMany("ClubMembers")
                         .HasForeignKey("ClubId")
