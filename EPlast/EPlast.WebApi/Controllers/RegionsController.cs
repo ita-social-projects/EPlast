@@ -3,6 +3,7 @@ using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.WebApi.Models.Region;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -15,13 +16,16 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly ILoggerService<CitiesController> _logger;
         private readonly IRegionService _regionService;
+        private readonly IRegionAnnualReportService _RegionAnnualReportService;
 
 
         public RegionsController(ILoggerService<CitiesController> logger,
-            IRegionService regionService)
+            IRegionService regionService,
+            IRegionAnnualReportService RegionAnnualReportService)
         {
             _logger = logger;
             _regionService = regionService;
+            _RegionAnnualReportService = RegionAnnualReportService;
 
         }
 
@@ -39,7 +43,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> CreateRegion(RegionDTO region)
         {
 
-           await  _regionService.AddRegionAsync(region);
+            await _regionService.AddRegionAsync(region);
 
             return Ok();
         }
@@ -122,10 +126,10 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
         public async Task<IActionResult> AddAdministrator(RegionAdministrationDTO admin)
         {
-                await _regionService.AddRegionAdministrator(admin);
+            await _regionService.AddRegionAdministrator(admin);
 
-                return Ok();
-            
+            return Ok();
+
         }
 
 
@@ -174,7 +178,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetUserAdministrations(string userId)
         {
-           var secretaries=await _regionService.GetUsersAdministrations(userId);
+            var secretaries = await _regionService.GetUsersAdministrations(userId);
             return Ok(secretaries);
 
         }
@@ -236,7 +240,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetMembers(int regionId)
         {
-          var members =   await _regionService.GetMembersAsync(regionId);
+            var members = await _regionService.GetMembersAsync(regionId);
             return Ok(members);
         }
 
@@ -268,6 +272,44 @@ namespace EPlast.WebApi.Controllers
         {
             var regions = await _regionService.GetRegions();
             return Ok(regions);
+        }
+
+        /// <summary>
+        /// Method to get all region reports that the user has access to
+        /// </summary>
+        /// <returns>List of annual reports</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("GetAllRegionAnnualReports")]
+        public async Task<IActionResult> GetAllRegionAnnualReports()
+        {
+            return StatusCode(StatusCodes.Status200OK,
+                new { annualReports = await _RegionAnnualReportService.GetAllAsync(User) });
+        }
+
+        /// <summary>
+        /// Method to get region annual report
+        /// </summary>
+        /// <param name="id">Region annual report identification number</param>
+        /// <returns>Annual report</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="403">User hasn't access to annual report</response>
+        /// <response code="404">The region annual report does not exist</response>
+        [HttpGet("GetRegionAnnualReportById/{id:int}")]
+        public async Task<IActionResult> GetRegionAnnualReportById(int id)
+        {
+            try
+            {
+                return StatusCode(StatusCodes.Status200OK, new { annualreport = await _RegionAnnualReportService.GetByIdAsync(User, id) });
+            }
+            catch (NullReferenceException)
+            {
+
+                return StatusCode(StatusCodes.Status404NotFound);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
         }
     }
 }
