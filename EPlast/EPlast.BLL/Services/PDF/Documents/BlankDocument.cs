@@ -109,29 +109,22 @@ namespace EPlast.BLL
             SetText(gfx, $"{blank?.UserProfile?.Work?.PlaceOfwork}", XFontStyle.Italic, 150, 433);
             SetText(gfx, "Вишкіл виховників", XFontStyle.Regular, 50, 450);
             SetText(gfx, $"УПЮ/УПН", XFontStyle.Italic, 50, 460);
-            int upuCoordinate = 190;
-            int uspCoordinate = 190;
-            var participants = blank?.User?.Participants;
-            if (participants != null)
+
+            var participantsUPU = blank?.User?.Participants?.Where(c => c.Event?.EventDateEnd < DateTime.Now &&
+            c?.ParticipantStatusId == 1 &&
+            (c.Event.EventCategory.EventSection.EventSectionName == "УПЮ" ||
+            c.Event.EventCategory.EventSection.EventSectionName == "УПН")).Select(c => c.Event.EventName).ToList();
+            var participantsUSP = blank?.User?.Participants?.Where(c => c.Event?.EventDateEnd < DateTime.Now &&
+            c?.ParticipantStatusId == 1 && c.Event.EventCategory.EventSection.EventSectionName == "УСП/УПС").Select(c => c.Event.EventName).ToList();
+            if (participantsUPU != null)
             {
-                foreach (var participant in participants)
-                {
-                    if (participant.Event.EventDateEnd < DateTime.Now &&
-                        participant.ParticipantStatusId == 1 &&
-                        (participant.Event.EventCategory.EventSection.EventSectionName == "УПЮ" ||
-                        participant.Event.EventCategory.EventSection.EventSectionName == "УПН"))
-                    {
-                        SetText(gfx, $"{participant.Event.EventName},", XFontStyle.Regular, upuCoordinate, 450);
-                        upuCoordinate += 50;
-                    }
-                    else if (participant.Event.EventDateEnd < DateTime.Now &&
-                       participant.ParticipantStatusId == 1 &&
-                       participant.Event.EventCategory.EventSection.EventSectionName == "УСП/УПС")
-                    {
-                        SetText(gfx, $"{participant.Event.EventName},", XFontStyle.Regular, uspCoordinate, 475);
-                        uspCoordinate += 50;
-                    }
-                }
+                var resultUPU = String.Join("; ", participantsUPU);
+                SetText(gfx, $"{resultUPU}", XFontStyle.Regular, 190, 450);
+            }
+            if (participantsUSP != null)
+            {
+                var resultUSP = String.Join("; ", participantsUSP);
+                SetText(gfx, $"{resultUSP}", XFontStyle.Regular, 190, 475);
             }
             SetLine(gfx, 165, 460, 550, 460);
             SetText(gfx, "Інші вишколи УСП/УПС", XFontStyle.Regular, 50, 475);
@@ -169,7 +162,7 @@ namespace EPlast.BLL
             SetDashLine(gfx, 40, 670, 560, 670);
 
             SetText(gfx, "Дата рішення Крайового органу про прийняття в дійсні члени", XFontStyle.Regular, 50, 680);
-            var plastDegree = blank.User?.UserPlastDegrees?.FirstOrDefault(c=>c.IsCurrent==true);
+            var plastDegree = blank.User?.UserPlastDegrees?.FirstOrDefault(c => c.IsCurrent == true);
             SetText(gfx, $"{plastDegree?.DateStart:dd.MM.yyyy}", XFontStyle.Italic, 380, 680);
 
             SetLine(gfx, 350, 690, 500, 690);
