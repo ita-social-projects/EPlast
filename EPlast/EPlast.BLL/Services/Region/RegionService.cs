@@ -2,6 +2,7 @@
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
+using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.City;
@@ -28,6 +29,7 @@ namespace EPlast.BLL.Services.Region
         private readonly ICityService _cityService;
         private readonly IAdminTypeService _adminTypeService;
         private readonly UserManager<User> _userManager;
+        private readonly IUniqueIdService _uniqueId;
 
         public RegionService(IRepositoryWrapper repoWrapper,
             IMapper mapper,
@@ -35,7 +37,8 @@ namespace EPlast.BLL.Services.Region
             IRegionBlobStorageRepository regionBlobStorage,
             ICityService cityService,
             IAdminTypeService adminTypeService,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IUniqueIdService uniqueId)
         {
             _regionFilesBlobStorageRepository = regionFilesBlobStorageRepository;
             _repoWrapper = repoWrapper;
@@ -44,6 +47,8 @@ namespace EPlast.BLL.Services.Region
             _cityService = cityService;
             _adminTypeService = adminTypeService;
             _userManager = userManager;
+            _uniqueId = uniqueId;
+
         }
 
         public async Task AddRegionAsync(RegionDTO region)
@@ -244,7 +249,7 @@ namespace EPlast.BLL.Services.Region
          {
              var fileBase64 = documentDTO.BlobName.Split(',')[1];
              var extension = "." + documentDTO.FileName.Split('.').LastOrDefault();
-             var fileName = Guid.NewGuid() + extension;
+             var fileName = _uniqueId.GetUniqueId() + extension;
              await _regionFilesBlobStorageRepository.UploadBlobForBase64Async(fileBase64, fileName);
              documentDTO.BlobName = fileName;
 

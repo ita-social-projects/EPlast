@@ -1,4 +1,5 @@
 ﻿using EPlast.BLL.DTO.Events;
+using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.DataAccess.Entities.Event;
@@ -17,12 +18,13 @@ namespace EPlast.BLL.Services.Events
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IEventBlobStorageRepository _eventBlobStorage;
+        private readonly IUniqueIdService _uniqueId;
 
-
-        public EventGalleryManager(IRepositoryWrapper repoWrapper, IEventBlobStorageRepository eventBlobStorage)
+        public EventGalleryManager(IRepositoryWrapper repoWrapper, IEventBlobStorageRepository eventBlobStorage, IUniqueIdService uniqueId)
         {
             _repoWrapper = repoWrapper;
             _eventBlobStorage = eventBlobStorage;
+            _uniqueId = uniqueId;
         }
 
         /// <inheritdoc />
@@ -35,7 +37,7 @@ namespace EPlast.BLL.Services.Events
             {
                 if (file != null && file.Length > 0)
                 {
-                    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                    var fileName = _uniqueId.GetUniqueId() + Path.GetExtension(file.FileName);
                     await _eventBlobStorage.UploadBlobAsync(file, fileName);
                     var gallery = new Gallary() { GalaryFileName = fileName };
                     await _repoWrapper.Gallary.CreateAsync(gallery);

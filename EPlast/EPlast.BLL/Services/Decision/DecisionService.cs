@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
+using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -20,16 +21,19 @@ namespace EPlast.BLL
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IDecisionBlobStorageRepository _decisionBlobStorage;
+        private readonly IUniqueIdService _uniqueId;
 
         public DecisionService(IRepositoryWrapper repoWrapper,
             IMapper mapper,
             IDecisionVmInitializer decisionVMCreator,
-            IDecisionBlobStorageRepository decisionBlobStorage)
+            IDecisionBlobStorageRepository decisionBlobStorage,
+            IUniqueIdService uniqueId)
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
             _decisionVMCreator = decisionVMCreator;
             _decisionBlobStorage = decisionBlobStorage;
+            _uniqueId = uniqueId;
         }
 
         /// <inheritdoc />
@@ -75,7 +79,7 @@ namespace EPlast.BLL
             _repoWrapper.Decesion.Create(repoDecision);
             if (decision.FileAsBase64 != null)
             {
-                repoDecision.FileName = Guid.NewGuid() + repoDecision.FileName;
+                repoDecision.FileName = _uniqueId.GetUniqueId() + repoDecision.FileName;
                 await UploadFileToBlobAsync(decision.FileAsBase64, repoDecision.FileName);
             }
             await _repoWrapper.SaveAsync();
