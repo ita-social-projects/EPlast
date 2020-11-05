@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
@@ -30,9 +31,10 @@ namespace EPlast.BLL.Services.UserProfiles
         private readonly IEducationService _educationService;
         private readonly IUserBlobStorageRepository _userBlobStorage;
         private readonly IConfirmedUsersService _confirmedUsersService;
+        private readonly IUniqueIdService _uniqueId;
         public UserService(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IMapper mapper, IWorkService workService,
             IEducationService educationService, IUserBlobStorageRepository userBlobStorage, IWebHostEnvironment env, IUserManagerService userManagerService,
-            IConfirmedUsersService confirmedUsersService)
+            IConfirmedUsersService confirmedUsersService, IUniqueIdService uniqueId)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
@@ -43,6 +45,7 @@ namespace EPlast.BLL.Services.UserProfiles
             _env = env;
             _userManagerService = userManagerService;
             _confirmedUsersService = confirmedUsersService;
+            _uniqueId = uniqueId;
         }
 
         /// <inheritdoc />
@@ -258,7 +261,7 @@ namespace EPlast.BLL.Services.UserProfiles
                             File.Delete(oldPath);
                         }
                     }
-                    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                    var fileName = _uniqueId.GetUniqueId() + Path.GetExtension(file.FileName);
                     var filePath = Path.Combine(uploads, fileName);
                     img.Save(filePath);
                     return fileName;
@@ -276,7 +279,7 @@ namespace EPlast.BLL.Services.UserProfiles
             {
                 var base64Parts = imageBase64.Split(',');
                 var ext = base64Parts[0].Split(new[] { '/', ';' }, 3)[1];
-                var fileName = Guid.NewGuid().ToString() + "." + ext;
+                var fileName = _uniqueId.GetUniqueId().ToString() + "." + ext;
                 await _userBlobStorage.UploadBlobForBase64Async(base64Parts[1], fileName);
                 if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default_user_image.png"))
                 {

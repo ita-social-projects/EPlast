@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using EPlast.BLL.Interfaces;
 
 namespace EPlast.BLL.Services.City
 {
@@ -16,14 +17,17 @@ namespace EPlast.BLL.Services.City
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
         private readonly ICityFilesBlobStorageRepository _cityFilesBlobStorage;
+        private readonly IUniqueIdService _uniqueId;
 
         public CityDocumentsService(IRepositoryWrapper repositoryWrapper,
             IMapper mapper,
-            ICityFilesBlobStorageRepository cityFilesBlobStorage)
+            ICityFilesBlobStorageRepository cityFilesBlobStorage,
+            IUniqueIdService uniqueId)
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
             _cityFilesBlobStorage = cityFilesBlobStorage;
+            _uniqueId = uniqueId;
         }
 
         private async Task<IEnumerable<CityDocumentType>> GetAllCityDocumentTypeEntities()
@@ -46,7 +50,7 @@ namespace EPlast.BLL.Services.City
         {
             var fileBase64 = documentsDTO.BlobName.Split(',')[1];
             var extension = "." + documentsDTO.FileName.Split('.').LastOrDefault();
-            var fileName = Guid.NewGuid() + extension;
+            var fileName = _uniqueId.GetUniqueId() + extension;
             await _cityFilesBlobStorage.UploadBlobForBase64Async(fileBase64, fileName);
             documentsDTO.BlobName = fileName;
 

@@ -1,4 +1,5 @@
 ﻿using EPlast.BLL.DTO.Notification;
+using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Notifications;
 using System;
 using System.Collections.Concurrent;
@@ -14,6 +15,12 @@ namespace EPlast.BLL.Services.Notifications
     public class NotificationConnectionManager : INotificationConnectionManager
     {
         private static readonly ConcurrentDictionary<string, HashSet<ConnectionDTO>> userMap = new ConcurrentDictionary<string, HashSet<ConnectionDTO>>();
+        private readonly IUniqueIdService _uniqueId;
+
+        public NotificationConnectionManager(IUniqueIdService uniqueId)
+        {
+            _uniqueId = uniqueId;
+        }
 
         public IEnumerable<string> OnlineUsers { get { return userMap.Keys; } }
 
@@ -65,7 +72,7 @@ namespace EPlast.BLL.Services.Notifications
 
         public string AddSocket(string userId, WebSocket socket)
         {
-            var connectionId = CreateConnectionId();
+            var connectionId = _uniqueId.GetUniqueId().ToString();
             if (!userMap.ContainsKey(userId))
             {
                 userMap.TryAdd(userId, new HashSet<ConnectionDTO>());
@@ -110,11 +117,6 @@ namespace EPlast.BLL.Services.Notifications
                 );
                 Task.WhenAll(tasks);
             }
-        }
-
-        private string CreateConnectionId()
-        {
-            return Guid.NewGuid().ToString();
         }
 
         public async Task SendMessageAsync(string userId, string message)

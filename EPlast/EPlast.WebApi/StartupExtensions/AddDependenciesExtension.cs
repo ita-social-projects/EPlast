@@ -135,6 +135,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<StatisticsServiceSettings>();
             services.AddSingleton<INotificationConnectionManager, NotificationConnectionManager>();
             services.AddSingleton<UserNotificationHandler>();
+            services.AddTransient<IUniqueIdService, UniqueIdService>();
 
             return services;
         }
