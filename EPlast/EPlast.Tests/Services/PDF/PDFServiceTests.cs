@@ -66,7 +66,7 @@ namespace EPlast.Tests.Services.PDF
                 .ReturnsAsync(new User() { Id=userId });
             var actualReturn = _pdfService.BlankCreatePDFAsync(userId);
             _repository.Verify();
-            Assert.IsInstanceOf<string>(actualReturn.Result);
+            Assert.IsInstanceOf<byte[]>(actualReturn.Result);
         }
 
         [TestCase("1")]
