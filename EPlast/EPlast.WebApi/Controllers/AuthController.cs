@@ -139,7 +139,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                var user = await _authService.FacebookLogin(userInfo);
+                var user = await _authService.FacebookLoginAsync(userInfo);
 
                 if (user == null)
                 {
