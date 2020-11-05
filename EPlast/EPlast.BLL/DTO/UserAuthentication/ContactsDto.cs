@@ -13,7 +13,6 @@ namespace EPlast.BLL.DTO.Account
         [EmailAddress(ErrorMessage = "Введене поле не є правильним для електронної пошти")]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "Поле номер телефону є обов'язковим")]
         [Phone]
         public string PhoneNumber { get; set; }
 
