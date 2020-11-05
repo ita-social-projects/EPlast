@@ -1,4 +1,5 @@
 ﻿using EPlast.BLL.DTO.Club;
+using EPlast.DataAccess.Entities;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -44,5 +45,12 @@ namespace EPlast.BLL.Interfaces.Club
         /// </summary>
         /// <param name="followerId">The id of the follower</param>
         Task RemoveFollowerAsync(int followerId);
+
+
+        /// <summary>
+        /// Remove a specific follower from the Club
+        /// </summary>
+        /// <param name="member">The member of the club</param>
+        Task RemoveMemberAsync(ClubMembers member);
     }
 }

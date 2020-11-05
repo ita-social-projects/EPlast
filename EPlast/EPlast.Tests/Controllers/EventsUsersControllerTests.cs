@@ -119,14 +119,15 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             var expectedId = 1;
+            var FakeEvent = CreateFakeEventCreate();
+            FakeEvent.Event.ID = 0;
 
             _eventUserManager
-                .Setup((x) => x.CreateEventAsync(CreateFakeEventCreate()))
-                .ReturnsAsync(It.IsAny<int>());
+                .Setup((x) => x.CreateEventAsync(FakeEvent))
+                .ReturnsAsync(expectedId);
 
             // Act
-            var result = await _eventsUsersController.EventCreate(CreateFakeEventCreate());
-
+            var result = await _eventsUsersController.EventCreate(FakeEvent);
             var actual = ((result as ObjectResult).Value as EventCreateDTO).Event.ID;
 
             // Assert
