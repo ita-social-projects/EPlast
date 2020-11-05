@@ -169,6 +169,9 @@ namespace EPlast.BLL
             SetDashLine(gfx, 40, 670, 560, 670);
 
             SetText(gfx, "Дата рішення Крайового органу про прийняття в дійсні члени", XFontStyle.Regular, 50, 680);
+            var plastDegree = blank.User?.UserPlastDegrees?.FirstOrDefault(c=>c.IsCurrent==true);
+            SetText(gfx, $"{plastDegree?.DateStart:dd.MM.yyyy}", XFontStyle.Italic, 380, 680);
+
             SetLine(gfx, 350, 690, 500, 690);
             SetText(gfx, "Дата заприсяження, іменування", XFontStyle.Regular, 50, 700);
             if (blank?.User?.UserMembershipDates?.FirstOrDefault()?.DateOath == DateTime.MinValue)
@@ -181,9 +184,9 @@ namespace EPlast.BLL
             }
             SetLine(gfx, 230, 710, 500, 710);
 
-            SetDashLine(gfx, 40, 725, 560, 725);
+            SetDashLine(gfx, 40, 717, 560, 717);
 
-            SetText(gfx, $"Номер користувача в системі - {blank?.UserProfile?.ID}", XFontStyle.Regular, 50, 735);
+            SetText(gfx, $"Номер користувача в системі - {blank?.UserProfile?.ID}", XFontStyle.Regular, 50, 727);
 
             DrawQRCode(gfx);
         }
@@ -220,7 +223,7 @@ namespace EPlast.BLL
             using var ms = new MemoryStream();
             qrCodeImage.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
             XImage xImage = XImage.FromStream(() => new MemoryStream(ms.ToArray()));
-            gfx.DrawImage(xImage, 480, 730);
+            gfx.DrawImage(xImage, 480, 720);
         }
 
     }
