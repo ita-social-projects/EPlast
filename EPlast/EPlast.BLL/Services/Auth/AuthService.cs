@@ -292,7 +292,7 @@ namespace EPlast.BLL.Services
             return _mapper.Map<User, UserDTO>(user);
 
         }
-        public async Task<UserDTO> FacebookLogin(FacebookUserInfo facebookUser)
+        public async Task<UserDTO> FacebookLoginAsync(FacebookUserInfo facebookUser)
         {
             var user = await _userManager.FindByEmailAsync(facebookUser.Email);
             if (user == null)
