@@ -212,7 +212,7 @@ namespace EPlast.BLL
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
             QRCodeData qrCodeData = qrGenerator.CreateQrCode("https://eplast.westeurope.cloudapp.azure.com/userpage/main/" + $"{blank.User.Id}", QRCodeGenerator.ECCLevel.Q);
             QRCode qrCode = new QRCode(qrCodeData);
-            Bitmap qrCodeImage = qrCode.GetGraphic(2);
+            Bitmap qrCodeImage = qrCode.GetGraphic(1);
             using var ms = new MemoryStream();
             qrCodeImage.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
             XImage xImage = XImage.FromStream(() => new MemoryStream(ms.ToArray()));
