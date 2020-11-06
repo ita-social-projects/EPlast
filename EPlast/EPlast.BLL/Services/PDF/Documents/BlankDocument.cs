@@ -162,7 +162,7 @@ namespace EPlast.BLL
             SetDashLine(gfx, 40, 670, 560, 670);
 
             SetText(gfx, "Дата рішення Крайового органу про прийняття в дійсні члени", XFontStyle.Regular, 50, 680);
-            var plastDegree = blank.User?.UserPlastDegrees?.FirstOrDefault(c => c.IsCurrent == true);
+            var plastDegree = blank.User?.UserPlastDegrees?.FirstOrDefault(c => c.IsCurrent);
             SetText(gfx, $"{plastDegree?.DateStart:dd.MM.yyyy}", XFontStyle.Italic, 380, 680);
 
             SetLine(gfx, 350, 690, 500, 690);

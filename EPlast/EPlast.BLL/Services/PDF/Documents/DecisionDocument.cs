@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using EPlast.BLL.ExtensionMethods;
+﻿using EPlast.BLL.ExtensionMethods;
 using EPlast.DataAccess.Entities;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using PdfSharpCore;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
 using PdfSharpCore.Pdf;

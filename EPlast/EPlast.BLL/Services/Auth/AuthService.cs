@@ -12,10 +12,8 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Web;
 using EPlast.BLL.Models;
 using Newtonsoft.Json;
-using Microsoft.AspNetCore.Server.IIS;
 
 namespace EPlast.BLL.Services
 {

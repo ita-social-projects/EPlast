@@ -2,7 +2,6 @@
 using EPlast.BLL.Interfaces.EventCalendar;
 using EPlast.BLL.Interfaces.EventUser;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services

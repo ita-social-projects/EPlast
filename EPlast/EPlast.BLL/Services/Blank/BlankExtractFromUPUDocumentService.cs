@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Blank
 {
-    public class BlankExtractFromUPUDocumentService : IBlankExtractFromUPUDocumentService
+    public class BlankExtractFromUpuDocumentService : IBlankExtractFromUPUDocumentService
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
         private readonly IBlankExtractFromUPUBlobStorageRepository _blankFilesBlobStorage;
 
-        public BlankExtractFromUPUDocumentService(IRepositoryWrapper repositoryWrapper,
+        public BlankExtractFromUpuDocumentService(IRepositoryWrapper repositoryWrapper,
            IMapper mapper,
            IBlankExtractFromUPUBlobStorageRepository blankFilesBlobStorage)
         {
