@@ -218,7 +218,5 @@ namespace EPlast.BLL.Interfaces
         /// </summary>
         /// <param name="facebookUser"></param>
         Task<UserDTO> FacebookLoginAsync(FacebookUserInfo facebookUser);
-
-
     }
 }

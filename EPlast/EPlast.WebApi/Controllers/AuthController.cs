@@ -95,14 +95,14 @@ namespace EPlast.WebApi.Controllers
 
         [HttpGet("GoogleClientId")]
         [AllowAnonymous]
-        public IActionResult GoogleClientId()
+        public IActionResult GetGoogleClientId()
         {
             return Ok(new { id = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("GoogleAuthentication")["GoogleClientId"]});
         }
 
         [HttpGet("FacebookAppId")]
         [AllowAnonymous]
-        public IActionResult FacebookAppId()
+        public IActionResult GetFacebookAppId()
         {
             return Ok(new { id = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("FacebookAuthentication")["FacebookAppId"] });
         }
@@ -137,27 +137,14 @@ namespace EPlast.WebApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> FacebookLogin([FromBody] FacebookUserInfo userInfo)
         {
-            try
+            var user = await _authService.FacebookLoginAsync(userInfo);
+            if (user == null)
             {
-                var user = await _authService.FacebookLoginAsync(userInfo);
-
-                if (user == null)
-                {
-                    return BadRequest();
-                }
-
-                var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
-
-                return Ok(new { token = generatedToken });
-            }
-            catch (Exception exc)
-            {
-                _loggerService.LogError(exc.Message);
+                return BadRequest();
             }
 
-            return BadRequest();
-
-
+            var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
+            return Ok(new {token = generatedToken});
         }
 
         /// <summary>
