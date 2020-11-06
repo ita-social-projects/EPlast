@@ -102,7 +102,7 @@ namespace EPlast.WebApi.Controllers
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
             cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(User, cityId);
 
-            return Ok(new { cityProfile.Members, cityProfile.CanEdit });
+            return Ok(new { cityProfile.Members, cityProfile.CanEdit, cityProfile.Name });
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace EPlast.WebApi.Controllers
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
             cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(User, cityId);
 
-            return Ok(new { cityProfile.Followers, cityProfile.CanEdit });
+            return Ok(new { cityProfile.Followers, cityProfile.CanEdit, cityProfile.Name });
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace EPlast.WebApi.Controllers
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
             cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(User, cityId);
 
-            return Ok(new { cityProfile.Administration, cityProfile.Head, cityProfile.CanEdit });
+            return Ok(new { cityProfile.Administration, cityProfile.Head, cityProfile.CanEdit, cityProfile.Name });
         }
 
         /// <summary>
