@@ -460,7 +460,6 @@ namespace PdfSharpCore.Drawing.Layout
                 Text = text;
                 Type = type;
                 Width = width;
-                StartIndex = startIndex;
                 EndIndex = endIndex;
             }
 
@@ -478,7 +477,6 @@ namespace PdfSharpCore.Drawing.Layout
             /// </summary>
             public readonly string Text;
 
-            public readonly int StartIndex = -1;
             public readonly int EndIndex = -1;
 
             /// <summary>

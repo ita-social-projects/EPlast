@@ -148,9 +148,9 @@ namespace EPlast.BLL.Services.Region
 
 
         /// <inheritdoc />
-        public async Task AddFollowerAsync(int RegionId, int cityId)
+        public async Task AddFollowerAsync(int regionId, int cityId)
         {
-            var region = (await _repoWrapper.Region.GetFirstAsync(d => d.ID == RegionId));
+            var region = (await _repoWrapper.Region.GetFirstAsync(d => d.ID == regionId));
             var city = (await _repoWrapper.City.GetFirstAsync(d=>d.ID==cityId));
 
             city.Region = region;

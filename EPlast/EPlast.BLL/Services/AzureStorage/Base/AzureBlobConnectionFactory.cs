@@ -45,7 +45,7 @@ namespace EPlast.BLL.Services.AzureStorage.Base
 
             if (!CloudStorageAccount.TryParse(storageConnectionString, out var storageAccount))
             {
-                throw new Exception("Could not create storage account with StorageConnectionString configuration");
+                throw new ArgumentException("Could not create storage account with StorageConnectionString configuration");
             }
 
             _blobClient = storageAccount.CreateCloudBlobClient();

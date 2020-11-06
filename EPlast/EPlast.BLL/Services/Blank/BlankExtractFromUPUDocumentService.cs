@@ -26,20 +26,20 @@ namespace EPlast.BLL.Services.Blank
         }
 
 
-        public async Task<ExtractFromUPUDocumentsDTO> AddDocumentAsync(ExtractFromUPUDocumentsDTO ExtractFromUPUDocumentsDTO)
+        public async Task<ExtractFromUPUDocumentsDTO> AddDocumentAsync(ExtractFromUPUDocumentsDTO biographyDocumentDTO)
         {
-            var fileBase64 = ExtractFromUPUDocumentsDTO.BlobName.Split(',')[1];
-            var extension = "." + ExtractFromUPUDocumentsDTO.FileName.Split('.').LastOrDefault();
+            var fileBase64 = biographyDocumentDTO.BlobName.Split(',')[1];
+            var extension = "." + biographyDocumentDTO.FileName.Split('.').LastOrDefault();
             var fileName = Guid.NewGuid() + extension;
             await _blankFilesBlobStorage.UploadBlobForBase64Async(fileBase64, fileName);
-            ExtractFromUPUDocumentsDTO.BlobName = fileName;
+            biographyDocumentDTO.BlobName = fileName;
 
-            var document = _mapper.Map<ExtractFromUPUDocumentsDTO, ExtractFromUPUDocuments>(ExtractFromUPUDocumentsDTO);
+            var document = _mapper.Map<ExtractFromUPUDocumentsDTO, ExtractFromUPUDocuments>(biographyDocumentDTO);
             _repositoryWrapper.ExtractFromUPUDocumentsRepository.Attach(document);
             await _repositoryWrapper.ExtractFromUPUDocumentsRepository.CreateAsync(document);
             await _repositoryWrapper.SaveAsync();
 
-            return ExtractFromUPUDocumentsDTO;
+            return biographyDocumentDTO;
         }
 
         public async Task DeleteFileAsync(int documentId)

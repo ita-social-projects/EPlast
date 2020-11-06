@@ -13,7 +13,7 @@ namespace EPlast.BLL.Interfaces.Region
         Task<IEnumerable<RegionDTO>> GetAllRegionsAsync();
         Task<RegionDTO> GetRegionByIdAsync(int regionId);
         Task<RegionProfileDTO> GetRegionProfileByIdAsync(int regionId);
-        Task DeleteRegionByIdAsync(int cityId);
+        Task DeleteRegionByIdAsync(int regionId);
         Task AddFollowerAsync(int regionId, int cityId);
         Task<IEnumerable<CityDTO>> GetMembersAsync(int regionId);
         Task AddRegionAsync(RegionDTO region);

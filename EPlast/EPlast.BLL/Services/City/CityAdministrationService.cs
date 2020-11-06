@@ -63,7 +63,7 @@ namespace EPlast.BLL.Services.City
 
             if(role == "Голова Станиці")
             {
-                await CheckCityHasHead(adminDTO.CityId);
+                await CheckCityHasHead();
             }
 
             await _repositoryWrapper.CityAdministration.CreateAsync(admin);
@@ -165,7 +165,7 @@ namespace EPlast.BLL.Services.City
                              );
             return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationStatusDTO>>(cityAdmins);
         }
-        private async Task CheckCityHasHead(int cityId)
+        private async Task CheckCityHasHead()
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync("Голова Станиці");
             var admin = await _repositoryWrapper.CityAdministration.
