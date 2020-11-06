@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using PdfSharpCore.Drawing;
-using PdfSharpCore.Drawing.Layout;
 using PdfSharpCore.Pdf.IO;
 
 namespace PdfSharpCore.Drawing.Layout
@@ -67,12 +65,7 @@ namespace PdfSharpCore.Drawing.Layout
         /// Gets or sets the text.
         /// </summary>
         /// <value>The text.</value>
-        public string Text
-        {
-            get => _text;
-            set => _text = value;
-        }
-        string _text;
+        public string Text { get; set; }
 
         /// <summary>
         /// Gets or sets the font.
@@ -131,22 +124,12 @@ namespace PdfSharpCore.Drawing.Layout
         /// <summary>
         /// Gets or sets the bounding box of the layout.
         /// </summary>
-        public XRect LayoutRectangle
-        {
-            get => _layoutRectangle;
-            set => _layoutRectangle = value;
-        }
-        XRect _layoutRectangle;
+        public XRect LayoutRectangle { get; set; }
 
         /// <summary>
         /// Gets or sets the alignment of the text.
         /// </summary>
-        public XParagraphAlignment Alignment
-        {
-            get => _alignment;
-            set => _alignment = value;
-        }
-        XParagraphAlignment _alignment = XParagraphAlignment.Left;
+        public XParagraphAlignment Alignment { get; set; } = XParagraphAlignment.Left;
 
         /// <summary>
         /// Prepares a given text for drawing, performs the layout, returns the index of the last fitting char and the needed height.
@@ -229,7 +212,7 @@ namespace PdfSharpCore.Drawing.Layout
         /// <exception cref="ArgumentNullException"></exception>
         public void DrawString(XBrush brush, XStringFormat format)
         {
-            // TODO: Do we need "XStringFormat format" at PrepareDrawString or at DrawString? Not yet used anyway, but probably already needed at PrepareDrawString.
+            // Do we need "XStringFormat format" at PrepareDrawString or at DrawString? Not yet used anyway, but probably already needed at PrepareDrawString.
             if (!_preparedText)
                 throw new ArgumentException("PrepareDrawString must be called first.");
             if (brush == null)
@@ -237,11 +220,11 @@ namespace PdfSharpCore.Drawing.Layout
             if (format.Alignment != XStringAlignment.Near || format.LineAlignment != XLineAlignment.Near)
                 throw new ArgumentException("Only TopLeft alignment is currently implemented.");
 
-            if (_text.Length == 0)
+            if (Text.Length == 0)
                 return;
 
-            double dx = _layoutRectangle.Location.X;
-            double dy = _layoutRectangle.Location.Y + _cyAscent;
+            double dx = LayoutRectangle.Location.X;
+            double dy = LayoutRectangle.Location.Y + _cyAscent;
             int count = _blocks.Count;
             for (int idx = 0; idx < count; idx++)
             {
@@ -286,17 +269,17 @@ namespace PdfSharpCore.Drawing.Layout
         void CreateBlocks()
         {
             _blocks.Clear();
-            int length = _text.Length;
+            int length = Text.Length;
             bool inNonWhiteSpace = false;
             int startIndex = 0, blockLength = 0;
             for (int idx = 0; idx < length; idx++)
             {
-                char ch = _text[idx];
+                char ch = Text[idx];
 
                 // Treat CR and CRLF as LF
                 if (ch == Chars.CR)
                 {
-                    if (idx < length - 1 && _text[idx + 1] == Chars.LF)
+                    if (idx < length - 1 && Text[idx + 1] == Chars.LF)
                         idx++;
                     ch = Chars.LF;
                 }
@@ -304,7 +287,7 @@ namespace PdfSharpCore.Drawing.Layout
                 {
                     if (blockLength != 0)
                     {
-                        string token = _text.Substring(startIndex, blockLength);
+                        string token = Text.Substring(startIndex, blockLength);
                         _blocks.Add(new Block(token, BlockType.Text,
                           _gfx.MeasureString(token, _font).Width,
                           startIndex, startIndex + blockLength - 1));
@@ -317,7 +300,7 @@ namespace PdfSharpCore.Drawing.Layout
                 {
                     if (inNonWhiteSpace)
                     {
-                        string token = _text.Substring(startIndex, blockLength);
+                        string token = Text.Substring(startIndex, blockLength);
                         _blocks.Add(new Block(token, BlockType.Text,
                           _gfx.MeasureString(token, _font).Width,
                           startIndex, startIndex + blockLength - 1));
@@ -337,7 +320,7 @@ namespace PdfSharpCore.Drawing.Layout
             }
             if (blockLength != 0)
             {
-                string token = _text.Substring(startIndex, blockLength);
+                string token = Text.Substring(startIndex, blockLength);
                 _blocks.Add(new Block(token, BlockType.Text,
                                 _gfx.MeasureString(token, _font).Width,
                                 startIndex, startIndex + blockLength - 1));
@@ -346,8 +329,8 @@ namespace PdfSharpCore.Drawing.Layout
 
         void CreateLayout()
         {
-            double rectWidth = _layoutRectangle.Width;
-            double rectHeight = _layoutRectangle.Height - _cyAscent - _cyDescent /*- lineSpace*/;
+            double rectWidth = LayoutRectangle.Width;
+            double rectHeight = LayoutRectangle.Height - _cyAscent - _cyDescent /*- lineSpace*/;
             int firstIndex = 0;
             double x = 0, y = 0;
             int count = _blocks.Count;
@@ -401,7 +384,7 @@ namespace PdfSharpCore.Drawing.Layout
         void AlignLine(int firstIndex, int lastIndex, double layoutWidth)
         {
             XParagraphAlignment blockAlignment = _blocks[firstIndex].Alignment;
-            if (_alignment == XParagraphAlignment.Left || blockAlignment == XParagraphAlignment.Left)
+            if (Alignment == XParagraphAlignment.Left || blockAlignment == XParagraphAlignment.Left)
                 return;
 
             int count = lastIndex - firstIndex + 1;
@@ -414,9 +397,9 @@ namespace PdfSharpCore.Drawing.Layout
 
             double dx = Math.Max(layoutWidth - totalWidth, 0);
 
-            if (_alignment != XParagraphAlignment.Justify)
+            if (Alignment != XParagraphAlignment.Justify)
             {
-                if (_alignment == XParagraphAlignment.Center)
+                if (Alignment == XParagraphAlignment.Center)
                     dx /= 2;
                 for (int idx = firstIndex; idx <= lastIndex; idx++)
                 {

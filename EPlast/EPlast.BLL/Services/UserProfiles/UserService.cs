@@ -3,7 +3,6 @@ using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.UserProfiles;
-using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
@@ -70,7 +69,7 @@ namespace EPlast.BLL.Services.UserProfiles
         public IEnumerable<ConfirmedUserDTO> GetConfirmedUsers(UserDTO user)
         {
             var result = user.ConfirmedUsers.
-                Where(x => x.isCityAdmin == false && x.isClubAdmin == false);
+                Where(x => x.isCityAdmin && x.isClubAdmin);
             return result;
         }
 
@@ -78,7 +77,7 @@ namespace EPlast.BLL.Services.UserProfiles
         public ConfirmedUserDTO GetClubAdminConfirmedUser(UserDTO user)
         {
             var result = user.ConfirmedUsers.
-                FirstOrDefault(x => x.isClubAdmin == true);
+                FirstOrDefault(x => x.isClubAdmin);
 
             return result;
         }
@@ -87,7 +86,7 @@ namespace EPlast.BLL.Services.UserProfiles
         public ConfirmedUserDTO GetCityAdminConfirmedUser(UserDTO user)
         {
             var result = user.ConfirmedUsers.
-                FirstOrDefault(x => x.isCityAdmin == true);
+                FirstOrDefault(x => x.isCityAdmin);
 
             return result;
         }
