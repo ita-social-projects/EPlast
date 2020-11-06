@@ -54,7 +54,8 @@ namespace EPlast.BLL.Services.Statistics
             return citiesStatistics;
         }
 
-        public async Task<IEnumerable<CityStatistics>> GetCityStatisticsAsync(IEnumerable<int> citiesIds, int minYear, int maxYear, IEnumerable<StatisticsItemIndicator> indicators)
+        public async Task<IEnumerable<CityStatistics>> GetCityStatisticsAsync(IEnumerable<int> citiesIds, int minYear, int maxYear,
+                                                                              IEnumerable<StatisticsItemIndicator> indicators)
         {
             SelectStatisticsItems(indicators);
             var citiesStatistics = new List<CityStatistics>();
@@ -63,6 +64,24 @@ namespace EPlast.BLL.Services.Statistics
                 citiesStatistics.Add(await GetCityStatisticsAsync(cityId, minYear, maxYear));
             }
             return citiesStatistics;
+        }
+
+        public async Task<IEnumerable<CityStatistics>> GetCityStatisticsAsync(IEnumerable<int> citiesIds,
+                                                                              IEnumerable<int> years,
+                                                                              IEnumerable<StatisticsItemIndicator> indicators)
+        {
+            SelectStatisticsItems(indicators);
+            var citiesStatistics = new List<CityStatistics>();
+            foreach (var cityId in citiesIds)
+            {
+                citiesStatistics.Add(await GetCityStatisticsAsync(cityId, years));
+            }
+            return citiesStatistics.OrderBy(x => x.City.Name);
+        }
+
+        public async Task<IEnumerable<CityStatistics>> GetAllCitiesStatisticsAsync()
+        {
+            return await GetCitiesStatisticsAsync(await _repositoryWrapper.AnnualReports.GetAllAsync());
         }
 
         public async Task<RegionStatistics> GetRegionStatisticsAsync(int regionId, int year, IEnumerable<StatisticsItemIndicator> indicators)
@@ -88,7 +107,8 @@ namespace EPlast.BLL.Services.Statistics
             return regionStatistics;
         }
 
-        public async Task<IEnumerable<RegionStatistics>> GetRegionStatisticsAsync(IEnumerable<int> regionsIds, int minYear, int maxYear, IEnumerable<StatisticsItemIndicator> indicators)
+        public async Task<IEnumerable<RegionStatistics>> GetRegionStatisticsAsync(IEnumerable<int> regionsIds, int minYear, int maxYear,
+                                                                                  IEnumerable<StatisticsItemIndicator> indicators)
         {
             SelectStatisticsItems(indicators);
             var regionStatistics = new List<RegionStatistics>();
@@ -99,9 +119,74 @@ namespace EPlast.BLL.Services.Statistics
             return regionStatistics;
         }
 
-        public async Task<IEnumerable<CityStatistics>> GetAllCitiesStatisticsAsync()
+        public async Task<IEnumerable<RegionStatistics>> GetRegionStatisticsAsync(IEnumerable<int> regionsIds,
+                                                                                  IEnumerable<int> years,
+                                                                                  IEnumerable<StatisticsItemIndicator> indicators)
         {
-            var annualReports = await _repositoryWrapper.AnnualReports.GetAllAsync();
+            SelectStatisticsItems(indicators);
+            var regionStatistics = new List<RegionStatistics>();
+            foreach (var regionId in regionsIds)
+            {
+                regionStatistics.Add(await GetRegionStatisticsAsync(regionId, years));
+            }
+            return regionStatistics;
+        }
+
+        public async Task<IEnumerable<RegionStatistics>> GetAllRegionsStatisticsAsync()
+        {
+            return await GetRegionsStatisticsAsync(await _repositoryWrapper.AnnualReports.GetAllAsync(), await _repositoryWrapper.City.GetAllAsync());
+        }
+
+        private async Task<RegionStatistics> GetRegionStatisticsAsync(int regionId, IEnumerable<int> years)
+        {
+            var region = await _repositoryWrapper.Region.GetFirstOrDefaultAsync(
+                    predicate: r => r.ID == regionId
+                );
+            var membersStatistics = await _repositoryWrapper.MembersStatistics.GetAllAsync(
+                    predicate: m => m.AnnualReport.City.RegionId == regionId && years.Contains(m.AnnualReport.Date.Year),
+                    include: source => source
+                        .Include(m => m.AnnualReport)
+                );
+            var yearStatistics = new List<YearStatistics>();
+            foreach (var year in years)
+            {
+                var membersStatistic = membersStatistics.First(m => m.AnnualReport.Date.Year == year);
+                yearStatistics.Add(GetYearStatistics(year, membersStatistic));
+            }
+            return new RegionStatistics
+            {
+                Region = _mapper.Map<DatabaseEntities.Region, DTOs.Region>(region),
+                YearStatistics = yearStatistics.OrderBy(x => x.Year)
+            };
+        }
+
+        private async Task<CityStatistics> GetCityStatisticsAsync(int cityId, IEnumerable<int> years)
+        {
+            var city = await _repositoryWrapper.City.GetFirstOrDefaultAsync(
+                    predicate: c => c.ID == cityId,
+                    include: source => source
+                        .Include(c => c.Region)
+                );
+            var membersStatistics = await _repositoryWrapper.MembersStatistics.GetAllAsync(
+                    predicate: m => m.AnnualReport.CityId == city.ID && years.Contains(m.AnnualReport.Date.Year),
+                    include: source => source
+                        .Include(m => m.AnnualReport)
+                );
+            var yearStatistics = new List<YearStatistics>();
+            foreach (var year in years)
+            {
+                var membersStatistic = membersStatistics.First(m => m.AnnualReport.Date.Year == year);
+                yearStatistics.Add(GetYearStatistics(year, membersStatistic));
+            }
+            return new CityStatistics
+            {
+                City = _mapper.Map<DatabaseEntities.City, DTOs.City>(city),
+                YearStatistics = yearStatistics.OrderBy(x => x.Year)
+            };
+        }
+
+        private async Task<IEnumerable<CityStatistics>> GetCitiesStatisticsAsync(IEnumerable<AnnualReport> annualReports)
+        {
             var allCityStatistics = new List<CityStatistics>();
             foreach (var report in annualReports)
             {
@@ -110,14 +195,14 @@ namespace EPlast.BLL.Services.Statistics
             return allCityStatistics;
         }
 
-        public async Task<IEnumerable<RegionStatistics>> GetAllRegionsStatisticsAsync()
+        private async Task<IEnumerable<RegionStatistics>> GetRegionsStatisticsAsync(IEnumerable<AnnualReport> annualReports, IEnumerable<DatabaseEntities.City> cities)
         {
-            var annualReports = await _repositoryWrapper.AnnualReports.GetAllAsync();
             var allRegionsStatistics = new List<RegionStatistics>();
             foreach (var report in annualReports)
             {
-                if(!allRegionsStatistics.Any(x => x.Region.ID == report.City.RegionId))
-                    allRegionsStatistics.Add(await GetRegionStatisticsAsync(report.City.RegionId, report.Date.Year));
+                DataAccess.Entities.City filteredCity = cities.First(city => city.ID == report.CityId);
+                if (!allRegionsStatistics.Any(x => x.Region.ID == filteredCity.RegionId && x.YearStatistics.Any(x => x.Year == report.Date.Year)))
+                    allRegionsStatistics.Add(await GetRegionStatisticsAsync(filteredCity.RegionId, report.Date.Year));
             }
             return allRegionsStatistics;
         }
@@ -158,7 +243,7 @@ namespace EPlast.BLL.Services.Statistics
             return new YearStatistics
             {
                 Year = year,
-                StatisticsItems = statisticsItems
+                StatisticsItems = statisticsItems.OrderBy(x => x.Indicator)
             };
         }
 
@@ -265,5 +350,7 @@ namespace EPlast.BLL.Services.Statistics
                 YearStatistics = yearStatistics
             };
         }
+
+        
     }
 }
