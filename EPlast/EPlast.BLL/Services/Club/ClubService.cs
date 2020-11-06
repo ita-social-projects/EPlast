@@ -378,7 +378,7 @@ namespace EPlast.BLL.Services.Club
             }
             else
             {
-                Club.Logo = oldImageName;
+                Club.Logo = oldImageName ?? null;
             }
         }
 
