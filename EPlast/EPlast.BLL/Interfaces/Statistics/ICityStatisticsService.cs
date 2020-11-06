@@ -11,5 +11,6 @@ namespace EPlast.BLL.Interfaces.Statistics
         Task<IEnumerable<CityStatistics>> GetCityStatisticsAsync(IEnumerable<int> citiesIds, int year, IEnumerable<StatisticsItemIndicator> indicators);
         Task<IEnumerable<CityStatistics>> GetCityStatisticsAsync(IEnumerable<int> citiesIds, int minYear, int maxYear, IEnumerable<StatisticsItemIndicator> indicators);
         Task<IEnumerable<CityStatistics>> GetAllCitiesStatisticsAsync();
+        Task<IEnumerable<CityStatistics>> GetCityStatisticsAsync(IEnumerable<int> citiesIds, IEnumerable<int> years, IEnumerable<StatisticsItemIndicator> indicators);
     }
 }
