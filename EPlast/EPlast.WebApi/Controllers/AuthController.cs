@@ -93,14 +93,14 @@ namespace EPlast.WebApi.Controllers
             return Ok(_resourceForErrors["ModelIsNotValid"]);
         }
 
-        [HttpGet("GoogleClientId")]
+        [HttpGet("googleClientId")]
         [AllowAnonymous]
         public IActionResult GetGoogleClientId()
         {
             return Ok(new { id = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("GoogleAuthentication")["GoogleClientId"]});
         }
 
-        [HttpGet("FacebookAppId")]
+        [HttpGet("facebookAppId")]
         [AllowAnonymous]
         public IActionResult GetFacebookAppId()
         {
