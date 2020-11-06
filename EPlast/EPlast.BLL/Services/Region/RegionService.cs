@@ -135,6 +135,7 @@ namespace EPlast.BLL.Services.Region
 
             var cities = await _cityService.GetCitiesByRegionAsync(regionId);
             regionProfile.Cities = cities;
+            regionProfile.City = region.City;
 
             return regionProfile;
         }
