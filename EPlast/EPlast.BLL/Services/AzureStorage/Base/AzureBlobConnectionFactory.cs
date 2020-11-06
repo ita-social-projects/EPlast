@@ -11,6 +11,7 @@ namespace EPlast.BLL.Services.AzureStorage.Base
     {
         private readonly IConfiguration _configuration;
         private CloudBlobClient _blobClient;
+        private CloudBlobContainer _blobContainer;
 
         public AzureBlobConnectionFactory(IConfiguration configuration)
         {
@@ -23,7 +24,7 @@ namespace EPlast.BLL.Services.AzureStorage.Base
             var containerName = _configuration.GetValue<string>(containerNameKey);
             var blobClient = GetBlobClient();
 
-            CloudBlobContainer _blobContainer = blobClient.GetContainerReference(containerName);
+            _blobContainer = blobClient.GetContainerReference(containerName);
 
             if (await _blobContainer.CreateIfNotExistsAsync())
             {

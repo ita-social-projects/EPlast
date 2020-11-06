@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Club
@@ -67,7 +66,7 @@ namespace EPlast.BLL.Services.Club
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                ExceptionDispatchInfo.Capture(e).Throw();
+                throw e;
             }
 
             if (role == "Голова Куреня")

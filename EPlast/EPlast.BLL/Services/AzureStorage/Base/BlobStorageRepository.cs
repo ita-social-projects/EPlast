@@ -10,7 +10,7 @@ namespace EPlast.BLL.Services.AzureStorage.Base
     public abstract class BlobStorageRepository : IBlobStorageRepository
     {
         private readonly IAzureBlobConnectionFactory _connectionFactory;
-        protected BlobStorageRepository(IAzureBlobConnectionFactory connectionFactory)
+        public BlobStorageRepository(IAzureBlobConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }
