@@ -39,9 +39,15 @@ namespace EPlast.DataAccess.Entities
         public string KbUSPWishes { get; set; } 
 
         [Required]
+        public int ClubId { get; set; }
         public Club Club { get; set; }
-        public ICollection<ClubMembers> ClubMembers { get; set; }
-        public ICollection<ClubAdministration> ClubAdministration { get; set; }
+
+        public string ClubMembersSummary { get; set; }
+
+        public string ClubAdminContacts{ get; set; }
+
+
+
         public DateTime Date { get; set; }
     }
 }

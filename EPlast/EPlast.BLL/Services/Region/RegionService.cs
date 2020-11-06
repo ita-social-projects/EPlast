@@ -135,6 +135,7 @@ namespace EPlast.BLL.Services.Region
 
             var cities = await _cityService.GetCitiesByRegionAsync(regionId);
             regionProfile.Cities = cities;
+            regionProfile.City = region.City;
 
             return regionProfile;
         }
@@ -194,7 +195,7 @@ namespace EPlast.BLL.Services.Region
             ChangedRegion.RegionName = region.RegionName;
             ChangedRegion.Description = region.Description;
             ChangedRegion.Street = region.Street;
-            ChangedRegion.HouseNumber = ChangedRegion.HouseNumber;
+            ChangedRegion.HouseNumber = region.HouseNumber;
 
              _repoWrapper.Region.Update(ChangedRegion);
             await _repoWrapper.SaveAsync();
