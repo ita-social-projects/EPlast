@@ -26,7 +26,6 @@ namespace EPlast.WebApi.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        private readonly IMapper _mapper;
         private readonly ILoggerService<AuthController> _loggerService;
         private readonly IStringLocalizer<AuthenticationErrors> _resourceForErrors;
         private readonly IJwtService _jwtService;
@@ -34,7 +33,6 @@ namespace EPlast.WebApi.Controllers
         private readonly IUserDatesService _userDatesService;
 
         public AuthController(IAuthService authService,
-            IMapper mapper,
             ILoggerService<AuthController> loggerService,
             IStringLocalizer<AuthenticationErrors> resourceForErrors,
             IJwtService jwtService,
@@ -42,7 +40,6 @@ namespace EPlast.WebApi.Controllers
             IUserDatesService userDatesService)
         {
             _authService = authService;
-            _mapper = mapper;
             _loggerService = loggerService;
             _resourceForErrors = resourceForErrors;
             _jwtService = jwtService;
