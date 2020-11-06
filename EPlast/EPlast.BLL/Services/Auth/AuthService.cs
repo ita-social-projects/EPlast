@@ -300,7 +300,7 @@ namespace EPlast.BLL.Services
                 user = new User
                 {
                     SocialNetworking = true,
-                    UserName = facebookUser.Email ?? facebookUser.UserId.ToString(),
+                    UserName = facebookUser.Email ?? facebookUser.UserId,
                     FirstName = facebookUser.Name.Split(' ')[0],
                     Email = facebookUser.Email ?? "facebookdefaultmail@gmail.com",
                     LastName = facebookUser.Name.Split(' ')[1],
