@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Security.Policy;
-using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
@@ -13,9 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using System.Threading.Tasks;
 using System.Web;
-using Google.Apis.Auth;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Auth.OAuth2.Flows;
 using NLog.Extensions.Logging;
 
 namespace EPlast.WebApi.Controllers
@@ -25,7 +20,6 @@ namespace EPlast.WebApi.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        private readonly IMapper _mapper;
         private readonly ILoggerService<AuthController> _loggerService;
         private readonly IStringLocalizer<AuthenticationErrors> _resourceForErrors;
         private readonly IJwtService _jwtService;
@@ -33,7 +27,6 @@ namespace EPlast.WebApi.Controllers
         private readonly IUserDatesService _userDatesService;
 
         public AuthController(IAuthService authService,
-            IMapper mapper,
             ILoggerService<AuthController> loggerService,
             IStringLocalizer<AuthenticationErrors> resourceForErrors,
             IJwtService jwtService,
@@ -41,7 +34,6 @@ namespace EPlast.WebApi.Controllers
             IUserDatesService userDatesService)
         {
             _authService = authService;
-            _mapper = mapper;
             _loggerService = loggerService;
             _resourceForErrors = resourceForErrors;
             _jwtService = jwtService;
