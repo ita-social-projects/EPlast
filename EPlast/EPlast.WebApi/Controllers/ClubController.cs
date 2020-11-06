@@ -476,7 +476,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
 
         [HttpGet("GetAllClubAnnualReports")]
-        //[Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Р“РѕР»РѕРІР° РћРєСЂСѓРіСѓ, Р“РѕР»РѕРІР° РЎС‚Р°РЅРёС†С–")]
         public async Task<IActionResult> GetAllClubAnnualReports()
         {
             return StatusCode(StatusCodes.Status200OK, new { clubAnnualReports = await _ClubAnnualReportService.GetAllAsync(User) });
@@ -492,7 +492,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">The club annual report does not exist</response>
 
         [HttpGet("GetClubAnnualReportById/{id:int}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Р“РѕР»РѕРІР° РћРєСЂСѓРіСѓ, Р“РѕР»РѕРІР° РЎС‚Р°РЅРёС†С–")]
         public async Task<IActionResult> GetClubAnnualReportById(int id)
         {
             try
