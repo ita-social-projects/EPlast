@@ -231,5 +231,6 @@ namespace EPlast.DataAccess
         public DbSet<UserNotification> UserNotifications { get; set; }
         public DbSet<AchievementDocuments> AchievementDocuments { get; set; }
         public DbSet<ExtractFromUPUDocuments> ExtractFromUPUDocuments { get; set; }
+        public DbSet<EventSection> EventSection { get; set; }
     }
 }

@@ -2,10 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace EPlast.BLL.DTO.Club
+namespace EPlast.WebApi.Models.Club
 {
-    public class ClubAnnualReportDTO
+    public class ClubAnnualReportViewModel
     {
         public int ID { get; set; }
 
@@ -39,13 +42,6 @@ namespace EPlast.BLL.DTO.Club
         [MaxLength(500, ErrorMessage = "Максимально допустима кількість символів 500")]
         public string KbUSPWishes { get; set; }
         public int ClubId { get; set; }
-
-        public ClubDTO Club { get; set; }
-
-        public string ClubMembersSummary { get; set; }
-        public string ClubAdminContacts { get; set; }
-
-
 
         public DateTime Date { get; set; }
     }
