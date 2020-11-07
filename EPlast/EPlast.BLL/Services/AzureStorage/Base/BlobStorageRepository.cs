@@ -10,16 +10,16 @@ namespace EPlast.BLL.Services.AzureStorage.Base
     public abstract class BlobStorageRepository : IBlobStorageRepository
     {
         private readonly IAzureBlobConnectionFactory _connectionFactory;
-        public BlobStorageRepository(IAzureBlobConnectionFactory connectionFactory)
+        protected BlobStorageRepository(IAzureBlobConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }
 
         /// <inheritdoc />
-        public async Task<CloudBlockBlob> GetBlobAsync(string blobName, string containerName)
+        public async Task<CloudBlockBlob> GetBlobAsync(string blobNameWithExtension, string containerNameKey)
         {
-            var cloudBlobContainer = await _connectionFactory.GetBlobContainer(containerName);
-            CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(blobName);
+            var cloudBlobContainer = await _connectionFactory.GetBlobContainer(containerNameKey);
+            CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(blobNameWithExtension);
 
             return blockBlob;
         }
@@ -39,17 +39,17 @@ namespace EPlast.BLL.Services.AzureStorage.Base
         }
 
         /// <inheritdoc />
-        public async Task DeleteBlobAsync(string blobName, string containerName)
+        public async Task DeleteBlobAsync(string blobNameWithExtension, string containerName)
         {
             var cloudBlobContainer = await _connectionFactory.GetBlobContainer(containerName);
-            CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(blobName);
+            CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(blobNameWithExtension);
             await blockBlob.DeleteIfExistsAsync();
         }
 
         /// <inheritdoc />
-        public async Task UploadBlobAsync(IFormFile blobfile, string fileName, string containerName)
+        public async Task UploadBlobAsync(IFormFile blobfile, string fileName, string containerNameKey)
         {
-            var cloudBlobContainer = await _connectionFactory.GetBlobContainer(containerName);
+            var cloudBlobContainer = await _connectionFactory.GetBlobContainer(containerNameKey);
             CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(fileName);
             using (var fileStream = (blobfile.OpenReadStream()))
             {
