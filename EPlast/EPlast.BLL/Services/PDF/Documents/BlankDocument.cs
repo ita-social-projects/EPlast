@@ -109,6 +109,23 @@ namespace EPlast.BLL
             SetText(gfx, $"{blank?.UserProfile?.Work?.PlaceOfwork}", XFontStyle.Italic, 150, 433);
             SetText(gfx, "Вишкіл виховників", XFontStyle.Regular, 50, 450);
             SetText(gfx, $"УПЮ/УПН", XFontStyle.Italic, 50, 460);
+
+            var participantsUPU = blank?.User?.Participants?.Where(c => c.Event?.EventDateEnd < DateTime.Now &&
+            c?.ParticipantStatusId == 1 &&
+            (c.Event.EventCategory.EventSection.EventSectionName == "УПЮ" ||
+            c.Event.EventCategory.EventSection.EventSectionName == "УПН")).Select(c => c.Event.EventName).ToList();
+            var participantsUSP = blank?.User?.Participants?.Where(c => c.Event?.EventDateEnd < DateTime.Now &&
+            c?.ParticipantStatusId == 1 && c.Event.EventCategory.EventSection.EventSectionName == "УСП/УПС").Select(c => c.Event.EventName).ToList();
+            if (participantsUPU != null)
+            {
+                var resultUPU = String.Join("; ", participantsUPU);
+                SetText(gfx, $"{resultUPU}", XFontStyle.Regular, 190, 450);
+            }
+            if (participantsUSP != null)
+            {
+                var resultUSP = String.Join("; ", participantsUSP);
+                SetText(gfx, $"{resultUSP}", XFontStyle.Regular, 190, 475);
+            }
             SetLine(gfx, 165, 460, 550, 460);
             SetText(gfx, "Інші вишколи УСП/УПС", XFontStyle.Regular, 50, 475);
             SetText(gfx, "(назва, тип, число, дати)", XFontStyle.Regular, 50, 485);
@@ -145,6 +162,9 @@ namespace EPlast.BLL
             SetDashLine(gfx, 40, 670, 560, 670);
 
             SetText(gfx, "Дата рішення Крайового органу про прийняття в дійсні члени", XFontStyle.Regular, 50, 680);
+            var plastDegree = blank.User?.UserPlastDegrees?.FirstOrDefault(c => c.IsCurrent == true);
+            SetText(gfx, $"{plastDegree?.DateStart:dd.MM.yyyy}", XFontStyle.Italic, 380, 680);
+
             SetLine(gfx, 350, 690, 500, 690);
             SetText(gfx, "Дата заприсяження, іменування", XFontStyle.Regular, 50, 700);
             if (blank?.User?.UserMembershipDates?.FirstOrDefault()?.DateOath == DateTime.MinValue)
@@ -157,9 +177,9 @@ namespace EPlast.BLL
             }
             SetLine(gfx, 230, 710, 500, 710);
 
-            SetDashLine(gfx, 40, 725, 560, 725);
+            SetDashLine(gfx, 40, 717, 560, 717);
 
-            SetText(gfx, $"Номер користувача в системі - {blank?.UserProfile?.ID}", XFontStyle.Regular, 50, 735);
+            SetText(gfx, $"Номер користувача в системі - {blank?.UserProfile?.ID}", XFontStyle.Regular, 50, 727);
 
             DrawQRCode(gfx);
         }
@@ -192,11 +212,11 @@ namespace EPlast.BLL
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
             QRCodeData qrCodeData = qrGenerator.CreateQrCode("https://eplast.westeurope.cloudapp.azure.com/userpage/main/" + $"{blank.User.Id}", QRCodeGenerator.ECCLevel.Q);
             QRCode qrCode = new QRCode(qrCodeData);
-            Bitmap qrCodeImage = qrCode.GetGraphic(2);
+            Bitmap qrCodeImage = qrCode.GetGraphic(1);
             using var ms = new MemoryStream();
             qrCodeImage.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
             XImage xImage = XImage.FromStream(() => new MemoryStream(ms.ToArray()));
-            gfx.DrawImage(xImage, 480, 730);
+            gfx.DrawImage(xImage, 480, 720);
         }
 
     }
