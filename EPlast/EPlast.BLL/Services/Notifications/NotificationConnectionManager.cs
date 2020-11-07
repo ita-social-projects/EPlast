@@ -81,7 +81,7 @@ namespace EPlast.BLL.Services.Notifications
             return connectionId;
         }
 
-        public async Task<bool> RemoveSocket(string userId, string connectionId)
+        public async Task<bool> RemoveSocketAsync(string userId, string connectionId)
         {
             try
             {
