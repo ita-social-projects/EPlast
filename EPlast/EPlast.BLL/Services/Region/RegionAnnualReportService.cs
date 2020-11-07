@@ -27,7 +27,7 @@ namespace EPlast.BLL.Services.Region
         }
 
         ///<inheritdoc/>
-        public async Task<RegionAnnualReportDTO> GetByIdAsync(ClaimsPrincipal claimsPrincipal, int id)
+        public async Task<RegionAnnualReportDTO> CreateByNameAsync(ClaimsPrincipal claimsPrincipal, int id, int year)
         {
             DataAccess.Entities.Region region = await _repositoryWrapper.Region.GetFirstOrDefaultAsync(
                      predicate: a => a.ID == id,
@@ -40,6 +40,12 @@ namespace EPlast.BLL.Services.Region
                          );
             var regionAnnualReport = new RegionAnnualReport()
             {
+                RegionName = region.RegionName,
+
+                RegionId = id,
+
+                Date = DateTime.Now,
+
                 NumberOfSeigneurMembers = region.Cities.Aggregate(0, (x, y) =>
                            x += y.AnnualReports.Aggregate(0, (z, p) => z += p.MembersStatistic.NumberOfSeigneurMembers)),
 
@@ -104,7 +110,10 @@ namespace EPlast.BLL.Services.Region
                     x += y.AnnualReports.Aggregate(0, (z, p) => z += p.NumberOfTeachers)),
             };
 
-            return await _regionAccessService.HasAccessAsync(claimsPrincipal, regionAnnualReport.ID) ? _mapper.Map<RegionAnnualReport, RegionAnnualReportDTO>(regionAnnualReport)
+            _repositoryWrapper.RegionAnnualReports.Create(regionAnnualReport);
+            await _repositoryWrapper.SaveAsync();
+
+            return await _regionAccessService.HasAccessAsync(claimsPrincipal, region.ID) ? _mapper.Map<RegionAnnualReportDTO>(regionAnnualReport)
                 : throw new UnauthorizedAccessException();
         }
 
@@ -115,7 +124,6 @@ namespace EPlast.BLL.Services.Region
                  source => source
                         .Include(a => a.Region));
             var citiesDTO = await _regionAccessService.GetRegionsAsync(claimsPrincipal);
-            var filteredAnnualReports = annualReports.Where(a => citiesDTO.Any(c => c.ID == a.Region.ID));
             return _mapper.Map<IEnumerable<RegionAnnualReport>, IEnumerable<RegionAnnualReportDTO>>(annualReports);
         }
 
@@ -141,6 +149,16 @@ namespace EPlast.BLL.Services.Region
         {
             return await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(
                 predicate: a => a.Region.ID == Id && a.Date.Year == DateTime.Now.Year) != null;
+        }
+
+        public async Task<RegionAnnualReportDTO> GetReportById(int id, int year)
+        {
+            return _mapper.Map<RegionAnnualReport, RegionAnnualReportDTO>(await _repositoryWrapper.RegionAnnualReports.GetFirstAsync(predicate: i => i.ID == id && i.Date.Year == year));
+        }
+
+        public async Task<IEnumerable<RegionAnnualReportDTO>> GetAllRegionsReports()
+        {
+            return _mapper.Map<IEnumerable<RegionAnnualReport>, IEnumerable<RegionAnnualReportDTO>>(await _repositoryWrapper.RegionAnnualReports.FindAll().ToListAsync());
         }
     }
 }

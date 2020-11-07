@@ -8,14 +8,15 @@ namespace EPlast.BLL.Interfaces.Region
     public interface IRegionAnnualReportService
     {
         /// <summary>
-        /// Method to get all the information in the club annual report
+        /// Method to get all the information in the region annual report
         /// </summary>
         /// <param name="claimsPrincipal">Authorized user</param>
         /// <param name="id">Annual report identification number</param>
+        /// <param name="year">Annual report identification number</param>
         /// <returns>Annual report model</returns>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
         /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
-        Task<RegionAnnualReportDTO> GetByIdAsync(ClaimsPrincipal claimsPrincipal, int id);
+        Task<RegionAnnualReportDTO> CreateByNameAsync(ClaimsPrincipal claimsPrincipal, int id, int year);
 
         /// <summary>
         /// Method to get all region reports that the user has access to
@@ -33,5 +34,25 @@ namespace EPlast.BLL.Interfaces.Region
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to region</exception>
         /// <exception cref="System.NullReferenceException">Thrown when region doesn't exist</exception>
         Task CreateAsync(ClaimsPrincipal claimsPrincipal, RegionAnnualReportDTO regionAnnualReportDTO);
+
+        /// <summary>
+        /// Method to get region report by Id
+        /// </summary>
+        /// <param name="claimsPrincipal">Authorized user</param>
+        /// <param name="id">Annual report identification number</param>
+        /// <param name="year">Annual report identification number</param>
+        /// <returns>Annual report model</returns>
+        /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
+        /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
+        Task<RegionAnnualReportDTO> GetReportById(int id,int year);
+
+
+        /// <summary>
+        /// Method to get all regions reports
+        /// </summary>
+        /// <returns>Annual report model</returns>
+        /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
+        /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
+        Task<IEnumerable<RegionAnnualReportDTO>> GetAllRegionsReports();
     }
 }

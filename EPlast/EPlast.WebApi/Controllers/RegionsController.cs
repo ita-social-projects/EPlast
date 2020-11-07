@@ -280,6 +280,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>List of annual reports</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("GetAllRegionAnnualReports")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
         public async Task<IActionResult> GetAllRegionAnnualReports()
         {
             return StatusCode(StatusCodes.Status200OK,
@@ -287,19 +288,23 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Method to get region annual report
+        /// Method to create region annual report
         /// </summary>
         /// <param name="id">Region annual report identification number</param>
+        /// <param name="year">Region annual report year</param>
         /// <returns>Annual report</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The region annual report does not exist</response>
-        [HttpGet("GetRegionAnnualReportById/{id:int}")]
-        public async Task<IActionResult> GetRegionAnnualReportById(int id)
+        [HttpPost("CreateRegionAnnualReportById/{id}/{year}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
+        public async Task<IActionResult> CreateRegionAnnualReportById(int id, int year)
         {
+
             try
             {
-                return StatusCode(StatusCodes.Status200OK, new { annualreport = await _RegionAnnualReportService.GetByIdAsync(User, id) });
+                var annualreport = await _RegionAnnualReportService.CreateByNameAsync(User, id, year);
+                return StatusCode(StatusCodes.Status200OK, annualreport);
             }
             catch (NullReferenceException)
             {
@@ -311,5 +316,36 @@ namespace EPlast.WebApi.Controllers
                 return StatusCode(StatusCodes.Status403Forbidden);
             }
         }
+
+        /// <summary>
+        /// Method to get region annual report by id
+        /// </summary>
+        /// <param name="id">Region annual report identification number</param>
+        /// <param name="year">Region annual report year</param>
+        /// <returns>Annual report</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="403">User hasn't access to annual report</response>
+        /// <response code="404">The region annual report does not exist</response>
+        [HttpGet("GetReportById/{id}/{year}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetReportById(int id, int year)
+        {
+            return Ok(await _RegionAnnualReportService.GetReportById(id, year));
+        }
+
+        /// <summary>
+        /// Method to get all region annual reports
+        /// </summary>
+        /// <returns>Annual reports</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="403">User hasn't access to annual report</response>
+        /// <response code="404">The region annual report does not exist</response>
+        [HttpGet("GetAllRegionsReports")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetAllRegionsReports()
+        {
+            return Ok(await _RegionAnnualReportService.GetAllRegionsReports());
+        }
+
     }
 }

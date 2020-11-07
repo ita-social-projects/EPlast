@@ -1,5 +1,4 @@
 ﻿using EPlast.DataAccess.Entities;
-using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Blank;
 using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Entities.Event;
@@ -186,7 +185,7 @@ namespace EPlast.DataAccess
                 annualReport.HasOne(a => a.Club);
             });
         }
-
+        public DbSet<RegionAnnualReport> RegionAnnualReports { get; set; }
         public DbSet<DocumentTemplate> DocumentTemplates { get; set; }
         public DbSet<Organization> Organization { get; set; }
         public DbSet<DecesionTarget> DecesionTargets { get; set; }

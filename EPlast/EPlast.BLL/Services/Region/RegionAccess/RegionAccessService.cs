@@ -17,10 +17,10 @@ namespace EPlast.BLL.Services.Region.RegionAccess
         private readonly UserManager<DatabaseEntities.User> _userManager;
         private readonly IMapper _mapper;
 
-        private readonly Dictionary<string, IRegionAccessGetter> _RegionAccessGetters;
+        private readonly Dictionary<string, IRegionAccessGetter> _regionAccessGetters;
         public RegionAccessService(RegionAccessSettings settings, UserManager<DatabaseEntities.User> userManager, IMapper mapper)
         {
-            _RegionAccessGetters = settings.RegionAccessGetters;
+            _regionAccessGetters = settings.RegionAccessGetters;
             _userManager = userManager;
             _mapper = mapper;
         }
@@ -29,11 +29,11 @@ namespace EPlast.BLL.Services.Region.RegionAccess
         {
             var user = await _userManager.GetUserAsync(claimsPrincipal);
             var roles = await _userManager.GetRolesAsync(user);
-            foreach (var key in _RegionAccessGetters.Keys)
+            foreach (var key in _regionAccessGetters.Keys)
             {
                 if (roles.Contains(key))
                 {
-                    var cities = await _RegionAccessGetters[key].GetRegion(user.Id);
+                    var cities = await _regionAccessGetters[key].GetRegion(user.Id);
                     return _mapper.Map<IEnumerable<DatabaseEntities.Region>, IEnumerable<RegionDTO>>(cities);
                 }
             }
@@ -42,8 +42,8 @@ namespace EPlast.BLL.Services.Region.RegionAccess
 
         public async Task<bool> HasAccessAsync(ClaimsPrincipal claimsPrincipal, int RegionId)
         {
-            var cities = await this.GetRegionsAsync(claimsPrincipal);
-            return cities.Any(c => c.ID == RegionId);
+            var regions = await GetRegionsAsync(claimsPrincipal);
+            return regions.Any(c => c.ID == RegionId);
         }
     }
 }
