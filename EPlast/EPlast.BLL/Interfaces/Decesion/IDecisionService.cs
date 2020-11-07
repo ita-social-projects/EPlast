@@ -18,9 +18,9 @@ namespace EPlast.BLL
         /// <summary>
         /// Changes the name and description of the decision
         /// </summary>
-        /// <param name="decision">Decision dto</param>
+        /// <param name="decisionDto">Decision dto</param>
         /// <returns>The bool value that says whether the changes were successful</returns>
-        Task ChangeDecisionAsync(DecisionDTO decision);
+        Task ChangeDecisionAsync(DecisionDTO decisionDto);
         /// <summary>
         /// Deletes the decision
         /// </summary>
