@@ -41,7 +41,7 @@ namespace EPlast.WebApi.CustomMiddlewares
                 }
                 else if (result.MessageType == WebSocketMessageType.Close)
                 {
-                    await _webSocketHandler.OnDisconnected(userId, id);
+                    await _webSocketHandler.OnDisconnectedAsync(userId, id);
                     return;
                 }
             });

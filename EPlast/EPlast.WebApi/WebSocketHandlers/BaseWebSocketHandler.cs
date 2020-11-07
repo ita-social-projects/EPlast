@@ -22,9 +22,9 @@ namespace EPlast.WebApi.WebSocketHandlers
             return WebSocketConnectionManager.AddSocket(userId, socket);
         }
 
-        public virtual async Task OnDisconnected(string userId, string connectionId)
+        public virtual async Task OnDisconnectedAsync(string userId, string connectionId)
         {
-            await WebSocketConnectionManager.RemoveSocket(userId, connectionId);
+            await WebSocketConnectionManager.RemoveSocketAsync(userId, connectionId);
         }
 
         public async Task SendMessageAsync(string userId, string message)

@@ -21,7 +21,7 @@ namespace EPlast.BLL.Interfaces.Notifications
 
         string AddSocket(string userId, WebSocket socket);
 
-        Task<bool> RemoveSocket(string userId, string connectionId);
+        Task<bool> RemoveSocketAsync(string userId, string connectionId);
 
         void RemoveAllUserIdSockets(string userId);
 
