@@ -69,7 +69,7 @@ namespace EPlast.BLL.Services.UserProfiles
         public IEnumerable<ConfirmedUserDTO> GetConfirmedUsers(UserDTO user)
         {
             var result = user.ConfirmedUsers.
-                Where(x => x.isCityAdmin && x.isClubAdmin);
+                Where(x => !x.isCityAdmin && !x.isClubAdmin);
             return result;
         }
 
