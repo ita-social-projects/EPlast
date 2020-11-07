@@ -123,9 +123,8 @@ namespace EPlast.BLL.Services.Notifications
         {
             if (userMap.ContainsKey(userId))
             {
-                var tasks = userMap[userId].Select(c =>
-                {
-                    if (c.WebSocket.State == WebSocketState.Open)
+                var tasks = userMap[userId].Where(c => c.WebSocket.State == WebSocketState.Open)
+                .Select(c =>
                     {
                         return c.WebSocket.SendAsync(buffer: new ArraySegment<byte>(array: Encoding.ASCII.GetBytes(message),
                                                                                     offset: 0,
@@ -133,15 +132,9 @@ namespace EPlast.BLL.Services.Notifications
                                                     messageType: WebSocketMessageType.Text,
                                                     endOfMessage: true,
                                                     cancellationToken: CancellationToken.None);
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                });
-                await Task.WhenAll(tasks.Where(t => t != null));
+                    });
+                await Task.WhenAll(tasks);
             }
-
         }
     }
 }
