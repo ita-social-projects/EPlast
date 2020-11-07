@@ -476,6 +476,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
 
         [HttpGet("GetAllClubAnnualReports")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetAllClubAnnualReports()
         {
             return StatusCode(StatusCodes.Status200OK, new { annualReports = await _ClubAnnualReportService.GetAllAsync(User) });

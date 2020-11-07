@@ -6,7 +6,7 @@ using DatabaseEntities = EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Services.Region.RegionAccess.RegionAccessGetters
 {
-    public class RegionAccessForAdminGetter: IRegionAccessGetter
+    public class RegionAccessForAdminGetter : IRegionAccessGetter
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         public RegionAccessForAdminGetter(IRepositoryWrapper repositoryWrapper)
