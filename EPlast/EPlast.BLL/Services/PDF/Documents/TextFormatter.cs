@@ -443,6 +443,7 @@ namespace PdfSharpCore.Drawing.Layout
                 Text = text;
                 Type = type;
                 Width = width;
+                StartIndex = startIndex;
                 EndIndex = endIndex;
             }
 
@@ -461,6 +462,7 @@ namespace PdfSharpCore.Drawing.Layout
             public readonly string Text;
 
             public readonly int EndIndex = -1;
+            public readonly int StartIndex = -1;
 
             /// <summary>
             /// The type of the block.

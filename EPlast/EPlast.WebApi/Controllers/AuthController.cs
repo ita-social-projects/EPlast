@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Security.Policy;
-using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
@@ -14,9 +12,6 @@ using Microsoft.Extensions.Localization;
 using System.Threading.Tasks;
 using System.Web;
 using EPlast.BLL.Models;
-using Google.Apis.Auth;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Auth.OAuth2.Flows;
 using NLog.Extensions.Logging;
 
 namespace EPlast.WebApi.Controllers
