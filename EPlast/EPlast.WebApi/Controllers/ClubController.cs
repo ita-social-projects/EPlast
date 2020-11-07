@@ -102,7 +102,7 @@ namespace EPlast.WebApi.Controllers
             var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
             ClubProfile.CanEdit = await _ClubAccessService.HasAccessAsync(User, ClubId);
 
-            return Ok(new { ClubProfile.Members, ClubProfile.CanEdit });
+            return Ok(new { ClubProfile.Members, ClubProfile.CanEdit, ClubProfile.Name });
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace EPlast.WebApi.Controllers
             var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
             ClubProfile.CanEdit = await _ClubAccessService.HasAccessAsync(User, ClubId);
 
-            return Ok(new { ClubProfile.Followers, ClubProfile.CanEdit });
+            return Ok(new { ClubProfile.Followers, ClubProfile.CanEdit, ClubProfile.Name});
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace EPlast.WebApi.Controllers
             var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
             ClubProfile.CanEdit = await _ClubAccessService.HasAccessAsync(User, ClubId);
 
-            return Ok(new { ClubProfile.Administration, ClubProfile.Head, ClubProfile.CanEdit });
+            return Ok(new { ClubProfile.Administration, ClubProfile.Head, ClubProfile.CanEdit, ClubProfile.Name });
         }
 
         /// <summary>
@@ -476,10 +476,10 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
 
         [HttpGet("GetAllClubAnnualReports")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці")]
         public async Task<IActionResult> GetAllClubAnnualReports()
         {
-            return StatusCode(StatusCodes.Status200OK, new { annualReports = await _ClubAnnualReportService.GetAllAsync(User) });
+            return StatusCode(StatusCodes.Status200OK, new { clubAnnualReports = await _ClubAnnualReportService.GetAllAsync(User) });
         }
 
         /// <summary>
@@ -492,6 +492,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">The club annual report does not exist</response>
 
         [HttpGet("GetClubAnnualReportById/{id:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці")]
         public async Task<IActionResult> GetClubAnnualReportById(int id)
         {
             try
@@ -510,7 +511,33 @@ namespace EPlast.WebApi.Controllers
         }
 
 
+        [HttpPost("CreateClubAnnualReport")]
+        public async Task<IActionResult> CreateClubAnnualReport(ClubAnnualReportViewModel annualReport)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var clubAnnualReport = _mapper.Map<ClubAnnualReportViewModel, ClubAnnualReportDTO>(annualReport);
+                    await _ClubAnnualReportService.CreateAsync(User, clubAnnualReport);
+                }
+                catch (InvalidOperationException)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest);
+                }
+                catch (NullReferenceException)
+                {
+                    return StatusCode(StatusCodes.Status404NotFound);
+                }
 
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
+
+            return StatusCode(StatusCodes.Status201Created);
+        }
         /// <summary>
         /// Get all clubs 
         /// </summary>

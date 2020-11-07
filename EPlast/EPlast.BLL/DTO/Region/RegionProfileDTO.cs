@@ -18,6 +18,7 @@ namespace EPlast.BLL.DTO.Region
         public string HouseNumber { get; set; }
         public string OfficeNumber { get; set; }
         public int PostIndex { get; set; }
+        public string City { get; set; }
         public IEnumerable<RegionDocumentDTO> Documents { get; set; }
         public IEnumerable<RegionAdministrationDTO> Administration { get; set; }
         public IEnumerable<CityDTO> Cities { get; set; }

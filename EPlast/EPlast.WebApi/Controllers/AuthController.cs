@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Security.Policy;
+using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
@@ -11,6 +13,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using System.Threading.Tasks;
 using System.Web;
+using EPlast.BLL.Models;
+using Google.Apis.Auth;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Auth.OAuth2.Flows;
+using NLog.Extensions.Logging;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -84,6 +91,60 @@ namespace EPlast.WebApi.Controllers
                 }
             }
             return Ok(_resourceForErrors["ModelIsNotValid"]);
+        }
+
+        [HttpGet("googleClientId")]
+        [AllowAnonymous]
+        public IActionResult GetGoogleClientId()
+        {
+            return Ok(new { id = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("GoogleAuthentication")["GoogleClientId"]});
+        }
+
+        [HttpGet("facebookAppId")]
+        [AllowAnonymous]
+        public IActionResult GetFacebookAppId()
+        {
+            return Ok(new { id = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("FacebookAuthentication")["FacebookAppId"] });
+        }
+
+        [HttpPost("signin/google")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GoogleLogin(string googleToken)
+        {
+            try
+            {
+                var user = await _authService.GetGoogleUserAsync(googleToken);
+                if (user == null)
+                {
+                    return BadRequest();
+                }
+
+                var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
+
+                return Ok(new {token = generatedToken});
+            }
+            catch (Exception exc)
+            {
+                _loggerService.LogError(exc.Message);
+            }
+            
+            return BadRequest();
+            
+
+        }
+
+        [HttpPost("signin/facebook")]
+        [AllowAnonymous]
+        public async Task<IActionResult> FacebookLogin([FromBody] FacebookUserInfo userInfo)
+        {
+            var user = await _authService.FacebookLoginAsync(userInfo);
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
+            return Ok(new {token = generatedToken});
         }
 
         /// <summary>
@@ -247,10 +308,6 @@ namespace EPlast.WebApi.Controllers
         {
             var userDto = await _authService.FindByIdAsync(userId);
             var model = new ResetPasswordDto { Code = token, Email = userDto.Email };
-            if (userDto == null)
-            {
-                return BadRequest();
-            }
             int totalTime = _authService.GetTimeAfterReset(userDto);
             if (totalTime < 180)
             {

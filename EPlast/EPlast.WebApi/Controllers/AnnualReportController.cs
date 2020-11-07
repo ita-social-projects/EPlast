@@ -57,7 +57,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                return StatusCode(StatusCodes.Status200OK, new { annualreport = await _annualReportService.GetByIdAsync(User, id)});
+                return StatusCode(StatusCodes.Status200OK, new { annualReport = await _annualReportService.GetByIdAsync(User, id)});
             }
             catch (NullReferenceException)
             {
