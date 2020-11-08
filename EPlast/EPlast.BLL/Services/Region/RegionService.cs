@@ -57,13 +57,20 @@ namespace EPlast.BLL.Services.Region
 
         public async Task AddRegionAdministrator(RegionAdministrationDTO regionAdministrationDTO)
         {
-            var newRegionAdmin = _mapper.Map<RegionAdministrationDTO, RegionAdministration>(regionAdministrationDTO);
+            var adminType = await _adminTypeService.GetAdminTypeByIdAsync(regionAdministrationDTO.AdminTypeId);
+            var newRegionAdmin = new RegionAdministration()
+            {
+                StartDate = regionAdministrationDTO.StartDate ?? DateTime.Now,
+                EndDate = regionAdministrationDTO.EndDate,
+                AdminTypeId = adminType.ID,
+                RegionId = regionAdministrationDTO.RegionId,
+                UserId = regionAdministrationDTO.UserId
+            };
 
             var oldAdmin = await _repoWrapper.RegionAdministration.
                 GetFirstOrDefaultAsync(d => d.AdminTypeId == newRegionAdmin.AdminTypeId 
                 && d.RegionId == newRegionAdmin.RegionId && d.Status);
 
-            var adminType = await _adminTypeService.GetAdminTypeByIdAsync(regionAdministrationDTO.AdminTypeId);
             var newUser = await _userManager.FindByIdAsync(newRegionAdmin.UserId);
             
             var role = adminType.AdminTypeName == "Голова Округу" ? "Голова Округу" : "Діловод Округу";
@@ -71,7 +78,7 @@ namespace EPlast.BLL.Services.Region
 
             if (oldAdmin != null)
             {
-                if (DateTime.Compare((DateTime)regionAdministrationDTO.EndDate, DateTime.Now) > 0)
+                if (DateTime.Now < newRegionAdmin.EndDate || newRegionAdmin.EndDate == null)
                 {
                     newRegionAdmin.Status = true;
                     oldAdmin.Status = false;
