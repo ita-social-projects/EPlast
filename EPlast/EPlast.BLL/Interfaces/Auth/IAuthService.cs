@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using EPlast.BLL.Models;
 using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Interfaces
@@ -211,6 +212,11 @@ namespace EPlast.BLL.Interfaces
         /// <returns>Returns Google user information</returns>
         /// 
         Task<UserDTO> GetGoogleUserAsync(string providerToken);
-       
+
+        /// <summary>
+        /// Sign in using Facebook
+        /// </summary>
+        /// <param name="facebookUser"></param>
+        Task<UserDTO> FacebookLoginAsync(FacebookUserInfo facebookUser);
     }
 }
