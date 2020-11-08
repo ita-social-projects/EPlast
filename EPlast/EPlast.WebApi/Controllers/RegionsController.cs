@@ -75,7 +75,7 @@ namespace EPlast.WebApi.Controllers
 
 
         [HttpGet("GetAdministration/{regionId}")]
-        //[Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetRegionAdmins(int regionId)
         {
             var Admins = await _regionService.GetAdministrationAsync(regionId);
