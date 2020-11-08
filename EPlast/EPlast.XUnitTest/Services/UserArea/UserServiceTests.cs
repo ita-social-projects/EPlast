@@ -49,7 +49,7 @@ namespace EPlast.XUnitTest.Services.UserArea
 
         private UserService GetService()
         {
-            return new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _workService.Object, _educationService.Object, _userBlobStorage.Object,_env.Object, _userManagerService.Object, _confirmedUserService.Object);
+            return new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _workService.Object, _educationService.Object, _userBlobStorage.Object,_env.Object);
         }
         [Fact]
         public async Task GetUserProfileTest()
