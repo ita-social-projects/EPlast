@@ -3,7 +3,6 @@ using EPlast.BLL.Interfaces.Events;
 using EPlast.DataAccess.Repositories;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Events

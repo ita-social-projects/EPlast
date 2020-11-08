@@ -3,7 +3,6 @@ using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.UserProfiles;
-using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
@@ -23,16 +22,13 @@ namespace EPlast.BLL.Services.UserProfiles
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
-        private readonly IUserManagerService _userManagerService;
         private readonly IMapper _mapper;
         private readonly IWorkService _workService;
         private readonly IWebHostEnvironment _env;
         private readonly IEducationService _educationService;
         private readonly IUserBlobStorageRepository _userBlobStorage;
-        private readonly IConfirmedUsersService _confirmedUsersService;
         public UserService(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IMapper mapper, IWorkService workService,
-            IEducationService educationService, IUserBlobStorageRepository userBlobStorage, IWebHostEnvironment env, IUserManagerService userManagerService,
-            IConfirmedUsersService confirmedUsersService)
+            IEducationService educationService, IUserBlobStorageRepository userBlobStorage, IWebHostEnvironment env)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
@@ -41,8 +37,6 @@ namespace EPlast.BLL.Services.UserProfiles
             _educationService = educationService;
             _userBlobStorage = userBlobStorage;
             _env = env;
-            _userManagerService = userManagerService;
-            _confirmedUsersService = confirmedUsersService;
         }
 
         /// <inheritdoc />
@@ -75,7 +69,7 @@ namespace EPlast.BLL.Services.UserProfiles
         public IEnumerable<ConfirmedUserDTO> GetConfirmedUsers(UserDTO user)
         {
             var result = user.ConfirmedUsers.
-                Where(x => x.isCityAdmin == false && x.isClubAdmin == false);
+                Where(x => !x.isCityAdmin && !x.isClubAdmin);
             return result;
         }
 
@@ -83,7 +77,7 @@ namespace EPlast.BLL.Services.UserProfiles
         public ConfirmedUserDTO GetClubAdminConfirmedUser(UserDTO user)
         {
             var result = user.ConfirmedUsers.
-                FirstOrDefault(x => x.isClubAdmin == true);
+                FirstOrDefault(x => x.isClubAdmin);
 
             return result;
         }
@@ -92,7 +86,7 @@ namespace EPlast.BLL.Services.UserProfiles
         public ConfirmedUserDTO GetCityAdminConfirmedUser(UserDTO user)
         {
             var result = user.ConfirmedUsers.
-                FirstOrDefault(x => x.isCityAdmin == true);
+                FirstOrDefault(x => x.isCityAdmin);
 
             return result;
         }
@@ -153,9 +147,9 @@ namespace EPlast.BLL.Services.UserProfiles
         }
 
         /// <inheritdoc />
-        public async Task UpdateAsyncForBase64(UserDTO user, string imageBase64, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
+        public async Task UpdateAsyncForBase64(UserDTO user, string base64, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
-            user.ImagePath = await UploadPhotoAsyncFromBase64(user.Id, imageBase64);
+            user.ImagePath = await UploadPhotoAsyncFromBase64(user.Id, base64);
             user.UserProfile.Nationality = CheckFieldForNull(user.UserProfile.NationalityId, user.UserProfile.Nationality.Name, user.UserProfile.Nationality);
             user.UserProfile.Religion = CheckFieldForNull(user.UserProfile.ReligionId, user.UserProfile.Religion.Name, user.UserProfile.Religion);
             user.UserProfile.Degree = CheckFieldForNull(user.UserProfile.DegreeId, user.UserProfile.Degree.Name, user.UserProfile.Degree);

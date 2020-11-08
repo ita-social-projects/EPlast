@@ -1,9 +1,7 @@
 ﻿using System;
 using EPlast.DataAccess.Repositories;
-using System.Linq;
 using System.Threading.Tasks;
 using EPlast.BLL.Interfaces.Logging;
-using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using Microsoft.EntityFrameworkCore;
 
