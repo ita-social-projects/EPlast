@@ -1,4 +1,5 @@
-﻿using EPlast.BLL.DTO.Blank;
+﻿using EPlast.BLL;
+using EPlast.BLL.DTO.Blank;
 using EPlast.BLL.Interfaces.Blank;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,12 +14,18 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly IBlankBiographyDocumentService _blankBiographyDocumentService;
         private readonly IBlankAchievementDocumentService _blankAchievementDocumentService;
+        private readonly IBlankExtractFromUPUDocumentService _blankExtractFromUPUDocumentService;
+        private readonly IPdfService _pdfService;
 
         public BlanksController(IBlankBiographyDocumentService blankBiographyDocumentService,
-           IBlankAchievementDocumentService blankAchievementDocumentService)
+           IBlankAchievementDocumentService blankAchievementDocumentService,
+           IBlankExtractFromUPUDocumentService blankExtractFromUPUDocumentService,
+           IPdfService pdfService)
         {
             _blankBiographyDocumentService = blankBiographyDocumentService;
             _blankAchievementDocumentService = blankAchievementDocumentService;
+            _blankExtractFromUPUDocumentService = blankExtractFromUPUDocumentService;
+            _pdfService = pdfService;
         }
 
         /// <summary>
@@ -50,6 +57,20 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Add a document to the ExtractFromUPU blank
+        /// </summary>
+        /// <param name="extractFromUPUDocumentsDTO">An information about a specific document</param>
+        /// <returns>A newly created Blank biography document</returns>
+        [HttpPost("AddExtractFromUPUDocument/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> AddExtractFromUPUDocument(ExtractFromUPUDocumentsDTO extractFromUPUDocumentsDTO)
+        {
+            await _blankExtractFromUPUDocumentService.AddDocumentAsync(extractFromUPUDocumentsDTO);
+
+            return Created("", extractFromUPUDocumentsDTO);
+        }
+
+        /// <summary>
         /// Get a document by User ID
         /// </summary>
         /// <param Id="userId">An Id of user</param>
@@ -59,6 +80,18 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetDocumentByUserId(string userId)
         {
             return Ok(await _blankBiographyDocumentService.GetDocumentByUserId(userId));
+        }
+
+        /// <summary>
+        /// Get a document by User ID
+        /// </summary>
+        /// <param Id="userId">An Id of user</param>
+        /// <returns>A blank document that attached to user</returns>
+        [HttpGet("GetExtractFromUPUDocumentByUserId/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetExtractFromUPUByUserId(string userId)
+        {
+            return Ok(await _blankExtractFromUPUDocumentService.GetDocumentByUserId(userId));
         }
 
         [HttpGet("InfinityScroll")]
@@ -107,6 +140,19 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Delete the Extract From UPU document by document ID
+        /// </summary>
+        /// <param Id="documentId">An Id of document</param>
+        [HttpDelete("RemoveExtractFromUPUDocument/{documentId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> RemoveExtractFromUPUDocument(int documentId)
+        {
+            await _blankExtractFromUPUDocumentService.DeleteFileAsync(documentId);
+
+            return NoContent();
+        }
+
+        /// <summary>
         /// Download  document by file name
         /// </summary>
         /// <param name="fileName">A file blob name</param>
@@ -128,6 +174,30 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetFileAchievementBase64(string fileName)
         {
             return Ok(await _blankAchievementDocumentService.DownloadFileAsync(fileName));
+        }
+
+        /// <summary>
+        /// Download  document by file name
+        /// </summary>
+        /// <param name="fileName">A file blob name</param>
+        /// <returns>A Base64 format of Extract From UPU document</returns>
+        [HttpGet("ExtractFromUPUDocumentBase64/{fileName}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetFileExtractFromUPUBase64(string fileName)
+        {
+            return Ok(await _blankExtractFromUPUDocumentService.DownloadFileAsync(fileName));
+        }
+
+        /// <summary>
+        /// Generate user document by user Id
+        /// </summary>
+        /// <param name="userId">User ID</param>
+        /// <returns>A Base64 format Generated document</returns>
+        [HttpGet("getGenerationFile/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetGenerationFile(string userId)
+        {
+            return Ok(await _pdfService.BlankCreatePDFAsync(userId));
         }
 
     }

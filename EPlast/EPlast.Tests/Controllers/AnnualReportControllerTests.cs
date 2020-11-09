@@ -1,5 +1,4 @@
 ﻿using EPlast.BLL.DTO.AnnualReport;
-using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.Resources;
@@ -7,7 +6,6 @@ using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -21,6 +19,8 @@ namespace EPlast.Tests.Controllers
     {
 
         private readonly Mock<IAnnualReportService> _annualReportService;
+
+
         private readonly Mock<IUserManagerService> _userManagerService;
         private readonly Mock<ILoggerService<AnnualReportController>> _loggerService;
         private readonly Mock<IStringLocalizer<AnnualReportControllerMessage>> _localizer;
