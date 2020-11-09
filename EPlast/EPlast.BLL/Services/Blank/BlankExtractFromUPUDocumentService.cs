@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Blank
 {
-    public class BlankExtractFromUPUDocumentService : IBlankExtractFromUPUDocumentService
+    public class BlankExtractFromUpuDocumentService : IBlankExtractFromUPUDocumentService
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
         private readonly IBlankExtractFromUPUBlobStorageRepository _blankFilesBlobStorage;
 
-        public BlankExtractFromUPUDocumentService(IRepositoryWrapper repositoryWrapper,
+        public BlankExtractFromUpuDocumentService(IRepositoryWrapper repositoryWrapper,
            IMapper mapper,
            IBlankExtractFromUPUBlobStorageRepository blankFilesBlobStorage)
         {
@@ -26,20 +26,20 @@ namespace EPlast.BLL.Services.Blank
         }
 
 
-        public async Task<ExtractFromUPUDocumentsDTO> AddDocumentAsync(ExtractFromUPUDocumentsDTO ExtractFromUPUDocumentsDTO)
+        public async Task<ExtractFromUPUDocumentsDTO> AddDocumentAsync(ExtractFromUPUDocumentsDTO extractFromUPUDocumentsDTO)
         {
-            var fileBase64 = ExtractFromUPUDocumentsDTO.BlobName.Split(',')[1];
-            var extension = "." + ExtractFromUPUDocumentsDTO.FileName.Split('.').LastOrDefault();
+            var fileBase64 = extractFromUPUDocumentsDTO.BlobName.Split(',')[1];
+            var extension = "." + extractFromUPUDocumentsDTO.FileName.Split('.').LastOrDefault();
             var fileName = Guid.NewGuid() + extension;
             await _blankFilesBlobStorage.UploadBlobForBase64Async(fileBase64, fileName);
-            ExtractFromUPUDocumentsDTO.BlobName = fileName;
+            extractFromUPUDocumentsDTO.BlobName = fileName;
 
-            var document = _mapper.Map<ExtractFromUPUDocumentsDTO, ExtractFromUPUDocuments>(ExtractFromUPUDocumentsDTO);
+            var document = _mapper.Map<ExtractFromUPUDocumentsDTO, ExtractFromUPUDocuments>(extractFromUPUDocumentsDTO);
             _repositoryWrapper.ExtractFromUPUDocumentsRepository.Attach(document);
             await _repositoryWrapper.ExtractFromUPUDocumentsRepository.CreateAsync(document);
             await _repositoryWrapper.SaveAsync();
 
-            return ExtractFromUPUDocumentsDTO;
+            return extractFromUPUDocumentsDTO;
         }
 
         public async Task DeleteFileAsync(int documentId)

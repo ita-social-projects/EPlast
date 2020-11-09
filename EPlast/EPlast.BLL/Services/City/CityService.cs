@@ -406,7 +406,7 @@ namespace EPlast.BLL.Services
             }
             else
             {
-                city.Logo = oldImageName ?? null;
+                city.Logo = oldImageName;
             }
         }
 

@@ -61,6 +61,18 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get all clubs 
+        /// </summary>
+        /// <returns>List of clubs</returns>
+        [HttpGet("Clubs")]
+        public async Task<IActionResult> GetClubs()
+        {
+            var cities = await _ClubService.GetClubs();
+            return Ok(cities);
+
+        }
+
+        /// <summary>
         /// Get a specific Club
         /// </summary>
         /// <param name="ClubId">The id of the Club</param>
@@ -537,17 +549,6 @@ namespace EPlast.WebApi.Controllers
             }
 
             return StatusCode(StatusCodes.Status201Created);
-        }
-        /// <summary>
-        /// Get all clubs 
-        /// </summary>
-        /// <returns>List of clubs</returns>
-        [HttpGet("Clubs")]
-        public async Task<IActionResult> GetClubs()
-        {
-            var cities = await _ClubService.GetClubs();
-            return Ok(cities);
-
         }
 
     }
