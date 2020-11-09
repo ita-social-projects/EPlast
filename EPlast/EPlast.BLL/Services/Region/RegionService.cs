@@ -7,7 +7,6 @@ using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Region;
-using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -63,13 +62,20 @@ namespace EPlast.BLL.Services.Region
 
         public async Task AddRegionAdministrator(RegionAdministrationDTO regionAdministrationDTO)
         {
-            var newRegionAdmin = _mapper.Map<RegionAdministrationDTO, RegionAdministration>(regionAdministrationDTO);
+            var adminType = await _adminTypeService.GetAdminTypeByIdAsync(regionAdministrationDTO.AdminTypeId);
+            var newRegionAdmin = new RegionAdministration()
+            {
+                StartDate = regionAdministrationDTO.StartDate ?? DateTime.Now,
+                EndDate = regionAdministrationDTO.EndDate,
+                AdminTypeId = adminType.ID,
+                RegionId = regionAdministrationDTO.RegionId,
+                UserId = regionAdministrationDTO.UserId
+            };
 
             var oldAdmin = await _repoWrapper.RegionAdministration.
                 GetFirstOrDefaultAsync(d => d.AdminTypeId == newRegionAdmin.AdminTypeId 
                 && d.RegionId == newRegionAdmin.RegionId && d.Status);
 
-            var adminType = await _adminTypeService.GetAdminTypeByIdAsync(regionAdministrationDTO.AdminTypeId);
             var newUser = await _userManager.FindByIdAsync(newRegionAdmin.UserId);
             
             var role = adminType.AdminTypeName == "Голова Округу" ? "Голова Округу" : "Діловод Округу";
@@ -77,7 +83,7 @@ namespace EPlast.BLL.Services.Region
 
             if (oldAdmin != null)
             {
-                if (DateTime.Compare((DateTime)regionAdministrationDTO.EndDate, DateTime.Now) > 0)
+                if (DateTime.Now < newRegionAdmin.EndDate || newRegionAdmin.EndDate == null)
                 {
                     newRegionAdmin.Status = true;
                     oldAdmin.Status = false;
@@ -154,9 +160,9 @@ namespace EPlast.BLL.Services.Region
 
 
         /// <inheritdoc />
-        public async Task AddFollowerAsync(int RegionId, int cityId)
+        public async Task AddFollowerAsync(int regionId, int cityId)
         {
-            var region = (await _repoWrapper.Region.GetFirstAsync(d => d.ID == RegionId));
+            var region = (await _repoWrapper.Region.GetFirstAsync(d => d.ID == regionId));
             var city = (await _repoWrapper.City.GetFirstAsync(d=>d.ID==cityId));
 
             city.Region = region;
@@ -238,7 +244,7 @@ namespace EPlast.BLL.Services.Region
 
         public async Task<IEnumerable<RegionAdministrationDTO>> GetUsersPreviousAdministrations(string userId)
         {
-            var secretaries = await _repoWrapper.RegionAdministration.GetAllAsync(a => a.UserId == userId && a.Status==false,
+            var secretaries = await _repoWrapper.RegionAdministration.GetAllAsync(a => a.UserId == userId && !a.Status,
                 include: source => source
                  .Include(r => r.User)
                  .Include(r => r.Region)
