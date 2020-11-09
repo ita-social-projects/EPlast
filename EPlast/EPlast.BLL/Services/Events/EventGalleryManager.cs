@@ -37,7 +37,7 @@ namespace EPlast.BLL.Services.Events
             {
                 if (file != null && file.Length > 0)
                 {
-                    var fileName = _uniqueId.GetUniqueId() + Path.GetExtension(file.FileName);
+                    var fileName = $"{_uniqueId.GetUniqueId()}{Path.GetExtension(file.FileName)}";
                     await _eventBlobStorage.UploadBlobAsync(file, fileName);
                     var gallery = new Gallary() { GalaryFileName = fileName };
                     await _repoWrapper.Gallary.CreateAsync(gallery);

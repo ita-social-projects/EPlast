@@ -50,8 +50,8 @@ namespace EPlast.BLL.Services.Club
         public async Task<ClubDocumentsDTO> AddDocumentAsync(ClubDocumentsDTO documentsDTO)
         {
             var fileBase64 = documentsDTO.BlobName.Split(',')[1];
-            var extension = "." + documentsDTO.FileName.Split('.').LastOrDefault();
-            var fileName = _uniqueId.GetUniqueId() + extension;
+            var extension = $".{documentsDTO.FileName.Split('.').LastOrDefault()}";
+            var fileName = $"{_uniqueId.GetUniqueId()}{extension}";
             await _ClubFilesBlobStorage.UploadBlobForBase64Async(fileBase64, fileName);
             documentsDTO.BlobName = fileName;
 
