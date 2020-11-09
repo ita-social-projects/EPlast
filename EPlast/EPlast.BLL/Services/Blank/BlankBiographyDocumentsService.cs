@@ -60,10 +60,8 @@ namespace EPlast.BLL.Services.Blank
 
         public async Task<BlankBiographyDocumentsDTO> GetDocumentByUserId(string userid)
         {
-            var document = _mapper.Map<BlankBiographyDocuments, BlankBiographyDocumentsDTO>(
+            return _mapper.Map<BlankBiographyDocuments, BlankBiographyDocumentsDTO>(
                 await _repositoryWrapper.BiographyDocumentsRepository.GetFirstOrDefaultAsync(i => i.UserId == userid));
-
-            return document;
         }
     }
 }

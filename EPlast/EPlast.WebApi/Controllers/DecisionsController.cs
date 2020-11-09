@@ -65,6 +65,30 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Returns all decisions
+        /// </summary>
+        /// <returns>All decisions</returns>
+        /// <response code="200">Array of all decisions</response>
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            List<DecisionViewModel> decisions = (await _decisionService.GetDecisionListAsync())
+                        .Select(decesion =>
+                        {
+                            var dvm = _mapper.Map<DecisionViewModel>(decesion.Decision);
+
+                            dvm.DecisionStatusType = _decisionService.GetDecisionStatusTypes()
+                            .FirstOrDefault(dst => dst.Value == decesion.Decision.DecisionStatusType.ToString()).Text;
+                            dvm.FileName = decesion.Decision.FileName;
+
+                            return dvm;
+                        })
+                        .ToList();
+
+            return Ok(decisions);
+        }
+
+        /// <summary>
         /// Updates decision
         /// </summary>
         /// <param name="id">decision id</param>
@@ -109,30 +133,6 @@ namespace EPlast.WebApi.Controllers
                 decision = decisionWrapper.Decision,
                 decisionOrganization = decisionOrganizations
             });
-        }
-
-        /// <summary>
-        /// Returns all decisions
-        /// </summary>
-        /// <returns>All decisions</returns>
-        /// <response code="200">Array of all decisions</response>
-        [HttpGet]
-        public async Task<IActionResult> Get()
-        {
-            List<DecisionViewModel> decisions = (await _decisionService.GetDecisionListAsync())
-                        .Select(decesion =>
-                        {
-                            var dvm = _mapper.Map<DecisionViewModel>(decesion.Decision);
-
-                            dvm.DecisionStatusType = _decisionService.GetDecisionStatusTypes()
-                            .FirstOrDefault(dst => dst.Value == decesion.Decision.DecisionStatusType.ToString()).Text;
-                            dvm.FileName = decesion.Decision.FileName;
-
-                            return dvm;
-                        })
-                        .ToList();
-
-            return Ok(decisions);
         }
 
         /// <summary>
