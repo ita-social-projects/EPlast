@@ -134,7 +134,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetRegions(int page, int pageSize, string regionName)
         {
             var regions = await _regionService.GetAllRegionsAsync();
-            var regionsViewModel = new RegionsViewModel(page, pageSize, regions, regionName);
+            var regionsViewModel = new RegionsViewModel(page, pageSize, regions, regionName, User.IsInRole("Admin"));
 
             return Ok(regionsViewModel);
         }
