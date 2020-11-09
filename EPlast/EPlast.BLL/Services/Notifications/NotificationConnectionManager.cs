@@ -57,7 +57,7 @@ namespace EPlast.BLL.Services.Notifications
             var userConnections = userMap.FirstOrDefault(p => p.Value.FirstOrDefault(conn => conn.WebSocket == socket) != null);
             if(userConnections.Equals(default(KeyValuePair<string, HashSet<ConnectionDTO>>)))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("Dictionary doesn`t contain this WebSocket", "socket");
             }
             return userConnections.Key;
         }
