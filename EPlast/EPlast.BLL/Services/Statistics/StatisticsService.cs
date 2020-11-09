@@ -175,7 +175,7 @@ namespace EPlast.BLL.Services.Statistics
             var yearStatistics = new List<YearStatistics>();
             foreach (var year in years)
             {
-                var membersStatistic = membersStatistics.First(m => m.AnnualReport.Date.Year == year);
+                var membersStatistic = membersStatistics.FirstOrDefault(m => m.AnnualReport.Date.Year == year);
                 yearStatistics.Add(GetYearStatistics(year, membersStatistic));
             }
             return new CityStatistics
