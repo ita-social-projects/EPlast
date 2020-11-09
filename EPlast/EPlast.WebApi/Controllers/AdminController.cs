@@ -126,7 +126,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="userId">The id of the user</param>
         /// <param name="role">The new current role of user</param>
-        /// <response code="200">Successful operation</response>
+        /// <response code="201">Successful operation</response>
         /// <response code="404">User not found</response>
         [HttpPut("changeRole/{userId}/{role}")]
         public async Task<IActionResult> ChangeCurrentUserRole(string userId, string role)

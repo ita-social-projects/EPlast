@@ -17,6 +17,7 @@ namespace EPlast.BLL.DTO.Region
         public string Logo { get; set; }
         public string Link { get; set; }
         public string Street { get; set; }
+        public bool CanCreate { get; set; }
         public string HouseNumber { get; set; }
         public string OfficeNumber { get; set; }
         public int PostIndex { get; set; }
