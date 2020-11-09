@@ -46,6 +46,7 @@ namespace EPlast.BLL.Services.City
         /// <inheritdoc />
         public async Task<CityAdministrationDTO> AddAdministratorAsync(CityAdministrationDTO adminDTO)
         {
+            
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
             var admin = new CityAdministration()
             {
@@ -60,12 +61,16 @@ namespace EPlast.BLL.Services.City
             var role = adminType.AdminTypeName == "Голова Станиці" ? "Голова Станиці" : "Діловод Станиці";
             await _userManager.AddToRoleAsync(user, role);
 
+            await CheckCityHasAdmin(adminDTO.CityId, adminType.AdminTypeName);
+            
+
             await _repositoryWrapper.CityAdministration.CreateAsync(admin);
             await _repositoryWrapper.SaveAsync();
             adminDTO.ID = admin.ID;
 
             return adminDTO;
         }
+        
 
         /// <inheritdoc />
         public async Task<CityAdministrationDTO> EditAdministratorAsync(CityAdministrationDTO adminDTO)
@@ -119,7 +124,7 @@ namespace EPlast.BLL.Services.City
                     .GetAllAsync(a => (a.EndDate > DateTime.Now || a.EndDate == null) && a.UserId == admin.UserId);
 
                 if (currentAdministration.All(a => (a.AdminTypeId == cityHeadType.ID ? "Голова Станиці" : "Діловод Станиці") != role)
-                    || currentAdministration.Count() == 0)
+                    || !currentAdministration.Any())
                 {
                     var user = await _userManager.FindByIdAsync(admin.UserId);
 
@@ -130,11 +135,46 @@ namespace EPlast.BLL.Services.City
 
         public async Task<IEnumerable<CityAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId)
         {
-            var admins = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.UserId == UserId,
+            var admins = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.UserId == UserId && a.Status,
+                 include:
+                 source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.City)
+                 );
+
+            return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(admins);
+        }
+
+
+
+
+        public async Task<IEnumerable<CityAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string UserId)
+        {
+            var admins = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.UserId == UserId && !a.Status,
                  include:
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.City)
                  );
             return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(admins);
         }
+
+        public async Task<IEnumerable<CityAdministrationStatusDTO>> GetAdministrationStatuses(string UserId)
+        {
+            var cityAdmins = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.UserId == UserId && !a.Status,
+                             include:
+                             source => source.Include(c => c.User).Include(c => c.AdminType).Include(c => c.City)
+                             );
+            return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationStatusDTO>>(cityAdmins);
+        }
+        private async Task CheckCityHasAdmin(int cityId, string adminTypeName)
+        {
+            var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminTypeName);
+            var admin = await _repositoryWrapper.CityAdministration.
+                GetFirstOrDefaultAsync(a => a.AdminTypeId == adminType.ID 
+                    && (DateTime.Now < a.EndDate || a.EndDate == null) && a.CityId == cityId);
+
+            if (admin != null)
+            {
+                await RemoveAdministratorAsync(admin.ID);
+            }
+        }
+
     }
 }

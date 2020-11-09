@@ -61,6 +61,17 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get all cities 
+        /// </summary>
+        /// <returns>List of cities</returns>
+        [HttpGet("Cities")]
+        public async Task<IActionResult> GetCities()
+        {
+            var cities = await _cityService.GetCities();
+            return Ok(cities);
+        }
+
+        /// <summary>
         /// Get a specific city
         /// </summary>
         /// <param name="cityId">The id of the city</param>
@@ -102,7 +113,7 @@ namespace EPlast.WebApi.Controllers
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
             cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(User, cityId);
 
-            return Ok(new { cityProfile.Members, cityProfile.CanEdit });
+            return Ok(new { cityProfile.Members, cityProfile.CanEdit, cityProfile.Name });
         }
 
         /// <summary>
@@ -125,7 +136,7 @@ namespace EPlast.WebApi.Controllers
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
             cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(User, cityId);
 
-            return Ok(new { cityProfile.Followers, cityProfile.CanEdit });
+            return Ok(new { cityProfile.Followers, cityProfile.CanEdit, cityProfile.Name });
         }
 
         /// <summary>
@@ -148,7 +159,7 @@ namespace EPlast.WebApi.Controllers
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
             cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(User, cityId);
 
-            return Ok(new { cityProfile.Administration, cityProfile.Head, cityProfile.CanEdit });
+            return Ok(new { cityProfile.Administration, cityProfile.Head, cityProfile.CanEdit, cityProfile.Name });
         }
 
         /// <summary>
@@ -279,6 +290,22 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> AddFollower(int cityId)
         {
             var follower = await _cityMembersService.AddFollowerAsync(cityId, User);
+            _logger.LogInformation($"User {{{follower.UserId}}} became a follower of city {{{cityId}}}.");
+
+            return Ok(follower);
+        }
+
+        /// <summary>
+        /// Add the user to followers
+        /// </summary>
+        /// <param name="cityId">An id of the city</param>
+        /// <param name="userId">An id of the user</param>
+        /// <returns>An information about a new follower</returns>
+        [HttpPost("AddFollowerWithId/{cityId}/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> AddFollowerWithId(int cityId, string userId)
+        {
+            var follower = await _cityMembersService.AddFollowerAsync(cityId, userId);
             _logger.LogInformation($"User {{{follower.UserId}}} became a follower of city {{{cityId}}}.");
 
             return Ok(follower);
@@ -455,6 +482,23 @@ namespace EPlast.WebApi.Controllers
         }
 
 
+
+        [HttpGet("GetUserPreviousAdmins/{UserId}")]
+
+        public async Task<IActionResult> GetUsePreviousAdministrations(string UserId)
+        {
+            var userAdmins = await _cityAdministrationService.GetPreviousAdministrationsOfUserAsync(UserId);
+
+            return Ok(userAdmins);
+        }
+
+        [HttpGet("GetAllAdministrationStatuses/{UserId}")]
+        public async Task<IActionResult> GetAllAdministrationStatuses(string UserId)
+        {
+            var userAdmins = await _cityAdministrationService.GetAdministrationStatuses(UserId);
+
+            return Ok((userAdmins));
+        }
 
     }
 }

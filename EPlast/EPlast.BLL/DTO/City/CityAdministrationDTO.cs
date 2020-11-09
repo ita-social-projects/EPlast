@@ -13,5 +13,6 @@ namespace EPlast.BLL.DTO.City
         public AdminTypeDTO AdminType { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public bool Status { get; set; }
     }
 }
