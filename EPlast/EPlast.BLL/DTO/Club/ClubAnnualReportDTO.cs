@@ -38,9 +38,15 @@ namespace EPlast.BLL.DTO.Club
 
         [MaxLength(500, ErrorMessage = "Максимально допустима кількість символів 500")]
         public string KbUSPWishes { get; set; }
+        public int ClubId { get; set; }
+
         public ClubDTO Club { get; set; }
-        public ICollection<ClubMembers> ClubMembers { get; set; }
-        public ICollection<ClubAdministration> ClubAdministration { get; set; }
+
+        public string ClubMembersSummary { get; set; }
+        public string ClubAdminContacts { get; set; }
+
+
+
         public DateTime Date { get; set; }
     }
 }

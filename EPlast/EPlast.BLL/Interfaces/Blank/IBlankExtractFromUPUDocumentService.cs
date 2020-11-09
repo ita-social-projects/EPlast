@@ -10,7 +10,7 @@ namespace EPlast.BLL.Interfaces.Blank
         /// </summary>
         /// <param name="document">An information about a specific document</param>
         /// <returns>A newly created biography document</returns>
-        Task<ExtractFromUPUDocumentsDTO> AddDocumentAsync(ExtractFromUPUDocumentsDTO biographyDocumentDTO);
+        Task<ExtractFromUPUDocumentsDTO> AddDocumentAsync(ExtractFromUPUDocumentsDTO extractFromUPUDocumentsDTO);
 
         /// <summary>
         /// Get a file in base64 format
