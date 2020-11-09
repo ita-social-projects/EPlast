@@ -12,10 +12,8 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Web;
 using EPlast.BLL.Models;
 using Newtonsoft.Json;
-using NLog.Fluent;
 
 namespace EPlast.BLL.Services
 {
@@ -257,7 +255,7 @@ namespace EPlast.BLL.Services
 
             if (httpResponseMessage.StatusCode != HttpStatusCode.OK)
             {
-                throw new Exception();
+                throw new HttpRequestException("Status code isn`t correct");
             }
 
             var response = await httpResponseMessage.Content.ReadAsStringAsync();
@@ -285,12 +283,40 @@ namespace EPlast.BLL.Services
                    await _userManager.AddToRoleAsync(user, "Прихильник");
                }
                else 
-                   throw new Exception("Failed creation of user");
+                   throw new ArgumentException("Failed creation of user");
 
             }
             await _signInManager.SignInAsync(user, isPersistent: false);
             return _mapper.Map<User, UserDTO>(user);
 
+        }
+        public async Task<UserDTO> FacebookLoginAsync(FacebookUserInfo facebookUser)
+        {
+            var user = await _userManager.FindByEmailAsync(facebookUser.Email);
+            if (user == null)
+            {
+                user = new User
+                {
+                    SocialNetworking = true,
+                    UserName = facebookUser.Email ?? facebookUser.UserId,
+                    FirstName = facebookUser.Name.Split(' ')[0],
+                    Email = facebookUser.Email ?? "facebookdefaultmail@gmail.com",
+                    LastName = facebookUser.Name.Split(' ')[1],
+                    ImagePath = "default_user_image.png",
+                    EmailConfirmed = true,
+                    RegistredOn = DateTime.Now,
+                    UserProfile = new UserProfile()
+                };
+                var createResult = await _userManager.CreateAsync(user);
+                if (createResult.Succeeded && user.Email!= "facebookdefaultmail@gmail.com")
+                {
+                    await _emailConfirmation.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
+                        "Ви зареєструвались в системі EPlast використовуючи свій Facebook-акаунт. ", "Адміністрація сайту EPlast");
+                }
+                await _userManager.AddToRoleAsync(user, "Прихильник");
+            }
+            await _signInManager.SignInAsync(user, isPersistent: false);
+            return _mapper.Map<User, UserDTO>(user);
         }
 
         ///<inheritdoc/>
