@@ -42,5 +42,7 @@ namespace EPlast.BLL.Interfaces.Region
         /// <returns>All Regions</returns>
         Task<IEnumerable<RegionForAdministrationDTO>> GetRegions();
 
+        Task EditRegionAdministrator(RegionAdministrationDTO regionAdministrationDTO);
+
     }
 }
