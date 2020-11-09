@@ -49,8 +49,8 @@ namespace EPlast.BLL.Services.City
         public async Task<CityDocumentsDTO> AddDocumentAsync(CityDocumentsDTO documentDTO)
         {
             var fileBase64 = documentDTO.BlobName.Split(',')[1];
-            var extension = "." + documentDTO.FileName.Split('.').LastOrDefault();
-            var fileName = _uniqueId.GetUniqueId() + extension;
+            var extension = $".{documentDTO.FileName.Split('.').LastOrDefault()}";
+            var fileName = $"{_uniqueId.GetUniqueId()}{extension}";
 
             await _cityFilesBlobStorage.UploadBlobForBase64Async(fileBase64, fileName);
             documentDTO.BlobName = fileName;
