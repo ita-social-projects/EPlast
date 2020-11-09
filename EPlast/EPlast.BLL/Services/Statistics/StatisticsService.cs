@@ -31,41 +31,7 @@ namespace EPlast.BLL.Services.Statistics
             _majorStatisticsItems = settings.GetMajorItems();
         }
 
-        public async Task<CityStatistics> GetCityStatisticsAsync(int cityId, int year, IEnumerable<StatisticsItemIndicator> indicators)
-        {
-            SelectStatisticsItems(indicators);
-            return await GetCityStatisticsAsync(cityId, year);
-        }
-
-        public async Task<CityStatistics> GetCityStatisticsAsync(int cityId, int minYear, int maxYear, IEnumerable<StatisticsItemIndicator> indicators)
-        {
-            SelectStatisticsItems(indicators);
-            return await GetCityStatisticsAsync(cityId, minYear, maxYear);
-        }
-
-        public async Task<IEnumerable<CityStatistics>> GetCityStatisticsAsync(IEnumerable<int> citiesIds, int year, IEnumerable<StatisticsItemIndicator> indicators)
-        {
-            SelectStatisticsItems(indicators);
-            var citiesStatistics = new List<CityStatistics>();
-            foreach (var cityId in citiesIds)
-            {
-                citiesStatistics.Add(await GetCityStatisticsAsync(cityId, year));
-            }
-            return citiesStatistics;
-        }
-
-        public async Task<IEnumerable<CityStatistics>> GetCityStatisticsAsync(IEnumerable<int> citiesIds, int minYear, int maxYear,
-                                                                              IEnumerable<StatisticsItemIndicator> indicators)
-        {
-            SelectStatisticsItems(indicators);
-            var citiesStatistics = new List<CityStatistics>();
-            foreach (var cityId in citiesIds)
-            {
-                citiesStatistics.Add(await GetCityStatisticsAsync(cityId, minYear, maxYear));
-            }
-            return citiesStatistics;
-        }
-
+        
         public async Task<IEnumerable<CityStatistics>> GetCityStatisticsAsync(IEnumerable<int> citiesIds,
                                                                               IEnumerable<int> years,
                                                                               IEnumerable<StatisticsItemIndicator> indicators)
@@ -78,47 +44,7 @@ namespace EPlast.BLL.Services.Statistics
             }
             return citiesStatistics.OrderBy(x => x.City.Name);
         }
-
-        public async Task<IEnumerable<CityStatistics>> GetAllCitiesStatisticsAsync()
-        {
-            return await GetCitiesStatisticsAsync(await _repositoryWrapper.AnnualReports.GetAllAsync());
-        }
-
-        public async Task<RegionStatistics> GetRegionStatisticsAsync(int regionId, int year, IEnumerable<StatisticsItemIndicator> indicators)
-        {
-            SelectStatisticsItems(indicators);
-            return await GetRegionStatisticsAsync(regionId, year);
-        }
-
-        public async Task<RegionStatistics> GetRegionStatisticsAsync(int regionId, int minYear, int maxYear, IEnumerable<StatisticsItemIndicator> indicators)
-        {
-            SelectStatisticsItems(indicators);
-            return await GetRegionStatisticsAsync(regionId, minYear, maxYear);
-        }
-
-        public async Task<IEnumerable<RegionStatistics>> GetRegionStatisticsAsync(IEnumerable<int> regionsIds, int year, IEnumerable<StatisticsItemIndicator> indicators)
-        {
-            SelectStatisticsItems(indicators);
-            var regionStatistics = new List<RegionStatistics>();
-            foreach (var regionId in regionsIds)
-            {
-                regionStatistics.Add(await GetRegionStatisticsAsync(regionId, year));
-            }
-            return regionStatistics;
-        }
-
-        public async Task<IEnumerable<RegionStatistics>> GetRegionStatisticsAsync(IEnumerable<int> regionsIds, int minYear, int maxYear,
-                                                                                  IEnumerable<StatisticsItemIndicator> indicators)
-        {
-            SelectStatisticsItems(indicators);
-            var regionStatistics = new List<RegionStatistics>();
-            foreach (var regionId in regionsIds)
-            {
-                regionStatistics.Add(await GetRegionStatisticsAsync(regionId, minYear, maxYear));
-            }
-            return regionStatistics;
-        }
-
+        
         public async Task<IEnumerable<RegionStatistics>> GetRegionStatisticsAsync(IEnumerable<int> regionsIds,
                                                                                   IEnumerable<int> years,
                                                                                   IEnumerable<StatisticsItemIndicator> indicators)
@@ -131,12 +57,7 @@ namespace EPlast.BLL.Services.Statistics
             }
             return regionStatistics;
         }
-
-        public async Task<IEnumerable<RegionStatistics>> GetAllRegionsStatisticsAsync()
-        {
-            return await GetRegionsStatisticsAsync(await _repositoryWrapper.AnnualReports.GetAllAsync(), await _repositoryWrapper.City.GetAllAsync());
-        }
-
+        
         private async Task<RegionStatistics> GetRegionStatisticsAsync(int regionId, IEnumerable<int> years)
         {
             var region = await _repositoryWrapper.Region.GetFirstOrDefaultAsync(
@@ -185,28 +106,6 @@ namespace EPlast.BLL.Services.Statistics
             };
         }
 
-        private async Task<IEnumerable<CityStatistics>> GetCitiesStatisticsAsync(IEnumerable<AnnualReport> annualReports)
-        {
-            var allCityStatistics = new List<CityStatistics>();
-            foreach (var report in annualReports)
-            {
-                allCityStatistics.Add(await GetCityStatisticsAsync(report.CityId, report.Date.Year));
-            }
-            return allCityStatistics;
-        }
-
-        private async Task<IEnumerable<RegionStatistics>> GetRegionsStatisticsAsync(IEnumerable<AnnualReport> annualReports, IEnumerable<DatabaseEntities.City> cities)
-        {
-            var allRegionsStatistics = new List<RegionStatistics>();
-            foreach (var report in annualReports)
-            {
-                DataAccess.Entities.City filteredCity = cities.First(city => city.ID == report.CityId);
-                if (!allRegionsStatistics.Any(x => x.Region.ID == filteredCity.RegionId && x.YearStatistics.Any(x => x.Year == report.Date.Year)))
-                    allRegionsStatistics.Add(await GetRegionStatisticsAsync(filteredCity.RegionId, report.Date.Year));
-            }
-            return allRegionsStatistics;
-        }
-
         private void SelectStatisticsItems(IEnumerable<StatisticsItemIndicator> indicators)
         {
             foreach (var key in _minorStatisticsItems.Keys)
@@ -246,111 +145,5 @@ namespace EPlast.BLL.Services.Statistics
                 StatisticsItems = statisticsItems.OrderBy(x => x.Indicator)
             };
         }
-
-        private YearStatistics GetYearStatistics(int year, IEnumerable<MembersStatistic> membersStatistic)
-        {
-            var statisticsItems = new List<StatisticsItem>();
-            foreach (var key in _minorStatisticsItems.Keys)
-            {
-                statisticsItems.Add(_minorStatisticsItems[key].GetValue(membersStatistic));
-            }
-            foreach (var key in _majorStatisticsItems.Keys)
-            {
-                statisticsItems.Add(_majorStatisticsItems[key].GetValue(membersStatistic));
-            }
-            return new YearStatistics
-            {
-                Year = year,
-                StatisticsItems = statisticsItems
-            };
-        }
-
-        private async Task<CityStatistics> GetCityStatisticsAsync(int cityId, int year)
-        {
-            var city = await _repositoryWrapper.City.GetFirstOrDefaultAsync(
-                    predicate: c => c.ID == cityId,
-                    include: source => source
-                        .Include(c => c.Region)
-                );
-            var membersStatistics = await _repositoryWrapper.MembersStatistics.GetFirstOrDefaultAsync(
-                    predicate: m => m.AnnualReport.CityId == city.ID && m.AnnualReport.Date.Year == year
-                );
-            return new CityStatistics
-            {
-                City = _mapper.Map<DatabaseEntities.City, DTOs.City>(city),
-                YearStatistics = new List<YearStatistics>
-                {
-                    GetYearStatistics(year, membersStatistics)
-                }
-            };
-        }
-
-        private async Task<CityStatistics> GetCityStatisticsAsync(int cityId, int minYear, int maxYear)
-        {
-            var city = await _repositoryWrapper.City.GetFirstOrDefaultAsync(
-                    predicate: c => c.ID == cityId,
-                    include: source => source
-                        .Include(c => c.Region)
-                );
-            var membersStatistics = await _repositoryWrapper.MembersStatistics.GetAllAsync(
-                    predicate: m => m.AnnualReport.CityId == city.ID && m.AnnualReport.Date.Year >= minYear && m.AnnualReport.Date.Year <= maxYear,
-                    include: source => source
-                        .Include(m => m.AnnualReport)
-                );
-            var yearStatistics = new List<YearStatistics>();
-            for (int year = minYear; year <= maxYear; year++)
-            {
-                var membersStatistic = membersStatistics.FirstOrDefault(m => m.AnnualReport.Date.Year == year);
-                yearStatistics.Add(GetYearStatistics(year, membersStatistic));
-            }
-            return new CityStatistics
-            {
-                City = _mapper.Map<DatabaseEntities.City, DTOs.City>(city),
-                YearStatistics = yearStatistics
-            };
-        }
-
-        private async Task<RegionStatistics> GetRegionStatisticsAsync(int regionId, int year)
-        {
-            var region = await _repositoryWrapper.Region.GetFirstOrDefaultAsync(
-                    predicate: r => r.ID == regionId
-                );
-            var membersStatistics = await _repositoryWrapper.MembersStatistics.GetAllAsync(
-                    predicate: m => m.AnnualReport.City.RegionId == regionId && m.AnnualReport.Date.Year == year
-                );
-            return new RegionStatistics
-            {
-                Region = _mapper.Map<DatabaseEntities.Region, DTOs.Region>(region),
-                YearStatistics = new List<YearStatistics>
-                {
-                    GetYearStatistics(year, membersStatistics)
-                }
-            };
-        }
-
-        private async Task<RegionStatistics> GetRegionStatisticsAsync(int regionId, int minYear, int maxYear)
-        {
-            var region = await _repositoryWrapper.Region.GetFirstOrDefaultAsync(
-                    predicate: r => r.ID == regionId
-                );
-            var membersStatistics = await _repositoryWrapper.MembersStatistics.GetAllAsync(
-                    predicate: m => m.AnnualReport.City.RegionId == regionId && m.AnnualReport.Date.Year >= minYear && m.AnnualReport.Date.Year <= maxYear,
-                    include: source => source
-                        .Include(m => m.AnnualReport)
-                );
-            var yearStatistics = new List<YearStatistics>();
-            for (int year = minYear; year <= maxYear; year++)
-            {
-                var membersStatistic = membersStatistics.FirstOrDefault(m => m.AnnualReport.Date.Year == year);
-                yearStatistics.Add(GetYearStatistics(year, membersStatistic));
-            }
-            return new RegionStatistics
-            {
-                Region = _mapper.Map<DatabaseEntities.Region, DTOs.Region>(region),
-                YearStatistics = yearStatistics
-            };
-        }
-
-        
     }
 }
