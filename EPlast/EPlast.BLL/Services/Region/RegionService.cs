@@ -107,21 +107,24 @@ namespace EPlast.BLL.Services.Region
         public async Task EditRegionAdministrator(RegionAdministrationDTO regionAdministrationDTO)
         {
             var admin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.ID == regionAdministrationDTO.ID);
-            var adminType = await _adminTypeService.GetAdminTypeByIdAsync(regionAdministrationDTO.AdminTypeId);
-
-            if (adminType.ID == admin.AdminTypeId)
+            if(admin != null)
             {
-                admin.StartDate = regionAdministrationDTO.StartDate ?? DateTime.Now;
-                admin.EndDate = regionAdministrationDTO.EndDate;
+                var adminType = await _adminTypeService.GetAdminTypeByIdAsync(regionAdministrationDTO.AdminTypeId);
 
-                _repoWrapper.RegionAdministration.Update(admin);
-                await _repoWrapper.SaveAsync();
-            }
+                if (adminType.ID == admin.AdminTypeId)
+                {
+                    admin.StartDate = regionAdministrationDTO.StartDate ?? DateTime.Now;
+                    admin.EndDate = regionAdministrationDTO.EndDate;
 
-            else
-            {
-                await DeleteAdminByIdAsync(regionAdministrationDTO.ID);
-                await AddRegionAdministrator(regionAdministrationDTO);
+                    _repoWrapper.RegionAdministration.Update(admin);
+                    await _repoWrapper.SaveAsync();
+                }
+
+                else
+                {
+                    await DeleteAdminByIdAsync(regionAdministrationDTO.ID);
+                    await AddRegionAdministrator(regionAdministrationDTO);
+                }
             }
         }
 
