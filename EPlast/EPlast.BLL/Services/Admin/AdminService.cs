@@ -1,13 +1,10 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
-using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.UserProfiles;
-using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Services.Interfaces;
-using EPlast.BLL.Services.Statistics.StatisticsItems.MinorStatisticsItems;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
