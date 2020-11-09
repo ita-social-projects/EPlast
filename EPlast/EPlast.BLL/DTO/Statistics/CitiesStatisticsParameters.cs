@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EPlast.BLL.DTO.Statistics
 {
-    public class StatisticsParameters
+    public class CitiesStatisticsParameters
     {
         public IEnumerable<int> CitiesId { get; set; }
         public IEnumerable<int> Years { get; set; }

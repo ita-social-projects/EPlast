@@ -32,9 +32,9 @@ namespace EPlast.BLL.Services.Statistics
         }
 
         
-        public async Task<IEnumerable<CityStatistics>> GetCityStatisticsAsync(IEnumerable<int> citiesIds,
-                                                                              IEnumerable<int> years,
-                                                                              IEnumerable<StatisticsItemIndicator> indicators)
+        public async Task<IEnumerable<CityStatistics>> GetCitiesStatisticsAsync(IEnumerable<int> citiesIds,
+                                                                                IEnumerable<int> years,
+                                                                                IEnumerable<StatisticsItemIndicator> indicators)
         {
             SelectStatisticsItems(indicators);
             var citiesStatistics = new List<CityStatistics>();
@@ -45,9 +45,9 @@ namespace EPlast.BLL.Services.Statistics
             return citiesStatistics.OrderBy(x => x.City.Name);
         }
         
-        public async Task<IEnumerable<RegionStatistics>> GetRegionStatisticsAsync(IEnumerable<int> regionsIds,
-                                                                                  IEnumerable<int> years,
-                                                                                  IEnumerable<StatisticsItemIndicator> indicators)
+        public async Task<IEnumerable<RegionStatistics>> GetRegionsStatisticsAsync(IEnumerable<int> regionsIds,
+                                                                                   IEnumerable<int> years,
+                                                                                   IEnumerable<StatisticsItemIndicator> indicators)
         {
             SelectStatisticsItems(indicators);
             var regionStatistics = new List<RegionStatistics>();

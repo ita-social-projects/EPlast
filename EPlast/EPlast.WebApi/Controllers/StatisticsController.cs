@@ -38,24 +38,11 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User does not have access to the statistics</response>
         /// <response code="404">The statistics does not exist</response>
         [HttpGet("cities")]
-        public async Task<IActionResult> GetForCitiesForYears( [FromQuery] StatisticsParameters statisticsParameters)
+        public async Task<IActionResult> GetCitiesStatistics([FromQuery] CitiesStatisticsParameters statisticsParameters)
         {
-            try
-            {
-                return StatusCode(StatusCodes.Status200OK, await cityStatisticsService.GetCityStatisticsAsync(statisticsParameters.CitiesId,
+                return StatusCode(StatusCodes.Status200OK, await cityStatisticsService.GetCitiesStatisticsAsync(statisticsParameters.CitiesId,
                                                                                                               statisticsParameters.Years,
                                                                                                               statisticsParameters.Indicators));
-            }
-            catch (NullReferenceException)
-            {
-                loggerService.LogError($"The statistics was not found");
-                return StatusCode(StatusCodes.Status404NotFound);
-            }
-            catch (UnauthorizedAccessException)
-            {
-                loggerService.LogError($"User does not have access to the statistics");
-                return StatusCode(StatusCodes.Status403Forbidden);
-            }
         }
         
         /// <summary>
@@ -69,24 +56,11 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User does not have access to the statistics</response>
         /// <response code="404">The statistics does not exist</response>
         [HttpGet("regions")]
-        public async Task<IActionResult> GetStatisticsForRegionsForYears([FromQuery] IEnumerable<int> regionsId,
+        public async Task<IActionResult> GetRegionsStatistics([FromQuery] IEnumerable<int> regionsId,
                                                                          [FromQuery] IEnumerable<int> years,
                                                                          [FromQuery] IEnumerable<StatisticsItemIndicator> indicators)
         {
-            try
-            {
-                return StatusCode(StatusCodes.Status200OK, await regionStatisticsService.GetRegionStatisticsAsync(regionsId, years, indicators));
-            }
-            catch (NullReferenceException)
-            {
-                loggerService.LogError($"The statistics was not found");
-                return StatusCode(StatusCodes.Status404NotFound);
-            }
-            catch (UnauthorizedAccessException)
-            {
-                loggerService.LogError($"User does not have access to the statistics");
-                return StatusCode(StatusCodes.Status403Forbidden);
-            }
+                return StatusCode(StatusCodes.Status200OK, await regionStatisticsService.GetRegionsStatisticsAsync(regionsId, years, indicators));            
         }
     }
 }
