@@ -54,7 +54,12 @@ namespace EPlast.BLL.Services.Notifications
 
         public string GetUserId(WebSocket socket)
         {
-            return userMap.FirstOrDefault(p => p.Value.FirstOrDefault(conn => conn.WebSocket == socket) != null).Key;
+            var userConnections = userMap.FirstOrDefault(p => p.Value.FirstOrDefault(conn => conn.WebSocket == socket) != null);
+            if(userConnections.Equals(default(KeyValuePair<string, HashSet<ConnectionDTO>>)))
+            {
+                throw new ArgumentException();
+            }
+            return userConnections.Key;
         }
 
         public string GetConnectionId(WebSocket socket)

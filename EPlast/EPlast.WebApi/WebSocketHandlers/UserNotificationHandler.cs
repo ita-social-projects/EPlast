@@ -2,6 +2,7 @@
 using EPlast.BLL.Interfaces.Notifications;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System;
 using System.Collections.Generic;
 using System.Net.WebSockets;
 using System.Text;
@@ -44,7 +45,15 @@ namespace EPlast.WebApi.WebSocketHandlers
 
         public override async Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer)
         {
-            var userId = WebSocketConnectionManager.GetUserId(socket);
+            string userId;
+            try
+            {
+                userId = WebSocketConnectionManager.GetUserId(socket);
+            }
+            catch (Exception)
+            {
+                return;
+            }
             var message = $"{userId} send: {Encoding.UTF8.GetString(buffer, 0, result.Count)}";
             await SendMessageAsync(userId, message);
         }
