@@ -370,7 +370,7 @@ namespace EPlast.BLL.Services.Club
                         }
                     }
 
-                    var fileName = _uniqueId.GetUniqueId() + Path.GetExtension(file.FileName);
+                    var fileName = $"{_uniqueId.GetUniqueId()}{Path.GetExtension(file.FileName)}";
                     var filePath = Path.Combine(uploads, fileName);
                     img.Save(filePath);
                     Club.Logo = fileName;
@@ -397,7 +397,7 @@ namespace EPlast.BLL.Services.Club
                     extension = (extension[0] == '.' ? "" : ".") + extension;
                 }
 
-                var fileName = _uniqueId.GetUniqueId() + extension;
+                var fileName = $"{_uniqueId.GetUniqueId()}{extension}";
 
                 await _ClubBlobStorage.UploadBlobForBase64Async(logoBase64Parts[1], fileName);
                 Club.Logo = fileName;

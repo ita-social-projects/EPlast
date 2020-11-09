@@ -249,8 +249,8 @@ namespace EPlast.BLL.Services.Region
         public async Task<RegionDocumentDTO> AddDocumentAsync(RegionDocumentDTO documentDTO)
          {
              var fileBase64 = documentDTO.BlobName.Split(',')[1];
-             var extension = "." + documentDTO.FileName.Split('.').LastOrDefault();
-             var fileName = _uniqueId.GetUniqueId() + extension;
+             var extension = $".{documentDTO.FileName.Split('.').LastOrDefault()}";
+             var fileName = $"{_uniqueId.GetUniqueId()}{extension}";
              await _regionFilesBlobStorageRepository.UploadBlobForBase64Async(fileBase64, fileName);
              documentDTO.BlobName = fileName;
 

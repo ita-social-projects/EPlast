@@ -79,7 +79,7 @@ namespace EPlast.BLL
             _repoWrapper.Decesion.Create(repoDecision);
             if (decision.FileAsBase64 != null)
             {
-                repoDecision.FileName = _uniqueId.GetUniqueId() + repoDecision.FileName;
+                repoDecision.FileName = $"{_uniqueId.GetUniqueId()}{repoDecision.FileName}";
                 await UploadFileToBlobAsync(decision.FileAsBase64, repoDecision.FileName);
             }
             await _repoWrapper.SaveAsync();
