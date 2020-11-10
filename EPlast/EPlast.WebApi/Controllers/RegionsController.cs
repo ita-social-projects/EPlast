@@ -16,13 +16,11 @@ namespace EPlast.WebApi.Controllers
         private readonly ILoggerService<CitiesController> _logger;
         private readonly IRegionService _regionService;
 
-
         public RegionsController(ILoggerService<CitiesController> logger,
             IRegionService regionService)
         {
             _logger = logger;
             _regionService = regionService;
-
         }
 
         [HttpGet("Profiles")]
