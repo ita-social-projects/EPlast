@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Club;
+using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.DataAccess.Entities;
@@ -17,14 +18,17 @@ namespace EPlast.BLL.Services.Club
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
         private readonly IClubFilesBlobStorageRepository _ClubFilesBlobStorage;
+        private readonly IUniqueIdService _uniqueId;
 
         public ClubDocumentsService(IRepositoryWrapper repositoryWrapper,
             IMapper mapper,
-            IClubFilesBlobStorageRepository ClubFilesBlobStorage)
+            IClubFilesBlobStorageRepository ClubFilesBlobStorage,
+            IUniqueIdService uniqueId)
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
             _ClubFilesBlobStorage = ClubFilesBlobStorage;
+            _uniqueId = uniqueId;
         }
 
         private async Task<IEnumerable<ClubDocumentType>> GetAllClubDocumentTypeEntities()
@@ -46,8 +50,8 @@ namespace EPlast.BLL.Services.Club
         public async Task<ClubDocumentsDTO> AddDocumentAsync(ClubDocumentsDTO documentsDTO)
         {
             var fileBase64 = documentsDTO.BlobName.Split(',')[1];
-            var extension = "." + documentsDTO.FileName.Split('.').LastOrDefault();
-            var fileName = Guid.NewGuid() + extension;
+            var extension = $".{documentsDTO.FileName.Split('.').LastOrDefault()}";
+            var fileName = $"{_uniqueId.GetUniqueId()}{extension}";
             await _ClubFilesBlobStorage.UploadBlobForBase64Async(fileBase64, fileName);
             documentsDTO.BlobName = fileName;
 
