@@ -82,6 +82,7 @@ namespace EPlast.BLL.Services.Region
                 {
                     newRegionAdmin.Status = true;
                     oldAdmin.Status = false;
+                    oldAdmin.EndDate = DateTime.Now;
                 }
                 else
                 {
@@ -100,6 +101,30 @@ namespace EPlast.BLL.Services.Region
                 await _repoWrapper.SaveAsync();
                 await _repoWrapper.RegionAdministration.CreateAsync(newRegionAdmin);
                 await _repoWrapper.SaveAsync();
+            }
+        }
+
+        public async Task EditRegionAdministrator(RegionAdministrationDTO regionAdministrationDTO)
+        {
+            var admin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.ID == regionAdministrationDTO.ID);
+            if(admin != null)
+            {
+                var adminType = await _adminTypeService.GetAdminTypeByIdAsync(regionAdministrationDTO.AdminTypeId);
+
+                if (adminType.ID == admin.AdminTypeId)
+                {
+                    admin.StartDate = regionAdministrationDTO.StartDate ?? DateTime.Now;
+                    admin.EndDate = regionAdministrationDTO.EndDate;
+
+                    _repoWrapper.RegionAdministration.Update(admin);
+                    await _repoWrapper.SaveAsync();
+                }
+
+                else
+                {
+                    await DeleteAdminByIdAsync(regionAdministrationDTO.ID);
+                    await AddRegionAdministrator(regionAdministrationDTO);
+                }
             }
         }
 
@@ -291,7 +316,7 @@ namespace EPlast.BLL.Services.Region
 
         public async Task<RegionAdministrationDTO> GetHead(int regionId)
         {
-            var head = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(d => d.RegionId == regionId && d.AdminType.AdminTypeName == "Голова Округу" && DateTime.Compare((DateTime)d.EndDate, DateTime.Now)>0&& d.Status,
+            var head = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(d => d.RegionId == regionId && d.AdminType.AdminTypeName == "Голова Округу" && (d.EndDate > DateTime.Now || d.EndDate == null),
                 include: source => source
                 .Include(
                 d => d.User));
