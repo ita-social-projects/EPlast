@@ -136,13 +136,27 @@ namespace EPlast.WebApi.Controllers
             return NoContent();
         }
 
+        [HttpPost("EditAdministrator")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
+        public async Task<IActionResult> EditAdministrator(RegionAdministrationDTO admin)
+        {
+            if(admin != null)
+            {
+                await _regionService.EditRegionAdministrator(admin);
+                _logger.LogInformation($"Successful edit admin: {admin.UserId}");
+                return NoContent();
+            }
+            _logger.LogError("Admin is null");
+            return NotFound();
+        }
+
 
         [HttpGet("Profiles/{page}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetRegions(int page, int pageSize, string regionName)
         {
             var regions = await _regionService.GetAllRegionsAsync();
-            var regionsViewModel = new RegionsViewModel(page, pageSize, regions, regionName);
+            var regionsViewModel = new RegionsViewModel(page, pageSize, regions, regionName, User.IsInRole("Admin"));
 
             return Ok(regionsViewModel);
         }
