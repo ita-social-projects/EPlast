@@ -109,6 +109,30 @@ namespace EPlast.BLL.Services.Region
             }
         }
 
+        public async Task EditRegionAdministrator(RegionAdministrationDTO regionAdministrationDTO)
+        {
+            var admin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.ID == regionAdministrationDTO.ID);
+            if(admin != null)
+            {
+                var adminType = await _adminTypeService.GetAdminTypeByIdAsync(regionAdministrationDTO.AdminTypeId);
+
+                if (adminType.ID == admin.AdminTypeId)
+                {
+                    admin.StartDate = regionAdministrationDTO.StartDate ?? DateTime.Now;
+                    admin.EndDate = regionAdministrationDTO.EndDate;
+
+                    _repoWrapper.RegionAdministration.Update(admin);
+                    await _repoWrapper.SaveAsync();
+                }
+
+                else
+                {
+                    await DeleteAdminByIdAsync(regionAdministrationDTO.ID);
+                    await AddRegionAdministrator(regionAdministrationDTO);
+                }
+            }
+        }
+
 
         public async Task<IEnumerable<RegionDTO>> GetAllRegionsAsync()
         {
