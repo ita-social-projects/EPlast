@@ -14,8 +14,9 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using DataAccessCity = EPlast.DataAccess.Entities;
+using DataAccessRegion = EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Services.Region
 {
@@ -53,7 +54,7 @@ namespace EPlast.BLL.Services.Region
         public async Task AddRegionAsync(RegionDTO region)
         {
 
-            var newRegion = _mapper.Map<RegionDTO, DataAccessCity.Region>(region);
+            var newRegion = _mapper.Map<RegionDTO, DataAccessRegion.Region>(region);
 
             await _repoWrapper.Region.CreateAsync(newRegion);
             await _repoWrapper.SaveAsync();
@@ -141,7 +142,7 @@ namespace EPlast.BLL.Services.Region
                     .Include(r => r.RegionAdministration)
                         .ThenInclude(t => t.AdminType));
 
-            return _mapper.Map<IEnumerable<DataAccessCity.Region>, IEnumerable<RegionDTO>>(regions);
+            return _mapper.Map<IEnumerable<DataAccessRegion.Region>, IEnumerable<RegionDTO>>(regions);
         }
 
 
@@ -161,7 +162,7 @@ namespace EPlast.BLL.Services.Region
                     .Include(r => r.RegionAdministration)
                         .ThenInclude(t => t.AdminType));
 
-            return _mapper.Map<DataAccessCity.Region, RegionDTO>(region);
+            return _mapper.Map<DataAccessRegion.Region, RegionDTO>(region);
         }
 
         public async Task<RegionProfileDTO> GetRegionProfileByIdAsync(int regionId)
@@ -175,6 +176,7 @@ namespace EPlast.BLL.Services.Region
 
             return regionProfile;
         }
+
 
         public async Task DeleteRegionByIdAsync(int regionId)
         {
@@ -213,7 +215,7 @@ namespace EPlast.BLL.Services.Region
         public async Task<RegionDTO> GetRegionByNameAsync(string Name)
         {
             var region = await _repoWrapper.Region.GetFirstAsync(d => d.RegionName == Name);
-            return _mapper.Map<DataAccessCity.Region, RegionDTO>(region);
+            return _mapper.Map<DataAccessRegion.Region, RegionDTO>(region);
         }
 
 
@@ -358,13 +360,11 @@ namespace EPlast.BLL.Services.Region
             await _repoWrapper.SaveAsync();
         }
 
-
-
         /// <inheritdoc />
         public async Task<IEnumerable<RegionForAdministrationDTO>> GetRegions()
         {
             var regions = await _repoWrapper.Region.GetAllAsync();
-            return _mapper.Map<IEnumerable<DataAccessCity.Region>, IEnumerable<RegionForAdministrationDTO>>(regions);
+            return _mapper.Map<IEnumerable<DataAccessRegion.Region>, IEnumerable<RegionForAdministrationDTO>>(regions);
         }
 
         public async Task<IEnumerable<AdminTypeDTO>> GetAllAdminTypes()
