@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.Club;
+using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Services;
@@ -32,6 +33,7 @@ namespace EPlast.Tests.Services.Club
         private Mock<IClubAccessService> _clubAccessService;
         private Mock<UserManager<User>> _userManager;
         private Mock<IUserStore<User>> _user;
+        private Mock<IUniqueIdService> _uniqueId;
 
         [SetUp]
         public void SetUp()
@@ -42,9 +44,10 @@ namespace EPlast.Tests.Services.Club
             _clubBlobStorage = new Mock<IClubBlobStorageRepository>();
             _clubAccessService = new Mock<IClubAccessService>();
             _user = new Mock<IUserStore<User>>();
+            _uniqueId = new Mock<IUniqueIdService>();
             _userManager = new Mock<UserManager<User>>(_user.Object, null, null, null, null, null, null, null, null);
             _clubService = new ClubService(_repoWrapper.Object, _mapper.Object, _env.Object, _clubBlobStorage.Object,
-                   _clubAccessService.Object, _userManager.Object);
+                   _clubAccessService.Object, _userManager.Object, _uniqueId.Object);
         }
 
 
@@ -247,7 +250,7 @@ namespace EPlast.Tests.Services.Club
             _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
                 .ReturnsAsync(GetTestNewClub());
 
-            return new ClubService(_repoWrapper.Object, _mapper.Object, _env.Object, _clubBlobStorage.Object, _clubAccessService.Object, null);
+            return new ClubService(_repoWrapper.Object, _mapper.Object, _env.Object, _clubBlobStorage.Object, _clubAccessService.Object, null,_uniqueId.Object);
         }
 
 

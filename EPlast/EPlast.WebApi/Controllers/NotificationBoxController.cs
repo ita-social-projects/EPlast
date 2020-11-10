@@ -4,9 +4,8 @@ using System.Threading.Tasks;
 using EPlast.BLL.Interfaces.Notifications;
 using System.Collections.Generic;
 using EPlast.BLL.DTO.Notification;
-using Microsoft.AspNetCore.SignalR;
-using EPlast.WebApi.SignalRHubs;
 using System.Linq;
+using EPlast.WebApi.WebSocketHandlers;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -15,18 +14,15 @@ namespace EPlast.WebApi.Controllers
     [ApiController]
     public class NotificationBoxController : ControllerBase
     {
-        private readonly IConnectionManagerService _connectionManagerService;
-        private readonly IHubContext<NotificationHub> _notificationHub;
+        private readonly UserNotificationHandler _userNotificationHandler;
         private readonly INotificationService _notificationService;
 
         public NotificationBoxController(
-            INotificationService notificationService, 
-            IHubContext<NotificationHub> hubContext, 
-            IConnectionManagerService connectionManagerService)
+            INotificationService notificationService,
+            UserNotificationHandler userNotificationHandler)
         {
-            _notificationHub = hubContext;
             _notificationService = notificationService;
-            _connectionManagerService = connectionManagerService;
+            _userNotificationHandler = userNotificationHandler;
         }
 
         [HttpGet("getTypes")]
@@ -93,15 +89,14 @@ namespace EPlast.WebApi.Controllers
 
         private IEnumerable<UserNotificationDTO> GetOnlineUserFromList(IEnumerable<UserNotificationDTO> userNotificationDTOs)
         {
-            List<string> onlineUsers = _connectionManagerService.OnlineUsers.ToList();
+            List<string> onlineUsers = _userNotificationHandler.GetOnlineUsers().ToList();
             return userNotificationDTOs.Where(un => onlineUsers.Contains(un.OwnerUserId));
         }
 
 
         private async Task SendPrivateNotification(UserNotificationDTO userNotificationDTO)
         {
-           var connectionIds = _connectionManagerService.GetConnections(userNotificationDTO.OwnerUserId).ToList();
-            await _notificationHub.Clients.Clients(connectionIds).SendAsync("ReceiveUserNotification", userNotificationDTO);
+           await _userNotificationHandler.SendUserNotificationAsync(userNotificationDTO);
         }
     }
 }       
