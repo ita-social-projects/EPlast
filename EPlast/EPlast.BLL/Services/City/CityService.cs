@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.City;
+using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.City;
 using EPlast.DataAccess.Repositories;
@@ -25,14 +26,16 @@ namespace EPlast.BLL.Services
         private readonly IWebHostEnvironment _env;
         private readonly ICityBlobStorageRepository _cityBlobStorage;
         private readonly ICityAccessService _cityAccessService;
-        private readonly UserManager<DataAccessCity.User> _userManager;
+        private readonly UserManager<DataAccessCity.User> _userManager; 
+        private readonly IUniqueIdService _uniqueId;
 
         public CityService(IRepositoryWrapper repoWrapper,
             IMapper mapper,
             IWebHostEnvironment env,
             ICityBlobStorageRepository cityBlobStorage,
             ICityAccessService cityAccessService,
-            UserManager<DataAccessCity.User> userManager)
+            UserManager<DataAccessCity.User> userManager,
+            IUniqueIdService uniqueId)
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
@@ -40,6 +43,7 @@ namespace EPlast.BLL.Services
             _cityBlobStorage = cityBlobStorage;
             _cityAccessService = cityAccessService;
             _userManager = userManager;
+            _uniqueId = uniqueId;
         }
 
         /// <inheritdoc />
@@ -394,7 +398,7 @@ namespace EPlast.BLL.Services
                         }
                     }
 
-                    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                    var fileName = $"{_uniqueId.GetUniqueId()}{Path.GetExtension(file.FileName)}";
                     var filePath = Path.Combine(uploads, fileName);
                     img.Save(filePath);
                     city.Logo = fileName;
@@ -402,7 +406,7 @@ namespace EPlast.BLL.Services
             }
             else
             {
-                city.Logo = oldImageName ?? null;
+                city.Logo = oldImageName;
             }
         }
 
@@ -421,7 +425,7 @@ namespace EPlast.BLL.Services
                     extension = (extension[0] == '.' ? "" : ".") + extension;
                 }
 
-                var fileName = Guid.NewGuid() + extension;
+                var fileName = $"{_uniqueId.GetUniqueId()}{extension}";
 
                 await _cityBlobStorage.UploadBlobForBase64Async(logoBase64Parts[1], fileName);
                 city.Logo = fileName;

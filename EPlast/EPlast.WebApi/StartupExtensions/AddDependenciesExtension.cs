@@ -43,6 +43,7 @@ using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Repositories;
 using EPlast.DataAccess.Repositories.Interfaces.Blank;
 using EPlast.DataAccess.Repositories.Realizations.Base;
+using EPlast.WebApi.WebSocketHandlers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EPlast.WebApi.StartupExtensions
@@ -117,7 +118,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IEventBlobStorageRepository, EventBlobStorageRepository>();
             services.AddScoped<IBlankFilesBlobStorageRepository, BlankFilesBlobStorageRepository>();
             services.AddScoped<IBlankAchievementBlobStorageRepository, BlankAchievementBlobStorageRepository>();
-            services.AddScoped<IBlankExtractFromUPUBlobStorageRepository, BlankExtractFromUPUBlobStorageRepository>();
+            services.AddScoped<IBlankExtractFromUPUBlobStorageRepository, BlankExtractFromUpuBlobStorageRepository>();
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddScoped<IAccessLevelService, AccessLevelService>();
             services.AddScoped<IPlastDegreeService, PlastDegreeService>();
@@ -128,15 +129,17 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IEducatorsStaffTypesService, EducatorsStaffTypesService>();
             services.AddScoped<IBlankBiographyDocumentService, BlankBiographyDocumentsService>();
             services.AddScoped<INotificationService, NotificationService>();
-            services.AddScoped<IConnectionManagerService, ConnectionManagerService>();
             services.AddScoped<IBlankAchievementDocumentService, AchievementDocumentService>();
-            services.AddScoped<IBlankExtractFromUPUDocumentService, BlankExtractFromUPUDocumentService>();
+            services.AddScoped<IBlankExtractFromUPUDocumentService, BlankExtractFromUpuDocumentService>();
             services.AddScoped<ICityStatisticsService, StatisticsService>();
             services.AddScoped<IRegionStatisticsService, StatisticsService>();
             services.AddScoped<IRegionAnnualReportService, RegionAnnualReportService>();
             services.AddScoped<IRegionAccessService, RegionAccessService>();
             services.AddScoped<RegionAccessSettings>();
             services.AddScoped<StatisticsServiceSettings>();
+            services.AddSingleton<INotificationConnectionManager, NotificationConnectionManager>();
+            services.AddSingleton<UserNotificationHandler>();
+            services.AddTransient<IUniqueIdService, UniqueIdService>();
 
             return services;
         }

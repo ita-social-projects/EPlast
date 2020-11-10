@@ -3,6 +3,8 @@ using EPlast.BLL;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces;
+using EPlast.BLL.Services;
 using EPlast.BLL.Services.Distinctions;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
@@ -26,12 +28,14 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         private Mock<IRepositoryWrapper> mockRepoWrapper;
         private Mock<IMapper> mockMapper;
         private UserDistinctionService distinctionService;
+        private IUniqueIdService _uniqueId;
 
         [SetUp]
         public void SetUp()
         {
             mockMapper = new Mock<IMapper>();
             mockRepoWrapper = new Mock<IRepositoryWrapper>();
+            _uniqueId = new UniqueIdService();
             distinctionService = new UserDistinctionService(mockMapper.Object, mockRepoWrapper.Object);
         }
 
@@ -404,7 +408,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         List<UserDistinction> nulluserDistinctions = null;
         List<UserDistinctionDTO> nulluserDistinctionsDTO = null;
                 
-        private string UserId => Guid.NewGuid().ToString();
+        private string UserId => _uniqueId.GetUniqueId().ToString();
 
         private UserDistinction userDistinction => new UserDistinction
         {

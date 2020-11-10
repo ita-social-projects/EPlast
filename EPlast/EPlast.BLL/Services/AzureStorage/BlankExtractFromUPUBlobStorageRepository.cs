@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.AzureStorage
 {
-   public class BlankExtractFromUPUBlobStorageRepository:BlobStorageRepository, IBlankExtractFromUPUBlobStorageRepository
+   public class BlankExtractFromUpuBlobStorageRepository:BlobStorageRepository, IBlankExtractFromUPUBlobStorageRepository
     {
         private const string CONTAINER = "ExtractFromUPUContainer";
-        public BlankExtractFromUPUBlobStorageRepository(IAzureBlobConnectionFactory connectionFactory) : base(connectionFactory)
+        public BlankExtractFromUpuBlobStorageRepository(IAzureBlobConnectionFactory connectionFactory) : base(connectionFactory)
         {
         }
         public async Task<CloudBlockBlob> GetBlobAsync(string blobName)
