@@ -1,4 +1,5 @@
 ﻿using System;
+using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
@@ -6,7 +7,6 @@ using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using System.Threading.Tasks;
@@ -26,13 +26,16 @@ namespace EPlast.WebApi.Controllers
         private readonly IJwtService _jwtService;
         private readonly IHomeService _homeService;
         private readonly IUserDatesService _userDatesService;
+        private readonly IStringLocalizer<Genders> _resourceForGender;
+
 
         public AuthController(IAuthService authService,
             ILoggerService<AuthController> loggerService,
             IStringLocalizer<AuthenticationErrors> resourceForErrors,
             IJwtService jwtService,
             IHomeService homeService,
-            IUserDatesService userDatesService)
+            IUserDatesService userDatesService,
+            IStringLocalizer<Genders> resourceForGender)
         {
             _authService = authService;
             _loggerService = loggerService;
@@ -40,6 +43,7 @@ namespace EPlast.WebApi.Controllers
             _jwtService = jwtService;
             _homeService = homeService;
             _userDatesService = userDatesService;
+            _resourceForGender = resourceForGender;
         }
 
         /// <summary>
@@ -129,14 +133,25 @@ namespace EPlast.WebApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> FacebookLogin([FromBody] FacebookUserInfo userInfo)
         {
-            var user = await _authService.FacebookLoginAsync(userInfo);
-            if (user == null)
+            try
             {
-                return BadRequest();
+                string newGender = _resourceForGender[userInfo.Gender].Value;
+                userInfo.Gender = newGender;
+                var user = await _authService.FacebookLoginAsync(userInfo);
+                if (user == null)
+                {
+                    return BadRequest();
+                }
+
+                var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
+                return Ok(new {token = generatedToken});
+            }
+            catch (Exception exc)
+            {
+                _loggerService.LogError(exc.Message);
             }
 
-            var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
-            return Ok(new {token = generatedToken});
+            return BadRequest();
         }
 
         /// <summary>
