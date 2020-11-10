@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.UserProfiles;
-using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
@@ -23,16 +23,15 @@ namespace EPlast.BLL.Services.UserProfiles
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
-        private readonly IUserManagerService _userManagerService;
         private readonly IMapper _mapper;
         private readonly IWorkService _workService;
         private readonly IWebHostEnvironment _env;
         private readonly IEducationService _educationService;
         private readonly IUserBlobStorageRepository _userBlobStorage;
-        private readonly IConfirmedUsersService _confirmedUsersService;
+        private readonly IUniqueIdService _uniqueId;
+
         public UserService(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IMapper mapper, IWorkService workService,
-            IEducationService educationService, IUserBlobStorageRepository userBlobStorage, IWebHostEnvironment env, IUserManagerService userManagerService,
-            IConfirmedUsersService confirmedUsersService)
+            IEducationService educationService, IUserBlobStorageRepository userBlobStorage, IWebHostEnvironment env, IUniqueIdService uniqueId)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
@@ -41,8 +40,7 @@ namespace EPlast.BLL.Services.UserProfiles
             _educationService = educationService;
             _userBlobStorage = userBlobStorage;
             _env = env;
-            _userManagerService = userManagerService;
-            _confirmedUsersService = confirmedUsersService;
+            _uniqueId = uniqueId;
         }
 
         /// <inheritdoc />
@@ -75,7 +73,7 @@ namespace EPlast.BLL.Services.UserProfiles
         public IEnumerable<ConfirmedUserDTO> GetConfirmedUsers(UserDTO user)
         {
             var result = user.ConfirmedUsers.
-                Where(x => x.isCityAdmin == false && x.isClubAdmin == false);
+                Where(x => !x.isCityAdmin && !x.isClubAdmin);
             return result;
         }
 
@@ -83,7 +81,7 @@ namespace EPlast.BLL.Services.UserProfiles
         public ConfirmedUserDTO GetClubAdminConfirmedUser(UserDTO user)
         {
             var result = user.ConfirmedUsers.
-                FirstOrDefault(x => x.isClubAdmin == true);
+                FirstOrDefault(x => x.isClubAdmin);
 
             return result;
         }
@@ -92,7 +90,7 @@ namespace EPlast.BLL.Services.UserProfiles
         public ConfirmedUserDTO GetCityAdminConfirmedUser(UserDTO user)
         {
             var result = user.ConfirmedUsers.
-                FirstOrDefault(x => x.isCityAdmin == true);
+                FirstOrDefault(x => x.isCityAdmin);
 
             return result;
         }
@@ -152,9 +150,9 @@ namespace EPlast.BLL.Services.UserProfiles
         }
 
         /// <inheritdoc />
-        public async Task UpdateAsyncForBase64(UserDTO user, string imageBase64, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
+        public async Task UpdateAsyncForBase64(UserDTO user, string base64, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
-            user.ImagePath = await UploadPhotoAsyncFromBase64(user.Id, imageBase64);
+            user.ImagePath = await UploadPhotoAsyncFromBase64(user.Id, base64);
             user.UserProfile.Nationality = CheckFieldForNull(user.UserProfile.NationalityId, user.UserProfile.Nationality.Name, user.UserProfile.Nationality);
             user.UserProfile.Religion = CheckFieldForNull(user.UserProfile.ReligionId, user.UserProfile.Religion.Name, user.UserProfile.Religion);
             user.UserProfile.Degree = CheckFieldForNull(user.UserProfile.DegreeId, user.UserProfile.Degree.Name, user.UserProfile.Degree);
@@ -258,7 +256,7 @@ namespace EPlast.BLL.Services.UserProfiles
                             File.Delete(oldPath);
                         }
                     }
-                    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                    var fileName = $"{_uniqueId.GetUniqueId()}{Path.GetExtension(file.FileName)}";
                     var filePath = Path.Combine(uploads, fileName);
                     img.Save(filePath);
                     return fileName;
@@ -276,7 +274,7 @@ namespace EPlast.BLL.Services.UserProfiles
             {
                 var base64Parts = imageBase64.Split(',');
                 var ext = base64Parts[0].Split(new[] { '/', ';' }, 3)[1];
-                var fileName = Guid.NewGuid().ToString() + "." + ext;
+                var fileName = $"{_uniqueId.GetUniqueId()}.{ext}";
                 await _userBlobStorage.UploadBlobForBase64Async(base64Parts[1], fileName);
                 if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default_user_image.png"))
                 {
