@@ -1,7 +1,5 @@
-﻿using PdfSharpCore;
-using PdfSharpCore.Drawing;
+﻿using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
-using PdfSharpCore.Pdf.IO;
 using System;
 using System.IO;
 

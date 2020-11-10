@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Club;
+using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.DataAccess.Repositories;
@@ -26,13 +27,15 @@ namespace EPlast.BLL.Services.Club
         private readonly IClubBlobStorageRepository _ClubBlobStorage;
         private readonly IClubAccessService _ClubAccessService;
         private readonly UserManager<DataAccessClub.User> _userManager;
+        private readonly IUniqueIdService _uniqueId;
 
         public ClubService(IRepositoryWrapper repoWrapper,
             IMapper mapper,
             IWebHostEnvironment env,
             IClubBlobStorageRepository ClubBlobStorage,
             IClubAccessService ClubAccessService,
-            UserManager<DataAccessClub.User> userManager)
+            UserManager<DataAccessClub.User> userManager,
+            IUniqueIdService uniqueId)
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
@@ -40,6 +43,7 @@ namespace EPlast.BLL.Services.Club
             _ClubBlobStorage = ClubBlobStorage;
             _ClubAccessService = ClubAccessService;
             _userManager = userManager;
+            _uniqueId = uniqueId;
         }
 
         /// <inheritdoc />
@@ -366,7 +370,7 @@ namespace EPlast.BLL.Services.Club
                         }
                     }
 
-                    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                    var fileName = $"{_uniqueId.GetUniqueId()}{Path.GetExtension(file.FileName)}";
                     var filePath = Path.Combine(uploads, fileName);
                     img.Save(filePath);
                     Club.Logo = fileName;
@@ -374,7 +378,7 @@ namespace EPlast.BLL.Services.Club
             }
             else
             {
-                Club.Logo = oldImageName ?? null;
+                Club.Logo = oldImageName;
             }
         }
 
@@ -393,7 +397,7 @@ namespace EPlast.BLL.Services.Club
                     extension = (extension[0] == '.' ? "" : ".") + extension;
                 }
 
-                var fileName = Guid.NewGuid() + extension;
+                var fileName = $"{_uniqueId.GetUniqueId()}{extension}";
 
                 await _ClubBlobStorage.UploadBlobForBase64Async(logoBase64Parts[1], fileName);
                 Club.Logo = fileName;
