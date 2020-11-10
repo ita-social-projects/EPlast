@@ -33,8 +33,8 @@ namespace EPlast.BLL.Services.Region.RegionAccess
             {
                 if (roles.Contains(key))
                 {
-                    var cities = await _regionAccessGetters[key].GetRegion(user.Id);
-                    return _mapper.Map<IEnumerable<DatabaseEntities.Region>, IEnumerable<RegionDTO>>(cities);
+                    var regions = await _regionAccessGetters[key].GetRegionAsync(user.Id);
+                    return _mapper.Map<IEnumerable<DatabaseEntities.Region>, IEnumerable<RegionDTO>>(regions);
                 }
             }
             return Enumerable.Empty<RegionDTO>();

@@ -44,7 +44,7 @@ namespace EPlast.BLL.Interfaces.Region
         /// <returns>Annual report model</returns>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
         /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
-        Task<RegionAnnualReportDTO> GetReportById(int id,int year);
+        Task<RegionAnnualReportDTO> GetReportByIdAsync(int id,int year);
 
 
         /// <summary>
@@ -53,6 +53,6 @@ namespace EPlast.BLL.Interfaces.Region
         /// <returns>Annual report model</returns>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
         /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
-        Task<IEnumerable<RegionAnnualReportDTO>> GetAllRegionsReports();
+        Task<IEnumerable<RegionAnnualReportDTO>> GetAllRegionsReportsAsync();
     }
 }

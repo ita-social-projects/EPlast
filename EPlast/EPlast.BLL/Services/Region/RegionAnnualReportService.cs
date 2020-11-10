@@ -28,93 +28,110 @@ namespace EPlast.BLL.Services.Region
 
         ///<inheritdoc/>
         public async Task<RegionAnnualReportDTO> CreateByNameAsync(ClaimsPrincipal claimsPrincipal, int id, int year)
-        {
-            DataAccess.Entities.Region region = await _repositoryWrapper.Region.GetFirstOrDefaultAsync(
-                     predicate: a => a.ID == id,
-                     include: source => source
-                         .Include(a => a.Cities)
-                         .ThenInclude(a => a.AnnualReports)
-                         .Include(af => af.Cities)
-                         .ThenInclude(af => af.AnnualReports)
-                         .ThenInclude(af => af.MembersStatistic)
-                         );
-            var regionAnnualReport = new RegionAnnualReport()
+        {  
+            var region = await _repositoryWrapper.Region.GetFirstOrDefaultAsync(a => a.ID == id);
+
+            if(!await _regionAccessService.HasAccessAsync(claimsPrincipal, region.ID))
             {
-                RegionName = region.RegionName,
+                throw new UnauthorizedAccessException("User doesn't have access");
+            }
+            if (await CheckCreated(id,year))
+            {
+                throw new InvalidOperationException("Report is already crated!");
+            }
+            var cities = await _repositoryWrapper.City.GetAllAsync(
+                predicate: a => a.RegionId == id
+                );
 
-                RegionId = id,
+            var AnnualReports = new List<AnnualReport>();
+            var MembersStatistics = new List<MembersStatistic>();
 
-                Date = DateTime.Now,
+            foreach(var city in cities)
+            {
+                var reports = await _repositoryWrapper.AnnualReports.GetAllAsync(a => a.Date.Year == year && a.CityId == city.ID);
+                if (reports.Count() > 0)
+                {
+                    foreach(var report in reports)
+                    {
+                        AnnualReports.Add(report);
+                    }
+                }
+            }
 
-                NumberOfSeigneurMembers = region.Cities.Aggregate(0, (x, y) =>
-                           x += y.AnnualReports.Aggregate(0, (z, p) => z += p.MembersStatistic.NumberOfSeigneurMembers)),
+            foreach(var report in AnnualReports)
+            {
+                var statistics = await _repositoryWrapper.MembersStatistics.GetAllAsync(a => a.AnnualReportId == report.ID);
+                if (statistics.Count() > 0)
+                {
+                    foreach (var stat in statistics)
+                    {
+                        MembersStatistics.Add(stat);
+                    }
+                }
+            }
 
-                NumberOfSeigneurSupporters = region.Cities.Aggregate(0, (x, y) =>
-                          x += y.AnnualReports.Aggregate(0, (z, p) => z += p.MembersStatistic.NumberOfSeigneurSupporters)),
+            if (cities != null)
+            {
+                var regionAnnualReport = new RegionAnnualReport()
+                {
+                    RegionName = region.RegionName,
 
-                NumberOfSeniorPlastynMembers = region.Cities.Aggregate(0, (x, y) =>
-                         x += y.AnnualReports.Aggregate(0, (z, p) => z += p.MembersStatistic.NumberOfSeniorPlastynMembers)),
+                    RegionId = id,
 
-                NumberOfSeniorPlastynSupporters = region.Cities.Aggregate(0, (x, y) =>
-                        x += y.AnnualReports.Aggregate(0, (z, p) => z += p.MembersStatistic.NumberOfSeniorPlastynSupporters)),
+                    Date = DateTime.Now,
 
-                NumberOfUnatstvaSkobVirlyts = region.Cities.Aggregate(0, (x, y) =>
-                       x += y.AnnualReports.Aggregate(0, (z, p) => z += p.MembersStatistic.NumberOfUnatstvaSkobVirlyts)),
+                    NumberOfSeigneurMembers = MembersStatistics.Select(x=>x.NumberOfSeigneurMembers).Sum(),
 
-                NumberOfUnatstvaProspectors = region.Cities.Aggregate(0, (x, y) =>
-                      x += y.AnnualReports.Aggregate(0, (z, p) => z += p.MembersStatistic.NumberOfUnatstvaProspectors)),
+                    NumberOfSeigneurSupporters = MembersStatistics.Select(x => x.NumberOfSeigneurSupporters).Sum(),
 
-                NumberOfUnatstvaMembers = region.Cities.Aggregate(0, (x, y) =>
-                    x += y.AnnualReports.Aggregate(0, (z, p) => z += p.MembersStatistic.NumberOfUnatstvaSupporters)),
+                    NumberOfSeniorPlastynMembers = MembersStatistics.Select(x => x.NumberOfSeniorPlastynMembers).Sum(),
 
-                NumberOfUnatstvaSupporters = region.Cities.Aggregate(0, (x, y) =>
-                    x += y.AnnualReports.Aggregate(0, (z, p) => z += p.MembersStatistic.NumberOfUnatstvaSupporters)),
+                    NumberOfSeniorPlastynSupporters = MembersStatistics.Select(x => x.NumberOfSeniorPlastynSupporters).Sum(),
 
-                NumberOfUnatstvaNoname = region.Cities.Aggregate(0, (x, y) =>
-                    x += y.AnnualReports.Aggregate(0, (z, p) => z += p.MembersStatistic.NumberOfUnatstvaNoname)),
+                    NumberOfUnatstvaSkobVirlyts = MembersStatistics.Select(x => x.NumberOfUnatstvaSkobVirlyts).Sum(),
 
-                NumberOfNovatstva = region.Cities.Aggregate(0, (x, y) =>
-                    x += y.AnnualReports.Aggregate(0, (z, p) => z += p.MembersStatistic.NumberOfNovatstva)),
+                    NumberOfUnatstvaProspectors = MembersStatistics.Select(x => x.NumberOfUnatstvaProspectors).Sum(),
 
-                NumberOfPtashata = region.Cities.Aggregate(0, (x, y) =>
-                    x += y.AnnualReports.Aggregate(0, (z, p) => z += p.MembersStatistic.NumberOfPtashata)),
+                    NumberOfUnatstvaMembers = MembersStatistics.Select(x => x.NumberOfUnatstvaMembers).Sum(),
 
-                NumberOfSeatsPtashat = region.Cities.Aggregate(0, (x, y) =>
-                    x += y.AnnualReports.Aggregate(0, (z, p) => z += p.NumberOfSeatsPtashat)),
+                    NumberOfUnatstvaSupporters = MembersStatistics.Select(x => x.NumberOfUnatstvaSupporters).Sum(),
 
-                NumberOfIndependentRiy = region.Cities.Aggregate(0, (x, y) =>
-                    x += y.AnnualReports.Aggregate(0, (z, p) => z += p.NumberOfIndependentRiy)),
+                    NumberOfUnatstvaNoname = MembersStatistics.Select(x => x.NumberOfUnatstvaNoname).Sum(),
 
-                NumberOfClubs = region.Cities.Aggregate(0, (x, y) =>
-                    x += y.AnnualReports.Aggregate(0, (z, p) => z += p.NumberOfClubs)),
+                    NumberOfNovatstva = MembersStatistics.Select(x => x.NumberOfNovatstva).Sum(),
 
-                NumberOfIndependentGroups = region.Cities.Aggregate(0, (x, y) =>
-                    x += y.AnnualReports.Aggregate(0, (z, p) => z += p.NumberOfIndependentGroups)),
+                    NumberOfPtashata = MembersStatistics.Select(x => x.NumberOfPtashata).Sum(),
 
-                NumberOfPlastpryiatMembers = region.Cities.Aggregate(0, (x, y) =>
-                    x += y.AnnualReports.Aggregate(0, (z, p) => z += p.NumberOfPlastpryiatMembers)),
+                    NumberOfSeatsPtashat= AnnualReports.Select(x => x.NumberOfSeatsPtashat).Sum(),
 
-                NumberOfBeneficiaries = region.Cities.Aggregate(0, (x, y) =>
-                    x += y.AnnualReports.Aggregate(0, (z, p) => z += p.NumberOfBeneficiaries)),
+                    NumberOfIndependentRiy = AnnualReports.Select(x => x.NumberOfIndependentRiy).Sum(),
 
-                NumberOfHonoraryMembers = region.Cities.Aggregate(0, (x, y) =>
-                    x += y.AnnualReports.Aggregate(0, (z, p) => z += p.NumberOfHonoraryMembers)),
+                    NumberOfClubs = AnnualReports.Select(x => x.NumberOfClubs).Sum(),
 
-                NumberOfAdministrators = region.Cities.Aggregate(0, (x, y) =>
-                    x += y.AnnualReports.Aggregate(0, (z, p) => z += p.NumberOfAdministrators)),
+                    NumberOfIndependentGroups = AnnualReports.Select(x => x.NumberOfIndependentGroups).Sum(),
 
-                NumberOfTeacherAdministrators = region.Cities.Aggregate(0, (x, y) =>
-                    x += y.AnnualReports.Aggregate(0, (z, p) => z += p.NumberOfTeacherAdministrators)),
+                    NumberOfPlastpryiatMembers = AnnualReports.Select(x => x.NumberOfPlastpryiatMembers).Sum(),
 
-                NumberOfTeachers = region.Cities.Aggregate(0, (x, y) =>
-                    x += y.AnnualReports.Aggregate(0, (z, p) => z += p.NumberOfTeachers)),
-            };
+                    NumberOfBeneficiaries = AnnualReports.Select(x => x.NumberOfBeneficiaries).Sum(),
 
-            _repositoryWrapper.RegionAnnualReports.Create(regionAnnualReport);
-            await _repositoryWrapper.SaveAsync();
+                    NumberOfHonoraryMembers = AnnualReports.Select(x => x.NumberOfHonoraryMembers).Sum(),
 
-            return await _regionAccessService.HasAccessAsync(claimsPrincipal, region.ID) ? _mapper.Map<RegionAnnualReportDTO>(regionAnnualReport)
-                : throw new UnauthorizedAccessException();
+                    NumberOfAdministrators = AnnualReports.Select(x => x.NumberOfAdministrators).Sum(),
+
+                    NumberOfTeacherAdministrators = AnnualReports.Select(x => x.NumberOfTeacherAdministrators).Sum(),
+
+                    NumberOfTeachers = AnnualReports.Select(x => x.NumberOfTeachers).Sum(),
+                };
+
+                _repositoryWrapper.RegionAnnualReports.Create(regionAnnualReport);
+                await _repositoryWrapper.SaveAsync();
+
+                return _mapper.Map<RegionAnnualReportDTO>(regionAnnualReport);
+            }
+            else
+            {
+                throw new InvalidOperationException("Can't be empty report!");
+            } 
         }
 
         ///<inheritdoc/>
@@ -129,15 +146,15 @@ namespace EPlast.BLL.Services.Region
 
         public async Task CreateAsync(ClaimsPrincipal claimsPrincipal, RegionAnnualReportDTO regionAnnualReportDTO)
         {
-            var region = await _repositoryWrapper.Region.GetFirstOrDefaultAsync(
-                predicate: a => a.ID == regionAnnualReportDTO.Region.ID);
-            if (await CheckCreated(region.ID))
+            var region = await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(
+                predicate: a => a.RegionId == regionAnnualReportDTO.RegionId&&a.Date.Year==regionAnnualReportDTO.Date.Year);
+            if (await CheckCreated(region.ID,region.Date.Year))
             {
-                throw new InvalidOperationException();
+                throw new InvalidOperationException("Report is already crated!");
             }
             if (!await _regionAccessService.HasAccessAsync(claimsPrincipal, region.ID))
             {
-                throw new UnauthorizedAccessException();
+                throw new UnauthorizedAccessException("No access for creating Annual Report!");
             }
             var regionAnnualReport = _mapper.Map<RegionAnnualReportDTO, RegionAnnualReport>(regionAnnualReportDTO);
             regionAnnualReport.Date = DateTime.Now;
@@ -145,20 +162,21 @@ namespace EPlast.BLL.Services.Region
             await _repositoryWrapper.SaveAsync();
         }
 
-        private async Task<bool> CheckCreated(int Id)
+        private async Task<bool> CheckCreated(int regionId, int year)
         {
             return await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(
-                predicate: a => a.Region.ID == Id && a.Date.Year == DateTime.Now.Year) != null;
+                predicate: a => a.RegionId== regionId && a.Date.Year == year) != null;
         }
-
-        public async Task<RegionAnnualReportDTO> GetReportById(int id, int year)
+        
+        public async Task<RegionAnnualReportDTO> GetReportByIdAsync(int id, int year)
         {
-            return _mapper.Map<RegionAnnualReport, RegionAnnualReportDTO>(await _repositoryWrapper.RegionAnnualReports.GetFirstAsync(predicate: i => i.ID == id && i.Date.Year == year));
+            return _mapper.Map<RegionAnnualReport, RegionAnnualReportDTO>(await _repositoryWrapper.RegionAnnualReports.GetFirstAsync(predicate: i => i.RegionId == id && i.Date.Year == year));
         }
 
-        public async Task<IEnumerable<RegionAnnualReportDTO>> GetAllRegionsReports()
+        public async Task<IEnumerable<RegionAnnualReportDTO>> GetAllRegionsReportsAsync()
         {
             return _mapper.Map<IEnumerable<RegionAnnualReport>, IEnumerable<RegionAnnualReportDTO>>(await _repositoryWrapper.RegionAnnualReports.FindAll().ToListAsync());
         }
+
     }
 }

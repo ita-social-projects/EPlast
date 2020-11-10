@@ -1,6 +1,7 @@
 ﻿using EPlast.BLL.DTO.Region;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Region;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.WebApi.Models.Region;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -17,15 +18,19 @@ namespace EPlast.WebApi.Controllers
         private readonly ILoggerService<CitiesController> _logger;
         private readonly IRegionService _regionService;
         private readonly IRegionAnnualReportService _RegionAnnualReportService;
-
+        private readonly IUserManagerService _userManagerService;
+        private readonly ILoggerService<AnnualReportController> _loggerService;
 
         public RegionsController(ILoggerService<CitiesController> logger,
             IRegionService regionService,
-            IRegionAnnualReportService RegionAnnualReportService)
+            IRegionAnnualReportService RegionAnnualReportService, IUserManagerService userManagerService, 
+            ILoggerService<AnnualReportController> loggerService)
         {
             _logger = logger;
             _regionService = regionService;
             _RegionAnnualReportService = RegionAnnualReportService;
+            _userManagerService = userManagerService;
+            _loggerService = loggerService;
 
         }
 
@@ -128,8 +133,7 @@ namespace EPlast.WebApi.Controllers
         {
             await _regionService.AddRegionAdministrator(admin);
 
-            return Ok();
-
+            return NoContent();
         }
 
 
@@ -308,7 +312,6 @@ namespace EPlast.WebApi.Controllers
             }
             catch (NullReferenceException)
             {
-
                 return StatusCode(StatusCodes.Status404NotFound);
             }
             catch (UnauthorizedAccessException)
@@ -328,9 +331,9 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">The region annual report does not exist</response>
         [HttpGet("GetReportById/{id}/{year}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetReportById(int id, int year)
+        public async Task<IActionResult> GetReportByIdAsync(int id, int year)
         {
-            return Ok(await _RegionAnnualReportService.GetReportById(id, year));
+            return Ok(await _RegionAnnualReportService.GetReportByIdAsync(id, year));
         }
 
         /// <summary>
@@ -342,9 +345,9 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">The region annual report does not exist</response>
         [HttpGet("GetAllRegionsReports")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetAllRegionsReports()
+        public async Task<IActionResult> GetAllRegionsReportsAsync()
         {
-            return Ok(await _RegionAnnualReportService.GetAllRegionsReports());
+            return Ok(await _RegionAnnualReportService.GetAllRegionsReportsAsync());
         }
 
     }

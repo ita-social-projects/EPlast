@@ -14,7 +14,7 @@ namespace EPlast.BLL.Services.Region.RegionAccess.RegionAccessGetters
             _repositoryWrapper = repositoryWrapper;
         }
 
-        public async Task<IEnumerable<DatabaseEntities.Region>> GetRegion(string userId)
+        public async Task<IEnumerable<DatabaseEntities.Region>> GetRegionAsync(string userId)
         {
             return await _repositoryWrapper.Region.GetAllAsync(include: source => source.Include(c => c.Cities));
         }
