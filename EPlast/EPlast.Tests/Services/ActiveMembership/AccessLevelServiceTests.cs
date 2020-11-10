@@ -1,7 +1,9 @@
 ﻿using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.ExtensionMethods;
+using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
+using EPlast.BLL.Services;
 using EPlast.BLL.Services.ActiveMembership;
 using EPlast.BLL.Services.Interfaces;
 using Moq;
@@ -18,13 +20,15 @@ namespace EPlast.Tests.Services.ActiveMembership
     {
         private IAccessLevelService _accessLevelService;
         private Mock<IUserManagerService> _userManagerService;
+        private IUniqueIdService _uniqueId;
 
         [SetUp]
         public void SetUp()
         {
-
             _userManagerService = new Mock<IUserManagerService>();
             _accessLevelService = new AccessLevelService( _userManagerService.Object);
+            _uniqueId = new UniqueIdService();
+
         }
         [Test]
         public async Task GetUserAccessLevelsAsync_UserIsPlastun_ReturnsIEnumerableOfStringsWithPlastunRolesForActiveMembership()
@@ -101,7 +105,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             Assert.IsInstanceOf<IEnumerable<string>>(result);
         }
 
-        private string UserId => Guid.NewGuid().ToString();
+        private string UserId => _uniqueId.GetUniqueId().ToString();
         private DateTime UserDateOfEntry => DateTime.Today;
         private UserDTO UserDTO => new UserDTO
         {
