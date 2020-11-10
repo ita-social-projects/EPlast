@@ -43,8 +43,8 @@ namespace EPlast.BLL.Services.Region
                 predicate: a => a.RegionId == id
                 );
 
-            var AnnualReports = new List<AnnualReport>();
-            var MembersStatistics = new List<MembersStatistic>();
+            var annualReports = new List<AnnualReport>();
+            var membersStatistics = new List<MembersStatistic>();
 
             foreach(var city in cities)
             {
@@ -53,19 +53,19 @@ namespace EPlast.BLL.Services.Region
                 {
                     foreach(var report in reports)
                     {
-                        AnnualReports.Add(report);
+                        annualReports.Add(report);
                     }
                 }
             }
 
-            foreach(var report in AnnualReports)
+            foreach(var report in annualReports)
             {
                 var statistics = await _repositoryWrapper.MembersStatistics.GetAllAsync(a => a.AnnualReportId == report.ID);
                 if (statistics.Count() > 0)
                 {
                     foreach (var stat in statistics)
                     {
-                        MembersStatistics.Add(stat);
+                        membersStatistics.Add(stat);
                     }
                 }
             }
@@ -80,47 +80,47 @@ namespace EPlast.BLL.Services.Region
 
                     Date = DateTime.Now,
 
-                    NumberOfSeigneurMembers = MembersStatistics.Select(x=>x.NumberOfSeigneurMembers).Sum(),
+                    NumberOfSeigneurMembers = membersStatistics.Select(x=>x.NumberOfSeigneurMembers).Sum(),
 
-                    NumberOfSeigneurSupporters = MembersStatistics.Select(x => x.NumberOfSeigneurSupporters).Sum(),
+                    NumberOfSeigneurSupporters = membersStatistics.Select(x => x.NumberOfSeigneurSupporters).Sum(),
 
-                    NumberOfSeniorPlastynMembers = MembersStatistics.Select(x => x.NumberOfSeniorPlastynMembers).Sum(),
+                    NumberOfSeniorPlastynMembers = membersStatistics.Select(x => x.NumberOfSeniorPlastynMembers).Sum(),
 
-                    NumberOfSeniorPlastynSupporters = MembersStatistics.Select(x => x.NumberOfSeniorPlastynSupporters).Sum(),
+                    NumberOfSeniorPlastynSupporters = membersStatistics.Select(x => x.NumberOfSeniorPlastynSupporters).Sum(),
 
-                    NumberOfUnatstvaSkobVirlyts = MembersStatistics.Select(x => x.NumberOfUnatstvaSkobVirlyts).Sum(),
+                    NumberOfUnatstvaSkobVirlyts = membersStatistics.Select(x => x.NumberOfUnatstvaSkobVirlyts).Sum(),
 
-                    NumberOfUnatstvaProspectors = MembersStatistics.Select(x => x.NumberOfUnatstvaProspectors).Sum(),
+                    NumberOfUnatstvaProspectors = membersStatistics.Select(x => x.NumberOfUnatstvaProspectors).Sum(),
 
-                    NumberOfUnatstvaMembers = MembersStatistics.Select(x => x.NumberOfUnatstvaMembers).Sum(),
+                    NumberOfUnatstvaMembers = membersStatistics.Select(x => x.NumberOfUnatstvaMembers).Sum(),
 
-                    NumberOfUnatstvaSupporters = MembersStatistics.Select(x => x.NumberOfUnatstvaSupporters).Sum(),
+                    NumberOfUnatstvaSupporters = membersStatistics.Select(x => x.NumberOfUnatstvaSupporters).Sum(),
 
-                    NumberOfUnatstvaNoname = MembersStatistics.Select(x => x.NumberOfUnatstvaNoname).Sum(),
+                    NumberOfUnatstvaNoname = membersStatistics.Select(x => x.NumberOfUnatstvaNoname).Sum(),
 
-                    NumberOfNovatstva = MembersStatistics.Select(x => x.NumberOfNovatstva).Sum(),
+                    NumberOfNovatstva = membersStatistics.Select(x => x.NumberOfNovatstva).Sum(),
 
-                    NumberOfPtashata = MembersStatistics.Select(x => x.NumberOfPtashata).Sum(),
+                    NumberOfPtashata = membersStatistics.Select(x => x.NumberOfPtashata).Sum(),
 
-                    NumberOfSeatsPtashat= AnnualReports.Select(x => x.NumberOfSeatsPtashat).Sum(),
+                    NumberOfSeatsPtashat= annualReports.Select(x => x.NumberOfSeatsPtashat).Sum(),
 
-                    NumberOfIndependentRiy = AnnualReports.Select(x => x.NumberOfIndependentRiy).Sum(),
+                    NumberOfIndependentRiy = annualReports.Select(x => x.NumberOfIndependentRiy).Sum(),
 
-                    NumberOfClubs = AnnualReports.Select(x => x.NumberOfClubs).Sum(),
+                    NumberOfClubs = annualReports.Select(x => x.NumberOfClubs).Sum(),
 
-                    NumberOfIndependentGroups = AnnualReports.Select(x => x.NumberOfIndependentGroups).Sum(),
+                    NumberOfIndependentGroups = annualReports.Select(x => x.NumberOfIndependentGroups).Sum(),
 
-                    NumberOfPlastpryiatMembers = AnnualReports.Select(x => x.NumberOfPlastpryiatMembers).Sum(),
+                    NumberOfPlastpryiatMembers = annualReports.Select(x => x.NumberOfPlastpryiatMembers).Sum(),
 
-                    NumberOfBeneficiaries = AnnualReports.Select(x => x.NumberOfBeneficiaries).Sum(),
+                    NumberOfBeneficiaries = annualReports.Select(x => x.NumberOfBeneficiaries).Sum(),
 
-                    NumberOfHonoraryMembers = AnnualReports.Select(x => x.NumberOfHonoraryMembers).Sum(),
+                    NumberOfHonoraryMembers = annualReports.Select(x => x.NumberOfHonoraryMembers).Sum(),
 
-                    NumberOfAdministrators = AnnualReports.Select(x => x.NumberOfAdministrators).Sum(),
+                    NumberOfAdministrators = annualReports.Select(x => x.NumberOfAdministrators).Sum(),
 
-                    NumberOfTeacherAdministrators = AnnualReports.Select(x => x.NumberOfTeacherAdministrators).Sum(),
+                    NumberOfTeacherAdministrators = annualReports.Select(x => x.NumberOfTeacherAdministrators).Sum(),
 
-                    NumberOfTeachers = AnnualReports.Select(x => x.NumberOfTeachers).Sum(),
+                    NumberOfTeachers = annualReports.Select(x => x.NumberOfTeachers).Sum(),
                 };
 
                 _repositoryWrapper.RegionAnnualReports.Create(regionAnnualReport);
