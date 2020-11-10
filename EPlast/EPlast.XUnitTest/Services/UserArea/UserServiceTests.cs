@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
@@ -33,6 +34,7 @@ namespace EPlast.XUnitTest.Services.UserArea
         private Mock<IWebHostEnvironment> _env;
         private Mock<IUserManagerService> _userManagerService;
         private Mock<IConfirmedUsersService> _confirmedUserService;
+        private Mock<IUniqueIdService> _uniqueId;
         public UserServiceTests()
         {
             _repoWrapper = new Mock<IRepositoryWrapper>();
@@ -45,11 +47,12 @@ namespace EPlast.XUnitTest.Services.UserArea
             _env=new Mock<IWebHostEnvironment>();
             _userManagerService = new Mock<IUserManagerService>();
             _confirmedUserService = new Mock<IConfirmedUsersService>();
+            _uniqueId = new Mock<IUniqueIdService>();
         }
 
         private UserService GetService()
         {
-            return new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _workService.Object, _educationService.Object, _userBlobStorage.Object,_env.Object, _userManagerService.Object, _confirmedUserService.Object);
+            return new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _workService.Object, _educationService.Object, _userBlobStorage.Object,_env.Object, _uniqueId.Object);
         }
         [Fact]
         public async Task GetUserProfileTest()

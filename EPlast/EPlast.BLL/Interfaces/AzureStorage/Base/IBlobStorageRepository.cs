@@ -17,9 +17,9 @@ namespace EPlast.BLL.Interfaces.AzureStorage.Base
         /// Uoload blob by IFormFile
         /// </summary>
         /// <param name="blobfile">File in format IFormFile</param>
-        /// <param name="blobNameWithExtension">Name of file with extension</param>
+        /// <param name="fileName">Name of file with extension</param>
         /// <param name="containerNameKey">Name of container where the file will be located</param>
-        Task UploadBlobAsync(IFormFile blobfile, string blobNameWithExtension, string containerNameKey);
+        Task UploadBlobAsync(IFormFile blobfile, string fileName, string containerNameKey);
 
         /// <summary>
         /// Get blob by CloudBlockBlob

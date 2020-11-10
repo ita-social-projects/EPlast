@@ -8,8 +8,8 @@ using EPlast.BLL.Settings;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Extensions;
-using EPlast.WebApi.SignalRHubs;
 using EPlast.WebApi.StartupExtensions;
+using EPlast.WebApi.WebSocketHandlers;
 using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -59,10 +59,8 @@ namespace EPlast.WebApi
             services.AddLocalization();
             services.AddRequestLocalizationOptions();
             services.AddIdentityOptions();
-            services.AddSignalR().AddHubOptions<NotificationHub>(options =>
-            {
-                options.EnableDetailedErrors = true; // temporarily
-            });
+            
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -106,6 +104,11 @@ namespace EPlast.WebApi
                 app.UseHsts();
             }
 
+            app.UseWebSockets();
+
+            app.MapWebSocketManager("/notifications", serviceProvider.GetService<UserNotificationHandler>());
+
+
             //app.UseAntiforgeryTokens();
             app.UseStatusCodePages();
             app.UseHttpsRedirection();
@@ -116,15 +119,13 @@ namespace EPlast.WebApi
                 builder
                 .AllowAnyMethod()
                 .AllowAnyHeader()
-                .SetIsOriginAllowed(_ => true)
-                .AllowCredentials();
+                .AllowAnyOrigin();
             });
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<NotificationHub>("/notifications");
             });
             app.UseHangfireDashboard();
             recurringJobManager.AddOrUpdate("Run every day",
