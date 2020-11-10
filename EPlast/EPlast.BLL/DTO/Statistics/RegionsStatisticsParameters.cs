@@ -4,9 +4,9 @@ using System.Text;
 
 namespace EPlast.BLL.DTO.Statistics
 {
-    public class CitiesStatisticsParameters
+    public class RegionsStatisticsParameters
     {
-        public IEnumerable<int> CityIds { get; set; }
+        public IEnumerable<int> RegionIds { get; set; }
         public IEnumerable<int> Years { get; set; }
         public IEnumerable<StatisticsItemIndicator> Indicators { get; set; }
     }

@@ -40,27 +40,25 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("cities")]
         public async Task<IActionResult> GetCitiesStatistics([FromQuery] CitiesStatisticsParameters statisticsParameters)
         {
-                return StatusCode(StatusCodes.Status200OK, await cityStatisticsService.GetCitiesStatisticsAsync(statisticsParameters.CitiesId,
+                return StatusCode(StatusCodes.Status200OK, await cityStatisticsService.GetCitiesStatisticsAsync(statisticsParameters.CityIds,
                                                                                                               statisticsParameters.Years,
                                                                                                               statisticsParameters.Indicators));
         }
-        
+
         /// <summary>
         /// Method to get statistics for the regions for the years
         /// </summary>
-        /// <param name="regionsId">Regions identification numbers</param>
-        /// <param name="years">Years of which statistics is needed</param>
-        /// <param name="indicators">Statistics parameters</param>
+        /// <param name="statisticsParameters">Statistics parameters: region id's, years, indicators</param>
         /// <returns>Statistics for the regions on the specified indicators and years</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="403">User does not have access to the statistics</response>
         /// <response code="404">The statistics does not exist</response>
         [HttpGet("regions")]
-        public async Task<IActionResult> GetRegionsStatistics([FromQuery] IEnumerable<int> regionsId,
-                                                                         [FromQuery] IEnumerable<int> years,
-                                                                         [FromQuery] IEnumerable<StatisticsItemIndicator> indicators)
+        public async Task<IActionResult> GetRegionsStatistics([FromQuery] RegionsStatisticsParameters statisticsParameters)
         {
-                return StatusCode(StatusCodes.Status200OK, await regionStatisticsService.GetRegionsStatisticsAsync(regionsId, years, indicators));            
+                return StatusCode(StatusCodes.Status200OK, await regionStatisticsService.GetRegionsStatisticsAsync(statisticsParameters.RegionIds,
+                                                                                                              statisticsParameters.Years,
+                                                                                                              statisticsParameters.Indicators));            
         }
     }
 }
