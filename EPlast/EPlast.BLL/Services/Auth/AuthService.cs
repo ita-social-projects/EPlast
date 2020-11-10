@@ -31,7 +31,8 @@ namespace EPlast.BLL.Services
         public AuthService(UserManager<User> userManager,
             SignInManager<User> signInManager,
             IEmailConfirmation emailConfirmation,
-            IMapper mapper, IRepositoryWrapper repoWrapper)
+            IMapper mapper,
+            IRepositoryWrapper repoWrapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
