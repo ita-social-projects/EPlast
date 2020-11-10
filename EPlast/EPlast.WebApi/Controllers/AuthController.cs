@@ -6,13 +6,13 @@ using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.Resources;
-using Microsoft.AspNetCore.Authorization
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using System.Threading.Tasks;
 using System.Web;
 using EPlast.BLL.Models;
-using NLog.Extensions.
+using NLog.Extensions.Logging;
 
 namespace EPlast.WebApi.Controllers
 {
