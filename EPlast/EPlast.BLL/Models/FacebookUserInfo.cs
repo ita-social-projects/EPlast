@@ -4,12 +4,6 @@ using System.Text;
 
 namespace EPlast.BLL.Models
 {
-    enum GenderType
-    {
-        Male,
-        Female,
-        Undefined
-    }
     public class FacebookUserInfo
     {
         public string AccessToken { get; set; }
