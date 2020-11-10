@@ -21,7 +21,7 @@ namespace EPlast.BLL.Services.Region.RegionAccess.RegionAccessGetters
                     predicate: a => a.AdminTypeName == "Голова Округу").Result;
         }
 
-        public async Task<IEnumerable<DatabaseEntities.Region>> GetRegion(string userId)
+        public async Task<IEnumerable<DatabaseEntities.Region>> GetRegionAsync(string userId)
         {
             var RegionAdministration = await _repositoryWrapper.RegionAdministration.GetFirstOrDefaultAsync(
                     predicate: c => c.UserId == userId && (DateTime.Now < c.EndDate || c.EndDate == null) && 

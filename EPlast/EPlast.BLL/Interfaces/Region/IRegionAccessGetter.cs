@@ -6,6 +6,6 @@ namespace EPlast.BLL.Services.Region.RegionAccess.RegionAccessGetters
 {
     public interface IRegionAccessGetter
     {
-        Task<IEnumerable<DatabaseEntities.Region>> GetRegion(string userId);
+        Task<IEnumerable<DatabaseEntities.Region>> GetRegionAsync(string userId);
     }
 }
