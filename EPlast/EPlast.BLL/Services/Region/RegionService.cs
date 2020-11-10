@@ -2,6 +2,7 @@
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
+using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.City;
@@ -27,6 +28,7 @@ namespace EPlast.BLL.Services.Region
         private readonly ICityService _cityService;
         private readonly IAdminTypeService _adminTypeService;
         private readonly UserManager<User> _userManager;
+        private readonly IUniqueIdService _uniqueId;
 
         public RegionService(IRepositoryWrapper repoWrapper,
             IMapper mapper,
@@ -34,7 +36,8 @@ namespace EPlast.BLL.Services.Region
             IRegionBlobStorageRepository regionBlobStorage,
             ICityService cityService,
             IAdminTypeService adminTypeService,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IUniqueIdService uniqueId)
         {
             _regionFilesBlobStorageRepository = regionFilesBlobStorageRepository;
             _repoWrapper = repoWrapper;
@@ -43,6 +46,8 @@ namespace EPlast.BLL.Services.Region
             _cityService = cityService;
             _adminTypeService = adminTypeService;
             _userManager = userManager;
+            _uniqueId = uniqueId;
+
         }
 
         public async Task AddRegionAsync(RegionDTO region)
@@ -82,6 +87,7 @@ namespace EPlast.BLL.Services.Region
                 {
                     newRegionAdmin.Status = true;
                     oldAdmin.Status = false;
+                    oldAdmin.EndDate = DateTime.Now;
                 }
                 else
                 {
@@ -100,6 +106,30 @@ namespace EPlast.BLL.Services.Region
                 await _repoWrapper.SaveAsync();
                 await _repoWrapper.RegionAdministration.CreateAsync(newRegionAdmin);
                 await _repoWrapper.SaveAsync();
+            }
+        }
+
+        public async Task EditRegionAdministrator(RegionAdministrationDTO regionAdministrationDTO)
+        {
+            var admin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.ID == regionAdministrationDTO.ID);
+            if(admin != null)
+            {
+                var adminType = await _adminTypeService.GetAdminTypeByIdAsync(regionAdministrationDTO.AdminTypeId);
+
+                if (adminType.ID == admin.AdminTypeId)
+                {
+                    admin.StartDate = regionAdministrationDTO.StartDate ?? DateTime.Now;
+                    admin.EndDate = regionAdministrationDTO.EndDate;
+
+                    _repoWrapper.RegionAdministration.Update(admin);
+                    await _repoWrapper.SaveAsync();
+                }
+
+                else
+                {
+                    await DeleteAdminByIdAsync(regionAdministrationDTO.ID);
+                    await AddRegionAdministrator(regionAdministrationDTO);
+                }
             }
         }
 
@@ -250,8 +280,8 @@ namespace EPlast.BLL.Services.Region
         public async Task<RegionDocumentDTO> AddDocumentAsync(RegionDocumentDTO documentDTO)
          {
              var fileBase64 = documentDTO.BlobName.Split(',')[1];
-             var extension = "." + documentDTO.FileName.Split('.').LastOrDefault();
-             var fileName = Guid.NewGuid() + extension;
+             var extension = $".{documentDTO.FileName.Split('.').LastOrDefault()}";
+             var fileName = $"{_uniqueId.GetUniqueId()}{extension}";
              await _regionFilesBlobStorageRepository.UploadBlobForBase64Async(fileBase64, fileName);
              documentDTO.BlobName = fileName;
 
@@ -291,7 +321,7 @@ namespace EPlast.BLL.Services.Region
 
         public async Task<RegionAdministrationDTO> GetHead(int regionId)
         {
-            var head = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(d => d.RegionId == regionId && d.AdminType.AdminTypeName == "Голова Округу" && DateTime.Compare((DateTime)d.EndDate, DateTime.Now)>0&& d.Status,
+            var head = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(d => d.RegionId == regionId && d.AdminType.AdminTypeName == "Голова Округу" && (d.EndDate > DateTime.Now || d.EndDate == null),
                 include: source => source
                 .Include(
                 d => d.User));
