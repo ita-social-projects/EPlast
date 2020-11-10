@@ -135,7 +135,8 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                userInfo.Gender = _resourceForGender[userInfo.Gender].Value;
+                string newGender = _resourceForGender[userInfo.Gender].Value;
+                userInfo.Gender = newGender;
                 var user = await _authService.FacebookLoginAsync(userInfo);
                 if (user == null)
                 {
