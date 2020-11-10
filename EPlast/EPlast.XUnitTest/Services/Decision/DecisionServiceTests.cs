@@ -16,6 +16,7 @@ using EPlast.BLL.Interfaces.Logging;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Query;
 using Xunit;
+using EPlast.BLL.Interfaces;
 
 namespace EPlast.XUnitTest
 {
@@ -25,6 +26,7 @@ namespace EPlast.XUnitTest
         private static Mock<IRepositoryWrapper> _repository;
         private static Mock<IDecisionBlobStorageRepository> _decisionBlobStorage;
         private static Mock<IDecisionVmInitializer> _decisionVmCreator;
+        private static Mock<IUniqueIdService> _uniqueId;
 
         private static DecisionService CreateDecisionService(int decisionId = 1)
         {
@@ -37,6 +39,7 @@ namespace EPlast.XUnitTest
             var mapper = new Mock<IMapper>();
             _decisionVmCreator = new Mock<IDecisionVmInitializer>();
             var logger = new Mock<ILoggerService<DecisionService>>();
+            _uniqueId = new Mock<IUniqueIdService>();
             directoryManager.Setup(dir => dir.Exists(It.IsAny<string>())).Returns(true);
             directoryManager.Setup(dir => dir.GetFiles(It.IsAny<string>())).Returns(new[] { "yes", "stonks", "files" });
 
@@ -65,7 +68,7 @@ namespace EPlast.XUnitTest
                 .Returns(GetTestOrganizationDtoList()[0]);
             mapper.Setup(m => m.Map<IEnumerable<OrganizationDTO>>(It.IsAny<IEnumerable<Organization>>()))
                 .Returns(GetTestOrganizationDtoList());
-            return new DecisionService(_repository.Object, mapper.Object, _decisionVmCreator.Object, _decisionBlobStorage.Object);
+            return new DecisionService(_repository.Object, mapper.Object, _decisionVmCreator.Object, _decisionBlobStorage.Object, _uniqueId.Object);
         }
 
         [Fact]
