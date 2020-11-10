@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Globalization;
 using System.Security.Policy;
+using System.Threading;
 using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
@@ -18,6 +20,7 @@ using Google.Apis.Auth;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using NLog.Extensions.Logging;
+using EPlast.Resources;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -32,6 +35,8 @@ namespace EPlast.WebApi.Controllers
         private readonly IJwtService _jwtService;
         private readonly IHomeService _homeService;
         private readonly IUserDatesService _userDatesService;
+        private readonly IStringLocalizer<Genders> _resourceForGender;
+
 
         public AuthController(IAuthService authService,
             IMapper mapper,
@@ -39,7 +44,8 @@ namespace EPlast.WebApi.Controllers
             IStringLocalizer<AuthenticationErrors> resourceForErrors,
             IJwtService jwtService,
             IHomeService homeService,
-            IUserDatesService userDatesService)
+            IUserDatesService userDatesService,
+            IStringLocalizer<Genders> resourceForGender)
         {
             _authService = authService;
             _mapper = mapper;
@@ -48,6 +54,7 @@ namespace EPlast.WebApi.Controllers
             _jwtService = jwtService;
             _homeService = homeService;
             _userDatesService = userDatesService;
+            _resourceForGender = resourceForGender;
         }
 
         /// <summary>
@@ -137,14 +144,24 @@ namespace EPlast.WebApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> FacebookLogin([FromBody] FacebookUserInfo userInfo)
         {
-            var user = await _authService.FacebookLoginAsync(userInfo);
-            if (user == null)
+            try
             {
-                return BadRequest();
+                userInfo.Gender = _resourceForGender[userInfo.Gender].Value;
+                var user = await _authService.FacebookLoginAsync(userInfo);
+                if (user == null)
+                {
+                    return BadRequest();
+                }
+
+                var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
+                return Ok(new {token = generatedToken});
+            }
+            catch (Exception exc)
+            {
+                _loggerService.LogError(exc.Message);
             }
 
-            var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
-            return Ok(new {token = generatedToken});
+            return BadRequest();
         }
 
         /// <summary>
