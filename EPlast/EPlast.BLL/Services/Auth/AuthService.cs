@@ -313,8 +313,8 @@ namespace EPlast.BLL.Services
                     UserProfile = new UserProfile()
                     {
                         Address = facebookUser.Address,
-                        Birthday = DateTime.Parse(facebookUser.Birthday,CultureInfo.CurrentCulture),
-                        GenderID = _repoWrapper.Gender.FindByCondition(x=>x.Name.ToLower()== facebookUser.Gender).FirstOrDefault()?.ID,
+                        Birthday = DateTime.Parse(facebookUser.Birthday,CultureInfo.InvariantCulture),
+                        GenderID = _repoWrapper.Gender.FindByCondition(x=>x.Name == facebookUser.Gender).FirstOrDefault()?.ID,
                         ReligionId =  _repoWrapper.Religion.FindByCondition(x => x.Name == facebookUser.Religion).FirstOrDefault()?.ID,
                     }
                 };
