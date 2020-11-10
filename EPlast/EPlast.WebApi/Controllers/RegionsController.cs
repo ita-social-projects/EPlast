@@ -132,6 +132,20 @@ namespace EPlast.WebApi.Controllers
 
         }
 
+        [HttpPost("EditAdministrator")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
+        public async Task<IActionResult> EditAdministrator(RegionAdministrationDTO admin)
+        {
+            if(admin != null)
+            {
+                await _regionService.EditRegionAdministrator(admin);
+                _logger.LogInformation($"Successful edit admin: {admin.UserId}");
+                return NoContent();
+            }
+            _logger.LogError("Admin is null");
+            return NotFound();
+        }
+
 
         [HttpGet("Profiles/{page}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
