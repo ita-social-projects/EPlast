@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
+using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Services;
@@ -31,6 +32,7 @@ namespace EPlast.Tests.Services.City
         private Mock<ICityAccessService> _cityAccessService;
         private Mock<UserManager<User>> _userManager;
         private Mock<IUserStore<User>> _user;
+        private Mock<IUniqueIdService> _uniqueId;
 
         [SetUp]
         public void SetUp()
@@ -41,9 +43,10 @@ namespace EPlast.Tests.Services.City
             _cityBlobStorage = new Mock<ICityBlobStorageRepository>();
             _cityAccessService = new Mock<ICityAccessService>();
             _user = new Mock<IUserStore<User>>();
+            _uniqueId = new Mock<IUniqueIdService>();
             _userManager = new Mock<UserManager<User>>(_user.Object, null, null, null, null, null, null, null, null);
             _cityService = new CityService(_repoWrapper.Object, _mapper.Object, _env.Object, _cityBlobStorage.Object,
-                   _cityAccessService.Object, _userManager.Object);
+                   _cityAccessService.Object, _userManager.Object, _uniqueId.Object);
         }
 
 
@@ -267,7 +270,7 @@ namespace EPlast.Tests.Services.City
             _repoWrapper.Setup(r => r.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessCity.City, bool>>>(), null))
                 .ReturnsAsync(GetTestNewCity());
 
-            return new CityService(_repoWrapper.Object, _mapper.Object, _env.Object, _cityBlobStorage.Object, _cityAccessService.Object, null);
+            return new CityService(_repoWrapper.Object, _mapper.Object, _env.Object, _cityBlobStorage.Object, _cityAccessService.Object, null, _uniqueId.Object);
         }
 
 
