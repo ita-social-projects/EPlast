@@ -18,7 +18,7 @@ namespace EPlast.Tests.Services.Blank
     [TestFixture]
     class BlankExtractOfUPUServiceTest
     {
-        private BlankExtractFromUPUDocumentService _blankExtractOfUPUService;
+        private BlankExtractFromUpuDocumentService _blankExtractOfUPUService;
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IMapper> _mapper;
         private Mock<IBlankExtractFromUPUBlobStorageRepository> _blankBlobRepository;
@@ -29,7 +29,7 @@ namespace EPlast.Tests.Services.Blank
             _mapper = new Mock<IMapper>();
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _blankBlobRepository = new Mock<IBlankExtractFromUPUBlobStorageRepository>();
-            _blankExtractOfUPUService = new BlankExtractFromUPUDocumentService(_repoWrapper.Object, _mapper.Object, _blankBlobRepository.Object);
+            _blankExtractOfUPUService = new BlankExtractFromUpuDocumentService(_repoWrapper.Object, _mapper.Object, _blankBlobRepository.Object);
         }
 
         [Test]

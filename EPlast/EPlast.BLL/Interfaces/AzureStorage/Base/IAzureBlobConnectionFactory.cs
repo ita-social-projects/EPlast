@@ -8,8 +8,8 @@ namespace EPlast.BLL.Interfaces.AzureStorage.Base
         /// <summary>
         /// Get blob container by container name
         /// </summary>
-        /// <param name="containerName">Container name</param>
+        /// <param name="containerNameKey">Container name</param>
         /// <returns>CloudBlockContainer</returns>
-        Task<CloudBlobContainer> GetBlobContainer(string containerName);
+        Task<CloudBlobContainer> GetBlobContainer(string containerNameKey);
     }
 }

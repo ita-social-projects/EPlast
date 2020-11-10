@@ -12,10 +12,8 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Web;
 using EPlast.BLL.Models;
 using Newtonsoft.Json;
-using NLog.Fluent;
 
 namespace EPlast.BLL.Services
 {
@@ -257,7 +255,7 @@ namespace EPlast.BLL.Services
 
             if (httpResponseMessage.StatusCode != HttpStatusCode.OK)
             {
-                throw new Exception();
+                throw new HttpRequestException("Status code isn`t correct");
             }
 
             var response = await httpResponseMessage.Content.ReadAsStringAsync();
@@ -285,7 +283,7 @@ namespace EPlast.BLL.Services
                    await _userManager.AddToRoleAsync(user, "Прихильник");
                }
                else 
-                   throw new Exception("Failed creation of user");
+                   throw new ArgumentException("Failed creation of user");
 
             }
             await _signInManager.SignInAsync(user, isPersistent: false);
