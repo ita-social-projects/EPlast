@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Globalization;
-using System.Security.Policy;
-using System.Threading;
 using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
@@ -9,18 +6,13 @@ using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.Resources;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using System.Threading.Tasks;
 using System.Web;
 using EPlast.BLL.Models;
-using Google.Apis.Auth;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Auth.OAuth2.Flows;
-using NLog.Extensions.Logging;
-using EPlast.Resources;
+using NLog.Extensions.
 
 namespace EPlast.WebApi.Controllers
 {
@@ -29,7 +21,6 @@ namespace EPlast.WebApi.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        private readonly IMapper _mapper;
         private readonly ILoggerService<AuthController> _loggerService;
         private readonly IStringLocalizer<AuthenticationErrors> _resourceForErrors;
         private readonly IJwtService _jwtService;
@@ -39,7 +30,6 @@ namespace EPlast.WebApi.Controllers
 
 
         public AuthController(IAuthService authService,
-            IMapper mapper,
             ILoggerService<AuthController> loggerService,
             IStringLocalizer<AuthenticationErrors> resourceForErrors,
             IJwtService jwtService,
@@ -48,7 +38,6 @@ namespace EPlast.WebApi.Controllers
             IStringLocalizer<Genders> resourceForGender)
         {
             _authService = authService;
-            _mapper = mapper;
             _loggerService = loggerService;
             _resourceForErrors = resourceForErrors;
             _jwtService = jwtService;
