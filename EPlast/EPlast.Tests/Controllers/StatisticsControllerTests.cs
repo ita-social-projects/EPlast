@@ -31,9 +31,7 @@ namespace EPlast.Tests.Controllers
 
         [Test]
         public async Task GetCitiesStatistics_IsNotNull_IsInstanceOf()
-        {
-            //Arrange
-
+        {            
             // Act
             var result = await statisticsController.GetCitiesStatistics(citiesStatisticsParameters);
 
