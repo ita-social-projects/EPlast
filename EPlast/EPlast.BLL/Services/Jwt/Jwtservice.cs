@@ -1,4 +1,5 @@
 ﻿using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Services.Interfaces;
 using Microsoft.Extensions.Options;
@@ -17,11 +18,13 @@ namespace EPlast.BLL.Services.Jwt
     {
         private readonly JwtOptions _jwtOptions;
         private readonly IUserManagerService _userManagerService;
+        private readonly IUniqueIdService _uniqueId;
 
-        public JwtService(IOptions<JwtOptions> jwtOptions, IUserManagerService userManagerService)
+        public JwtService(IOptions<JwtOptions> jwtOptions, IUserManagerService userManagerService, IUniqueIdService uniqueId)
         {
             _jwtOptions = jwtOptions.Value;
             _userManagerService = userManagerService;
+            _uniqueId = uniqueId;
         }
 
         ///<inheritdoc/>
@@ -32,7 +35,7 @@ namespace EPlast.BLL.Services.Jwt
                 new Claim(ClaimTypes.Name, userDTO.Email),
                 new Claim(JwtRegisteredClaimNames.NameId, userDTO.Id),
                 new Claim(JwtRegisteredClaimNames.FamilyName, userDTO.Id),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                new Claim(JwtRegisteredClaimNames.Jti, _uniqueId.GetUniqueId().ToString())
             };
             var roles = await _userManagerService.GetRolesAsync(userDTO);
             claims.AddRange(roles.Select(role => new Claim(ClaimsIdentity.DefaultRoleClaimType, role)));

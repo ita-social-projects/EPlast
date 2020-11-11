@@ -53,6 +53,7 @@ namespace EPlast.DataAccess.Repositories
         IRegionAdministrationRepository RegionAdministration { get; }
         IAnnualReportsRepository AnnualReports { get; }
         IClubAnnualReportsRepository ClubAnnualReports { get; }
+        IRegionAnnualReportsRepository RegionAnnualReports { get; }
 
         IMembersStatisticsRepository MembersStatistics { get; }
 

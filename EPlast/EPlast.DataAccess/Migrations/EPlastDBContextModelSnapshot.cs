@@ -540,7 +540,7 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<int>("ClubEnteredMembersCount")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ClubId")
+                    b.Property<int>("ClubId")
                         .HasColumnType("int");
 
                     b.Property<int>("ClubLeftMembersCount")
@@ -1394,6 +1394,92 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("RegionAdministrations");
                 });
 
+            modelBuilder.Entity("EPlast.DataAccess.Entities.RegionAnnualReport", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("NumberOfAdministrators")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfBeneficiaries")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfClubs")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfHonoraryMembers")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfIndependentGroups")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfIndependentRiy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfNovatstva")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfPlastpryiatMembers")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfPtashata")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfSeatsPtashat")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfSeigneurMembers")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfSeigneurSupporters")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfSeniorPlastynMembers")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfSeniorPlastynSupporters")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfTeacherAdministrators")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfTeachers")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfUnatstvaMembers")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfUnatstvaNoname")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfUnatstvaProspectors")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfUnatstvaSkobVirlyts")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfUnatstvaSupporters")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RegionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RegionName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("RegionId");
+
+                    b.ToTable("RegionAnnualReports");
+                });
+
             modelBuilder.Entity("EPlast.DataAccess.Entities.RegionDocuments", b =>
                 {
                     b.Property<int>("ID")
@@ -2049,7 +2135,9 @@ namespace EPlast.DataAccess.Migrations
                 {
                     b.HasOne("EPlast.DataAccess.Entities.Club", "Club")
                         .WithMany()
-                        .HasForeignKey("ClubID");
+                        .HasForeignKey("ClubId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.ClubDocuments", b =>
@@ -2279,6 +2367,15 @@ namespace EPlast.DataAccess.Migrations
                     b.HasOne("EPlast.DataAccess.Entities.User", "User")
                         .WithMany("RegionAdministrations")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.RegionAnnualReport", b =>
+                {
+                    b.HasOne("EPlast.DataAccess.Entities.Region", "Region")
+                        .WithMany()
+                        .HasForeignKey("RegionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

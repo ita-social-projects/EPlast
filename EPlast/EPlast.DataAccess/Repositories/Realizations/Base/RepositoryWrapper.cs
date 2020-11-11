@@ -75,6 +75,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IAchievementDocumentsRepository _achievementDocumentsRepository;
         private IExtractFromUPUDocumentsRepository _extractFromUPUDocumentsRepository;
         private IClubAnnualReportsRepository _clubAnnualReports;
+        private IRegionAnnualReportsRepository _regionAnnualReports;
 
         public IEducatorsStaffTypesRepository KVTypes
         {
@@ -634,6 +635,18 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                     _clubAnnualReports = new ClubAnnualReportRepository(_dbContext);
                 }
                 return _clubAnnualReports;
+            }
+        }
+
+        public IRegionAnnualReportsRepository RegionAnnualReports
+        {
+            get
+            {
+                if (_regionAnnualReports == null)
+                {
+                    _regionAnnualReports = new RegionAnnualReportRepository(_dbContext);
+                }
+                return _regionAnnualReports;
             }
         }
 
