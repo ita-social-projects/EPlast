@@ -109,8 +109,8 @@ namespace EPlast.BLL.Services.Region
         {
             var annualReports = await _repositoryWrapper.RegionAnnualReports.GetAllAsync(include:
                  source => source
-                        .Include(a => a.Region));
-            var citiesDTO = await _regionAccessService.GetRegionsAsync(claimsPrincipal);
+                 .Include(a => a.Region));
+
             return _mapper.Map<IEnumerable<RegionAnnualReport>, IEnumerable<RegionAnnualReportDTO>>(annualReports);
         }
 
