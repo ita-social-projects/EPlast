@@ -9,7 +9,7 @@ namespace EPlast.BLL.DTO.Account
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Поле пароль є обов'язковим")]
-        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})*$",
+        [RegularExpression(@"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,}$",
             ErrorMessage = "Пароль повинен містити літери, цифри та знаки")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
