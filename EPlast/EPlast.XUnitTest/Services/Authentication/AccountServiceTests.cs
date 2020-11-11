@@ -77,7 +77,7 @@ namespace EPlast.XUnitTest.Services
                .Returns(GetTestUserWithEmailsSendedTime());
 
             AuthService AuthService = new AuthService(mockUserManager.Object, mockSignInManager.Object,
-               mockEmailConfirmation.Object, mockMapper.Object);
+               mockEmailConfirmation.Object, mockMapper.Object,null);
 
             return (mockSignInManager, mockUserManager, mockEmailConfirmation, AuthService);
         }
