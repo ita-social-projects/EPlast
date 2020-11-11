@@ -16,8 +16,8 @@ namespace EPlast.BLL.Services.Region.RegionAccess
     {
         private readonly UserManager<DatabaseEntities.User> _userManager;
         private readonly IMapper _mapper;
-
         private readonly Dictionary<string, IRegionAccessGetter> _regionAccessGetters;
+
         public RegionAccessService(RegionAccessSettings settings, UserManager<DatabaseEntities.User> userManager, IMapper mapper)
         {
             _regionAccessGetters = settings.RegionAccessGetters;
@@ -40,10 +40,10 @@ namespace EPlast.BLL.Services.Region.RegionAccess
             return Enumerable.Empty<RegionDTO>();
         }
 
-        public async Task<bool> HasAccessAsync(ClaimsPrincipal claimsPrincipal, int RegionId)
+        public async Task<bool> HasAccessAsync(ClaimsPrincipal claimsPrincipal, int regionId)
         {
             var regions = await GetRegionsAsync(claimsPrincipal);
-            return regions.Any(c => c.ID == RegionId);
+            return regions.Any(c => c.ID == regionId);
         }
     }
 }
