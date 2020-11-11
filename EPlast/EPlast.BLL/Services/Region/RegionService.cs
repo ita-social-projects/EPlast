@@ -55,7 +55,6 @@ namespace EPlast.BLL.Services.Region
         {
             await _repoWrapper.Region.CreateAsync(_mapper.Map<RegionDTO, DataAccessRegion.Region>(region));
 
-            await _repoWrapper.Region.CreateAsync(newRegion);
             await _repoWrapper.SaveAsync();
         }
 
