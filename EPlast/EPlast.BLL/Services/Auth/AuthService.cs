@@ -7,12 +7,14 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.BLL.Models;
+using EPlast.DataAccess.Repositories;
 using Newtonsoft.Json;
 
 namespace EPlast.BLL.Services
@@ -23,16 +25,18 @@ namespace EPlast.BLL.Services
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailConfirmation _emailConfirmation;
         private readonly IMapper _mapper;
-
+        private readonly IRepositoryWrapper _repoWrapper;
         public AuthService(UserManager<User> userManager,
             SignInManager<User> signInManager,
             IEmailConfirmation emailConfirmation,
-            IMapper mapper)
+            IMapper mapper,
+            IRepositoryWrapper repoWrapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailConfirmation = emailConfirmation;
             _mapper = mapper;
+            _repoWrapper = repoWrapper;
         }
 
         ///<inheritdoc/>
@@ -306,6 +310,12 @@ namespace EPlast.BLL.Services
                     EmailConfirmed = true,
                     RegistredOn = DateTime.Now,
                     UserProfile = new UserProfile()
+                    {
+                        Address = facebookUser.Address,
+                        Birthday = DateTime.Parse(facebookUser.Birthday,CultureInfo.InvariantCulture),
+                        GenderID = _repoWrapper.Gender.FindByCondition(x=>x.Name == facebookUser.Gender).FirstOrDefault()?.ID,
+                        ReligionId =  _repoWrapper.Religion.FindByCondition(x => x.Name == facebookUser.Religion).FirstOrDefault()?.ID,
+                    }
                 };
                 var createResult = await _userManager.CreateAsync(user);
                 if (createResult.Succeeded && user.Email!= "facebookdefaultmail@gmail.com")

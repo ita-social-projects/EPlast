@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces;
+using EPlast.BLL.Services;
 using EPlast.BLL.Services.ActiveMembership;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
@@ -23,6 +25,7 @@ namespace EPlast.Tests.Services.ActiveMembership
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IMapper> _mapper;
         private Mock<IUserManagerService> _userManagerService;
+        private IUniqueIdService _uniqueId;
 
         [SetUp]
         public void SetUp()
@@ -30,6 +33,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             _mapper = new Mock<IMapper>();
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _userManagerService = new Mock<IUserManagerService>();
+            _uniqueId = new UniqueIdService();
             _activeMembershipService = new PlastDegreeService(_mapper.Object, _repoWrapper.Object, _userManagerService.Object);
         }
         [Test]
@@ -268,7 +272,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             // Assert
             Assert.IsTrue(result);
         }
-        private string UserId => Guid.NewGuid().ToString();
+        private string UserId => _uniqueId.GetUniqueId().ToString();
         private DateTime UserDateOfEntry => DateTime.Today;
         private int DoesNotExistingId => 42;
 

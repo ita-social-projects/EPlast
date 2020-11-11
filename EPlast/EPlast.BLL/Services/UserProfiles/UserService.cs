@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
@@ -27,8 +28,10 @@ namespace EPlast.BLL.Services.UserProfiles
         private readonly IWebHostEnvironment _env;
         private readonly IEducationService _educationService;
         private readonly IUserBlobStorageRepository _userBlobStorage;
+        private readonly IUniqueIdService _uniqueId;
+
         public UserService(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IMapper mapper, IWorkService workService,
-            IEducationService educationService, IUserBlobStorageRepository userBlobStorage, IWebHostEnvironment env)
+            IEducationService educationService, IUserBlobStorageRepository userBlobStorage, IWebHostEnvironment env, IUniqueIdService uniqueId)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
@@ -37,6 +40,7 @@ namespace EPlast.BLL.Services.UserProfiles
             _educationService = educationService;
             _userBlobStorage = userBlobStorage;
             _env = env;
+            _uniqueId = uniqueId;
         }
 
         /// <inheritdoc />
@@ -110,9 +114,10 @@ namespace EPlast.BLL.Services.UserProfiles
             try
             {
                 var timeToJoinPlast = registeredOn.AddYears(1) - DateTime.Now;
+                TimeSpan halfOfYear = new TimeSpan(182, 0, 0, 0);
                 if (_repoWrapper.ConfirmedUser.FindByCondition(x => x.UserID == userId).Any(q => q.isClubAdmin))
                 {
-                    timeToJoinPlast = timeToJoinPlast.Divide(2);
+                    timeToJoinPlast = timeToJoinPlast.Subtract(halfOfYear);
                 }
                 if (timeToJoinPlast <= TimeSpan.Zero)
                 {
@@ -252,7 +257,7 @@ namespace EPlast.BLL.Services.UserProfiles
                             File.Delete(oldPath);
                         }
                     }
-                    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                    var fileName = $"{_uniqueId.GetUniqueId()}{Path.GetExtension(file.FileName)}";
                     var filePath = Path.Combine(uploads, fileName);
                     img.Save(filePath);
                     return fileName;
@@ -270,7 +275,7 @@ namespace EPlast.BLL.Services.UserProfiles
             {
                 var base64Parts = imageBase64.Split(',');
                 var ext = base64Parts[0].Split(new[] { '/', ';' }, 3)[1];
-                var fileName = Guid.NewGuid().ToString() + "." + ext;
+                var fileName = $"{_uniqueId.GetUniqueId()}.{ext}";
                 await _userBlobStorage.UploadBlobForBase64Async(base64Parts[1], fileName);
                 if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default_user_image.png"))
                 {
