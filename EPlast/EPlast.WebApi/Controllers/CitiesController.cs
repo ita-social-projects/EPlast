@@ -61,6 +61,17 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get all cities 
+        /// </summary>
+        /// <returns>List of cities</returns>
+        [HttpGet("Cities")]
+        public async Task<IActionResult> GetCities()
+        {
+            var cities = await _cityService.GetCities();
+            return Ok(cities);
+        }
+
+        /// <summary>
         /// Get a specific city
         /// </summary>
         /// <param name="cityId">The id of the city</param>
@@ -102,7 +113,7 @@ namespace EPlast.WebApi.Controllers
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
             cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(User, cityId);
 
-            return Ok(new { cityProfile.Members, cityProfile.CanEdit });
+            return Ok(new { cityProfile.Members, cityProfile.CanEdit, cityProfile.Name });
         }
 
         /// <summary>
@@ -125,7 +136,7 @@ namespace EPlast.WebApi.Controllers
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
             cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(User, cityId);
 
-            return Ok(new { cityProfile.Followers, cityProfile.CanEdit });
+            return Ok(new { cityProfile.Followers, cityProfile.CanEdit, cityProfile.Name });
         }
 
         /// <summary>
@@ -148,7 +159,7 @@ namespace EPlast.WebApi.Controllers
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
             cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(User, cityId);
 
-            return Ok(new { cityProfile.Administration, cityProfile.Head, cityProfile.CanEdit });
+            return Ok(new { cityProfile.Administration, cityProfile.Head, cityProfile.CanEdit, cityProfile.Name });
         }
 
         /// <summary>
@@ -488,18 +499,6 @@ namespace EPlast.WebApi.Controllers
 
             return Ok((userAdmins));
         }
-
-        /// <summary>
-        /// Get all cities 
-        /// </summary>
-        /// <returns>List of cities</returns>
-        [HttpGet("Cities")]
-        public async Task<IActionResult> GetCities()
-        {
-            var cities = await _cityService.GetCities();
-            return Ok(cities);
-        }
-
 
     }
 }

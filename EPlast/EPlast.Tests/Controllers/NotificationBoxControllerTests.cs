@@ -2,7 +2,7 @@
 using EPlast.BLL.Interfaces.Notifications;
 using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Controllers;
-using EPlast.WebApi.SignalRHubs;
+using EPlast.WebApi.WebSocketHandlers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Moq;
@@ -16,19 +16,17 @@ namespace EPlast.Tests.Controllers
 {
     class NotificationBoxControllerTests
     {
-        private Mock<IConnectionManagerService> _connectionManagerService;
-        private Mock<IHubContext<NotificationHub>> _notificationHub;
+        private Mock<UserNotificationHandler> _userNotificationHandler;
         private Mock<INotificationService> _notificationService;
 
         private NotificationBoxController _notificationBoxController =>
-        new NotificationBoxController(_notificationService.Object, _notificationHub.Object, _connectionManagerService.Object);
-
+        new NotificationBoxController(_notificationService.Object, _userNotificationHandler.Object);
 
         public NotificationBoxControllerTests()
         {
-            _notificationHub = new Mock<IHubContext<NotificationHub>>();
             _notificationService = new Mock<INotificationService>();
-            _connectionManagerService = new Mock<IConnectionManagerService>();
+            Mock<INotificationConnectionManager> connectionManager = new Mock<INotificationConnectionManager>();
+            _userNotificationHandler = new Mock<UserNotificationHandler>(connectionManager.Object);
         }
 
 

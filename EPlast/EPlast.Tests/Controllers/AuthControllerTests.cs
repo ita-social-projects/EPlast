@@ -18,16 +18,15 @@ namespace EPlast.Tests.Controllers
 {
     public class AuthControllerTestsAuth
     {
-        public (Mock<IAuthService>, Mock<IUserService>, Mock<IMapper>, Mock<IStringLocalizer<AuthenticationErrors>>, AuthController) CreateAuthController()
+        public (Mock<IAuthService>, Mock<IUserService>, Mock<IStringLocalizer<AuthenticationErrors>>, AuthController) CreateAuthController()
         {
             Mock<IAuthService> mockAuthService = new Mock<IAuthService>();
             Mock<IUserService> mockUserService = new Mock<IUserService>();
-            Mock<IMapper> mockMapper = new Mock<IMapper>();
             Mock<IStringLocalizer<AuthenticationErrors>> mockStringLocalizer = new Mock<IStringLocalizer<AuthenticationErrors>>();
 
-            AuthController AuthController = new AuthController(mockAuthService.Object, mockMapper.Object, null, 
-                mockStringLocalizer.Object, null, null, null);
-            return (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController);
+            AuthController AuthController = new AuthController(mockAuthService.Object, null, 
+                mockStringLocalizer.Object, null, null, null, null);
+            return (mockAuthService, mockUserService,  mockStringLocalizer, AuthController);
         }
 
         //Login
@@ -35,7 +34,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_LoginPost_UserNull()
         {
             //Arrange
-            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
+            var (mockAuthService, mockUserService,  mockStringLocalizer, AuthController) = CreateAuthController();
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
@@ -58,7 +57,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_LoginPost_EmailNotConfirmed()
         {
             //Arrange
-            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
+            var (mockAuthService, mockUserService,  mockStringLocalizer, AuthController) = CreateAuthController();
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
@@ -85,7 +84,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_LoginPost_AccountLocked()
         {
             //Arrange
-            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
+            var (mockAuthService, mockUserService,  mockStringLocalizer, AuthController) = CreateAuthController();
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
@@ -116,7 +115,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_LoginPost_LoginInCorrectPassword()
         {
             //Arrange
-            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
+            var (mockAuthService, mockUserService,  mockStringLocalizer, AuthController) = CreateAuthController();
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
@@ -147,7 +146,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_LoginPost_ModelIsNotValid()
         {
             //Arrange
-            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
+            var (mockAuthService, mockUserService,  mockStringLocalizer, AuthController) = CreateAuthController();
             AuthController.ModelState.AddModelError("NameError", "Required");
 
             mockStringLocalizer
@@ -168,7 +167,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_RegisterPost_ModelIsNotValid()
         {
             //Arrange
-            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
+            var (mockAuthService, mockUserService,  mockStringLocalizer, AuthController) = CreateAuthController();
             AuthController.ModelState.AddModelError("NameError", "Required");
 
             mockStringLocalizer
@@ -188,7 +187,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_RegisterPost_RegisterRegisteredUser()
         {
             //Arrange
-            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
+            var (mockAuthService, mockUserService,  mockStringLocalizer, AuthController) = CreateAuthController();
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
@@ -211,7 +210,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_RegisterPost_RegisterInCorrectPassword()
         {
             //Arrange
-            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
+            var (mockAuthService, mockUserService,  mockStringLocalizer, AuthController) = CreateAuthController();
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
@@ -238,7 +237,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_RegisterPost_ConfirmRegistration()
         {
             //Arrange
-            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
+            var (mockAuthService, mockUserService,  mockStringLocalizer, AuthController) = CreateAuthController();
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
@@ -287,7 +286,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_ForgotPost_ModelIsNotValid()
         {
             //Arrange
-            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
+            var (mockAuthService, mockUserService,  mockStringLocalizer, AuthController) = CreateAuthController();
             AuthController.ModelState.AddModelError("NameError", "Required");
 
             mockStringLocalizer
@@ -307,7 +306,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_ForgotPost_ForgotNotRegisteredUser()
         {
             //Arrange
-            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
+            var (mockAuthService, mockUserService,  mockStringLocalizer, AuthController) = CreateAuthController();
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
@@ -334,7 +333,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_ForgotPost_ForgotPasswordConfirmation()
         {
             //Arrange
-            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
+            var (mockAuthService, mockUserService,  mockStringLocalizer, AuthController) = CreateAuthController();
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
@@ -379,7 +378,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_ResetPost_ResetNotRegisteredUser()
         {
             //Arrange
-            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
+            var (mockAuthService, mockUserService,  mockStringLocalizer, AuthController) = CreateAuthController();
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
@@ -402,7 +401,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_ResetPost_ResetPasswordConfirmation()
         {
             //Arrange
-            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
+            var (mockAuthService, mockUserService,  mockStringLocalizer, AuthController) = CreateAuthController();
 
             mockAuthService
                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
@@ -433,7 +432,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_ResetPost_ResetPasswordProblems()
         {
             //Arrange
-            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
+            var (mockAuthService, mockUserService,  mockStringLocalizer, AuthController) = CreateAuthController();
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
@@ -460,7 +459,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_ResetPost_ModelIsNotValid()
         {
             //Arrange
-            var (mockAuthService, mockUserService, mockMapper, mockStringLocalizer, AuthController) = CreateAuthController();
+            var (mockAuthService, mockUserService,  mockStringLocalizer, AuthController) = CreateAuthController();
             AuthController.ModelState.AddModelError("NameError", "Required");
 
             mockStringLocalizer
