@@ -43,7 +43,7 @@ namespace EPlast.Tests.Controllers
 
         private readonly CitiesStatisticsParameters citiesStatisticsParameters = new CitiesStatisticsParameters()
         {
-            CitiesId = new List<int>() { 5, 19, 20, 28, 29 },
+            CityIds = new List<int>() { 5, 19, 20, 28, 29 },
             Years = new List<int>() { 2019, 2020 },
             Indicators = indicators
         };
