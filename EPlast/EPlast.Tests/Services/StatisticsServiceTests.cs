@@ -48,15 +48,15 @@ namespace EPlast.Tests.Services
                 .Returns(cities.First());
 
             //Act
-            var result = await statisticsService.GetCitiesStatisticsAsync(citiesIds, years, indicators );
+            var result = await statisticsService.GetCitiesStatisticsAsync(cityIds, years, indicators );
 
             //Assert
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<IEnumerable<CityStatistics>>(result);
         }
 
-        private readonly IEnumerable<int> citiesIds = new List<int>() { 5, 19, 20, 28, 29 };
-        private readonly IEnumerable<int> regionsIds = new List<int>() { 3, 8, 9, 11 };
+        private readonly IEnumerable<int> cityIds = new List<int>() { 5, 19, 20, 28, 29 };
+        private readonly IEnumerable<int> regionIds = new List<int>() { 3, 8, 9, 11 };
         private readonly IEnumerable<int> years = new List<int>() { 2019, 2020 };
 
         private readonly IEnumerable<DTOs.Region> regions = new List<DTOs.Region>
