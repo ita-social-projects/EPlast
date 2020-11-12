@@ -1,13 +1,9 @@
 ﻿using EPlast.BLL.DTO.Statistics;
-using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Statistics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
