@@ -6,6 +6,6 @@ namespace EPlast.BLL.Interfaces.Statistics
 {
     public interface ICityStatisticsService
     {
-        Task<IEnumerable<CityStatistics>> GetCitiesStatisticsAsync(IEnumerable<int> citiesIds, IEnumerable<int> years, IEnumerable<StatisticsItemIndicator> indicators);
+        Task<IEnumerable<CityStatistics>> GetCitiesStatisticsAsync(IEnumerable<int> cityIds, IEnumerable<int> years, IEnumerable<StatisticsItemIndicator> indicators);
     }
 }
