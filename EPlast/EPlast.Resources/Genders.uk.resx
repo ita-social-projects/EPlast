@@ -117,74 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Account-Locked" xml:space="preserve">
-    <value>Ваш акаунт заблоковано. Повторіть цю дію пізніше, або скиньте свій пароль.</value>
+  <data name="female" xml:space="preserve">
+    <value>Жінка</value>
   </data>
-  <data name="Change-PasswordProblems" xml:space="preserve">
-    <value>Проблема зі зміною пароля, можливо неправильно введений старий пароль</value>
-  </data>
-  <data name="ChangePasswordConfirmation" xml:space="preserve">
-    <value>Ваш пароль успішно змінено.</value>
-  </data>
-  <data name="ChangePasswordNotAllowed" xml:space="preserve">
-    <value>Зміна пароля для користувачів, які увійшли використовуючи Google/Facebook не доступна.</value>
-  </data>
-  <data name="Confirm-Registration" xml:space="preserve">
-    <value>Перегляньте електронну адресу та підтвердьте реєстрацію у системі.</value>
-  </data>
-  <data name="Confirmed-Registration" xml:space="preserve">
-    <value>Ви підтвердили свій вхід. Для того щоб увійти в профіль натисніть Увійти/Зареєструватись.</value>
-  </data>
-  <data name="ConfirmedEmailNotAllowed" xml:space="preserve">
-    <value>Час для підтвердження акаунта вичерпаний. </value>
-  </data>
-  <data name="Error-ExternalLoginInfo" xml:space="preserve">
-    <value>Error loading external login information</value>
-  </data>
-  <data name="Error-ExternalLoginProvider" xml:space="preserve">
-    <value>Error from external provider</value>
-  </data>
-  <data name="Feedback-Sended" xml:space="preserve">
-    <value>Ваше питання успішно надіслано</value>
-  </data>
-  <data name="Forgot-NotRegisteredUser" xml:space="preserve">
-    <value>Користувача із такою електронною поштою не існує</value>
-  </data>
-  <data name="ForgotPasswordConfirmation" xml:space="preserve">
-    <value>Для скидування пароля, перейдіть за посиланням в листі, яке відправлене на вашу електронну пошту.</value>
-  </data>
-  <data name="Login-InCorrectPassword" xml:space="preserve">
-    <value>Ви ввели неправильний пароль, спробуйте ще раз</value>
-  </data>
-  <data name="Login-NotConfirmed" xml:space="preserve">
-    <value>Ваш акаунт не підтверджений, будь ласка увійдіть та зробіть підтвердження</value>
-  </data>
-  <data name="Login-NotRegistered" xml:space="preserve">
-    <value>Ви не зареєстровані в системі, або не підтвердили свою електронну пошту</value>
-  </data>
-  <data name="ModelIsNotValid" xml:space="preserve">
-    <value>Введені дані є неправильними</value>
-  </data>
-  <data name="Register-InCorrectData" xml:space="preserve">
-    <value>Дані введені неправильно</value>
-  </data>
-  <data name="Register-InCorrectPassword" xml:space="preserve">
-    <value>Пароль має містити цифри та літери, мінімальна довжина повинна складати 8</value>
-  </data>
-  <data name="Register-RegisteredUser" xml:space="preserve">
-    <value>Користувач з введеною електронною поштою вже зареєстрований в системі, можливо він не підтвердив свою реєстрацію</value>
-  </data>
-  <data name="Reset-NotRegisteredUser" xml:space="preserve">
-    <value>Користувача із заданою електронною поштою немає в системі або він не підтвердив свою реєстрацію</value>
-  </data>
-  <data name="Reset-PasswordProblems" xml:space="preserve">
-    <value>Проблеми зі скидуванням пароля або введений новий пароль повинен вміщати 8символів, включаючи літери та цифри</value>
-  </data>
-  <data name="ResetPasswordConfirmation" xml:space="preserve">
-    <value>Ваш пароль успішно скинутий.</value>
-  </data>
-  <data name="ResetPasswordNotAllowed" xml:space="preserve">
-    <value>Час для скидування пароля акаунта вичерпаний. Для того, щоб скинути пароль, повторно відвідайте сторінку
-                Забули Пароль та повторіть дану операцію.</value>
+  <data name="male" xml:space="preserve">
+    <value>Чоловік</value>
   </data>
 </root>
