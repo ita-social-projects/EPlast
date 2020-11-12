@@ -3,6 +3,7 @@ using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.WebApi.Models.Region;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -15,13 +16,15 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly ILoggerService<CitiesController> _logger;
         private readonly IRegionService _regionService;
-
+        private readonly IRegionAnnualReportService _RegionAnnualReportService;
 
         public RegionsController(ILoggerService<CitiesController> logger,
-            IRegionService regionService)
+            IRegionService regionService,
+            IRegionAnnualReportService RegionAnnualReportService)
         {
             _logger = logger;
             _regionService = regionService;
+            _RegionAnnualReportService = RegionAnnualReportService;
 
         }
 
@@ -38,8 +41,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
         public async Task<IActionResult> CreateRegion(RegionDTO region)
         {
-
-           await  _regionService.AddRegionAsync(region);
+            await _regionService.AddRegionAsync(region);
 
             return Ok();
         }
@@ -59,6 +61,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> RedirectCities(int prevRegId, int nextRegId)
         {
             await _regionService.RedirectMembers(prevRegId, nextRegId);
+
             return Ok();
         }
 
@@ -79,6 +82,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetRegionAdmins(int regionId)
         {
             var Admins = await _regionService.GetAdministrationAsync(regionId);
+
             return Ok(Admins);
         }
 
@@ -122,10 +126,24 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
         public async Task<IActionResult> AddAdministrator(RegionAdministrationDTO admin)
         {
-                await _regionService.AddRegionAdministrator(admin);
+            await _regionService.AddRegionAdministrator(admin);
 
-                return Ok();
-            
+            return NoContent();
+        }
+
+        [HttpPost("EditAdministrator")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
+        public async Task<IActionResult> EditAdministrator(RegionAdministrationDTO admin)
+        {
+            if(admin != null)
+            {
+                await _regionService.EditRegionAdministrator(admin);
+                _logger.LogInformation($"Successful edit admin: {admin.UserId}");
+                return NoContent();
+            }
+            _logger.LogError("Admin is null");
+
+            return NotFound();
         }
 
 
@@ -134,11 +152,10 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetRegions(int page, int pageSize, string regionName)
         {
             var regions = await _regionService.GetAllRegionsAsync();
-            var regionsViewModel = new RegionsViewModel(page, pageSize, regions, regionName);
+            var regionsViewModel = new RegionsViewModel(page, pageSize, regions, regionName, User.IsInRole("Admin"));
 
             return Ok(regionsViewModel);
         }
-
 
 
 
@@ -174,7 +191,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetUserAdministrations(string userId)
         {
-           var secretaries=await _regionService.GetUsersAdministrations(userId);
+            var secretaries = await _regionService.GetUsersAdministrations(userId);
             return Ok(secretaries);
 
         }
@@ -236,7 +253,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetMembers(int regionId)
         {
-          var members =   await _regionService.GetMembersAsync(regionId);
+            var members = await _regionService.GetMembersAsync(regionId);
             return Ok(members);
         }
 
@@ -269,5 +286,77 @@ namespace EPlast.WebApi.Controllers
             var regions = await _regionService.GetRegions();
             return Ok(regions);
         }
+
+        /// <summary>
+        /// Method to get all region reports that the user has access to
+        /// </summary>
+        /// <returns>List of annual reports</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("GetAllRegionAnnualReports")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
+        public async Task<IActionResult> GetAllRegionAnnualReports()
+        {
+            return StatusCode(StatusCodes.Status200OK,
+                new { annualReports = await _RegionAnnualReportService.GetAllAsync(User) });
+        }
+
+        /// <summary>
+        /// Method to create region annual report
+        /// </summary>
+        /// <param name="id">Region annual report identification number</param>
+        /// <param name="year">Region annual report year</param>
+        /// <returns>Annual report</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="403">User hasn't access to annual report</response>
+        /// <response code="404">The region annual report does not exist</response>
+        [HttpPost("CreateRegionAnnualReportById/{id}/{year}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
+        public async Task<IActionResult> CreateRegionAnnualReportById(int id, int year)
+        {
+            try
+            {
+                var annualreport = await _RegionAnnualReportService.CreateByNameAsync(User, id, year);
+                return StatusCode(StatusCodes.Status200OK, annualreport);
+            }
+            catch (NullReferenceException)
+            {
+                return StatusCode(StatusCodes.Status404NotFound);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
+        }
+
+        /// <summary>
+        /// Method to get region annual report by id
+        /// </summary>
+        /// <param name="id">Region annual report identification number</param>
+        /// <param name="year">Region annual report year</param>
+        /// <returns>Annual report</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="403">User hasn't access to annual report</response>
+        /// <response code="404">The region annual report does not exist</response>
+        [HttpGet("GetReportById/{id}/{year}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetReportByIdAsync(int id, int year)
+        {
+            return Ok(await _RegionAnnualReportService.GetReportByIdAsync(id, year));
+        }
+
+        /// <summary>
+        /// Method to get all region annual reports
+        /// </summary>
+        /// <returns>Annual reports</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="403">User hasn't access to annual report</response>
+        /// <response code="404">The region annual report does not exist</response>
+        [HttpGet("GetAllRegionsReports")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetAllRegionsReportsAsync()
+        {
+            return Ok(await _RegionAnnualReportService.GetAllRegionsReportsAsync());
+        }
+
     }
 }

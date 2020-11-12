@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Security.Policy;
 using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
@@ -8,14 +7,11 @@ using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using System.Threading.Tasks;
 using System.Web;
-using Google.Apis.Auth;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Auth.OAuth2.Flows;
+using EPlast.BLL.Models;
 using NLog.Extensions.Logging;
 
 namespace EPlast.WebApi.Controllers
@@ -25,28 +21,29 @@ namespace EPlast.WebApi.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        private readonly IMapper _mapper;
         private readonly ILoggerService<AuthController> _loggerService;
         private readonly IStringLocalizer<AuthenticationErrors> _resourceForErrors;
         private readonly IJwtService _jwtService;
         private readonly IHomeService _homeService;
         private readonly IUserDatesService _userDatesService;
+        private readonly IStringLocalizer<Genders> _resourceForGender;
+
 
         public AuthController(IAuthService authService,
-            IMapper mapper,
             ILoggerService<AuthController> loggerService,
             IStringLocalizer<AuthenticationErrors> resourceForErrors,
             IJwtService jwtService,
             IHomeService homeService,
-            IUserDatesService userDatesService)
+            IUserDatesService userDatesService,
+            IStringLocalizer<Genders> resourceForGender)
         {
             _authService = authService;
-            _mapper = mapper;
             _loggerService = loggerService;
             _resourceForErrors = resourceForErrors;
             _jwtService = jwtService;
             _homeService = homeService;
             _userDatesService = userDatesService;
+            _resourceForGender = resourceForGender;
         }
 
         /// <summary>
@@ -92,11 +89,18 @@ namespace EPlast.WebApi.Controllers
             return Ok(_resourceForErrors["ModelIsNotValid"]);
         }
 
-        [HttpGet("GoogleClientId")]
+        [HttpGet("googleClientId")]
         [AllowAnonymous]
-        public IActionResult GoogleClientId()
+        public IActionResult GetGoogleClientId()
         {
-            return Ok(new { id = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("GoogleAuthentication")["GoogleClientId"] });
+            return Ok(new { id = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("GoogleAuthentication")["GoogleClientId"]});
+        }
+
+        [HttpGet("facebookAppId")]
+        [AllowAnonymous]
+        public IActionResult GetFacebookAppId()
+        {
+            return Ok(new { id = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("FacebookAuthentication")["FacebookAppId"] });
         }
 
         [HttpPost("signin/google")]
@@ -123,6 +127,31 @@ namespace EPlast.WebApi.Controllers
             return BadRequest();
             
 
+        }
+
+        [HttpPost("signin/facebook")]
+        [AllowAnonymous]
+        public async Task<IActionResult> FacebookLogin([FromBody] FacebookUserInfo userInfo)
+        {
+            try
+            {
+                string newGender = _resourceForGender[userInfo.Gender].Value;
+                userInfo.Gender = newGender;
+                var user = await _authService.FacebookLoginAsync(userInfo);
+                if (user == null)
+                {
+                    return BadRequest();
+                }
+
+                var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
+                return Ok(new {token = generatedToken});
+            }
+            catch (Exception exc)
+            {
+                _loggerService.LogError(exc.Message);
+            }
+
+            return BadRequest();
         }
 
         /// <summary>
@@ -286,10 +315,6 @@ namespace EPlast.WebApi.Controllers
         {
             var userDto = await _authService.FindByIdAsync(userId);
             var model = new ResetPasswordDto { Code = token, Email = userDto.Email };
-            if (userDto == null)
-            {
-                return BadRequest();
-            }
             int totalTime = _authService.GetTimeAfterReset(userDto);
             if (totalTime < 180)
             {

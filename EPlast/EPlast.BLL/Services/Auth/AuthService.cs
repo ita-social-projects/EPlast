@@ -7,15 +7,15 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Web;
 using EPlast.BLL.Models;
+using EPlast.DataAccess.Repositories;
 using Newtonsoft.Json;
-using NLog.Fluent;
 
 namespace EPlast.BLL.Services
 {
@@ -25,16 +25,18 @@ namespace EPlast.BLL.Services
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailConfirmation _emailConfirmation;
         private readonly IMapper _mapper;
-
+        private readonly IRepositoryWrapper _repoWrapper;
         public AuthService(UserManager<User> userManager,
             SignInManager<User> signInManager,
             IEmailConfirmation emailConfirmation,
-            IMapper mapper)
+            IMapper mapper,
+            IRepositoryWrapper repoWrapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailConfirmation = emailConfirmation;
             _mapper = mapper;
+            _repoWrapper = repoWrapper;
         }
 
         ///<inheritdoc/>
@@ -257,7 +259,7 @@ namespace EPlast.BLL.Services
 
             if (httpResponseMessage.StatusCode != HttpStatusCode.OK)
             {
-                throw new Exception();
+                throw new HttpRequestException("Status code isn`t correct");
             }
 
             var response = await httpResponseMessage.Content.ReadAsStringAsync();
@@ -270,7 +272,7 @@ namespace EPlast.BLL.Services
                     UserName = googleApiTokenInfo.Email,
                     Email = googleApiTokenInfo.Email,
                     FirstName = googleApiTokenInfo.GivenName,
-                    LastName = googleApiTokenInfo.FamilyName,
+                    LastName = googleApiTokenInfo.FamilyName ?? googleApiTokenInfo.GivenName,
                     SocialNetworking = true,
                     ImagePath = "default_user_image.png",
                     EmailConfirmed = true,
@@ -279,25 +281,52 @@ namespace EPlast.BLL.Services
                 };
                var createResult = await _userManager.CreateAsync(user);
                if(createResult.Succeeded)
-                    await _emailConfirmation.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
-                    "Ви зареєструвались в системі EPlast використовуючи свій Google-акаунт ", "Адміністрація сайту EPlast");
+               {
+                   await _emailConfirmation.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
+                    "Ви зареєструвались в системі EPlast використовуючи свій Google-акаунт. ", "Адміністрація сайту EPlast");
+                   await _userManager.AddToRoleAsync(user, "Прихильник");
+               }
                else 
-                   throw new Exception("Failed creation of user");
+                   throw new ArgumentException("Failed creation of user");
 
             }
-            await GoogleSignInAsync(user);
+            await _signInManager.SignInAsync(user, isPersistent: false);
             return _mapper.Map<User, UserDTO>(user);
 
         }
-
-        ///<inheritdoc/>
-        private async Task GoogleSignInAsync(User user)
+        public async Task<UserDTO> FacebookLoginAsync(FacebookUserInfo facebookUser)
         {
-            var loginInfo = new UserLoginInfo(user.Email, Guid.NewGuid().ToString(), user.UserName);
-            await _userManager.AddToRoleAsync(user, "Прихильник");
-            await _userManager.AddLoginAsync(user, loginInfo);
+            var user = await _userManager.FindByEmailAsync(facebookUser.Email);
+            if (user == null)
+            {
+                user = new User
+                {
+                    SocialNetworking = true,
+                    UserName = facebookUser.Email ?? facebookUser.UserId,
+                    FirstName = facebookUser.Name.Split(' ')[0],
+                    Email = facebookUser.Email ?? "facebookdefaultmail@gmail.com",
+                    LastName = facebookUser.Name.Split(' ')[1],
+                    ImagePath = "default_user_image.png",
+                    EmailConfirmed = true,
+                    RegistredOn = DateTime.Now,
+                    UserProfile = new UserProfile()
+                    {
+                        Address = facebookUser.Address,
+                        Birthday = DateTime.Parse(facebookUser.Birthday,CultureInfo.InvariantCulture),
+                        GenderID = _repoWrapper.Gender.FindByCondition(x=>x.Name == facebookUser.Gender).FirstOrDefault()?.ID,
+                        ReligionId =  _repoWrapper.Religion.FindByCondition(x => x.Name == facebookUser.Religion).FirstOrDefault()?.ID,
+                    }
+                };
+                var createResult = await _userManager.CreateAsync(user);
+                if (createResult.Succeeded && user.Email!= "facebookdefaultmail@gmail.com")
+                {
+                    await _emailConfirmation.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
+                        "Ви зареєструвались в системі EPlast використовуючи свій Facebook-акаунт. ", "Адміністрація сайту EPlast");
+                }
+                await _userManager.AddToRoleAsync(user, "Прихильник");
+            }
             await _signInManager.SignInAsync(user, isPersistent: false);
-           
+            return _mapper.Map<User, UserDTO>(user);
         }
 
         ///<inheritdoc/>
