@@ -32,13 +32,13 @@ namespace EPlast.BLL.Services.Statistics
         }
 
         
-        public async Task<IEnumerable<CityStatistics>> GetCitiesStatisticsAsync(IEnumerable<int> citiesIds,
+        public async Task<IEnumerable<CityStatistics>> GetCitiesStatisticsAsync(IEnumerable<int> cityIds,
                                                                                 IEnumerable<int> years,
                                                                                 IEnumerable<StatisticsItemIndicator> indicators)
         {
             SelectStatisticsItems(indicators);
             var citiesStatistics = new List<CityStatistics>();
-            foreach (var cityId in citiesIds)
+            foreach (var cityId in cityIds)
             {
                 citiesStatistics.Add(await GetCityStatisticsAsync(cityId, years));
             }

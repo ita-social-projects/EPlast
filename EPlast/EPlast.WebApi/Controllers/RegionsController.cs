@@ -1,7 +1,6 @@
 ﻿using EPlast.BLL.DTO.Region;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Region;
-using EPlast.BLL.Services.Interfaces;
 using EPlast.WebApi.Models.Region;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -18,19 +17,14 @@ namespace EPlast.WebApi.Controllers
         private readonly ILoggerService<CitiesController> _logger;
         private readonly IRegionService _regionService;
         private readonly IRegionAnnualReportService _RegionAnnualReportService;
-        private readonly IUserManagerService _userManagerService;
-        private readonly ILoggerService<AnnualReportController> _loggerService;
 
         public RegionsController(ILoggerService<CitiesController> logger,
             IRegionService regionService,
-            IRegionAnnualReportService RegionAnnualReportService, IUserManagerService userManagerService, 
-            ILoggerService<AnnualReportController> loggerService)
+            IRegionAnnualReportService RegionAnnualReportService)
         {
             _logger = logger;
             _regionService = regionService;
             _RegionAnnualReportService = RegionAnnualReportService;
-            _userManagerService = userManagerService;
-            _loggerService = loggerService;
 
         }
 
@@ -47,7 +41,6 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
         public async Task<IActionResult> CreateRegion(RegionDTO region)
         {
-
             await _regionService.AddRegionAsync(region);
 
             return Ok();
@@ -68,6 +61,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> RedirectCities(int prevRegId, int nextRegId)
         {
             await _regionService.RedirectMembers(prevRegId, nextRegId);
+
             return Ok();
         }
 
@@ -88,6 +82,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetRegionAdmins(int regionId)
         {
             var Admins = await _regionService.GetAdministrationAsync(regionId);
+
             return Ok(Admins);
         }
 
@@ -147,6 +142,7 @@ namespace EPlast.WebApi.Controllers
                 return NoContent();
             }
             _logger.LogError("Admin is null");
+
             return NotFound();
         }
 
@@ -160,7 +156,6 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(regionsViewModel);
         }
-
 
 
 
@@ -318,7 +313,6 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
         public async Task<IActionResult> CreateRegionAnnualReportById(int id, int year)
         {
-
             try
             {
                 var annualreport = await _RegionAnnualReportService.CreateByNameAsync(User, id, year);

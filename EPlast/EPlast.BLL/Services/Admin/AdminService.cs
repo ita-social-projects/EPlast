@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.City;
+using EPlast.BLL.DTO.Region;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
@@ -9,6 +11,7 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -194,6 +197,40 @@ namespace EPlast.BLL.Services
                 });
             }
             return userTable;
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<CityDTO>> GetCityRegionAdminsOfUser(string userId)
+        {
+            var cities = await _repoWrapper.City.
+                GetAllAsync(predicate: c => c.CityMembers.FirstOrDefault(c => c.UserId == userId) != null,
+                            include: x => x.Include(i => i.Region).ThenInclude(r => r.RegionAdministration).ThenInclude(a => a.AdminType)
+                                           .Include(c => c.CityAdministration).ThenInclude(c => c.AdminType));
+
+            foreach (var city in cities)
+            {
+                city.Region.RegionAdministration = city.Region.RegionAdministration.Where(r =>
+                {
+                    if(r.AdminType.AdminTypeName == "Голова Округу" && (r.EndDate > DateTime.Now || r.EndDate == null))
+                    {
+                        r.Region = null;
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }).ToList();
+            }
+
+            var citiesDTO = _mapper.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDTO>>(cities);
+
+            foreach (var city in citiesDTO)
+            {
+                city.Region.Administration = _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(cities.First(c => c.ID == city.ID).Region.RegionAdministration);
+            }
+            return citiesDTO;
+
         }
 
     }
