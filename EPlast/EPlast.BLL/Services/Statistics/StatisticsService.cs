@@ -123,20 +123,24 @@ namespace EPlast.BLL.Services.Statistics
         private MembersStatistic GetMembersStatisticAsync(RegionAnnualReport regionAnnualReport)
         {
             var isRegionAnnualReportNull = regionAnnualReport == null;
-            return new MembersStatistic()
+            if(!isRegionAnnualReportNull)
             {
-                NumberOfPtashata = isRegionAnnualReportNull ? 0 : regionAnnualReport.NumberOfPtashata,
-                NumberOfNovatstva = isRegionAnnualReportNull ? 0 : regionAnnualReport.NumberOfNovatstva,
-                NumberOfUnatstvaNoname = isRegionAnnualReportNull ? 0 : regionAnnualReport.NumberOfUnatstvaNoname,
-                NumberOfUnatstvaSupporters = isRegionAnnualReportNull ? 0 : regionAnnualReport.NumberOfUnatstvaSupporters,
-                NumberOfUnatstvaMembers = isRegionAnnualReportNull ? 0 : regionAnnualReport.NumberOfUnatstvaMembers,
-                NumberOfUnatstvaProspectors = isRegionAnnualReportNull ? 0 : regionAnnualReport.NumberOfUnatstvaProspectors,
-                NumberOfUnatstvaSkobVirlyts = isRegionAnnualReportNull ? 0 : regionAnnualReport.NumberOfUnatstvaSkobVirlyts,
-                NumberOfSeniorPlastynSupporters = isRegionAnnualReportNull ? 0 : regionAnnualReport.NumberOfSeniorPlastynSupporters,
-                NumberOfSeniorPlastynMembers = isRegionAnnualReportNull ? 0 : regionAnnualReport.NumberOfSeniorPlastynMembers,
-                NumberOfSeigneurSupporters = isRegionAnnualReportNull ? 0 : regionAnnualReport.NumberOfSeigneurSupporters,
-                NumberOfSeigneurMembers = isRegionAnnualReportNull ? 0 : regionAnnualReport.NumberOfSeigneurMembers
-            };
+                return new MembersStatistic()
+                {
+                    NumberOfPtashata = regionAnnualReport.NumberOfPtashata,
+                    NumberOfNovatstva = regionAnnualReport.NumberOfNovatstva,
+                    NumberOfUnatstvaNoname = regionAnnualReport.NumberOfUnatstvaNoname,
+                    NumberOfUnatstvaSupporters = regionAnnualReport.NumberOfUnatstvaSupporters,
+                    NumberOfUnatstvaMembers = regionAnnualReport.NumberOfUnatstvaMembers,
+                    NumberOfUnatstvaProspectors = regionAnnualReport.NumberOfUnatstvaProspectors,
+                    NumberOfUnatstvaSkobVirlyts = regionAnnualReport.NumberOfUnatstvaSkobVirlyts,
+                    NumberOfSeniorPlastynSupporters = regionAnnualReport.NumberOfSeniorPlastynSupporters,
+                    NumberOfSeniorPlastynMembers = regionAnnualReport.NumberOfSeniorPlastynMembers,
+                    NumberOfSeigneurSupporters = regionAnnualReport.NumberOfSeigneurSupporters,
+                    NumberOfSeigneurMembers = regionAnnualReport.NumberOfSeigneurMembers
+                };
+            }
+            return new MembersStatistic();
         }
 
         private YearStatistics GetYearStatistics(int year, MembersStatistic membersStatistic)
