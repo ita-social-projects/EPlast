@@ -57,51 +57,43 @@ namespace EPlast.BLL.Services.Statistics
             }
             return regionStatistics;
         }
-        
-        private async Task<RegionStatistics> GetRegionStatisticsAsync(int regionId, IEnumerable<int> years)
-        {
-            var region = await _repositoryWrapper.Region.GetFirstOrDefaultAsync(
-                    predicate: r => r.ID == regionId
-                );
-            var membersStatistics = await _repositoryWrapper.MembersStatistics.GetAllAsync(
-                    predicate: m => m.AnnualReport.City.RegionId == regionId && years.Contains(m.AnnualReport.Date.Year),
-                    include: source => source
-                        .Include(m => m.AnnualReport)
-                );
-            var yearStatistics = new List<YearStatistics>();
-            foreach (var year in years)
-            {
-                var membersStatistic = membersStatistics.First(m => m.AnnualReport.Date.Year == year);
-                yearStatistics.Add(GetYearStatistics(year, membersStatistic));
-            }
-            return new RegionStatistics
-            {
-                Region = _mapper.Map<DatabaseEntities.Region, DTOs.Region>(region),
-                YearStatistics = yearStatistics.OrderBy(x => x.Year)
-            };
-        }
 
         private async Task<CityStatistics> GetCityStatisticsAsync(int cityId, IEnumerable<int> years)
         {
             var city = await _repositoryWrapper.City.GetFirstOrDefaultAsync(
                     predicate: c => c.ID == cityId,
                     include: source => source
-                        .Include(c => c.Region)
-                );
+                        .Include(c => c.Region));
             var membersStatistics = await _repositoryWrapper.MembersStatistics.GetAllAsync(
                     predicate: m => m.AnnualReport.CityId == city.ID && years.Contains(m.AnnualReport.Date.Year),
                     include: source => source
-                        .Include(m => m.AnnualReport)
-                );
+                        .Include(m => m.AnnualReport));
             var yearStatistics = new List<YearStatistics>();
             foreach (var year in years)
             {
-                var membersStatistic = membersStatistics.FirstOrDefault(m => m.AnnualReport.Date.Year == year);
-                yearStatistics.Add(GetYearStatistics(year, membersStatistic));
+                yearStatistics.Add(GetYearStatistics(year, membersStatistics.FirstOrDefault(m => m.AnnualReport.Date.Year == year)));
             }
             return new CityStatistics
             {
                 City = _mapper.Map<DatabaseEntities.City, DTOs.City>(city),
+                YearStatistics = yearStatistics.OrderBy(x => x.Year)
+            };
+        }
+
+        private async Task<RegionStatistics> GetRegionStatisticsAsync(int regionId, IEnumerable<int> years)
+        {
+            var region = await _repositoryWrapper.Region.GetFirstOrDefaultAsync(
+                    predicate: r => r.ID == regionId);
+            var regionsAnnualReports = await _repositoryWrapper.RegionAnnualReports.GetAllAsync(
+                    predicate: m => m.RegionId == regionId && years.Contains(m.Date.Year));
+            var yearStatistics = new List<YearStatistics>();
+            foreach (var year in years)
+            {
+                yearStatistics.Add(GetYearStatistics(year, GetMembersStatisticAsync(regionsAnnualReports.FirstOrDefault(report => report.Date.Year == year))));
+            }
+            return new RegionStatistics
+            {
+                Region = _mapper.Map<DatabaseEntities.Region, DTOs.Region>(region),
                 YearStatistics = yearStatistics.OrderBy(x => x.Year)
             };
         }
@@ -126,6 +118,25 @@ namespace EPlast.BLL.Services.Statistics
                     _majorStatisticsItems[key].RemoveMinors(_minorStatisticsItems);
                 }
             }
+        }
+
+        private MembersStatistic GetMembersStatisticAsync(RegionAnnualReport regionAnnualReport)
+        {
+            var isRegionAnnualReportNull = regionAnnualReport == null;
+            return new MembersStatistic()
+            {
+                NumberOfPtashata = isRegionAnnualReportNull ? 0 : regionAnnualReport.NumberOfPtashata,
+                NumberOfNovatstva = isRegionAnnualReportNull ? 0 : regionAnnualReport.NumberOfNovatstva,
+                NumberOfUnatstvaNoname = isRegionAnnualReportNull ? 0 : regionAnnualReport.NumberOfUnatstvaNoname,
+                NumberOfUnatstvaSupporters = isRegionAnnualReportNull ? 0 : regionAnnualReport.NumberOfUnatstvaSupporters,
+                NumberOfUnatstvaMembers = isRegionAnnualReportNull ? 0 : regionAnnualReport.NumberOfUnatstvaMembers,
+                NumberOfUnatstvaProspectors = isRegionAnnualReportNull ? 0 : regionAnnualReport.NumberOfUnatstvaProspectors,
+                NumberOfUnatstvaSkobVirlyts = isRegionAnnualReportNull ? 0 : regionAnnualReport.NumberOfUnatstvaSkobVirlyts,
+                NumberOfSeniorPlastynSupporters = isRegionAnnualReportNull ? 0 : regionAnnualReport.NumberOfSeniorPlastynSupporters,
+                NumberOfSeniorPlastynMembers = isRegionAnnualReportNull ? 0 : regionAnnualReport.NumberOfSeniorPlastynMembers,
+                NumberOfSeigneurSupporters = isRegionAnnualReportNull ? 0 : regionAnnualReport.NumberOfSeigneurSupporters,
+                NumberOfSeigneurMembers = isRegionAnnualReportNull ? 0 : regionAnnualReport.NumberOfSeigneurMembers
+            };
         }
 
         private YearStatistics GetYearStatistics(int year, MembersStatistic membersStatistic)
