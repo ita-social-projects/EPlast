@@ -16,5 +16,7 @@ namespace EPlast.BLL.Models
         public object Picture { get; set; }
         public string UserId { get; set; }
         public string SignedRequest { get; set; }
+        public string Birthday { get; set; }
+        public string Gender { get; set; }
     }
 }

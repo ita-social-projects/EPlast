@@ -114,9 +114,10 @@ namespace EPlast.BLL.Services.UserProfiles
             try
             {
                 var timeToJoinPlast = registeredOn.AddYears(1) - DateTime.Now;
+                TimeSpan halfOfYear = new TimeSpan(182, 0, 0, 0);
                 if (_repoWrapper.ConfirmedUser.FindByCondition(x => x.UserID == userId).Any(q => q.isClubAdmin))
                 {
-                    timeToJoinPlast = timeToJoinPlast.Divide(2);
+                    timeToJoinPlast = timeToJoinPlast.Subtract(halfOfYear);
                 }
                 if (timeToJoinPlast <= TimeSpan.Zero)
                 {
