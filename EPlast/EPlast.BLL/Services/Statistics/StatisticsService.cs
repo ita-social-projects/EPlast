@@ -122,8 +122,7 @@ namespace EPlast.BLL.Services.Statistics
 
         private MembersStatistic GetMembersStatisticAsync(RegionAnnualReport regionAnnualReport)
         {
-            var isRegionAnnualReportNull = regionAnnualReport == null;
-            if(!isRegionAnnualReportNull)
+            if(regionAnnualReport != null)
             {
                 return new MembersStatistic()
                 {
