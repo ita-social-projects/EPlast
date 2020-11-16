@@ -1,13 +1,9 @@
 ﻿using AutoMapper;
 using EPlast.BLL;
-using EPlast.BLL.DTO;
-using EPlast.BLL.DTO.ActiveMembership;
-using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Services;
 using EPlast.BLL.Services.Distinctions;
 using EPlast.DataAccess.Entities;
-using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
