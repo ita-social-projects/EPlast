@@ -24,11 +24,11 @@ namespace EPlast.WebApi.Controllers
             this.regionStatisticsService = regionStatisticsService;
             this.loggerService = loggerService;
         }
-              
+
         /// <summary>
-        /// Method to get statistics for the cities for the years
+        /// Method to get cities statistics
         /// </summary>
-        /// <param name="statisticsParameters">Statistics parameters: cities id's, years, indicators</param>
+        /// <param name="statisticsParameters">Statistics parameters: cities ids, years, indicators</param>
         /// <returns>Statistics for the cities on the specified indicators and years</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="403">User does not have access to the statistics</response>
@@ -42,9 +42,9 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Method to get statistics for the regions for the years
+        /// Method to get regions statistics
         /// </summary>
-        /// <param name="statisticsParameters">Statistics parameters: region id's, years, indicators</param>
+        /// <param name="statisticsParameters">Statistics parameters: region ids, years, indicators</param>
         /// <returns>Statistics for the regions on the specified indicators and years</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="403">User does not have access to the statistics</response>
