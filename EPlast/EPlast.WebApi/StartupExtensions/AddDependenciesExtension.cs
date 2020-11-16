@@ -35,6 +35,7 @@ using EPlast.BLL.Services.Jwt;
 using EPlast.BLL.Services.Logging;
 using EPlast.BLL.Services.Notifications;
 using EPlast.BLL.Services.Region;
+using EPlast.BLL.Services.Region.RegionAccess;
 using EPlast.BLL.Services.Statistics;
 using EPlast.BLL.Services.UserProfiles;
 using EPlast.BLL.Settings;
@@ -132,6 +133,9 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IBlankExtractFromUPUDocumentService, BlankExtractFromUpuDocumentService>();
             services.AddScoped<ICityStatisticsService, StatisticsService>();
             services.AddScoped<IRegionStatisticsService, StatisticsService>();
+            services.AddScoped<IRegionAnnualReportService, RegionAnnualReportService>();
+            services.AddScoped<IRegionAccessService, RegionAccessService>();
+            services.AddScoped<RegionAccessSettings>();
             services.AddScoped<StatisticsServiceSettings>();
             services.AddSingleton<INotificationConnectionManager, NotificationConnectionManager>();
             services.AddSingleton<UserNotificationHandler>();
