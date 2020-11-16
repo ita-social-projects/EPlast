@@ -131,9 +131,10 @@ namespace EPlast.BLL.Services.Notifications
                 var tasks = userMap[userId].Where(c => c.WebSocket.State == WebSocketState.Open)
                 .Select(c =>
                     {
-                        return c.WebSocket.SendAsync(buffer: new ArraySegment<byte>(array: Encoding.ASCII.GetBytes(message),
+                        var byteArray = Encoding.UTF8.GetBytes(message);
+                        return c.WebSocket.SendAsync(buffer: new ArraySegment<byte>(array: byteArray,
                                                                                     offset: 0,
-                                                                                    count: message.Length),
+                                                                                    count: byteArray.Length),
                                                     messageType: WebSocketMessageType.Text,
                                                     endOfMessage: true,
                                                     cancellationToken: CancellationToken.None);
