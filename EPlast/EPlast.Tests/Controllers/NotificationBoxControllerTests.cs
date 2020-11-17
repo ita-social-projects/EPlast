@@ -129,12 +129,12 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             bool successSetCheck = true;
-            _notificationService.Setup(cs => cs.SetCheckForListNotificationAsync(It.IsAny<IEnumerable<int>>())).ReturnsAsync(successSetCheck);
+            _notificationService.Setup(cs => cs.SetCheckForListNotificationAsync(It.IsAny<string>())).ReturnsAsync(successSetCheck);
 
             NotificationBoxController notificationBoxController = _notificationBoxController;
 
             //Act
-            var result = await notificationBoxController.SetCheckForListNotification(new List<int>());
+            var result = await notificationBoxController.SetCheckForListNotification("2");
             //Assert
             Assert.IsInstanceOf<NoContentResult>(result);
 
@@ -145,12 +145,12 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             bool successSetCheck = false;
-            _notificationService.Setup(cs => cs.SetCheckForListNotificationAsync(It.IsAny<IEnumerable<int>>())).ReturnsAsync(successSetCheck);
+            _notificationService.Setup(cs => cs.SetCheckForListNotificationAsync(It.IsAny<string>())).ReturnsAsync(successSetCheck);
 
             NotificationBoxController notificationBoxController = _notificationBoxController;
 
             //Act
-            var result = await notificationBoxController.SetCheckForListNotification(new List<int>());
+            var result = await notificationBoxController.SetCheckForListNotification("2");
             //Assert
             Assert.IsInstanceOf<BadRequestResult>(result);
 
