@@ -311,10 +311,8 @@ namespace EPlast.BLL.Services
                     RegistredOn = DateTime.Now,
                     UserProfile = new UserProfile()
                     {
-                        Address = facebookUser.Address,
                         Birthday = DateTime.Parse(facebookUser.Birthday,CultureInfo.InvariantCulture),
                         GenderID = _repoWrapper.Gender.FindByCondition(x=>x.Name == facebookUser.Gender).FirstOrDefault()?.ID,
-                        ReligionId =  _repoWrapper.Religion.FindByCondition(x => x.Name == facebookUser.Religion).FirstOrDefault()?.ID,
                     }
                 };
                 var createResult = await _userManager.CreateAsync(user);
