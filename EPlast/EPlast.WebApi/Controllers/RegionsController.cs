@@ -281,7 +281,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>List of regions</returns>
         [HttpGet("Regions")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetCities()
+        public async Task<IActionResult> GetRegions()
         {
             var regions = await _regionService.GetRegions();
             return Ok(regions);
