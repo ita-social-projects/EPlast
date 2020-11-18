@@ -106,7 +106,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                var region = await _regionService.GetRegionProfileByIdAsync(regionId);
+                var region = await _regionService.GetRegionProfileByIdAsync(regionId, User);
                 if (region == null)
                 {
                     return NotFound();
