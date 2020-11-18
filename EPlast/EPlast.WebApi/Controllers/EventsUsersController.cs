@@ -40,7 +40,6 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Instance of EventCreateDTO</response>
         /// <response code="400">When the EventCreateDTO is null or empty</response> 
         [HttpGet("dataForNewEvent")]
-        [Authorize(Roles = "Пластун,Admin")]
         public async Task<IActionResult> GetEventsDataForCreate()
         {
             var eventCreateModel = await _eventUserManager.InitializeEventCreateDTOAsync();
