@@ -21,29 +21,17 @@ namespace EPlast.BLL.Interfaces.Notifications
         /// <returns>all notifications of current user</returns>
         public Task<IEnumerable<UserNotificationDTO>> GetAllUserNotificationsAsync(string userId);
         /// <summary>
-        /// Returns bool, if notification added successfull, return true, else false
-        /// </summary>
-        /// <param name="userNotificationDTO">userNotificationDTO</param>
-        /// <returns>Returns bool</returns>
-        public Task<bool> AddUserNotificationAsync(UserNotificationDTO userNotificationDTO);
-        /// <summary>
         /// Returns list of added notifications
         /// </summary>
         /// <param name="userNotificationsDTO">List of userNotificationDTO</param>
         /// <returns>Returns list of UserNotificationDTO</returns>
         public Task<IEnumerable<UserNotificationDTO>> AddListUserNotificationAsync(IEnumerable<UserNotificationDTO> userNotificationsDTO);
         /// <summary>
-        /// Returns bool, if check set successfull, return true, else false
-        /// </summary>
-        /// <param name="notificationId">Notification id</param>
-        /// <returns>Returns bool</returns>
-        public Task<bool> SetCheckForNotificationAsync(int notificationId);
-        /// <summary>
         /// Returns bool, if check for list of notification set successfull, return true, else false
         /// </summary>
-        /// <param name="notificationIdList"></param>
+        /// <param name="userId"></param>
         /// <returns>Returns bool</returns>
-        public Task<bool> SetCheckForListNotificationAsync(IEnumerable<int> notificationIdList);
+        public Task<bool> SetCheckForListNotificationAsync(string userId);
         /// <summary>
         /// Returns bool, if user notification removed successfull, return true, else false
         /// </summary>

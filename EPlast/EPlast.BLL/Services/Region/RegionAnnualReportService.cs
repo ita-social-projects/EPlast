@@ -41,7 +41,7 @@ namespace EPlast.BLL.Services.Region
                 throw new InvalidOperationException("Report is already crated!");
             }
 
-            var annualReports = (await _repositoryWrapper.AnnualReports.GetAllAsync(a => a.Date.Year == year && a.City.RegionId == id))
+            var annualReports = (await _repositoryWrapper.AnnualReports.GetAllAsync(a => a.Date.Year == year && a.City.RegionId == id && a.Status == AnnualReportStatus.Confirmed))
                 .Where(result => result != null).ToList();
 
             var membersStatistics = (await _repositoryWrapper.MembersStatistics.GetAllAsync(predicate: m => m.AnnualReport.City.RegionId == id))
