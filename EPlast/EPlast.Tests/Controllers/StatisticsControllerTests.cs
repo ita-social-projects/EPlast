@@ -38,10 +38,27 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<ActionResult>(result);
         }
 
+        [Test]
+        public async Task GetRegionsStatistics_IsNotNull_IsInstanceOf()
+        {
+            // Act
+            var result = await statisticsController.GetRegionsStatistics(regionsStatisticsParameters);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<ActionResult>(result);
+        }
 
         private readonly CitiesStatisticsParameters citiesStatisticsParameters = new CitiesStatisticsParameters()
         {
             CityIds = new List<int>() { 5, 19, 20, 28, 29 },
+            Years = new List<int>() { 2019, 2020 },
+            Indicators = indicators
+        };
+
+        private readonly RegionsStatisticsParameters regionsStatisticsParameters = new RegionsStatisticsParameters()
+        {
+            RegionIds = new List<int>() { 3, 4, 6, 7 },
             Years = new List<int>() { 2019, 2020 },
             Indicators = indicators
         };
