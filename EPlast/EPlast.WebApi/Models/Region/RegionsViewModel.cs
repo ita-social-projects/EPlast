@@ -17,7 +17,7 @@ namespace EPlast.WebApi.Models.Region
             else
             {
                 Regions = from region in regions where region.RegionName.Contains(regionName) select region;
-                Total = regions.Count();
+                Total = Regions.Count();
                 CanCreate = isAdmin;
             }
             
