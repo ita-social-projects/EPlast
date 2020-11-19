@@ -106,7 +106,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                var region = await _regionService.GetRegionProfileByIdAsync(regionId);
+                var region = await _regionService.GetRegionProfileByIdAsync(regionId, User);
                 if (region == null)
                 {
                     return NotFound();
@@ -281,7 +281,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>List of regions</returns>
         [HttpGet("Regions")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetCities()
+        public async Task<IActionResult> GetRegions()
         {
             var regions = await _regionService.GetRegions();
             return Ok(regions);

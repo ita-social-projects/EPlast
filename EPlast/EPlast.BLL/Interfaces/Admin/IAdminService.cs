@@ -1,4 +1,5 @@
 ﻿using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.City;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -42,5 +43,10 @@ namespace EPlast.BLL.Services.Interfaces
         /// Change Current Role of user
         /// </summary>
         Task ChangeCurrentRoleAsync(string userId, string role);
+
+        /// <summary>
+        /// Get City and Region Admins by userId of user which contained cityMembers
+        /// </summary>
+        Task<IEnumerable<CityDTO>> GetCityRegionAdminsOfUser(string userId);
     }
 }
