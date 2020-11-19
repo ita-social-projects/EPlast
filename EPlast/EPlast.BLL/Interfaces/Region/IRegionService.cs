@@ -4,6 +4,7 @@ using EPlast.BLL.DTO.Region;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.DataAccess.Entities;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Interfaces.Region
@@ -12,7 +13,7 @@ namespace EPlast.BLL.Interfaces.Region
     {
         Task<IEnumerable<RegionDTO>> GetAllRegionsAsync();
         Task<RegionDTO> GetRegionByIdAsync(int regionId);
-        Task<RegionProfileDTO> GetRegionProfileByIdAsync(int regionId);
+        Task<RegionProfileDTO> GetRegionProfileByIdAsync(int regionId, ClaimsPrincipal user);
         Task DeleteRegionByIdAsync(int regionId);
         Task AddFollowerAsync(int regionId, int cityId);
         Task<IEnumerable<CityDTO>> GetMembersAsync(int regionId);

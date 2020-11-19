@@ -214,5 +214,26 @@ namespace EPlast.WebApi.Controllers
             _loggerService.LogError("City id is 0");
             return BadRequest();
         }
+
+        /// <summary>
+        /// Get City and Region Admins by userId of user which contained cityMembers
+        /// </summary>
+        /// <returns>User object and CityDTO, which contains CityAdministration, region => RegionAdministration</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="500">userId is empty/null or user not contained in database</response>
+        [HttpGet("CityRegionAdmins/{userId}")]
+        public async Task<IActionResult> GetCityAndRegionAdminsOfUser(string userId)
+        {
+            if (!string.IsNullOrEmpty(userId))
+            {
+                var user = await _userManagerService.FindByIdAsync(userId);
+                if (user != null)
+                {
+                    var result = await _adminService.GetCityRegionAdminsOfUser(userId);
+                    return Ok(new { result, user});
+                }
+            }
+            return BadRequest();
+        }
     }
 }

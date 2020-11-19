@@ -9,11 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 using DTOs = EPlast.BLL.DTO.Statistics;
 using Microsoft.EntityFrameworkCore.Query;
 using EPlast.DataAccess.Entities;
+using EPlast.BLL.DTO.Region;
 
 namespace EPlast.Tests.Services
 {
@@ -48,15 +48,38 @@ namespace EPlast.Tests.Services
                 .Returns(cities.First());
 
             //Act
-            var result = await statisticsService.GetCitiesStatisticsAsync(citiesIds, years, indicators );
+            var result = await statisticsService.GetCitiesStatisticsAsync(cityIds, years, indicators );
 
             //Assert
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<IEnumerable<CityStatistics>>(result);
         }
 
-        private readonly IEnumerable<int> citiesIds = new List<int>() { 5, 19, 20, 28, 29 };
-        private readonly IEnumerable<int> regionsIds = new List<int>() { 3, 8, 9, 11 };
+        [Test]
+        public async Task GetRegionsStatisticsAsync_IsNotNull_IsInstanceOf()
+        {
+            //Arrange
+            mockRepoWrapper.Setup(r => r.Region.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.Region, bool>>>(),
+                It.IsAny<Func<IQueryable<DataAccess.Entities.Region>, IIncludableQueryable<DataAccess.Entities.Region, object>>>()))
+                    .ReturnsAsync(new DataAccess.Entities.Region());
+            mockRepoWrapper.Setup(r => r.RegionAnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(),
+                It.IsAny<Func<IQueryable<RegionAnnualReport>, IIncludableQueryable<RegionAnnualReport, object>>>()))
+                    .ReturnsAsync(new RegionAnnualReport());
+            mockMapper.Setup(m => m.Map<RegionAnnualReport, RegionAnnualReportDTO>(It.IsAny<RegionAnnualReport>()))
+                .Returns( new RegionAnnualReportDTO ());
+            mockMapper.Setup(m => m.Map<DataAccess.Entities.Region, DTOs.Region>(It.IsAny<DataAccess.Entities.Region>()))
+                .Returns(regions.First());
+
+            //Act
+            var result = await statisticsService.GetRegionsStatisticsAsync(regionIds, years, indicators);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<IEnumerable<RegionStatistics>>(result);
+        }
+
+        private readonly IEnumerable<int> cityIds = new List<int>() { 5, 19, 20, 28, 29 };
+        private readonly IEnumerable<int> regionIds = new List<int>() { 3, 8, 9, 11 };
         private readonly IEnumerable<int> years = new List<int>() { 2019, 2020 };
 
         private readonly IEnumerable<DTOs.Region> regions = new List<DTOs.Region>

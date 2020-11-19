@@ -5,9 +5,7 @@ using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
@@ -40,10 +38,27 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<ActionResult>(result);
         }
 
+        [Test]
+        public async Task GetRegionsStatistics_IsNotNull_IsInstanceOf()
+        {
+            // Act
+            var result = await statisticsController.GetRegionsStatistics(regionsStatisticsParameters);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<ActionResult>(result);
+        }
 
         private readonly CitiesStatisticsParameters citiesStatisticsParameters = new CitiesStatisticsParameters()
         {
-            CitiesId = new List<int>() { 5, 19, 20, 28, 29 },
+            CityIds = new List<int>() { 5, 19, 20, 28, 29 },
+            Years = new List<int>() { 2019, 2020 },
+            Indicators = indicators
+        };
+
+        private readonly RegionsStatisticsParameters regionsStatisticsParameters = new RegionsStatisticsParameters()
+        {
+            RegionIds = new List<int>() { 3, 4, 6, 7 },
             Years = new List<int>() { 2019, 2020 },
             Indicators = indicators
         };

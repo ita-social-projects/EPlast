@@ -161,7 +161,7 @@ namespace EPlast.BLL.Services.Region
             return _mapper.Map<DataAccessRegion.Region, RegionDTO>(region);
         }
 
-        public async Task<RegionProfileDTO> GetRegionProfileByIdAsync(int regionId)
+        public async Task<RegionProfileDTO> GetRegionProfileByIdAsync(int regionId, ClaimsPrincipal user)
         {
             var region = await GetRegionByIdAsync(regionId);
             var regionProfile = _mapper.Map<RegionDTO, RegionProfileDTO>(region);
@@ -169,6 +169,7 @@ namespace EPlast.BLL.Services.Region
             var cities = await _cityService.GetCitiesByRegionAsync(regionId);
             regionProfile.Cities = cities;
             regionProfile.City = region.City;
+            regionProfile.CanEdit = user.IsInRole("Admin") || user.IsInRole("Голова Округу");
 
             return regionProfile;
         }
