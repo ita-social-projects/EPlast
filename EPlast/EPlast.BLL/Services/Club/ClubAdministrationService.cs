@@ -149,7 +149,10 @@ namespace EPlast.BLL.Services.Club
 
             foreach (var admin in admins)
             {
-                admin.Club.ClubAdministration = null;
+                if (admin.Club != null)
+                {
+                    admin.Club.ClubAdministration = null;
+                }
             }
 
             return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationDTO>>(admins);
