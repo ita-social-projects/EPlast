@@ -15,7 +15,6 @@ namespace EPlast.Tests.Controllers
     {
         private Mock<ICityStatisticsService> cityStatisticsService;
         private Mock<IRegionStatisticsService> regionStatisticsService;
-        private Mock<ILoggerService<StatisticsController>> loggerService;
         private StatisticsController statisticsController;
 
         [SetUp]
@@ -23,8 +22,7 @@ namespace EPlast.Tests.Controllers
         {
             cityStatisticsService = new Mock<ICityStatisticsService>();
             regionStatisticsService = new Mock<IRegionStatisticsService>();
-            loggerService = new Mock<ILoggerService<StatisticsController>>();
-            statisticsController = new StatisticsController(cityStatisticsService.Object, regionStatisticsService.Object, loggerService.Object);
+            statisticsController = new StatisticsController(cityStatisticsService.Object, regionStatisticsService.Object);
         }
 
         [Test]
@@ -38,10 +36,27 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<ActionResult>(result);
         }
 
+        [Test]
+        public async Task GetRegionsStatistics_IsNotNull_IsInstanceOf()
+        {
+            // Act
+            var result = await statisticsController.GetRegionsStatistics(regionsStatisticsParameters);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<ActionResult>(result);
+        }
 
         private readonly CitiesStatisticsParameters citiesStatisticsParameters = new CitiesStatisticsParameters()
         {
             CityIds = new List<int>() { 5, 19, 20, 28, 29 },
+            Years = new List<int>() { 2019, 2020 },
+            Indicators = indicators
+        };
+
+        private readonly RegionsStatisticsParameters regionsStatisticsParameters = new RegionsStatisticsParameters()
+        {
+            RegionIds = new List<int>() { 3, 4, 6, 7 },
             Years = new List<int>() { 2019, 2020 },
             Indicators = indicators
         };

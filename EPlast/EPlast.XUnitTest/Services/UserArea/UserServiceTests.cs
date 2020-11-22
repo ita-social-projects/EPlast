@@ -26,7 +26,6 @@ namespace EPlast.XUnitTest.Services.UserArea
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IUserStore<User>> _userStoreMock;
         private Mock<UserManager<User>> _userManager;
-        private Mock<IWebHostEnvironment> _hostEnv;
         private Mock<IMapper> _mapper;
         private Mock<IWorkService> _workService;
         private Mock<IEducationService> _educationService;

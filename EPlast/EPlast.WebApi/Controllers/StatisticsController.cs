@@ -1,5 +1,4 @@
 ﻿using EPlast.BLL.DTO.Statistics;
-using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Statistics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -14,15 +13,12 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly ICityStatisticsService cityStatisticsService;
         private readonly IRegionStatisticsService regionStatisticsService;
-        private readonly ILoggerService<StatisticsController> loggerService;
 
         public StatisticsController(ICityStatisticsService cityStatisticsService,
-                                    IRegionStatisticsService regionStatisticsService,
-                                    ILoggerService<StatisticsController> loggerService)
+                                    IRegionStatisticsService regionStatisticsService)
         {
             this.cityStatisticsService = cityStatisticsService;
             this.regionStatisticsService = regionStatisticsService;
-            this.loggerService = loggerService;
         }
 
         /// <summary>
