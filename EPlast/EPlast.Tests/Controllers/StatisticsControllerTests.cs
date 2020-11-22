@@ -15,7 +15,6 @@ namespace EPlast.Tests.Controllers
     {
         private Mock<ICityStatisticsService> cityStatisticsService;
         private Mock<IRegionStatisticsService> regionStatisticsService;
-        private Mock<ILoggerService<StatisticsController>> loggerService;
         private StatisticsController statisticsController;
 
         [SetUp]
@@ -23,8 +22,7 @@ namespace EPlast.Tests.Controllers
         {
             cityStatisticsService = new Mock<ICityStatisticsService>();
             regionStatisticsService = new Mock<IRegionStatisticsService>();
-            loggerService = new Mock<ILoggerService<StatisticsController>>();
-            statisticsController = new StatisticsController(cityStatisticsService.Object, regionStatisticsService.Object, loggerService.Object);
+            statisticsController = new StatisticsController(cityStatisticsService.Object, regionStatisticsService.Object);
         }
 
         [Test]
