@@ -157,6 +157,18 @@ namespace EPlast.WebApi.Controllers
             return Ok(regionsViewModel);
         }
 
+        /// <summary>
+        /// Get all regions
+        /// </summary>
+        /// <returns>List of regions</returns>
+        [HttpGet("Regions")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetRegions()
+        {
+            var regions = await _regionService.GetRegions();
+            return Ok(regions);
+        }
+
 
 
         [HttpDelete("RemoveAdministration/{Id}")]
@@ -273,18 +285,6 @@ namespace EPlast.WebApi.Controllers
         {
             var typeId = await _regionService.GetAdminType(name);
             return typeId;
-        }
-
-        /// <summary>
-        /// Get all regions
-        /// </summary>
-        /// <returns>List of regions</returns>
-        [HttpGet("Regions")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetRegions()
-        {
-            var regions = await _regionService.GetRegions();
-            return Ok(regions);
         }
 
         /// <summary>
