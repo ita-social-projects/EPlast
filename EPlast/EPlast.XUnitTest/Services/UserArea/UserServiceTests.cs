@@ -211,7 +211,7 @@ namespace EPlast.XUnitTest.Services.UserArea
             // Assert
             _repoWrapper.Verify(r => r.User.Update(It.IsAny<User>()), Times.Once());
             _repoWrapper.Verify(r => r.UserProfile.Update(It.IsAny<UserProfile>()), Times.Once());
-            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once());
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.AtLeast(2));
         }
     }
 }
