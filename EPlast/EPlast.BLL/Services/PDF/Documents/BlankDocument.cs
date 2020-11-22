@@ -47,7 +47,7 @@ namespace EPlast.BLL
             SetText(gfx, "ознайомлений/на.", XFontStyle.Regular, 50, 200);
 
             SetText(gfx, "Поручення дійсних членів Пласту:", XFontStyle.Bold, 50, 230);
-            int count = blank.User?.ConfirmedUsers != null ? blank.User.ConfirmedUsers.Count() : 0;
+            int count = blank.User?.ConfirmedUsers != null ? blank.User.ConfirmedUsers.Count : 0;
             for (int i = 0, coordinates = 250; i < count; i++, coordinates += 20)
             {
                 if (blank.User.ConfirmedUsers.ElementAt(i).isCityAdmin)
