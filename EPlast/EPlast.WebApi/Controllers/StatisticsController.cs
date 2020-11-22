@@ -1,5 +1,4 @@
 ﻿using EPlast.BLL.DTO.Statistics;
-using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Statistics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
