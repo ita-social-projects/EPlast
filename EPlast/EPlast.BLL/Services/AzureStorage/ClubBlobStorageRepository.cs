@@ -9,35 +9,10 @@ namespace EPlast.BLL.Services.AzureStorage
 {
     public class ClubBlobStorageRepository : BlobStorageRepository, IClubBlobStorageRepository
     {
-        private const string Container = "ClubImages";
+        private const string CONTAINER = "ClubImages";
 
-        public ClubBlobStorageRepository(IAzureBlobConnectionFactory connectionFactory) : base(connectionFactory)
+        public ClubBlobStorageRepository(IAzureBlobConnectionFactory connectionFactory) : base(connectionFactory, CONTAINER)
         {
-        }
-
-        public async Task<CloudBlockBlob> GetBlobAsync(string blobName)
-        {
-            return await this.GetBlobAsync(blobName, Container);
-        }
-
-        public async Task<string> GetBlobBase64Async(string blobName)
-        {
-            return await this.GetBlobBase64Async(blobName, Container);
-        }
-
-        public async Task DeleteBlobAsync(string blobName)
-        {
-            await this.DeleteBlobAsync(blobName, Container);
-        }
-
-        public async Task UploadBlobAsync(IFormFile blobFile, string fileName)
-        {
-            await this.UploadBlobAsync(blobFile, fileName, Container);
-        }
-
-        public async Task UploadBlobForBase64Async(string base64, string fileName)
-        {
-            await this.UploadBlobForBase64Async(base64, fileName, Container);
         }
     }
 }
