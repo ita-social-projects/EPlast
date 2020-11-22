@@ -207,7 +207,7 @@ namespace EPlast.XUnitTest.Services.UserArea
             var mockFile = new Mock<IFormFile>();
 
             var service = GetService();            // Act
-            await service.UpdateAsync(userDTO, mockFile.Object, 1, 1, 1, 1);
+            await service.UpdateAsyncForFile(userDTO, mockFile.Object, 1, 1, 1, 1);
             // Assert
             _repoWrapper.Verify(r => r.User.Update(It.IsAny<User>()), Times.Once());
             _repoWrapper.Verify(r => r.UserProfile.Update(It.IsAny<UserProfile>()), Times.Once());

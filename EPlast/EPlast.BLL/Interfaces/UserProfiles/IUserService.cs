@@ -16,7 +16,7 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         /// <param name="userId">The id of the user</param>
         /// <returns>A user dto</returns>
         Task<UserDTO> GetUserAsync(string userId);
-        Task UpdateAsync(UserDTO user, IFormFile file, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId);
+        Task UpdateAsyncForFile(UserDTO user, IFormFile file, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId);
 
         /// <summary>
         /// Change a user
