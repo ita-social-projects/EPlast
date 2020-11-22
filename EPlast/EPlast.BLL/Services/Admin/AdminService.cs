@@ -26,7 +26,7 @@ namespace EPlast.BLL.Services
         private readonly IMapper _mapper;
         private readonly ICityMembersService _cityMembers;
         private readonly IClubMembersService _clubMembers;
-        private readonly IRegionService _regionService;
+        private readonly IRegionAdministrationService _regionService;
 
         public AdminService(IRepositoryWrapper repoWrapper, 
             UserManager<User> userManager, 
@@ -34,7 +34,7 @@ namespace EPlast.BLL.Services
             RoleManager<IdentityRole> roleManager,
             ICityMembersService cityMembers,
             IClubMembersService clubMembers,
-            IRegionService regionService)
+            IRegionAdministrationService regionService)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;

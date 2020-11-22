@@ -82,7 +82,7 @@ namespace EPlast.BLL.Services.Notifications
                 {
                     foreach (var userNotification in userNotifications)
                     {
-                        if (userNotification.Checked == false)
+                        if (!userNotification.Checked)
                         {
                             userNotification.Checked = true;
                             userNotification.CheckedAt = DateTime.Now;

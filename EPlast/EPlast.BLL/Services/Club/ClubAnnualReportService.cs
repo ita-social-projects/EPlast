@@ -16,15 +16,13 @@ namespace EPlast.BLL.Services.Club
     public class ClubAnnualReportService: IClubAnnualReportService
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
-        private readonly UserManager<User> _userManager;
         private readonly IClubAccessService _clubAccessService;
         private readonly IMapper _mapper;
 
         public ClubAnnualReportService(IRepositoryWrapper repositoryWrapper,
-                                    UserManager<User> userManager, IClubAccessService clubAccessService, IMapper mapper)
+                                    IClubAccessService clubAccessService, IMapper mapper)
         {
             _repositoryWrapper = repositoryWrapper;
-            _userManager = userManager;
             _clubAccessService = clubAccessService;
             _mapper = mapper;
         }
