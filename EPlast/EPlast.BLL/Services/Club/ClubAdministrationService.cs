@@ -142,20 +142,32 @@ namespace EPlast.BLL.Services.Club
 
         public async Task<IEnumerable<ClubAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId)
         {
-            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == UserId && a.Status,
+            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == UserId && (a.EndDate > DateTime.Now || a.EndDate == null),
                  include:
                  source => source.Include(c => c.User).Include(a => a.Club).Include(c => c.AdminType)
                  );
+
+            foreach (var admin in admins)
+            {
+                admin.Club.ClubAdministration = null;
+            }
+
             return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationDTO>>(admins);
         }
 
 
         public async Task<IEnumerable<ClubAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string UserId)
         {
-            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == UserId && !a.Status,
+            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == UserId && a.EndDate < DateTime.Now,
                  include:
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(c => c.Club)
                  );
+
+            foreach (var admin in admins)
+            {
+                admin.Club.ClubAdministration = null;
+            }
+
             return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationDTO>>(admins);
         }
 
