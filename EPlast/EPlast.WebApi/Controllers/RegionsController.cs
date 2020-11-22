@@ -16,14 +16,17 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly ILoggerService<CitiesController> _logger;
         private readonly IRegionService _regionService;
+        private readonly IRegionAdministrationService _regionAdministrationService;
         private readonly IRegionAnnualReportService _RegionAnnualReportService;
 
         public RegionsController(ILoggerService<CitiesController> logger,
             IRegionService regionService,
+            IRegionAdministrationService regionAdministrationService,
             IRegionAnnualReportService RegionAnnualReportService)
         {
             _logger = logger;
             _regionService = regionService;
+            _regionAdministrationService = regionAdministrationService;
             _RegionAnnualReportService = RegionAnnualReportService;
 
         }
@@ -81,7 +84,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetRegionAdmins(int regionId)
         {
-            var Admins = await _regionService.GetAdministrationAsync(regionId);
+            var Admins = await _regionAdministrationService.GetAdministrationAsync(regionId);
 
             return Ok(Admins);
         }
@@ -92,7 +95,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetRegionHead(int regionId)
         {
-            var Head = await _regionService.GetHead(regionId);
+            var Head = await _regionAdministrationService.GetHead(regionId);
 
             return Ok(Head);
         }
@@ -126,7 +129,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
         public async Task<IActionResult> AddAdministrator(RegionAdministrationDTO admin)
         {
-            await _regionService.AddRegionAdministrator(admin);
+            await _regionAdministrationService.AddRegionAdministrator(admin);
 
             return NoContent();
         }
@@ -137,7 +140,7 @@ namespace EPlast.WebApi.Controllers
         {
             if(admin != null)
             {
-                await _regionService.EditRegionAdministrator(admin);
+                await _regionAdministrationService.EditRegionAdministrator(admin);
                 _logger.LogInformation($"Successful edit admin: {admin.UserId}");
                 return NoContent();
             }
@@ -175,7 +178,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
         public async Task<IActionResult> Remove(int Id)
         {
-            await _regionService.DeleteAdminByIdAsync(Id);
+            await _regionAdministrationService.DeleteAdminByIdAsync(Id);
             return Ok();
         }
 
@@ -203,7 +206,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetUserAdministrations(string userId)
         {
-            var secretaries = await _regionService.GetUsersAdministrations(userId);
+            var secretaries = await _regionAdministrationService.GetUsersAdministrations(userId);
             return Ok(secretaries);
 
         }
@@ -212,7 +215,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetUserPrevAdministrations(string userId)
         {
-            var secretaries = await _regionService.GetUsersPreviousAdministrations(userId);
+            var secretaries = await _regionAdministrationService.GetUsersPreviousAdministrations(userId);
             return Ok(secretaries);
 
         }
@@ -274,7 +277,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetAdminTypes()
         {
-            var types = await _regionService.GetAllAdminTypes();
+            var types = await _regionAdministrationService.GetAllAdminTypes();
             return Ok(types);
         }
 
@@ -283,7 +286,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<int> GetAdminTypeId(string name)
         {
-            var typeId = await _regionService.GetAdminType(name);
+            var typeId = await _regionAdministrationService.GetAdminType(name);
             return typeId;
         }
 
