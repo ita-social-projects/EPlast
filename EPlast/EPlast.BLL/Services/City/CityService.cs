@@ -15,11 +15,12 @@ using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using EPlast.BLL.Services.CityClub;
 using DataAccessCity = EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Services
 {
-    public class CityService : ICityService
+    public class CityService : CityClubBase, ICityService
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
@@ -384,30 +385,7 @@ namespace EPlast.BLL.Services
                 predicate: i => i.ID == cityId))
                 ?.Logo;
 
-            if (file != null && file.Length > 0)
-            {
-                using (var img = Image.FromStream(file.OpenReadStream()))
-                {
-                    var uploads = Path.Combine(_env.WebRootPath, "images\\Cities");
-                    if (!string.IsNullOrEmpty(oldImageName))
-                    {
-                        var oldPath = Path.Combine(uploads, oldImageName);
-                        if (File.Exists(oldPath))
-                        {
-                            File.Delete(oldPath);
-                        }
-                    }
-
-                    var fileName = $"{_uniqueId.GetUniqueId()}{Path.GetExtension(file.FileName)}";
-                    var filePath = Path.Combine(uploads, fileName);
-                    img.Save(filePath);
-                    city.Logo = fileName;
-                }
-            }
-            else
-            {
-                city.Logo = oldImageName;
-            }
+            city.Logo = GetChangedPhoto("images\\Cities", file, oldImageName, _env.WebRootPath, _uniqueId.GetUniqueId().ToString());
         }
 
         private async Task UploadPhotoAsync(CityDTO city)
