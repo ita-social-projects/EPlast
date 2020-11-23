@@ -169,46 +169,52 @@ namespace EPlast.WebApi.Controllers
                 _loggerService.LogError("User id is null");
                 return NotFound();
             }
-            var user = await _userService.GetUserAsync(userId);
+
+            UserDTO user;
+
+            try
+            {
+                user = await _userService.GetUserAsync(userId);
+            }
+            catch (Exception)
+            {
+                _loggerService.LogError($"User not found. UserId:{userId}");
+                return NotFound();
+            }
             var confirmedUsers = _userService.GetConfirmedUsers(user);
             var canApprove = await _userService.CanApproveAsync(confirmedUsers, userId, User);
             var time = await _userService.CheckOrAddPlastunRoleAsync(user.Id, user.RegistredOn);
             var clubApprover = _userService.GetClubAdminConfirmedUser(user);
             var cityApprover = _userService.GetCityAdminConfirmedUser(user);
 
-            if (user != null)
+            var model = new UserApproversViewModel
             {
-                var model = new UserApproversViewModel
-                {
-                    User = _mapper.Map<UserDTO, UserInfoViewModel>(user),
-                    canApprove = canApprove,
-                    TimeToJoinPlast = ((int)time.TotalDays),
-                    ConfirmedUsers = _mapper.Map<IEnumerable<ConfirmedUserDTO>, IEnumerable<ConfirmedUserViewModel>>(confirmedUsers),
-                    ClubApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(clubApprover),
-                    CityApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(cityApprover),
-                    IsUserHeadOfCity = await _userManagerService.IsInRoleAsync(User, "Голова Станиці"),
-                    IsUserHeadOfClub = await _userManagerService.IsInRoleAsync(User, "Голова Куреня"),
-                    IsUserHeadOfRegion = await _userManagerService.IsInRoleAsync(User, "Голова Округу"),
-                    IsUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун"),
-                    CurrentUserId = approverId
-                };
-                foreach (var item in model.ConfirmedUsers)
-                {
-                    item.Approver.User.ImagePath = await _userService.GetImageBase64Async(item.Approver.User.ImagePath);
-                }
-                if (model.ClubApprover != null)
-                {
-                    model.ClubApprover.Approver.User.ImagePath = await _userService.GetImageBase64Async(model?.ClubApprover?.Approver?.User.ImagePath);
-                }
-                if (model.CityApprover != null)
-                {
-                    model.CityApprover.Approver.User.ImagePath = await _userService.GetImageBase64Async(model?.CityApprover?.Approver?.User.ImagePath);
-                }
-                return Ok(model);
+                User = _mapper.Map<UserDTO, UserInfoViewModel>(user),
+                canApprove = canApprove,
+                TimeToJoinPlast = ((int)time.TotalDays),
+                ConfirmedUsers = _mapper.Map<IEnumerable<ConfirmedUserDTO>, IEnumerable<ConfirmedUserViewModel>>(confirmedUsers),
+                ClubApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(clubApprover),
+                CityApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(cityApprover),
+                IsUserHeadOfCity = await _userManagerService.IsInRoleAsync(User, "Голова Станиці"),
+                IsUserHeadOfClub = await _userManagerService.IsInRoleAsync(User, "Голова Куреня"),
+                IsUserHeadOfRegion = await _userManagerService.IsInRoleAsync(User, "Голова Округу"),
+                IsUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун"),
+                CurrentUserId = approverId
+            };
+            foreach (var item in model.ConfirmedUsers)
+            {
+                item.Approver.User.ImagePath = await _userService.GetImageBase64Async(item.Approver.User.ImagePath);
             }
-
-            _loggerService.LogError($"User not found. UserId:{userId}");
-            return NotFound();
+            if (model.ClubApprover != null)
+            {
+                model.ClubApprover.Approver.User.ImagePath = await _userService.GetImageBase64Async(model?.ClubApprover?.Approver?.User.ImagePath);
+            }
+            if (model.CityApprover != null)
+            {
+                model.CityApprover.Approver.User.ImagePath = await _userService.GetImageBase64Async(model?.CityApprover?.Approver?.User.ImagePath);
+            }
+            return Ok(model);
+            
         }
         /// <summary>
         /// Approving user
