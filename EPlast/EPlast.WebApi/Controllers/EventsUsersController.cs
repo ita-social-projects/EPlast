@@ -11,11 +11,14 @@ namespace EPlast.WebApi.Controllers
     [Authorize(AuthenticationSchemes = "Bearer")]
     public class EventsUsersController : ControllerBase
     {
-        private readonly IEventUserManager _eventUserManager;
+        private readonly IEventUserManager eventUserManager;
+        private readonly IEventUserService eventUserService;
 
-        public EventsUsersController(IEventUserManager eventUserManager)
+        public EventsUsersController(IEventUserManager eventUserManager, IEventUserService eventUserService)
         {
-            _eventUserManager = eventUserManager;
+            this.eventUserManager = eventUserManager;
+            this.eventUserService = eventUserService;
+
         }
 
         /// <summary>
@@ -28,7 +31,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("eventsUsers/{userId}")]
         public async Task<IActionResult> GetEventUserByUserId(string userId)
         {
-            var eventUserModel = await _eventUserManager.EventUserAsync(userId, User);
+            var eventUserModel = await eventUserService.EventUserAsync(userId, User);
 
             return Ok(eventUserModel);
         }
@@ -42,7 +45,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("dataForNewEvent")]
         public async Task<IActionResult> GetEventsDataForCreate()
         {
-            var eventCreateModel = await _eventUserManager.InitializeEventCreateDTOAsync();
+            var eventCreateModel = await eventUserManager.InitializeEventCreateDTOAsync();
 
             return Ok(eventCreateModel);
         }
@@ -58,7 +61,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = "Прихильник,Пластун,Admin")]
         public async Task<IActionResult> EventCreate([FromBody] EventCreateDTO createDTO)
         {
-            createDTO.Event.ID = await _eventUserManager.CreateEventAsync(createDTO);
+            createDTO.Event.ID = await eventUserManager.CreateEventAsync(createDTO);
 
             return Created(nameof(GetEventUserByUserId), createDTO);
         }
@@ -74,7 +77,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = "Прихильник,Пластун,Admin")]
         public async Task<IActionResult> EventEdit(int eventId)
         {
-            var eventCreateModel = await _eventUserManager.InitializeEventEditDTOAsync(eventId);
+            var eventCreateModel = await eventUserManager.InitializeEventEditDTOAsync(eventId);
 
             return Ok(eventCreateModel);
         }
@@ -90,7 +93,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = "Прихильник,Пластун,Admin")]
         public async Task<IActionResult> EventEdit([FromBody] EventCreateDTO createDTO)
         {
-            await _eventUserManager.EditEventAsync((createDTO));
+            await eventUserManager.EditEventAsync((createDTO));
 
             return NoContent();
         }
@@ -106,7 +109,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = "Прихильник,Пластун,Admin")]
         public async Task<IActionResult> ApproveEvent(int eventId)
         {
-            var eventApproved = await _eventUserManager.ApproveEventAsync(eventId);
+            var eventApproved = await eventUserManager.ApproveEventAsync(eventId);
 
             return Ok(eventApproved);
         }
