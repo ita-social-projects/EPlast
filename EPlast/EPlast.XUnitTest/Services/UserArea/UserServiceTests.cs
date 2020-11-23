@@ -28,8 +28,7 @@ namespace EPlast.XUnitTest.Services.UserArea
         private Mock<UserManager<User>> _userManager;
         private Mock<IWebHostEnvironment> _hostEnv;
         private Mock<IMapper> _mapper;
-        private Mock<IWorkService> _workService;
-        private Mock<IEducationService> _educationService;
+        private Mock<IUserPersonalDataService> _userPersonalDataService;
         private Mock<IUserBlobStorageRepository> _userBlobStorage;
         private Mock<IWebHostEnvironment> _env;
         private Mock<IUserManagerService> _userManagerService;
@@ -41,8 +40,7 @@ namespace EPlast.XUnitTest.Services.UserArea
             _userStoreMock = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(_userStoreMock.Object, null, null, null, null, null, null, null, null);
             _mapper = new Mock<IMapper>();
-            _workService = new Mock<IWorkService>();
-            _educationService = new Mock<IEducationService>();
+            _userPersonalDataService = new Mock<IUserPersonalDataService>();
             _userBlobStorage=new Mock<IUserBlobStorageRepository>();
             _env=new Mock<IWebHostEnvironment>();
             _userManagerService = new Mock<IUserManagerService>();
@@ -52,7 +50,7 @@ namespace EPlast.XUnitTest.Services.UserArea
 
         private UserService GetService()
         {
-            return new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _workService.Object, _educationService.Object, _userBlobStorage.Object,_env.Object, _uniqueId.Object);
+            return new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _userPersonalDataService.Object, _userBlobStorage.Object,_env.Object, _uniqueId.Object);
         }
         [Fact]
         public async Task GetUserProfileTest()

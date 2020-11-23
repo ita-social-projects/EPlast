@@ -21,36 +21,21 @@ namespace EPlast.WebApi.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly INationalityService _nationalityService;
-        private readonly IEducationService _educationService;
-        private readonly IReligionService _religionService;
-        private readonly IWorkService _workService;
-        private readonly IGenderService _genderService;
-        private readonly IDegreeService _degreeService;
         private readonly IUserManagerService _userManagerService;
         private readonly IConfirmedUsersService _confirmedUserService;
+        private readonly IUserPersonalDataService _userPersonalDataService;
         private readonly ILoggerService<UserController> _loggerService;
         private readonly IMapper _mapper;
 
         public UserController(IUserService userService,
-            INationalityService nationalityService,
-            IEducationService educationService,
-            IReligionService religionService,
-            IWorkService workService,
-            IGenderService genderService,
-            IDegreeService degreeService,
+            IUserPersonalDataService userPersonalDataService,
             IConfirmedUsersService confirmedUserService,
             IUserManagerService userManagerService,
             ILoggerService<UserController> loggerService,
             IMapper mapper)
         {
             _userService = userService;
-            _nationalityService = nationalityService;
-            _religionService = religionService;
-            _degreeService = degreeService;
-            _workService = workService;
-            _educationService = educationService;
-            _genderService = genderService;
+            _userPersonalDataService = userPersonalDataService;
             _confirmedUserService = confirmedUserService;
             _userManagerService = userManagerService;
             _loggerService = loggerService;
@@ -127,22 +112,22 @@ namespace EPlast.WebApi.Controllers
             var user = await _userService.GetUserAsync(userId);
             if (user != null)
             {
-                var genders = _mapper.Map<IEnumerable<GenderDTO>, IEnumerable<GenderViewModel>>(await _genderService.GetAllAsync());
-                var placeOfStudyUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(await _educationService.GetAllGroupByPlaceAsync());
-                var specialityUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(await _educationService.GetAllGroupBySpecialityAsync());
-                var placeOfWorkUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(await _workService.GetAllGroupByPlaceAsync());
-                var positionUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(await _workService.GetAllGroupByPositionAsync());
+                var genders = _mapper.Map<IEnumerable<GenderDTO>, IEnumerable<GenderViewModel>>(await _userPersonalDataService.GetAllGendersAsync());
+                var placeOfStudyUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(await _userPersonalDataService.GetAllEducationsGroupByPlaceAsync());
+                var specialityUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(await _userPersonalDataService.GetAllEducationsGroupBySpecialityAsync());
+                var placeOfWorkUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(await _userPersonalDataService.GetAllWorkGroupByPlaceAsync());
+                var positionUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(await _userPersonalDataService.GetAllWorkGroupByPositionAsync());
 
                 var educView = new UserEducationViewModel { PlaceOfStudyID = user.UserProfile.EducationId, SpecialityID = user.UserProfile.EducationId, PlaceOfStudyList = placeOfStudyUnique, SpecialityList = specialityUnique };
                 var workView = new UserWorkViewModel { PlaceOfWorkID = user.UserProfile.WorkId, PositionID = user.UserProfile.WorkId, PlaceOfWorkList = placeOfWorkUnique, PositionList = positionUnique };
                 var model = new EditUserViewModel()
                 {
                     User = _mapper.Map<UserDTO, UserViewModel>(user),
-                    Nationalities = _mapper.Map<IEnumerable<NationalityDTO>, IEnumerable<NationalityViewModel>>(await _nationalityService.GetAllAsync()),
-                    Religions = _mapper.Map<IEnumerable<ReligionDTO>, IEnumerable<ReligionViewModel>>(await _religionService.GetAllAsync()),
+                    Nationalities = _mapper.Map<IEnumerable<NationalityDTO>, IEnumerable<NationalityViewModel>>(await _userPersonalDataService.GetAllNationalityAsync()),
+                    Religions = _mapper.Map<IEnumerable<ReligionDTO>, IEnumerable<ReligionViewModel>>(await _userPersonalDataService.GetAllReligionsAsync()),
                     EducationView = educView,
                     WorkView = workView,
-                    Degrees = _mapper.Map<IEnumerable<DegreeDTO>, IEnumerable<DegreeViewModel>>(await _degreeService.GetAllAsync()),
+                    Degrees = _mapper.Map<IEnumerable<DegreeDTO>, IEnumerable<DegreeViewModel>>(await _userPersonalDataService.GetAllDegreesAsync()),
                     Genders = genders,
                 };
 
