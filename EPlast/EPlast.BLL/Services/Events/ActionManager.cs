@@ -76,13 +76,6 @@ namespace EPlast.BLL.Services.Events
         /// <inheritdoc />
         public async Task<List<GeneralEventDTO>> GetEventsAsync(int categoryId, int eventTypeId, ClaimsPrincipal user)
         {
-            int approvedStatus = await _participantStatusManager.GetStatusIdAsync("Учасник");
-            int undeterminedStatus = await _participantStatusManager.GetStatusIdAsync("Розглядається");
-            int rejectedStatus = await _participantStatusManager.GetStatusIdAsync("Відмовлено");
-            int approvedEvent = await _eventStatusManager.GetStatusIdAsync("Затверджений(-на)");
-            int finishedEvent = await _eventStatusManager.GetStatusIdAsync("Завершений(-на)");
-            int notApprovedEvent = await _eventStatusManager.GetStatusIdAsync("Не затверджені");
-
             var events = await _repoWrapper.Event
                 .GetAllAsync(
                     e => e.EventCategoryID == categoryId && e.EventTypeID == eventTypeId,
@@ -91,22 +84,7 @@ namespace EPlast.BLL.Services.Events
                         .Include(e => e.Participants)
                 );
 
-            var dto = events
-                .Select(ev => new GeneralEventDTO
-                {
-                    EventId = ev.ID,
-                    EventName = ev.EventName,
-                    IsUserEventAdmin = (ev.EventAdministrations.Any(e => e.UserID == _userManager.GetUserId(user))) || user.IsInRole("Адміністратор подій"),
-                    IsUserParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(user)),
-                    IsUserApprovedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(user) && p.ParticipantStatusId == approvedStatus),
-                    IsUserUndeterminedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(user) && p.ParticipantStatusId == undeterminedStatus),
-                    IsUserRejectedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(user) && p.ParticipantStatusId == rejectedStatus),
-                    IsEventApproved = ev.EventStatusID == approvedEvent,
-                    IsEventNotApproved = ev.EventStatusID == notApprovedEvent,
-                    IsEventFinished = ev.EventStatusID == finishedEvent
-                })
-                .ToList();
-
+            var dto = await GetEventDtosAsync(events, user);
             return dto;
         }
 
@@ -292,13 +270,6 @@ namespace EPlast.BLL.Services.Events
 
         public async Task<List<GeneralEventDTO>> GetEventsByStatusAsync(int categoryId, int typeId, int status, ClaimsPrincipal user)
         {
-            int approvedStatus = await _participantStatusManager.GetStatusIdAsync("Учасник");
-            int undeterminedStatus = await _participantStatusManager.GetStatusIdAsync("Розглядається");
-            int rejectedStatus = await _participantStatusManager.GetStatusIdAsync("Відмовлено");
-            int approvedEvent = await _eventStatusManager.GetStatusIdAsync("Затверджений(-на)");
-            int finishedEvent = await _eventStatusManager.GetStatusIdAsync("Завершений(-на)");
-            int notApprovedEvent = await _eventStatusManager.GetStatusIdAsync("Не затверджені");
-
             IEnumerable<Event> events;
             if (status == 1)
             {
@@ -322,7 +293,21 @@ namespace EPlast.BLL.Services.Events
                   );
 
             }
-            var dto = events
+
+            var dto = await GetEventDtosAsync(events, user);
+            return dto;
+        }
+
+        private async Task<List<GeneralEventDTO>> GetEventDtosAsync(IEnumerable<Event> events, ClaimsPrincipal user)
+        {
+            int approvedStatus = await _participantStatusManager.GetStatusIdAsync("Учасник");
+            int undeterminedStatus = await _participantStatusManager.GetStatusIdAsync("Розглядається");
+            int rejectedStatus = await _participantStatusManager.GetStatusIdAsync("Відмовлено");
+            int approvedEvent = await _eventStatusManager.GetStatusIdAsync("Затверджений(-на)");
+            int finishedEvent = await _eventStatusManager.GetStatusIdAsync("Завершений(-на)");
+            int notApprovedEvent = await _eventStatusManager.GetStatusIdAsync("Не затверджені");
+
+            return events
                 .Select(ev => new GeneralEventDTO
                 {
                     EventId = ev.ID,
@@ -337,8 +322,6 @@ namespace EPlast.BLL.Services.Events
                     IsEventFinished = ev.EventStatusID == finishedEvent
                 })
                 .ToList();
-
-            return dto;
         }
     }
 }
