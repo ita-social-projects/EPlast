@@ -76,7 +76,7 @@ namespace PdfSharpCore.Drawing.Layout
             set
             {
                 if (value == null)
-                    throw new ArgumentNullException("Font");
+                    throw new ArgumentNullException(nameof(value));
                 _font = value;
 
                 _lineSpace = _font.GetHeight();
@@ -290,7 +290,7 @@ namespace PdfSharpCore.Drawing.Layout
                         string token = Text.Substring(startIndex, blockLength);
                         _blocks.Add(new Block(token, BlockType.Text,
                           _gfx.MeasureString(token, _font).Width,
-                          startIndex, startIndex + blockLength - 1));
+                         startIndex + blockLength - 1));
                     }
                     startIndex = idx + 1;
                     blockLength = 0;
@@ -303,7 +303,7 @@ namespace PdfSharpCore.Drawing.Layout
                         string token = Text.Substring(startIndex, blockLength);
                         _blocks.Add(new Block(token, BlockType.Text,
                           _gfx.MeasureString(token, _font).Width,
-                          startIndex, startIndex + blockLength - 1));
+                           startIndex + blockLength - 1));
                         startIndex = idx + 1;
                         blockLength = 0;
                     }
@@ -323,7 +323,7 @@ namespace PdfSharpCore.Drawing.Layout
                 string token = Text.Substring(startIndex, blockLength);
                 _blocks.Add(new Block(token, BlockType.Text,
                                 _gfx.MeasureString(token, _font).Width,
-                                startIndex, startIndex + blockLength - 1));
+                                startIndex + blockLength - 1));
             }
         }
 
@@ -438,12 +438,12 @@ namespace PdfSharpCore.Drawing.Layout
             /// <param name="width">The width of the text.</param>
             /// <param name="startIndex"></param>
             /// <param name="endIndex"></param>
-            public Block(string text, BlockType type, double width, int startIndex, int endIndex)
+            public Block(string text, BlockType type, double width, int endIndex)
             {
                 Text = text;
                 Type = type;
                 Width = width;
-                StartIndex = startIndex;
+                //StartIndex = startIndex;
                 EndIndex = endIndex;
             }
 
@@ -462,7 +462,7 @@ namespace PdfSharpCore.Drawing.Layout
             public readonly string Text;
 
             public readonly int EndIndex = -1;
-            public readonly int StartIndex = -1;
+            //public readonly int StartIndex = -1;
 
             /// <summary>
             /// The type of the block.
