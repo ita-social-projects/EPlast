@@ -35,9 +35,9 @@ namespace PdfSharpCore.Drawing.Layout
 
         public struct LayoutOptions
         {
-            public float Spacing;
+            public SpacingMode SpacingMode { get; set; }
 
-            public SpacingMode SpacingMode;
+            public float Spacing { get; set; }
         }
 
         /// <summary>
