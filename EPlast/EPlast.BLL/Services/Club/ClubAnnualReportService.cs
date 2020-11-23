@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Club
@@ -82,22 +83,25 @@ namespace EPlast.BLL.Services.Club
             {
                 throw new UnauthorizedAccessException();
             }
+
+            StringBuilder clubMembers = new StringBuilder();
             foreach (var item in club.ClubMembers)
             {
                 var cityMember = await _repositoryWrapper.CityMembers.GetFirstOrDefaultAsync(predicate: a => a.UserId == item.UserId,include:source=>source.Include(ar=>ar.City));
-                clubAnnualReportDTO.ClubMembersSummary += $"{item.User.UserPlastDegrees.FirstOrDefault(x=>x.UserId==item.User.Id).PlastDegree.Name}, " +
-                                                            $"{item.User.FirstName} {item.User.LastName}," +
-                                                            $"{item.IsApproved},"+
-                                                            $"{cityMember.City.Name};";
+                clubMembers = clubMembers.Append(new StringBuilder(
+                    $"{item.User.UserPlastDegrees.FirstOrDefault(x => x.UserId == item.User.Id).PlastDegree.Name}, {item.User.FirstName} {item.User.LastName}, {item.IsApproved}, {cityMember.City.Name};"));
             }
-            foreach(var item in club.ClubAdministration)
+
+            clubAnnualReportDTO.ClubMembersSummary = clubMembers.ToString();
+
+            StringBuilder clubAdmins = new StringBuilder();
+            foreach (var item in club.ClubAdministration)
             {
 
-                clubAnnualReportDTO.ClubAdminContacts += $"{item.User.UserPlastDegrees.FirstOrDefault(x=>x.UserId==item.User.Id).PlastDegree.Name}," +
-                                                            $"{item.User.FirstName} {item.User.LastName}," +
-                                                            $"{item.User.Email}," +
-                                                            $"{item.User.PhoneNumber}";
+                clubAdmins = clubAdmins.Append($"{item.User.UserPlastDegrees.FirstOrDefault(x=>x.UserId==item.User.Id).PlastDegree.Name}, {item.User.FirstName} {item.User.LastName}, {item.User.Email}, {item.User.PhoneNumber}");
             }
+
+            clubAnnualReportDTO.ClubAdminContacts = clubAdmins.ToString();
             var clubAnnualReport = _mapper.Map<ClubAnnualReportDTO, ClubAnnualReport>(clubAnnualReportDTO);
 
             await _repositoryWrapper.ClubAnnualReports.CreateAsync(clubAnnualReport);

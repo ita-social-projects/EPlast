@@ -224,7 +224,7 @@ namespace EPlast.WebApi.Controllers
 
                 if (result.Succeeded)
                 {
-                    return Redirect("https://eplast.westeurope.cloudapp.azure.com/signin");
+                    return Redirect(ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["SignIn"]);
                 }
                 else
                 {
