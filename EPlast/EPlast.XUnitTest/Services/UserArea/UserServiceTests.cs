@@ -26,7 +26,6 @@ namespace EPlast.XUnitTest.Services.UserArea
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IUserStore<User>> _userStoreMock;
         private Mock<UserManager<User>> _userManager;
-        private Mock<IWebHostEnvironment> _hostEnv;
         private Mock<IMapper> _mapper;
         private Mock<IUserPersonalDataService> _userPersonalDataService;
         private Mock<IUserBlobStorageRepository> _userBlobStorage;
@@ -205,11 +204,11 @@ namespace EPlast.XUnitTest.Services.UserArea
             var mockFile = new Mock<IFormFile>();
 
             var service = GetService();            // Act
-            await service.UpdateAsync(userDTO, mockFile.Object, 1, 1, 1, 1);
+            await service.UpdateAsyncForFile(userDTO, mockFile.Object, 1, 1, 1, 1);
             // Assert
             _repoWrapper.Verify(r => r.User.Update(It.IsAny<User>()), Times.Once());
             _repoWrapper.Verify(r => r.UserProfile.Update(It.IsAny<UserProfile>()), Times.Once());
-            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once());
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.AtLeast(2));
         }
     }
 }

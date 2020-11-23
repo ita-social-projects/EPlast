@@ -58,10 +58,10 @@ namespace EPlast.WebApi.Controllers
 
             return BadRequest();
         }
-        [HttpPost("setCheckNotifications/setChecked")]
-        public async Task<IActionResult> SetCheckForListNotification(IEnumerable<int> notificationIdList)
+        [HttpPost("setCheckNotifications/setChecked/{userId}")]
+        public async Task<IActionResult> SetCheckForListNotification(string userId)
         {
-            if (await _notificationService.SetCheckForListNotificationAsync(notificationIdList))
+            if (await _notificationService.SetCheckForListNotificationAsync(userId))
             {
                 return NoContent();
             }

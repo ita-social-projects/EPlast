@@ -45,13 +45,13 @@ namespace EPlast.BLL.Services.Statistics
             return citiesStatistics.OrderBy(x => x.City.Name);
         }
         
-        public async Task<IEnumerable<RegionStatistics>> GetRegionsStatisticsAsync(IEnumerable<int> regionsIds,
+        public async Task<IEnumerable<RegionStatistics>> GetRegionsStatisticsAsync(IEnumerable<int> regionIds,
                                                                                    IEnumerable<int> years,
                                                                                    IEnumerable<StatisticsItemIndicator> indicators)
         {
             SelectStatisticsItems(indicators);
             var regionStatistics = new List<RegionStatistics>();
-            foreach (var regionId in regionsIds)
+            foreach (var regionId in regionIds)
             {
                 regionStatistics.Add(await GetRegionStatisticsAsync(regionId, years));
             }

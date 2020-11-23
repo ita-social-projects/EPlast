@@ -121,6 +121,6 @@ namespace EPlast.BLL.Interfaces.Events
 
         Task CheckEventsStatusesAsync();
 
-        Task<List<GeneralEventDTO>> GetEventsByStatusAsync(int categoryId, int typeId, int status, ClaimsPrincipal User);
+        Task<List<GeneralEventDTO>> GetEventsByStatusAsync(int categoryId, int typeId, int status, ClaimsPrincipal user);
     }
 }

@@ -147,23 +147,25 @@ namespace EPlast.Tests.Services.Notifications
         [Test]
         public async Task SetCheckForListNotificationAsync_Valid_ReturnsTrue()
         {
-            _repoWrapper.Setup(m => m.UserNotifications.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserNotification, bool>>>(),
-                 It.IsAny<Func<IQueryable<UserNotification>, IIncludableQueryable<UserNotification, object>>>())).ReturnsAsync(new UserNotification());
+            _userManagerService.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new UserDTO());
+
+            _repoWrapper.Setup(m => m.UserNotifications.GetAllAsync(It.IsAny<Expression<Func<UserNotification, bool>>>(),
+        It.IsAny<Func<IQueryable<UserNotification>, IIncludableQueryable<UserNotification, object>>>())).ReturnsAsync(GetTestUserNotification().Where(c => c.OwnerUserId == "1"));
 
             _repoWrapper.Setup(m => m.UserNotifications.Update(It.IsAny<UserNotification>()));
 
             _repoWrapper.Setup(m => m.SaveAsync());
 
             //Act 
-            var result = await _notificationService.SetCheckForListNotificationAsync(GetTestUserNotificationDTO().Select(un => un.Id));
+            var result = await _notificationService.SetCheckForListNotificationAsync("1");
 
             //Assert
             Assert.IsTrue(result);
 
-            _repoWrapper.Verify(f => f.UserNotifications.Update(It.IsAny<UserNotification>()), Times.Exactly(3));
+            _repoWrapper.Verify(f => f.UserNotifications.Update(It.IsAny<UserNotification>()), Times.Exactly(1));
 
-            _repoWrapper.Verify(f => f.UserNotifications.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserNotification, bool>>>(),
-                 It.IsAny<Func<IQueryable<UserNotification>, IIncludableQueryable<UserNotification, object>>>()), Times.Exactly(3));
+            _repoWrapper.Verify(f => f.UserNotifications.GetAllAsync(It.IsAny<Expression<Func<UserNotification, bool>>>(),
+        It.IsAny<Func<IQueryable<UserNotification>, IIncludableQueryable<UserNotification, object>>>()), Times.Exactly(1));
 
             _repoWrapper.Verify(f => f.SaveAsync(), Times.Once);
         }
@@ -171,21 +173,20 @@ namespace EPlast.Tests.Services.Notifications
         [Test]
         public async Task SetCheckForListNotificationAsync_InValid_ReturnsFalse()
         {
-            _repoWrapper.Setup(m => m.UserNotifications.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserNotification, bool>>>(),
-                 It.IsAny<Func<IQueryable<UserNotification>, IIncludableQueryable<UserNotification, object>>>())).ReturnsAsync((UserNotification)null);
+            _userManagerService.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync((UserDTO)null);
 
             _repoWrapper.Setup(m => m.SaveAsync());
 
             //Act 
-            var result = await _notificationService.SetCheckForListNotificationAsync(GetTestUserNotificationDTO().Select(un => un.Id));
+            var result = await _notificationService.SetCheckForListNotificationAsync("1");
 
             //Assert
             Assert.IsFalse(result);
 
             _repoWrapper.Verify(f => f.UserNotifications.Update(It.IsAny<UserNotification>()), Times.Never);
 
-            _repoWrapper.Verify(f => f.UserNotifications.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserNotification, bool>>>(),
-                 It.IsAny<Func<IQueryable<UserNotification>, IIncludableQueryable<UserNotification, object>>>()), Times.Exactly(1));
+            _repoWrapper.Verify(f => f.UserNotifications.GetAllAsync(It.IsAny<Expression<Func<UserNotification, bool>>>(),
+                 It.IsAny<Func<IQueryable<UserNotification>, IIncludableQueryable<UserNotification, object>>>()), Times.Never);
 
             _repoWrapper.Verify(f => f.SaveAsync(), Times.Never);
         }
@@ -316,7 +317,8 @@ namespace EPlast.Tests.Services.Notifications
                    OwnerUserId="1",
                    Id=1,
                    NotificationTypeId = 1,
-                   Message="New message #1"
+                   Message="New message #1",
+                   Checked = false
                },
                new  UserNotification
                {
