@@ -10,16 +10,15 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using EPlast.BLL.Services.CityClub;
 using DataAccessClub = EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Services.Club
 {
-    public class ClubService : IClubService
+    public class ClubService : CityClubBase, IClubService
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
@@ -349,43 +348,20 @@ namespace EPlast.BLL.Services.Club
             return Club;
         }
 
-        private async Task UploadPhotoAsync(ClubDTO Club, IFormFile file)
+        private async Task UploadPhotoAsync(ClubDTO club, IFormFile file)
         {
-            var ClubId = Club.ID;
+            var ClubId = club.ID;
             var oldImageName = (await _repoWrapper.Club.GetFirstOrDefaultAsync(
                 predicate: i => i.ID == ClubId))
                 ?.Logo;
 
-            if (file != null && file.Length > 0)
-            {
-                using (var img = Image.FromStream(file.OpenReadStream()))
-                {
-                    var uploads = Path.Combine(_env.WebRootPath, "images\\Clubs");
-                    if (!string.IsNullOrEmpty(oldImageName))
-                    {
-                        var oldPath = Path.Combine(uploads, oldImageName);
-                        if (File.Exists(oldPath))
-                        {
-                            File.Delete(oldPath);
-                        }
-                    }
-
-                    var fileName = $"{_uniqueId.GetUniqueId()}{Path.GetExtension(file.FileName)}";
-                    var filePath = Path.Combine(uploads, fileName);
-                    img.Save(filePath);
-                    Club.Logo = fileName;
-                }
-            }
-            else
-            {
-                Club.Logo = oldImageName;
-            }
+            club.Logo = GetChangedPhoto("images\\Clubs",file,oldImageName, _env.WebRootPath, _uniqueId.GetUniqueId().ToString());
         }
 
-        private async Task UploadPhotoAsync(ClubDTO Club)
+        private async Task UploadPhotoAsync(ClubDTO club)
         {
-            var oldImageName = (await _repoWrapper.Club.GetFirstOrDefaultAsync(i => i.ID == Club.ID))?.Logo;
-            var logoBase64 = Club.Logo;
+            var oldImageName = (await _repoWrapper.Club.GetFirstOrDefaultAsync(i => i.ID == club.ID))?.Logo;
+            var logoBase64 = club.Logo;
 
             if (!string.IsNullOrWhiteSpace(logoBase64) && logoBase64.Length > 0)
             {
@@ -400,7 +376,7 @@ namespace EPlast.BLL.Services.Club
                 var fileName = $"{_uniqueId.GetUniqueId()}{extension}";
 
                 await _ClubBlobStorage.UploadBlobForBase64Async(logoBase64Parts[1], fileName);
-                Club.Logo = fileName;
+                club.Logo = fileName;
             }
 
             if (!string.IsNullOrEmpty(oldImageName))

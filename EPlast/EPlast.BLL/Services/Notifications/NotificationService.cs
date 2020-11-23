@@ -37,26 +37,6 @@ namespace EPlast.BLL.Services.Notifications
             return _mapper.Map<IEnumerable<UserNotificationDTO>>(userNotitfications.OrderByDescending(d => d.CreatedAt));
         }
 
-        public async Task<bool> AddUserNotificationAsync(UserNotificationDTO userNotificationDTO)
-        {
-            bool addedSuccessfully = false;
-            if((await _userManagerService.FindByIdAsync(userNotificationDTO.OwnerUserId)) != null)
-            {
-                UserNotification userNotification = _mapper.Map<UserNotification>(userNotificationDTO);
-                NotificationType notificationType = await _repoWrapper.NotificationTypes.GetFirstOrDefaultAsync(nt => nt.Id == userNotificationDTO.NotificationTypeId);
-                if (notificationType != null)
-                {
-                    userNotification.NotificationType = notificationType;
-                    userNotification.Checked = false;
-                    userNotification.CreatedAt = DateTime.Now;
-                    await _repoWrapper.UserNotifications.CreateAsync(userNotification);
-                    await _repoWrapper.SaveAsync();
-                    addedSuccessfully = true;
-                }
-            }
-            return addedSuccessfully;
-        }
-
         public async Task<IEnumerable<UserNotificationDTO>> AddListUserNotificationAsync(IEnumerable<UserNotificationDTO> userNotificationsDTO)
         {
             bool addedSuccessfully = true;
@@ -92,40 +72,28 @@ namespace EPlast.BLL.Services.Notifications
             throw new InvalidOperationException();
         }
 
-        public async Task<bool> SetCheckForNotificationAsync(int notificationId)
+        public async Task<bool> SetCheckForListNotificationAsync(string userId)
         {
             bool ChangedSuccessfully = false;
-            var userNotification = await _repoWrapper.UserNotifications.GetFirstOrDefaultAsync(nt => nt.Id == notificationId);
-            if (userNotification != null)
+            if (!string.IsNullOrEmpty(userId) && await _userManagerService.FindByIdAsync(userId) != null)
             {
-                userNotification.Checked = true;
-                userNotification.CheckedAt = DateTime.Now;
-                _repoWrapper.UserNotifications.Update(userNotification);
-                await _repoWrapper.SaveAsync();
-                ChangedSuccessfully = true;
-            }
-            return ChangedSuccessfully;
-        }
-
-        public async Task<bool> SetCheckForListNotificationAsync(IEnumerable<int> notificationIdList)
-        {
-            bool ChangedSuccessfully = true;
-            foreach (int notificationId in notificationIdList)
-            {
-                var userNotification = await _repoWrapper.UserNotifications.GetFirstOrDefaultAsync(nt => nt.Id == notificationId);
-
-                if (userNotification != null)
+                var userNotifications = await _repoWrapper.UserNotifications.GetAllAsync(nt => nt.OwnerUserId == userId);
+                if (userNotifications.ToList().Count != 0)
                 {
-                    userNotification.Checked = true;
-                    userNotification.CheckedAt = DateTime.Now;
-                    _repoWrapper.UserNotifications.Update(userNotification);
-                }
-                else
-                {
-                    return false;
+                    foreach (var userNotification in userNotifications)
+                    {
+                        if (!userNotification.Checked)
+                        {
+                            userNotification.Checked = true;
+                            userNotification.CheckedAt = DateTime.Now;
+                            _repoWrapper.UserNotifications.Update(userNotification);
+                        }
+                    }
+                    await _repoWrapper.SaveAsync();
+                    ChangedSuccessfully = true;
                 }
             }
-            await _repoWrapper.SaveAsync();
+
             return ChangedSuccessfully;
         }
 
