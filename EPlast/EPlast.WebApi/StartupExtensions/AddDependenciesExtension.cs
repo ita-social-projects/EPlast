@@ -87,9 +87,8 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<ICityDocumentsService, CityDocumentsService>();
             services.AddScoped<ICityMembersService, CityMembersService>();
             services.AddScoped<IClubService, ClubService>();
-            services.AddScoped<IClubAdministrationService, ClubAdministrationService>();
+            services.AddScoped<IClubParticipantsService, ClubParticipantsService>();
             services.AddScoped<IClubDocumentsService, ClubDocumentsService>();
-            services.AddScoped<IClubMembersService, ClubMembersService>();
             services.AddScoped<IAdminTypeService, AdminTypeService>();
             services.AddScoped<IActionManager, ActionManager>();
             services.AddScoped<IEventCategoryManager, EventCategoryManager>();

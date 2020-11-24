@@ -2,18 +2,11 @@
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Logging;
-using EPlast.BLL.Services.Interfaces;
 using EPlast.WebApi.Controllers;
 using EPlast.WebApi.Models.Club;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.Routing;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -23,10 +16,9 @@ namespace EPlast.Tests.Controllers
     class ClubControllerTests
     {
         private readonly Mock<IClubService> _ClubService;
-        private readonly Mock<IClubMembersService> _ClubMembersService;
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<ILoggerService<ClubController>> _logger;
-        private readonly Mock<IClubAdministrationService> _ClubAdministrationService;
+        private readonly Mock<IClubParticipantsService> _ClubParticipantsService;
         private readonly Mock<IClubAccessService> _ClubAccessService;
         private readonly Mock<IClubDocumentsService> _ClubDocumentsService;
         private readonly Mock<IClubAnnualReportService> _ClubAnnualReportService;
@@ -36,20 +28,17 @@ namespace EPlast.Tests.Controllers
         {
             _ClubAccessService = new Mock<IClubAccessService>();
             _ClubService = new Mock<IClubService>();
-            _ClubMembersService = new Mock<IClubMembersService>();
             _mapper = new Mock<IMapper>();
             _logger = new Mock<ILoggerService<ClubController>>();
-            _ClubAdministrationService = new Mock<IClubAdministrationService>();
+            _ClubParticipantsService = new Mock<IClubParticipantsService>();
             _ClubDocumentsService = new Mock<IClubDocumentsService>();
             _ClubAnnualReportService = new Mock<IClubAnnualReportService>();
         }
 
         private ClubController CreateClubController => new ClubController(_logger.Object,
-
              _mapper.Object,
            _ClubService.Object,
-           _ClubMembersService.Object,
-           _ClubAdministrationService.Object,
+           _ClubParticipantsService.Object,
            _ClubDocumentsService.Object,
            _ClubAccessService.Object,
            _ClubAnnualReportService.Object
@@ -190,10 +179,6 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
-
-
-
-
 
         [TestCase(2)]
         public async Task GetAdmins_Valid_Test(int id)
@@ -345,8 +330,6 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
-
-
         [Test]
         public async Task Create_InvalidModelState_Valid_Test()
         {
@@ -393,8 +376,6 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
 
-
-
         [Test]
         public async Task Edit_Valid_Test()
         {
@@ -415,12 +396,10 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkResult>(result);
         }
 
-
-
         [Test]
         public async Task AddFollower_Valid_Test()
         {
-            _ClubMembersService.Setup(c => c.AddFollowerAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+            _ClubParticipantsService.Setup(c => c.AddFollowerAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(new ClubMembersDTO());
 
             _logger.Setup(l => l.LogInformation(It.IsAny<string>()));
@@ -432,7 +411,6 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
-
 
         [Test]
         public async Task Remove_Valid_Test()
@@ -448,12 +426,10 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkResult>(result);
         }
 
-
-
         [Test]
         public async Task RemoveFollower_Valid_Test()
         {
-            _ClubMembersService.Setup(c => c.RemoveFollowerAsync(It.IsAny<int>()));
+            _ClubParticipantsService.Setup(c => c.RemoveFollowerAsync(It.IsAny<int>()));
 
             _logger.Setup(l => l.LogInformation(It.IsAny<string>()));
 
@@ -468,7 +444,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task ChangeApproveStatus_Valid_Test()
         {
-            _ClubMembersService.Setup(c => c.ToggleApproveStatusAsync(It.IsAny<int>()))
+            _ClubParticipantsService.Setup(c => c.ToggleApproveStatusAsync(It.IsAny<int>()))
                 .ReturnsAsync(new ClubMembersDTO());
 
             _logger.Setup(l => l.LogInformation(It.IsAny<string>()));
@@ -489,7 +465,7 @@ namespace EPlast.Tests.Controllers
             _mapper.Setup(m => m.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(It.IsAny<ClubAdministrationViewModel>()))
                 .Returns(new ClubAdministrationDTO());
 
-            _ClubAdministrationService.Setup(c => c.EditAdministratorAsync(It.IsAny<ClubAdministrationDTO>()));
+            _ClubParticipantsService.Setup(c => c.EditAdministratorAsync(It.IsAny<ClubAdministrationDTO>()));
 
             _logger.Setup(l => l.LogInformation(It.IsAny<string>()));
 
@@ -509,7 +485,7 @@ namespace EPlast.Tests.Controllers
             _mapper.Setup(m => m.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(It.IsAny<ClubAdministrationViewModel>()))
                 .Returns(new ClubAdministrationDTO());
 
-            _ClubAdministrationService.Setup(c => c.RemoveAdministratorAsync(It.IsAny<int>()));
+            _ClubParticipantsService.Setup(c => c.RemoveAdministratorAsync(It.IsAny<int>()));
 
             _logger.Setup(l => l.LogInformation(It.IsAny<string>()));
 
@@ -520,7 +496,6 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkResult>(result);
         }
-
 
         [Test]
         public async Task GetClubThatUserHasAccessTo_Valid_Test()
@@ -536,13 +511,9 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
-
-
         private int GetFakeID()
         {
             return 1;
         }
-
-
     }
 }
