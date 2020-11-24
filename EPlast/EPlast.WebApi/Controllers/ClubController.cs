@@ -521,14 +521,14 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("CreateClubAnnualReport")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці")]
-        public async Task<IActionResult> CreateClubAnnualReport(ClubAnnualReportDTO annualReport)
+        public async Task<IActionResult> CreateClubAnnualReport(ClubAnnualReportViewModel annualReport)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    //var clubAnnualReport = _mapper.Map<ClubAnnualReportViewModel, ClubAnnualReportDTO>(annualReport);
-                    await _ClubAnnualReportService.CreateAsync(User, annualReport);
+                    var clubAnnualReport = _mapper.Map<ClubAnnualReportViewModel, ClubAnnualReportDTO>(annualReport);
+                    await _ClubAnnualReportService.CreateAsync(User, clubAnnualReport);
                 }
                 catch (InvalidOperationException)
                 {
