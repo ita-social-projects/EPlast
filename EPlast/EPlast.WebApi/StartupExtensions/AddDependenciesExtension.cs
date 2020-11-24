@@ -99,6 +99,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IEventAdministrationTypeManager, EventAdministrationTypeManager>();
             services.AddScoped<IEventCalendarService, EventCalendarService>();
             services.AddScoped<IEventsManager, EventsManager>();
+            services.AddScoped<IEventWrapper, EventWrapper>();
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.AddTransient<IJwtService, JwtService>();
             services.AddScoped<IUserBlobStorageRepository, UserBlobStorageRepository>();
