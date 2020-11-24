@@ -13,29 +13,30 @@ namespace EPlast.Tests.Controllers
     [TestFixture]
     class EventsUsersControllerTests
     {
-        private Mock<IEventUserManager> _eventUserManager;
+        private Mock<IEventUserManager> eventUserManager;
+        private Mock<IEventUserService> eventUserService;
 
-        private EventsUsersController _eventsUsersController;
+        private EventsUsersController eventsUsersController;
 
         [SetUp]
         public void SetUp()
         {
-            _eventUserManager = new Mock<IEventUserManager>();
+            eventUserManager = new Mock<IEventUserManager>();
+            eventUserService = new Mock<IEventUserService>();
 
-            _eventsUsersController = new EventsUsersController(
-                _eventUserManager.Object);
+            eventsUsersController = new EventsUsersController(eventUserManager.Object, eventUserService.Object);
         }
 
         [Test]
         public async Task GetEventUserByUserId_ReturnsOkObjectResult()
         {
             // Arrange
-            _eventUserManager
+            eventUserService
                 .Setup((x) => x.EventUserAsync(It.IsAny<string>(), It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(CreateFakeEventUser());
 
             // Act
-            var result = await _eventsUsersController.GetEventUserByUserId(It.IsAny<string>());
+            var result = await eventsUsersController.GetEventUserByUserId(It.IsAny<string>());
 
             // Assert
             Assert.NotNull((result as ObjectResult).Value);
@@ -48,12 +49,12 @@ namespace EPlast.Tests.Controllers
             // Arrange
             var expectedId = "1";
 
-            _eventUserManager
+            eventUserService
                 .Setup((x) => x.EventUserAsync(It.IsAny<string>(), It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(CreateFakeEventUser());
 
             // Act
-            var result = await _eventsUsersController.GetEventUserByUserId(It.IsAny<string>());
+            var result = await eventsUsersController.GetEventUserByUserId(It.IsAny<string>());
 
             var actual = ((result as ObjectResult).Value as EventUserDTO).User.Id;
 
@@ -66,12 +67,12 @@ namespace EPlast.Tests.Controllers
         public async Task GetEventsDataForCreate_ReturnsOkObjectResult()
         {
             // Arrange
-            _eventUserManager
+            eventUserManager
                 .Setup((x) => x.InitializeEventCreateDTOAsync())
                 .ReturnsAsync(CreateFakeEventCreate());
 
             // Act
-            var result = await _eventsUsersController.GetEventsDataForCreate();
+            var result = await eventsUsersController.GetEventsDataForCreate();
 
             // Assert
             Assert.NotNull((result as ObjectResult).Value);
@@ -84,12 +85,12 @@ namespace EPlast.Tests.Controllers
             // Arrange
             var expectedId = 1;
 
-            _eventUserManager
+            eventUserManager
                 .Setup((x) => x.InitializeEventCreateDTOAsync())
                 .ReturnsAsync(CreateFakeEventCreate());
 
             // Act
-            var result = await _eventsUsersController.GetEventsDataForCreate();
+            var result = await eventsUsersController.GetEventsDataForCreate();
 
             var actual = ((result as ObjectResult).Value as EventCreateDTO).Event.ID;
 
@@ -102,12 +103,12 @@ namespace EPlast.Tests.Controllers
         public async Task EventCreate_ReturnsCreatedResult()
         {
             // Arrange
-            _eventUserManager
+            eventUserManager
                 .Setup((x) => x.CreateEventAsync(CreateFakeEventCreate()))
                 .ReturnsAsync(It.IsAny<int>());
 
             // Act
-            var result = await _eventsUsersController.EventCreate(CreateFakeEventCreate());
+            var result = await eventsUsersController.EventCreate(CreateFakeEventCreate());
 
             // Assert
             Assert.NotNull((result as ObjectResult).Value as EventCreateDTO);
@@ -122,12 +123,12 @@ namespace EPlast.Tests.Controllers
             var FakeEvent = CreateFakeEventCreate();
             FakeEvent.Event.ID = 0;
 
-            _eventUserManager
+            eventUserManager
                 .Setup((x) => x.CreateEventAsync(FakeEvent))
                 .ReturnsAsync(expectedId);
 
             // Act
-            var result = await _eventsUsersController.EventCreate(FakeEvent);
+            var result = await eventsUsersController.EventCreate(FakeEvent);
             var actual = ((result as ObjectResult).Value as EventCreateDTO).Event.ID;
 
             // Assert
@@ -139,12 +140,12 @@ namespace EPlast.Tests.Controllers
         public async Task EventEdit_ReturnsOkObjectResult()
         {
             // Arrange
-            _eventUserManager
+            eventUserManager
                 .Setup((x) => x.InitializeEventEditDTOAsync(It.IsAny<int>()))
                 .ReturnsAsync(CreateFakeEventCreate());
 
             // Act
-            var result = await _eventsUsersController.EventEdit(It.IsAny<int>());
+            var result = await eventsUsersController.EventEdit(It.IsAny<int>());
 
             // Assert
             Assert.NotNull((result as ObjectResult).Value as EventCreateDTO);
@@ -157,12 +158,12 @@ namespace EPlast.Tests.Controllers
             // Arrange
             var expectedId = 1;
 
-            _eventUserManager
+            eventUserManager
                 .Setup((x) => x.InitializeEventEditDTOAsync(It.IsAny<int>()))
                 .ReturnsAsync(CreateFakeEventCreate());
 
             // Act
-            var result = await _eventsUsersController.EventEdit(It.IsAny<int>());
+            var result = await eventsUsersController.EventEdit(It.IsAny<int>());
 
             var actual = ((result as ObjectResult).Value as EventCreateDTO).Event.ID;
 
@@ -175,11 +176,11 @@ namespace EPlast.Tests.Controllers
         public async Task EventEdit_EventCreate_ReturnsOkObjectResult()
         {
             // Arrange
-            _eventUserManager
+            eventUserManager
                 .Setup((x) => x.EditEventAsync(CreateFakeEventCreate()));
 
             // Act
-            var result = await _eventsUsersController.EventEdit(CreateFakeEventCreate());
+            var result = await eventsUsersController.EventEdit(CreateFakeEventCreate());
 
             // Assert
             Assert.IsInstanceOf<NoContentResult>(result);
