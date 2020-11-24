@@ -69,12 +69,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IFileManager, FileManager>();
             services.AddScoped<IFileStreamManager, FileStreamManager>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<INationalityService, NationalityService>();
-            services.AddScoped<IReligionService, ReligionService>();
-            services.AddScoped<IEducationService, EducationService>();
-            services.AddScoped<IWorkService, WorkService>();
-            services.AddScoped<IGenderService, GenderService>();
-            services.AddScoped<IDegreeService, DegreeService>();
+            services.AddScoped<IUserPersonalDataService, UserPersonalDataService>();
             services.AddScoped<IConfirmedUsersService, ConfirmedUsersService>();
             services.AddScoped<IUserManagerService, UserManagerService>();
             services.AddScoped<IAdminService, AdminService>();
@@ -139,6 +134,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddSingleton<INotificationConnectionManager, NotificationConnectionManager>();
             services.AddSingleton<UserNotificationHandler>();
             services.AddTransient<IUniqueIdService, UniqueIdService>();
+            services.AddTransient<IEventUserService, EventUserService>();
 
             return services;
         }
