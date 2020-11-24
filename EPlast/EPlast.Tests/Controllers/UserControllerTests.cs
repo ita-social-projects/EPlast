@@ -23,12 +23,7 @@ namespace EPlast.Tests.Controllers
     class UserControllerTests
     {
         private Mock<IUserService> _userService;
-        private Mock<INationalityService> _nationalityService;
-        private Mock<IEducationService> _educationService;
-        private Mock<IReligionService> _religionService;
-        private Mock<IWorkService> _workService;
-        private Mock<IGenderService> _genderService;
-        private Mock<IDegreeService> _degreeService;
+        private Mock<IUserPersonalDataService> _userPersonalDataService;
         private Mock<IUserManagerService> _userManagerService;
         private Mock<IConfirmedUsersService> _confirmedUserService;
         private Mock<ILoggerService<UserController>> _loggerService;
@@ -40,12 +35,7 @@ namespace EPlast.Tests.Controllers
         public void SetUp()
         {
             _userService = new Mock<IUserService>();
-            _nationalityService = new Mock<INationalityService>();
-            _educationService = new Mock<IEducationService>();
-            _religionService = new Mock<IReligionService>();
-            _workService = new Mock<IWorkService>();
-            _genderService = new Mock<IGenderService>();
-            _degreeService = new Mock<IDegreeService>();
+            _userPersonalDataService = new Mock<IUserPersonalDataService>();
             _userManagerService = new Mock<IUserManagerService>();
             _confirmedUserService = new Mock<IConfirmedUsersService>();
             _loggerService = new Mock<ILoggerService<UserController>>();
@@ -53,12 +43,7 @@ namespace EPlast.Tests.Controllers
 
             _userController = new UserController(
                 _userService.Object,
-                _nationalityService.Object,
-                _educationService.Object,
-                _religionService.Object,
-                _workService.Object,
-                _genderService.Object,
-                _degreeService.Object,
+                _userPersonalDataService.Object,
                 _confirmedUserService.Object,
                 _userManagerService.Object,
                 _loggerService.Object,
@@ -226,60 +211,60 @@ namespace EPlast.Tests.Controllers
                 .Setup((x) => x.GetUserAsync(idString))
                 .ReturnsAsync(CreateFakeUser());
 
-            _genderService
-                .Setup((x) => x.GetAllAsync())
+            _userPersonalDataService
+                .Setup((x) => x.GetAllGendersAsync())
                 .ReturnsAsync(new List<GenderDTO>());
 
             _mapper
                 .Setup((x) => x.Map<IEnumerable<GenderDTO>, IEnumerable<GenderViewModel>>(new List<GenderDTO>()))
                 .Returns(new List<GenderViewModel>());
 
-            _educationService
-               .Setup((x) => x.GetAllGroupByPlaceAsync())
+            _userPersonalDataService
+               .Setup((x) => x.GetAllEducationsGroupByPlaceAsync())
                 .ReturnsAsync(new List<EducationDTO>());
 
             _mapper
                 .Setup((x) => x.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(new List<EducationDTO>()))
                 .Returns(new List<EducationViewModel>());
 
-            _educationService
-               .Setup((x) => x.GetAllGroupBySpecialityAsync())
+            _userPersonalDataService
+               .Setup((x) => x.GetAllEducationsGroupBySpecialityAsync())
                 .ReturnsAsync(new List<EducationDTO>());
 
-            _workService
-               .Setup((x) => x.GetAllGroupByPlaceAsync())
+            _userPersonalDataService
+               .Setup((x) => x.GetAllWorkGroupByPlaceAsync())
                 .ReturnsAsync(new List<WorkDTO>());
 
             _mapper
                 .Setup((x) => x.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(new List<WorkDTO>()))
                 .Returns(new List<WorkViewModel>());
 
-            _workService
-               .Setup((x) => x.GetAllGroupByPositionAsync())
+            _userPersonalDataService
+               .Setup((x) => x.GetAllWorkGroupByPositionAsync())
                .ReturnsAsync(new List<WorkDTO>());
 
             _mapper
                 .Setup((x) => x.Map<UserDTO, UserViewModel>(It.IsAny<UserDTO>()))
                 .Returns(CreateFakeUserViewModel());
 
-            _nationalityService
-                .Setup((x) => x.GetAllAsync())
+            _userPersonalDataService
+                .Setup((x) => x.GetAllNationalityAsync())
                 .ReturnsAsync(new List<NationalityDTO>());
 
             _mapper
                 .Setup((x) => x.Map<IEnumerable<NationalityDTO>, IEnumerable<NationalityViewModel>>(It.IsAny<List<NationalityDTO>>()))
                 .Returns(new List<NationalityViewModel>());
 
-            _religionService
-                .Setup((x) => x.GetAllAsync())
+            _userPersonalDataService
+                .Setup((x) => x.GetAllReligionsAsync())
                 .ReturnsAsync(new List<ReligionDTO>());
 
             _mapper
                 .Setup((x) => x.Map<IEnumerable<ReligionDTO>, IEnumerable<ReligionViewModel>>(It.IsAny<List<ReligionDTO>>()))
                 .Returns(new List<ReligionViewModel>());
 
-            _degreeService
-                .Setup((x) => x.GetAllAsync())
+            _userPersonalDataService
+                .Setup((x) => x.GetAllDegreesAsync())
                 .ReturnsAsync(new List<DegreeDTO>());
 
             _mapper
