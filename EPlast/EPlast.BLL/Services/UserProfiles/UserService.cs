@@ -24,20 +24,23 @@ namespace EPlast.BLL.Services.UserProfiles
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
-        private readonly IWorkService _workService;
+        private readonly IUserPersonalDataService _userPersonalDataService;
         private readonly IWebHostEnvironment _env;
-        private readonly IEducationService _educationService;
         private readonly IUserBlobStorageRepository _userBlobStorage;
         private readonly IUniqueIdService _uniqueId;
 
-        public UserService(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IMapper mapper, IWorkService workService,
-            IEducationService educationService, IUserBlobStorageRepository userBlobStorage, IWebHostEnvironment env, IUniqueIdService uniqueId)
+        public UserService(IRepositoryWrapper repoWrapper, 
+            UserManager<User> userManager, 
+            IMapper mapper,
+            IUserPersonalDataService userPersonalDataService,
+            IUserBlobStorageRepository userBlobStorage, 
+            IWebHostEnvironment env, 
+            IUniqueIdService uniqueId)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
             _mapper = mapper;
-            _workService = workService;
-            _educationService = educationService;
+            _userPersonalDataService = userPersonalDataService;
             _userBlobStorage = userBlobStorage;
             _env = env;
             _uniqueId = uniqueId;
@@ -134,19 +137,10 @@ namespace EPlast.BLL.Services.UserProfiles
                 return TimeSpan.Zero;
             }
         }
-        public async Task UpdateAsync(UserDTO user, IFormFile file, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
+        public async Task UpdateAsyncForFile(UserDTO user, IFormFile file, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
             user.ImagePath = await UploadPhotoAsyncInFolder(user.Id, file);
-            user.UserProfile.Nationality = CheckFieldForNull(user.UserProfile.NationalityId, user.UserProfile.Nationality.Name, user.UserProfile.Nationality);
-            user.UserProfile.Religion = CheckFieldForNull(user.UserProfile.ReligionId, user.UserProfile.Religion.Name, user.UserProfile.Religion);
-            user.UserProfile.Degree = CheckFieldForNull(user.UserProfile.DegreeId, user.UserProfile.Degree.Name, user.UserProfile.Degree);
-            user.UserProfile.EducationId = await CheckEducationFieldsAsync(user.UserProfile.Education.PlaceOfStudy, user.UserProfile.Education.Speciality, placeOfStudyId, specialityId);
-            user.UserProfile.Education = CheckFieldForNull(user.UserProfile.EducationId, user.UserProfile.Education.PlaceOfStudy, user.UserProfile.Education.Speciality, user.UserProfile.Education);
-            user.UserProfile.WorkId = await CheckWorkFieldsAsync(user.UserProfile.Work.PlaceOfwork, user.UserProfile.Work.Position, placeOfWorkId, positionId);
-            user.UserProfile.Work = CheckFieldForNull(user.UserProfile.WorkId, user.UserProfile.Work.PlaceOfwork, user.UserProfile.Work.Position, user.UserProfile.Work);
-            var userForUpdate = _mapper.Map<UserDTO, User>(user);
-            _repoWrapper.User.Update(userForUpdate);
-            _repoWrapper.UserProfile.Update(userForUpdate.UserProfile);
+            await UpdateAsync(user, placeOfStudyId, specialityId, placeOfWorkId, positionId);
             await _repoWrapper.SaveAsync();
         }
 
@@ -154,16 +148,7 @@ namespace EPlast.BLL.Services.UserProfiles
         public async Task UpdateAsyncForBase64(UserDTO user, string base64, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
             user.ImagePath = await UploadPhotoAsyncFromBase64(user.Id, base64);
-            user.UserProfile.Nationality = CheckFieldForNull(user.UserProfile.NationalityId, user.UserProfile.Nationality.Name, user.UserProfile.Nationality);
-            user.UserProfile.Religion = CheckFieldForNull(user.UserProfile.ReligionId, user.UserProfile.Religion.Name, user.UserProfile.Religion);
-            user.UserProfile.Degree = CheckFieldForNull(user.UserProfile.DegreeId, user.UserProfile.Degree.Name, user.UserProfile.Degree);
-            user.UserProfile.EducationId = await CheckEducationFieldsAsync(user.UserProfile.Education.PlaceOfStudy, user.UserProfile.Education.Speciality, placeOfStudyId, specialityId);
-            user.UserProfile.Education = CheckFieldForNull(user.UserProfile.EducationId, user.UserProfile.Education.PlaceOfStudy, user.UserProfile.Education.Speciality, user.UserProfile.Education);
-            user.UserProfile.WorkId = await CheckWorkFieldsAsync(user.UserProfile.Work.PlaceOfwork, user.UserProfile.Work.Position, placeOfWorkId, positionId);
-            user.UserProfile.Work = CheckFieldForNull(user.UserProfile.WorkId, user.UserProfile.Work.PlaceOfwork, user.UserProfile.Work.Position, user.UserProfile.Work);
-            var userForUpdate = _mapper.Map<UserDTO, User>(user);
-            _repoWrapper.User.Update(userForUpdate);
-            _repoWrapper.UserProfile.Update(userForUpdate.UserProfile);
+            await UpdateAsync(user, placeOfStudyId, specialityId, placeOfWorkId, positionId);
             await _repoWrapper.SaveAsync();
         }
 
@@ -181,8 +166,8 @@ namespace EPlast.BLL.Services.UserProfiles
             }
             else
             {
-                var spec = await _educationService?.GetByIdAsync(secondId);
-                var placeStudy = await _educationService?.GetByIdAsync(firstId);
+                var spec = await _userPersonalDataService?.GetEducationsByIdAsync(secondId);
+                var placeStudy = await _userPersonalDataService?.GetEducationsByIdAsync(firstId);
                 if (spec != null && spec.PlaceOfStudy == firstName)
                 {
                     return spec.ID;
@@ -206,8 +191,8 @@ namespace EPlast.BLL.Services.UserProfiles
             }
             else
             {
-                var placeOfWork = await _workService?.GetByIdAsync(firstId);
-                var position = await _workService?.GetByIdAsync(secondId);
+                var placeOfWork = await _userPersonalDataService?.GetWorkByIdAsync(firstId);
+                var position = await _userPersonalDataService?.GetWorkByIdAsync(secondId);
                 if (position != null && position.PlaceOfwork == firstName)
                 {
                     return position.ID;
@@ -289,6 +274,21 @@ namespace EPlast.BLL.Services.UserProfiles
                 return oldImageName;
             }
 
+        }
+        /// <inheritdoc />
+        private async Task UpdateAsync(UserDTO user, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
+        {
+            user.UserProfile.Nationality = CheckFieldForNull(user.UserProfile.NationalityId, user.UserProfile.Nationality.Name, user.UserProfile.Nationality);
+            user.UserProfile.Religion = CheckFieldForNull(user.UserProfile.ReligionId, user.UserProfile.Religion.Name, user.UserProfile.Religion);
+            user.UserProfile.Degree = CheckFieldForNull(user.UserProfile.DegreeId, user.UserProfile.Degree.Name, user.UserProfile.Degree);
+            user.UserProfile.EducationId = await CheckEducationFieldsAsync(user.UserProfile.Education.PlaceOfStudy, user.UserProfile.Education.Speciality, placeOfStudyId, specialityId);
+            user.UserProfile.Education = CheckFieldForNull(user.UserProfile.EducationId, user.UserProfile.Education.PlaceOfStudy, user.UserProfile.Education.Speciality, user.UserProfile.Education);
+            user.UserProfile.WorkId = await CheckWorkFieldsAsync(user.UserProfile.Work.PlaceOfwork, user.UserProfile.Work.Position, placeOfWorkId, positionId);
+            user.UserProfile.Work = CheckFieldForNull(user.UserProfile.WorkId, user.UserProfile.Work.PlaceOfwork, user.UserProfile.Work.Position, user.UserProfile.Work);
+            var userForUpdate = _mapper.Map<UserDTO, User>(user);
+            _repoWrapper.User.Update(userForUpdate);
+            _repoWrapper.UserProfile.Update(userForUpdate.UserProfile);
+            await _repoWrapper.SaveAsync();
         }
     }
 }
