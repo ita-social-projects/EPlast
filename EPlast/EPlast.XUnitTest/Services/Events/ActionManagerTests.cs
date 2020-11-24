@@ -24,12 +24,8 @@ namespace EPlast.XUnitTest.Services.Events
         private readonly Mock<IRepositoryWrapper> _repoWrapper;
         private readonly Mock<UserManager<User>> _userManager;
         private readonly Mock<IMapper> _mapper;
-        private readonly Mock<IEventCategoryManager> _eventCategoryManager;
-        private readonly Mock<IEventTypeManager> _eventTypeManager;
-        private readonly Mock<IEventStatusManager> _eventStatusManager;
         private readonly Mock<IParticipantStatusManager> _participantStatusManager;
         private readonly Mock<IParticipantManager> _participantManager;
-        private readonly Mock<IEventGalleryManager> _eventGalleryManager;
         private readonly Mock<IEventWrapper> _eventWrapper;
 
         public ActionManagerTests()
@@ -38,12 +34,8 @@ namespace EPlast.XUnitTest.Services.Events
             _userManager = new Mock<UserManager<User>>(userStore.Object, null, null, null, null, null, null, null, null);
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _mapper = new Mock<IMapper>();
-            _eventStatusManager = new Mock<IEventStatusManager>();
-            _eventCategoryManager = new Mock<IEventCategoryManager>();
-            _eventTypeManager = new Mock<IEventTypeManager>();
             _participantStatusManager = new Mock<IParticipantStatusManager>();
             _participantManager = new Mock<IParticipantManager>();
-            _eventGalleryManager = new Mock<IEventGalleryManager>();
             _eventWrapper = new Mock<IEventWrapper>();
         }
 
@@ -51,7 +43,8 @@ namespace EPlast.XUnitTest.Services.Events
         public async void GetEventTypesTest()
         {
             //Arrange
-            _eventTypeManager.Setup(x => x.GetDTOAsync())
+
+            _eventWrapper.Setup(x => x.EventTypeManager.GetDTOAsync())
                 .ReturnsAsync(new List<EventTypeDTO>());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
@@ -65,7 +58,7 @@ namespace EPlast.XUnitTest.Services.Events
         public async void GetActionCategoriesTest()
         {
             //Arrange
-            _eventCategoryManager.Setup(x => x.GetDTOAsync())
+            _eventWrapper.Setup(x => x.EventCategoryManager.GetDTOAsync())
                 .ReturnsAsync(new List<EventCategoryDTO>());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
@@ -80,7 +73,7 @@ namespace EPlast.XUnitTest.Services.Events
         {
             //Arrange
             var eventTypeId = 1;
-            _eventCategoryManager.Setup(x => x.GetDTOByEventTypeIdAsync(It.IsAny<int>()))
+            _eventWrapper.Setup(x => x.EventCategoryManager.GetDTOByEventTypeIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(new List<EventCategoryDTO>());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
@@ -98,11 +91,11 @@ namespace EPlast.XUnitTest.Services.Events
             int typeId = 3;
             int categoryId = 3;
             int fakeId = 3;
-            _eventStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+            _eventWrapper.Setup(x => x.EventStatusManager.GetStatusIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(fakeId);
             _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(fakeId);
-            _eventTypeManager.Setup(x => x.GetTypeIdAsync(It.IsAny<string>()))
+            _eventWrapper.Setup(x => x.EventTypeManager.GetTypeIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(fakeId);
             _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()))
                 .Returns(expectedID);
@@ -123,7 +116,7 @@ namespace EPlast.XUnitTest.Services.Events
             string expectedID = "abc-1";
             int eventId = 3;
             int fakeId = 3;
-            _eventStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+            _eventWrapper.Setup(x => x.EventStatusManager.GetStatusIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(fakeId);
             _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(fakeId);
@@ -288,7 +281,7 @@ namespace EPlast.XUnitTest.Services.Events
         {
             //Arrange
             int eventId = 3;
-            _eventGalleryManager.Setup(x => x.GetPicturesInBase64(It.IsAny<int>()))
+            _eventWrapper.Setup(x => x.EventGalleryManager.GetPicturesInBase64(It.IsAny<int>()))
                 .ReturnsAsync(new List<EventGalleryDTO>());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
@@ -302,7 +295,7 @@ namespace EPlast.XUnitTest.Services.Events
         {
             //Arrange
             int eventId = 3;
-            _eventGalleryManager.Setup(x => x.AddPicturesAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
+            _eventWrapper.Setup(x => x.EventGalleryManager.AddPicturesAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
                 .ReturnsAsync(new List<EventGalleryDTO>());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
@@ -316,7 +309,7 @@ namespace EPlast.XUnitTest.Services.Events
         {
             //Arrange
             int eventId = 3;
-            _eventGalleryManager.Setup(x => x.DeletePictureAsync(It.IsAny<int>()))
+            _eventWrapper.Setup(x => x.EventGalleryManager.DeletePictureAsync(It.IsAny<int>()))
                 .ReturnsAsync(StatusCodes.Status200OK);
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
