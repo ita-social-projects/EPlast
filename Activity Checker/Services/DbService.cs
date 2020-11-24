@@ -17,7 +17,6 @@ class DbService
                             WHERE EmailConfirmed = 0
                             AND DATEDIFF(
                             hour, EmailSendedOnRegister, GETDATE()) > 12";
-
         try
         {
             using (var conn = DefaultConnection)
