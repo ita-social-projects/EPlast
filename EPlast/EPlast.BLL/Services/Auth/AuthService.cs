@@ -17,6 +17,7 @@ using EPlast.BLL.Models;
 using EPlast.DataAccess.Repositories;
 using Newtonsoft.Json;
 using EPlast.BLL.Interfaces.ActiveMembership;
+using NLog.Extensions.Logging;
 
 namespace EPlast.BLL.Services
 {
@@ -255,9 +256,10 @@ namespace EPlast.BLL.Services
         ///<inheritdoc/>
         public async Task<UserDTO> GetGoogleUserAsync(string providerToken)
         {
-            string GoogleApiTokenInfoUrl = "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token={0}";
+            string googleApiTokenInfoUrl =
+                ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("GoogleAuthentication")["GoogleApiTokenInfoUrl"];
             var httpClient = new HttpClient();
-            var requestUri = new Uri(string.Format(GoogleApiTokenInfoUrl, providerToken));
+            var requestUri = new Uri(string.Format(googleApiTokenInfoUrl, providerToken));
 
             HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(requestUri);
 
