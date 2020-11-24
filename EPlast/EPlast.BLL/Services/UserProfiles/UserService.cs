@@ -24,20 +24,23 @@ namespace EPlast.BLL.Services.UserProfiles
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
-        private readonly IWorkService _workService;
+        private readonly IUserPersonalDataService _userPersonalDataService;
         private readonly IWebHostEnvironment _env;
-        private readonly IEducationService _educationService;
         private readonly IUserBlobStorageRepository _userBlobStorage;
         private readonly IUniqueIdService _uniqueId;
 
-        public UserService(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IMapper mapper, IWorkService workService,
-            IEducationService educationService, IUserBlobStorageRepository userBlobStorage, IWebHostEnvironment env, IUniqueIdService uniqueId)
+        public UserService(IRepositoryWrapper repoWrapper, 
+            UserManager<User> userManager, 
+            IMapper mapper,
+            IUserPersonalDataService userPersonalDataService,
+            IUserBlobStorageRepository userBlobStorage, 
+            IWebHostEnvironment env, 
+            IUniqueIdService uniqueId)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
             _mapper = mapper;
-            _workService = workService;
-            _educationService = educationService;
+            _userPersonalDataService = userPersonalDataService;
             _userBlobStorage = userBlobStorage;
             _env = env;
             _uniqueId = uniqueId;
@@ -163,8 +166,8 @@ namespace EPlast.BLL.Services.UserProfiles
             }
             else
             {
-                var spec = await _educationService?.GetByIdAsync(secondId);
-                var placeStudy = await _educationService?.GetByIdAsync(firstId);
+                var spec = await _userPersonalDataService?.GetEducationsByIdAsync(secondId);
+                var placeStudy = await _userPersonalDataService?.GetEducationsByIdAsync(firstId);
                 if (spec != null && spec.PlaceOfStudy == firstName)
                 {
                     return spec.ID;
@@ -188,8 +191,8 @@ namespace EPlast.BLL.Services.UserProfiles
             }
             else
             {
-                var placeOfWork = await _workService?.GetByIdAsync(firstId);
-                var position = await _workService?.GetByIdAsync(secondId);
+                var placeOfWork = await _userPersonalDataService?.GetWorkByIdAsync(firstId);
+                var position = await _userPersonalDataService?.GetWorkByIdAsync(secondId);
                 if (position != null && position.PlaceOfwork == firstName)
                 {
                     return position.ID;
