@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30002.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActivityChecker", "ActivityChecker.csproj", "{D0B264D9-1094-40BB-B686-0A67DA4DD643}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CronJobConsole", "CronJobConsole.csproj", "{7EF6F189-9450-4F41-BA26-5C541557DB01}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D0B264D9-1094-40BB-B686-0A67DA4DD643}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D0B264D9-1094-40BB-B686-0A67DA4DD643}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D0B264D9-1094-40BB-B686-0A67DA4DD643}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D0B264D9-1094-40BB-B686-0A67DA4DD643}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EF6F189-9450-4F41-BA26-5C541557DB01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EF6F189-9450-4F41-BA26-5C541557DB01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EF6F189-9450-4F41-BA26-5C541557DB01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EF6F189-9450-4F41-BA26-5C541557DB01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {4B5C429D-7E7F-4B7E-AEC6-2664D3FF6A27}
+		SolutionGuid = {8E90A151-EE38-4808-989A-02C909AAB9C2}
 	EndGlobalSection
 EndGlobal
