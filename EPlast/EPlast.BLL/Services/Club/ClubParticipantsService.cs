@@ -21,7 +21,6 @@ namespace EPlast.BLL.Services.Club
         private readonly IMapper _mapper;
         private readonly IAdminTypeService _adminTypeService;
         private readonly UserManager<User> _userManager;
-        private readonly IClubParticipantsService _ClubParticipantsService;
 
 
         public ClubParticipantsService(IRepositoryWrapper repositoryWrapper,
@@ -225,7 +224,7 @@ namespace EPlast.BLL.Services.Club
                 .GetAllAsync(i => i.UserId == userId && (DateTime.Now < i.EndDate || i.EndDate == null));
             foreach (var admin in oldClubAdmins)
             {
-                await _ClubParticipantsService.RemoveAdministratorAsync(admin.ID);
+                await RemoveAdministratorAsync(admin.ID);
             }
 
             var ClubMember = new ClubMembers()

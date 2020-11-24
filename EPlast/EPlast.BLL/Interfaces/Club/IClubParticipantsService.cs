@@ -64,7 +64,7 @@ namespace EPlast.BLL.Interfaces.Club
         /// <param name="ClubId">The id of the Club</param>
         /// <param name="userId">The id of the user</param>
         /// <returns>An information about a new follower</returns>
-        /// See <see cref="IClubMembersService.AddFollowerAsync(int, ClaimsPrincipal)"/> to add current user
+        /// See <see cref="IClubParticipantsService.AddFollowerAsync(int, ClaimsPrincipal)"/> to add current user
         Task<ClubMembersDTO> AddFollowerAsync(int ClubId, string userId);
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace EPlast.BLL.Interfaces.Club
         /// <param name="ClubId">The id of the Club</param>
         /// <param name="user">Current user</param>
         /// <returns>An information about a new follower</returns>
-        /// See <see cref="IClubMembersService.AddFollowerAsync(int, string)"/> to add user by id
+        /// See <see cref="IClubParticipantsService.AddFollowerAsync(int, string)"/> to add user by id
         Task<ClubMembersDTO> AddFollowerAsync(int ClubId, ClaimsPrincipal user);
 
         /// <summary>
