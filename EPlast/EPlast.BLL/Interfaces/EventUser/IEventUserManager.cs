@@ -1,5 +1,4 @@
 ﻿using EPlast.BLL.DTO.EventUser;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Interfaces.EventUser
@@ -9,14 +8,6 @@ namespace EPlast.BLL.Interfaces.EventUser
     /// </summary>
     public interface IEventUserManager
     {
-        /// <summary>
-        /// Get all created, planned, visited events for user by id
-        /// </summary>
-        /// <returns>Array of all created, planned, visited events for user</returns>
-        /// /// <param name="userId"></param>
-        /// /// <param name="user"></param>
-        Task<EventUserDTO> EventUserAsync(string userId, ClaimsPrincipal user);
-
         /// <summary>
         /// Get all data for creating event
         /// </summary>
