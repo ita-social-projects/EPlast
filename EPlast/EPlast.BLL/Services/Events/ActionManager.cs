@@ -21,46 +21,39 @@ namespace EPlast.BLL.Services.Events
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
-        private readonly IEventCategoryManager _eventCategoryManager;
-        private readonly IEventTypeManager _eventTypeManager;
-        private readonly IEventStatusManager _eventStatusManager;
         private readonly IParticipantStatusManager _participantStatusManager;
         private readonly IParticipantManager _participantManager;
-        private readonly IEventGalleryManager _eventGalleryManager;
+        private readonly IEventWrapper _eventWrapper;
 
         public ActionManager(UserManager<User> userManager, IRepositoryWrapper repoWrapper, IMapper mapper,
-            IEventCategoryManager eventCategoryManager, IEventTypeManager eventTypeManager,
-            IEventStatusManager eventStatusManager, IParticipantStatusManager participantStatusManager,
-            IParticipantManager participantManager, IEventGalleryManager eventGalleryManager)
+            IParticipantStatusManager participantStatusManager, IParticipantManager participantManager,
+            IEventWrapper eventWrapper)
         {
             _userManager = userManager;
             _repoWrapper = repoWrapper;
             _mapper = mapper;
-            _eventCategoryManager = eventCategoryManager;
-            _eventTypeManager = eventTypeManager;
-            _eventStatusManager = eventStatusManager;
             _participantStatusManager = participantStatusManager;
             _participantManager = participantManager;
-            _eventGalleryManager = eventGalleryManager;
+            _eventWrapper = eventWrapper;
         }
 
         /// <inheritdoc />
         public async Task<IEnumerable<EventTypeDTO>> GetEventTypesAsync()
         {
-            var dto = await _eventTypeManager.GetDTOAsync();
+            var dto = await _eventWrapper.EventTypeManager.GetDTOAsync();
             return dto;
         }
 
         public async Task<IEnumerable<EventCategoryDTO>> GetActionCategoriesAsync()
         {
-            var dto = await _eventCategoryManager.GetDTOAsync();
+            var dto = await _eventWrapper.EventCategoryManager.GetDTOAsync();
             return dto;
         }
 
         /// <inheritdoc />
         public async Task<IEnumerable<EventCategoryDTO>> GetCategoriesByTypeIdAsync(int eventTypeId)
         {
-            var dto = await _eventCategoryManager.GetDTOByEventTypeIdAsync(eventTypeId);
+            var dto = await _eventWrapper.EventCategoryManager.GetDTOByEventTypeIdAsync(eventTypeId);
 
             return dto;
         }
@@ -68,7 +61,7 @@ namespace EPlast.BLL.Services.Events
         /// <inheritdoc />
         public async Task<IEnumerable<EventCategoryDTO>> GetCategoriesByPageAsync(int eventTypeId, int page, int pageSize, string CategoryName = null)
         {
-            var dto = await _eventCategoryManager.GetDTOByEventPageAsync(eventTypeId, page, pageSize);
+            var dto = await _eventWrapper.EventCategoryManager.GetDTOByEventPageAsync(eventTypeId, page, pageSize);
 
             return dto;
         }
@@ -94,7 +87,7 @@ namespace EPlast.BLL.Services.Events
             int approvedStatus = await _participantStatusManager.GetStatusIdAsync("Учасник");
             int undeterminedStatus = await _participantStatusManager.GetStatusIdAsync("Розглядається");
             int rejectedStatus = await _participantStatusManager.GetStatusIdAsync("Відмовлено");
-            int finishedEvent = await _eventStatusManager.GetStatusIdAsync("Завершений(-на)");
+            int finishedEvent = await _eventWrapper.EventStatusManager.GetStatusIdAsync("Завершений(-на)");
             bool isUserGlobalEventAdmin = user?.IsInRole("Адміністратор подій") ?? false;
 
             var targetEvent = await _repoWrapper.Event
@@ -144,7 +137,7 @@ namespace EPlast.BLL.Services.Events
         /// <inheritdoc />
         public async Task<IEnumerable<EventGalleryDTO>> GetPicturesAsync(int id)
         {
-            var dto = await _eventGalleryManager.GetPicturesInBase64(id);
+            var dto = await _eventWrapper.EventGalleryManager.GetPicturesInBase64(id);
 
             return dto;
         }
@@ -243,14 +236,14 @@ namespace EPlast.BLL.Services.Events
         /// <inheritdoc />
         public async Task<IEnumerable<EventGalleryDTO>> FillEventGalleryAsync(int id, IList<IFormFile> files)
         {
-            var uploadedPictures = await _eventGalleryManager.AddPicturesAsync(id, files);
+            var uploadedPictures = await _eventWrapper.EventGalleryManager.AddPicturesAsync(id, files);
             return uploadedPictures;
         }
 
         /// <inheritdoc />
         public async Task<int> DeletePictureAsync(int id)
         {
-            int result = await _eventGalleryManager.DeletePictureAsync(id);
+            int result = await _eventWrapper.EventGalleryManager.DeletePictureAsync(id);
             return result;
         }
 
@@ -303,9 +296,9 @@ namespace EPlast.BLL.Services.Events
             int approvedStatus = await _participantStatusManager.GetStatusIdAsync("Учасник");
             int undeterminedStatus = await _participantStatusManager.GetStatusIdAsync("Розглядається");
             int rejectedStatus = await _participantStatusManager.GetStatusIdAsync("Відмовлено");
-            int approvedEvent = await _eventStatusManager.GetStatusIdAsync("Затверджений(-на)");
-            int finishedEvent = await _eventStatusManager.GetStatusIdAsync("Завершений(-на)");
-            int notApprovedEvent = await _eventStatusManager.GetStatusIdAsync("Не затверджені");
+            int approvedEvent = await _eventWrapper.EventStatusManager.GetStatusIdAsync("Затверджений(-на)");
+            int finishedEvent = await _eventWrapper.EventStatusManager.GetStatusIdAsync("Завершений(-на)");
+            int notApprovedEvent = await _eventWrapper.EventStatusManager.GetStatusIdAsync("Не затверджені");
 
             return events
                 .Select(ev => new GeneralEventDTO
