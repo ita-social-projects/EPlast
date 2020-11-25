@@ -12,22 +12,22 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Club
 {
-    public class ClubMembersService : IClubMembersService
+    public class ClubMembersService : IClubParticipantsService
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
-        private readonly IClubAdministrationService _ClubAdministrationService;
+        private readonly IClubParticipantsService _ClubParticipantsService;
 
         public ClubMembersService(IRepositoryWrapper repositoryWrapper,
             IMapper mapper,
             UserManager<User> userManager,
-            IClubAdministrationService ClubAdministrationService)
+            IClubParticipantsService ClubParticipantsService)
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
             _userManager = userManager;
-            _ClubAdministrationService = ClubAdministrationService;
+            _ClubParticipantsService = ClubParticipantsService;
         }
 
         /// <inheritdoc />
@@ -56,7 +56,7 @@ namespace EPlast.BLL.Services.Club
                 .GetAllAsync(i => i.UserId == userId && (DateTime.Now < i.EndDate || i.EndDate == null));
             foreach (var admin in oldClubAdmins)
             {
-                await _ClubAdministrationService.RemoveAdministratorAsync(admin.ID);
+                await _ClubParticipantsService.RemoveAdministratorAsync(admin.ID);
             }
 
             var ClubMember = new ClubMembers()
