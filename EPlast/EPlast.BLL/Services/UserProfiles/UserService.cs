@@ -144,7 +144,7 @@ namespace EPlast.BLL.Services.UserProfiles
         /// <inheritdoc />
         public async Task UpdateAsyncForBase64(UserDTO user, string base64, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
-            user.ImagePath = await UploadPhotoAsyncFromBase64(user.Id, base64);
+            user.ImagePath ??= await UploadPhotoAsyncFromBase64(user.Id, base64);
             await UpdateAsync(user, placeOfStudyId, specialityId, placeOfWorkId, positionId);
             await _repoWrapper.SaveAsync();
         }
