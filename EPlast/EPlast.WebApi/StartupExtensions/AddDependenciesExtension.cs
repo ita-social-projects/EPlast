@@ -69,12 +69,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IFileManager, FileManager>();
             services.AddScoped<IFileStreamManager, FileStreamManager>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<INationalityService, NationalityService>();
-            services.AddScoped<IReligionService, ReligionService>();
-            services.AddScoped<IEducationService, EducationService>();
-            services.AddScoped<IWorkService, WorkService>();
-            services.AddScoped<IGenderService, GenderService>();
-            services.AddScoped<IDegreeService, DegreeService>();
+            services.AddScoped<IUserPersonalDataService, UserPersonalDataService>();
             services.AddScoped<IConfirmedUsersService, ConfirmedUsersService>();
             services.AddScoped<IUserManagerService, UserManagerService>();
             services.AddScoped<IAdminService, AdminService>();
@@ -87,9 +82,8 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<ICityDocumentsService, CityDocumentsService>();
             services.AddScoped<ICityMembersService, CityMembersService>();
             services.AddScoped<IClubService, ClubService>();
-            services.AddScoped<IClubAdministrationService, ClubAdministrationService>();
+            services.AddScoped<IClubParticipantsService, ClubParticipantsService>();
             services.AddScoped<IClubDocumentsService, ClubDocumentsService>();
-            services.AddScoped<IClubMembersService, ClubMembersService>();
             services.AddScoped<IAdminTypeService, AdminTypeService>();
             services.AddScoped<IActionManager, ActionManager>();
             services.AddScoped<IEventCategoryManager, EventCategoryManager>();
@@ -104,6 +98,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IEventAdministrationTypeManager, EventAdministrationTypeManager>();
             services.AddScoped<IEventCalendarService, EventCalendarService>();
             services.AddScoped<IEventsManager, EventsManager>();
+            services.AddScoped<IEventWrapper, EventWrapper>();
             services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.AddTransient<IJwtService, JwtService>();
             services.AddScoped<IUserBlobStorageRepository, UserBlobStorageRepository>();
@@ -140,6 +135,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddSingleton<INotificationConnectionManager, NotificationConnectionManager>();
             services.AddSingleton<UserNotificationHandler>();
             services.AddTransient<IUniqueIdService, UniqueIdService>();
+            services.AddTransient<IEventUserService, EventUserService>();
 
             return services;
         }
