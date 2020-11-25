@@ -1,6 +1,5 @@
 ﻿using EPlast.DataAccess.Entities;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.BLL.DTO.Club
@@ -8,7 +7,6 @@ namespace EPlast.BLL.DTO.Club
     public class ClubAnnualReportDTO
     {
         public int ID { get; set; }
-
         public AnnualReportStatus Status { get; set; }
 
         [Required(ErrorMessage = "Заповніть поле")]
@@ -38,15 +36,11 @@ namespace EPlast.BLL.DTO.Club
 
         [MaxLength(500, ErrorMessage = "Максимально допустима кількість символів 500")]
         public string KbUSPWishes { get; set; }
+
         public int ClubId { get; set; }
-
         public ClubDTO Club { get; set; }
-
         public string ClubMembersSummary { get; set; }
         public string ClubAdminContacts { get; set; }
-
-
-
         public DateTime Date { get; set; }
     }
 }
