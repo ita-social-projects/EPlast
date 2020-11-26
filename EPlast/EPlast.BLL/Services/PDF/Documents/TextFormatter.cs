@@ -266,12 +266,50 @@ namespace PdfSharpCore.Drawing.Layout
             DrawString(brush);
         }
 
+        int TreatCR(int idx, int length)
+        {
+            if (idx < length - 1 && Text[idx + 1] == Chars.LF)
+            {
+                return ++idx;
+            }
+            return idx;
+        }
+
+        void CheckBlockLenght(int startIndex, int blockLength)
+        {
+            if (blockLength != 0)
+            {
+                string token = Text.Substring(startIndex, blockLength);
+                _blocks.Add(new Block(token, BlockType.Text,
+                  _gfx.MeasureString(token, _font).Width,
+                  startIndex + blockLength - 1));
+            }
+        }
+
+        void CheckOnWhiteSpace(int idx, bool inNonWhiteSpace, ref int startIndex, ref int blockLength)
+        {
+            if (inNonWhiteSpace)
+            {
+                string token = Text.Substring(startIndex, blockLength);
+                _blocks.Add(new Block(token, BlockType.Text,
+                  _gfx.MeasureString(token, _font).Width,
+                  startIndex + blockLength - 1));
+                startIndex = idx + 1;
+                blockLength = 0;
+            }
+            else
+            {
+                blockLength++;
+            }
+        }
+
         void CreateBlocks()
         {
             _blocks.Clear();
             int length = Text.Length;
             bool inNonWhiteSpace = false;
             int startIndex = 0, blockLength = 0;
+
             for (int idx = 0; idx < length; idx++)
             {
                 char ch = Text[idx];
@@ -279,38 +317,20 @@ namespace PdfSharpCore.Drawing.Layout
                 // Treat CR and CRLF as LF
                 if (ch == Chars.CR)
                 {
-                    if (idx < length - 1 && Text[idx + 1] == Chars.LF)
-                        idx++;
+                    idx = TreatCR(idx, length);
                     ch = Chars.LF;
                 }
                 if (ch == Chars.LF)
                 {
-                    if (blockLength != 0)
-                    {
-                        string token = Text.Substring(startIndex, blockLength);
-                        _blocks.Add(new Block(token, BlockType.Text,
-                          _gfx.MeasureString(token, _font).Width,
-                         startIndex + blockLength - 1));
-                    }
+                    CheckBlockLenght(startIndex, blockLength);
+                    
                     startIndex = idx + 1;
                     blockLength = 0;
                     _blocks.Add(new Block(BlockType.LineBreak));
                 }
                 else if (Char.IsWhiteSpace(ch))
                 {
-                    if (inNonWhiteSpace)
-                    {
-                        string token = Text.Substring(startIndex, blockLength);
-                        _blocks.Add(new Block(token, BlockType.Text,
-                          _gfx.MeasureString(token, _font).Width,
-                           startIndex + blockLength - 1));
-                        startIndex = idx + 1;
-                        blockLength = 0;
-                    }
-                    else
-                    {
-                        blockLength++;
-                    }
+                    CheckOnWhiteSpace(idx, inNonWhiteSpace, ref startIndex, ref blockLength);
                 }
                 else
                 {
@@ -327,6 +347,29 @@ namespace PdfSharpCore.Drawing.Layout
             }
         }
 
+        void CheckAlignment(int firstIndex, int count, double rectWidth)
+        {
+            if (firstIndex < count && Alignment != XParagraphAlignment.Justify)
+                AlignLine(firstIndex, count - 1, rectWidth);
+        }
+
+        bool CheckWidth(double width, Block block, double rectWidth, ref double x, double y)
+        {
+            if ((x + width <= rectWidth || x == 0) && block.Type != BlockType.LineBreak)
+            {
+                block.Location = new XPoint(x, y);
+                x += width + _spaceWidth;
+                return true;
+            }
+            return false;
+        }
+
+        void CheckAlignmentBlocks(int firstIndex)
+        {
+            if (Alignment == XParagraphAlignment.Justify)
+                _blocks[firstIndex].Alignment = XParagraphAlignment.Left;
+        }
+
         void CreateLayout()
         {
             double rectWidth = LayoutRectangle.Width;
@@ -334,13 +377,13 @@ namespace PdfSharpCore.Drawing.Layout
             int firstIndex = 0;
             double x = 0, y = 0;
             int count = _blocks.Count;
+
             for (int idx = 0; idx < count; idx++)
             {
                 Block block = _blocks[idx];
                 if (block.Type == BlockType.LineBreak)
                 {
-                    if (Alignment == XParagraphAlignment.Justify)
-                        _blocks[firstIndex].Alignment = XParagraphAlignment.Left;
+                    CheckAlignmentBlocks(firstIndex);
                     AlignLine(firstIndex, idx - 1, rectWidth);
                     firstIndex = idx + 1;
                     x = 0;
@@ -353,13 +396,9 @@ namespace PdfSharpCore.Drawing.Layout
                 }
                 else
                 {
-                    double width = block.Width; 
-                    if ((x + width <= rectWidth || x == 0) && block.Type != BlockType.LineBreak)
-                    {
-                        block.Location = new XPoint(x, y);
-                        x += width + _spaceWidth; 
-                    }
-                    else
+                    double width = block.Width;
+                    bool ifRes = CheckWidth(width, block, rectWidth, ref x, y);
+                    if(!ifRes)
                     {
                         AlignLine(firstIndex, idx - 1, rectWidth);
                         firstIndex = idx;
@@ -374,8 +413,7 @@ namespace PdfSharpCore.Drawing.Layout
                     }
                 }
             }
-            if (firstIndex < count && Alignment != XParagraphAlignment.Justify)
-                AlignLine(firstIndex, count - 1, rectWidth);
+            CheckAlignment(firstIndex, count, rectWidth);
         }
 
         /// <summary>
