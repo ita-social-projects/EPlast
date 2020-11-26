@@ -18,9 +18,9 @@ using System.Threading.Tasks;
 namespace EPlast.Tests.Services.Club
 {
     [TestFixture]
-    public class ClubAdministrationServiceTests
+    public class ClubParticipantsServiceTests
     {
-        private ClubAdministrationService _clubAdministrationService;
+        private ClubParticipantsService _clubParticipantsService;
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IMapper> _mapper;
         private Mock<IAdminTypeService> _adminTypeService;
@@ -35,7 +35,7 @@ namespace EPlast.Tests.Services.Club
             _adminTypeService = new Mock<IAdminTypeService>();
             _user = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(_user.Object, null, null, null, null, null, null, null, null);
-            _clubAdministrationService = new ClubAdministrationService(_repoWrapper.Object, _mapper.Object, _adminTypeService.Object, _userManager.Object);
+            _clubParticipantsService = new ClubParticipantsService(_repoWrapper.Object, _mapper.Object, _adminTypeService.Object, _userManager.Object);
         }
 
         [Test]
@@ -51,7 +51,7 @@ namespace EPlast.Tests.Services.Club
                 .Returns(new List<ClubAdministrationDTO> { new ClubAdministrationDTO { ID = fakeId } });
 
             // Act
-            var result = await _clubAdministrationService.GetAdministrationByIdAsync(It.IsAny<int>());
+            var result = await _clubParticipantsService.GetAdministrationByIdAsync(It.IsAny<int>());
 
             // Assert
             Assert.NotNull(result);
@@ -69,7 +69,7 @@ namespace EPlast.Tests.Services.Club
                 .ReturnsAsync(new AdminTypeDTO());
 
             //Act
-            var result = await _clubAdministrationService.AddAdministratorAsync(clubAdmDTO);
+            var result = await _clubParticipantsService.AddAdministratorAsync(clubAdmDTO);
 
             //Assert
             Assert.IsInstanceOf<ClubAdministrationDTO>(result);
@@ -93,7 +93,7 @@ namespace EPlast.Tests.Services.Club
                 .Setup(r => r.SaveAsync());
 
             //Act
-            var result = await _clubAdministrationService.EditAdministratorAsync(clubAdmDTO);
+            var result = await _clubParticipantsService.EditAdministratorAsync(clubAdmDTO);
 
             //Assert
             _repoWrapper.Verify();
@@ -125,7 +125,7 @@ namespace EPlast.Tests.Services.Club
                });
 
             //Act
-            var result = await _clubAdministrationService.EditAdministratorAsync(clubFakeAdmDTO);
+            var result = await _clubParticipantsService.EditAdministratorAsync(clubFakeAdmDTO);
 
             //Assert
             _repoWrapper.Verify();
@@ -154,7 +154,7 @@ namespace EPlast.Tests.Services.Club
                 .Setup(r => r.SaveAsync());
 
             //Act
-            var result = _clubAdministrationService.RemoveAdministratorAsync(It.IsAny<int>());
+            var result = _clubParticipantsService.RemoveAdministratorAsync(It.IsAny<int>());
 
             //Assert
             _repoWrapper.Verify();
@@ -181,7 +181,7 @@ namespace EPlast.Tests.Services.Club
                 .Setup(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
 
             //Act
-            var result = _clubAdministrationService.CheckPreviousAdministratorsToDelete();
+            var result = _clubParticipantsService.CheckPreviousAdministratorsToDelete();
 
             //Assert
             _repoWrapper.Verify();
@@ -201,7 +201,7 @@ namespace EPlast.Tests.Services.Club
                 .Returns(GetTestClubAdministration());
 
             //Act
-            var result = await _clubAdministrationService.GetAdministrationsOfUserAsync(It.IsAny<string>());
+            var result = await _clubParticipantsService.GetAdministrationsOfUserAsync(It.IsAny<string>());
 
             //Assert
             Assert.NotNull(result);
@@ -260,5 +260,38 @@ namespace EPlast.Tests.Services.Club
         };
 
         private int fakeId = 3;
+
+        [Test]
+        public async Task GetMembersByClubIdAsync_ReturnsMembers()
+        {
+            // Arrange
+            _repoWrapper.Setup(r => r.ClubMembers.GetAllAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+            It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
+            .ReturnsAsync(new List<ClubMembers> { new ClubMembers() }); ;
+
+            // Act
+            var result = await _clubParticipantsService.GetMembersByClubIdAsync(It.IsAny<int>());
+
+            // Assert
+            Assert.NotNull(result);
+            _mapper.Verify(m => m.Map<IEnumerable<ClubMembers>, IEnumerable<ClubMembersDTO>>(It.IsAny<IEnumerable<ClubMembers>>()));
+        }
+
+        [Test]
+        public async Task ToggleApproveStatusAsyncTest()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(s => s.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+            It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
+                .ReturnsAsync(new ClubMembers());
+
+            //Act
+            await _clubParticipantsService.ToggleApproveStatusAsync(It.IsAny<int>());
+
+            //Assert
+            _repoWrapper.Verify(i => i.ClubMembers.Update(It.IsAny<ClubMembers>()), Times.Once());
+        }
     }
+
 }
