@@ -103,7 +103,8 @@ namespace EPlast.BLL.Services.Club
                 var degree = userPlastDegrees.FirstOrDefault(user => user.UserId == item.UserId);
                 if (item.AdminTypeId == 69)
                 {
-                    clubAdmins = clubAdmins.Append($"{degree.PlastDegree.Name}, {item.User.FirstName} {item.User.LastName}, {item.User.Email}, {item.User.PhoneNumber} /n");
+                    clubAdmins = clubAdmins.Append(new StringBuilder(
+                        $"{degree.PlastDegree.Name}, {item.User.FirstName} {item.User.LastName}, {item.User.Email}, {item.User.PhoneNumber};").Append("\n"));
                 }
             }
 
