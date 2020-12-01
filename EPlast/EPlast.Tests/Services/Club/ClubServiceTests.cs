@@ -241,6 +241,16 @@ namespace EPlast.Tests.Services.Club
                     CreateFakeCities(10).Where(condition));
             _repoWrapper.Setup(r => r.Region.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Region, bool>>>(), null))
                .ReturnsAsync(GetTestRegion());
+            _mapper.Setup(m => m.Map<ClubDTO, DataAccess.Entities.Club>(It.IsAny<ClubDTO>()))
+                .Returns(() => new DataAccess.Entities.Club());
+            _repoWrapper.Setup(m => m.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(), null))
+                .ReturnsAsync(new CityMembers() { });
+            _repoWrapper.Setup(r => r.City.GetFirstAsync(It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(), null))
+                .ReturnsAsync(new DataAccess.Entities.City() { Name = "Львів" });
+            _repoWrapper.Setup(r => r.Region.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Region, bool>>>(), null))
+               .ReturnsAsync(GetTestRegion());
+            _repoWrapper.Setup(r => r.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(), null))
+               .ReturnsAsync(new User() { CityName = "Львів" });
             _repoWrapper.Setup(r => r.Club.Update(It.IsAny<DataAccessClub.Club>()))
                 .Verifiable();
             _repoWrapper.Setup(r => r.Club.Create(It.IsAny<DataAccessClub.Club>()))
@@ -276,6 +286,8 @@ namespace EPlast.Tests.Services.Club
                     {
                         new ClubAdministrationDTO
                         {
+                           UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
+                           User=new ClubUserDTO(),
                            AdminType = new AdminTypeDTO
                            {
                                AdminTypeName = "Голова Станиці"
@@ -283,6 +295,8 @@ namespace EPlast.Tests.Services.Club
                         },
                         new ClubAdministrationDTO
                         {
+                            UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
+                            User=new ClubUserDTO(),
                             AdminType = new AdminTypeDTO
                             {
                                 AdminTypeName = "----------"
@@ -290,6 +304,8 @@ namespace EPlast.Tests.Services.Club
                         },
                         new ClubAdministrationDTO
                         {
+                            UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
+                            User=new ClubUserDTO(),
                             AdminType = new AdminTypeDTO
                             {
                                 AdminTypeName = "Голова Станиці"
@@ -297,6 +313,8 @@ namespace EPlast.Tests.Services.Club
                         },
                         new ClubAdministrationDTO
                         {
+                            UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
+                            User=new ClubUserDTO(),
                             AdminType = new AdminTypeDTO
                             {
                                 AdminTypeName = "----------"
@@ -307,6 +325,8 @@ namespace EPlast.Tests.Services.Club
                     {
                         new ClubMembersDTO
                         {
+                            UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
+                            User=new ClubUserDTO(),
                             StartDate = new Random().Next(0,1) ==1 ? DateTime.Today : (DateTime?) null
                         }
                     },
