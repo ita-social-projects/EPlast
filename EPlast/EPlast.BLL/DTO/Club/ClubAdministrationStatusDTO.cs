@@ -9,7 +9,6 @@ namespace EPlast.BLL.DTO.Club
         public string UserId { get; set; }
         public ClubUserDTO User { get; set; }
         public int ClubId { get; set; }
-
         public ClubDTO Club { get; set; }
         public int AdminTypeId { get; set; }
         public AdminTypeDTO AdminType { get; set; }
