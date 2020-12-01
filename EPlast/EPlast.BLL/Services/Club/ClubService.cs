@@ -154,6 +154,15 @@ namespace EPlast.BLL.Services.Club
                 .Where(m => m.IsApproved)
                 .ToList();
 
+            foreach (var member in members)
+            {
+                var userId = member.UserId;
+                var user = await _repoWrapper.User.GetFirstOrDefaultAsync(a => a.Id == userId);
+                var cityMembers = await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(a => a.UserId == userId);
+                var city = await _repoWrapper.City.GetFirstAsync(a => a.ID == cityMembers.CityId);
+                member.User.CityName = city.Name.ToString();
+            }
+
             var ClubProfileDto = new ClubProfileDTO
             {
                 Club = Club,
@@ -176,6 +185,15 @@ namespace EPlast.BLL.Services.Club
                 .Where(m => !m.IsApproved)
                 .ToList();
 
+            foreach (var follower in followers)
+            {
+                var userId = follower.UserId;
+                var user = await _repoWrapper.User.GetFirstOrDefaultAsync(a => a.Id == userId);
+                var cityMembers = await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(a => a.UserId == userId);
+                var city = await _repoWrapper.City.GetFirstAsync(a => a.ID == cityMembers.CityId);
+                follower.User.CityName = city.Name.ToString();
+            }
+
             var ClubProfileDto = new ClubProfileDTO
             {
                 Club = Club,
@@ -197,10 +215,20 @@ namespace EPlast.BLL.Services.Club
             var ClubHead = Club.ClubAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Куреня"
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
+
             var ClubAdmins = Club.ClubAdministration
-                .Where(a => a.AdminType.AdminTypeName != "Голова Куреня"
-                    && (DateTime.Now < a.EndDate || a.EndDate == null))
-                .ToList();
+               .Where(a => a.AdminType.AdminTypeName != "Голова Куреня"
+                   && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
+
+
+            foreach (var admin in ClubAdmins)
+            {
+                var userId = admin.UserId;
+                var user = await _repoWrapper.User.GetFirstOrDefaultAsync(a => a.Id == userId);
+                var cityMembers = await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(a => a.UserId == userId);
+                var city = await _repoWrapper.City.GetFirstAsync(a => a.ID == cityMembers.CityId);
+                admin.User.CityName= city.Name.ToString();
+            }
 
             var ClubProfileDto = new ClubProfileDTO
             {
