@@ -194,7 +194,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Details(int ClubId)
         {
-            var ClubDto = await _ClubService.GetByIdAsync(ClubId);
+            var ClubDto = await _ClubService.GetClubProfileAsync(ClubId);
             if (ClubDto == null)
             {
                 return NotFound();
@@ -521,7 +521,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("CreateClubAnnualReport")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці")]
-        public async Task<IActionResult> CreateClubAnnualReport(ClubAnnualReportViewModel annualReport)
+        public async Task<IActionResult> CreateClubAnnualReport([FromBody] ClubAnnualReportViewModel annualReport)
         {
             if (ModelState.IsValid)
             {

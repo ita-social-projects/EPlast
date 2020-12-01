@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.DataAccess.Entities
 {
-   public class ClubAnnualReport
+    public class ClubAnnualReport
     {
         public int ID { get; set; }
 
@@ -40,13 +39,12 @@ namespace EPlast.DataAccess.Entities
 
         [Required]
         public int ClubId { get; set; }
+        public string ClubName { get; set; }
         public Club Club { get; set; }
 
         public string ClubMembersSummary { get; set; }
 
         public string ClubAdminContacts{ get; set; }
-
-
 
         public DateTime Date { get; set; }
     }

@@ -38,7 +38,7 @@ namespace EPlast.BLL.DTO.Club
         public string KbUSPWishes { get; set; }
 
         public int ClubId { get; set; }
-        public ClubDTO Club { get; set; }
+        public string ClubName { get; set; }
         public string ClubMembersSummary { get; set; }
         public string ClubAdminContacts { get; set; }
         public DateTime Date { get; set; }

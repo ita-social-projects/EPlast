@@ -1,9 +1,7 @@
-﻿using EPlast.BLL.DTO.AnnualReport;
-using System;
+﻿using System;
 
 namespace EPlast.BLL.DTO.Region
 {
-
     public class RegionAnnualReportDTO
     {
         public int ID { get; set; }
