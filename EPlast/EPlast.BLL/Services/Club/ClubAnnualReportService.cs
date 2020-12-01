@@ -91,7 +91,7 @@ namespace EPlast.BLL.Services.Club
                 var degree = userPlastDegrees.FirstOrDefault(user => user.UserId == item.UserId);
                 var cityMember = await _repositoryWrapper.CityMembers.GetFirstOrDefaultAsync(predicate: a => a.UserId == item.UserId, include: source => source.Include(ar => ar.City));
                 clubMembers = clubMembers.Append(new StringBuilder(
-                    $"{degree.PlastDegree.Name}, {item.User.FirstName} {item.User.LastName}, {cityMember.City.Name};"));
+                    $"{degree.PlastDegree.Name}, {item.User.FirstName} {item.User.LastName}, {cityMember.City.Name};").Append("\n"));
             }
 
             clubAnnualReportDTO.ClubMembersSummary = clubMembers.ToString();
@@ -103,7 +103,7 @@ namespace EPlast.BLL.Services.Club
                 var degree = userPlastDegrees.FirstOrDefault(user => user.UserId == item.UserId);
                 if (item.AdminTypeId == 69)
                 {
-                    clubAdmins = clubAdmins.Append($"{degree.PlastDegree.Name}, {item.User.FirstName} {item.User.LastName}, {item.User.Email}, {item.User.PhoneNumber}");
+                    clubAdmins = clubAdmins.Append($"{degree.PlastDegree.Name}, {item.User.FirstName} {item.User.LastName}, {item.User.Email}, {item.User.PhoneNumber} /n");
                 }
             }
 
@@ -120,6 +120,33 @@ namespace EPlast.BLL.Services.Club
         {
             return await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(
                 predicate: a => a.Club.ID == Id && a.Date.Year == DateTime.Now.Year) != null;
+        }
+
+        ///<inheritdoc/>
+        public async Task ConfirmAsync(ClaimsPrincipal claimsPrincipal, int id)
+        {
+            var clubAnnualReport = await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(
+                    predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed);
+            if (!await _clubAccessService.HasAccessAsync(claimsPrincipal, clubAnnualReport.ClubId))
+            {
+                throw new UnauthorizedAccessException();
+            }
+
+            clubAnnualReport.Status = AnnualReportStatus.Confirmed;
+            _repositoryWrapper.ClubAnnualReports.Update(clubAnnualReport);
+            await SaveLastConfirmedAsync(clubAnnualReport.ClubId);
+            await _repositoryWrapper.SaveAsync();
+        }
+
+        private async Task SaveLastConfirmedAsync(int clubId)
+        {
+            var clubAnnualReport = await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(
+                predicate: a => a.ClubId == clubId && a.Status == AnnualReportStatus.Confirmed);
+            if (clubAnnualReport != null)
+            {
+                clubAnnualReport.Status = AnnualReportStatus.Saved;
+                _repositoryWrapper.ClubAnnualReports.Update(clubAnnualReport);
+            }
         }
     }
 }
