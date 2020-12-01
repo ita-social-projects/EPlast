@@ -98,14 +98,23 @@ namespace EPlast.BLL.Services.Club
                     && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .Take(6)
                 .ToList();
+            Club.AdministrationCount = Club.ClubAdministration
+                .Where(a => (DateTime.Now < a.EndDate || a.EndDate == null))
+                .Count();
             var members = Club.ClubMembers
                 .Where(m => m.IsApproved)
-                .Take(6)
+                .Take(9)
                 .ToList();
+            Club.MemberCount = Club.ClubMembers
+                .Where(m => m.IsApproved)
+                .Count();
             var followers = Club.ClubMembers
                 .Where(m => !m.IsApproved)
                 .Take(6)
                 .ToList();
+            Club.FollowerCount = Club.ClubMembers
+                .Where(m => !m.IsApproved)
+                .Count();
             var ClubDoc = Club.ClubDocuments.Take(6).ToList();
 
             var ClubProfileDto = new ClubProfileDTO

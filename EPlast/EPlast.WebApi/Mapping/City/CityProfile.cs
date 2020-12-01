@@ -29,7 +29,11 @@ namespace EPlast.BLL.Mapping.City
                 .ForMember(r => r.Region, s => s.MapFrom(t => t.City.Region))
                 .ForMember(r => r.CanCreate, s => s.MapFrom(t => t.City.CanCreate))
                 .ForMember(r => r.CanJoin, s => s.MapFrom(t => t.City.CanJoin))
-                .ForMember(r => r.CanEdit, s => s.MapFrom(t => t.City.CanEdit));
+                .ForMember(r => r.CanEdit, s => s.MapFrom(t => t.City.CanEdit))
+                .ForMember(r => r.MemberCount, s => s.MapFrom(t => t.City.MemberCount))
+                .ForMember(r => r.FollowerCount, s => s.MapFrom(t => t.City.FollowerCount))
+                .ForMember(r => r.AdministrationCount, s => s.MapFrom(t => t.City.AdministrationCount));    
+
         }
     }
 }
