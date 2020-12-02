@@ -105,15 +105,22 @@ namespace EPlast.BLL.Services
                     && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .Take(6)
                 .ToList();
+            city.AdministrationCount = city.CityAdministration
+                .Count(a => (DateTime.Now < a.EndDate || a.EndDate == null));
             var members = city.CityMembers
                 .Where(m => m.IsApproved)
-                .Take(6)
+                .Take(9)
                 .ToList();
+            city.MemberCount = city.CityMembers
+                .Count(m => m.IsApproved);
             var followers = city.CityMembers
                 .Where(m => !m.IsApproved)
                 .Take(6)
                 .ToList();
+            city.FollowerCount = city.CityMembers
+                .Count(m => !m.IsApproved);
             var cityDoc = city.CityDocuments.Take(6).ToList();
+            
 
             var cityProfileDto = new CityProfileDTO
             {

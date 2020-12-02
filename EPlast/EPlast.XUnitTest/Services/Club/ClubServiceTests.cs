@@ -49,6 +49,10 @@ namespace EPlast.XUnitTest.Services.ClubTests
                 .Returns(CreateFakeClubDto(10).FirstOrDefault());
             _mapper.Setup(m => m.Map<ClubDTO, DataAccess.Entities.Club>(It.IsAny<ClubDTO>()))
                 .Returns(() => new DataAccess.Entities.Club());
+            _repoWrapper.Setup(m => m.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(), null))
+                .ReturnsAsync(new CityMembers() { });
+            _repoWrapper.Setup(r => r.City.GetFirstAsync(It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(), null))
+                .ReturnsAsync(new DataAccess.Entities.City() { Name = "Львів" });
             _repoWrapper.Setup(r => r.Club.FindAll())
                 .Returns(CreateFakeCities(10));
             _repoWrapper.Setup(r => r.Club.FindByCondition(It.IsAny<Expression<Func<DataAccess.Entities.Club, bool>>>()))
@@ -56,6 +60,8 @@ namespace EPlast.XUnitTest.Services.ClubTests
                     CreateFakeCities(10).Where(condition));
             _repoWrapper.Setup(r => r.Region.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Region, bool>>>(), null))
                .ReturnsAsync(GetTestRegion());
+            _repoWrapper.Setup(r => r.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(), null))
+               .ReturnsAsync(new User() { CityName = "Львів" });
             _repoWrapper.Setup(r => r.Club.Update(It.IsAny<DataAccess.Entities.Club>()))
                 .Verifiable();
             _repoWrapper.Setup(r => r.Club.Create(It.IsAny<DataAccess.Entities.Club>()))
@@ -212,7 +218,9 @@ namespace EPlast.XUnitTest.Services.ClubTests
             var Club = new DataAccess.Entities.Club
             {
                 Name = "Club",
-                Logo = "710b8b06-6869-45db-894f-7a0b131e6c6b.jpg"
+                Logo = "710b8b06-6869-45db-894f-7a0b131e6c6b.jpg",
+                ClubMembers = new List<ClubMembers> { new ClubMembers() { UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad" } }
+
             };
 
             return Club;
@@ -230,7 +238,8 @@ namespace EPlast.XUnitTest.Services.ClubTests
                     {
                         new ClubAdministrationDTO
                         {
-
+                           UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
+                           User=new ClubUserDTO(),
                            AdminType = new AdminTypeDTO
                            {
                                AdminTypeName = "Голова Станиці"
@@ -239,6 +248,8 @@ namespace EPlast.XUnitTest.Services.ClubTests
                         },
                         new ClubAdministrationDTO
                         {
+                            UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
+                            User=new ClubUserDTO(),
                             AdminType = new AdminTypeDTO
                             {
                                 AdminTypeName = "----------"
@@ -246,6 +257,8 @@ namespace EPlast.XUnitTest.Services.ClubTests
                         },
                         new ClubAdministrationDTO
                         {
+                            UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
+                            User=new ClubUserDTO(),
                             AdminType = new AdminTypeDTO
                             {
                                 AdminTypeName = "Голова Станиці"
@@ -253,6 +266,8 @@ namespace EPlast.XUnitTest.Services.ClubTests
                         },
                         new ClubAdministrationDTO
                         {
+                            UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
+                            User=new ClubUserDTO(),
                             AdminType = new AdminTypeDTO
                             {
                                 AdminTypeName = "----------"
@@ -263,7 +278,9 @@ namespace EPlast.XUnitTest.Services.ClubTests
                     {
                         new ClubMembersDTO
                         {
-                            StartDate = new Random().Next(0,1) ==1 ? DateTime.Today : (DateTime?) null
+                            UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
+                            StartDate = new Random().Next(0,1) ==1 ? DateTime.Today : (DateTime?) null,
+                            User=new ClubUserDTO()
                         }
                     },
                     ClubDocuments = new List<ClubDocumentsDTO>
@@ -274,7 +291,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
                         new ClubDocumentsDTO(),
                         new ClubDocumentsDTO()
                     }
-                });
+                }); ;
             }
 
             return cities.AsQueryable();

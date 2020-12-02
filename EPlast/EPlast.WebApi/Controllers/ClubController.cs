@@ -194,7 +194,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Details(int ClubId)
         {
-            var ClubDto = await _ClubService.GetByIdAsync(ClubId);
+            var ClubDto = await _ClubService.GetClubProfileAsync(ClubId);
             if (ClubDto == null)
             {
                 return NotFound();
@@ -485,7 +485,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
 
         [HttpGet("GetAllClubAnnualReports")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня")]
         public async Task<IActionResult> GetAllClubAnnualReports()
         {
             return StatusCode(StatusCodes.Status200OK, new { clubAnnualReports = await _ClubAnnualReportService.GetAllAsync(User) });
@@ -501,7 +501,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">The club annual report does not exist</response>
 
         [HttpGet("GetClubAnnualReportById/{id:int}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня")]
         public async Task<IActionResult> GetClubAnnualReportById(int id)
         {
             try
@@ -510,7 +510,6 @@ namespace EPlast.WebApi.Controllers
             }
             catch (NullReferenceException)
             {
-
                 return StatusCode(StatusCodes.Status404NotFound);
             }
             catch (UnauthorizedAccessException)
@@ -520,8 +519,8 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("CreateClubAnnualReport")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці")]
-        public async Task<IActionResult> CreateClubAnnualReport(ClubAnnualReportViewModel annualReport)
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня")]
+        public async Task<IActionResult> CreateClubAnnualReport([FromBody] ClubAnnualReportViewModel annualReport)
         {
             if (ModelState.IsValid)
             {
@@ -548,5 +547,32 @@ namespace EPlast.WebApi.Controllers
             return StatusCode(StatusCodes.Status201Created);
         }
 
+
+        /// <summary>
+        /// Method to confirm annual report
+        /// </summary>
+        /// <param name="id">Annual report identification number</param>
+        /// <returns>Answer from backend</returns>
+        /// <response code="200">Annual report was successfully confirmed</response>
+        /// <response code="403">User hasn't access to annual report</response>
+        /// <response code="404">The annual report does not exist</response>
+        [HttpPut("confirmClubAnnualReport/{id:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня ")]
+        public async Task<IActionResult> ConfirmClubAnnualReport(int id)
+        {
+            try
+            {
+                await _ClubAnnualReportService.ConfirmAsync(User, id);
+                return Ok();
+            }
+            catch (NullReferenceException)
+            {
+                return StatusCode(StatusCodes.Status404NotFound);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
+        }
     }
 }
