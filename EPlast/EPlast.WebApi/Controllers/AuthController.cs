@@ -113,7 +113,7 @@ namespace EPlast.WebApi.Controllers
                 {
                     return BadRequest();
                 }
-
+                await AddEntryMembershipDate(user.Id);
                 var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
 
                 return Ok(new {token = generatedToken});
@@ -124,8 +124,6 @@ namespace EPlast.WebApi.Controllers
             }
             
             return BadRequest();
-            
-
         }
 
         [HttpPost("signin/facebook")]
@@ -141,6 +139,7 @@ namespace EPlast.WebApi.Controllers
                 {
                     return BadRequest();
                 }
+                await AddEntryMembershipDate(user.Id);
 
                 var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
                 return Ok(new {token = generatedToken});
@@ -415,6 +414,14 @@ namespace EPlast.WebApi.Controllers
             await _homeService.SendEmailAdmin(contactsDto);
 
             return Ok(_resourceForErrors["Feedback-Sended"]);
+        }
+
+        private async Task AddEntryMembershipDate(string userId)
+        {
+            if (await _userDatesService.UserHasMembership(userId) == false)
+            {
+                await _userDatesService.AddDateEntryAsync(userId);
+            }
         }
     }
 }
