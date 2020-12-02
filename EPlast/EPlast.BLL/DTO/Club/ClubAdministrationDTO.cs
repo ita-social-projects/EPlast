@@ -10,6 +10,7 @@ namespace EPlast.BLL.DTO.Club
         public ClubUserDTO User { get; set; }
         public int ClubId { get; set; }
         public int AdminTypeId { get; set; }
+        public ClubDTO Club { get; set; }
         public AdminTypeDTO AdminType { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
