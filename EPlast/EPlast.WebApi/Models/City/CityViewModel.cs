@@ -26,5 +26,9 @@ namespace EPlast.WebApi.Models.City
         public IEnumerable<CityMembersViewModel> Members { get; set; }
         public IEnumerable<CityMembersViewModel> Followers { get; set; }
         public IEnumerable<CityDocumentsViewModel> Documents { get; set; }
+
+        public int MemberCount { get; set; }
+        public int FollowerCount { get; set; }
+        public int AdministrationCount { get; set; }
     }
 }

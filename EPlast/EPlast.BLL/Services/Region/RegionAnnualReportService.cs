@@ -27,7 +27,8 @@ namespace EPlast.BLL.Services.Region
         }
 
         ///<inheritdoc/>
-        public async Task<RegionAnnualReportDTO> CreateByNameAsync(ClaimsPrincipal claimsPrincipal, int id, int year)
+        public async Task<RegionAnnualReportDTO> CreateByNameAsync(ClaimsPrincipal claimsPrincipal, int id, int year,
+            RegionAnnualReportQuestions regionAnnualReportQuestions)
         {
             var region = await _repositoryWrapper.Region.GetFirstOrDefaultAsync(a => a.ID == id);
 
@@ -96,6 +97,30 @@ namespace EPlast.BLL.Services.Region
                 NumberOfTeacherAdministrators = annualReports.Select(x => x.NumberOfTeacherAdministrators).Sum(),
 
                 NumberOfTeachers = annualReports.Select(x => x.NumberOfTeachers).Sum(),
+
+                StateOfPreparation = regionAnnualReportQuestions.StateOfPreparation,
+
+                Characteristic = regionAnnualReportQuestions.Characteristic,
+
+                ChurchCooperation = regionAnnualReportQuestions.ChurchCooperation,
+
+                InvolvementOfVolunteers = regionAnnualReportQuestions.InvolvementOfVolunteers,
+
+                ImportantNeeds = regionAnnualReportQuestions.ImportantNeeds,
+
+                SocialProjects = regionAnnualReportQuestions.SocialProjects,
+
+                StatusOfStrategy = regionAnnualReportQuestions.StatusOfStrategy,
+
+                SuccessStories = regionAnnualReportQuestions.SuccessStories,
+
+                ProblemSituations = regionAnnualReportQuestions.ProblemSituations,
+
+                TrainedNeeds = regionAnnualReportQuestions.TrainedNeeds,
+
+                PublicFunding = regionAnnualReportQuestions.PublicFunding,
+
+                Fundraising = regionAnnualReportQuestions.Fundraising
             };
 
             _repositoryWrapper.RegionAnnualReports.Create(regionAnnualReport);
