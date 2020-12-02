@@ -31,6 +31,13 @@ namespace EPlast.BLL.Interfaces.ActiveMembership
         /// <param name="userId">User id</param>
         /// <returns>bool if adding is successful</returns>
         public Task<bool> AddDateEntryAsync(string userId);
+
+        /// <summary>
+        /// Returns boolean, if user has membership return true, else false
+        /// </summary>
+        /// <param name="userId">User id</param>
+        /// <returns>true if user has membership</returns>
+        public Task<bool> UserHasMembership(string userId);
     }
 
 
