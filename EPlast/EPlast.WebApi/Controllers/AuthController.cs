@@ -418,7 +418,7 @@ namespace EPlast.WebApi.Controllers
 
         private async Task AddEntryMembershipDate(string userId)
         {
-            if (await _userDatesService.UserHasMembership(userId) == false)
+            if (!(await _userDatesService.UserHasMembership(userId)))
             {
                 await _userDatesService.AddDateEntryAsync(userId);
             }
