@@ -28,7 +28,6 @@ namespace EPlast.BLL.Services
         private readonly IEmailConfirmation _emailConfirmation;
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repoWrapper;
-        private readonly IUserDatesService _userDatesService;
         public AuthService(UserManager<User> userManager,
             SignInManager<User> signInManager,
             IEmailConfirmation emailConfirmation,
@@ -41,7 +40,6 @@ namespace EPlast.BLL.Services
             _emailConfirmation = emailConfirmation;
             _mapper = mapper;
             _repoWrapper = repoWrapper;
-            _userDatesService = userDatesService;
         }
 
         ///<inheritdoc/>
