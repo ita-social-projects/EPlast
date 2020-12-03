@@ -16,7 +16,7 @@ namespace EPlast.BLL.Interfaces.Region
         /// <returns>Annual report model</returns>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
         /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
-        Task<RegionAnnualReportDTO> CreateByNameAsync(ClaimsPrincipal claimsPrincipal, int id, int year);
+        Task<RegionAnnualReportDTO> CreateByNameAsync(ClaimsPrincipal claimsPrincipal, int id, int year, RegionAnnualReportQuestions regionAnnualReportQuestions);
 
         /// <summary>
         /// Method to get all region reports that the user has access to

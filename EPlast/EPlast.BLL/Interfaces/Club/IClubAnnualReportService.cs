@@ -36,5 +36,14 @@ namespace EPlast.BLL.Interfaces.Club
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to city</exception>
         /// <exception cref="System.NullReferenceException">Thrown when city doesn't exist</exception>
         Task CreateAsync(ClaimsPrincipal claimsPrincipal, ClubAnnualReportDTO clubAnnualReportDTO);
+
+        /// <summary>
+        /// Method to confirm club annual report
+        /// </summary>
+        /// <param name="claimsPrincipal">Authorized user</param>
+        /// <param name="id">Annual report identification number</param>
+        /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
+        /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
+        Task ConfirmAsync(ClaimsPrincipal claimsPrincipal, int id);
     }
 }
