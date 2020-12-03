@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.DataAccess.Entities
 {
@@ -30,5 +31,31 @@ namespace EPlast.DataAccess.Entities
         public int RegionId { get; set; }
         public string RegionName { get; set; }
         public Region Region { get; set; }
+
+        [Required]
+        public string StateOfPreparation { get; set; }
+        [Required]
+        public string Characteristic { get; set; }
+        [Required]
+        public string StatusOfStrategy { get; set; }
+        [Required]
+        public string InvolvementOfVolunteers { get; set; }
+        [Required]
+        public string TrainedNeeds { get; set; }
+        [Required]
+        public string PublicFunding { get; set; }
+        [Required]
+        public string ChurchCooperation { get; set; }
+        [Required]
+        public string Fundraising { get; set; }
+        [Required]
+        public string SocialProjects { get; set; }
+        [Required]
+        public string ProblemSituations { get; set; }
+        [Required]
+        public string ImportantNeeds { get; set; }
+        [Required]
+        public string SuccessStories { get; set; }
+
     }
 }

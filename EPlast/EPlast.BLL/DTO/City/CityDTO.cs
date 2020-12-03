@@ -40,6 +40,9 @@ namespace EPlast.BLL.DTO.City
         public bool CanCreate { get; set; }
         public bool CanEdit { get; set; }
         public bool CanJoin { get; set; }
+        public int MemberCount { get; set; }
+        public int FollowerCount { get; set; }
+        public int AdministrationCount { get; set; }
         public IEnumerable<CityDocumentsDTO> CityDocuments { get; set; }
         public IEnumerable<CityMembersDTO> CityMembers { get; set; }
         public IEnumerable<CityAdministrationDTO> CityAdministration { get; set; }
