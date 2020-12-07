@@ -42,6 +42,21 @@ namespace EPlast.BLL.Services.ActiveMembership
             return isChanged;
         }
 
+        public async Task<bool> UserHasMembership(string userId)
+        {
+            try
+            {
+                await GetUserMembershipDatesAsync(userId);
+                return true;
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
+            return false;
+        }
+
         public async Task<UserMembershipDatesDTO> GetUserMembershipDatesAsync(string userId)
         {
             var userDto = await _userManagerService.FindByIdAsync(userId);

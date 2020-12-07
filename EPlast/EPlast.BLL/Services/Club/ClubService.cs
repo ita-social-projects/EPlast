@@ -98,14 +98,20 @@ namespace EPlast.BLL.Services.Club
                     && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .Take(6)
                 .ToList();
+            Club.AdministrationCount = Club.ClubAdministration
+                .Count(a => (DateTime.Now < a.EndDate || a.EndDate == null));
             var members = Club.ClubMembers
                 .Where(m => m.IsApproved)
-                .Take(6)
+                .Take(9)
                 .ToList();
+            Club.MemberCount = Club.ClubMembers
+                .Count(m => m.IsApproved);
             var followers = Club.ClubMembers
                 .Where(m => !m.IsApproved)
                 .Take(6)
                 .ToList();
+            Club.FollowerCount = Club.ClubMembers
+                .Count(m => !m.IsApproved);
             var ClubDoc = Club.ClubDocuments.Take(6).ToList();
 
             var ClubProfileDto = new ClubProfileDTO
@@ -148,6 +154,14 @@ namespace EPlast.BLL.Services.Club
                 .Where(m => m.IsApproved)
                 .ToList();
 
+            foreach (var member in members)
+            {
+                var userId = member.UserId;
+                var cityMembers = await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(a => a.UserId == userId);
+                var city = await _repoWrapper.City.GetFirstAsync(a => a.ID == cityMembers.CityId);
+                member.User.CityName = city.Name.ToString();
+            }
+
             var ClubProfileDto = new ClubProfileDTO
             {
                 Club = Club,
@@ -170,6 +184,14 @@ namespace EPlast.BLL.Services.Club
                 .Where(m => !m.IsApproved)
                 .ToList();
 
+            foreach (var follower in followers)
+            {
+                var userId = follower.UserId;
+                var cityMembers = await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(a => a.UserId == userId);
+                var city = await _repoWrapper.City.GetFirstAsync(a => a.ID == cityMembers.CityId);
+                follower.User.CityName = city.Name.ToString();
+            }
+
             var ClubProfileDto = new ClubProfileDTO
             {
                 Club = Club,
@@ -191,10 +213,19 @@ namespace EPlast.BLL.Services.Club
             var ClubHead = Club.ClubAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Куреня"
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
+
             var ClubAdmins = Club.ClubAdministration
-                .Where(a => a.AdminType.AdminTypeName != "Голова Куреня"
-                    && (DateTime.Now < a.EndDate || a.EndDate == null))
-                .ToList();
+               .Where(a => a.AdminType.AdminTypeName != "Голова Куреня"
+                   && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
+
+
+            foreach (var admin in ClubAdmins)
+            {
+                var userId = admin.UserId;
+                var cityMembers = await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(a => a.UserId == userId);
+                var city = await _repoWrapper.City.GetFirstAsync(a => a.ID == cityMembers.CityId);
+                admin.User.CityName= city.Name.ToString();
+            }
 
             var ClubProfileDto = new ClubProfileDTO
             {
