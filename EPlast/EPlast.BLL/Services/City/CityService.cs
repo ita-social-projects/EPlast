@@ -136,12 +136,14 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<CityProfileDTO> GetCityProfileAsync(int cityId, ClaimsPrincipal user)
+        public async Task<CityProfileDTO> GetCityProfileAsync(int cityId, DataAccessCity.User user)
         {
             var cityProfileDto = await GetCityProfileAsync(cityId);
-            var userId = _userManager.GetUserId(user);
-
-            cityProfileDto.City.CanCreate = user.IsInRole("Admin");
+            //var userId = _userManager.GetUserId(user);
+            var userId = user.Id;
+            var userRoles = await _userManager.GetRolesAsync(user);
+            cityProfileDto.City.CanCreate = userRoles.Contains("Admin");
+            //cityProfileDto.City.CanCreate = user.IsInRole("Admin");
             cityProfileDto.City.CanEdit = await _cityAccessService.HasAccessAsync(user, cityId);
             cityProfileDto.City.CanJoin = (await _repoWrapper.CityMembers
                 .GetFirstOrDefaultAsync(u => u.User.Id == userId && u.CityId == cityId)) == null;

@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -26,13 +28,14 @@ namespace EPlast.WebApi.Controllers
         private readonly IUserPersonalDataService _userPersonalDataService;
         private readonly ILoggerService<UserController> _loggerService;
         private readonly IMapper _mapper;
+        private readonly UserManager<User> _userManager;
 
         public UserController(IUserService userService,
             IUserPersonalDataService userPersonalDataService,
             IConfirmedUsersService confirmedUserService,
             IUserManagerService userManagerService,
             ILoggerService<UserController> loggerService,
-            IMapper mapper)
+            IMapper mapper, UserManager<User> userManager)
         {
             _userService = userService;
             _userPersonalDataService = userPersonalDataService;
@@ -40,6 +43,7 @@ namespace EPlast.WebApi.Controllers
             _userManagerService = userManagerService;
             _loggerService = loggerService;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -184,7 +188,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
             var confirmedUsers = _userService.GetConfirmedUsers(user);
-            var canApprove = await _userService.CanApproveAsync(confirmedUsers, userId, User);
+            var canApprove = await _userService.CanApproveAsync(confirmedUsers, userId, await _userManager.GetUserAsync(User));
             var time = await _userService.CheckOrAddPlastunRoleAsync(user.Id, user.RegistredOn);
             var clubApprover = _userService.GetClubAdminConfirmedUser(user);
             var cityApprover = _userService.GetCityAdminConfirmedUser(user);
@@ -197,9 +201,9 @@ namespace EPlast.WebApi.Controllers
                 ConfirmedUsers = _mapper.Map<IEnumerable<ConfirmedUserDTO>, IEnumerable<ConfirmedUserViewModel>>(confirmedUsers),
                 ClubApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(clubApprover),
                 CityApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(cityApprover),
-                IsUserHeadOfCity = await _userManagerService.IsInRoleAsync(User, "Голова Станиці"),
-                IsUserHeadOfClub = await _userManagerService.IsInRoleAsync(User, "Голова Куреня"),
-                IsUserHeadOfRegion = await _userManagerService.IsInRoleAsync(User, "Голова Округу"),
+                IsUserHeadOfCity = await _userManagerService.IsInRoleAsync(_mapper.Map<User,UserDTO>(await _userManager.GetUserAsync(User)), "Голова Станиці"),
+                IsUserHeadOfClub = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), "Голова Куреня"),
+                IsUserHeadOfRegion = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), "Голова Округу"),
                 IsUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун"),
                 CurrentUserId = approverId
             };
@@ -233,7 +237,7 @@ namespace EPlast.WebApi.Controllers
             if (userId != null)
             {
 
-                await _confirmedUserService.CreateAsync(User, userId, isClubAdmin, isCityAdmin);
+                await _confirmedUserService.CreateAsync(await _userManager.GetUserAsync(User), userId, isClubAdmin, isCityAdmin);
 
                 return Ok();
             }

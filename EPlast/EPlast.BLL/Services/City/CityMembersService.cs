@@ -74,11 +74,11 @@ namespace EPlast.BLL.Services.City
         }
 
         /// <inheritdoc />
-        public async Task<CityMembersDTO> AddFollowerAsync(int cityId, ClaimsPrincipal user)
+        public async Task<CityMembersDTO> AddFollowerAsync(int cityId, User user)
         {
-            var userId = _userManager.GetUserId(user);
+            //var userId = _userManager.GetUserId(user);
 
-            return await AddFollowerAsync(cityId, userId);
+            return await AddFollowerAsync(cityId, user.Id);
         }
 
         /// <inheritdoc />

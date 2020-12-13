@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Interfaces.Club
 {
@@ -18,14 +19,14 @@ namespace EPlast.BLL.Interfaces.Club
         /// <returns>Annual report model</returns>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
         /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
-        Task<ClubAnnualReportDTO> GetByIdAsync(ClaimsPrincipal claimsPrincipal, int id);
+        Task<ClubAnnualReportDTO> GetByIdAsync(User claimsPrincipal, int id);
 
         /// <summary>
         /// Method to get all club reports that the user has access to
         /// </summary>
         /// <param name="claimsPrincipal">Authorized user</param>
         /// <returns>List of annual report model</returns>
-        Task<IEnumerable<ClubAnnualReportDTO>> GetAllAsync(ClaimsPrincipal claimsPrincipal);
+        Task<IEnumerable<ClubAnnualReportDTO>> GetAllAsync(User claimsPrincipal);
 
         /// <summary>
         /// Method to create new club annual report
@@ -35,7 +36,7 @@ namespace EPlast.BLL.Interfaces.Club
         /// <exception cref="System.InvalidOperationException">Thrown when city has created annual report</exception>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to city</exception>
         /// <exception cref="System.NullReferenceException">Thrown when city doesn't exist</exception>
-        Task CreateAsync(ClaimsPrincipal claimsPrincipal, ClubAnnualReportDTO clubAnnualReportDTO);
+        Task CreateAsync(User claimsPrincipal, ClubAnnualReportDTO clubAnnualReportDTO);
 
         /// <summary>
         /// Method to confirm club annual report
@@ -44,6 +45,6 @@ namespace EPlast.BLL.Interfaces.Club
         /// <param name="id">Annual report identification number</param>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
         /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
-        Task ConfirmAsync(ClaimsPrincipal claimsPrincipal, int id);
+        Task ConfirmAsync(User claimsPrincipal, int id);
     }
 }

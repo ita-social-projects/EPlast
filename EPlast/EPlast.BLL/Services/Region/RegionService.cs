@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using DataAccessRegion = EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Services.Region
@@ -25,13 +26,14 @@ namespace EPlast.BLL.Services.Region
         private readonly IRegionFilesBlobStorageRepository _regionFilesBlobStorageRepository;
         private readonly ICityService _cityService;
         private readonly IUniqueIdService _uniqueId;
+        private readonly UserManager<User> _userManager;
 
         public RegionService(IRepositoryWrapper repoWrapper,
             IMapper mapper,
             IRegionFilesBlobStorageRepository regionFilesBlobStorageRepository,
             IRegionBlobStorageRepository regionBlobStorage,
             ICityService cityService,
-            IUniqueIdService uniqueId)
+            IUniqueIdService uniqueId, UserManager<User> userManager)
         {
             _regionFilesBlobStorageRepository = regionFilesBlobStorageRepository;
             _repoWrapper = repoWrapper;
@@ -39,7 +41,7 @@ namespace EPlast.BLL.Services.Region
             _regionBlobStorage = regionBlobStorage;
             _cityService = cityService;
             _uniqueId = uniqueId;
-
+            _userManager = userManager;
         }
 
         public async Task AddRegionAsync(RegionDTO region)
@@ -78,15 +80,16 @@ namespace EPlast.BLL.Services.Region
             return _mapper.Map<DataAccessRegion.Region, RegionDTO>(region);
         }
 
-        public async Task<RegionProfileDTO> GetRegionProfileByIdAsync(int regionId, ClaimsPrincipal user)
+        public async Task<RegionProfileDTO> GetRegionProfileByIdAsync(int regionId, User user)
         {
             var region = await GetRegionByIdAsync(regionId);
             var regionProfile = _mapper.Map<RegionDTO, RegionProfileDTO>(region);
+            var userRoles = await _userManager.GetRolesAsync(user);
 
             var cities = await _cityService.GetCitiesByRegionAsync(regionId);
             regionProfile.Cities = cities;
             regionProfile.City = region.City;
-            regionProfile.CanEdit = user.IsInRole("Admin") || user.IsInRole("Голова Округу");
+            regionProfile.CanEdit = userRoles.Contains("Admin") || userRoles.Contains("Голова Округу");
 
             return regionProfile;
         }

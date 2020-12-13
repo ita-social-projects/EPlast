@@ -128,12 +128,14 @@ namespace EPlast.BLL.Services.Club
         }
 
         /// <inheritdoc />
-        public async Task<ClubProfileDTO> GetClubProfileAsync(int ClubId, ClaimsPrincipal user)
+        public async Task<ClubProfileDTO> GetClubProfileAsync(int ClubId, DataAccessClub.User user)
         {
             var ClubProfileDto = await GetClubProfileAsync(ClubId);
-            var userId = _userManager.GetUserId(user);
+            //var userId = _userManager.GetUserId(user);
+            var userId = user.Id;
+            var userRoles = await _userManager.GetRolesAsync(user);
 
-            ClubProfileDto.Club.CanCreate = user.IsInRole("Admin");
+            ClubProfileDto.Club.CanCreate = userRoles.Contains("Admin");
             ClubProfileDto.Club.CanEdit = await _ClubAccessService.HasAccessAsync(user, ClubId);
             ClubProfileDto.Club.CanJoin = (await _repoWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(u => u.User.Id == userId && u.ClubId == ClubId)) == null;

@@ -37,11 +37,11 @@ namespace EPlast.BLL.Services.EventUser
             this.eventAdmininistrationManager = eventAdmininistrationManager;
         }
 
-        public async Task<EventUserDTO> EventUserAsync(string userId, ClaimsPrincipal user)
+        public async Task<EventUserDTO> EventUserAsync(string userId, User user)
         {
             if (string.IsNullOrEmpty(userId))
             {
-                userId = userManager.GetUserId(user);
+                userId = await userManager.GetUserIdAsync(user);
             }
 
             var userWithRoles = await userManager.FindByIdAsync(userId);

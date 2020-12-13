@@ -25,9 +25,9 @@ namespace EPlast.BLL.Services.Region.RegionAccess
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<RegionDTO>> GetRegionsAsync(ClaimsPrincipal claimsPrincipal)
+        public async Task<IEnumerable<RegionDTO>> GetRegionsAsync(DatabaseEntities.User user)
         {
-            var user = await _userManager.GetUserAsync(claimsPrincipal);
+            //var user = await _userManager.GetUserAsync(claimsPrincipal);
             var roles = await _userManager.GetRolesAsync(user);
             foreach (var key in _regionAccessGetters.Keys)
             {
@@ -40,7 +40,7 @@ namespace EPlast.BLL.Services.Region.RegionAccess
             return Enumerable.Empty<RegionDTO>();
         }
 
-        public async Task<bool> HasAccessAsync(ClaimsPrincipal claimsPrincipal, int regionId)
+        public async Task<bool> HasAccessAsync(DatabaseEntities.User claimsPrincipal, int regionId)
         {
             var regions = await GetRegionsAsync(claimsPrincipal);
             return regions.Any(c => c.ID == regionId);
