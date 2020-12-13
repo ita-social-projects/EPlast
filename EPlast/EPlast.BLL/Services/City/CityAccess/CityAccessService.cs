@@ -26,9 +26,9 @@ namespace EPlast.BLL.Services.City.CityAccess
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<CityDTO>> GetCitiesAsync(ClaimsPrincipal claimsPrincipal)
+        public async Task<IEnumerable<CityDTO>> GetCitiesAsync(DatabaseEntities.User user)
         {
-            var user = await _userManager.GetUserAsync(claimsPrincipal);
+            //var user = await _userManager.GetUserAsync(claimsPrincipal);
             var roles = await _userManager.GetRolesAsync(user);
             foreach (var key in _cityAccessGetters.Keys)
             {
@@ -41,9 +41,9 @@ namespace EPlast.BLL.Services.City.CityAccess
             return Enumerable.Empty<CityDTO>();
         }
 
-        public async Task<bool> HasAccessAsync(ClaimsPrincipal claimsPrincipal, int cityId)
+        public async Task<bool> HasAccessAsync(DatabaseEntities.User user, int cityId)
         {
-            var cities = await this.GetCitiesAsync(claimsPrincipal);
+            var cities = await this.GetCitiesAsync(user);
             return cities.Any(c => c.ID == cityId);
         }
     }

@@ -11,6 +11,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.City;
+using EPlast.DataAccess.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -22,14 +25,18 @@ namespace EPlast.WebApi.Controllers
         private readonly IUserManagerService _userManagerService;
         private readonly ILoggerService<AnnualReportController> _loggerService;
         private readonly IStringLocalizer<AnnualReportControllerMessage> _localizer;
+        private readonly ICityAccessService _cityAccessService;
+        private readonly UserManager<User> _userManager;
 
         public AnnualReportController(IAnnualReportService annualReportService, IUserManagerService userManagerService, ILoggerService<AnnualReportController> loggerService,
-            IStringLocalizer<AnnualReportControllerMessage> localizer)
+            IStringLocalizer<AnnualReportControllerMessage> localizer, ICityAccessService cityAccessService, UserManager<User> userManager)
         {
             _annualReportService = annualReportService;
             _userManagerService = userManagerService;
             _loggerService = loggerService;
             _localizer = localizer;
+            _cityAccessService = cityAccessService;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -40,7 +47,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            return StatusCode(StatusCodes.Status200OK, new { annualReports = await _annualReportService.GetAllAsync(User) });
+            return StatusCode(StatusCodes.Status200OK, new { annualReports = await _annualReportService.GetAllAsync(await _userManager.GetUserAsync(User)) });
         }
 
 
@@ -57,7 +64,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                return StatusCode(StatusCodes.Status200OK, new { annualReport = await _annualReportService.GetByIdAsync(User, id)});
+                return StatusCode(StatusCodes.Status200OK, new { annualReport = await _annualReportService.GetByIdAsync(await _userManager.GetUserAsync(User), id)});
             }
             catch (NullReferenceException)
             {
@@ -66,7 +73,7 @@ namespace EPlast.WebApi.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                _loggerService.LogError($"User (id: {await _userManagerService.GetUserIdAsync(User)}) hasn't access to annual report (id: {id})");
+                _loggerService.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to annual report (id: {id})");
                 return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["NoAccess"].Value });
             }
         }
@@ -88,8 +95,9 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    await _annualReportService.CreateAsync(User, annualReport);
-                    _loggerService.LogInformation($"User (id: {await _userManagerService.GetUserIdAsync(User)}) created annual report for city (id: {annualReport.CityId})");
+                    //var user = await _userManager.GetUserAsync(User);
+                    await _annualReportService.CreateAsync(await _userManager.GetUserAsync(User), annualReport);
+                    _loggerService.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) created annual report for city (id: {annualReport.CityId})");
                     return StatusCode(StatusCodes.Status201Created, new { message = _localizer["Created"].Value });
                 }
                 catch (InvalidOperationException)
@@ -99,7 +107,7 @@ namespace EPlast.WebApi.Controllers
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    _loggerService.LogError($"User (id: {await _userManagerService.GetUserIdAsync(User)}) hasn't access to city (id: {annualReport.CityId})");
+                    _loggerService.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to city (id: {annualReport.CityId})");
                     return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["CityNoAccess"].Value });
                 }
                 catch (NullReferenceException)
@@ -131,8 +139,9 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    await _annualReportService.EditAsync(User, annualReport);
-                    _loggerService.LogInformation($"User (id: {await _userManagerService.GetUserIdAsync(User)}) edited annual report (id: {annualReport.ID})");
+                    //var user = await _userManager.GetUserAsync(User);
+                    await _annualReportService.EditAsync(await _userManager.GetUserAsync(User), annualReport);
+                    _loggerService.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) edited annual report (id: {annualReport.ID})");
                     return StatusCode(StatusCodes.Status200OK, new { message = _localizer["Edited"].Value });
                 }
                 catch (InvalidOperationException)
@@ -147,7 +156,7 @@ namespace EPlast.WebApi.Controllers
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    _loggerService.LogError($"User (id: {await _userManagerService.GetUserIdAsync(User)}) hasn't access to edit annual report (id: {annualReport.ID})");
+                    _loggerService.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to edit annual report (id: {annualReport.ID})");
                     return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["NoAccess"].Value });
                 }
             }
@@ -171,8 +180,8 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                await _annualReportService.ConfirmAsync(User, id);
-                _loggerService.LogInformation($"User (id: {await _userManagerService.GetUserIdAsync(User)}) confirmed annual report (id: {id})");
+                await _annualReportService.ConfirmAsync(await _userManager.GetUserAsync(User), id);
+                _loggerService.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) confirmed annual report (id: {id})");
                 return StatusCode(StatusCodes.Status200OK, new { message = _localizer["Confirmed"].Value });
             }
             catch (NullReferenceException)
@@ -182,7 +191,7 @@ namespace EPlast.WebApi.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                _loggerService.LogError($"User (id: {await _userManagerService.GetUserIdAsync(User)}) hasn't access to confirm annual report (id: {id})");
+                _loggerService.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to confirm annual report (id: {id})");
                 return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["NoAccess"].Value });
             }
         }
@@ -201,8 +210,8 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                await _annualReportService.CancelAsync(User, id);
-                _loggerService.LogInformation($"User (id: {await _userManagerService.GetUserIdAsync(User)}) canceled annual report (id: {id})");
+                await _annualReportService.CancelAsync(await _userManager.GetUserAsync(User), id);
+                _loggerService.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) canceled annual report (id: {id})");
                 return StatusCode(StatusCodes.Status200OK, new { message = _localizer["Canceled"].Value });
             }
             catch (NullReferenceException)
@@ -212,7 +221,7 @@ namespace EPlast.WebApi.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                _loggerService.LogError($"User (id: {await _userManagerService.GetUserIdAsync(User)}) hasn't access to cancel annual report (id: {id})");
+                _loggerService.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to cancel annual report (id: {id})");
                 return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["NoAccess"].Value });
             }
         }
@@ -231,8 +240,8 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                await _annualReportService.DeleteAsync(User, id);
-                _loggerService.LogInformation($"User (id: {await _userManagerService.GetUserIdAsync(User)}) deleted annual report (id: {id})");
+                await _annualReportService.DeleteAsync(await _userManager.GetUserAsync(User), id);
+                _loggerService.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) deleted annual report (id: {id})");
                 return StatusCode(StatusCodes.Status200OK, new { message = _localizer["Deleted"].Value });
             }
             catch (NullReferenceException)
@@ -242,7 +251,7 @@ namespace EPlast.WebApi.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                _loggerService.LogError($"User (id: {await _userManagerService.GetUserIdAsync(User)}) hasn't access to delete annual report (id: {id})");
+                _loggerService.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to delete annual report (id: {id})");
                 return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["NoAccess"].Value });
             }
         }
@@ -260,7 +269,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                if (await _annualReportService.CheckCreated(User, cityId))
+                if (await _annualReportService.CheckCreated(await _userManager.GetUserAsync(User), cityId))
                 {
                     return StatusCode(StatusCodes.Status200OK, new { hasCreated = true, message = _localizer["HasReport"].Value });
                 }

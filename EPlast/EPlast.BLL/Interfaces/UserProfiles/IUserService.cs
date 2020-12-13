@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Interfaces.UserProfiles
 {
@@ -65,7 +66,7 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         /// <param name="userId">The id of the selected user</param>
         /// <param name="user">Authorized user</param>
         /// <returns>Can the user approve</returns>
-        Task<bool> CanApproveAsync(IEnumerable<ConfirmedUserDTO> confUsers, string userId, ClaimsPrincipal user);
+        Task<bool> CanApproveAsync(IEnumerable<ConfirmedUserDTO> confUsers, string userId, User user);
 
 
         /// <summary>

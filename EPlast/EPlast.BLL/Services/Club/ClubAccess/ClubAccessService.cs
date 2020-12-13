@@ -27,9 +27,9 @@ namespace EPlast.BLL.Services.Club.ClubAccess
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ClubDTO>> GetClubsAsync(ClaimsPrincipal claimsPrincipal)
+        public async Task<IEnumerable<ClubDTO>> GetClubsAsync(DatabaseEntities.User user)
         {
-            var user = await _userManager.GetUserAsync(claimsPrincipal);
+            //var user = await _userManager.GetUserAsync(claimsPrincipal);
             var roles = await _userManager.GetRolesAsync(user);
             foreach (var key in _ClubAccessGetters.Keys)
             {
@@ -42,9 +42,9 @@ namespace EPlast.BLL.Services.Club.ClubAccess
             return Enumerable.Empty<ClubDTO>();
         }
 
-        public async Task<bool> HasAccessAsync(ClaimsPrincipal claimsPrincipal, int ClubId)
+        public async Task<bool> HasAccessAsync(DatabaseEntities.User user, int ClubId)
         {
-            var cities = await this.GetClubsAsync(claimsPrincipal);
+            var cities = await this.GetClubsAsync(user);
             return cities.Any(c => c.ID == ClubId);
         }
 

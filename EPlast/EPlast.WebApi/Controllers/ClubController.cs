@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -22,6 +24,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IClubDocumentsService _ClubDocumentsService;
         private readonly IClubAccessService _ClubAccessService;
         private readonly IClubAnnualReportService _ClubAnnualReportService;
+        private readonly UserManager<User> _userManager;
 
         public ClubController(ILoggerService<ClubController> logger,
             IMapper mapper,
@@ -29,7 +32,7 @@ namespace EPlast.WebApi.Controllers
             IClubParticipantsService ClubParticipantsService,
             IClubDocumentsService ClubDocumentsService,
             IClubAccessService ClubAccessService,
-            IClubAnnualReportService ClubAnnualReportService)
+            IClubAnnualReportService ClubAnnualReportService, UserManager<User> userManager)
         {
             _logger = logger;
             _mapper = mapper;
@@ -38,6 +41,7 @@ namespace EPlast.WebApi.Controllers
             _ClubDocumentsService = ClubDocumentsService;
             _ClubAccessService = ClubAccessService;
             _ClubAnnualReportService = ClubAnnualReportService;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -80,7 +84,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetProfile(int ClubId)
         {
-            var ClubProfileDto = await _ClubService.GetClubProfileAsync(ClubId, User);
+            var ClubProfileDto = await _ClubService.GetClubProfileAsync(ClubId, await _userManager.GetUserAsync(User));
             if (ClubProfileDto == null)
             {
                 return NotFound();
@@ -109,7 +113,7 @@ namespace EPlast.WebApi.Controllers
             }
 
             var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
-            ClubProfile.CanEdit = await _ClubAccessService.HasAccessAsync(User, ClubId);
+            ClubProfile.CanEdit = await _ClubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), ClubId);
 
             return Ok(new { ClubProfile.Members, ClubProfile.CanEdit, ClubProfile.Name });
         }
@@ -132,7 +136,7 @@ namespace EPlast.WebApi.Controllers
             }
 
             var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
-            ClubProfile.CanEdit = await _ClubAccessService.HasAccessAsync(User, ClubId);
+            ClubProfile.CanEdit = await _ClubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), ClubId);
 
             return Ok(new { ClubProfile.Followers, ClubProfile.CanEdit, ClubProfile.Name});
         }
@@ -155,7 +159,7 @@ namespace EPlast.WebApi.Controllers
             }
 
             var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
-            ClubProfile.CanEdit = await _ClubAccessService.HasAccessAsync(User, ClubId);
+            ClubProfile.CanEdit = await _ClubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), ClubId);
 
             return Ok(new { ClubProfile.Administration, ClubProfile.Head, ClubProfile.CanEdit, ClubProfile.Name });
         }
@@ -178,7 +182,7 @@ namespace EPlast.WebApi.Controllers
             }
 
             var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
-            ClubProfile.CanEdit = await _ClubAccessService.HasAccessAsync(User, ClubId);
+            ClubProfile.CanEdit = await _ClubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), ClubId);
 
             return Ok(new { ClubProfile.Documents, ClubProfile.CanEdit });
         }
@@ -287,7 +291,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> AddFollower(int ClubId)
         {
-            var follower = await _ClubParticipantsService.AddFollowerAsync(ClubId, User);
+            var follower = await _ClubParticipantsService.AddFollowerAsync(ClubId, await _userManager.GetUserAsync(User));
             _logger.LogInformation($"User {{{follower.UserId}}} became a follower of Club {{{ClubId}}}.");
 
             return Ok(follower);
@@ -446,7 +450,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetClubsThatUserHasAccessTo()
         {
-            return Ok(new { Clubs = await _ClubAccessService.GetClubsAsync(User) });
+            return Ok(new { Clubs = await _ClubAccessService.GetClubsAsync(await _userManager.GetUserAsync(User)) });
         }
 
 
@@ -488,7 +492,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня")]
         public async Task<IActionResult> GetAllClubAnnualReports()
         {
-            return StatusCode(StatusCodes.Status200OK, new { clubAnnualReports = await _ClubAnnualReportService.GetAllAsync(User) });
+            return StatusCode(StatusCodes.Status200OK, new { clubAnnualReports = await _ClubAnnualReportService.GetAllAsync(await _userManager.GetUserAsync(User)) });
         }
 
         /// <summary>
@@ -506,7 +510,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                return StatusCode(StatusCodes.Status200OK, new { annualreport = await _ClubAnnualReportService.GetByIdAsync(User, id) });
+                return StatusCode(StatusCodes.Status200OK, new { annualreport = await _ClubAnnualReportService.GetByIdAsync(await _userManager.GetUserAsync(User), id) });
             }
             catch (NullReferenceException)
             {
@@ -527,7 +531,7 @@ namespace EPlast.WebApi.Controllers
                 try
                 {
                     var clubAnnualReport = _mapper.Map<ClubAnnualReportViewModel, ClubAnnualReportDTO>(annualReport);
-                    await _ClubAnnualReportService.CreateAsync(User, clubAnnualReport);
+                    await _ClubAnnualReportService.CreateAsync(await _userManager.GetUserAsync(User), clubAnnualReport);
                 }
                 catch (InvalidOperationException)
                 {
@@ -562,7 +566,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                await _ClubAnnualReportService.ConfirmAsync(User, id);
+                await _ClubAnnualReportService.ConfirmAsync(await _userManager.GetUserAsync(User), id);
                 return Ok();
             }
             catch (NullReferenceException)

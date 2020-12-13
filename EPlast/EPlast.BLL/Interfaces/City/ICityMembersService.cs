@@ -31,7 +31,7 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="user">Current user</param>
         /// <returns>An information about a new follower</returns>
         /// See <see cref="ICityMembersService.AddFollowerAsync(int, string)"/> to add user by id
-        Task<CityMembersDTO> AddFollowerAsync(int cityId, ClaimsPrincipal user);
+        Task<CityMembersDTO> AddFollowerAsync(int cityId, User user);
 
         /// <summary>
         /// Toggle approve status of a specific member

@@ -142,7 +142,7 @@ namespace EPlast.BLL.Interfaces
         /// </summary>
         /// <param name="claimsPrincipal"></param>
         /// <returns>Returns id of user</returns>
-        string GetIdForUser(ClaimsPrincipal claimsPrincipal);
+        Task<string> GetIdForUser(User claimsPrincipal);
 
         /// <summary>
         /// Returns time after registration for user
@@ -163,7 +163,7 @@ namespace EPlast.BLL.Interfaces
         /// </summary>
         /// <param name="claimsPrincipal"></param>
         /// <returns>User who was logged in</returns>
-        Task<UserDTO> GetUserAsync(ClaimsPrincipal claimsPrincipal);
+        Task<UserDTO> GetUserAsync(User claimsPrincipal);
 
         /// <summary>
         /// Sending email for registration

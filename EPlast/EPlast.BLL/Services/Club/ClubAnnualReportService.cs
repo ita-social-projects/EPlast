@@ -10,6 +10,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.BLL.Services.Club
 {
@@ -18,18 +19,20 @@ namespace EPlast.BLL.Services.Club
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IClubAccessService _clubAccessService;
         private readonly IMapper _mapper;
+        private readonly UserManager<User> _userManager;
 
         public ClubAnnualReportService(IRepositoryWrapper repositoryWrapper,
-                                    IClubAccessService clubAccessService, IMapper mapper)
+                                    IClubAccessService clubAccessService, IMapper mapper, UserManager<User> userManager)
         {
             _repositoryWrapper = repositoryWrapper;
             _clubAccessService = clubAccessService;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         ///<inheritdoc/>
 
-        public async Task<ClubAnnualReportDTO> GetByIdAsync(ClaimsPrincipal claimsPrincipal, int id)
+        public async Task<ClubAnnualReportDTO> GetByIdAsync(User claimsPrincipal, int id)
         {
             var clubAnnualReport = await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == id,
@@ -48,7 +51,7 @@ namespace EPlast.BLL.Services.Club
         }
 
         ///<inheritdoc/>
-        public async Task<IEnumerable<ClubAnnualReportDTO>> GetAllAsync(ClaimsPrincipal claimsPrincipal)
+        public async Task<IEnumerable<ClubAnnualReportDTO>> GetAllAsync(User claimsPrincipal)
         {
             var annualReports = await _repositoryWrapper.ClubAnnualReports.GetAllAsync(
                     include: source => source
@@ -59,7 +62,7 @@ namespace EPlast.BLL.Services.Club
             return _mapper.Map<IEnumerable<ClubAnnualReport>, IEnumerable<ClubAnnualReportDTO>>(annualReports);
         }
 
-        public async Task CreateAsync(ClaimsPrincipal claimsPrincipal, ClubAnnualReportDTO clubAnnualReportDTO)
+        public async Task CreateAsync(User claimsPrincipal, ClubAnnualReportDTO clubAnnualReportDTO)
         {
             var club = await _repositoryWrapper.Club.GetFirstOrDefaultAsync(
                 predicate: a => a.ID == clubAnnualReportDTO.ClubId,
@@ -124,7 +127,7 @@ namespace EPlast.BLL.Services.Club
         }
 
         ///<inheritdoc/>
-        public async Task ConfirmAsync(ClaimsPrincipal claimsPrincipal, int id)
+        public async Task ConfirmAsync(User claimsPrincipal, int id)
         {
             var clubAnnualReport = await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed);

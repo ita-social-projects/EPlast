@@ -11,6 +11,8 @@ using Microsoft.Extensions.Localization;
 using System.Threading.Tasks;
 using System.Web;
 using EPlast.BLL.Models;
+using EPlast.DataAccess.Entities;
+using Microsoft.AspNetCore.Identity;
 using NLog.Extensions.Logging;
 
 namespace EPlast.WebApi.Controllers
@@ -26,6 +28,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IHomeService _homeService;
         private readonly IUserDatesService _userDatesService;
         private readonly IStringLocalizer<Genders> _resourceForGender;
+        private readonly UserManager<User> _userManager;
 
 
         public AuthController(IAuthService authService,
@@ -34,7 +37,7 @@ namespace EPlast.WebApi.Controllers
             IJwtService jwtService,
             IHomeService homeService,
             IUserDatesService userDatesService,
-            IStringLocalizer<Genders> resourceForGender)
+            IStringLocalizer<Genders> resourceForGender, UserManager<User> userManager)
         {
             _authService = authService;
             _loggerService = loggerService;
@@ -43,6 +46,7 @@ namespace EPlast.WebApi.Controllers
             _homeService = homeService;
             _userDatesService = userDatesService;
             _resourceForGender = resourceForGender;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -377,7 +381,7 @@ namespace EPlast.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                var userDto = await _authService.GetUserAsync(User);
+                var userDto = await _authService.GetUserAsync(await _userManager.GetUserAsync(User));
                 if (userDto == null)
                 {
                     return BadRequest();

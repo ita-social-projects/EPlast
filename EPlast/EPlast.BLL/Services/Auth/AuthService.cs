@@ -190,9 +190,9 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public string GetIdForUser(ClaimsPrincipal claimsPrincipal)
+        public async Task<string> GetIdForUser(User claimsPrincipal)
         {
-            var currentUserId = _userManager.GetUserId(claimsPrincipal);
+            var currentUserId = await _userManager.GetUserIdAsync(claimsPrincipal);
             return currentUserId;
         }
 
@@ -215,10 +215,10 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async Task<UserDTO> GetUserAsync(ClaimsPrincipal claimsPrincipal)
+        public async Task<UserDTO> GetUserAsync(User claimsPrincipal)
         {
-            var user = await _userManager.GetUserAsync(claimsPrincipal);
-            return _mapper.Map<User, UserDTO>(user);
+            //var user = await _userManager.GetUserAsync(claimsPrincipal);
+            return _mapper.Map<User, UserDTO>(claimsPrincipal);
         }
 
         ///<inheritdoc/>

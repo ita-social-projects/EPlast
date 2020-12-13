@@ -30,7 +30,7 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async Task<AnnualReportDTO> GetByIdAsync(ClaimsPrincipal claimsPrincipal, int id)
+        public async Task<AnnualReportDTO> GetByIdAsync(User user, int id)
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == id,
@@ -38,29 +38,29 @@ namespace EPlast.BLL.Services
                         .Include(a => a.NewCityAdmin)
                         .Include(a => a.MembersStatistic)
                         .Include(a => a.City));
-            return await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId) ? _mapper.Map<AnnualReport, AnnualReportDTO>(annualReport)
+            return await _cityAccessService.HasAccessAsync(user, annualReport.CityId) ? _mapper.Map<AnnualReport, AnnualReportDTO>(annualReport)
                 : throw new UnauthorizedAccessException();
         }
 
         ///<inheritdoc/>
-        public async Task<IEnumerable<AnnualReportDTO>> GetAllAsync(ClaimsPrincipal claimsPrincipal)
+        public async Task<IEnumerable<AnnualReportDTO>> GetAllAsync(User user)
         {
             var annualReports = await _repositoryWrapper.AnnualReports.GetAllAsync(
                     include: source => source
                         .Include(ar => ar.Creator)
                         .Include(ar => ar.City)
                             .ThenInclude(c => c.Region));
-            var citiesDTO = await _cityAccessService.GetCitiesAsync(claimsPrincipal);
+            var citiesDTO = await _cityAccessService.GetCitiesAsync(user);
             var filteredAnnualReports = annualReports.Where(ar => citiesDTO.Any(c => c.ID == ar.CityId));
             return _mapper.Map<IEnumerable<AnnualReport>, IEnumerable<AnnualReportDTO>>(filteredAnnualReports);
         }
 
         ///<inheritdoc/>
-        public async Task CreateAsync(ClaimsPrincipal claimsPrincipal, AnnualReportDTO annualReportDTO)
+        public async Task CreateAsync(User user, AnnualReportDTO annualReportDTO)
         {
             var city = await _repositoryWrapper.City.GetFirstOrDefaultAsync(
                 predicate: a => a.ID == annualReportDTO.CityId);
-            if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, city.ID))
+            if (!await _cityAccessService.HasAccessAsync(user, city.ID))
             {
                 throw new UnauthorizedAccessException();
             }
@@ -69,7 +69,7 @@ namespace EPlast.BLL.Services
                 throw new InvalidOperationException();
             }
             var annualReport = _mapper.Map<AnnualReportDTO, AnnualReport>(annualReportDTO);
-            var user = await _userManager.GetUserAsync(claimsPrincipal);
+            //var user = await _userManager.GetUserAsync(user);
             annualReport.CreatorId = user.Id;
             annualReport.Date = DateTime.Now;
             annualReport.Status = AnnualReportStatus.Unconfirmed;
@@ -78,7 +78,7 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async Task EditAsync(ClaimsPrincipal claimsPrincipal, AnnualReportDTO annualReportDTO)
+        public async Task EditAsync(User user, AnnualReportDTO annualReportDTO)
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == annualReportDTO.ID && a.CityId == annualReportDTO.CityId && a.CreatorId == annualReportDTO.CreatorId
@@ -87,7 +87,7 @@ namespace EPlast.BLL.Services
             {
                 throw new InvalidOperationException();
             }
-            if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
+            if (!await _cityAccessService.HasAccessAsync(user, annualReport.CityId))
             {
                 throw new UnauthorizedAccessException();
             }
@@ -97,11 +97,11 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async Task ConfirmAsync(ClaimsPrincipal claimsPrincipal, int id)
+        public async Task ConfirmAsync(User user, int id)
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed);
-            if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
+            if (!await _cityAccessService.HasAccessAsync(user, annualReport.CityId))
             {
                 throw new UnauthorizedAccessException();
             }
@@ -112,11 +112,11 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async Task CancelAsync(ClaimsPrincipal claimsPrincipal, int id)
+        public async Task CancelAsync(User user, int id)
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == id && a.Status == AnnualReportStatus.Confirmed);
-            if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
+            if (!await _cityAccessService.HasAccessAsync(user, annualReport.CityId))
             {
                 throw new UnauthorizedAccessException();
             }
@@ -126,11 +126,11 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async Task DeleteAsync(ClaimsPrincipal claimsPrincipal, int id)
+        public async Task DeleteAsync(User user, int id)
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed);
-            if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, annualReport.CityId))
+            if (!await _cityAccessService.HasAccessAsync(user, annualReport.CityId))
             {
                 throw new UnauthorizedAccessException();
             }
@@ -139,11 +139,11 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async Task<bool> CheckCreated(ClaimsPrincipal claimsPrincipal, int cityId)
+        public async Task<bool> CheckCreated(User user, int cityId)
         {
             var city = await _repositoryWrapper.City.GetFirstOrDefaultAsync(
                 predicate: a => a.ID == cityId);
-            if (!await _cityAccessService.HasAccessAsync(claimsPrincipal, city.ID))
+            if (!await _cityAccessService.HasAccessAsync(user, city.ID))
             {
                 throw new UnauthorizedAccessException();
             }

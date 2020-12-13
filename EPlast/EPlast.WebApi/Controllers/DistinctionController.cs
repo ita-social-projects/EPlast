@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.BLL;
+using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EPlast.WebApi.Controllers
@@ -14,15 +16,16 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly IDistinctionService _distinctionService;
         private readonly IUserDistinctionService _userDistinctionService;
+        private readonly UserManager<User> _userManager;
 
 
         public DistinctionController(
             IDistinctionService distinctionService, 
-            IUserDistinctionService userDistinctionService
-            )
+            IUserDistinctionService userDistinctionService, UserManager<User> userManager)
         {
             _distinctionService = distinctionService;
             _userDistinctionService = userDistinctionService;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -107,7 +110,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                await _distinctionService.DeleteDistinctionAsync(id, User);
+                await _distinctionService.DeleteDistinctionAsync(id, await _userManager.GetUserAsync(User));
                 return NoContent();
             }
             catch (NullReferenceException) 
@@ -128,7 +131,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                await _userDistinctionService.DeleteUserDistinctionAsync(id, User);
+                await _userDistinctionService.DeleteUserDistinctionAsync(id, await _userManager.GetUserAsync(User));
                 return NoContent();
             }
             catch (NullReferenceException)
@@ -152,7 +155,7 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    await _userDistinctionService.AddUserDistinctionAsync(userDistinctionDTO, User);
+                    await _userDistinctionService.AddUserDistinctionAsync(userDistinctionDTO, await _userManager.GetUserAsync(User));
                     return NoContent();
                 }
                 catch (NullReferenceException)
@@ -175,7 +178,7 @@ namespace EPlast.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _distinctionService.AddDistinctionAsync(distinctionDTO, User);
+                await _distinctionService.AddDistinctionAsync(distinctionDTO, await _userManager.GetUserAsync(User));
                 return NoContent();
             }
             return BadRequest(ModelState);
@@ -196,7 +199,7 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    await _userDistinctionService.ChangeUserDistinctionAsync(userDistinctionDTO, User);
+                    await _userDistinctionService.ChangeUserDistinctionAsync(userDistinctionDTO, await _userManager.GetUserAsync(User));
                     return NoContent();
                 }
                 catch (NullReferenceException)
@@ -222,7 +225,7 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    await _distinctionService.ChangeDistinctionAsync(distinctionDTO, User);
+                    await _distinctionService.ChangeDistinctionAsync(distinctionDTO, await _userManager.GetUserAsync(User));
                     return NoContent();
                 }
                 catch (NullReferenceException)

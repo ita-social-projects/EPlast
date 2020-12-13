@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.BLL
 {
@@ -12,33 +14,35 @@ namespace EPlast.BLL
     {
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repoWrapper;
+        private readonly UserManager<User> _userManager;
 
 
-        public DistinctionService(IMapper mapper, IRepositoryWrapper repoWrapper)
+        public DistinctionService(IMapper mapper, IRepositoryWrapper repoWrapper, UserManager<User> userManager)
         {
             _mapper = mapper;
             _repoWrapper = repoWrapper;
+            _userManager = userManager;
         }
-        public async Task AddDistinctionAsync(DistinctionDTO distinctionDTO, ClaimsPrincipal user)
+        public async Task AddDistinctionAsync(DistinctionDTO distinctionDTO, User user)
         {
-            CheckIfAdmin(user);
+            await CheckIfAdminAsync(user);
             var distinction = _mapper.Map<DistinctionDTO, Distinction>(distinctionDTO);
             await _repoWrapper.Distinction.CreateAsync(distinction);
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task ChangeDistinctionAsync(DistinctionDTO distinctionDTO, ClaimsPrincipal user)
+        public async Task ChangeDistinctionAsync(DistinctionDTO distinctionDTO, User user)
         {
-            CheckIfAdmin(user);
+            await CheckIfAdminAsync(user);
             var distinction = await _repoWrapper.Distinction.GetFirstAsync(x => x.Id == distinctionDTO.Id);
             distinction.Name = distinctionDTO.Name;
             _repoWrapper.Distinction.Update(distinction);
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task DeleteDistinctionAsync(int id, ClaimsPrincipal user)
+        public async Task DeleteDistinctionAsync(int id, User user)
         {
-            CheckIfAdmin(user);
+            await CheckIfAdminAsync(user);
             var distinction = (await _repoWrapper.Distinction.GetFirstAsync(d => d.Id == id));
             if (distinction == null)
                 throw new ArgumentNullException($"Distinction with {id} not found");
@@ -56,9 +60,9 @@ namespace EPlast.BLL
             return distinction;
         }
 
-        public void CheckIfAdmin(ClaimsPrincipal user)
+        public async Task CheckIfAdminAsync(User user)
         {
-            if (!user.IsInRole("Admin"))
+            if(!(await _userManager.GetRolesAsync(user)).Contains("Admin"))
                 throw new UnauthorizedAccessException();
         }
     }

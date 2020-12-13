@@ -19,9 +19,9 @@ namespace EPlast.BLL.Services
             _userManager = userManager;
         }
 
-        public async Task CreateAsync(ClaimsPrincipal user, string userId, bool isClubAdmin = false, bool isCityAdmin = false)
+        public async Task CreateAsync(User user, string userId, bool isClubAdmin = false, bool isCityAdmin = false)
         {
-            var id = await _userManager.GetUserIdAsync(await _userManager.GetUserAsync(user));
+            var id = await _userManager.GetUserIdAsync(user);
             var conUser = new ConfirmedUser { UserID = userId, ConfirmDate = DateTime.Now, isClubAdmin = isClubAdmin, isCityAdmin = isCityAdmin };
             var appUser = new Approver { UserID = id, ConfirmedUser = conUser };
             conUser.Approver = appUser;

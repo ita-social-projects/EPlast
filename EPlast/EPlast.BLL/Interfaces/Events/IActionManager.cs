@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Interfaces.Events
 {
@@ -34,7 +35,7 @@ namespace EPlast.BLL.Interfaces.Events
         /// <param name="eventTypeId">The Id of event type</param>
         /// <param name="categoryId">The Id of event category</param>
         /// <param name="user">ClaimsPrincipal of logged in user</param>
-        Task<List<GeneralEventDTO>> GetEventsAsync(int categoryId, int eventTypeId, ClaimsPrincipal user);
+        Task<List<GeneralEventDTO>> GetEventsAsync(int categoryId, int eventTypeId, User user);
 
         /// <summary>
         /// Get detailed information about event by event Id.
@@ -42,7 +43,7 @@ namespace EPlast.BLL.Interfaces.Events
         /// <returns>A detailed information about specific event.</returns>
         /// <param name="id">The Id of event</param>
         /// <param name="user">ClaimsPrincipal of logged in user</param>
-        Task<EventDTO> GetEventInfoAsync(int id, ClaimsPrincipal user);
+        Task<EventDTO> GetEventInfoAsync(int id, User user);
 
         /// <summary>
         /// Get pictures in Base64 format by event Id.
@@ -64,7 +65,7 @@ namespace EPlast.BLL.Interfaces.Events
         /// <returns>Status code of the subscribing on event operation.</returns>
         /// <param name="id">The Id of event</param>
         /// <param name="user">ClaimsPrincipal of logged in user</param>
-        Task<int> SubscribeOnEventAsync(int id, ClaimsPrincipal user);
+        Task<int> SubscribeOnEventAsync(int id, User user);
 
         /// <summary>
         /// Delete event participant by event id.
@@ -72,7 +73,7 @@ namespace EPlast.BLL.Interfaces.Events
         /// <returns>Status code of the unsubscribing on event operation.</returns>
         /// <param name="id">The Id of event</param>
         /// <param name="user">ClaimsPrincipal of logged in user</param>
-        Task<int> UnSubscribeOnEventAsync(int id, ClaimsPrincipal user);
+        Task<int> UnSubscribeOnEventAsync(int id, User user);
 
         /// <summary>
         /// Set an estimate of the participant's event.
@@ -81,7 +82,7 @@ namespace EPlast.BLL.Interfaces.Events
         /// <param name="eventId">The Id of event</param>
         /// <param name="user">ClaimsPrincipal of logged in user</param>
         /// <param name="estimate">The value of estimate</param>
-        Task<int> EstimateEventAsync(int eventId, ClaimsPrincipal user, double estimate);
+        Task<int> EstimateEventAsync(int eventId, User user, double estimate);
 
         /// <summary>
         /// Change event participant status to approved.
@@ -121,6 +122,6 @@ namespace EPlast.BLL.Interfaces.Events
 
         Task CheckEventsStatusesAsync();
 
-        Task<List<GeneralEventDTO>> GetEventsByStatusAsync(int categoryId, int typeId, int status, ClaimsPrincipal user);
+        Task<List<GeneralEventDTO>> GetEventsByStatusAsync(int categoryId, int typeId, int status, User user);
     }
 }

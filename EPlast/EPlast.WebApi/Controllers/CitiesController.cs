@@ -10,6 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.UserProfiles;
+using EPlast.DataAccess.Entities;
+using Microsoft.AspNetCore.Identity;
 using AnnualReportDTOs = EPlast.BLL.DTO.AnnualReport;
 
 namespace EPlast.WebApi.Controllers
@@ -25,6 +28,7 @@ namespace EPlast.WebApi.Controllers
         private readonly ICityAdministrationService _cityAdministrationService;
         private readonly ICityDocumentsService _cityDocumentsService;
         private readonly ICityAccessService _cityAccessService;
+        private readonly UserManager<User> userManager;
 
         public CitiesController(ILoggerService<CitiesController> logger,
             IMapper mapper,
@@ -32,7 +36,7 @@ namespace EPlast.WebApi.Controllers
             ICityMembersService cityMembersService,
             ICityAdministrationService cityAdministrationService,
             ICityDocumentsService cityDocumentsService,
-            ICityAccessService cityAccessService)
+            ICityAccessService cityAccessService, UserManager<User> userManager)
         {
             _logger = logger;
             _mapper = mapper;
@@ -41,6 +45,7 @@ namespace EPlast.WebApi.Controllers
             _cityAdministrationService = cityAdministrationService;
             _cityDocumentsService = cityDocumentsService;
             _cityAccessService = cityAccessService;
+            this.userManager = userManager;
         }
 
         /// <summary>
@@ -82,7 +87,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetProfile(int cityId)
         {
-            var cityProfileDto = await _cityService.GetCityProfileAsync(cityId, User);
+            var cityProfileDto = await _cityService.GetCityProfileAsync(cityId, await userManager.GetUserAsync(User));
             if (cityProfileDto == null)
             {
                 return NotFound();
@@ -111,7 +116,7 @@ namespace EPlast.WebApi.Controllers
             }
 
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
-            cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(User, cityId);
+            cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(await userManager.GetUserAsync(User), cityId);
 
             return Ok(new { cityProfile.Members, cityProfile.CanEdit, cityProfile.Name });
         }
@@ -134,7 +139,7 @@ namespace EPlast.WebApi.Controllers
             }
 
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
-            cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(User, cityId);
+            cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(await userManager.GetUserAsync(User), cityId);
 
             return Ok(new { cityProfile.Followers, cityProfile.CanEdit, cityProfile.Name });
         }
@@ -157,7 +162,7 @@ namespace EPlast.WebApi.Controllers
             }
 
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
-            cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(User, cityId);
+            cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(await userManager.GetUserAsync(User), cityId);
 
             return Ok(new { cityProfile.Administration, cityProfile.Head, cityProfile.CanEdit, cityProfile.Name });
         }
@@ -180,7 +185,7 @@ namespace EPlast.WebApi.Controllers
             }
 
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
-            cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(User, cityId);
+            cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(await userManager.GetUserAsync(User), cityId);
 
             return Ok(new { cityProfile.Documents, cityProfile.CanEdit });
         }
@@ -289,7 +294,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> AddFollower(int cityId)
         {
-            var follower = await _cityMembersService.AddFollowerAsync(cityId, User);
+            var follower = await _cityMembersService.AddFollowerAsync(cityId, await userManager.GetUserAsync(User));
             _logger.LogInformation($"User {{{follower.UserId}}} became a follower of city {{{cityId}}}.");
 
             return Ok(follower);
@@ -467,7 +472,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetCitiesThatUserHasAccessTo()
         {
-            return Ok(new { cities = await _cityAccessService.GetCitiesAsync(User) });
+            return Ok(new { cities = await _cityAccessService.GetCitiesAsync(await userManager.GetUserAsync(User)) });
         }
 
 

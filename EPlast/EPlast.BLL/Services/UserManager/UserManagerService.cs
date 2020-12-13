@@ -35,31 +35,31 @@ namespace EPlast.BLL.Services
             return false;
         }
 
-        public async Task<bool> IsInRoleAsync(ClaimsPrincipal user, params string[] roles)
-        {
+        //public async Task<bool> IsInRoleAsync(ClaimsPrincipal user, params string[] roles)
+        //{
 
-            var userFirst = await _userManager.GetUserAsync(user);
+        //    var userFirst = await _userManager.GetUserAsync(user);
 
-            foreach (var i in roles)
-            {
-                if (await _userManager.IsInRoleAsync(userFirst, i))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
+        //    foreach (var i in roles)
+        //    {
+        //        if (await _userManager.IsInRoleAsync(userFirst, i))
+        //        {
+        //            return true;
+        //        }
+        //    }
+        //    return false;
+        //}
 
-        public async Task<string> GetUserIdAsync(ClaimsPrincipal user)
-        {
-            var userAsync = await _userManager.GetUserAsync(user);
-            if (userAsync == null)
-            {
-                // Return null if User not authorized.
-                return null;
-            }
-            return _userManager.GetUserId(user);
-        }
+        //public async Task<string> GetUserIdAsync(ClaimsPrincipal user)
+        //{
+        //    var userAsync = await _userManager.GetUserAsync(user);
+        //    if (userAsync == null)
+        //    {
+        //        // Return null if User not authorized.
+        //        return null;
+        //    }
+        //    return _userManager.GetUserId(user);
+        //}
 
         public async Task<UserDTO> FindByIdAsync(string userId)
         {
