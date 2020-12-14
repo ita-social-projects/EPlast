@@ -368,39 +368,6 @@ namespace EPlast.XUnitTest.Services
         }
 
         [Fact]
-        public void GetIdForUserTest()
-        {
-            //Arrange
-            var (mockSignInManager, mockUserManager, mockEmailConfirmation, AuthService) = CreateAuthService();
-            mockUserManager
-                .Setup(s => s.GetUserId(It.IsAny<ClaimsPrincipal>()))
-                .Returns(GetTestIdForUser());
-
-            //Act
-            var result = AuthService.GetIdForUser(ClaimsPrincipal.Current);
-
-            //Assert
-            Assert.NotNull(result);
-            Assert.Equal("aaaa-bbbb-cccc", result);
-        }
-
-        [Fact]
-        public void GetIdForUserTestReturnNull()
-        {
-            //Arrange
-            var (mockSignInManager, mockUserManager, mockEmailConfirmation, AuthService) = CreateAuthService();
-            mockUserManager
-                .Setup(s => s.GetUserId(It.IsAny<ClaimsPrincipal>()))
-                .Returns((string)null);
-
-            //Act
-            var result = AuthService.GetIdForUser(ClaimsPrincipal.Current);
-
-            //Assert
-            Assert.Null(result);
-        }
-
-        [Fact]
         public void GetTimeAfterRegistrTest()
         {
             //Arrange
