@@ -2,6 +2,7 @@
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Logging;
+using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Controllers;
 using EPlast.WebApi.Models.City;
 using Microsoft.AspNetCore.Http;
@@ -78,7 +79,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetProfile_Valid_Test(int id)
         {
 
-            _cityService.Setup(c => c.GetCityProfileAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+            _cityService.Setup(c => c.GetCityProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(new CityProfileDTO());
 
             _mapper.Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
@@ -137,7 +138,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetProfile_Invalid_Test(int id)
         {
 
-            _cityService.Setup(c => c.GetCityProfileAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+            _cityService.Setup(c => c.GetCityProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(() => null);
 
             _mapper.Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
@@ -174,7 +175,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetProfile_Invalid_Test()
         {
 
-            _cityService.Setup(c => c.GetCityProfileAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+            _cityService.Setup(c => c.GetCityProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(() => null);
 
             CitiesController citycon = CreateCityController;
@@ -414,7 +415,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task AddFollower_Valid_Test()
         {
-            _cityMembersService.Setup(c => c.AddFollowerAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+            _cityMembersService.Setup(c => c.AddFollowerAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(new CityMembersDTO());
 
             _logger.Setup(l => l.LogInformation(It.IsAny<string>()));
@@ -520,7 +521,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetCitiesThatUserHasAccessTo_Valid_Test()
         {
 
-            _cityAccessService.Setup(c => c.GetCitiesAsync(It.IsAny<ClaimsPrincipal>()));
+            _cityAccessService.Setup(c => c.GetCitiesAsync(It.IsAny<User>()));
 
             CitiesController citycon = CreateCityController;
 

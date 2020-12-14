@@ -11,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BLL.Interfaces.City;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
 
@@ -22,20 +21,16 @@ namespace EPlast.WebApi.Controllers
     public class AnnualReportController : ControllerBase
     {
         private readonly IAnnualReportService _annualReportService;
-        private readonly IUserManagerService _userManagerService;
         private readonly ILoggerService<AnnualReportController> _loggerService;
         private readonly IStringLocalizer<AnnualReportControllerMessage> _localizer;
-        private readonly ICityAccessService _cityAccessService;
         private readonly UserManager<User> _userManager;
 
-        public AnnualReportController(IAnnualReportService annualReportService, IUserManagerService userManagerService, ILoggerService<AnnualReportController> loggerService,
-            IStringLocalizer<AnnualReportControllerMessage> localizer, ICityAccessService cityAccessService, UserManager<User> userManager)
+        public AnnualReportController(IAnnualReportService annualReportService, ILoggerService<AnnualReportController> loggerService,
+            IStringLocalizer<AnnualReportControllerMessage> localizer, UserManager<User> userManager)
         {
             _annualReportService = annualReportService;
-            _userManagerService = userManagerService;
             _loggerService = loggerService;
             _localizer = localizer;
-            _cityAccessService = cityAccessService;
             _userManager = userManager;
         }
 

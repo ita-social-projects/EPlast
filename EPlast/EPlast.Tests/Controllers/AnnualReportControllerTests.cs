@@ -1,16 +1,17 @@
 ﻿using EPlast.BLL.DTO.AnnualReport;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Services.Interfaces;
+using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
@@ -19,34 +20,31 @@ namespace EPlast.Tests.Controllers
     {
 
         private readonly Mock<IAnnualReportService> _annualReportService;
-
-
-        private readonly Mock<IUserManagerService> _userManagerService;
         private readonly Mock<ILoggerService<AnnualReportController>> _loggerService;
         private readonly Mock<IStringLocalizer<AnnualReportControllerMessage>> _localizer;
+        private readonly Mock<UserManager<User>> _userManager;
 
 
         public AnnualReportControllerTest()
         {
             _annualReportService = new Mock<IAnnualReportService>();
-            _userManagerService = new Mock<IUserManagerService>();
             _loggerService = new Mock<ILoggerService<AnnualReportController>>();
             _localizer = new Mock<IStringLocalizer<AnnualReportControllerMessage>>();
-
+            _userManager = new Mock<UserManager<User>>();
         }
 
         private AnnualReportController CreateAnnualReportController => new AnnualReportController(
             _annualReportService.Object,
-            _userManagerService.Object,
             _loggerService.Object,
-            _localizer.Object
+            _localizer.Object,
+            _userManager.Object
             );
 
 
         [Test]
         public async Task Get_Valid_Test()
         {
-            _annualReportService.Setup(a => a.GetAllAsync(It.IsAny<ClaimsPrincipal>()))
+            _annualReportService.Setup(a => a.GetAllAsync(It.IsAny<User>()))
                .ReturnsAsync(new List<AnnualReportDTO>());
 
             AnnualReportController annualController = CreateAnnualReportController;
@@ -68,7 +66,7 @@ namespace EPlast.Tests.Controllers
         public async Task Get_Invalid_NullRefException_Test()
         {
 
-            _annualReportService.Setup(a => a.GetByIdAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
+            _annualReportService.Setup(a => a.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
                .Throws(new NullReferenceException());
 
             _localizer
@@ -103,7 +101,7 @@ namespace EPlast.Tests.Controllers
         public async Task Get_InvalidUnauthorisedAccessException_ExceptionTest()
         {
 
-            _annualReportService.Setup(a => a.GetByIdAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
+            _annualReportService.Setup(a => a.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
                .Throws(new UnauthorizedAccessException());
 
             _localizer
@@ -140,7 +138,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetWithparam_Valid_Test()
         {
 
-            _annualReportService.Setup(a => a.GetByIdAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
+            _annualReportService.Setup(a => a.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
                .ReturnsAsync(new AnnualReportDTO());
 
 
@@ -168,9 +166,9 @@ namespace EPlast.Tests.Controllers
         public async Task Create_Valid_Test()
         {
 
-            _annualReportService.Setup(a => a.CreateAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AnnualReportDTO>()));
+            _annualReportService.Setup(a => a.CreateAsync(It.IsAny<User>(), It.IsAny<AnnualReportDTO>()));
 
-            _userManagerService.Setup(a => a.GetUserIdAsync(It.IsAny<ClaimsPrincipal>()));
+            _userManager.Setup(a => a.GetUserIdAsync(It.IsAny<User>()));
 
             _loggerService.Setup(l => l.LogInformation(It.IsAny<string>()));
 
@@ -217,14 +215,11 @@ namespace EPlast.Tests.Controllers
         }
 
 
-
-
-
         [Test]
         public async Task Create_Invalid_InvalidOperationException_Test()
         {
 
-            _annualReportService.Setup(a => a.CreateAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AnnualReportDTO>()))
+            _annualReportService.Setup(a => a.CreateAsync(It.IsAny<User>(), It.IsAny<AnnualReportDTO>()))
                 .Throws(new InvalidOperationException());
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
@@ -259,10 +254,10 @@ namespace EPlast.Tests.Controllers
         public async Task Create_Invalid_UnAuthorisedException_Test()
         {
 
-            _annualReportService.Setup(a => a.CreateAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AnnualReportDTO>()))
+            _annualReportService.Setup(a => a.CreateAsync(It.IsAny<User>(), It.IsAny<AnnualReportDTO>()))
                 .Throws(new UnauthorizedAccessException());
 
-            _userManagerService.Setup(a => a.GetUserIdAsync(It.IsAny<ClaimsPrincipal>()));
+            _userManager.Setup(a => a.GetUserIdAsync(It.IsAny<User>()));
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
 
@@ -296,7 +291,7 @@ namespace EPlast.Tests.Controllers
         public async Task Create_Invalid_NullReferenceFoundException_Test()
         {
 
-            _annualReportService.Setup(a => a.CreateAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AnnualReportDTO>()))
+            _annualReportService.Setup(a => a.CreateAsync(It.IsAny<User>(), It.IsAny<AnnualReportDTO>()))
                 .Throws(new NullReferenceException());
 
 
@@ -334,9 +329,9 @@ namespace EPlast.Tests.Controllers
         public async Task Edit_Valid_Test()
         {
 
-            _annualReportService.Setup(a => a.EditAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AnnualReportDTO>()));
+            _annualReportService.Setup(a => a.EditAsync(It.IsAny<User>(), It.IsAny<AnnualReportDTO>()));
 
-            _annualReportService.Setup(a => a.GetByIdAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
+            _annualReportService.Setup(a => a.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
                .ReturnsAsync(new AnnualReportDTO());
 
             _localizer
@@ -386,7 +381,7 @@ namespace EPlast.Tests.Controllers
         public async Task Edit_Invalid_InvalidOperationException_Test()
         {
 
-            _annualReportService.Setup(a => a.EditAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AnnualReportDTO>()))
+            _annualReportService.Setup(a => a.EditAsync(It.IsAny<User>(), It.IsAny<AnnualReportDTO>()))
                 .Throws(new InvalidOperationException());
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
@@ -420,7 +415,7 @@ namespace EPlast.Tests.Controllers
         public async Task Edit_Invalid_NullReferenceException_Test()
         {
 
-            _annualReportService.Setup(a => a.EditAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AnnualReportDTO>()))
+            _annualReportService.Setup(a => a.EditAsync(It.IsAny<User>(), It.IsAny<AnnualReportDTO>()))
                 .Throws(new NullReferenceException());
 
 
@@ -454,10 +449,10 @@ namespace EPlast.Tests.Controllers
         public async Task Edit_Invalid_UnAuthorisedException_Test()
         {
 
-            _annualReportService.Setup(a => a.EditAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AnnualReportDTO>()))
+            _annualReportService.Setup(a => a.EditAsync(It.IsAny<User>(), It.IsAny<AnnualReportDTO>()))
                 .Throws(new UnauthorizedAccessException());
 
-            _userManagerService.Setup(a => a.GetUserIdAsync(It.IsAny<ClaimsPrincipal>()));
+            _userManager.Setup(a => a.GetUserIdAsync(It.IsAny<User>()));
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
 
@@ -489,9 +484,9 @@ namespace EPlast.Tests.Controllers
         public async Task Confirm_Valid_Test()
         {
 
-            _annualReportService.Setup(a => a.ConfirmAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()));
+            _annualReportService.Setup(a => a.ConfirmAsync(It.IsAny<User>(), It.IsAny<int>()));
 
-            _userManagerService.Setup(a => a.GetUserIdAsync(It.IsAny<ClaimsPrincipal>()));
+            _userManager.Setup(a => a.GetUserIdAsync(It.IsAny<User>()));
 
             _loggerService.Setup(l => l.LogInformation(It.IsAny<string>()));
 
@@ -522,10 +517,10 @@ namespace EPlast.Tests.Controllers
         public async Task Confirm_Invalid_UnAuthorisedException_Test()
         {
 
-            _annualReportService.Setup(a => a.ConfirmAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
+            _annualReportService.Setup(a => a.ConfirmAsync(It.IsAny<User>(), It.IsAny<int>()))
                 .Throws(new UnauthorizedAccessException());
 
-            _userManagerService.Setup(a => a.GetUserIdAsync(It.IsAny<ClaimsPrincipal>()));
+            _userManager.Setup(a => a.GetUserIdAsync(It.IsAny<User>()));
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
 
@@ -556,7 +551,7 @@ namespace EPlast.Tests.Controllers
         public async Task Confirm_Invalid_NullReferenceException_Test()
         {
 
-            _annualReportService.Setup(a => a.ConfirmAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
+            _annualReportService.Setup(a => a.ConfirmAsync(It.IsAny<User>(), It.IsAny<int>()))
                  .Throws(new NullReferenceException());
 
 
@@ -592,9 +587,9 @@ namespace EPlast.Tests.Controllers
         public async Task Cancel_Valid_Test()
         {
 
-            _annualReportService.Setup(a => a.CancelAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()));
+            _annualReportService.Setup(a => a.CancelAsync(It.IsAny<User>(), It.IsAny<int>()));
 
-            _userManagerService.Setup(a => a.GetUserIdAsync(It.IsAny<ClaimsPrincipal>()));
+            _userManager.Setup(a => a.GetUserIdAsync(It.IsAny<User>()));
 
             _loggerService.Setup(l => l.LogInformation(It.IsAny<string>()));
 
@@ -624,7 +619,7 @@ namespace EPlast.Tests.Controllers
         public async Task Cancel_Invalid_NullReferenceException_Test()
         {
 
-            _annualReportService.Setup(a => a.CancelAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
+            _annualReportService.Setup(a => a.CancelAsync(It.IsAny<User>(), It.IsAny<int>()))
                  .Throws(new NullReferenceException());
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
@@ -656,10 +651,10 @@ namespace EPlast.Tests.Controllers
         public async Task Cancel_Invalid_UnAuthorisedException_Test()
         {
 
-            _annualReportService.Setup(a => a.CancelAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
+            _annualReportService.Setup(a => a.CancelAsync(It.IsAny<User>(), It.IsAny<int>()))
                 .Throws(new UnauthorizedAccessException());
 
-            _userManagerService.Setup(a => a.GetUserIdAsync(It.IsAny<ClaimsPrincipal>()));
+            _userManager.Setup(a => a.GetUserIdAsync(It.IsAny<User>()));
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
 
@@ -690,9 +685,9 @@ namespace EPlast.Tests.Controllers
         public async Task Delete_Valid_Test()
         {
 
-            _annualReportService.Setup(a => a.DeleteAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()));
+            _annualReportService.Setup(a => a.DeleteAsync(It.IsAny<User>(), It.IsAny<int>()));
 
-            _userManagerService.Setup(a => a.GetUserIdAsync(It.IsAny<ClaimsPrincipal>()));
+            _userManager.Setup(a => a.GetUserIdAsync(It.IsAny<User>()));
 
             _loggerService.Setup(l => l.LogInformation(It.IsAny<string>()));
 
@@ -722,7 +717,7 @@ namespace EPlast.Tests.Controllers
         public async Task Delete_Invalid_NullReferenceException_Test()
         {
 
-            _annualReportService.Setup(a => a.DeleteAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
+            _annualReportService.Setup(a => a.DeleteAsync(It.IsAny<User>(), It.IsAny<int>()))
                  .Throws(new NullReferenceException());
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
@@ -752,10 +747,10 @@ namespace EPlast.Tests.Controllers
         public async Task Delete_Invalid_UnAuthorisedException_Test()
         {
 
-            _annualReportService.Setup(a => a.DeleteAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
+            _annualReportService.Setup(a => a.DeleteAsync(It.IsAny<User>(), It.IsAny<int>()))
                 .Throws(new UnauthorizedAccessException());
 
-            _userManagerService.Setup(a => a.GetUserIdAsync(It.IsAny<ClaimsPrincipal>()));
+            _userManager.Setup(a => a.GetUserIdAsync(It.IsAny<User>()));
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
 
@@ -787,7 +782,7 @@ namespace EPlast.Tests.Controllers
         public async Task CheckCreated_Valid_Test()
         {
 
-            _annualReportService.Setup(a => a.CheckCreated(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
+            _annualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
                 .ReturnsAsync(true);
 
             _localizer
@@ -815,7 +810,7 @@ namespace EPlast.Tests.Controllers
         public async Task CheckCreated_Invalid_NotCreated_Test()
         {
 
-            _annualReportService.Setup(a => a.CheckCreated(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
+            _annualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
                 .ReturnsAsync(false);
 
             AnnualReportController annualController = CreateAnnualReportController;
@@ -837,7 +832,7 @@ namespace EPlast.Tests.Controllers
         public async Task CheckCreated_Invalid_NullReferenceException_Test()
         {
 
-            _annualReportService.Setup(a => a.CheckCreated(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
+            _annualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
                 .Throws(new NullReferenceException());
 
 
@@ -868,7 +863,7 @@ namespace EPlast.Tests.Controllers
         public async Task CheckCreated_Invalid_UnauthorizedAccessException_Test()
         {
 
-            _annualReportService.Setup(a => a.CheckCreated(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>()))
+            _annualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
                 .Throws(new UnauthorizedAccessException());
 
             _localizer

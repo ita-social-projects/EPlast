@@ -3,6 +3,7 @@ using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Services.City.CityAccess;
 using EPlast.BLL.Settings;
+using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
@@ -51,7 +52,7 @@ namespace EPlast.XUnitTest.Services.City
                 .ReturnsAsync(new List<DatabaseEntities.City> { new DatabaseEntities.City() });
 
             // Act
-            await _cityAccessService.GetCitiesAsync(It.IsAny<ClaimsPrincipal>());
+            await _cityAccessService.GetCitiesAsync(It.IsAny<User>());
 
             // Assert
             _mapper.Verify(m => m.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityDTO>>(It.IsAny<IEnumerable<DatabaseEntities.City>>()));
@@ -73,7 +74,7 @@ namespace EPlast.XUnitTest.Services.City
                         .ReturnsAsync(new List<DatabaseEntities.City> { new DatabaseEntities.City() });
 
             // Act
-            await _cityAccessService.GetCitiesAsync(It.IsAny<ClaimsPrincipal>());
+            await _cityAccessService.GetCitiesAsync(It.IsAny<User>());
 
             // Assert
             _repositoryWrapper.Verify(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(),
@@ -96,7 +97,7 @@ namespace EPlast.XUnitTest.Services.City
                 .ReturnsAsync(new List<DatabaseEntities.City> { new DatabaseEntities.City() });
 
             // Act
-            await _cityAccessService.GetCitiesAsync(It.IsAny<ClaimsPrincipal>());
+            await _cityAccessService.GetCitiesAsync(It.IsAny<User>());
 
             // Assert
             _repositoryWrapper.Verify(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(), null), Times.Never);
@@ -118,7 +119,7 @@ namespace EPlast.XUnitTest.Services.City
                         .ReturnsAsync(new List<DatabaseEntities.City> { new DatabaseEntities.City() });
 
             // Act
-            await _cityAccessService.GetCitiesAsync(It.IsAny<ClaimsPrincipal>());
+            await _cityAccessService.GetCitiesAsync(It.IsAny<User>());
 
             // Assert
             _repositoryWrapper.Verify(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(),
@@ -140,7 +141,7 @@ namespace EPlast.XUnitTest.Services.City
                 .ReturnsAsync(new List<DatabaseEntities.City> { new DatabaseEntities.City() });
 
             // Act
-            await _cityAccessService.GetCitiesAsync(It.IsAny<ClaimsPrincipal>());
+            await _cityAccessService.GetCitiesAsync(It.IsAny<User>());
 
             // Assert
             _repositoryWrapper.Verify(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(), null), Times.Never);
@@ -157,7 +158,7 @@ namespace EPlast.XUnitTest.Services.City
                 .ReturnsAsync(Enumerable.Empty<string>().ToList());
 
             // Act
-            await _cityAccessService.GetCitiesAsync(It.IsAny<ClaimsPrincipal>());
+            await _cityAccessService.GetCitiesAsync(It.IsAny<User>());
 
             // Assert
             _mapper.Verify(m => m.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityDTO>>(It.IsAny<IEnumerable<DatabaseEntities.City>>()), Times.Never);
@@ -179,7 +180,7 @@ namespace EPlast.XUnitTest.Services.City
                 .Returns(new List<CityDTO> { new CityDTO() { ID = 1 } });
 
             // Act
-            var result = await _cityAccessService.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), 1);
+            var result = await _cityAccessService.HasAccessAsync(It.IsAny<User>(), 1);
 
             // Assert
             Assert.True(result);
@@ -201,7 +202,7 @@ namespace EPlast.XUnitTest.Services.City
                 .Returns(new List<CityDTO> { new CityDTO() { ID = 1 } });
 
             // Act
-            var result = await _cityAccessService.HasAccessAsync(It.IsAny<ClaimsPrincipal>(), 2);
+            var result = await _cityAccessService.HasAccessAsync(It.IsAny<User>(), 2);
 
             // Assert
             Assert.False(result);

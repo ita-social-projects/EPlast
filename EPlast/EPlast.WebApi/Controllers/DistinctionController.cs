@@ -21,7 +21,8 @@ namespace EPlast.WebApi.Controllers
 
         public DistinctionController(
             IDistinctionService distinctionService, 
-            IUserDistinctionService userDistinctionService, UserManager<User> userManager)
+            IUserDistinctionService userDistinctionService,
+            UserManager<User> userManager)
         {
             _distinctionService = distinctionService;
             _userDistinctionService = userDistinctionService;
