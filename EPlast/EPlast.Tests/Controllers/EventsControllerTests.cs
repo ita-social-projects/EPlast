@@ -7,6 +7,7 @@ using EPlast.BLL.Interfaces.Events;
 using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
@@ -19,14 +20,18 @@ namespace EPlast.Tests.Controllers
         private Mock<IActionManager> _actionManager;
 
         private EventsController _eventsController;
+        private Mock<UserManager<User>> _userManager;
 
         [SetUp]
         public void SetUp()
         {
             _actionManager = new Mock<IActionManager>();
+            var store = new Mock<IUserStore<User>>();
+            _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
 
             _eventsController = new EventsController(
-                _actionManager.Object);
+                _actionManager.Object,
+                _userManager.Object);
         }
 
         [Test]

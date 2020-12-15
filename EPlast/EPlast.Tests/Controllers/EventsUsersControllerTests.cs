@@ -19,14 +19,16 @@ namespace EPlast.Tests.Controllers
         private Mock<IEventUserService> eventUserService;
 
         private EventsUsersController eventsUsersController;
-        private readonly Mock<UserManager<User>> userManager;
+        private Mock<UserManager<User>> userManager;
+
 
         [SetUp]
         public void SetUp()
         {
             eventUserManager = new Mock<IEventUserManager>();
             eventUserService = new Mock<IEventUserService>();
-
+            var store = new Mock<IUserStore<User>>();
+            userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             eventsUsersController = new EventsUsersController(eventUserManager.Object, eventUserService.Object, userManager.Object);
         }
 

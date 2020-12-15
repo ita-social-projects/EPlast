@@ -16,6 +16,8 @@ using EPlast.BLL.DTO;
 using System.Security.Claims;
 using EPlast.WebApi.Models.User;
 using EPlast.WebApi.Models.Approver;
+using Microsoft.AspNetCore.Identity;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.Tests.Controllers
 {
@@ -28,6 +30,7 @@ namespace EPlast.Tests.Controllers
         private Mock<IConfirmedUsersService> _confirmedUserService;
         private Mock<ILoggerService<UserController>> _loggerService;
         private Mock<IMapper> _mapper;
+        private Mock<UserManager<User>> _userManager;
 
         private UserController _userController;
 
@@ -40,6 +43,8 @@ namespace EPlast.Tests.Controllers
             _confirmedUserService = new Mock<IConfirmedUsersService>();
             _loggerService = new Mock<ILoggerService<UserController>>();
             _mapper = new Mock<IMapper>();
+            var store = new Mock<IUserStore<User>>();
+            _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
 
             _userController = new UserController(
                 _userService.Object,
@@ -47,7 +52,8 @@ namespace EPlast.Tests.Controllers
                 _confirmedUserService.Object,
                 _userManagerService.Object,
                 _loggerService.Object,
-                _mapper.Object);
+                _mapper.Object,
+                _userManager.Object);
         }
 
         [Test]
@@ -382,7 +388,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(new List<ConfirmedUserDTO>());
 
             _userService
-                .Setup((x) => x.CanApproveAsync(It.IsAny<List<ConfirmedUserDTO>>(), It.IsAny<string>(), It.IsAny<ClaimsPrincipal>()))
+                .Setup((x) => x.CanApproveAsync(It.IsAny<List<ConfirmedUserDTO>>(), It.IsAny<string>(), It.IsAny<User>()))
                 .ReturnsAsync(canApprove);
 
             _userService
@@ -414,7 +420,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(CreateConfirmedUserViewModel());
 
             _userManagerService
-                .Setup((x) => x.IsInRoleAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<string>()))
+                .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
                 .ReturnsAsync(isUserHead);
 
             _userService
@@ -467,7 +473,7 @@ namespace EPlast.Tests.Controllers
             var idString = "1";
 
             _confirmedUserService
-                .Setup((x) => x.CreateAsync(It.IsAny<ClaimsPrincipal>(), idString, It.IsAny<bool>(), It.IsAny<bool>()));
+                .Setup((x) => x.CreateAsync(It.IsAny<User>(), idString, It.IsAny<bool>(), It.IsAny<bool>()));
 
             // Act
             var result = await _userController.ApproveUser(idString, It.IsAny<bool>(), It.IsAny<bool>());

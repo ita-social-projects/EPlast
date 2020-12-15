@@ -22,7 +22,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
     {
         private Mock<IRepositoryWrapper> mockRepoWrapper;
         private Mock<IMapper> mockMapper;
-        private readonly Mock<UserManager<User>> userManager;
+        private Mock<UserManager<User>> userManager;
         private DistinctionService distinctionService;
 
         [SetUp]
@@ -30,6 +30,8 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         {
             mockMapper = new Mock<IMapper>();
             mockRepoWrapper = new Mock<IRepositoryWrapper>();
+            var store = new Mock<IUserStore<User>>();
+            userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             distinctionService = new DistinctionService(mockMapper.Object, mockRepoWrapper.Object, userManager.Object);
         }
 
@@ -188,10 +190,6 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                .ReturnsAsync(distinction);
 
             //Act
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity();
-            ClaimsPrincipal notAdmin = new ClaimsPrincipal();
-            claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "Htos`"));
-            notAdmin.AddIdentity(claimsIdentity);
 
             //Assert
             Exception exception = Assert.ThrowsAsync(typeof(UnauthorizedAccessException),
@@ -209,10 +207,6 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                .ReturnsAsync(new Distinction());
 
             //Act
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity();
-            ClaimsPrincipal Admin = new ClaimsPrincipal();
-            claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "Admin"));
-            Admin.AddIdentity(claimsIdentity);
 
             //Assert
             Assert.DoesNotThrowAsync(async () => { await distinctionService.ChangeDistinctionAsync(distinctionDTO, It.IsAny<User>()); });
@@ -226,10 +220,6 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                .Setup(x => x.Distinction.CreateAsync(It.IsAny<Distinction>()));
 
             //Act
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity();
-            ClaimsPrincipal notAdmin = new ClaimsPrincipal();
-            claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "Htos`"));
-            notAdmin.AddIdentity(claimsIdentity);
 
             //Assert
             Exception exception = Assert.ThrowsAsync(typeof(UnauthorizedAccessException),
@@ -245,13 +235,9 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                .Setup(x => x.Distinction.CreateAsync(It.IsAny<Distinction>()));
 
             //Act
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity();
-            ClaimsPrincipal Admin = new ClaimsPrincipal();
-            claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "Admin"));
-            Admin.AddIdentity(claimsIdentity);
 
             //Assert
-            Assert.DoesNotThrowAsync(async () => { await distinctionService.AddDistinctionAsync(It.IsAny<DistinctionDTO>(), It.IsAny<User>()); });
+            Assert.DoesNotThrowAsync(async () => { await distinctionService.AddDistinctionAsync( new DistinctionDTO(), new User()); });
         }
 
         Distinction nullDistinction = null;
