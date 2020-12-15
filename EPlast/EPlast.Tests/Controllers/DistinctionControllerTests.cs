@@ -19,7 +19,7 @@ namespace EPlast.Tests.Controllers
     {
         private Mock<IDistinctionService> _distinctionService;
         private Mock<IUserDistinctionService> _userDistinctionService;
-        private UserManager<User> _userManager;
+        private Mock<UserManager<User>> _userManager;
 
         private DistinctionController _distinctionController;
         
@@ -28,11 +28,13 @@ namespace EPlast.Tests.Controllers
         {
             _distinctionService = new Mock<IDistinctionService>();
             _userDistinctionService = new Mock<IUserDistinctionService>();
+            var store = new Mock<IUserStore<User>>();
+            _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
 
             _distinctionController = new DistinctionController(
                 _distinctionService.Object,
                 _userDistinctionService.Object,
-                _userManager
+                _userManager.Object
                 );
         }
 

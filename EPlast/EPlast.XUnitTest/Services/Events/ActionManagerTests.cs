@@ -91,6 +91,8 @@ namespace EPlast.XUnitTest.Services.Events
             int typeId = 3;
             int categoryId = 3;
             int fakeId = 3;
+            User user = new User();
+            user.Id = "abc-1";
             _eventWrapper.Setup(x => x.EventStatusManager.GetStatusIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(fakeId);
             _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
@@ -103,7 +105,7 @@ namespace EPlast.XUnitTest.Services.Events
                 .ReturnsAsync(GetEvents());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
-            var methodResult = await actionManager.GetEventsAsync(categoryId, typeId, new User());
+            var methodResult = await actionManager.GetEventsAsync(categoryId, typeId, user);
             //Assert
             Assert.NotNull(methodResult);
             Assert.IsType<List<GeneralEventDTO>>(methodResult);

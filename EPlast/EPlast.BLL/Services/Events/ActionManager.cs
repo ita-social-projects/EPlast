@@ -119,7 +119,7 @@ namespace EPlast.BLL.Services.Events
                 IsEventFinished = targetEvent.EventStatusID == finishedEvent
             };
 
-            if (!dto.IsUserEventAdmin)
+            if (!dto.IsUserEventAdmin && dto.ParticipantAssessment !=0)
             {
                 dto.Event.EventParticipants = dto.Event.EventParticipants.Where(p => p.StatusId == approvedStatus);
             }
@@ -307,7 +307,7 @@ namespace EPlast.BLL.Services.Events
                 {
                     EventId = ev.ID,
                     EventName = ev.EventName,
-                    IsUserEventAdmin = ev.EventAdministrations.Any( e => e.UserID == _userManager.GetUserIdAsync(user).Result) || userRoles.Contains("Адміністратор подій"),
+                    IsUserEventAdmin = ev.EventAdministrations.Any( e => e.UserID == _userManager.GetUserIdAsync(user).Result) || (userRoles != null ? userRoles.Contains("Адміністратор подій"): false),
                     IsUserParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result),
                     IsUserApprovedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == approvedStatus),
                     IsUserUndeterminedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == undeterminedStatus),

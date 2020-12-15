@@ -12,6 +12,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
@@ -30,7 +31,8 @@ namespace EPlast.Tests.Controllers
             _annualReportService = new Mock<IAnnualReportService>();
             _loggerService = new Mock<ILoggerService<AnnualReportController>>();
             _localizer = new Mock<IStringLocalizer<AnnualReportControllerMessage>>();
-            _userManager = new Mock<UserManager<User>>();
+            var store = new Mock<IUserStore<User>>();
+            _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
         }
 
         private AnnualReportController CreateAnnualReportController => new AnnualReportController(
@@ -104,6 +106,8 @@ namespace EPlast.Tests.Controllers
             _annualReportService.Setup(a => a.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
                .Throws(new UnauthorizedAccessException());
 
+            _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
+
             _localizer
                .Setup(s => s["NoAccess"])
                .Returns(GetNoAccess());
@@ -168,7 +172,7 @@ namespace EPlast.Tests.Controllers
 
             _annualReportService.Setup(a => a.CreateAsync(It.IsAny<User>(), It.IsAny<AnnualReportDTO>()));
 
-            _userManager.Setup(a => a.GetUserIdAsync(It.IsAny<User>()));
+            _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
             _loggerService.Setup(l => l.LogInformation(It.IsAny<string>()));
 
@@ -257,7 +261,7 @@ namespace EPlast.Tests.Controllers
             _annualReportService.Setup(a => a.CreateAsync(It.IsAny<User>(), It.IsAny<AnnualReportDTO>()))
                 .Throws(new UnauthorizedAccessException());
 
-            _userManager.Setup(a => a.GetUserIdAsync(It.IsAny<User>()));
+            _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
 
@@ -452,7 +456,7 @@ namespace EPlast.Tests.Controllers
             _annualReportService.Setup(a => a.EditAsync(It.IsAny<User>(), It.IsAny<AnnualReportDTO>()))
                 .Throws(new UnauthorizedAccessException());
 
-            _userManager.Setup(a => a.GetUserIdAsync(It.IsAny<User>()));
+            _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
 
@@ -486,7 +490,7 @@ namespace EPlast.Tests.Controllers
 
             _annualReportService.Setup(a => a.ConfirmAsync(It.IsAny<User>(), It.IsAny<int>()));
 
-            _userManager.Setup(a => a.GetUserIdAsync(It.IsAny<User>()));
+            _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
             _loggerService.Setup(l => l.LogInformation(It.IsAny<string>()));
 
@@ -520,7 +524,7 @@ namespace EPlast.Tests.Controllers
             _annualReportService.Setup(a => a.ConfirmAsync(It.IsAny<User>(), It.IsAny<int>()))
                 .Throws(new UnauthorizedAccessException());
 
-            _userManager.Setup(a => a.GetUserIdAsync(It.IsAny<User>()));
+            _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
 
@@ -589,7 +593,7 @@ namespace EPlast.Tests.Controllers
 
             _annualReportService.Setup(a => a.CancelAsync(It.IsAny<User>(), It.IsAny<int>()));
 
-            _userManager.Setup(a => a.GetUserIdAsync(It.IsAny<User>()));
+            _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
             _loggerService.Setup(l => l.LogInformation(It.IsAny<string>()));
 
@@ -654,7 +658,7 @@ namespace EPlast.Tests.Controllers
             _annualReportService.Setup(a => a.CancelAsync(It.IsAny<User>(), It.IsAny<int>()))
                 .Throws(new UnauthorizedAccessException());
 
-            _userManager.Setup(a => a.GetUserIdAsync(It.IsAny<User>()));
+            _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
 
@@ -687,7 +691,7 @@ namespace EPlast.Tests.Controllers
 
             _annualReportService.Setup(a => a.DeleteAsync(It.IsAny<User>(), It.IsAny<int>()));
 
-            _userManager.Setup(a => a.GetUserIdAsync(It.IsAny<User>()));
+            _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
             _loggerService.Setup(l => l.LogInformation(It.IsAny<string>()));
 
@@ -750,7 +754,7 @@ namespace EPlast.Tests.Controllers
             _annualReportService.Setup(a => a.DeleteAsync(It.IsAny<User>(), It.IsAny<int>()))
                 .Throws(new UnauthorizedAccessException());
 
-            _userManager.Setup(a => a.GetUserIdAsync(It.IsAny<User>()));
+            _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
 

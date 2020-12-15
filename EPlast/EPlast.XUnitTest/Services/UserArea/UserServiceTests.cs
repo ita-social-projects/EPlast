@@ -122,7 +122,7 @@ namespace EPlast.XUnitTest.Services.UserArea
             _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User { Id = "1" });
 
             var service = GetService();            // Act
-            var result = await service.CanApproveAsync(confUsers, "2", It.IsAny<User>());
+            var result = await service.CanApproveAsync(confUsers, "2", new User());
             // Assert
             var res = Assert.IsType<bool>(result);
             Assert.True(result);
@@ -133,10 +133,9 @@ namespace EPlast.XUnitTest.Services.UserArea
             UserDTO user = new UserDTO { ConfirmedUsers = new List<ConfirmedUserDTO>() };
             var conUser = new ConfirmedUserDTO();
             var confUsers = new List<ConfirmedUserDTO> { conUser, conUser, conUser, conUser };
-            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User { Id = "1" });
 
             var service = GetService();            // Act
-            var result = await service.CanApproveAsync(confUsers, "1", It.IsAny<User>());
+            var result = await service.CanApproveAsync(confUsers, "1", new User());
             // Assert
             var res = Assert.IsType<bool>(result);
             Assert.False(result);

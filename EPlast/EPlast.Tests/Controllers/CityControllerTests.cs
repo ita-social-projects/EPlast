@@ -13,7 +13,6 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
@@ -29,6 +28,8 @@ namespace EPlast.Tests.Controllers
         private readonly Mock<ICityAdministrationService> _cityAdministrationService;
         private readonly Mock<ICityAccessService> _cityAccessService;
         private readonly Mock<ICityDocumentsService> _cityDocumentsService;
+        private readonly Mock<Microsoft.AspNetCore.Identity.UserManager<User>> _userManager;
+
 
         public CityControllerTests()
         {
@@ -39,6 +40,8 @@ namespace EPlast.Tests.Controllers
             _logger = new Mock<ILoggerService<CitiesController>>();
             _cityAdministrationService = new Mock<ICityAdministrationService>();
             _cityDocumentsService = new Mock<ICityDocumentsService>();
+            var store = new Mock<Microsoft.AspNetCore.Identity.IUserStore<User>>();
+            _userManager = new Mock<Microsoft.AspNetCore.Identity.UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
         }
 
         private CitiesController CreateCityController => new CitiesController(_logger.Object,
@@ -47,7 +50,8 @@ namespace EPlast.Tests.Controllers
            _cityMembersService.Object,
            _cityAdministrationService.Object,
            _cityDocumentsService.Object,
-           _cityAccessService.Object
+           _cityAccessService.Object,
+           _userManager.Object
           );
 
 
@@ -419,6 +423,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(new CityMembersDTO());
 
             _logger.Setup(l => l.LogInformation(It.IsAny<string>()));
+            
 
             CitiesController citycon = CreateCityController;
 
