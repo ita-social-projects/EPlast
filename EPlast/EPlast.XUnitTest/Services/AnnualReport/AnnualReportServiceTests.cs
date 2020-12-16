@@ -25,16 +25,13 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         private readonly Mock<IRepositoryWrapper> _repositoryWrapper = new Mock<IRepositoryWrapper>();
         private readonly Mock<ICityAccessService> _cityAccessService = new Mock<ICityAccessService>();
         private readonly Mock<IMapper> _mapper = new Mock<IMapper>();
-        private readonly Mock<UserManager<DatabaseEntities.User>> _userManager;
         private readonly IAnnualReportService _annualReportService;
 
         public AnnualReportServiceTests()
         {
-            var userStore = new Mock<IUserStore<DatabaseEntities.User>>();
-            _userManager = new Mock<UserManager<DatabaseEntities.User>>(userStore.Object, null, null, null, null, null, null, null, null);
             _repositoryWrapper.Setup(r => r.AdminType.FindByCondition(It.IsAny<Expression<Func<DatabaseEntities.AdminType, bool>>>()))
                 .Returns(new List<DatabaseEntities.AdminType> { new DatabaseEntities.AdminType() }.AsQueryable());
-            _annualReportService = new AnnualReportService(_repositoryWrapper.Object, _userManager.Object, _cityAccessService.Object, _mapper.Object);
+            _annualReportService = new AnnualReportService(_repositoryWrapper.Object, _cityAccessService.Object, _mapper.Object);
         }
 
         [Fact]
