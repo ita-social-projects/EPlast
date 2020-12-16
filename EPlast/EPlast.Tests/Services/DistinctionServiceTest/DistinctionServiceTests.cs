@@ -32,6 +32,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
             mockRepoWrapper = new Mock<IRepositoryWrapper>();
             var store = new Mock<IUserStore<User>>();
             userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            userManager.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRoles());
             distinctionService = new DistinctionService(mockMapper.Object, mockRepoWrapper.Object, userManager.Object);
         }
 
@@ -146,6 +147,8 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                    It.IsAny<Func<IQueryable<Distinction>, IIncludableQueryable<Distinction, object>>>()))
                .ReturnsAsync(distinction);
 
+            userManager.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRolesWithoutAdmin());
+
             //Assert
             Exception exception = Assert.ThrowsAsync(typeof(UnauthorizedAccessException),
                 async () => { await distinctionService.DeleteDistinctionAsync(It.IsAny<int>(), It.IsAny<User>()); });
@@ -189,7 +192,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                    It.IsAny<Func<IQueryable<Distinction>, IIncludableQueryable<Distinction, object>>>()))
                .ReturnsAsync(distinction);
 
-            //Act
+            userManager.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRolesWithoutAdmin());
 
             //Assert
             Exception exception = Assert.ThrowsAsync(typeof(UnauthorizedAccessException),
@@ -219,7 +222,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
             mockRepoWrapper
                .Setup(x => x.Distinction.CreateAsync(It.IsAny<Distinction>()));
 
-            //Act
+            userManager.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRolesWithoutAdmin());
 
             //Assert
             Exception exception = Assert.ThrowsAsync(typeof(UnauthorizedAccessException),
@@ -230,13 +233,9 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         [Test]
         public void AddDistinctionAsync_IfAdmin_WorksCorrectly()
         {
-            //Arrange
             mockRepoWrapper
                .Setup(x => x.Distinction.CreateAsync(It.IsAny<Distinction>()));
 
-            //Act
-
-            //Assert
             Assert.DoesNotThrowAsync(async () => { await distinctionService.AddDistinctionAsync( new DistinctionDTO(), new User()); });
         }
 
@@ -265,6 +264,26 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                 new DistinctionDTO{Id = 2, Name = "За волю"},
                 new DistinctionDTO{Id = 3, Name = "За народ"}
             }.AsEnumerable();
+        }
+
+        private IList<string> GetRoles()
+        {
+            return new List<string>
+            {
+                "Admin",
+                "Htos",
+                "Nixto"
+
+            };
+        }
+        private IList<string> GetRolesWithoutAdmin()
+        {
+            return new List<string>
+            {
+                "Htos",
+                "Nixto"
+
+            };
         }
     }
 }

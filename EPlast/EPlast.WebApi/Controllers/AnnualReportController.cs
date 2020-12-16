@@ -90,7 +90,6 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    //var user = await _userManager.GetUserAsync(User);
                     await _annualReportService.CreateAsync(await _userManager.GetUserAsync(User), annualReport);
                     _loggerService.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) created annual report for city (id: {annualReport.CityId})");
                     return StatusCode(StatusCodes.Status201Created, new { message = _localizer["Created"].Value });
@@ -134,7 +133,6 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    //var user = await _userManager.GetUserAsync(User);
                     await _annualReportService.EditAsync(await _userManager.GetUserAsync(User), annualReport);
                     _loggerService.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) edited annual report (id: {annualReport.ID})");
                     return StatusCode(StatusCodes.Status200OK, new { message = _localizer["Edited"].Value });

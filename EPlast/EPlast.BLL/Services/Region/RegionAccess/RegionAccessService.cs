@@ -27,7 +27,6 @@ namespace EPlast.BLL.Services.Region.RegionAccess
 
         public async Task<IEnumerable<RegionDTO>> GetRegionsAsync(DatabaseEntities.User user)
         {
-            //var user = await _userManager.GetUserAsync(claimsPrincipal);
             var roles = await _userManager.GetRolesAsync(user);
             foreach (var key in _regionAccessGetters.Keys)
             {
