@@ -131,8 +131,7 @@ namespace EPlast.BLL.Services.Club
         public async Task<ClubProfileDTO> GetClubProfileAsync(int ClubId, DataAccessClub.User user)
         {
             var ClubProfileDto = await GetClubProfileAsync(ClubId);
-            //var userId = _userManager.GetUserId(user);
-            var userId = user.Id;
+            var userId = await _userManager.GetUserIdAsync(user);
             var userRoles = await _userManager.GetRolesAsync(user);
 
             ClubProfileDto.Club.CanCreate = userRoles.Contains("Admin");

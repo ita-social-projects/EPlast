@@ -17,14 +17,12 @@ namespace EPlast.BLL.Services
     public class AnnualReportService : IAnnualReportService
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
-        private readonly UserManager<User> _userManager;
         private readonly ICityAccessService _cityAccessService;
         private readonly IMapper _mapper;
 
-        public AnnualReportService(IRepositoryWrapper repositoryWrapper, UserManager<User> userManager, ICityAccessService cityAccessService, IMapper mapper)
+        public AnnualReportService(IRepositoryWrapper repositoryWrapper, ICityAccessService cityAccessService, IMapper mapper)
         {
             _repositoryWrapper = repositoryWrapper;
-            _userManager = userManager;
             _cityAccessService = cityAccessService;
             _mapper = mapper;
         }
@@ -69,7 +67,6 @@ namespace EPlast.BLL.Services
                 throw new InvalidOperationException();
             }
             var annualReport = _mapper.Map<AnnualReportDTO, AnnualReport>(annualReportDTO);
-            //var user = await _userManager.GetUserAsync(user);
             annualReport.CreatorId = user.Id;
             annualReport.Date = DateTime.Now;
             annualReport.Status = AnnualReportStatus.Unconfirmed;
