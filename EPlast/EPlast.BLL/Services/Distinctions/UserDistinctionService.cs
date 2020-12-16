@@ -17,10 +17,11 @@ namespace EPlast.BLL.Services.Distinctions
         private readonly IRepositoryWrapper _repoWrapper; 
         private readonly UserManager<User> _userManager;
 
-        public UserDistinctionService(IMapper mapper, IRepositoryWrapper repoWrapper)
+        public UserDistinctionService(IMapper mapper, IRepositoryWrapper repoWrapper, UserManager<User> userManager)
         {
             _mapper = mapper;
             _repoWrapper = repoWrapper;
+            _userManager = userManager;
         }
         public async Task AddUserDistinctionAsync(UserDistinctionDTO userDistinctionDTO, User user)
         {
