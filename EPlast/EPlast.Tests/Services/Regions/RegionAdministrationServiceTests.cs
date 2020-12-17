@@ -222,20 +222,7 @@ namespace EPlast.Tests.Services.Regions
                .ReturnsAsync(regionAdm);
             _userManager
                 .Setup(u=>u.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User() {Id= "Голова Станиці"});
-            _userManager
-                .Setup(u=>u.AddToRoleAsync(new User() { Id = "Голова Станиці" }, "Діловод Округу"));
-            _userManager
-                 .Setup(u => u.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User() { Id = "Голова Станиці" });
-            _userManager
-                .Setup(x=>x.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
-            _repoWrapper
-                .Setup(x=>x.RegionAdministration.Update(regionAdm));
-            _repoWrapper
-                .Setup(x=>x.SaveAsync());
-            _repoWrapper
-                .Setup(x=>x.RegionAdministration.CreateAsync(regionAdm));
-            _repoWrapper
-               .Setup(x => x.SaveAsync());
+            _userManager.Setup(u=>u.AddToRoleAsync(new User() { Id = "Голова Станиці" }, "Діловод Округу"));
             //Act
             var result = _servise.AddRegionAdministrator(regionAdmDTO);
             //Assert
