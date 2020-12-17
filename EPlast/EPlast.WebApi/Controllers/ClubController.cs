@@ -574,5 +574,95 @@ namespace EPlast.WebApi.Controllers
                 return StatusCode(StatusCodes.Status403Forbidden);
             }
         }
+
+        /// <summary>
+        /// Method to cancel club annual report
+        /// </summary>
+        /// <param name="id">Annual report identification number</param>
+        /// <returns>Answer from backend</returns>
+        /// <response code="200">Annual report was successfully canceled</response>
+        /// <response code="403">User hasn't access to annual report</response>
+        /// <response code="404">The annual report does not exist</response>
+        [HttpPut("cancelClubAnnualReport/{id:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня ")]
+        public async Task<IActionResult> CancelClubAnnualReport(int id)
+        {
+            try
+            {
+                await _ClubAnnualReportService.CancelAsync(User, id);
+                return Ok();
+            }
+            catch (NullReferenceException)
+            {
+                return StatusCode(StatusCodes.Status404NotFound);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
+        }
+
+        /// <summary>
+        /// Method to delete annual report
+        /// </summary>
+        /// <param name="id">Club annual report identification number</param>
+        /// <returns>Answer from backend</returns>
+        /// <response code="200">Annual report was successfully deleted</response>
+        /// <response code="403">User hasn't access to annual report</response>
+        /// <response code="404">The annual report does not exist</response>
+        [HttpDelete("deleteClubAnnualReport/{id:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня ")]
+        public async Task<IActionResult> DeleteClubAnnualReport(int id)
+        {
+            try
+            {
+                await _ClubAnnualReportService.DeleteClubReportAsync(User, id);
+                return Ok();
+            }
+            catch (NullReferenceException)
+            {
+                return StatusCode(StatusCodes.Status404NotFound);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
+        }
+
+        /// <summary>
+        /// Method to edit club annual report
+        /// </summary>
+        /// <param name="clubAnnualReport"></param>
+        /// <returns>Answer from backend</returns>
+        /// <response code="200">Club annual report was successfully edited</response>
+        /// <response code="403">User hasn't access to club annual report</response>
+        /// <response code="404">The club annual report does not exist</response>
+        /// <response code="404">Annual report model is not valid</response>
+        [HttpPut("editClubAnnualReport")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня ")]
+        public async Task<IActionResult> EditClubAnnualReport(ClubAnnualReportDTO clubAnnualReport)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _ClubAnnualReportService.EditClubReportAsync(User, clubAnnualReport);
+                    return Ok();
+                }
+                catch (NullReferenceException)
+                {
+                    return StatusCode(StatusCodes.Status404NotFound);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    return StatusCode(StatusCodes.Status403Forbidden);
+                }
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
+        }
+
     }
 }
