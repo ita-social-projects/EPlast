@@ -262,8 +262,8 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task Details_Valid_Test()
         {
-            _ClubService.Setup(c => c.GetByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(new ClubDTO());
+            _ClubService.Setup(c => c.GetClubProfileAsync(It.IsAny<int>()))
+                .ReturnsAsync(new ClubProfileDTO());
 
             _mapper.Setup(m => m.Map<ClubDTO, ClubViewModel>(It.IsAny<ClubDTO>()))
                 .Returns(new ClubViewModel());

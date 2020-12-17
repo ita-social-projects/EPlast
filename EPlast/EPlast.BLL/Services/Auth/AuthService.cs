@@ -28,7 +28,6 @@ namespace EPlast.BLL.Services
         private readonly IEmailConfirmation _emailConfirmation;
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repoWrapper;
-        private readonly IUserDatesService _userDatesService;
         public AuthService(UserManager<User> userManager,
             SignInManager<User> signInManager,
             IEmailConfirmation emailConfirmation,
@@ -41,7 +40,6 @@ namespace EPlast.BLL.Services
             _emailConfirmation = emailConfirmation;
             _mapper = mapper;
             _repoWrapper = repoWrapper;
-            _userDatesService = userDatesService;
         }
 
         ///<inheritdoc/>
@@ -290,12 +288,10 @@ namespace EPlast.BLL.Services
                {
                    await _emailConfirmation.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
                     "Ви зареєструвались в системі EPlast використовуючи свій Google-акаунт. ", "Адміністрація сайту EPlast");
-                   await _userManager.AddToRoleAsync(user, "Прихильник");
-                   await _userDatesService.AddDateEntryAsync(user.Id);
-                }
+               }
                else 
                    throw new ArgumentException("Failed creation of user");
-
+               await _userManager.AddToRoleAsync(user, "Прихильник");
             }
             await _signInManager.SignInAsync(user, isPersistent: false);
             return _mapper.Map<User, UserDTO>(user);
@@ -329,7 +325,6 @@ namespace EPlast.BLL.Services
                         "Ви зареєструвались в системі EPlast використовуючи свій Facebook-акаунт. ", "Адміністрація сайту EPlast");
                 }
                 await _userManager.AddToRoleAsync(user, "Прихильник");
-                await _userDatesService.AddDateEntryAsync(user.Id);
             }
             await _signInManager.SignInAsync(user, isPersistent: false);
             return _mapper.Map<User, UserDTO>(user);
