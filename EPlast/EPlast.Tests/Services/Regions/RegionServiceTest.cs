@@ -56,7 +56,6 @@ namespace EPlast.Tests.Services.Regions
                 .Returns(regions);
             // Act
             var result = await _regionService.GetAllRegionsAsync();
-
             // Assert
             Assert.IsInstanceOf<IEnumerable<RegionDTO>>(result);
             Assert.IsNotNull(result);
@@ -69,10 +68,8 @@ namespace EPlast.Tests.Services.Regions
             // Arrange
             string logo = "logo";
             _regionBlobStorage.Setup(x => x.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync(logo);
-
             // Act
             var result = await _regionService.GetLogoBase64(logo);
-
             // Assert
             Assert.IsInstanceOf<string>(result);
             Assert.IsNotNull(result);
@@ -90,7 +87,6 @@ namespace EPlast.Tests.Services.Regions
             _mapper.Setup(x => x.Map<DataAccess.Entities.Region, RegionDTO>(It.IsAny<DataAccess.Entities.Region>()))
                 .Returns(regions.First);
             // Act
-
             var result = await _regionService.GetRegionByIdAsync(id);
             var actual = result.ID;
             // Assert
@@ -122,15 +118,13 @@ namespace EPlast.Tests.Services.Regions
         public async Task GetRegionByNameAsync_ReturnsRegionDTO()
         {
             // Arrange
-            
-            _repoWrapper
+             _repoWrapper
                    .Setup(x => x.Region.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.Region, bool>>>(),
                    It.IsAny<Func<IQueryable<DataAccess.Entities.Region>, IIncludableQueryable<DataAccess.Entities.Region, object>>>()))
                    .ReturnsAsync(new DataAccess.Entities.Region());
 
             _mapper.Setup(x => x.Map<DataAccess.Entities.Region, RegionDTO>(It.IsAny<DataAccess.Entities.Region>()))
                 .Returns(regions.First);
-
             // Act
             var result = await _regionService.GetRegionByNameAsync(It.IsAny<string>());
 
@@ -152,7 +146,6 @@ namespace EPlast.Tests.Services.Regions
             _repoWrapper.Setup(x=>x.RegionDocument.Attach(regionDocuments));
             // Act
             var result = await _regionService.AddDocumentAsync(doc);
-
             // Assert
             Assert.IsInstanceOf<RegionDocumentDTO>(result);
             Assert.IsNotNull(result);
@@ -178,18 +171,14 @@ namespace EPlast.Tests.Services.Regions
             Assert.IsNotNull(result);
         }
 
-
-
         [Test]
         public async Task DownloadFileAsync_ReturnsString()
         {
             // Arrange
             string fname = "File";
             _regionFilesBlobStorageRepository.Setup(x=>x.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync(fname);
-
             // Act
             var result = await _regionService.DownloadFileAsync(It.IsAny<string>());
-
             // Assert
             Assert.AreEqual(fname,result);
             Assert.IsNotNull(result);
@@ -206,16 +195,12 @@ namespace EPlast.Tests.Services.Regions
 
             _mapper.Setup(x => x.Map<IEnumerable<Region>, IEnumerable<RegionForAdministrationDTO>>(It.IsAny<List<Region>>()))
                 .Returns(regionsForAdmin);
-
             // Act
             var result = await _regionService.GetRegions();
-
             // Assert
             Assert.IsInstanceOf<IEnumerable<RegionForAdministrationDTO>>(result);
             Assert.IsNotNull(result);
         }
-
-
 
         [Test]
         public void DeleteRegionByIdAsync_ReturnsCorrect()
@@ -225,21 +210,16 @@ namespace EPlast.Tests.Services.Regions
                    .Setup(x => x.Region.GetFirstAsync(It.IsAny<Expression<Func<Region, bool>>>(),
                 It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
                 .ReturnsAsync(new Region());
-
             _repoWrapper
                   .Setup(x => x.Region.Delete(new Region()));
             _repoWrapper
                   .Setup(x => x.SaveAsync());
             // Act
             var result = _regionService.DeleteRegionByIdAsync(It.IsAny<int>());
-
             // Assert
             _repoWrapper.Verify();
             Assert.NotNull(result);
         }
-
-
-
 
         [Test]
         public void AddFollowerAsync_ReturnsCorrect()
@@ -317,8 +297,6 @@ namespace EPlast.Tests.Services.Regions
             Assert.NotNull(result);
         }
 
-
-
         [Test]
         public void RedirectMembers_ReturnsCorrect()
         {
@@ -327,15 +305,12 @@ namespace EPlast.Tests.Services.Regions
                    .Setup(x => x.City.GetAllAsync(It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
                 It.IsAny<Func<IQueryable<DataAccess.Entities.City>, IIncludableQueryable<DataAccess.Entities.City, object>>>()))
                 .ReturnsAsync(city);
-
             _repoWrapper
                .Setup(x => x.City.Update(It.IsAny<DataAccess.Entities.City>()));
-
             _repoWrapper
                   .Setup(x => x.SaveAsync());
             // Act
             var result = _regionService.RedirectMembers(It.IsAny<int>(), It.IsAny<int>());
-
             // Assert
             _repoWrapper.Verify();
             Assert.NotNull(result);
@@ -349,10 +324,8 @@ namespace EPlast.Tests.Services.Regions
                    .Setup(x => x.RegionAdministration.GetAllAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
                 It.IsAny<Func<IQueryable<RegionAdministration>, IIncludableQueryable<RegionAdministration, object>>>()))
                 .ReturnsAsync(Admins);
-
             _repoWrapper
                .Setup(x => x.RegionAdministration.Update(It.IsAny<RegionAdministration>()));
-
             _repoWrapper
                   .Setup(x => x.SaveAsync());
             // Act
@@ -367,24 +340,18 @@ namespace EPlast.Tests.Services.Regions
         public void AddRegionAsync_ReturnsCorrect()
         {
             // Arrange
-            
-            _mapper
+             _mapper
                 .Setup(x => x.Map<RegionDTO, Region>(It.IsAny<RegionDTO>())).Returns(new Region());
-
             _repoWrapper
                    .Setup(x => x.Region.CreateAsync(It.IsAny<Region>()));
-
             _repoWrapper
                   .Setup(x => x.SaveAsync());
             // Act
             var result = _regionService.AddRegionAsync(It.IsAny<RegionDTO>());
-
             // Assert
             _repoWrapper.Verify();
             Assert.NotNull(result);
         }
-
-
 
         private readonly IEnumerable<RegionForAdministrationDTO> regionsForAdmin = new List<RegionForAdministrationDTO>
         {
@@ -392,13 +359,11 @@ namespace EPlast.Tests.Services.Regions
             new RegionForAdministrationDTO { ID = 2, RegionName = "Тернопільський" }
         };
 
-
         private readonly IEnumerable<RegionDocumentDTO> documentDTOs = new List<RegionDocumentDTO>
         {
             new RegionDocumentDTO { ID = 1, BlobName="Some, name" },
             new RegionDocumentDTO { ID = 2, BlobName="Some, 2name" }
         };
-
 
         private readonly IEnumerable<RegionDTO> regions = new List<RegionDTO>
         {

@@ -27,7 +27,6 @@ namespace EPlast.Tests.Services.Regions
 
         private RegionAnnualReportService service;
 
-
         [SetUp]
         public void SetUp()
         {
@@ -35,9 +34,7 @@ namespace EPlast.Tests.Services.Regions
             _mockRegionAccessService = new Mock<IRegionAccessService>();
             _mockMapper = new Mock<IMapper>();
             service = new RegionAnnualReportService(_mockRepositoryWrapper.Object, _mockRegionAccessService.Object, _mockMapper.Object);
-
         }
-
 
         [Test]
         public async Task GetReportByIdAsync_ReturnsRegionAnnualReportDTO()
@@ -50,10 +47,8 @@ namespace EPlast.Tests.Services.Regions
                 .ReturnsAsync(new RegionAnnualReport() {ID=2 });
             _mockMapper.Setup(x => x.Map<RegionAnnualReport, RegionAnnualReportDTO>(It.IsAny<RegionAnnualReport>()))
                 .Returns(new RegionAnnualReportDTO() { ID = 2 });
-
             // Act
             var result = await service.GetReportByIdAsync(Id, year);
-
             // Assert
             Assert.IsInstanceOf<RegionAnnualReportDTO>(result);
             Assert.IsNotNull(result);

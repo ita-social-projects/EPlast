@@ -55,7 +55,6 @@ namespace EPlast.Tests.Services.Regions
 
             _mapper.Setup(x => x.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(It.IsAny<IEnumerable<RegionAdministration>>()))
                 .Returns(GetFakeAdminDTO());
-         
 
             //Act
             var result = await _servise.GetUsersAdministrations(It.IsAny<string>());
@@ -76,7 +75,6 @@ namespace EPlast.Tests.Services.Regions
             _mapper.Setup(x => x.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(It.IsAny<IEnumerable<RegionAdministration>>()))
                 .Returns(GetFakeAdminDTO());
 
-
             //Act
             var result = await _servise.GetUsersPreviousAdministrations(It.IsAny<string>());
             // Assert
@@ -94,7 +92,6 @@ namespace EPlast.Tests.Services.Regions
 
             _mapper.Setup(x => x.Map<RegionAdministration, RegionAdministrationDTO>(It.IsAny<RegionAdministration>()))
                 .Returns(new RegionAdministrationDTO() { ID=2 });
-
 
             //Act
             var result = await _servise.GetHead(It.IsAny<int>());
@@ -130,7 +127,6 @@ namespace EPlast.Tests.Services.Regions
             _mapper.Setup(x => x.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(It.IsAny<IEnumerable<RegionAdministration>>()))
                 .Returns(GetFakeAdminDTO());
 
-
             //Act
             var result = await _servise.GetAdministrationAsync(It.IsAny<int>());
             // Assert
@@ -149,7 +145,6 @@ namespace EPlast.Tests.Services.Regions
 
             _mapper.Setup(x => x.Map<IEnumerable<AdminType>, IEnumerable<AdminTypeDTO>>(It.IsAny<IEnumerable<AdminType>>()))
                 .Returns(GetFakeAdminTypes());
-
 
             //Act
             var result = await _servise.GetAllAdminTypes();
@@ -189,7 +184,6 @@ namespace EPlast.Tests.Services.Regions
             Assert.NotNull(result);
         }
 
-
         [Test]
         public void EditRegionAdministrator_ReturnsCorrect()
         {
@@ -206,15 +200,12 @@ namespace EPlast.Tests.Services.Regions
                 .Setup(r => r.RegionAdministration.Update(It.IsAny<RegionAdministration>()));
             _repoWrapper
                 .Setup(r => r.SaveAsync());
-
             //Act
             var result = _servise.EditRegionAdministrator(It.IsAny<RegionAdministrationDTO>());
-
             //Assert
             _repoWrapper.Verify();
             Assert.NotNull(result);
         }
-
 
         [Test]
         public void AddRegionAdministrator_ReturnsCorrect()
@@ -231,24 +222,19 @@ namespace EPlast.Tests.Services.Regions
                .ReturnsAsync(regionAdm);
             _userManager
                 .Setup(u=>u.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User() {Id= "Голова Станиці"});
-
             _userManager.Setup(u=>u.AddToRoleAsync(new User() { Id = "Голова Станиці" }, "Діловод Округу"));
-
             //Act
             var result = _servise.AddRegionAdministrator(regionAdmDTO);
-
             //Assert
             _repoWrapper.Verify();
             Assert.NotNull(result);
         }
-
 
         private static AdminTypeDTO AdminType = new AdminTypeDTO
         {
             AdminTypeName = "Голова Станиці",
             ID = 1
         };
-
  
         private RegionAdministration regionAdm = new RegionAdministration
         {
@@ -262,7 +248,6 @@ namespace EPlast.Tests.Services.Regions
             AdminTypeId = AdminType.ID,
             UserId = "Голова Станиці"
         };
-
 
         private RegionAdministrationDTO regionAdmDTO = new RegionAdministrationDTO
         {
@@ -285,7 +270,6 @@ namespace EPlast.Tests.Services.Regions
             };
         }
 
-
         private IEnumerable<AdminTypeDTO> GetFakeAdminTypes()
         {
             return new List<AdminTypeDTO>() {
@@ -294,8 +278,5 @@ namespace EPlast.Tests.Services.Regions
                     new AdminTypeDTO(){ID=4 }
             };
         }
-
-
-
     }
 }
