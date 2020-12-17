@@ -45,8 +45,6 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<List<RegionDTO>>((result as ObjectResult).Value);
         }
 
-
-
         [Test]
         public async Task CreateRegion_NewRegion_ReturnsOkResult()
         {
@@ -58,26 +56,19 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkResult>(result);
         }
 
-
-
         [Test]
         public async Task CreateRegion_NullRegion_ReturnsOkResult()
         {
-            // Arrange
-           
             // Act
             var result = await _RegionController.CreateRegion(null);
             // Assert
             Assert.IsInstanceOf<OkResult>(result);
         }
 
-
         [Test]
         public async Task GetPhotoBase64_NullString_ReturnsOkObjResult()
         {
-            // Arrange
-            
-            // Act
+           // Act
             var result = await _RegionController.GetPhotoBase64(null);
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
@@ -87,26 +78,20 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task RedirectCities_AnyInt_ReturnsOkResult()
         {
-            // Arrange
-
             // Act
             var result = await _RegionController.RedirectCities(1, 2);
             // Assert
             Assert.IsInstanceOf<OkResult>(result);
         }
 
-
         [Test]
         public async Task EditRegion_NullInt_ReturnsOkResult()
         {
-           
-
             // Act
             var result = await _RegionController.EditRegion(1, null);
             // Assert
             Assert.IsInstanceOf<OkResult>(result);
         }
-
 
         [Test]
         public async Task GetRegionAdmins_Int_ReturnsOkObjResult()
@@ -120,7 +105,6 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<List<RegionAdministrationDTO>>((result as ObjectResult).Value);
         }
-
 
         [Test]
         public async Task GetRegionHead_Int_ReturnsOkObjResult()
@@ -138,82 +122,60 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(actual.ID, 2);
         }
 
-
-
         [Test]
         public async Task AddAdministrator_Null_ReturnsNoContentResult()
         {
             // Arrange
             RegionAdministrationDTO admin = null;
-          
             // Act
             var result = await _RegionController.AddAdministrator(admin);
-           
             // Assert
             Assert.IsInstanceOf<NoContentResult>(result);
-            
         }
-
 
         [Test]
         public async Task AddAdministrator_CorrectData_ReturnsNoContentResult()
         {
             // Arrange
-            
             RegionAdministrationDTO admin = new RegionAdministrationDTO() { ID=2};
             _regionAdministrationService.Setup(x => x.AddRegionAdministrator(admin));
-            
             // Act
             var result = await _RegionController.AddAdministrator(admin);
-
             // Assert
             Assert.IsInstanceOf<NoContentResult>(result);
-
         }
 
         [Test]
         public async Task EditAdministrator_CorrectData_ReturnsNoContentResult()
         {
             // Arrange
-
             RegionAdministrationDTO admin = new RegionAdministrationDTO() { ID = 2 };
             _regionAdministrationService.Setup(x => x.EditRegionAdministrator(admin));
             _logger.Setup(x=> x.LogInformation(It.IsAny<string>()));
-
             // Act
             var result = await _RegionController.EditAdministrator(admin);
-
             // Assert
             Assert.IsInstanceOf<NoContentResult>(result);
-           
-        }
-
+         }
 
         [Test]
         public async Task EditAdministrator_Null_ReturnsNoContentResult()
         {
             // Arrange
-
             RegionAdministrationDTO admin = null;
             _regionAdministrationService.Setup(x => x.EditRegionAdministrator(admin));
             _logger.Setup(x => x.LogError(It.IsAny<string>()));
-
             // Act
             var result = await _RegionController.EditAdministrator(admin);
-
             // Assert
             Assert.IsInstanceOf<NotFoundResult>(result);
-
         }
-
 
         [Test]
         public async Task GetRegions_ReturnsRegions()
         {
             // Arrange
-
             _regionService.Setup(x => x.GetRegions()).ReturnsAsync(GetAdminRegions());
-
             // Act
             var result = await _RegionController.GetRegions();
              var actual = (result as ObjectResult).Value;
@@ -222,22 +184,16 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<IEnumerable<RegionForAdministrationDTO>>(actual);
         }
 
-
-
         [Test]
         public async Task Remove_ReturnsRegions()
         {
             // Arrange
             int id = 2;
-
             // Act
             var result = await _RegionController.Remove(id);
-          
             // Assert
             Assert.IsInstanceOf<OkResult>(result);
-           
         }
-
 
         [Test]
         public async Task AddDocument_NewDocument_ReturnsNullOkObjectResult()
@@ -251,9 +207,7 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<RegionDocumentDTO>(actual);
-
         }
-
 
         [Test]
         public async Task RemoveAdmin_ReturnsOkResult()
@@ -266,8 +220,6 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkResult>(result);
          }
 
-
-
         [Test]
         public async Task GetUserAdministrations_NullString_ReturnsOkResult()
         {
@@ -275,7 +227,6 @@ namespace EPlast.Tests.Controllers
             string id = null;
             // Act
             var result = await _RegionController.GetUserAdministrations(id);
-            //?
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
@@ -292,10 +243,7 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<IEnumerable<RegionAdministrationDTO>>(actual);
-
         }
-
-
         [Test]
         public async Task GetUserPrevAdministrations_NullString_ReturnsOkResult()
         {
@@ -303,10 +251,8 @@ namespace EPlast.Tests.Controllers
             string id = null;
             // Act
             var result = await _RegionController.GetUserPrevAdministrations(id);
-           
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
-           
         }
 
         [Test]
@@ -321,24 +267,18 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<IEnumerable<RegionAdministrationDTO>>(actual);
-
         }
-
 
         [Test]
         public async Task RemoveDocument_Id_ReturnsOkResult()
         {
             // Arrange
             int id = 2;
-          
             // Act
             var result = await _RegionController.RemoveDocument(id);
             _logger.Setup(x => x.LogInformation(It.IsAny<string>()));
-
             // Assert
-
             Assert.IsInstanceOf<OkResult>(result);
-
         }
 
 
@@ -351,14 +291,9 @@ namespace EPlast.Tests.Controllers
             var result = await _RegionController.GetFileBase64("file");
             var actual = (result as ObjectResult).Value;
             // Assert
-
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<string>(actual);
-
         }
-
-
-
 
         [Test]
         public async Task GetRegionDocs_Id_ReturnsOkResult()
@@ -369,14 +304,10 @@ namespace EPlast.Tests.Controllers
             // Act
             var result = await _RegionController.GetRegionDocs(id);
             var actual = (result as ObjectResult).Value;
-
             // Assert
-
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<IEnumerable<RegionDocumentDTO>>(actual);
         }
-
-
 
         [Test]
         public async Task AddFollower_ReturnsOkResult()
@@ -401,32 +332,23 @@ namespace EPlast.Tests.Controllers
             // Act
             var result = await _RegionController.GetMembers(id);
             var actual = (result as ObjectResult).Value;
-
             // Assert
-
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<IEnumerable<CityDTO>>(actual);
         }
-
-
 
         [Test]
         public async Task GetAdminTypes_ReturnsOkObjectResult()
         {
             // Arrange
-         
             _regionAdministrationService.Setup(x => x.GetAllAdminTypes()).ReturnsAsync(new List<AdminTypeDTO>());
             // Act
             var result = await _RegionController.GetAdminTypes();
             var actual = (result as ObjectResult).Value;
-
             // Assert
-
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<IEnumerable<AdminTypeDTO>>(actual);
         }
-
-
 
         [Test]
         public async Task GetAdminTypeId_TypeNameString_ReturnsAdminTypeId()
@@ -443,7 +365,6 @@ namespace EPlast.Tests.Controllers
            
         }
 
-
         [Test]
         public async Task GetReportByIdAsync_ReturnsReportDTO()
         {
@@ -459,7 +380,6 @@ namespace EPlast.Tests.Controllers
 
         }
 
-
         [Test]
         public async Task GetAllRegionsReportsAsync_ReturnsReportDTO()
         {
@@ -474,8 +394,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<IEnumerable<RegionAnnualReportDTO>>(actual);
 
         }
-
-        private IEnumerable<RegionDTO> GetRegions() {
+       private IEnumerable<RegionDTO> GetRegions() {
             return new List<RegionDTO>()
             {
                 new RegionDTO(){ ID =2, RegionName="Lviv"},
@@ -496,8 +415,6 @@ namespace EPlast.Tests.Controllers
             };
 
         }
-
-
         private IEnumerable<RegionForAdministrationDTO> GetAdminRegions()
         {
             return new List<RegionForAdministrationDTO>()
@@ -509,9 +426,5 @@ namespace EPlast.Tests.Controllers
             };
 
         }
-
-
-
-
     }
 }
