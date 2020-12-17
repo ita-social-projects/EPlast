@@ -149,5 +149,52 @@ namespace EPlast.BLL.Services.Club
                 _repositoryWrapper.ClubAnnualReports.Update(clubAnnualReport);
             }
         }
+
+        ///<inheritdoc/>
+        public async Task CancelAsync(ClaimsPrincipal claimsPrincipal, int id)
+        {
+            var clubAnnualReport = await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(
+                    predicate: a => a.ID == id && a.Status == AnnualReportStatus.Confirmed);
+            if (!await _clubAccessService.HasAccessAsync(claimsPrincipal, clubAnnualReport.ClubId))
+            {
+                throw new UnauthorizedAccessException();
+            }
+            clubAnnualReport.Status = AnnualReportStatus.Unconfirmed;
+            _repositoryWrapper.ClubAnnualReports.Update(clubAnnualReport);
+            await _repositoryWrapper.SaveAsync();
+        }
+
+        ///<inheritdoc/>
+        public async Task DeleteClubReportAsync(ClaimsPrincipal claimsPrincipal, int id)
+        {
+            var clubAnnualReport = await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(
+                    predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed);
+            if (!await _clubAccessService.HasAccessAsync(claimsPrincipal, clubAnnualReport.ClubId))
+            {
+                throw new UnauthorizedAccessException();
+            }
+            _repositoryWrapper.ClubAnnualReports.Delete(clubAnnualReport);
+            await _repositoryWrapper.SaveAsync();
+        }
+
+        ///<inheritdoc/>
+        public async Task EditClubReportAsync(ClaimsPrincipal claimsPrincipal, ClubAnnualReportDTO clubAnnualReportDTO)
+        {
+            var clubAnnualReport = await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(
+                    predicate: a => a.ClubId == clubAnnualReportDTO.ClubId
+                      && a.Status == AnnualReportStatus.Unconfirmed);
+            if (clubAnnualReportDTO.Status != AnnualReportStatus.Unconfirmed)
+            {
+                throw new InvalidOperationException();
+            }
+            if (!await _clubAccessService.HasAccessAsync(claimsPrincipal, clubAnnualReport.ClubId))
+            {
+                throw new UnauthorizedAccessException();
+            }
+            clubAnnualReport = _mapper.Map<ClubAnnualReportDTO, ClubAnnualReport>(clubAnnualReportDTO);
+            _repositoryWrapper.ClubAnnualReports.Update(clubAnnualReport);
+            await _repositoryWrapper.SaveAsync();
+        }
     }
+
 }
