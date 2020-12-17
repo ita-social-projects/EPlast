@@ -45,5 +45,34 @@ namespace EPlast.BLL.Interfaces.Club
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
         /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
         Task ConfirmAsync(ClaimsPrincipal claimsPrincipal, int id);
+
+        /// <summary>
+        /// Method to cancel club annual report
+        /// </summary>
+        /// <param name="claimsPrincipal">Authorized user</param>
+        /// <param name="id">Annual report identification number</param>
+        /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
+        /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
+        Task CancelAsync(ClaimsPrincipal claimsPrincipal, int id);
+
+        /// <summary>
+        /// Method to delete club annual report
+        /// </summary>
+        /// <param name="claimsPrincipal">Authorized user</param>
+        /// <param name="id">Annual report identification number</param>
+        /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
+        /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
+        Task DeleteClubReportAsync(ClaimsPrincipal claimsPrincipal, int id);
+
+        /// <summary>
+        /// Method to edit club annual report
+        /// </summary>
+        /// <param name="claimsPrincipal">Authorized user</param>
+        /// <param name="clubAnnualReportDTO">Club annual report model</param>
+        /// <exception cref="System.InvalidOperationException">Thrown when club annual report can not be edited</exception>
+        /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to club annual report</exception>
+        /// <exception cref="System.NullReferenceException">Thrown when club annual report doesn't exist</exception>
+        Task EditClubReportAsync(ClaimsPrincipal claimsPrincipal, ClubAnnualReportDTO clubAnnualReportDTO);
+
     }
 }
