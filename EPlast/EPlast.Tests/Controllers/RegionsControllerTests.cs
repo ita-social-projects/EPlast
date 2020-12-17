@@ -64,7 +64,7 @@ namespace EPlast.Tests.Controllers
         public async Task CreateRegion_NullRegion_ReturnsOkResult()
         {
             // Arrange
-           //думаю тут треба контролер переробити, null не мав би заходити у створення нового регіону, повертає Ок, думаю для регіону хоча б назва мала б бути обовязкова
+           
             // Act
             var result = await _RegionController.CreateRegion(null);
             // Assert
@@ -99,7 +99,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task EditRegion_NullInt_ReturnsOkResult()
         {
-            // Arrange
+           
 
             // Act
             var result = await _RegionController.EditRegion(1, null);
@@ -145,7 +145,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             RegionAdministrationDTO admin = null;
-           //на мою думку так не повинно бути, тест проходить з невалідними даними
+          
             // Act
             var result = await _RegionController.AddAdministrator(admin);
            
@@ -238,22 +238,6 @@ namespace EPlast.Tests.Controllers
            
         }
 
-        //[Test]
-        //public async Task AddDocument_Null_ReturnsNullExeption()
-        //{
-        //    // Arrange
-        //    RegionDocumentDTO document = null;
-        //    //з null пропускає в роботу, _regionService його з'їдає, але _logger не можу залогувати помилку або айді, exeption не обробляється
-        //    // Act
-        //    _logger.Setup(x => x.LogInformation(It.IsAny<string>()));
-        //    var result = await _RegionController.AddDocument(document);
-            
-
-        //    // Assert
-        //    Assert.IsInstanceOf<OkObjectResult>(result);
-        //    //Assert.IsNull(result);
-
-        //}
 
         [Test]
         public async Task AddDocument_NewDocument_ReturnsNullOkObjectResult()
@@ -319,10 +303,10 @@ namespace EPlast.Tests.Controllers
             string id = null;
             // Act
             var result = await _RegionController.GetUserPrevAdministrations(id);
-            //?
+           
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
-            //Assert.IsNull((result as ObjectResult).Value); empty
+           
         }
 
         [Test]
@@ -459,21 +443,6 @@ namespace EPlast.Tests.Controllers
            
         }
 
-
-        //[Test]
-        //public async Task GetAdminTypeId_NullString_ReturnsNull()
-        //{
-        //    // Arrange
-            
-        //    _regionAdministrationService.Setup(x => x.GetAdminType(It.IsAny<string>())).ReturnsAsync(null);
-        //    // Act
-        //    var result = await _RegionController.GetAdminTypeId("TypeName");
-        //    //    null не перевіряється у методі, при спробі отримати дані з методу виникає помилка, яка не оброюляється
-        //    // Assert
-
-        //    Assert.IsNull(result);
-
-        //}
 
         [Test]
         public async Task GetReportByIdAsync_ReturnsReportDTO()
