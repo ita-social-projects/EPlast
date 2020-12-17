@@ -308,17 +308,19 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="id">Region annual report identification number</param>
         /// <param name="year">Region annual report year</param>
+        /// <param name="regionAnnualReportQuestions">Region annual report questions</param>
         /// <returns>Annual report</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The region annual report does not exist</response>
         [HttpPost("CreateRegionAnnualReportById/{id}/{year}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
-        public async Task<IActionResult> CreateRegionAnnualReportById(int id, int year)
+        public async Task<IActionResult> CreateRegionAnnualReportById(int id, int year, 
+            [FromBody]RegionAnnualReportQuestions regionAnnualReportQuestions)
         {
             try
             {
-                var annualreport = await _RegionAnnualReportService.CreateByNameAsync(User, id, year);
+                var annualreport = await _RegionAnnualReportService.CreateByNameAsync(User, id, year, regionAnnualReportQuestions);
                 return StatusCode(StatusCodes.Status200OK, annualreport);
             }
             catch (NullReferenceException)
