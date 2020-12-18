@@ -130,7 +130,6 @@ namespace EPlast.Tests.Services
             Assert.NotNull(result);
         }
 
-
         [Test]
         public void DeleteUserAsync_ReturnsCorrect()
         {
@@ -263,7 +262,5 @@ namespace EPlast.Tests.Services
             "Прихильник",
             "Колишній член пласту"
         };
-
-
     }
 }
