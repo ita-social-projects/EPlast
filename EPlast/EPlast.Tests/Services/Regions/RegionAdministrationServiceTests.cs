@@ -207,42 +207,6 @@ namespace EPlast.Tests.Services.Regions
             Assert.NotNull(result);
         }
 
-        [Test]
-        public void AddRegionAdministrator_ReturnsCorrect()
-        {
-            //Arrange
-            _adminTypeService
-              .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
-              .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminType));
-
-            _repoWrapper
-               .Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
-               It.IsAny<Func<IQueryable<RegionAdministration>,
-               IIncludableQueryable<RegionAdministration, object>>>()))
-               .ReturnsAsync(regionAdm);
-            _userManager
-                .Setup(u=>u.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User() {Id= "Голова Станиці"});
-            _userManager
-                .Setup(u=>u.AddToRoleAsync(new User() { Id = "Голова Станиці" }, "Діловод Округу"));
-            _userManager
-                 .Setup(u => u.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User() { Id = "Голова Станиці" });
-            _userManager
-                .Setup(x=>x.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
-            _repoWrapper
-                .Setup(x=>x.RegionAdministration.Update(regionAdm));
-            _repoWrapper
-                .Setup(x=>x.SaveAsync());
-            _repoWrapper
-                .Setup(x=>x.RegionAdministration.CreateAsync(regionAdm));
-            _repoWrapper
-               .Setup(x => x.SaveAsync());
-            //Act
-            var result = _servise.AddRegionAdministrator(regionAdmDTO);
-            //Assert
-            _repoWrapper.Verify();
-            Assert.NotNull(result);
-        }
-
         private static AdminTypeDTO AdminType = new AdminTypeDTO
         {
             AdminTypeName = "Голова Станиці",
