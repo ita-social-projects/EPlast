@@ -207,6 +207,94 @@ namespace EPlast.Tests.Services.Regions
             Assert.NotNull(result);
         }
 
+        [Test]
+        public void EditRegionAdministrator_NotNull_ReturnsCorrect()
+        {
+            //Arrange
+            RegionAdministration regionAdmFake = new RegionAdministration
+            {
+                ID = 1,
+                AdminType = new AdminType()
+                {
+                    AdminTypeName = "Голова Округу",
+                    ID = 1
+                },
+                Status = true,
+                AdminTypeId = AdminType.ID,
+                UserId = "Голова Округу"
+            };
+            _repoWrapper
+                .Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
+                It.IsAny<Func<IQueryable<RegionAdministration>,
+                IIncludableQueryable<RegionAdministration, object>>>()))
+                .ReturnsAsync(regionAdmFake);
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
+                .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminType));
+            //Act
+            var result = _servise.EditRegionAdministrator(It.IsAny<RegionAdministrationDTO>());
+            //Assert
+            _repoWrapper.Verify();
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public void AddRegionAdministrator_NullOldAdmin_ReturnsCorrect()
+        {
+            //Arrange
+            RegionAdministration adm = null;
+            _adminTypeService
+              .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
+              .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminType));
+            _repoWrapper
+               .Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
+               It.IsAny<Func<IQueryable<RegionAdministration>,
+               IIncludableQueryable<RegionAdministration, object>>>()))
+               .ReturnsAsync(adm);
+            _userManager
+                .Setup(x=>x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User() { Id= "Some" });
+            _userManager
+                .Setup(x=>x.AddToRoleAsync(new User() { Id = "Some" }, "Голова Округу"));
+            _repoWrapper
+                .Setup(x=>x.RegionAdministration.CreateAsync(regionAdm));
+            //Act
+            var result = _servise.AddRegionAdministrator(regionAdmDTO);
+            //Assert
+            _adminTypeService.Verify();
+            _userManager.Verify();
+            _repoWrapper.Verify();
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public void AddRegionAdministrator_ReturnsCorrect()
+        {
+            //Arrange
+            _adminTypeService
+              .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
+              .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminType));
+            _repoWrapper
+               .Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
+               It.IsAny<Func<IQueryable<RegionAdministration>,
+               IIncludableQueryable<RegionAdministration, object>>>()))
+               .ReturnsAsync(regionAdm);
+            _userManager
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User() { Id = "Some" })
+                .Callback(()=> _userManager
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User() { Id = "SomeNew" }));
+            _userManager
+                .Setup(x => x.AddToRoleAsync(new User() { Id = "Some" }, "Голова Округу"));
+            _repoWrapper
+                .Setup(x => x.RegionAdministration.CreateAsync(regionAdm));
+            //Act
+            var result = _servise.AddRegionAdministrator(regionAdmDTO);
+            //Assert
+            _adminTypeService.Verify();
+            _userManager.Verify();
+            _repoWrapper.Verify();
+            Assert.NotNull(result);
+        }
+
         private static AdminTypeDTO AdminType = new AdminTypeDTO
         {
             AdminTypeName = "Голова Станиці",
@@ -236,7 +324,8 @@ namespace EPlast.Tests.Services.Regions
             },
             Status = true,
             AdminTypeId = AdminType.ID,
-            UserId = "Голова Станиці"
+            UserId = "Голова Станиці",
+            RegionId=2
         };
 
         private IEnumerable<RegionAdministrationDTO> GetFakeAdminDTO() {

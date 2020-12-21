@@ -53,6 +53,5 @@ namespace EPlast.Tests.Services.Regions
             Assert.IsInstanceOf<RegionAnnualReportDTO>(result);
             Assert.IsNotNull(result);
         }
-
     }
 }
