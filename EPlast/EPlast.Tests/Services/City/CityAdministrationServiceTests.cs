@@ -55,11 +55,8 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.NotNull(result);
-            foreach(CityAdministrationDTO admin in result)
-            {
-                Assert.NotNull(admin.User);
-                Assert.NotNull(admin.AdminType);
-            }
+            Assert.NotNull(result.Select(admin => admin.User));
+            Assert.NotNull(result.Select(admin => admin.AdminType));
             Assert.AreEqual(result.FirstOrDefault().ID, fakeId);
         }
 
