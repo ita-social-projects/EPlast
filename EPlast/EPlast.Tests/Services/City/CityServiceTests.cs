@@ -178,7 +178,7 @@ namespace EPlast.Tests.Services.City
             //// Arrange
             CityService cityService = CreateCityService();
             _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
-                .Returns(CreateFakeCityDtoWithoutAdmin(1).FirstOrDefault());
+                .Returns(CreateFakeCityDtoWithoutAdmin(count).FirstOrDefault());
 
             //// Act
             var result = await cityService.GetCityProfileAsync(Id);
@@ -282,7 +282,7 @@ namespace EPlast.Tests.Services.City
             //// Arrange
             CityService cityService = CreateCityService();
             _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
-                .Returns(CreateFakeCityDtoWithoutAdmin(1).FirstOrDefault());
+                .Returns(CreateFakeCityDtoWithoutAdmin(count).FirstOrDefault());
 
             //// Act
             var result = await cityService.GetCityAdminsAsync(Id);
@@ -327,14 +327,14 @@ namespace EPlast.Tests.Services.City
         {
             //// Arrange
             CityService cityService = CreateCityService();
-            _cityBlobStorage.Setup(c => c.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync("LogoBase64");
+            _cityBlobStorage.Setup(c => c.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync(logoName);
 
             //// Act
-            var result = await cityService.GetLogoBase64("LogoBase64");
+            var result = await cityService.GetLogoBase64(logoName);
 
             //// Assert
             Assert.NotNull(result);
-            Assert.AreEqual("LogoBase64", result);
+            Assert.AreEqual(logoName, result);
         }
 
         [Test]
@@ -655,9 +655,9 @@ namespace EPlast.Tests.Services.City
             Assert.IsInstanceOf<IEnumerable<CityForAdministrationDTO>>(result);
         }
 
-
-
         private int Id => 1;
+        private int count => 2;
+        private string logoName => "logoName";
 
         private IEnumerable<CityDTO> GetTestCityDTO()
         {
@@ -717,7 +717,6 @@ namespace EPlast.Tests.Services.City
 
             return new CityService(_repoWrapper.Object, _mapper.Object, _env.Object, _cityBlobStorage.Object, _cityAccessService.Object, null, _uniqueId.Object);
         }
-
 
         private IQueryable<DataAccessCity.City> CreateFakeCities(int count)
         {
@@ -827,7 +826,7 @@ namespace EPlast.Tests.Services.City
             return cities.AsQueryable();
         }
 
-        public IQueryable<CityDTO> CreateFakeCityDtoWithoutMembers(int count)
+        private IQueryable<CityDTO> CreateFakeCityDtoWithoutMembers(int count)
         {
             List<CityDTO> cities = new List<CityDTO>();
 
@@ -856,7 +855,6 @@ namespace EPlast.Tests.Services.City
                 };
                 cities.Add(cityDto);
             };
-
             return cities.AsQueryable();
         }
 
@@ -872,6 +870,7 @@ namespace EPlast.Tests.Services.City
                 };
             return city;
         }
+
         private CityDTO GetCityDtoWithoutMembers()
         {
             return new CityDTO
@@ -914,7 +913,6 @@ namespace EPlast.Tests.Services.City
             {
                 Name = "city"
             };
-
             return city;
         }
     }
