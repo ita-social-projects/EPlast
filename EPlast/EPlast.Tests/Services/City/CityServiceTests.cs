@@ -8,6 +8,7 @@ using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
@@ -64,6 +65,20 @@ namespace EPlast.Tests.Services.City
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<List<DataAccessCity.City>>(result);
+        }
+
+        [Test]
+        public async Task GetAllAsync_ReturnCitiesByName()
+        {
+            // Arrange
+            CityService cityService = CreateCityService();
+
+            // Act
+            var result = await cityService.GetAllAsync("test");
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<DataAccessCity.City>>(result);
         }
 
         [Test]
@@ -143,6 +158,38 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
+        public async Task GetCityProfileAsync_ReturnNull()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
+                .Returns(new List<CityDTO>().FirstOrDefault());
+            
+            //// Act
+            var result = await cityService.GetCityProfileAsync(Id);
+
+            //// Assert
+            Assert.Null(result);
+        }
+
+        [Test]
+        public async Task GetCityProfileAsync_WhereAdminIsNull_ReturnCityProfile()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
+                .Returns(CreateFakeCityDtoWithoutAdmin(1).FirstOrDefault());
+
+            //// Act
+            var result = await cityService.GetCityProfileAsync(Id);
+
+            //// Assert
+            Assert.NotNull(result);
+            Assert.Null(result.Head);
+            Assert.AreEqual(result.Admins, new List<CityAdministrationDTO>());
+        }
+
+        [Test]
         public async Task GetCityMembersAsync_ReturnsCityMembers()
         {
             //// Arrange
@@ -154,6 +201,21 @@ namespace EPlast.Tests.Services.City
             //// Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<CityProfileDTO>(result);
+        }
+
+        [Test]
+        public async Task GetCityMembersAsync_ReturnsNull()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
+                .Returns(new List<CityDTO>().FirstOrDefault());
+
+            //// Act
+            var result = await cityService.GetCityMembersAsync(Id);
+
+            //// Assert
+            Assert.Null(result);
         }
 
         [Test]
@@ -171,6 +233,21 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
+        public async Task GetCityFollowersAsync_ReturnsNull()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
+                .Returns(new List<CityDTO>().FirstOrDefault());
+
+            //// Act
+            var result = await cityService.GetCityFollowersAsync(Id);
+
+            //// Assert
+            Assert.Null(result);
+        }
+
+        [Test]
         public async Task GetCityAdminsAsync_ReturnsCityAdmins()
         {
             //// Arrange
@@ -182,6 +259,38 @@ namespace EPlast.Tests.Services.City
             //// Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<CityProfileDTO>(result);
+        }
+
+        [Test]
+        public async Task GetCityAdminsAsync_ReturnNull()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
+                .Returns(new List<CityDTO>().FirstOrDefault());
+
+            //// Act
+            var result = await cityService.GetCityAdminsAsync(Id);
+
+            //// Assert
+            Assert.Null(result);
+        }
+
+        [Test]
+        public async Task GetCityAdminsAsync_WhereAdminIsNull_ReturnCity()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
+                .Returns(CreateFakeCityDtoWithoutAdmin(1).FirstOrDefault());
+
+            //// Act
+            var result = await cityService.GetCityAdminsAsync(Id);
+
+            //// Assert
+            Assert.NotNull(result);
+            Assert.Null(result.Head);
+            Assert.AreEqual(result.Admins, new List<CityAdministrationDTO>());
         }
 
         [Test]
@@ -199,6 +308,74 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
+        public async Task GetCityDocumentsAsync_ReturnNull()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
+                .Returns(new List<CityDTO>().FirstOrDefault());
+
+            //// Act
+            var result = await cityService.GetCityDocumentsAsync(Id);
+
+            //// Assert
+            Assert.Null(result);
+        }
+
+        [Test]
+        public async Task GetLogoBase64_ReturnLogoBase64()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+            _cityBlobStorage.Setup(c => c.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync("LogoBase64");
+
+            //// Act
+            var result = await cityService.GetLogoBase64("LogoBase64");
+
+            //// Assert
+            Assert.NotNull(result);
+            Assert.AreEqual("LogoBase64", result);
+        }
+
+        [Test]
+        public async Task RemoveTest()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+            _cityBlobStorage.Setup(c => c.DeleteBlobAsync(It.IsAny<string>()));
+            _repoWrapper.Setup(r => r.City.Delete(It.IsAny<DataAccessCity.City>()));
+            _repoWrapper.Setup(r => r.SaveAsync());
+
+            //// Act
+            await cityService.RemoveAsync(It.IsAny<int>());
+
+            //// Assert
+            _cityBlobStorage.Verify(c => c.DeleteBlobAsync(It.IsAny<string>()), Times.Once);
+            _repoWrapper.Verify(r => r.City.Delete(It.IsAny<DataAccessCity.City>()), Times.Once);
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
+        }
+
+        [Test]
+        public async Task RemoveTest_WithoutLogo()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+            _repoWrapper.Setup(r => r.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessCity.City, bool>>>(), null))
+                .ReturnsAsync(GetTestCityWithoutLogo());
+            _cityBlobStorage.Setup(c => c.DeleteBlobAsync(It.IsAny<string>()));
+            _repoWrapper.Setup(r => r.City.Delete(It.IsAny<DataAccessCity.City>()));
+            _repoWrapper.Setup(r => r.SaveAsync());
+
+            //// Act
+            await cityService.RemoveAsync(It.IsAny<int>());
+
+            //// Assert
+            _cityBlobStorage.Verify(c => c.DeleteBlobAsync(It.IsAny<string>()), Times.Never);
+            _repoWrapper.Verify(r => r.City.Delete(It.IsAny<DataAccessCity.City>()), Times.Once);
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
+        }
+
+        [Test]
         public async Task EditAsync_ReturnsCityEdited()
         {
             //// Arrange
@@ -211,6 +388,274 @@ namespace EPlast.Tests.Services.City
             Assert.NotNull(result);
             Assert.IsInstanceOf<CityProfileDTO>(result);
         }
+
+        [Test]
+        public async Task EditAsync_ReturnNull()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
+                .Returns(new List<CityDTO>().FirstOrDefault());
+
+            //// Act
+            var result = await cityService.EditAsync(Id);
+
+            //// Assert
+            Assert.Null(result);
+        }
+
+        [Test]
+        public async Task EditAsync_WhereMembersIsNull_ReturnsCityEdited()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
+                .Returns(CreateFakeCityDtoWithoutMembers(1).FirstOrDefault());
+
+            //// Act
+            var result = await cityService.EditAsync(Id);
+
+            //// Assert
+            Assert.AreEqual(new List<CityMembersDTO>(), result.Members);
+        }
+
+        [Test]
+        public async Task EditAsync_WithModelAndFormFile_ReturnsCityEdited()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+            CityProfileDTO cityProfileDto = new CityProfileDTO
+            {
+                City = new CityDTO
+                {
+                    ID = 0
+                }
+            };
+            _repoWrapper.Setup(r => r.City.Attach(It.IsAny<DataAccessCity.City>()));
+            _repoWrapper.Setup(r => r.City.Update(It.IsAny<DataAccessCity.City>()));
+            _repoWrapper.Setup(r => r.SaveAsync());
+
+            //// Act
+            await cityService.EditAsync(cityProfileDto, It.IsAny<IFormFile>());
+
+            //// Assert
+            _repoWrapper.Verify(r => r.City.Attach(It.IsAny<DataAccessCity.City>()), Times.Once);
+            _repoWrapper.Verify(r => r.City.Update(It.IsAny<DataAccessCity.City>()), Times.Once);
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
+        }
+
+        [Test]
+        public async Task EditAsync_WithModel_ReturnsCityEdited()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+            CityDTO cityDto = new CityDTO
+            {
+                ID = 0
+            };
+            _repoWrapper.Setup(r => r.City.Attach(It.IsAny<DataAccessCity.City>()));
+            _repoWrapper.Setup(r => r.City.Update(It.IsAny<DataAccessCity.City>()));
+            _repoWrapper.Setup(r => r.SaveAsync());
+
+            //// Act
+            await cityService.EditAsync(cityDto);
+
+            //// Assert
+            _repoWrapper.Verify(r => r.City.Attach(It.IsAny<DataAccessCity.City>()), Times.Once);
+            _repoWrapper.Verify(r => r.City.Update(It.IsAny<DataAccessCity.City>()), Times.Once);
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
+        }
+
+        [Test]
+        public async Task CreateAsync_ReturnCityDtoID()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+            CityDTO cityDto = new CityDTO
+            {
+                ID = 0
+            };
+            _cityBlobStorage.Setup(b => b.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
+            _cityBlobStorage.Setup(b => b.DeleteBlobAsync(It.IsAny<string>()));
+
+            //// Act
+            var result = await cityService.CreateAsync(cityDto);
+
+            //// Assert
+            Assert.AreEqual(cityDto.ID, result);
+            _cityBlobStorage.Verify(b => b.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+            _cityBlobStorage.Verify(b => b.DeleteBlobAsync(It.IsAny<string>()), Times.Once);
+        }
+
+        [Test]
+        public async Task CreateAsync_WithCityDtoLogo_ReturnCityDtoID()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+            CityDTO cityDto = new CityDTO
+            {
+                ID = 0,
+                Logo = "data:application/.jpeg;base64,/9j/"
+            };
+            _cityBlobStorage.Setup(b => b.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
+            _cityBlobStorage.Setup(b => b.DeleteBlobAsync(It.IsAny<string>()));
+
+            //// Act
+            var result = await cityService.CreateAsync(cityDto);
+
+            //// Assert
+            Assert.AreEqual(cityDto.ID, result);
+            _cityBlobStorage.Verify(b => b.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _cityBlobStorage.Verify(b => b.DeleteBlobAsync(It.IsAny<string>()), Times.Once);
+        }
+
+        [Test]
+        public async Task CreateAsync_WithCityDtoLogo_CityIsNull_ReturnCityDtoID()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+            CityDTO cityDto = new CityDTO
+            {
+                ID = 0,
+                Logo = "data:application/.jpeg;base64,/9j/"
+            };
+            _repoWrapper.Setup(r => r.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessCity.City, bool>>>(), null))
+                .ReturnsAsync((DataAccessCity.City)null);
+            _cityBlobStorage.Setup(b => b.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
+
+
+            //// Act
+            var result = await cityService.CreateAsync(cityDto);
+
+            //// Assert
+            Assert.AreEqual(cityDto.ID, result);
+            _cityBlobStorage.Verify(b => b.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _cityBlobStorage.Verify(b => b.DeleteBlobAsync(It.IsAny<string>()), Times.Never);
+        }
+
+        [Test]
+        public async Task CreateAsync_WithCityDtoLogo_ExtensionIsEmpty_ReturnCityDtoID()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+            CityDTO cityDto = new CityDTO
+            {
+                ID = 0,
+                Logo = "data:application/,/9j/"
+            };
+            _cityBlobStorage.Setup(b => b.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
+
+            //// Act
+            var result = await cityService.CreateAsync(cityDto);
+
+            //// Assert
+            Assert.AreEqual(cityDto.ID, result);
+            _cityBlobStorage.Verify(b => b.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Test]
+        public async Task CreateAsync_WithCityDtoLogo_ExtensionWithoutPoint_ReturnCityDtoID()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+            CityDTO cityDto = new CityDTO
+            {
+                ID = 0,
+                Logo = "data:application/base64,/9j/"
+            };
+            _cityBlobStorage.Setup(b => b.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
+
+            //// Act
+            var result = await cityService.CreateAsync(cityDto);
+
+            //// Assert
+            Assert.AreEqual(cityDto.ID, result);
+            _cityBlobStorage.Verify(b => b.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Test]
+        public async Task CreateAsync_WhereFormFileIsNull_ReturnCityDtoID()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+            CityProfileDTO cityProfileDto = new CityProfileDTO
+            {
+                City = new CityDTO
+                {
+                    ID = 0
+                }
+            };
+
+            //// Act
+            var result = await cityService.CreateAsync(cityProfileDto, null);
+
+            //// Assert
+            Assert.AreEqual(cityProfileDto.City.ID, result);
+        }
+
+        [Test]
+        public async Task CreateAsync_WithFormFile_WhereRegionIsNull_ReturnCityDtoID()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+            CityProfileDTO cityProfileDto = new CityProfileDTO
+            {
+                City = new CityDTO
+                {
+                    ID = 0
+                },
+            };
+            _mapper.Setup(m => m.Map<CityDTO, DataAccessCity.City>(It.IsAny<CityDTO>()))
+                .Returns(GetTestNewCity());
+            _repoWrapper.Setup(r => r.Region.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Region, bool>>>(), null))
+                .ReturnsAsync((Region)null);
+            _repoWrapper.Setup(r => r.Region.CreateAsync(It.IsAny<Region>()));
+
+            //// Act
+            var result = await cityService.CreateAsync(cityProfileDto, null);
+
+            //// Assert
+            Assert.AreEqual(cityProfileDto.City.ID, result);
+            _repoWrapper.Verify(r => r.Region.CreateAsync(It.IsAny<Region>()), Times.Once);
+        }
+
+        [Test]
+        public async Task CreateAsync_WithFormFile_ReturnCityDtoID()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+            CityProfileDTO cityProfileDto = new CityProfileDTO
+            {
+                City = new CityDTO
+                {
+                    ID = 0
+                }
+            };
+            _repoWrapper.Setup(r => r.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessCity.City, bool>>>(), null))
+                .ReturnsAsync((DataAccessCity.City)null);
+
+            //// Act
+            var result = await cityService.CreateAsync(cityProfileDto, It.IsAny<IFormFile>());
+
+            //// Assert
+            Assert.AreEqual(cityProfileDto.City.ID, result);
+        }
+
+        [Test]
+        public async Task GetCities_ReturnCityForAdministrationDTOs()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+
+            //// Act
+            var result = await cityService.GetCities();
+
+            //// Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<CityForAdministrationDTO>>(result);
+        }
+
+
 
         private int Id => 1;
 
@@ -248,7 +693,7 @@ namespace EPlast.Tests.Services.City
         private CityService CreateCityService()
         {
             _mapper.Setup(m => m.Map<IEnumerable<DataAccessCity.City>,
-                    IEnumerable<CityDTO>>(It.IsAny<IEnumerable<DataAccess.Entities.City>>()))
+                    IEnumerable<CityDTO>>(It.IsAny<IEnumerable<DataAccessCity.City>>()))
                 .Returns(CreateFakeCityDto(10));
             _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
                 .Returns(CreateFakeCityDto(10).FirstOrDefault());
@@ -292,37 +737,7 @@ namespace EPlast.Tests.Services.City
             {
                 cities.Add(new CityDTO
                 {
-                    CityAdministration = new List<CityAdministrationDTO>
-                    {
-                        new CityAdministrationDTO
-                        {
-                           AdminType = new AdminTypeDTO
-                           {
-                               AdminTypeName = "Голова Станиці"
-                           }
-                        },
-                        new CityAdministrationDTO
-                        {
-                            AdminType = new AdminTypeDTO
-                            {
-                                AdminTypeName = "----------"
-                            }
-                        },
-                        new CityAdministrationDTO
-                        {
-                            AdminType = new AdminTypeDTO
-                            {
-                                AdminTypeName = "Голова Станиці"
-                            }
-                        },
-                        new CityAdministrationDTO
-                        {
-                            AdminType = new AdminTypeDTO
-                            {
-                                AdminTypeName = "----------"
-                            }
-                        }
-                    },
+                    CityAdministration = GetCityAdministrationDTO(),
                     CityMembers = new List<CityMembersDTO>
                     {
                         new CityMembersDTO
@@ -337,10 +752,141 @@ namespace EPlast.Tests.Services.City
                         new CityDocumentsDTO(),
                         new CityDocumentsDTO(),
                         new CityDocumentsDTO()
-                    }
+                    },
                 });
             }
             return cities.AsQueryable();
+        }
+
+        private List<CityAdministrationDTO> GetCityAdministrationDTO()
+        {
+            return new List<CityAdministrationDTO>
+            {
+                 new CityAdministrationDTO
+                 {
+
+                      AdminType = new AdminTypeDTO
+                      {
+                           AdminTypeName = "Голова Станиці"
+                      }
+
+                 },
+                 new CityAdministrationDTO
+                 {
+                      AdminType = new AdminTypeDTO
+                      {
+                           AdminTypeName = "----------"
+                      }
+                 },
+                 new CityAdministrationDTO
+                 {
+                       AdminType = new AdminTypeDTO
+                       {
+                            AdminTypeName = "Голова Станиці"
+                       }
+                 },
+                 new CityAdministrationDTO
+                 {
+                       AdminType = new AdminTypeDTO
+                       {
+                            AdminTypeName = "----------"
+                       }
+                 }
+            };
+        }
+
+        private IQueryable<CityDTO> CreateFakeCityDtoWithoutAdmin(int count)
+        {
+            List<CityDTO> cities = new List<CityDTO>();
+
+            for (int i = 0; i < count; i++)
+            {
+                var cityDto = GetCityDto();
+                cityDto.CityAdministration = new List<CityAdministrationDTO>
+                {
+                    new CityAdministrationDTO
+                    {
+                        AdminType = new AdminTypeDTO
+                        {
+                            AdminTypeName = "Голова Станиці"
+                        },
+                        EndDate = DateTime.Now.AddMonths(-3)
+                    },
+                    new CityAdministrationDTO
+                    {
+                        AdminType = new AdminTypeDTO
+                        {
+                            AdminTypeName = "----------",
+                        },
+                        EndDate = DateTime.Now.AddMonths(-3)
+                    }
+                };
+                cities.Add(cityDto);
+            };
+
+            return cities.AsQueryable();
+        }
+
+        public IQueryable<CityDTO> CreateFakeCityDtoWithoutMembers(int count)
+        {
+            List<CityDTO> cities = new List<CityDTO>();
+
+            for (int i = 0; i < count; i++)
+            {
+                var cityDto = GetCityDtoWithoutMembers();
+                cityDto.CityMembers = new List<CityMembersDTO>();
+                cityDto.CityAdministration = new List<CityAdministrationDTO>
+                {
+                    new CityAdministrationDTO
+                    {
+                        AdminType = new AdminTypeDTO
+                        {
+                            AdminTypeName = "Голова Станиці"
+                        },
+                        EndDate = DateTime.Now.AddMonths(-3)
+                    },
+                    new CityAdministrationDTO
+                    {
+                        AdminType = new AdminTypeDTO
+                        {
+                            AdminTypeName = "----------",
+                        },
+                        EndDate = DateTime.Now.AddMonths(-3)
+                    }
+                };
+                cities.Add(cityDto);
+            };
+
+            return cities.AsQueryable();
+        }
+
+        private CityDTO GetCityDto()
+        {
+            var city = GetCityDtoWithoutMembers();
+            city.CityMembers = new List<CityMembersDTO>
+                {
+                    new CityMembersDTO
+                    {
+                        StartDate = new Random().Next(0, 1) == 1 ? DateTime.Today : (DateTime?)null
+                    }
+                };
+            return city;
+        }
+        private CityDTO GetCityDtoWithoutMembers()
+        {
+            return new CityDTO
+            {
+                CityAdministration = GetCityAdministrationDTO(),
+                CityDocuments = new List<CityDocumentsDTO>
+                    {
+                        new CityDocumentsDTO(),
+                        new CityDocumentsDTO(),
+                        new CityDocumentsDTO(),
+                        new CityDocumentsDTO(),
+                        new CityDocumentsDTO()
+                    },
+                Region = new BLL.DTO.Region.RegionDTO()
+            };
         }
 
         private Region GetTestRegion()
@@ -355,11 +901,21 @@ namespace EPlast.Tests.Services.City
 
         private DataAccessCity.City GetTestNewCity()
         {
-            return new DataAccessCity.City
+            var city = GetTestCityWithoutLogo();
+            city.Logo = "710b8b06-6869-45db-894f-7a0b131e6c6b.jpg";
+            city.Region = GetTestRegion();
+
+            return city;
+        }
+
+        private DataAccessCity.City GetTestCityWithoutLogo()
+        {
+            var city = new DataAccessCity.City
             {
-                Name = "city",
-                Logo = "710b8b06-6869-45db-894f-7a0b131e6c6b.jpg"
+                Name = "city"
             };
+
+            return city;
         }
     }
 }
