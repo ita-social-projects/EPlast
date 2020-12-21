@@ -261,8 +261,7 @@ namespace EPlast.Tests.Services.Regions
             var result = _servise.AddRegionAdministrator(regionAdmDTO);
             //Assert
             _adminTypeService.Verify();
-            _userManager.Verify();
-            _repoWrapper.Verify();
+            _userManager.Verify();          
             Assert.NotNull(result);
         }
 
@@ -291,7 +290,6 @@ namespace EPlast.Tests.Services.Regions
             //Assert
             _adminTypeService.Verify();
             _userManager.Verify();
-            _repoWrapper.Verify();
             Assert.NotNull(result);
         }
 
