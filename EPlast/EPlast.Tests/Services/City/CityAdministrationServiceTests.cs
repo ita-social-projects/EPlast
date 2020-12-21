@@ -44,22 +44,45 @@ namespace EPlast.Tests.Services.City
             // Arrange
             _repoWrapper
                 .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
-                 It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
-                     .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId} });
+                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId } });
             _mapper
                 .Setup(m => m.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(It.IsAny<IEnumerable<CityAdministration>>()))
-                .Returns(new List<CityAdministrationDTO> { new CityAdministrationDTO { ID = fakeId } });
+                .Returns(new List<CityAdministrationDTO> { new CityAdministrationDTO { ID = fakeId, AdminType = new AdminTypeDTO(), User = new CityUserDTO() } });
 
             // Act
             var result = await _cityAdministrationService.GetAdministrationByIdAsync(It.IsAny<int>());
 
             // Assert
             Assert.NotNull(result);
+            foreach(CityAdministrationDTO admin in result)
+            {
+                Assert.NotNull(admin.User);
+                Assert.NotNull(admin.AdminType);
+            }
             Assert.AreEqual(result.FirstOrDefault().ID, fakeId);
         }
 
         [Test]
         public async Task AddAdministratorAsync_ReturnsAdministrator()
+        {
+            //Arrange
+            cityAdmDTO.StartDate = It.IsAny<DateTime>();
+            _repoWrapper
+                .Setup(s => s.CityAdministration.CreateAsync(cityAdm));
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AdminTypeDTO());
+
+            //Act
+            var result = await _cityAdministrationService.AddAdministratorAsync(cityAdmDTO);
+
+            //Assert
+            Assert.IsInstanceOf<CityAdministrationDTO>(result);
+        }
+
+        [Test]
+        public async Task AddAdministratorAsync_WhereStartDateIsNull_ReturnsAdministrator()
         {
             //Arrange
             _repoWrapper
@@ -79,13 +102,39 @@ namespace EPlast.Tests.Services.City
         public async Task EditAdministratorAsync_ReturnsEditedAdministratorWithSameId()
         {
             //Arrange
+            cityAdmDTO.StartDate = It.IsAny<DateTime>();
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(new AdminTypeDTO());
             _repoWrapper
                 .Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
-                It.IsAny<Func<IQueryable<CityAdministration>,
-                IIncludableQueryable<CityAdministration, object>>>()))
+                    It.IsAny<Func<IQueryable<CityAdministration>,
+                    IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new CityAdministration());
+            _repoWrapper
+                .Setup(r => r.CityAdministration.Update(It.IsAny<CityAdministration>()));
+            _repoWrapper
+                .Setup(r => r.SaveAsync());
+
+            //Act
+            var result = await _cityAdministrationService.EditAdministratorAsync(cityAdmDTO);
+
+            //Assert
+            _repoWrapper.Verify();
+            Assert.IsInstanceOf<CityAdministrationDTO>(result);
+        }
+
+        [Test]
+        public async Task EditAdministratorAsync_WithStartTimeIsNull_ReturnsEditedAdministratorWithSameId()
+        {
+            //Arrange
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AdminTypeDTO());
+            _repoWrapper
+                .Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>,
+                    IIncludableQueryable<CityAdministration, object>>>()))
                 .ReturnsAsync(new CityAdministration());
             _repoWrapper
                 .Setup(r => r.CityAdministration.Update(It.IsAny<CityAdministration>()));
@@ -106,8 +155,8 @@ namespace EPlast.Tests.Services.City
             //Arrange
             _repoWrapper
                 .Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
-                It.IsAny<Func<IQueryable<CityAdministration>,
-                IIncludableQueryable<CityAdministration, object>>>()))
+                    It.IsAny<Func<IQueryable<CityAdministration>,
+                    IIncludableQueryable<CityAdministration, object>>>()))
                 .ReturnsAsync(new CityAdministration());
             _adminTypeService
                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
@@ -117,7 +166,7 @@ namespace EPlast.Tests.Services.City
                    ID = 3
                });
             _adminTypeService
-                .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
+               .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
                .ReturnsAsync(new AdminTypeDTO
                {
                    AdminTypeName = "Голова Станиці",
@@ -138,8 +187,38 @@ namespace EPlast.Tests.Services.City
             //Arrange
             _repoWrapper
                 .Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
-                It.IsAny<Func<IQueryable<CityAdministration>,
-                IIncludableQueryable<CityAdministration, object>>>()))
+                    It.IsAny<Func<IQueryable<CityAdministration>,
+                    IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(cityAdm);
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
+                .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminType));
+            _userManager
+                .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
+            _userManager
+                .Setup(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
+            _repoWrapper
+                .Setup(r => r.CityAdministration.Update(It.IsAny<CityAdministration>()));
+            _repoWrapper
+                .Setup(r => r.SaveAsync());
+
+            //Act
+            var result = _cityAdministrationService.RemoveAdministratorAsync(It.IsAny<int>());
+
+            //Assert
+            _repoWrapper.Verify();
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public void RemoveAdministratorAsync_WithAnotherRole_ReturnsCorrect()
+        {
+            //Arrange
+            AdminType.AdminTypeName = "Another";
+            _repoWrapper
+                .Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>,
+                    IIncludableQueryable<CityAdministration, object>>>()))
                 .ReturnsAsync(cityAdm);
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
@@ -165,9 +244,10 @@ namespace EPlast.Tests.Services.City
         public void CheckPreviousAdministratorsToDelete_ReturnsCorrect()
         {
             //Arrange
-            _repoWrapper.Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
-                 It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
-                     .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId } });
+            _repoWrapper
+                .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId } });
             _adminTypeService
                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                .ReturnsAsync(new AdminTypeDTO
@@ -188,14 +268,48 @@ namespace EPlast.Tests.Services.City
             Assert.NotNull(result);
         }
 
+        [Test]
+        public void CheckPreviousAdministratorsToDelete_WithDifferrentId_ReturnsCorrect()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId, AdminTypeId = fakeId } })
+                .Callback(() => _repoWrapper
+                    .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                        It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+                    .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId, AdminTypeId = 2 } }));
+            _adminTypeService
+               .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+               .ReturnsAsync(new AdminTypeDTO
+               {
+                   AdminTypeName = "Голова Станиці",
+                   ID = fakeId
+               });
+            _userManager
+                .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
+            _userManager
+                .Setup(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
+
+            //Act
+            var result = _cityAdministrationService.CheckPreviousAdministratorsToDelete();
+
+            //Assert
+            _repoWrapper.Verify();
+            _userManager.Verify(u => u.FindByIdAsync(It.IsAny<string>()), Times.Once);
+            _userManager.Verify(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
+            Assert.NotNull(result);
+        }
 
         [Test]
         public async Task GetAdministrationsOfUserAsync_ReturnsCorrectAdministrations()
         {
             //Arrange
-            _repoWrapper.Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
-                 It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
-                     .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = 3 } });
+            _repoWrapper
+                .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = 3 } });
             _mapper
                 .Setup(m => m.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(It.IsAny<IEnumerable<CityAdministration>>()))
                 .Returns(GetTestCityAdministration());
@@ -208,12 +322,93 @@ namespace EPlast.Tests.Services.City
             Assert.IsInstanceOf<IEnumerable<CityAdministrationDTO>>(result);
         }
 
+        [Test]
+        public async Task GetAdministrationsOfUserAsync_WithCity_ReturnsCorrectAdministrations()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new List<CityAdministration> { new CityAdministration() 
+                { 
+                    ID = 3, 
+                    City = new DataAccess.Entities.City () 
+                } });
+            _mapper
+                .Setup(m => m.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(It.IsAny<IEnumerable<CityAdministration>>()))
+                .Returns(GetTestCityAdministration());
+
+            //Act
+            var result = await _cityAdministrationService.GetAdministrationsOfUserAsync(It.IsAny<string>());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<CityAdministrationDTO>>(result);
+        }
+
+        [Test]
+        public async Task GetPreviousAdministrationsOfUserAsync_ReturnsCorrectAdministrations()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new List<CityAdministration> { new CityAdministration()
+                {
+                    ID = 3,
+                    City = new DataAccess.Entities.City ()
+                } });
+            _mapper
+                .Setup(m => m.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(It.IsAny<IEnumerable<CityAdministration>>()))
+                .Returns(GetTestCityAdministration());
+
+            //Act
+            var result = await _cityAdministrationService.GetPreviousAdministrationsOfUserAsync(It.IsAny<string>());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<CityAdministrationDTO>>(result);
+        }
+
+
+        [Test]
+        public async Task GetAdministrationStatuses_ReturnsCorrectAdministrationStatuses()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new List<CityAdministration> { new CityAdministration()
+                {
+                    ID = 3
+                } });
+            _mapper
+                .Setup(m => m.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationStatusDTO>>(It.IsAny<IEnumerable<CityAdministration>>()))
+                .Returns(GetTestCityAdministrationStatuses());
+
+            //Act
+            var result = await _cityAdministrationService.GetAdministrationStatuses(It.IsAny<string>());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<CityAdministrationStatusDTO>>(result);
+        }
+
         private IEnumerable<CityAdministrationDTO> GetTestCityAdministration()
         {
             return new List<CityAdministrationDTO>
             {
                 new CityAdministrationDTO{UserId = "Голова Станиці"},
                 new CityAdministrationDTO{UserId = "Голова Станиці"}
+            }.AsEnumerable();
+        }
+
+        private IEnumerable<CityAdministrationStatusDTO> GetTestCityAdministrationStatuses()
+        {
+            return new List<CityAdministrationStatusDTO>
+            {
+                new CityAdministrationStatusDTO{UserId = "Голова Станиці"},
+                new CityAdministrationStatusDTO{UserId = "Голова Станиці"}
             }.AsEnumerable();
         }
 
@@ -230,7 +425,6 @@ namespace EPlast.Tests.Services.City
             CityId = 1,
             AdminTypeId = 1,
             EndDate = DateTime.Today,
-            StartDate = DateTime.Now,
             User = new CityUserDTO(),
             UserId = "Голова Станиці"
         };
