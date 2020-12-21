@@ -39,7 +39,5 @@ namespace EPlast.Tests.Services.Regions
             Assert.IsInstanceOf<IEnumerable<DataAccess.Entities.Region>>(result);
             Assert.AreEqual(1, result.Count());
         }
-
-       
     }
 }
