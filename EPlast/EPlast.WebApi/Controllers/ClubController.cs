@@ -600,7 +600,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                await _ClubAnnualReportService.CancelAsync(User, id);
+                await _ClubAnnualReportService.CancelAsync(await _userManager.GetUserAsync(User), id);
                 return Ok();
             }
             catch (NullReferenceException)
@@ -627,7 +627,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                await _ClubAnnualReportService.DeleteClubReportAsync(User, id);
+                await _ClubAnnualReportService.DeleteClubReportAsync(await _userManager.GetUserAsync(User), id);
                 return Ok();
             }
             catch (NullReferenceException)
@@ -657,7 +657,7 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    await _ClubAnnualReportService.EditClubReportAsync(User, clubAnnualReport);
+                    await _ClubAnnualReportService.EditClubReportAsync(await _userManager.GetUserAsync(User), clubAnnualReport);
                     return Ok();
                 }
                 catch (NullReferenceException)
