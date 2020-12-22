@@ -112,7 +112,7 @@ namespace EPlast.Tests.Services.City
             CityMembersService cityMembersService = CreateCityMembersService();
 
             // Act
-            await _cityMembersService.RemoveFollowerAsync(It.IsAny<int>());
+            await cityMembersService.RemoveFollowerAsync(It.IsAny<int>());
 
             // Assert
             _repoWrapper.Verify(r => r.CityMembers.Delete(It.IsAny<CityMembers>()), Times.Once());
@@ -126,7 +126,7 @@ namespace EPlast.Tests.Services.City
             CityMembersService cityMembersService = CreateCityMembersService();
 
             // Act
-            await _cityMembersService.RemoveMemberAsync(It.IsAny<CityMembers>());
+            await cityMembersService.RemoveMemberAsync(It.IsAny<CityMembers>());
 
             // Assert
             _repoWrapper.Verify(r => r.CityMembers.Delete(It.IsAny<CityMembers>()), Times.Once());
