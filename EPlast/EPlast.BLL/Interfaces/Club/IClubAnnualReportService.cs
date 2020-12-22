@@ -46,5 +46,9 @@ namespace EPlast.BLL.Interfaces.Club
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
         /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
         Task ConfirmAsync(User claimsPrincipal, int id);
+
+        Task CancelAsync(User claimsPrincipal, int id);
+        Task DeleteClubReportAsync(User claimsPrincipal, int id);
+        Task EditClubReportAsync(User claimsPrincipal, ClubAnnualReportDTO clubAnnualReportDto);
     }
 }

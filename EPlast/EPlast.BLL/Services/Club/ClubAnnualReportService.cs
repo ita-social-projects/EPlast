@@ -19,15 +19,13 @@ namespace EPlast.BLL.Services.Club
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IClubAccessService _clubAccessService;
         private readonly IMapper _mapper;
-        private readonly UserManager<User> _userManager;
 
         public ClubAnnualReportService(IRepositoryWrapper repositoryWrapper,
-                                    IClubAccessService clubAccessService, IMapper mapper, UserManager<User> userManager)
+                                    IClubAccessService clubAccessService, IMapper mapper)
         {
             _repositoryWrapper = repositoryWrapper;
             _clubAccessService = clubAccessService;
             _mapper = mapper;
-            _userManager = userManager;
         }
 
         ///<inheritdoc/>
@@ -154,7 +152,7 @@ namespace EPlast.BLL.Services.Club
         }
 
         ///<inheritdoc/>
-        public async Task CancelAsync(ClaimsPrincipal claimsPrincipal, int id)
+        public async Task CancelAsync(User claimsPrincipal, int id)
         {
             var clubAnnualReport = await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == id && a.Status == AnnualReportStatus.Confirmed);
@@ -168,7 +166,7 @@ namespace EPlast.BLL.Services.Club
         }
 
         ///<inheritdoc/>
-        public async Task DeleteClubReportAsync(ClaimsPrincipal claimsPrincipal, int id)
+        public async Task DeleteClubReportAsync(User claimsPrincipal, int id)
         {
             var clubAnnualReport = await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed);
@@ -181,12 +179,12 @@ namespace EPlast.BLL.Services.Club
         }
 
         ///<inheritdoc/>
-        public async Task EditClubReportAsync(ClaimsPrincipal claimsPrincipal, ClubAnnualReportDTO clubAnnualReportDTO)
+        public async Task EditClubReportAsync(User claimsPrincipal, ClubAnnualReportDTO clubAnnualReportDto)
         {
             var clubAnnualReport = await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(
-                    predicate: a => a.ClubId == clubAnnualReportDTO.ClubId
+                    predicate: a => a.ClubId == clubAnnualReportDto.ClubId
                       && a.Status == AnnualReportStatus.Unconfirmed);
-            if (clubAnnualReportDTO.Status != AnnualReportStatus.Unconfirmed)
+            if (clubAnnualReportDto.Status != AnnualReportStatus.Unconfirmed)
             {
                 throw new InvalidOperationException();
             }
@@ -194,7 +192,7 @@ namespace EPlast.BLL.Services.Club
             {
                 throw new UnauthorizedAccessException();
             }
-            clubAnnualReport = _mapper.Map<ClubAnnualReportDTO, ClubAnnualReport>(clubAnnualReportDTO);
+            clubAnnualReport = _mapper.Map<ClubAnnualReportDTO, ClubAnnualReport>(clubAnnualReportDto);
             _repositoryWrapper.ClubAnnualReports.Update(clubAnnualReport);
             await _repositoryWrapper.SaveAsync();
         }

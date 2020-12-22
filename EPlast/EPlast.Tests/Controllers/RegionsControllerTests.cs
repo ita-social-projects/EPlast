@@ -9,6 +9,8 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.Tests.Controllers
 {
@@ -18,7 +20,7 @@ namespace EPlast.Tests.Controllers
         private  Mock<IRegionService> _regionService;
         private  Mock<IRegionAdministrationService> _regionAdministrationService;
         private  Mock<IRegionAnnualReportService> _regionAnnualReportService;
-
+        private Mock<UserManager<User>> _userManager;
         private RegionsController _regionController;
 
         [SetUp]
@@ -28,9 +30,10 @@ namespace EPlast.Tests.Controllers
             _regionService = new Mock<IRegionService>();
             _regionAdministrationService = new Mock<IRegionAdministrationService>();
             _regionAnnualReportService = new Mock<IRegionAnnualReportService>();
-
+            var store = new Mock<IUserStore<User>>();
+            _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _regionController = new RegionsController(
-                _logger.Object, _regionService.Object, _regionAdministrationService.Object, _regionAnnualReportService.Object);
+                _logger.Object, _regionService.Object, _regionAdministrationService.Object, _regionAnnualReportService.Object, _userManager.Object);
         }
 
         [Test]
