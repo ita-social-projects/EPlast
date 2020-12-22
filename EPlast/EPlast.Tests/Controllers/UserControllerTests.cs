@@ -388,8 +388,8 @@ namespace EPlast.Tests.Controllers
                 .Returns(new List<ConfirmedUserDTO>());
 
             _userService
-                .Setup((x) => x.CanApproveAsync(It.IsAny<List<ConfirmedUserDTO>>(), It.IsAny<string>(), It.IsAny<User>()))
-                .ReturnsAsync(canApprove);
+                .Setup((x) => x.CanApprove(It.IsAny<List<ConfirmedUserDTO>>(), It.IsAny<string>(), It.IsAny<User>()))
+                .Returns(canApprove);
 
             _userService
                .Setup((x) => x.CheckOrAddPlastunRoleAsync(It.IsAny<string>(), It.IsAny<DateTime>()))

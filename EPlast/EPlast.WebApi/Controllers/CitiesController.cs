@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BLL.DTO.UserProfiles;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
 using AnnualReportDTOs = EPlast.BLL.DTO.AnnualReport;

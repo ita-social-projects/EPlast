@@ -6,7 +6,6 @@ using EPlast.BLL.Settings;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using DatabaseEntities = EPlast.DataAccess.Entities;
 
@@ -29,7 +28,6 @@ namespace EPlast.BLL.Services.Club.ClubAccess
 
         public async Task<IEnumerable<ClubDTO>> GetClubsAsync(DatabaseEntities.User user)
         {
-            //var user = await _userManager.GetUserAsync(claimsPrincipal);
             var roles = await _userManager.GetRolesAsync(user);
             foreach (var key in _ClubAccessGetters.Keys)
             {

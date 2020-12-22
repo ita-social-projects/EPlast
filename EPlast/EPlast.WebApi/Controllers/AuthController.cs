@@ -381,7 +381,7 @@ namespace EPlast.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                var userDto = await _authService.GetUserAsync(await _userManager.GetUserAsync(User));
+                var userDto = _authService.GetUser(await _userManager.GetUserAsync(User));
                 if (userDto == null)
                 {
                     return BadRequest();
