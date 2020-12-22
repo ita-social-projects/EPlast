@@ -44,9 +44,20 @@ namespace EPlast.BLL.Services.Region
 
         public async Task AddRegionAsync(RegionDTO region)
         {
+            if (await CheckCreated(region.RegionName))
+            {
+                throw new InvalidOperationException();
+            }
+
             await _repoWrapper.Region.CreateAsync(_mapper.Map<RegionDTO, DataAccessRegion.Region>(region));
 
             await _repoWrapper.SaveAsync();
+        }
+
+        private async Task<bool> CheckCreated(string name)
+        {
+            return await _repoWrapper.Region.GetFirstOrDefaultAsync(
+                predicate: a => a.RegionName == name) != null;
         }
 
         public async Task<IEnumerable<RegionDTO>> GetAllRegionsAsync()
