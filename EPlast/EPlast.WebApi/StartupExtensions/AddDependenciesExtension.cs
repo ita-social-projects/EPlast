@@ -15,6 +15,7 @@ using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Notifications;
 using EPlast.BLL.Interfaces.Region;
+using EPlast.BLL.Interfaces.Resources;
 using EPlast.BLL.Interfaces.Statistics;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services;
@@ -39,9 +40,7 @@ using EPlast.BLL.Services.Region.RegionAccess;
 using EPlast.BLL.Services.Statistics;
 using EPlast.BLL.Services.UserProfiles;
 using EPlast.BLL.Settings;
-using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Repositories;
-using EPlast.DataAccess.Repositories.Interfaces.Blank;
 using EPlast.DataAccess.Repositories.Realizations.Base;
 using EPlast.WebApi.WebSocketHandlers;
 using Microsoft.Extensions.DependencyInjection;
@@ -136,6 +135,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddSingleton<UserNotificationHandler>();
             services.AddTransient<IUniqueIdService, UniqueIdService>();
             services.AddTransient<IEventUserService, EventUserService>();
+            services.AddScoped<IResources, BLL.Services.Resources.Resources>();
 
             return services;
         }
