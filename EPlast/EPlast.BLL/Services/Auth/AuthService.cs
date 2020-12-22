@@ -215,7 +215,7 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async Task<UserDTO> GetUserAsync(User claimsPrincipal)
+        public UserDTO GetUser(User claimsPrincipal)
         {
             return _mapper.Map<User, UserDTO>(claimsPrincipal);
         }

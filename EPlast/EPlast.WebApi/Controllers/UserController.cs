@@ -188,7 +188,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
             var confirmedUsers = _userService.GetConfirmedUsers(user);
-            var canApprove = await _userService.CanApproveAsync(confirmedUsers, userId, await _userManager.GetUserAsync(User));
+            var canApprove = _userService.CanApprove(confirmedUsers, userId, await _userManager.GetUserAsync(User));
             var time = await _userService.CheckOrAddPlastunRoleAsync(user.Id, user.RegistredOn);
             var clubApprover = _userService.GetClubAdminConfirmedUser(user);
             var cityApprover = _userService.GetCityAdminConfirmedUser(user);

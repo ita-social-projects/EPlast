@@ -19,28 +19,28 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly ILoggerService<ClubController> _logger;
         private readonly IMapper _mapper;
-        private readonly IClubService _ClubService;
-        private readonly IClubParticipantsService _ClubParticipantsService;
-        private readonly IClubDocumentsService _ClubDocumentsService;
-        private readonly IClubAccessService _ClubAccessService;
-        private readonly IClubAnnualReportService _ClubAnnualReportService;
+        private readonly IClubService _clubService;
+        private readonly IClubParticipantsService _clubParticipantsService;
+        private readonly IClubDocumentsService _clubDocumentsService;
+        private readonly IClubAccessService _clubAccessService;
+        private readonly IClubAnnualReportService _clubAnnualReportService;
         private readonly UserManager<User> _userManager;
 
         public ClubController(ILoggerService<ClubController> logger,
             IMapper mapper,
-            IClubService ClubService,
-            IClubParticipantsService ClubParticipantsService,
-            IClubDocumentsService ClubDocumentsService,
-            IClubAccessService ClubAccessService,
-            IClubAnnualReportService ClubAnnualReportService, UserManager<User> userManager)
+            IClubService clubService,
+            IClubParticipantsService clubParticipantsService,
+            IClubDocumentsService clubDocumentsService,
+            IClubAccessService clubAccessService,
+            IClubAnnualReportService clubAnnualReportService, UserManager<User> userManager)
         {
             _logger = logger;
             _mapper = mapper;
-            _ClubService = ClubService;
-            _ClubParticipantsService = ClubParticipantsService;
-            _ClubDocumentsService = ClubDocumentsService;
-            _ClubAccessService = ClubAccessService;
-            _ClubAnnualReportService = ClubAnnualReportService;
+            _clubService = clubService;
+            _clubParticipantsService = clubParticipantsService;
+            _clubDocumentsService = clubDocumentsService;
+            _clubAccessService = clubAccessService;
+            _clubAnnualReportService = clubAnnualReportService;
             _userManager = userManager;
         }
 
@@ -55,7 +55,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetClubs(int page, int pageSize, string ClubName = null)
         {
-            var clubs = await _ClubService.GetAllDTOAsync(ClubName);
+            var clubs = await _clubService.GetAllDTOAsync(ClubName);
             var ClubsViewModel = new ClubsViewModel(page, pageSize, clubs, User.IsInRole("Admin"));
 
             return Ok(ClubsViewModel);
@@ -68,7 +68,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("Clubs")]
         public async Task<IActionResult> GetClubs()
         {
-            var cities = await _ClubService.GetClubs();
+            var cities = await _clubService.GetClubs();
             return Ok(cities);
 
         }
@@ -84,7 +84,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetProfile(int ClubId)
         {
-            var ClubProfileDto = await _ClubService.GetClubProfileAsync(ClubId, await _userManager.GetUserAsync(User));
+            var ClubProfileDto = await _clubService.GetClubProfileAsync(ClubId, await _userManager.GetUserAsync(User));
             if (ClubProfileDto == null)
             {
                 return NotFound();
@@ -106,14 +106,14 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetMembers(int ClubId)
         {
-            var ClubProfileDto = await _ClubService.GetClubMembersAsync(ClubId);
+            var ClubProfileDto = await _clubService.GetClubMembersAsync(ClubId);
             if (ClubProfileDto == null)
             {
                 return NotFound();
             }
 
             var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
-            ClubProfile.CanEdit = await _ClubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), ClubId);
+            ClubProfile.CanEdit = await _clubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), ClubId);
 
             return Ok(new { ClubProfile.Members, ClubProfile.CanEdit, ClubProfile.Name });
         }
@@ -129,14 +129,14 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetFollowers(int ClubId)
         {
-            var ClubProfileDto = await _ClubService.GetClubFollowersAsync(ClubId);
+            var ClubProfileDto = await _clubService.GetClubFollowersAsync(ClubId);
             if (ClubProfileDto == null)
             {
                 return NotFound();
             }
 
             var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
-            ClubProfile.CanEdit = await _ClubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), ClubId);
+            ClubProfile.CanEdit = await _clubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), ClubId);
 
             return Ok(new { ClubProfile.Followers, ClubProfile.CanEdit, ClubProfile.Name });
         }
@@ -152,14 +152,14 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetAdmins(int ClubId)
         {
-            var ClubProfileDto = await _ClubService.GetClubAdminsAsync(ClubId);
+            var ClubProfileDto = await _clubService.GetClubAdminsAsync(ClubId);
             if (ClubProfileDto == null)
             {
                 return NotFound();
             }
 
             var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
-            ClubProfile.CanEdit = await _ClubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), ClubId);
+            ClubProfile.CanEdit = await _clubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), ClubId);
 
             return Ok(new { ClubProfile.Administration, ClubProfile.Head, ClubProfile.CanEdit, ClubProfile.Name });
         }
@@ -175,14 +175,14 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetDocuments(int ClubId)
         {
-            var ClubProfileDto = await _ClubService.GetClubDocumentsAsync(ClubId);
+            var ClubProfileDto = await _clubService.GetClubDocumentsAsync(ClubId);
             if (ClubProfileDto == null)
             {
                 return NotFound();
             }
 
             var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
-            ClubProfile.CanEdit = await _ClubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), ClubId);
+            ClubProfile.CanEdit = await _clubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), ClubId);
 
             return Ok(new { ClubProfile.Documents, ClubProfile.CanEdit });
         }
@@ -198,7 +198,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Details(int ClubId)
         {
-            var ClubDto = await _ClubService.GetClubProfileAsync(ClubId);
+            var ClubDto = await _clubService.GetClubProfileAsync(ClubId);
             if (ClubDto == null)
             {
                 return NotFound();
@@ -216,7 +216,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetPhotoBase64(string logoName)
         {
-            var logoBase64 = await _ClubService.GetLogoBase64(logoName);
+            var logoBase64 = await _clubService.GetLogoBase64(logoName);
 
             return Ok(logoBase64);
         }
@@ -237,7 +237,7 @@ namespace EPlast.WebApi.Controllers
                 try
                 {
                     var ClubDTO = _mapper.Map<ClubViewModel, ClubDTO>(Club);
-                    ClubDTO.ID = await _ClubService.CreateAsync(ClubDTO);
+                    ClubDTO.ID = await _clubService.CreateAsync(ClubDTO);
                     _logger.LogInformation($"Club {{{ClubDTO.Name}}} was created.");
                     return Ok(ClubDTO.ID);
                 }
@@ -269,7 +269,7 @@ namespace EPlast.WebApi.Controllers
 
             var ClubDTO = _mapper.Map<ClubViewModel, ClubDTO>(Club);
 
-            await _ClubService.EditAsync(ClubDTO);
+            await _clubService.EditAsync(ClubDTO);
             _logger.LogInformation($"Club {{{ClubDTO.Name}}} was edited.");
 
             return Ok();
@@ -283,7 +283,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Remove(int ClubId)
         {
-            await _ClubService.RemoveAsync(ClubId);
+            await _clubService.RemoveAsync(ClubId);
             _logger.LogInformation($"Club with id {{{ClubId}}} was deleted.");
 
             return Ok();
@@ -298,7 +298,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> AddFollower(int ClubId)
         {
-            var follower = await _ClubParticipantsService.AddFollowerAsync(ClubId, await _userManager.GetUserAsync(User));
+            var follower = await _clubParticipantsService.AddFollowerAsync(ClubId, await _userManager.GetUserAsync(User));
             _logger.LogInformation($"User {{{follower.UserId}}} became a follower of Club {{{ClubId}}}.");
 
             return Ok(follower);
@@ -314,7 +314,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> AddFollowerWithId(int clubId, string userId)
         {
-            var follower = await _ClubParticipantsService.AddFollowerAsync(clubId, userId);
+            var follower = await _clubParticipantsService.AddFollowerAsync(clubId, userId);
             _logger.LogInformation($"User {{{follower.UserId}}} became a follower of city {{{clubId}}}.");
 
             return Ok(follower);
@@ -328,7 +328,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RemoveFollower(int followerId)
         {
-            await _ClubParticipantsService.RemoveFollowerAsync(followerId);
+            await _clubParticipantsService.RemoveFollowerAsync(followerId);
             _logger.LogInformation($"Follower with ID {{{followerId}}} was removed.");
 
             return Ok();
@@ -343,7 +343,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> ChangeApproveStatus(int memberId)
         {
-            var member = await _ClubParticipantsService.ToggleApproveStatusAsync(memberId);
+            var member = await _clubParticipantsService.ToggleApproveStatusAsync(memberId);
             _logger.LogInformation($"Status of member with ID {{{memberId}}} was changed.");
 
             return Ok(member);
@@ -359,7 +359,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> AddAdmin(ClubAdministrationViewModel newAdmin)
         {
             var admin = _mapper.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(newAdmin);
-            await _ClubParticipantsService.AddAdministratorAsync(admin);
+            await _clubParticipantsService.AddAdministratorAsync(admin);
 
             _logger.LogInformation($"User {{{admin.UserId}}} became admin for Club {{{admin.ClubId}}}" +
                 $" with role {{{admin.AdminType.AdminTypeName}}}.");
@@ -375,7 +375,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RemoveAdmin(int adminId)
         {
-            await _ClubParticipantsService.RemoveAdministratorAsync(adminId);
+            await _clubParticipantsService.RemoveAdministratorAsync(adminId);
             _logger.LogInformation($"Admin with ID {{{adminId}}} was removed.");
 
             return Ok();
@@ -392,7 +392,7 @@ namespace EPlast.WebApi.Controllers
         {
             var adminDTO = _mapper.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(admin);
 
-            await _ClubParticipantsService.EditAdministratorAsync(adminDTO);
+            await _clubParticipantsService.EditAdministratorAsync(adminDTO);
             _logger.LogInformation($"Admin with User-ID {{{admin.UserId}}} was edited.");
 
             return Ok(adminDTO);
@@ -409,7 +409,7 @@ namespace EPlast.WebApi.Controllers
         {
             var documentDTO = _mapper.Map<ClubDocumentsViewModel, ClubDocumentsDTO>(document);
 
-            await _ClubDocumentsService.AddDocumentAsync(documentDTO);
+            await _clubDocumentsService.AddDocumentAsync(documentDTO);
             _logger.LogInformation($"Document with id {{{documentDTO.ID}}} was added.");
 
             return Ok(documentDTO);
@@ -424,7 +424,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetFileBase64(string fileName)
         {
-            var fileBase64 = await _ClubDocumentsService.DownloadFileAsync(fileName);
+            var fileBase64 = await _clubDocumentsService.DownloadFileAsync(fileName);
 
             return Ok(fileBase64);
         }
@@ -437,7 +437,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RemoveDocument(int documentId)
         {
-            await _ClubDocumentsService.DeleteFileAsync(documentId);
+            await _clubDocumentsService.DeleteFileAsync(documentId);
             _logger.LogInformation($"Document with id {{{documentId}}} was deleted.");
 
             return Ok();
@@ -447,7 +447,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetDocumentTypesAsync()
         {
-            var documentTypes = await _ClubDocumentsService.GetAllClubDocumentTypesAsync();
+            var documentTypes = await _clubDocumentsService.GetAllClubDocumentTypesAsync();
 
             return Ok(documentTypes);
         }
@@ -457,7 +457,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetClubsThatUserHasAccessTo()
         {
-            return Ok(new { Clubs = await _ClubAccessService.GetClubsAsync(await _userManager.GetUserAsync(User)) });
+            return Ok(new { Clubs = await _clubAccessService.GetClubsAsync(await _userManager.GetUserAsync(User)) });
         }
 
 
@@ -466,7 +466,7 @@ namespace EPlast.WebApi.Controllers
 
         public async Task<IActionResult> GetUserAdministrations(string UserId)
         {
-            var userAdmins = await _ClubParticipantsService.GetAdministrationsOfUserAsync(UserId);
+            var userAdmins = await _clubParticipantsService.GetAdministrationsOfUserAsync(UserId);
 
             return Ok(userAdmins);
         }
@@ -476,7 +476,7 @@ namespace EPlast.WebApi.Controllers
 
         public async Task<IActionResult> GetUserPreviousAdministrations(string UserId)
         {
-            var userAdmins = await _ClubParticipantsService.GetPreviousAdministrationsOfUserAsync(UserId);
+            var userAdmins = await _clubParticipantsService.GetPreviousAdministrationsOfUserAsync(UserId);
 
             return Ok(userAdmins);
         }
@@ -484,7 +484,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("GetAllAdministrationStatuses/{UserId}")]
         public async Task<IActionResult> GetAllAdministrationStatuses(string UserId)
         {
-            var userAdmins = await _ClubParticipantsService.GetAdministrationStatuses(UserId);
+            var userAdmins = await _clubParticipantsService.GetAdministrationStatuses(UserId);
 
             return Ok(userAdmins);
         }
@@ -499,7 +499,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня")]
         public async Task<IActionResult> GetAllClubAnnualReports()
         {
-            return StatusCode(StatusCodes.Status200OK, new { clubAnnualReports = await _ClubAnnualReportService.GetAllAsync(await _userManager.GetUserAsync(User)) });
+            return StatusCode(StatusCodes.Status200OK, new { clubAnnualReports = await _clubAnnualReportService.GetAllAsync(await _userManager.GetUserAsync(User)) });
         }
 
         /// <summary>
@@ -517,7 +517,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                return StatusCode(StatusCodes.Status200OK, new { annualreport = await _ClubAnnualReportService.GetByIdAsync(await _userManager.GetUserAsync(User), id) });
+                return StatusCode(StatusCodes.Status200OK, new { annualreport = await _clubAnnualReportService.GetByIdAsync(await _userManager.GetUserAsync(User), id) });
             }
             catch (NullReferenceException)
             {
@@ -538,7 +538,7 @@ namespace EPlast.WebApi.Controllers
                 try
                 {
                     var clubAnnualReport = _mapper.Map<ClubAnnualReportViewModel, ClubAnnualReportDTO>(annualReport);
-                    await _ClubAnnualReportService.CreateAsync(await _userManager.GetUserAsync(User), clubAnnualReport);
+                    await _clubAnnualReportService.CreateAsync(await _userManager.GetUserAsync(User), clubAnnualReport);
                 }
                 catch (InvalidOperationException)
                 {
@@ -573,7 +573,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                await _ClubAnnualReportService.ConfirmAsync(await _userManager.GetUserAsync(User), id);
+                await _clubAnnualReportService.ConfirmAsync(await _userManager.GetUserAsync(User), id);
                 return Ok();
             }
             catch (NullReferenceException)
@@ -600,7 +600,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                await _ClubAnnualReportService.CancelAsync(await _userManager.GetUserAsync(User), id);
+                await _clubAnnualReportService.CancelAsync(await _userManager.GetUserAsync(User), id);
                 return Ok();
             }
             catch (NullReferenceException)
@@ -627,7 +627,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                await _ClubAnnualReportService.DeleteClubReportAsync(await _userManager.GetUserAsync(User), id);
+                await _clubAnnualReportService.DeleteClubReportAsync(await _userManager.GetUserAsync(User), id);
                 return Ok();
             }
             catch (NullReferenceException)
@@ -657,7 +657,7 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    await _ClubAnnualReportService.EditClubReportAsync(await _userManager.GetUserAsync(User), clubAnnualReport);
+                    await _clubAnnualReportService.EditClubReportAsync(await _userManager.GetUserAsync(User), clubAnnualReport);
                     return Ok();
                 }
                 catch (NullReferenceException)

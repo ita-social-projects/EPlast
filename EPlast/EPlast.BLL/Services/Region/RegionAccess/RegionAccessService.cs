@@ -6,7 +6,6 @@ using EPlast.BLL.Settings;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using DatabaseEntities = EPlast.DataAccess.Entities;
 
@@ -25,14 +24,14 @@ namespace EPlast.BLL.Services.Region.RegionAccess
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<RegionDTO>> GetRegionsAsync(DatabaseEntities.User user)
+        public async Task<IEnumerable<RegionDTO>> GetRegionsAsync(DatabaseEntities.User claimsPrincipal)
         {
-            var roles = await _userManager.GetRolesAsync(user);
+            var roles = await _userManager.GetRolesAsync(claimsPrincipal);
             foreach (var key in _regionAccessGetters.Keys)
             {
                 if (roles.Contains(key))
                 {
-                    var regions = await _regionAccessGetters[key].GetRegionAsync(user.Id);
+                    var regions = await _regionAccessGetters[key].GetRegionAsync(claimsPrincipal.Id);
                     return _mapper.Map<IEnumerable<DatabaseEntities.Region>, IEnumerable<RegionDTO>>(regions);
                 }
             }

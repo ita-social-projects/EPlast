@@ -3,7 +3,6 @@ using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;

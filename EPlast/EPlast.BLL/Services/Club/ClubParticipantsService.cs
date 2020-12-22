@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.ExceptionServices;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Club

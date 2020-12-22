@@ -163,7 +163,7 @@ namespace EPlast.BLL.Interfaces
         /// </summary>
         /// <param name="claimsPrincipal"></param>
         /// <returns>User who was logged in</returns>
-        Task<UserDTO> GetUserAsync(User claimsPrincipal);
+        UserDTO GetUser(User claimsPrincipal);
 
         /// <summary>
         /// Sending email for registration
