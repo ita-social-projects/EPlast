@@ -159,8 +159,11 @@ namespace EPlast.BLL.Services.Club
             {
                 var userId = member.UserId;
                 var cityMembers = await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(a => a.UserId == userId);
+                if (cityMembers != null)
+                {
                 var city = await _repoWrapper.City.GetFirstAsync(a => a.ID == cityMembers.CityId);
                 member.User.CityName = city.Name.ToString();
+                }
             }
 
             var ClubProfileDto = new ClubProfileDTO
@@ -224,8 +227,11 @@ namespace EPlast.BLL.Services.Club
             {
                 var userId = admin.UserId;
                 var cityMembers = await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(a => a.UserId == userId);
-                var city = await _repoWrapper.City.GetFirstAsync(a => a.ID == cityMembers.CityId);
-                admin.User.CityName= city.Name.ToString();
+                if (cityMembers != null)
+                {
+                    var city = await _repoWrapper.City.GetFirstAsync(a => a.ID == cityMembers.CityId);
+                    admin.User.CityName= city.Name.ToString();
+                }
             }
 
             var ClubProfileDto = new ClubProfileDTO
@@ -347,6 +353,11 @@ namespace EPlast.BLL.Services.Club
         /// <inheritdoc />
         public async Task<int> CreateAsync(ClubDTO model)
         {
+            if (await CheckCreated(model.Name))
+            {
+                throw new InvalidOperationException();
+            }
+
             await UploadPhotoAsync(model);
             var Club = CreateClubAsync(model);
 
@@ -355,6 +366,12 @@ namespace EPlast.BLL.Services.Club
             await _repoWrapper.SaveAsync();
 
             return Club.ID;
+        }
+
+        private async Task<bool> CheckCreated(string name)
+        {
+            return await _repoWrapper.Club.GetFirstOrDefaultAsync(
+                predicate: a => a.Name == name) != null;
         }
 
         /// <inheritdoc />
