@@ -4,12 +4,11 @@ using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
-using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using System.Threading.Tasks;
 using System.Web;
+using EPlast.BLL.Interfaces.Resources;
 using EPlast.BLL.Models;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -23,30 +22,27 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly IAuthService _authService;
         private readonly ILoggerService<AuthController> _loggerService;
-        private readonly IStringLocalizer<AuthenticationErrors> _resourceForErrors;
         private readonly IJwtService _jwtService;
         private readonly IHomeService _homeService;
         private readonly IUserDatesService _userDatesService;
-        private readonly IStringLocalizer<Genders> _resourceForGender;
         private readonly UserManager<User> _userManager;
-
+        private readonly IResources _resources;
 
         public AuthController(IAuthService authService,
             ILoggerService<AuthController> loggerService,
-            IStringLocalizer<AuthenticationErrors> resourceForErrors,
             IJwtService jwtService,
             IHomeService homeService,
             IUserDatesService userDatesService,
-            IStringLocalizer<Genders> resourceForGender, UserManager<User> userManager)
+            UserManager<User> userManager, 
+            IResources resources)
         {
             _authService = authService;
             _loggerService = loggerService;
-            _resourceForErrors = resourceForErrors;
             _jwtService = jwtService;
             _homeService = homeService;
             _userDatesService = userDatesService;
-            _resourceForGender = resourceForGender;
             _userManager = userManager;
+            _resources = resources;
         }
 
         /// <summary>
@@ -65,19 +61,19 @@ namespace EPlast.WebApi.Controllers
                 var user = await _authService.FindByEmailAsync(loginDto.Email);
                 if (user == null)
                 {
-                    return BadRequest(_resourceForErrors["Login-NotRegistered"]);
+                    return BadRequest(_resources.ResourceForErrors["Login-NotRegistered"]);
                 }
                 else
                 {
                     if (!await _authService.IsEmailConfirmedAsync(user))
                     {
-                        return BadRequest(_resourceForErrors["Login-NotConfirmed"]);
+                        return BadRequest(_resources.ResourceForErrors["Login-NotConfirmed"]);
                     }
                 }
                 var result = await _authService.SignInAsync(loginDto);
                 if (result.IsLockedOut)
                 {
-                    return BadRequest(_resourceForErrors["Account-Locked"]);
+                    return BadRequest(_resources.ResourceForErrors["Account-Locked"]);
                 }
                 if (result.Succeeded)
                 {
@@ -86,10 +82,10 @@ namespace EPlast.WebApi.Controllers
                 }
                 else
                 {
-                    return BadRequest(_resourceForErrors["Login-InCorrectPassword"]);
+                    return BadRequest(_resources.ResourceForErrors["Login-InCorrectPassword"]);
                 }
             }
-            return Ok(_resourceForErrors["ModelIsNotValid"]);
+            return Ok(_resources.ResourceForErrors["ModelIsNotValid"]);
         }
 
         [HttpGet("googleClientId")]
@@ -136,7 +132,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                string newGender = _resourceForGender[userInfo.Gender].Value;
+                string newGender = _resources.ResourceForGender[userInfo.Gender].Value;
                 userInfo.Gender = newGender;
                 var user = await _authService.FacebookLoginAsync(userInfo);
                 if (user == null)
@@ -169,19 +165,19 @@ namespace EPlast.WebApi.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(_resourceForErrors["Register-InCorrectData"]);
+                return BadRequest(_resources.ResourceForErrors["Register-InCorrectData"]);
             }
             var registeredUser = await _authService.FindByEmailAsync(registerDto.Email);
             if (registeredUser != null)
             {
-                return BadRequest(_resourceForErrors["Register-RegisteredUser"]);
+                return BadRequest(_resources.ResourceForErrors["Register-RegisteredUser"]);
             }
             else
             {
                 var result = await _authService.CreateUserAsync(registerDto);
                 if (!result.Succeeded)
                 {
-                    return BadRequest(_resourceForErrors["Register-InCorrectPassword"]);
+                    return BadRequest(_resources.ResourceForErrors["Register-InCorrectPassword"]);
                 }
                 else
                 {
@@ -194,7 +190,7 @@ namespace EPlast.WebApi.Controllers
                           protocol: HttpContext.Request.Scheme);
                     await _authService.SendEmailRegistr(confirmationLink, userDto);
                     await _userDatesService.AddDateEntryAsync(userDto.Id);
-                    return Ok(_resourceForErrors["Confirm-Registration"]);
+                    return Ok(_resources.ResourceForErrors["Confirm-Registration"]);
                 }
             }
         }
@@ -236,7 +232,7 @@ namespace EPlast.WebApi.Controllers
             }
             else
             {
-                return Ok(_resourceForErrors["ConfirmedEmailNotAllowed"]);
+                return Ok(_resources.ResourceForErrors["ConfirmedEmailNotAllowed"]);
             }
         }
 
@@ -267,8 +263,7 @@ namespace EPlast.WebApi.Controllers
             return Ok("ResendEmailConfirmation");
         }
 
-        [HttpGet("logout")] //+
-        //[ValidateAntiForgeryToken]
+        [HttpGet("logout")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public IActionResult Logout()
         {
@@ -293,14 +288,14 @@ namespace EPlast.WebApi.Controllers
                 var userDto = await _authService.FindByEmailAsync(forgotpasswordDto.Email);
                 if (userDto == null || !(await _authService.IsEmailConfirmedAsync(userDto)))
                 {
-                    return BadRequest(_resourceForErrors["Forgot-NotRegisteredUser"]);
+                    return BadRequest(_resources.ResourceForErrors["Forgot-NotRegisteredUser"]);
                 }
                 string token = await _authService.GenerateResetTokenAsync(userDto);
                 var confirmationLink = string.Format("https://eplast.westeurope.cloudapp.azure.com/resetPassword?token={0}", HttpUtility.UrlEncode(token));
                 await _authService.SendEmailReseting(confirmationLink, forgotpasswordDto);
-                return Ok(_resourceForErrors["ForgotPasswordConfirmation"]);
+                return Ok(_resources.ResourceForErrors["ForgotPasswordConfirmation"]);
             }
-            return BadRequest(_resourceForErrors["ModelIsNotValid"]);
+            return BadRequest(_resources.ResourceForErrors["ModelIsNotValid"]);
         }
 
         /// <summary>
@@ -331,7 +326,7 @@ namespace EPlast.WebApi.Controllers
             }
             else
             {
-                return Ok(_resourceForErrors["ResetPasswordNotAllowed"]);
+                return Ok(_resources.ResourceForErrors["ResetPasswordNotAllowed"]);
             }
         }
 
@@ -349,22 +344,22 @@ namespace EPlast.WebApi.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(_resourceForErrors["ModelIsNotValid"]);
+                return BadRequest(_resources.ResourceForErrors["ModelIsNotValid"]);
             }
             var userDto = await _authService.FindByEmailAsync(resetpasswordDto.Email);
             if (userDto == null)
             {
-                return BadRequest(_resourceForErrors["Reset-NotRegisteredUser"]);
+                return BadRequest(_resources.ResourceForErrors["Reset-NotRegisteredUser"]);
             }
             var result = await _authService.ResetPasswordAsync(userDto.Id, resetpasswordDto);
             if (result.Succeeded)
             {
                 await _authService.CheckingForLocking(userDto);
-                return Ok(_resourceForErrors["ResetPasswordConfirmation"]);
+                return Ok(_resources.ResourceForErrors["ResetPasswordConfirmation"]);
             }
             else
             {
-                return BadRequest(_resourceForErrors["Reset-PasswordProblems"]);
+                return BadRequest(_resources.ResourceForErrors["Reset-PasswordProblems"]);
             }
         }
 
@@ -389,14 +384,14 @@ namespace EPlast.WebApi.Controllers
                 var result = await _authService.ChangePasswordAsync(userDto.Id, changepasswordDto);
                 if (!result.Succeeded)
                 {
-                    return BadRequest(_resourceForErrors["Change-PasswordProblems"]);
+                    return BadRequest(_resources.ResourceForErrors["Change-PasswordProblems"]);
                 }
                 _authService.RefreshSignInAsync(userDto); //тут
-                return Ok(_resourceForErrors["ChangePasswordConfirmation"]);
+                return Ok(_resources.ResourceForErrors["ChangePasswordConfirmation"]);
             }
             else
             {
-                return BadRequest(_resourceForErrors["ModelIsNotValid"]);
+                return BadRequest(_resources.ResourceForErrors["ModelIsNotValid"]);
             }
         }
 
@@ -413,11 +408,11 @@ namespace EPlast.WebApi.Controllers
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("", "Дані введені неправильно");
-                return BadRequest(_resourceForErrors["ModelIsNotValid"]);
+                return BadRequest(_resources.ResourceForErrors["ModelIsNotValid"]);
             }
             await _homeService.SendEmailAdmin(contactsDto);
 
-            return Ok(_resourceForErrors["Feedback-Sended"]);
+            return Ok(_resources.ResourceForErrors["Feedback-Sended"]);
         }
 
         private async Task AddEntryMembershipDate(string userId)
