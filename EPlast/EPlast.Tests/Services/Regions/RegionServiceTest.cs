@@ -341,17 +341,27 @@ namespace EPlast.Tests.Services.Regions
         {
             // Arrange
              _mapper
-                .Setup(x => x.Map<RegionDTO, Region>(It.IsAny<RegionDTO>())).Returns(new Region());
+                .Setup(x => x.Map<RegionDTO, Region>(It.IsAny<RegionDTO>())).Returns(fakeRegion);
             _repoWrapper
-                   .Setup(x => x.Region.CreateAsync(It.IsAny<Region>()));
+                   .Setup(x => x.Region.CreateAsync(fakeRegion));
             _repoWrapper
                   .Setup(x => x.SaveAsync());
             // Act
-            var result = _regionService.AddRegionAsync(It.IsAny<RegionDTO>());
+            var result = _regionService.AddRegionAsync(fakeRegionDTO);
             // Assert
             _repoWrapper.Verify();
             Assert.NotNull(result);
         }
+
+        private readonly Region fakeRegion = new Region()
+        {
+            RegionName = ""
+        };
+
+        private readonly RegionDTO fakeRegionDTO = new RegionDTO
+        {
+            RegionName = ""
+        };
 
         private readonly IEnumerable<RegionForAdministrationDTO> regionsForAdmin = new List<RegionForAdministrationDTO>
         {

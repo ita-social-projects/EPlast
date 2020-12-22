@@ -134,7 +134,7 @@ namespace EPlast.WebApi.Controllers
             var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
             ClubProfile.CanEdit = await _ClubAccessService.HasAccessAsync(User, ClubId);
 
-            return Ok(new { ClubProfile.Followers, ClubProfile.CanEdit, ClubProfile.Name});
+            return Ok(new { ClubProfile.Followers, ClubProfile.CanEdit, ClubProfile.Name });
         }
 
         /// <summary>
@@ -228,17 +228,24 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Create(ClubViewModel Club)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var ClubDTO = _mapper.Map<ClubViewModel, ClubDTO>(Club);
+                    ClubDTO.ID = await _ClubService.CreateAsync(ClubDTO);
+                    _logger.LogInformation($"Club {{{ClubDTO.Name}}} was created.");
+                    return Ok(ClubDTO.ID);
+                }
+                catch (InvalidOperationException)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest);
+                }
+            }
+            else
             {
                 return BadRequest(ModelState);
             }
-
-            var ClubDTO = _mapper.Map<ClubViewModel, ClubDTO>(Club);
-
-            ClubDTO.ID = await _ClubService.CreateAsync(ClubDTO);
-            _logger.LogInformation($"Club {{{ClubDTO.Name}}} was created.");
-
-            return Ok(ClubDTO.ID);
         }
 
         /// <summary>
