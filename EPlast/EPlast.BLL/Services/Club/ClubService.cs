@@ -352,6 +352,11 @@ namespace EPlast.BLL.Services.Club
         /// <inheritdoc />
         public async Task<int> CreateAsync(ClubDTO model)
         {
+            if (await CheckCreated(model.Name))
+            {
+                throw new InvalidOperationException();
+            }
+
             await UploadPhotoAsync(model);
             var Club = CreateClubAsync(model);
 
@@ -360,6 +365,12 @@ namespace EPlast.BLL.Services.Club
             await _repoWrapper.SaveAsync();
 
             return Club.ID;
+        }
+
+        private async Task<bool> CheckCreated(string name)
+        {
+            return await _repoWrapper.Club.GetFirstOrDefaultAsync(
+                predicate: a => a.Name == name) != null;
         }
 
         /// <inheritdoc />
