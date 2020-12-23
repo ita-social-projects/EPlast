@@ -29,7 +29,6 @@ namespace EPlast.Tests.Controllers
         private readonly Mock<IClubParticipantsService> _ClubParticipantsService;
         private readonly Mock<IClubAccessService> _ClubAccessService;
         private readonly Mock<IClubDocumentsService> _ClubDocumentsService;
-        private readonly Mock<IClubAnnualReportService> _ClubAnnualReportService;
         private readonly Mock<UserManager<User>> _userManager;
 
 
@@ -41,7 +40,6 @@ namespace EPlast.Tests.Controllers
             _logger = new Mock<ILoggerService<ClubController>>();
             _ClubParticipantsService = new Mock<IClubParticipantsService>();
             _ClubDocumentsService = new Mock<IClubDocumentsService>();
-            _ClubAnnualReportService = new Mock<IClubAnnualReportService>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
 
@@ -53,7 +51,6 @@ namespace EPlast.Tests.Controllers
            _ClubParticipantsService.Object,
            _ClubDocumentsService.Object,
            _ClubAccessService.Object,
-           _ClubAnnualReportService.Object,
            _userManager.Object
           );
 
