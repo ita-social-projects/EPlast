@@ -46,17 +46,14 @@ namespace EPlast.Tests.Services.City
                 _cityAdministrationService.Object);
         }
 
-
         [Test]
         public async Task GetMembersByCityIdAsync_ReturnsMembers()
         {
             // Arrange
-            _repoWrapper.Setup(r => r.CityMembers.GetAllAsync(It.IsAny<Expression<Func<DataAccessCity.CityMembers, bool>>>(),
-            It.IsAny<Func<IQueryable<DataAccessCity.CityMembers>, IIncludableQueryable<DataAccessCity.CityMembers, object>>>()))
-            .ReturnsAsync(new List<DataAccessCity.CityMembers> { new DataAccessCity.CityMembers() }); ;
+            CityMembersService cityMembersService = CreateCityMembersService();
 
             // Act
-            var result = await _cityMembersService.GetMembersByCityIdAsync(It.IsAny<int>());
+            var result = await cityMembersService.GetMembersByCityIdAsync(It.IsAny<int>());
 
             // Assert
             Assert.NotNull(result);
@@ -64,19 +61,111 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
-        public async Task ToggleApproveStatusAsyncTest()
+        public async Task AddFollowerAsync_ReturnMembers()
         {
-            //Arrange
+            // Arrange
+            CityMembersService cityMembersService = CreateCityMembersService();
+
+            // Act
+            var result = await cityMembersService.AddFollowerAsync(fakeIdInt, fakeIdString);
+
+            // Assert
+            Assert.NotNull(result);
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Exactly(2));
+        }
+
+        [Test]
+        public async Task AddFollowerAsync_WhereOldCityMemberIsNull_ReturnMembers()
+        {
+            // Arrange
+            CityMembersService cityMembersService = CreateCityMembersService();
             _repoWrapper
                 .Setup(s => s.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessCity.CityMembers, bool>>>(),
-            It.IsAny<Func<IQueryable<DataAccessCity.CityMembers>, IIncludableQueryable<DataAccessCity.CityMembers, object>>>()))
-                .ReturnsAsync(new CityMembers());
+                    It.IsAny<Func<IQueryable<DataAccessCity.CityMembers>, IIncludableQueryable<DataAccessCity.CityMembers, object>>>()))
+                .ReturnsAsync((CityMembers)null);
 
-            //Act
-            await _cityMembersService.ToggleApproveStatusAsync(It.IsAny<int>());
+            // Act
+            var result = await cityMembersService.AddFollowerAsync(fakeIdInt, fakeIdString);
 
-            //Assert
+            // Assert
+            Assert.NotNull(result);
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
+        }
+
+        [Test]
+        public async Task ToggleApproveStatusAsync()
+        {
+            // Arrange
+            CityMembersService cityMembersService = CreateCityMembersService();
+
+            // Act
+            await cityMembersService.ToggleApproveStatusAsync(It.IsAny<int>());
+
+            // Assert
             _repoWrapper.Verify(i => i.CityMembers.Update(It.IsAny<CityMembers>()), Times.Once());
+        }
+
+        [Test]
+        public async Task RemoveFollowerAsync()
+        {
+            // Arrange
+            CityMembersService cityMembersService = CreateCityMembersService();
+
+            // Act
+            await cityMembersService.RemoveFollowerAsync(It.IsAny<int>());
+
+            // Assert
+            _repoWrapper.Verify(r => r.CityMembers.Delete(It.IsAny<CityMembers>()), Times.Once());
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once());
+        }
+
+        [Test]
+        public async Task RemoveMemberAsync()
+        {
+            // Arrange
+            CityMembersService cityMembersService = CreateCityMembersService();
+
+            // Act
+            await cityMembersService.RemoveMemberAsync(It.IsAny<CityMembers>());
+
+            // Assert
+            _repoWrapper.Verify(r => r.CityMembers.Delete(It.IsAny<CityMembers>()), Times.Once());
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once());
+        }
+
+        private int fakeIdInt => 1;
+        private string fakeIdString => "1";
+
+        private CityMembersService CreateCityMembersService()
+        {
+            _repoWrapper
+                .Setup(r => r.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessCity.CityMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccessCity.CityMembers>, IIncludableQueryable<DataAccessCity.CityMembers, object>>>()))
+                .ReturnsAsync(new CityMembers());
+            _repoWrapper
+                .Setup(r => r.CityMembers.Delete(It.IsAny<CityMembers>()));
+            _repoWrapper
+                .Setup(r => r.CityMembers.CreateAsync(It.IsAny<DataAccessCity.CityMembers>()));
+            _repoWrapper
+                .Setup(r => r.SaveAsync());
+            _repoWrapper
+                .Setup(r => r.CityMembers.GetAllAsync(It.IsAny<Expression<Func<DataAccessCity.CityMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccessCity.CityMembers>, IIncludableQueryable<DataAccessCity.CityMembers, object>>>()))
+                .ReturnsAsync(new List<DataAccessCity.CityMembers> { new DataAccessCity.CityMembers() }); 
+            _repoWrapper
+                .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeIdInt } });
+            _cityAdministrationService
+                .Setup(c => c.RemoveAdministratorAsync(It.IsAny<int>()));
+            _userManager
+                .Setup(u => u.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(new User());
+            _mapper
+                .Setup(m => m.Map<DataAccessCity.CityMembers, CityMembersDTO>(It.IsAny<DataAccessCity.CityMembers>()))
+                .Returns(new CityMembersDTO());
+
+            return new CityMembersService(_repoWrapper.Object, _mapper.Object, _userManager.Object, _cityAdministrationService.Object);
         }
     }
 }
