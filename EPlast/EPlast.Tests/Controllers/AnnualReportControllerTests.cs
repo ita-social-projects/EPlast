@@ -14,6 +14,8 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AutoMapper;
+using EPlast.BLL.Interfaces.Club;
 
 namespace EPlast.Tests.Controllers
 {
@@ -21,6 +23,8 @@ namespace EPlast.Tests.Controllers
     {
 
         private readonly Mock<IAnnualReportService> _annualReportService;
+        private readonly Mock<IClubAnnualReportService> _clubAnnualReportService;
+        private readonly Mock<IMapper> _mapper;
         private readonly Mock<ILoggerService<AnnualReportController>> _loggerService;
         private readonly Mock<IStringLocalizer<AnnualReportControllerMessage>> _localizer;
         private readonly Mock<UserManager<User>> _userManager;
@@ -33,13 +37,17 @@ namespace EPlast.Tests.Controllers
             _localizer = new Mock<IStringLocalizer<AnnualReportControllerMessage>>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            _clubAnnualReportService = new Mock<IClubAnnualReportService>();
+            _mapper = new Mock<IMapper>();
         }
 
         private AnnualReportController CreateAnnualReportController => new AnnualReportController(
             _annualReportService.Object,
             _loggerService.Object,
             _localizer.Object,
-            _userManager.Object
+            _userManager.Object,
+            _clubAnnualReportService.Object,
+            _mapper.Object
             );
 
 

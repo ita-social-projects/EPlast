@@ -17,11 +17,11 @@ namespace EPlast.BLL.Services.Club.ClubAccess
         private readonly UserManager<DatabaseEntities.User> _userManager;
         private readonly IMapper _mapper;
 
-        private readonly Dictionary<string, IClubAccessGetter> _ClubAccessGetters;
+        private readonly Dictionary<string, IClubAccessGetter> _clubAccessGetters;
 
         public ClubAccessService(ClubAccessSettings settings, UserManager<DatabaseEntities.User> userManager, IMapper mapper)
         {
-            _ClubAccessGetters = settings.ClubAccessGetters;
+            _clubAccessGetters = settings.ClubAccessGetters;
             _userManager = userManager;
             _mapper = mapper;
         }
@@ -29,11 +29,11 @@ namespace EPlast.BLL.Services.Club.ClubAccess
         public async Task<IEnumerable<ClubDTO>> GetClubsAsync(DatabaseEntities.User user)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            foreach (var key in _ClubAccessGetters.Keys)
+            foreach (var key in _clubAccessGetters.Keys)
             {
                 if (roles.Contains(key))
                 {
-                    var cities = await _ClubAccessGetters[key].GetClubs(user.Id);
+                    var cities = await _clubAccessGetters[key].GetClubs(user.Id);
                     return _mapper.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubDTO>>(cities);
                 }
             }
