@@ -229,7 +229,7 @@ namespace EPlast.BLL.Services.Club
                 if (cityMembers != null)
                 {
                     var city = await _repoWrapper.City.GetFirstAsync(a => a.ID == cityMembers.CityId);
-                    admin.User.CityName= city.Name.ToString();
+                    admin.User.CityName = city.Name.ToString();
                 }
             }
 
