@@ -140,9 +140,9 @@ namespace EPlast.BLL.Interfaces
         /// <summary>
         /// Get id for user from database
         /// </summary>
-        /// <param name="claimsPrincipal"></param>
+        /// <param name="user"></param>
         /// <returns>Returns id of user</returns>
-        string GetIdForUser(ClaimsPrincipal claimsPrincipal);
+        Task<string> GetIdForUser(User user);
 
         /// <summary>
         /// Returns time after registration for user
@@ -161,9 +161,9 @@ namespace EPlast.BLL.Interfaces
         /// <summary>
         /// Get current user
         /// </summary>
-        /// <param name="claimsPrincipal"></param>
+        /// <param name="user"></param>
         /// <returns>User who was logged in</returns>
-        Task<UserDTO> GetUserAsync(ClaimsPrincipal claimsPrincipal);
+        UserDTO GetUser(User user);
 
         /// <summary>
         /// Sending email for registration
@@ -188,22 +188,6 @@ namespace EPlast.BLL.Interfaces
         /// <param name="forgotPasswordDto"></param>
         /// <returns>Result of sending email</returns>
         Task SendEmailReseting(string confirmationLink, ForgotPasswordDto forgotPasswordDto);
-
-        /// <summary>
-        /// Sign in using Facebook
-        /// </summary>
-        /// <param name="email"></param>
-        /// <param name="externalLoginInfo"></param>
-        /// <returns>Result of Facebook authentication</returns>
-        Task FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo);
-
-        /// <summary>
-        /// Sign in using Google
-        /// </summary>
-        /// <param name="email"></param>
-        /// <param name="externalLoginInfo"></param>
-        /// <returns>Result of Google authentication</returns>
-        Task GoogleAuthentication(string email, ExternalLoginInfo externalLoginInfo);
 
         /// <summary>
         ///  Validates google token and gets user information

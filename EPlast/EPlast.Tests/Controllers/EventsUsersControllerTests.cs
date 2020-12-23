@@ -1,7 +1,9 @@
 ﻿using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.EventUser;
+using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Controllers;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
@@ -17,14 +19,17 @@ namespace EPlast.Tests.Controllers
         private Mock<IEventUserService> eventUserService;
 
         private EventsUsersController eventsUsersController;
+        private Mock<UserManager<User>> userManager;
+
 
         [SetUp]
         public void SetUp()
         {
             eventUserManager = new Mock<IEventUserManager>();
             eventUserService = new Mock<IEventUserService>();
-
-            eventsUsersController = new EventsUsersController(eventUserManager.Object, eventUserService.Object);
+            var store = new Mock<IUserStore<User>>();
+            userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            eventsUsersController = new EventsUsersController(eventUserManager.Object, eventUserService.Object, userManager.Object);
         }
 
         [Test]
@@ -32,7 +37,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             eventUserService
-                .Setup((x) => x.EventUserAsync(It.IsAny<string>(), It.IsAny<ClaimsPrincipal>()))
+                .Setup((x) => x.EventUserAsync(It.IsAny<string>(), It.IsAny<User>()))
                 .ReturnsAsync(CreateFakeEventUser());
 
             // Act
@@ -50,7 +55,7 @@ namespace EPlast.Tests.Controllers
             var expectedId = "1";
 
             eventUserService
-                .Setup((x) => x.EventUserAsync(It.IsAny<string>(), It.IsAny<ClaimsPrincipal>()))
+                .Setup((x) => x.EventUserAsync(It.IsAny<string>(), It.IsAny<User>()))
                 .ReturnsAsync(CreateFakeEventUser());
 
             // Act
