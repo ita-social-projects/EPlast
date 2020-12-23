@@ -14,41 +14,41 @@ namespace EPlast.BLL.Interfaces.Club
         /// <summary>
         /// Method to get all the information in the club annual report
         /// </summary>
-        /// <param name="claimsPrincipal">Authorized user</param>
+        /// <param name="user">Authorized user</param>
         /// <param name="id">Annual report identification number</param>
         /// <returns>Annual report model</returns>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
         /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
-        Task<ClubAnnualReportDTO> GetByIdAsync(User claimsPrincipal, int id);
+        Task<ClubAnnualReportDTO> GetByIdAsync(User user, int id);
 
         /// <summary>
         /// Method to get all club reports that the user has access to
         /// </summary>
-        /// <param name="claimsPrincipal">Authorized user</param>
+        /// <param name="user">Authorized user</param>
         /// <returns>List of annual report model</returns>
-        Task<IEnumerable<ClubAnnualReportDTO>> GetAllAsync(User claimsPrincipal);
+        Task<IEnumerable<ClubAnnualReportDTO>> GetAllAsync(User user);
 
         /// <summary>
         /// Method to create new club annual report
         /// </summary>
-        /// <param name="claimsPrincipal">Authorized user</param>
+        /// <param name="user">Authorized user</param>
         /// <param name="clubAnnualReportDTO">Annual report model</param>
         /// <exception cref="System.InvalidOperationException">Thrown when city has created annual report</exception>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to city</exception>
         /// <exception cref="System.NullReferenceException">Thrown when city doesn't exist</exception>
-        Task CreateAsync(User claimsPrincipal, ClubAnnualReportDTO clubAnnualReportDTO);
+        Task CreateAsync(User user, ClubAnnualReportDTO clubAnnualReportDTO);
 
         /// <summary>
         /// Method to confirm club annual report
         /// </summary>
-        /// <param name="claimsPrincipal">Authorized user</param>
+        /// <param name="user">Authorized user</param>
         /// <param name="id">Annual report identification number</param>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
         /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
-        Task ConfirmAsync(User claimsPrincipal, int id);
+        Task ConfirmAsync(User user, int id);
 
-        Task CancelAsync(User claimsPrincipal, int id);
-        Task DeleteClubReportAsync(User claimsPrincipal, int id);
-        Task EditClubReportAsync(User claimsPrincipal, ClubAnnualReportDTO clubAnnualReportDto);
+        Task CancelAsync(User user, int id);
+        Task DeleteClubReportAsync(User user, int id);
+        Task EditClubReportAsync(User user, ClubAnnualReportDTO clubAnnualReportDto);
     }
 }
