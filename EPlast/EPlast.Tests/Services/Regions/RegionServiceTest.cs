@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.Tests.Services.Regions
 {
@@ -27,6 +28,7 @@ namespace EPlast.Tests.Services.Regions
         private Mock<IRegionFilesBlobStorageRepository> _regionFilesBlobStorageRepository;
         private Mock<ICityService> _cityService;
         private Mock<IUniqueIdService> _uniqueId;
+        private Mock<UserManager<User>> _userManager;
         private RegionService _regionService;
 
         [SetUp]
@@ -38,9 +40,11 @@ namespace EPlast.Tests.Services.Regions
             _regionFilesBlobStorageRepository = new Mock<IRegionFilesBlobStorageRepository>();
             _cityService = new Mock<ICityService>();
             _uniqueId = new Mock<IUniqueIdService>();
+            var store = new Mock<IUserStore<User>>();
+            _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _regionService = new RegionService(
                 _repoWrapper.Object, _mapper.Object, _regionFilesBlobStorageRepository.Object, 
-                _regionBlobStorage.Object, _cityService.Object, _uniqueId.Object
+                _regionBlobStorage.Object, _cityService.Object, _uniqueId.Object, _userManager.Object
                 );
         }
 

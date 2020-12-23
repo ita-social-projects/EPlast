@@ -91,6 +91,8 @@ namespace EPlast.XUnitTest.Services.Events
             int typeId = 3;
             int categoryId = 3;
             int fakeId = 3;
+            User user = new User();
+            user.Id = "abc-1";
             _eventWrapper.Setup(x => x.EventStatusManager.GetStatusIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(fakeId);
             _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
@@ -103,11 +105,11 @@ namespace EPlast.XUnitTest.Services.Events
                 .ReturnsAsync(GetEvents());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
-            var methodResult = await actionManager.GetEventsAsync(categoryId, typeId, new ClaimsPrincipal());
+            var methodResult = await actionManager.GetEventsAsync(categoryId, typeId, user);
             //Assert
             Assert.NotNull(methodResult);
             Assert.IsType<List<GeneralEventDTO>>(methodResult);
-            Assert.Equal(GetEvents().Count(), methodResult.Count);
+            Assert.Equal(GetEvents().Count(), methodResult.Count());
         }
         [Fact]
         public async void GetEventInfoTest()
@@ -127,7 +129,7 @@ namespace EPlast.XUnitTest.Services.Events
                 .ReturnsAsync(GetEvents().First());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
-            var methodResult = await actionManager.GetEventInfoAsync(eventId, new ClaimsPrincipal());
+            var methodResult = await actionManager.GetEventInfoAsync(eventId, new User());
             //Assert
             Assert.NotNull(methodResult);
             Assert.IsType<EventDTO>(methodResult);
@@ -177,7 +179,7 @@ namespace EPlast.XUnitTest.Services.Events
                 .ReturnsAsync(StatusCodes.Status200OK);
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
-            var methodResult = await actionManager.SubscribeOnEventAsync(testEventId, new ClaimsPrincipal());
+            var methodResult = await actionManager.SubscribeOnEventAsync(testEventId, new User());
             //Assert
             Assert.Equal(StatusCodes.Status200OK, methodResult);
         }
@@ -195,7 +197,7 @@ namespace EPlast.XUnitTest.Services.Events
                 .ThrowsAsync(new Exception());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
-            var methodResult = await actionManager.SubscribeOnEventAsync(testEventId, new ClaimsPrincipal());
+            var methodResult = await actionManager.SubscribeOnEventAsync(testEventId, new User());
             //Assert
             Assert.Equal(StatusCodes.Status400BadRequest, methodResult);
         }
@@ -214,7 +216,7 @@ namespace EPlast.XUnitTest.Services.Events
                 .ReturnsAsync(StatusCodes.Status200OK);
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
-            var methodResult = await actionManager.UnSubscribeOnEventAsync(testEventId, new ClaimsPrincipal());
+            var methodResult = await actionManager.UnSubscribeOnEventAsync(testEventId, new User());
             //Assert
             Assert.Equal(StatusCodes.Status200OK, methodResult);
         }
@@ -232,7 +234,7 @@ namespace EPlast.XUnitTest.Services.Events
                 .ThrowsAsync(new Exception());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
-            var methodResult = await actionManager.UnSubscribeOnEventAsync(testEventId, new ClaimsPrincipal());
+            var methodResult = await actionManager.UnSubscribeOnEventAsync(testEventId, new User());
             //Assert
             Assert.Equal(StatusCodes.Status400BadRequest, methodResult);
         }

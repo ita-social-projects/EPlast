@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Interfaces.Region
 {
@@ -16,14 +17,14 @@ namespace EPlast.BLL.Interfaces.Region
         /// <returns>Annual report model</returns>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
         /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
-        Task<RegionAnnualReportDTO> CreateByNameAsync(ClaimsPrincipal claimsPrincipal, int id, int year, RegionAnnualReportQuestions regionAnnualReportQuestions);
+        Task<RegionAnnualReportDTO> CreateByNameAsync(User claimsPrincipal, int id, int year, RegionAnnualReportQuestions regionAnnualReportQuestions);
 
         /// <summary>
         /// Method to get all region reports that the user has access to
         /// </summary>
         /// <param name="claimsPrincipal">Authorized user</param>
         /// <returns>List of annual report model</returns>
-        Task<IEnumerable<RegionAnnualReportDTO>> GetAllAsync(ClaimsPrincipal claimsPrincipal);
+        Task<IEnumerable<RegionAnnualReportDTO>> GetAllAsync(User claimsPrincipal);
 
         /// <summary>
         /// Method to create new region annual report
@@ -33,7 +34,7 @@ namespace EPlast.BLL.Interfaces.Region
         /// <exception cref="System.InvalidOperationException">Thrown when region has created annual report</exception>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to region</exception>
         /// <exception cref="System.NullReferenceException">Thrown when region doesn't exist</exception>
-        Task CreateAsync(ClaimsPrincipal claimsPrincipal, RegionAnnualReportDTO regionAnnualReportDTO);
+        Task CreateAsync(User claimsPrincipal, RegionAnnualReportDTO regionAnnualReportDTO);
 
         /// <summary>
         /// Method to get region report by Id

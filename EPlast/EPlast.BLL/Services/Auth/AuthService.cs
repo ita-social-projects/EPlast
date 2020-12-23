@@ -11,12 +11,10 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.BLL.Models;
 using EPlast.DataAccess.Repositories;
 using Newtonsoft.Json;
-using EPlast.BLL.Interfaces.ActiveMembership;
 using NLog.Extensions.Logging;
 
 namespace EPlast.BLL.Services
@@ -32,8 +30,7 @@ namespace EPlast.BLL.Services
             SignInManager<User> signInManager,
             IEmailConfirmation emailConfirmation,
             IMapper mapper,
-            IRepositoryWrapper repoWrapper,
-            IUserDatesService userDatesService)
+            IRepositoryWrapper repoWrapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -190,9 +187,9 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public string GetIdForUser(ClaimsPrincipal claimsPrincipal)
+        public async Task<string> GetIdForUser(User user)
         {
-            var currentUserId = _userManager.GetUserId(claimsPrincipal);
+            var currentUserId = await _userManager.GetUserIdAsync(user);
             return currentUserId;
         }
 
@@ -215,9 +212,8 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async Task<UserDTO> GetUserAsync(ClaimsPrincipal claimsPrincipal)
+        public UserDTO GetUser(User user)
         {
-            var user = await _userManager.GetUserAsync(claimsPrincipal);
             return _mapper.Map<User, UserDTO>(user);
         }
 
@@ -330,57 +326,5 @@ namespace EPlast.BLL.Services
             return _mapper.Map<User, UserDTO>(user);
         }
 
-        ///<inheritdoc/>
-        public async Task GoogleAuthentication(string email, ExternalLoginInfo externalLoginInfo)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
-            {
-                user = new User
-                {
-                    SocialNetworking = true,
-                    UserName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Email),
-                    Email = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Email),
-                    FirstName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.GivenName),
-                    LastName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Surname),
-                    ImagePath = "default.png",
-                    EmailConfirmed = true,
-                    RegistredOn = DateTime.Now,
-                    UserProfile = new UserProfile()
-                };
-                await _userManager.CreateAsync(user);
-                await _emailConfirmation.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
-                    "Ви зареєструвались в системі EPlast використовуючи свій Google-акаунт ", "Адміністрація сайту EPlast");
-            }
-            await _userManager.AddToRoleAsync(user, "Прихильник");
-            await _userManager.AddLoginAsync(user, externalLoginInfo);
-            await _signInManager.SignInAsync(user, isPersistent: false);
-        }
-        ///<inheritdoc/>
-        public async Task FacebookAuthentication(string email, ExternalLoginInfo externalLoginInfo)
-        {
-            var nameIdentifier = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
-            var identifierForSearching = email ?? nameIdentifier;
-            var user = _userManager.Users.FirstOrDefault(u => u.UserName == identifierForSearching);
-            if (user == null)
-            {
-                user = new User
-                {
-                    SocialNetworking = true,
-                    UserName = (email ?? nameIdentifier),
-                    FirstName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.GivenName),
-                    Email = (email ?? "facebookdefaultmail@gmail.com"),
-                    LastName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Surname),
-                    ImagePath = "default.png",
-                    EmailConfirmed = true,
-                    RegistredOn = DateTime.Now,
-                    UserProfile = new UserProfile()
-                };
-                await _userManager.CreateAsync(user);
-            }
-            await _userManager.AddToRoleAsync(user, "Прихильник");
-            await _userManager.AddLoginAsync(user, externalLoginInfo);
-            await _signInManager.SignInAsync(user, isPersistent: false);
-        }
     }
 }
