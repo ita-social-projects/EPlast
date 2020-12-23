@@ -493,7 +493,8 @@ namespace EPlast.Tests.Services.Club
                 ID = 0
             };
             _clubBlobStorage.Setup(b => b.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
-            _clubBlobStorage.Setup(b => b.DeleteBlobAsync(It.IsAny<string>()));
+            _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
+                .ReturnsAsync((DataAccessClub.Club)null);
 
             // Act
             var result = await clubService.CreateAsync(clubDto);
@@ -501,7 +502,22 @@ namespace EPlast.Tests.Services.Club
             // Assert
             Assert.AreEqual(clubDto.ID, result);
             _clubBlobStorage.Verify(b => b.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
-            _clubBlobStorage.Verify(b => b.DeleteBlobAsync(It.IsAny<string>()), Times.Once);
+        }
+
+        [Test]
+        public void CreateAsync_InvalidOperationException()
+        {
+            // Arrange
+            ClubService clubService = CreateClubService();
+            ClubDTO clubDto = new ClubDTO
+            {
+                ID = 0
+            };
+            _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
+                .ReturnsAsync(new DataAccessClub.Club());
+
+            // Act // Assert
+            Assert.ThrowsAsync<InvalidOperationException>( async () => await clubService.CreateAsync(clubDto));
         }
 
         [Test]
@@ -515,7 +531,8 @@ namespace EPlast.Tests.Services.Club
                 Logo = "data:application/.jpeg;base64,/9j/"
             };
             _clubBlobStorage.Setup(b => b.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
-            _clubBlobStorage.Setup(b => b.DeleteBlobAsync(It.IsAny<string>()));
+            _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
+                .ReturnsAsync((DataAccessClub.Club)null);
 
             // Act
             var result = await clubService.CreateAsync(clubDto);
@@ -523,7 +540,6 @@ namespace EPlast.Tests.Services.Club
             // Assert
             Assert.AreEqual(clubDto.ID, result);
             _clubBlobStorage.Verify(b => b.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
-            _clubBlobStorage.Verify(b => b.DeleteBlobAsync(It.IsAny<string>()), Times.Once);
         }
 
         [Test]
@@ -561,6 +577,8 @@ namespace EPlast.Tests.Services.Club
                 Logo = "data:application/,/9j/"
             };
             _clubBlobStorage.Setup(b => b.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
+            _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
+                .ReturnsAsync((DataAccessClub.Club)null);
 
             // Act
             var result = await clubService.CreateAsync(clubDto);
@@ -581,6 +599,8 @@ namespace EPlast.Tests.Services.Club
                 Logo = "data:application/base64,/9j/"
             };
             _clubBlobStorage.Setup(b => b.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
+            _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
+                .ReturnsAsync((DataAccessClub.Club)null);
 
             // Act
             var result = await clubService.CreateAsync(clubDto);
