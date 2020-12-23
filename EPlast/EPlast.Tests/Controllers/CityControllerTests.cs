@@ -492,7 +492,7 @@ namespace EPlast.Tests.Controllers
         public async Task AddFollowerWithId_Valid_Test()
         {
             // Arrange
-            _cityMembersService
+            _cityParticipantsService
                 .Setup(c => c.AddFollowerAsync(It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(new CityMembersDTO());
             _logger
@@ -527,7 +527,7 @@ namespace EPlast.Tests.Controllers
         public async Task RemoveFollower_Valid_Test()
         {
             // Arrange
-            _cityMembersService
+            _cityParticipantsService
                 .Setup(c => c.RemoveFollowerAsync(It.IsAny<int>()));
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
@@ -545,7 +545,7 @@ namespace EPlast.Tests.Controllers
         public async Task ChangeApproveStatus_Valid_Test()
         {
             // Arrange
-            _cityMembersService
+            _cityParticipantsService
                 .Setup(c => c.ToggleApproveStatusAsync(It.IsAny<int>()))
                 .ReturnsAsync(new CityMembersDTO());
             _logger
@@ -568,7 +568,7 @@ namespace EPlast.Tests.Controllers
             _mapper
                 .Setup(m => m.Map<CityAdministrationViewModel, CityAdministrationDTO>(It.IsAny<CityAdministrationViewModel>()))
                 .Returns(new CityAdministrationDTO() { AdminType = new BLL.DTO.Admin.AdminTypeDTO() });
-            _cityAdministrationService
+            _cityParticipantsService
                 .Setup(c => c.AddAdministratorAsync(It.IsAny<CityAdministrationDTO>()));
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
@@ -589,7 +589,7 @@ namespace EPlast.Tests.Controllers
             _mapper
                 .Setup(m => m.Map<CityAdministrationViewModel, CityAdministrationDTO>(It.IsAny<CityAdministrationViewModel>()))
                 .Returns(new CityAdministrationDTO());
-            _cityAdministrationService
+            _cityParticipantsService
                 .Setup(c => c.RemoveAdministratorAsync(It.IsAny<int>()));
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
@@ -612,7 +612,7 @@ namespace EPlast.Tests.Controllers
             _mapper
                 .Setup(m => m.Map<CityAdministrationViewModel, CityAdministrationDTO>(It.IsAny<CityAdministrationViewModel>()))
                 .Returns(new CityAdministrationDTO());
-            _cityAdministrationService
+            _cityParticipantsService
                 .Setup(c => c.EditAdministratorAsync(It.IsAny<CityAdministrationDTO>()));
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
@@ -721,7 +721,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _cityAccessService
-                .Setup(c => c.GetCitiesAsync(It.IsAny<ClaimsPrincipal>()));
+                .Setup(c => c.GetCitiesAsync(It.IsAny<User>()));
             CitiesController citycon = CreateCityController;
 
             // Act
@@ -731,13 +731,12 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
-            _cityAccessService.Setup(c => c.GetCitiesAsync(It.IsAny<User>()));
 
         [Test]
         public async Task GetUserAdministrations_Valid_Test()
         {
             // Arrange
-            _cityAdministrationService
+            _cityParticipantsService
                 .Setup(c => c.GetAdministrationsOfUserAsync(It.IsAny<string>()))
                 .ReturnsAsync(It.IsAny<IEnumerable<CityAdministrationDTO>>());
             CitiesController citycon = CreateCityController;
@@ -754,7 +753,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetUserPreviousAdministrations_Valid_Test()
         {
             // Arrange
-            _cityAdministrationService
+            _cityParticipantsService
                 .Setup(c => c.GetPreviousAdministrationsOfUserAsync(It.IsAny<string>()))
                 .ReturnsAsync(It.IsAny<IEnumerable<CityAdministrationDTO>>());
             CitiesController citycon = CreateCityController;
@@ -771,7 +770,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetAllAdministrationStatuses_Valid_Test()
         {
             // Arrange
-            _cityAdministrationService
+            _cityParticipantsService
                 .Setup(c => c.GetAdministrationStatuses(It.IsAny<string>()))
                 .ReturnsAsync(It.IsAny<IEnumerable<CityAdministrationStatusDTO>>());
             CitiesController citycon = CreateCityController;
