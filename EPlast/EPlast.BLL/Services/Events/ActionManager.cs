@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Events
@@ -67,7 +66,7 @@ namespace EPlast.BLL.Services.Events
         }
 
         /// <inheritdoc />
-        public async Task<List<GeneralEventDTO>> GetEventsAsync(int categoryId, int eventTypeId, ClaimsPrincipal user)
+        public async Task<IEnumerable<GeneralEventDTO>> GetEventsAsync(int categoryId, int eventTypeId, User user)
         {
             var events = await _repoWrapper.Event
                 .GetAllAsync(
@@ -82,13 +81,14 @@ namespace EPlast.BLL.Services.Events
         }
 
         /// <inheritdoc />
-        public async Task<EventDTO> GetEventInfoAsync(int id, ClaimsPrincipal user)
+        public async Task<EventDTO> GetEventInfoAsync(int id, User user)
         {
             int approvedStatus = await _participantStatusManager.GetStatusIdAsync("Учасник");
             int undeterminedStatus = await _participantStatusManager.GetStatusIdAsync("Розглядається");
             int rejectedStatus = await _participantStatusManager.GetStatusIdAsync("Відмовлено");
             int finishedEvent = await _eventWrapper.EventStatusManager.GetStatusIdAsync("Завершений(-на)");
-            bool isUserGlobalEventAdmin = user?.IsInRole("Адміністратор подій") ?? false;
+            var userRoles = await _userManager.GetRolesAsync(user);
+            bool isUserGlobalEventAdmin = userRoles?.Contains("Адміністратор подій") ?? false;
 
             var targetEvent = await _repoWrapper.Event
                 .GetFirstAsync(
@@ -110,15 +110,15 @@ namespace EPlast.BLL.Services.Events
             var dto = new EventDTO()
             {
                 Event = _mapper.Map<Event, EventInfoDTO>(targetEvent),
-                IsUserEventAdmin = (targetEvent.EventAdministrations.Any(evAdm => evAdm.UserID == _userManager.GetUserId(user))) || isUserGlobalEventAdmin,
-                IsUserParticipant = targetEvent.Participants.Any(p => p.UserId == _userManager.GetUserId(user)),
-                IsUserApprovedParticipant = targetEvent.Participants.Any(p => p.UserId == _userManager.GetUserId(user) && p.ParticipantStatusId == approvedStatus),
-                IsUserUndeterminedParticipant = targetEvent.Participants.Any(p => p.UserId == _userManager.GetUserId(user) && p.ParticipantStatusId == undeterminedStatus),
-                IsUserRejectedParticipant = targetEvent.Participants.Any(p => p.UserId == _userManager.GetUserId(user) && p.ParticipantStatusId == rejectedStatus),
+                IsUserEventAdmin = (targetEvent.EventAdministrations.Any(evAdm => evAdm.UserID == _userManager.GetUserIdAsync(user).Result)) || isUserGlobalEventAdmin,
+                IsUserParticipant = targetEvent.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result),
+                IsUserApprovedParticipant = targetEvent.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == approvedStatus),
+                IsUserUndeterminedParticipant = targetEvent.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == undeterminedStatus),
+                IsUserRejectedParticipant = targetEvent.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == rejectedStatus),
                 IsEventFinished = targetEvent.EventStatusID == finishedEvent
             };
 
-            if (!dto.IsUserEventAdmin)
+            if (!dto.IsUserEventAdmin && dto.ParticipantAssessment !=0)
             {
                 dto.Event.EventParticipants = dto.Event.EventParticipants.Where(p => p.StatusId == approvedStatus);
             }
@@ -128,7 +128,7 @@ namespace EPlast.BLL.Services.Events
                 && (DateTime.Now < targetEvent.EventDateEnd.Add(new TimeSpan(3, 0, 0, 0))))
             {
                 dto.CanEstimate = true;
-                dto.ParticipantAssessment = targetEvent.Participants.First(p => p.UserId == _userManager.GetUserId(user)).Estimate;
+                dto.ParticipantAssessment = targetEvent.Participants.First(p => p.UserId == _userManager.GetUserIdAsync(user).Result).Estimate;
             }
 
             return dto;
@@ -160,13 +160,13 @@ namespace EPlast.BLL.Services.Events
         }
 
         /// <inheritdoc />
-        public async Task<int> SubscribeOnEventAsync(int id, ClaimsPrincipal user)
+        public async Task<int> SubscribeOnEventAsync(int id, User user)
         {
             try
             {
                 Event targetEvent = await _repoWrapper.Event
                     .GetFirstAsync(e => e.ID == id);
-                var userId = _userManager.GetUserId(user);
+                var userId = await _userManager.GetUserIdAsync(user);
                 int result = await _participantManager.SubscribeOnEventAsync(targetEvent, userId);
                 return result;
             }
@@ -177,13 +177,13 @@ namespace EPlast.BLL.Services.Events
         }
 
         /// <inheritdoc />
-        public async Task<int> UnSubscribeOnEventAsync(int id, ClaimsPrincipal user)
+        public async Task<int> UnSubscribeOnEventAsync(int id, User user)
         {
             try
             {
                 Event targetEvent = await _repoWrapper.Event
                     .GetFirstAsync(e => e.ID == id);
-                var userId = _userManager.GetUserId(user);
+                var userId = await _userManager.GetUserIdAsync(user);
                 int result = await _participantManager.UnSubscribeOnEventAsync(targetEvent, userId);
                 return result;
             }
@@ -193,11 +193,11 @@ namespace EPlast.BLL.Services.Events
             }
         }
 
-        public async Task<int> EstimateEventAsync(int eventId, ClaimsPrincipal user, double estimate)
+        public async Task<int> EstimateEventAsync(int eventId, User user, double estimate)
         {
             try
             {
-                var userId = _userManager.GetUserId(user);
+                var userId = await _userManager.GetUserIdAsync(user);
                 var newRating = await _participantManager.EstimateEventByParticipantAsync(eventId, userId, estimate);
                 var targetEvent = await _repoWrapper.Event.GetFirstAsync(e => e.ID == eventId);
                 targetEvent.Rating = newRating;
@@ -261,7 +261,7 @@ namespace EPlast.BLL.Services.Events
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task<List<GeneralEventDTO>> GetEventsByStatusAsync(int categoryId, int typeId, int status, ClaimsPrincipal user)
+        public async Task<IEnumerable<GeneralEventDTO>> GetEventsByStatusAsync(int categoryId, int typeId, int status, User user)
         {
             IEnumerable<Event> events;
             if (status == 1)
@@ -291,7 +291,7 @@ namespace EPlast.BLL.Services.Events
             return dto;
         }
 
-        private async Task<List<GeneralEventDTO>> GetEventDtosAsync(IEnumerable<Event> events, ClaimsPrincipal user)
+        private async Task<List<GeneralEventDTO>> GetEventDtosAsync(IEnumerable<Event> events, User user)
         {
             int approvedStatus = await _participantStatusManager.GetStatusIdAsync("Учасник");
             int undeterminedStatus = await _participantStatusManager.GetStatusIdAsync("Розглядається");
@@ -299,17 +299,18 @@ namespace EPlast.BLL.Services.Events
             int approvedEvent = await _eventWrapper.EventStatusManager.GetStatusIdAsync("Затверджений(-на)");
             int finishedEvent = await _eventWrapper.EventStatusManager.GetStatusIdAsync("Завершений(-на)");
             int notApprovedEvent = await _eventWrapper.EventStatusManager.GetStatusIdAsync("Не затверджені");
+            var userRoles = await _userManager.GetRolesAsync(user);
 
             return events
                 .Select(ev => new GeneralEventDTO
                 {
                     EventId = ev.ID,
                     EventName = ev.EventName,
-                    IsUserEventAdmin = (ev.EventAdministrations.Any(e => e.UserID == _userManager.GetUserId(user))) || user.IsInRole("Адміністратор подій"),
-                    IsUserParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(user)),
-                    IsUserApprovedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(user) && p.ParticipantStatusId == approvedStatus),
-                    IsUserUndeterminedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(user) && p.ParticipantStatusId == undeterminedStatus),
-                    IsUserRejectedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserId(user) && p.ParticipantStatusId == rejectedStatus),
+                    IsUserEventAdmin = ev.EventAdministrations.Any( e => e.UserID == _userManager.GetUserIdAsync(user).Result) || userRoles != null && userRoles.Contains("Адміністратор подій"),
+                    IsUserParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result),
+                    IsUserApprovedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == approvedStatus),
+                    IsUserUndeterminedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == undeterminedStatus),
+                    IsUserRejectedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == rejectedStatus),
                     IsEventApproved = ev.EventStatusID == approvedEvent,
                     IsEventNotApproved = ev.EventStatusID == notApprovedEvent,
                     IsEventFinished = ev.EventStatusID == finishedEvent

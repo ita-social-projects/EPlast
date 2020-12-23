@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.ExceptionServices;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Club
@@ -242,9 +241,9 @@ namespace EPlast.BLL.Services.Club
         }
 
         /// <inheritdoc />
-        public async Task<ClubMembersDTO> AddFollowerAsync(int ClubId, ClaimsPrincipal user)
+        public async Task<ClubMembersDTO> AddFollowerAsync(int ClubId, User user)
         {
-            var userId = _userManager.GetUserId(user);
+            var userId = await _userManager.GetUserIdAsync(user);
 
             return await AddFollowerAsync(ClubId, userId);
         }

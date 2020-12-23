@@ -14,7 +14,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.UserProfiles
@@ -99,10 +98,9 @@ namespace EPlast.BLL.Services.UserProfiles
         }
 
         /// <inheritdoc />
-        public async Task<bool> CanApproveAsync(IEnumerable<ConfirmedUserDTO> confUsers, string userId, ClaimsPrincipal user)
+        public bool CanApprove(IEnumerable<ConfirmedUserDTO> confUsers, string userId, User user)
         {
-            var currentUser = await _userManager.GetUserAsync(user);
-            var currentUserId = currentUser.Id;
+            var currentUserId = user.Id;
 
             var canApprove = confUsers.Count() < 3
                     && !confUsers.Any(x => x.Approver.UserID == currentUserId)
