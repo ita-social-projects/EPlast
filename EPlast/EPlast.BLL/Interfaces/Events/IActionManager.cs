@@ -2,7 +2,6 @@
 using EPlast.BLL.DTO.EventUser;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 
@@ -35,7 +34,7 @@ namespace EPlast.BLL.Interfaces.Events
         /// <param name="eventTypeId">The Id of event type</param>
         /// <param name="categoryId">The Id of event category</param>
         /// <param name="user">ClaimsPrincipal of logged in user</param>
-        Task<List<GeneralEventDTO>> GetEventsAsync(int categoryId, int eventTypeId, User user);
+        Task<IEnumerable<GeneralEventDTO>> GetEventsAsync(int categoryId, int eventTypeId, User user);
 
         /// <summary>
         /// Get detailed information about event by event Id.
@@ -64,7 +63,7 @@ namespace EPlast.BLL.Interfaces.Events
         /// </summary>
         /// <returns>Status code of the subscribing on event operation.</returns>
         /// <param name="id">The Id of event</param>
-        /// <param name="user">ClaimsPrincipal of logged in user</param>
+        /// <param name="user">User object</param>
         Task<int> SubscribeOnEventAsync(int id, User user);
 
         /// <summary>
@@ -72,7 +71,7 @@ namespace EPlast.BLL.Interfaces.Events
         /// </summary>
         /// <returns>Status code of the unsubscribing on event operation.</returns>
         /// <param name="id">The Id of event</param>
-        /// <param name="user">ClaimsPrincipal of logged in user</param>
+        /// <param name="user">User object</param>
         Task<int> UnSubscribeOnEventAsync(int id, User user);
 
         /// <summary>
@@ -80,7 +79,7 @@ namespace EPlast.BLL.Interfaces.Events
         /// </summary>
         /// <returns>Status code of the setting an estimate of the participant's event operation.</returns>
         /// <param name="eventId">The Id of event</param>
-        /// <param name="user">ClaimsPrincipal of logged in user</param>
+        /// <param name="user">User object</param>
         /// <param name="estimate">The value of estimate</param>
         Task<int> EstimateEventAsync(int eventId, User user, double estimate);
 
@@ -122,6 +121,6 @@ namespace EPlast.BLL.Interfaces.Events
 
         Task CheckEventsStatusesAsync();
 
-        Task<List<GeneralEventDTO>> GetEventsByStatusAsync(int categoryId, int typeId, int status, User user);
+        Task<IEnumerable<GeneralEventDTO>> GetEventsByStatusAsync(int categoryId, int typeId, int status, User user);
     }
 }
