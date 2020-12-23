@@ -22,10 +22,9 @@ namespace EPlast.Tests.Controllers
     {
 
         private readonly Mock<ICityService> _cityService;
-        private readonly Mock<ICityMembersService> _cityMembersService;
+        private readonly Mock<ICityParticipantsService> _cityParticipantsService;
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<ILoggerService<CitiesController>> _logger;
-        private readonly Mock<ICityAdministrationService> _cityAdministrationService;
         private readonly Mock<ICityAccessService> _cityAccessService;
         private readonly Mock<ICityDocumentsService> _cityDocumentsService;
         private readonly Mock<Microsoft.AspNetCore.Identity.UserManager<User>> _userManager;
@@ -35,10 +34,9 @@ namespace EPlast.Tests.Controllers
         {
             _cityAccessService = new Mock<ICityAccessService>();
             _cityService = new Mock<ICityService>();
-            _cityMembersService = new Mock<ICityMembersService>();
+            _cityParticipantsService = new Mock<ICityParticipantsService>();
             _mapper = new Mock<IMapper>();
             _logger = new Mock<ILoggerService<CitiesController>>();
-            _cityAdministrationService = new Mock<ICityAdministrationService>();
             _cityDocumentsService = new Mock<ICityDocumentsService>();
             var store = new Mock<Microsoft.AspNetCore.Identity.IUserStore<User>>();
             _userManager = new Mock<Microsoft.AspNetCore.Identity.UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
@@ -47,11 +45,10 @@ namespace EPlast.Tests.Controllers
         private CitiesController CreateCityController => new CitiesController(_logger.Object,
              _mapper.Object,
            _cityService.Object,
-           _cityMembersService.Object,
-           _cityAdministrationService.Object,
-           _cityDocumentsService.Object,
+             _cityDocumentsService.Object,
            _cityAccessService.Object,
-           _userManager.Object
+           _userManager.Object,
+        _cityParticipantsService.Object
           );
 
 
@@ -419,7 +416,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task AddFollower_Valid_Test()
         {
-            _cityMembersService.Setup(c => c.AddFollowerAsync(It.IsAny<int>(), It.IsAny<User>()))
+            _cityParticipantsService.Setup(c => c.AddFollowerAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(new CityMembersDTO());
 
             _logger.Setup(l => l.LogInformation(It.IsAny<string>()));
@@ -453,7 +450,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task RemoveFollower_Valid_Test()
         {
-            _cityMembersService.Setup(c => c.RemoveFollowerAsync(It.IsAny<int>()));
+            _cityParticipantsService.Setup(c => c.RemoveFollowerAsync(It.IsAny<int>()));
 
             _logger.Setup(l => l.LogInformation(It.IsAny<string>()));
 
@@ -468,7 +465,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task ChangeApproveStatus_Valid_Test()
         {
-            _cityMembersService.Setup(c => c.ToggleApproveStatusAsync(It.IsAny<int>()))
+            _cityParticipantsService.Setup(c => c.ToggleApproveStatusAsync(It.IsAny<int>()))
                 .ReturnsAsync(new CityMembersDTO());
 
             _logger.Setup(l => l.LogInformation(It.IsAny<string>()));
@@ -489,7 +486,7 @@ namespace EPlast.Tests.Controllers
             _mapper.Setup(m => m.Map<CityAdministrationViewModel, CityAdministrationDTO>(It.IsAny<CityAdministrationViewModel>()))
                 .Returns(new CityAdministrationDTO());
 
-            _cityAdministrationService.Setup(c => c.EditAdministratorAsync(It.IsAny<CityAdministrationDTO>()));
+            _cityParticipantsService.Setup(c => c.EditAdministratorAsync(It.IsAny<CityAdministrationDTO>()));
 
             _logger.Setup(l => l.LogInformation(It.IsAny<string>()));
 
@@ -509,7 +506,7 @@ namespace EPlast.Tests.Controllers
             _mapper.Setup(m => m.Map<CityAdministrationViewModel, CityAdministrationDTO>(It.IsAny<CityAdministrationViewModel>()))
                 .Returns(new CityAdministrationDTO());
 
-            _cityAdministrationService.Setup(c => c.RemoveAdministratorAsync(It.IsAny<int>()));
+            _cityParticipantsService.Setup(c => c.RemoveAdministratorAsync(It.IsAny<int>()));
 
             _logger.Setup(l => l.LogInformation(It.IsAny<string>()));
 

@@ -24,25 +24,26 @@ namespace EPlast.BLL.Services
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IMapper _mapper;
-        private readonly ICityMembersService _cityMembers;
         private readonly IClubParticipantsService _clubParticipants;
         private readonly IRegionAdministrationService _regionService;
+        private readonly ICityParticipantsService _cityParticipants;
+
 
         public AdminService(IRepositoryWrapper repoWrapper, 
             UserManager<User> userManager, 
             IMapper mapper, 
             RoleManager<IdentityRole> roleManager,
-            ICityMembersService cityMembers,
             IClubParticipantsService clubParticipants,
-            IRegionAdministrationService regionService)
+            IRegionAdministrationService regionService, 
+            ICityParticipantsService cityParticipants)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
             _mapper = mapper;
             _roleManager = roleManager;
-            _cityMembers = cityMembers;
             _clubParticipants = clubParticipants;
             _regionService = regionService;
+            _cityParticipants = cityParticipants;
         }
 
         /// <inheritdoc />
@@ -90,7 +91,7 @@ namespace EPlast.BLL.Services
 
             if(cityMember != null)
             {
-                await _cityMembers.RemoveMemberAsync(cityMember);
+                await _cityParticipants.RemoveMemberAsync(cityMember);
             }
 
             var clubMember = await _repoWrapper.ClubMembers.GetFirstOrDefaultAsync(m => m.UserId == userId);

@@ -77,9 +77,8 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IGlobalLoggerService, GlobalLoggerService>();
             services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
             services.AddScoped<ICityService, CityService>();
-            services.AddScoped<ICityAdministrationService, CityAdministrationService>();
+            services.AddScoped<ICityParticipantsService, CityParticipantsService>();
             services.AddScoped<ICityDocumentsService, CityDocumentsService>();
-            services.AddScoped<ICityMembersService, CityMembersService>();
             services.AddScoped<IClubService, ClubService>();
             services.AddScoped<IClubParticipantsService, ClubParticipantsService>();
             services.AddScoped<IClubDocumentsService, ClubDocumentsService>();
