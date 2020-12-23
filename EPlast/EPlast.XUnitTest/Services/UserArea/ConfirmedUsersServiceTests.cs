@@ -33,7 +33,7 @@ namespace EPlast.XUnitTest.Services.UserArea
             _repoWrapper.Setup(x =>  x.ConfirmedUser.GetAllAsync(null,null)).ReturnsAsync(new List<ConfirmedUser>().AsQueryable());
             var service = new ConfirmedUsersService(_repoWrapper.Object, _userManager.Object);
 
-            await service.CreateAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<string>());
+            await service.CreateAsync(It.IsAny<User>(), It.IsAny<string>());
 
             _repoWrapper.Verify(r => r.ConfirmedUser.CreateAsync(It.IsAny<ConfirmedUser>()), Times.Once());
             _repoWrapper.Verify(r => r.SaveAsync(), Times.Once());

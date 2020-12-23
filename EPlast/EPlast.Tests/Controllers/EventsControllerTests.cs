@@ -4,8 +4,10 @@ using System.Threading.Tasks;
 using EPlast.BLL.DTO.Events;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.Events;
+using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
@@ -18,14 +20,18 @@ namespace EPlast.Tests.Controllers
         private Mock<IActionManager> _actionManager;
 
         private EventsController _eventsController;
+        private Mock<UserManager<User>> _userManager;
 
         [SetUp]
         public void SetUp()
         {
             _actionManager = new Mock<IActionManager>();
+            var store = new Mock<IUserStore<User>>();
+            _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
 
             _eventsController = new EventsController(
-                _actionManager.Object);
+                _actionManager.Object,
+                _userManager.Object);
         }
 
         [Test]
@@ -109,7 +115,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _actionManager
-                .Setup((x) => x.GetEventsAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                .Setup((x) => x.GetEventsAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(CreateListOfFakeGeneralEvents());
 
             // Act
@@ -127,7 +133,7 @@ namespace EPlast.Tests.Controllers
             var listCount = 2;
 
             _actionManager
-                .Setup((x) => x.GetEventsAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                .Setup((x) => x.GetEventsAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(CreateListOfFakeGeneralEvents());
 
             var expected = listCount;
@@ -147,7 +153,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _actionManager
-                .Setup((x) => x.GetEventInfoAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                .Setup((x) => x.GetEventInfoAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(CreateFakeEvent());
 
             // Act
@@ -163,7 +169,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _actionManager
-                .Setup((x) => x.GetEventInfoAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                .Setup((x) => x.GetEventInfoAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(CreateFakeEvent());
 
             // Act
@@ -256,7 +262,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _actionManager
-                .Setup((x) => x.SubscribeOnEventAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                .Setup((x) => x.SubscribeOnEventAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(StatusCodes.Status200OK);
 
             var expected = StatusCodes.Status200OK;
@@ -275,7 +281,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _actionManager
-                .Setup((x) => x.SubscribeOnEventAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                .Setup((x) => x.SubscribeOnEventAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(StatusCodes.Status400BadRequest);
 
             var expected = StatusCodes.Status400BadRequest;
@@ -294,7 +300,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _actionManager
-                .Setup((x) => x.UnSubscribeOnEventAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                .Setup((x) => x.UnSubscribeOnEventAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(StatusCodes.Status200OK);
 
             var expected = StatusCodes.Status200OK;
@@ -313,7 +319,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _actionManager
-                .Setup((x) => x.UnSubscribeOnEventAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                .Setup((x) => x.UnSubscribeOnEventAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(StatusCodes.Status400BadRequest);
 
             var expected = StatusCodes.Status400BadRequest;

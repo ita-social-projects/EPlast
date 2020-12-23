@@ -15,6 +15,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.Tests.Services.DistinctionServiceTest
 {
@@ -24,6 +25,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         private Mock<IRepositoryWrapper> mockRepoWrapper;
         private Mock<IMapper> mockMapper;
         private UserDistinctionService distinctionService;
+        private Mock<UserManager<User>> userManager;
         private IUniqueIdService _uniqueId;
 
         [SetUp]
@@ -32,7 +34,10 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
             mockMapper = new Mock<IMapper>();
             mockRepoWrapper = new Mock<IRepositoryWrapper>();
             _uniqueId = new UniqueIdService();
-            distinctionService = new UserDistinctionService(mockMapper.Object, mockRepoWrapper.Object);
+            var store = new Mock<IUserStore<User>>();
+            userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            userManager.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRoles());
+            distinctionService = new UserDistinctionService(mockMapper.Object, mockRepoWrapper.Object, userManager.Object);
         }
 
         [Test]
@@ -43,16 +48,11 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                  .Setup(x => x.UserDistinction.GetFirstAsync(It.IsAny<Expression<Func<UserDistinction, bool>>>(),
                     It.IsAny<Func<IQueryable<UserDistinction>, IIncludableQueryable<UserDistinction, object>>>()))
                 .ReturnsAsync(new UserDistinction());
-
-            //Act
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity();
-            ClaimsPrincipal notAdmin = new ClaimsPrincipal();
-            claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "Htos`"));
-            notAdmin.AddIdentity(claimsIdentity);
+            userManager.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRolesWithoutAdmin());
 
             //Assert
             Exception exception = Assert.ThrowsAsync(typeof(UnauthorizedAccessException),
-                async () => { await distinctionService.DeleteUserDistinctionAsync(It.IsAny<int>(), notAdmin); });
+                async () => { await distinctionService.DeleteUserDistinctionAsync(It.IsAny<int>(), It.IsAny<User>()); });
             Assert.AreEqual("Attempted to perform an unauthorized operation.", exception.Message);
         }
 
@@ -66,14 +66,10 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                 .ReturnsAsync(() => null);
 
             //Act
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity();
-            ClaimsPrincipal Admin = new ClaimsPrincipal();
-            claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "Admin"));
-            Admin.AddIdentity(claimsIdentity);
 
             //Assert
             Exception exception = Assert.ThrowsAsync(typeof(NotImplementedException),
-                async () => { await distinctionService.DeleteUserDistinctionAsync(It.IsAny<int>(), Admin); });
+                async () => { await distinctionService.DeleteUserDistinctionAsync(It.IsAny<int>(), It.IsAny<User>()); });
             Assert.AreEqual("The method or operation is not implemented.", exception.Message);
         }
 
@@ -87,13 +83,9 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                 .ReturnsAsync(userDistinction);
 
             //Act
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity();
-            ClaimsPrincipal Admin = new ClaimsPrincipal();
-            claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "Admin"));
-            Admin.AddIdentity(claimsIdentity);
 
             //Assert
-            Assert.DoesNotThrowAsync(async () => { await distinctionService.DeleteUserDistinctionAsync(It.IsAny<int>(), Admin); });
+            Assert.DoesNotThrowAsync(async () => { await distinctionService.DeleteUserDistinctionAsync(It.IsAny<int>(), It.IsAny<User>()); });
         }
 
         [Test]
@@ -105,15 +97,11 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                     It.IsAny<Func<IQueryable<UserDistinction>, IIncludableQueryable<UserDistinction, object>>>()))
                 .ReturnsAsync(new UserDistinction());
 
-            //Act
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity();
-            ClaimsPrincipal notAdmin = new ClaimsPrincipal();
-            claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "Htos`"));
-            notAdmin.AddIdentity(claimsIdentity);
+            userManager.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRolesWithoutAdmin());
 
             //Assert
             Exception exception = Assert.ThrowsAsync(typeof(UnauthorizedAccessException),
-                async () => { await distinctionService.ChangeUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), notAdmin); });
+                async () => { await distinctionService.ChangeUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), It.IsAny<User>()); });
             Assert.AreEqual("Attempted to perform an unauthorized operation.", exception.Message);
         }
 
@@ -127,13 +115,9 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                 .ReturnsAsync(userDistinction);
 
             //Act
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity();
-            ClaimsPrincipal Admin = new ClaimsPrincipal();
-            claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "Admin"));
-            Admin.AddIdentity(claimsIdentity);
 
             //Assert
-            Assert.DoesNotThrowAsync(async () => { await distinctionService.ChangeUserDistinctionAsync(userDistinctionDTO, Admin); });
+            Assert.DoesNotThrowAsync(async () => { await distinctionService.ChangeUserDistinctionAsync(userDistinctionDTO, It.IsAny<User>()); });
         }
 
         [Test]
@@ -143,15 +127,11 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
             mockRepoWrapper
                  .Setup(x => x.UserDistinction.CreateAsync(It.IsAny<UserDistinction>()));
 
-            //Act
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity();
-            ClaimsPrincipal notAdmin = new ClaimsPrincipal();
-            claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "Htos`"));
-            notAdmin.AddIdentity(claimsIdentity);
+            userManager.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRolesWithoutAdmin());
 
             //Assert
             Exception exception = Assert.ThrowsAsync(typeof(UnauthorizedAccessException),
-                async () => { await distinctionService.AddUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), notAdmin); });
+                async () => { await distinctionService.AddUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), It.IsAny<User>()); });
             Assert.AreEqual("Attempted to perform an unauthorized operation.", exception.Message);
         }
 
@@ -163,13 +143,9 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                  .Setup(x => x.UserDistinction.CreateAsync(userDistinction));
 
             //Act
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity();
-            ClaimsPrincipal Admin = new ClaimsPrincipal();
-            claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "Admin"));
-            Admin.AddIdentity(claimsIdentity);
 
             //Assert
-            Assert.DoesNotThrowAsync(async () => { await distinctionService.AddUserDistinctionAsync(userDistinctionDTO, Admin); });
+            Assert.DoesNotThrowAsync(async () => { await distinctionService.AddUserDistinctionAsync(userDistinctionDTO, It.IsAny<User>()); });
         }
 
         [Test]
@@ -491,6 +467,25 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                    User = new BLL.DTO.City.CityUserDTO { FirstName = "", LastName = "", FatherName =""}
                }
             }.AsEnumerable();
+        }
+        private IList<string> GetRoles()
+        {
+            return new List<string>
+            {
+                "Admin",
+                "Htos",
+                "Nixto"
+
+            };
+        }
+        private IList<string> GetRolesWithoutAdmin()
+        {
+            return new List<string>
+            {
+                "Htos",
+                "Nixto"
+
+            };
         }
     }
 }
