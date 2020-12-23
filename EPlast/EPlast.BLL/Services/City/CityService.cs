@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.BLL.Services.CityClub;
 using DataAccessCity = EPlast.DataAccess.Entities;
@@ -136,12 +135,12 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<CityProfileDTO> GetCityProfileAsync(int cityId, ClaimsPrincipal user)
+        public async Task<CityProfileDTO> GetCityProfileAsync(int cityId, DataAccessCity.User user)
         {
             var cityProfileDto = await GetCityProfileAsync(cityId);
-            var userId = _userManager.GetUserId(user);
-
-            cityProfileDto.City.CanCreate = user.IsInRole("Admin");
+            var userId = await _userManager.GetUserIdAsync(user);
+            var userRoles = await _userManager.GetRolesAsync(user);
+            cityProfileDto.City.CanCreate = userRoles.Contains("Admin");
             cityProfileDto.City.CanEdit = await _cityAccessService.HasAccessAsync(user, cityId);
             cityProfileDto.City.CanJoin = (await _repoWrapper.CityMembers
                 .GetFirstOrDefaultAsync(u => u.User.Id == userId && u.CityId == cityId)) == null;

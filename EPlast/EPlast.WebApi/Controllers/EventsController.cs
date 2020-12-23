@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -16,9 +18,12 @@ namespace EPlast.WebApi.Controllers
     public class EventsController : ControllerBase
     {
         private readonly IActionManager _actionManager;
-        public EventsController(IActionManager actionManager)
+        private readonly UserManager<User> _userManager;
+
+        public EventsController(IActionManager actionManager, UserManager<User> userManager)
         {
             _actionManager = actionManager;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -84,7 +89,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetEvents(int typeId, int categoryId)
         {
-            return Ok(await _actionManager.GetEventsAsync(categoryId, typeId, User));
+            return Ok(await _actionManager.GetEventsAsync(categoryId, typeId, await _userManager.GetUserAsync(User)));
         }
 
 
@@ -93,7 +98,7 @@ namespace EPlast.WebApi.Controllers
        
         public async Task<IActionResult> GetEventsByCategory(int typeId, int categoryId, int status)
         {
-            return Ok(await _actionManager.GetEventsByStatusAsync(categoryId, typeId, status, User));
+            return Ok(await _actionManager.GetEventsByStatusAsync(categoryId, typeId, status, await _userManager.GetUserAsync(User)));
         }
 
 
@@ -110,7 +115,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetEventDetail(int id)
         {
-            return Ok(await _actionManager.GetEventInfoAsync(id, User));
+            return Ok(await _actionManager.GetEventInfoAsync(id, await _userManager.GetUserAsync(User)));
         }
 
         /// <summary>
@@ -125,7 +130,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> EstimateEvent(int id, double estimate)
         {
-            var result = await _actionManager.EstimateEventAsync(id, User, estimate);
+            var result = await _actionManager.EstimateEventAsync(id, await _userManager.GetUserAsync(User), estimate);
             return Ok(result);
         }
 
@@ -185,7 +190,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> SubscribeOnEvent(int eventId)
         {
-            return StatusCode(await _actionManager.SubscribeOnEventAsync(eventId, User));
+            return StatusCode(await _actionManager.SubscribeOnEventAsync(eventId, await _userManager.GetUserAsync(User)));
         }
 
         /// <summary>
@@ -199,7 +204,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> UnSubscribeOnEvent(int eventId)
         {
-            return StatusCode(await _actionManager.UnSubscribeOnEventAsync(eventId, User));
+            return StatusCode(await _actionManager.UnSubscribeOnEventAsync(eventId, await _userManager.GetUserAsync(User)));
         }
 
         /// <summary>

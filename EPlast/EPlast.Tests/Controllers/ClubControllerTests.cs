@@ -2,8 +2,10 @@
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Logging;
+using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Controllers;
 using EPlast.WebApi.Models.Club;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -27,7 +29,7 @@ namespace EPlast.Tests.Controllers
         private readonly Mock<IClubParticipantsService> _ClubParticipantsService;
         private readonly Mock<IClubAccessService> _ClubAccessService;
         private readonly Mock<IClubDocumentsService> _ClubDocumentsService;
-        private readonly Mock<IClubAnnualReportService> _ClubAnnualReportService;
+        private readonly Mock<UserManager<User>> _userManager;
 
 
         public ClubControllerTests()
@@ -38,7 +40,9 @@ namespace EPlast.Tests.Controllers
             _logger = new Mock<ILoggerService<ClubController>>();
             _ClubParticipantsService = new Mock<IClubParticipantsService>();
             _ClubDocumentsService = new Mock<IClubDocumentsService>();
-            _ClubAnnualReportService = new Mock<IClubAnnualReportService>();
+            var store = new Mock<IUserStore<User>>();
+            _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+
         }
 
         private ClubController CreateClubController => new ClubController(_logger.Object,
@@ -47,7 +51,7 @@ namespace EPlast.Tests.Controllers
            _ClubParticipantsService.Object,
            _ClubDocumentsService.Object,
            _ClubAccessService.Object,
-           _ClubAnnualReportService.Object
+           _userManager.Object
           );
 
         [TestCase(1, 1, "Курінь")]
@@ -106,9 +110,8 @@ namespace EPlast.Tests.Controllers
         [TestCase(2)]
         public async Task GetProfile_Valid_Test(int id)
         {
-            // Arrange
-            _ClubService
-                .Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+
+            _ClubService.Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(new ClubProfileDTO());
             _mapper
                 .Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
@@ -129,7 +132,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _ClubService.
-                Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(() => null);
             _mapper
                 .Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
@@ -149,7 +152,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _ClubService
-                .Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                .Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(() => null);
             ClubController Clubcon = CreateClubController;
 
@@ -164,6 +167,10 @@ namespace EPlast.Tests.Controllers
         [TestCase(2)]
         public async Task GetMembers_Valid_Test(int id)
         {
+
+            _ClubService.Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
+                .ReturnsAsync(() => null);
+
             // Arrange
             _ClubService
                 .Setup(cs => cs.GetClubMembersAsync(It.IsAny<int>()))
@@ -217,6 +224,8 @@ namespace EPlast.Tests.Controllers
             // Act
             var result = await Clubcon.GetFollowers(id);
 
+            _ClubService.Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
+                .ReturnsAsync(() => null);
             // Assert
             _mapper.Verify(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()));
             Assert.NotNull(result);
@@ -510,9 +519,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task AddFollower_Valid_Test()
         {
-            // Arrange
-            _ClubParticipantsService
-                .Setup(c => c.AddFollowerAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+            _ClubParticipantsService.Setup(c => c.AddFollowerAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(new ClubMembersDTO());
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
@@ -726,7 +733,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _ClubAccessService
-                .Setup(c => c.GetClubsAsync(It.IsAny<ClaimsPrincipal>()));
+                .Setup(c => c.GetClubsAsync(It.IsAny<User>()));
             ClubController Clubcon = CreateClubController;
 
             // Act
