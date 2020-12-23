@@ -135,7 +135,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _ClubService.
-                Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(() => null);
             _mapper
                 .Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
@@ -155,7 +155,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _ClubService
-                .Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+                .Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(() => null);
             ClubController Clubcon = CreateClubController;
 
@@ -174,7 +174,6 @@ namespace EPlast.Tests.Controllers
             _ClubService.Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(() => null);
 
-            _mapper.Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
             // Arrange
             _ClubService
                 .Setup(cs => cs.GetClubMembersAsync(It.IsAny<int>()))
@@ -737,7 +736,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _ClubAccessService
-                .Setup(c => c.GetClubsAsync(It.IsAny<ClaimsPrincipal>()));
+                .Setup(c => c.GetClubsAsync(It.IsAny<User>()));
             ClubController Clubcon = CreateClubController;
 
             // Act
@@ -781,7 +780,6 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
-            _ClubAccessService.Setup(c => c.GetClubsAsync(It.IsAny<User>()));
 
         [Test]
         public async Task GetAllAdministrationStatuses_Valid_Test()

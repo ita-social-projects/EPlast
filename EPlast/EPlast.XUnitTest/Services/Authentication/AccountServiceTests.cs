@@ -77,7 +77,7 @@ namespace EPlast.XUnitTest.Services
                .Returns(GetTestUserWithEmailsSendedTime());
 
             AuthService AuthService = new AuthService(mockUserManager.Object, mockSignInManager.Object,
-               mockEmailConfirmation.Object, mockMapper.Object,null, null);
+               mockEmailConfirmation.Object, mockMapper.Object,null);
 
             return (mockSignInManager, mockUserManager, mockEmailConfirmation, AuthService);
         }
@@ -333,38 +333,6 @@ namespace EPlast.XUnitTest.Services
 
             //Assert
             Assert.Null(findResult);
-        }
-
-        [Fact]
-        public void GoogleAuthentication()
-        {
-            //Arrange
-            var (mockSignInManager, mockUserManager, mockEmailConfirmation, AuthService) = CreateAuthService();
-            mockUserManager
-                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync((User)null);
-
-            //Act
-            var result = AuthService.GoogleAuthentication(GetTestEmail(), GetExternalLoginInfoFake());
-
-            //Assert
-            Assert.NotNull(result);
-        }
-
-        [Fact]
-        public void GoogleAuthenticationUserNull()
-        {
-            //Arrange
-            var (mockSignInManager, mockUserManager, mockEmailConfirmation, AuthService) = CreateAuthService();
-            mockUserManager
-                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetTestUserWithAllFields());
-
-            //Act
-            var result = AuthService.GoogleAuthentication(GetTestEmail(), GetExternalLoginInfoFake());
-            
-            //Assert
-            Assert.NotNull(result);
         }
 
         [Fact]

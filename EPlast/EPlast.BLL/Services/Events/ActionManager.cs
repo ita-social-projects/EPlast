@@ -66,7 +66,7 @@ namespace EPlast.BLL.Services.Events
         }
 
         /// <inheritdoc />
-        public async Task<List<GeneralEventDTO>> GetEventsAsync(int categoryId, int eventTypeId, User user)
+        public async Task<IEnumerable<GeneralEventDTO>> GetEventsAsync(int categoryId, int eventTypeId, User user)
         {
             var events = await _repoWrapper.Event
                 .GetAllAsync(
@@ -261,7 +261,7 @@ namespace EPlast.BLL.Services.Events
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task<List<GeneralEventDTO>> GetEventsByStatusAsync(int categoryId, int typeId, int status, User user)
+        public async Task<IEnumerable<GeneralEventDTO>> GetEventsByStatusAsync(int categoryId, int typeId, int status, User user)
         {
             IEnumerable<Event> events;
             if (status == 1)

@@ -204,7 +204,7 @@ namespace EPlast.Tests.Services.City
                });
 
             //Act
-            var result = await _cityParticipantsService.EditAdministratorAsync(cityFakeAdmDTO);
+            var result = await _cityParticipantsService.EditAdministratorAsync(cityAdmDTO);
 
             //Assert
             _repoWrapper.Verify();
@@ -357,7 +357,7 @@ namespace EPlast.Tests.Services.City
                 .Setup(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
 
             //Act
-            var result = _cityAdministrationService.CheckPreviousAdministratorsToDelete();
+            var result = _cityParticipantsService.CheckPreviousAdministratorsToDelete();
 
             //Assert
             _repoWrapper.Verify();

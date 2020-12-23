@@ -109,7 +109,7 @@ namespace EPlast.XUnitTest.Services.Events
             //Assert
             Assert.NotNull(methodResult);
             Assert.IsType<List<GeneralEventDTO>>(methodResult);
-            Assert.Equal(GetEvents().Count(), methodResult.Count);
+            Assert.Equal(GetEvents().Count(), methodResult.Count());
         }
         [Fact]
         public async void GetEventInfoTest()
