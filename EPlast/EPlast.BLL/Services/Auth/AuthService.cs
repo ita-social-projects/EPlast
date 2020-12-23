@@ -11,12 +11,10 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.BLL.Models;
 using EPlast.DataAccess.Repositories;
 using Newtonsoft.Json;
-using EPlast.BLL.Interfaces.ActiveMembership;
 using NLog.Extensions.Logging;
 
 namespace EPlast.BLL.Services

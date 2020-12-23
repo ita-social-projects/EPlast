@@ -31,7 +31,7 @@ namespace EPlast.WebApi.Controllers
             IClubParticipantsService clubParticipantsService,
             IClubDocumentsService clubDocumentsService,
             IClubAccessService clubAccessService,
-            IClubAnnualReportService clubAnnualReportService, UserManager<User> userManager)
+            UserManager<User> userManager)
         {
             _logger = logger;
             _mapper = mapper;

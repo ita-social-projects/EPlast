@@ -111,7 +111,7 @@ namespace EPlast.XUnitTest.Services.UserArea
             Assert.IsAssignableFrom<IEnumerable<ConfirmedUserDTO>>(result);
         }
         [Fact]
-        public async Task CanApproveTest()
+        public void CanApproveTest()
         {
             var conUser = new ConfirmedUserDTO { UserID = "1", ConfirmDate = DateTime.Now, isClubAdmin = false, isCityAdmin = false };
             var appUser = new ApproverDTO { UserID = "3", ConfirmedUser = conUser };
@@ -128,7 +128,7 @@ namespace EPlast.XUnitTest.Services.UserArea
             Assert.True(result);
         }
         [Fact]
-        public async Task CanApproveTestFailure()
+        public void CanApproveTestFailure()
         {
             UserDTO user = new UserDTO { ConfirmedUsers = new List<ConfirmedUserDTO>() };
             var conUser = new ConfirmedUserDTO();
