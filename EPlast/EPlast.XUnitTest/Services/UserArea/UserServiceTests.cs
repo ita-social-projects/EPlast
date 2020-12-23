@@ -111,7 +111,7 @@ namespace EPlast.XUnitTest.Services.UserArea
             Assert.IsAssignableFrom<IEnumerable<ConfirmedUserDTO>>(result);
         }
         [Fact]
-        public async Task CanApproveTest()
+        public void CanApproveTest()
         {
             var conUser = new ConfirmedUserDTO { UserID = "1", ConfirmDate = DateTime.Now, isClubAdmin = false, isCityAdmin = false };
             var appUser = new ApproverDTO { UserID = "3", ConfirmedUser = conUser };
@@ -122,21 +122,20 @@ namespace EPlast.XUnitTest.Services.UserArea
             _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User { Id = "1" });
 
             var service = GetService();            // Act
-            var result = await service.CanApproveAsync(confUsers, "2", It.IsAny<ClaimsPrincipal>());
+            var result = service.CanApprove(confUsers, "2", new User());
             // Assert
             var res = Assert.IsType<bool>(result);
             Assert.True(result);
         }
         [Fact]
-        public async Task CanApproveTestFailure()
+        public void CanApproveTestFailure()
         {
             UserDTO user = new UserDTO { ConfirmedUsers = new List<ConfirmedUserDTO>() };
             var conUser = new ConfirmedUserDTO();
             var confUsers = new List<ConfirmedUserDTO> { conUser, conUser, conUser, conUser };
-            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User { Id = "1" });
 
             var service = GetService();            // Act
-            var result = await service.CanApproveAsync(confUsers, "1", It.IsAny<ClaimsPrincipal>());
+            var result = service.CanApprove(confUsers, "1", new User());
             // Assert
             var res = Assert.IsType<bool>(result);
             Assert.False(result);

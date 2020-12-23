@@ -3,6 +3,8 @@ using EPlast.BLL.Interfaces.EventUser;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -13,12 +15,13 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly IEventUserManager eventUserManager;
         private readonly IEventUserService eventUserService;
+        private readonly UserManager<User> _userManager;
 
-        public EventsUsersController(IEventUserManager eventUserManager, IEventUserService eventUserService)
+        public EventsUsersController(IEventUserManager eventUserManager, IEventUserService eventUserService, UserManager<User> userManager)
         {
             this.eventUserManager = eventUserManager;
             this.eventUserService = eventUserService;
-
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -31,7 +34,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("eventsUsers/{userId}")]
         public async Task<IActionResult> GetEventUserByUserId(string userId)
         {
-            var eventUserModel = await eventUserService.EventUserAsync(userId, User);
+            var eventUserModel = await eventUserService.EventUserAsync(userId, await _userManager.GetUserAsync(User));
 
             return Ok(eventUserModel);
         }

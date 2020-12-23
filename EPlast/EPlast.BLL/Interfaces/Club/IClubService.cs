@@ -54,7 +54,7 @@ namespace EPlast.BLL.Interfaces.Club
         /// <param name="ClubId">The id of the Club</param>
         /// <param name="user">Current user</param>
         /// See <see cref="IClubService.GetClubProfileAsync(int)"/> to get information about a specific Club
-        Task<ClubProfileDTO> GetClubProfileAsync(int ClubId, ClaimsPrincipal user);
+        Task<ClubProfileDTO> GetClubProfileAsync(int ClubId, DataAccessClub.User user);
 
         /// <summary>
         /// Get a list of members of a specific Club

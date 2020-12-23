@@ -29,7 +29,7 @@ namespace EPlast.Tests.Services
         private  Mock<RoleManager<IdentityRole>> _roleManager;
         private  Mock<IMapper> _mapper;
         private Mock<IUserStore<User>> _user;
-        private  Mock<ICityMembersService> _cityMembers;
+        private  Mock<ICityParticipantsService> _cityParticipantsService;
         private  Mock<IClubParticipantsService> _clubParticipants;
         private  Mock<IRegionAdministrationService> _regionService;
         private Mock<IRoleStore<IdentityRole>> _store;
@@ -48,7 +48,7 @@ namespace EPlast.Tests.Services
                _store.Object, It.IsAny<IEnumerable<IRoleValidator<IdentityRole>>>(),
                It.IsAny<ILookupNormalizer>(), It.IsAny<IdentityErrorDescriber>(), It.IsAny<ILogger<RoleManager<IdentityRole>>>());
             _mapper = new Mock<IMapper>();
-            _cityMembers = new Mock<ICityMembersService>();
+            _cityParticipantsService = new Mock<ICityParticipantsService>();
             _clubParticipants = new Mock<IClubParticipantsService>();
             _regionService = new Mock<IRegionAdministrationService>();
 
@@ -57,10 +57,10 @@ namespace EPlast.Tests.Services
                 _userManager.Object,
                 _mapper.Object,
                 _roleManager.Object,
-                _cityMembers.Object,
                 _clubParticipants.Object,
-                _regionService.Object
-                );
+                _regionService.Object,
+                _cityParticipantsService.Object
+            );
         }
       
         [Test]
@@ -100,7 +100,7 @@ namespace EPlast.Tests.Services
                 It.IsAny<Func<IQueryable<CityMembers>,
                 IIncludableQueryable<CityMembers, object>>>()))
                 .ReturnsAsync(new CityMembers());
-            _cityMembers
+            _cityParticipantsService
                 .Setup(x=>x.RemoveMemberAsync(It.IsAny<CityMembers>()));
             _repoWrapper
                .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
@@ -125,7 +125,7 @@ namespace EPlast.Tests.Services
             // Assert
             _userManager.Verify();
             _repoWrapper.Verify();
-            _cityMembers.Verify();
+            _cityParticipantsService.Verify();
             _clubParticipants.Verify();
             Assert.NotNull(result);
         }

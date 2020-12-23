@@ -51,7 +51,7 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="cityId">The id of the city</param>
         /// <param name="user">Current user</param>
         /// See <see cref="ICityService.GetCityProfileAsync(int)"/> to get information about a specific city
-        Task<CityProfileDTO> GetCityProfileAsync(int cityId, ClaimsPrincipal user);
+        Task<CityProfileDTO> GetCityProfileAsync(int cityId, DataAccessCity.User user);
 
         /// <summary>
         /// Get a list of members of a specific city

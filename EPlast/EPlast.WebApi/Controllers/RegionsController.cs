@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -18,17 +20,19 @@ namespace EPlast.WebApi.Controllers
         private readonly IRegionService _regionService;
         private readonly IRegionAdministrationService _regionAdministrationService;
         private readonly IRegionAnnualReportService _RegionAnnualReportService;
+        private readonly UserManager<User> _userManager;
 
         public RegionsController(ILoggerService<CitiesController> logger,
             IRegionService regionService,
             IRegionAdministrationService regionAdministrationService,
-            IRegionAnnualReportService RegionAnnualReportService)
+            IRegionAnnualReportService RegionAnnualReportService,
+            UserManager<User> userManager)
         {
             _logger = logger;
             _regionService = regionService;
             _regionAdministrationService = regionAdministrationService;
             _RegionAnnualReportService = RegionAnnualReportService;
-
+            _userManager = userManager;
         }
 
         [HttpGet("Profiles")]
@@ -109,7 +113,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                var region = await _regionService.GetRegionProfileByIdAsync(regionId, User);
+                var region = await _regionService.GetRegionProfileByIdAsync(regionId, await _userManager.GetUserAsync(User));
                 if (region == null)
                 {
                     return NotFound();
@@ -300,7 +304,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetAllRegionAnnualReports()
         {
             return StatusCode(StatusCodes.Status200OK,
-                new { annualReports = await _RegionAnnualReportService.GetAllAsync(User) });
+                new { annualReports = await _RegionAnnualReportService.GetAllAsync(await _userManager.GetUserAsync(User)) });
         }
 
         /// <summary>
@@ -320,7 +324,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                var annualreport = await _RegionAnnualReportService.CreateByNameAsync(User, id, year, regionAnnualReportQuestions);
+                var annualreport = await _RegionAnnualReportService.CreateByNameAsync(await _userManager.GetUserAsync(User), id, year, regionAnnualReportQuestions);
                 return StatusCode(StatusCodes.Status200OK, annualreport);
             }
             catch (NullReferenceException)

@@ -4,24 +4,27 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.BLL.Services.Distinctions
 {
     public class UserDistinctionService : IUserDistinctionService
     {
         private readonly IMapper _mapper;
-        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly IRepositoryWrapper _repoWrapper; 
+        private readonly UserManager<User> _userManager;
 
-        public UserDistinctionService(IMapper mapper, IRepositoryWrapper repoWrapper)
+        public UserDistinctionService(IMapper mapper, IRepositoryWrapper repoWrapper, UserManager<User> userManager)
         {
             _mapper = mapper;
             _repoWrapper = repoWrapper;
+            _userManager = userManager;
         }
-        public async Task AddUserDistinctionAsync(UserDistinctionDTO userDistinctionDTO, ClaimsPrincipal user)
+        public async Task AddUserDistinctionAsync(UserDistinctionDTO userDistinctionDTO, User user)
         {
-            CheckIfAdmin(user);
+            await CheckIfAdminAsync(user);
             var userDistinction = new UserDistinction()
             {
                 UserId = userDistinctionDTO.UserId,
@@ -35,9 +38,9 @@ namespace EPlast.BLL.Services.Distinctions
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task ChangeUserDistinctionAsync(UserDistinctionDTO userDistinctionDTO, ClaimsPrincipal user)
+        public async Task ChangeUserDistinctionAsync(UserDistinctionDTO userDistinctionDTO, User user)
         {
-            CheckIfAdmin(user);
+            await CheckIfAdminAsync(user);
             var userDistinction = new UserDistinction()
             {
                 Id = userDistinctionDTO.Id,
@@ -52,9 +55,9 @@ namespace EPlast.BLL.Services.Distinctions
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task DeleteUserDistinctionAsync(int id, ClaimsPrincipal user)
+        public async Task DeleteUserDistinctionAsync(int id, User user)
         {
-            CheckIfAdmin(user);
+            await CheckIfAdminAsync(user);
             var userDistinction = await _repoWrapper.UserDistinction.GetFirstOrDefaultAsync(d => d.Id == id);
             if (userDistinction == null)
                 throw new NotImplementedException();
@@ -95,9 +98,9 @@ namespace EPlast.BLL.Services.Distinctions
             return distNum != null;
         }
 
-        public void CheckIfAdmin(ClaimsPrincipal user)
+        public async Task CheckIfAdminAsync(User user)
         {
-            if (!user.IsInRole("Admin"))
+            if (!(await _userManager.GetRolesAsync(user)).Contains("Admin"))
                 throw new UnauthorizedAccessException();
         }
 

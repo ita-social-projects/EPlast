@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,7 +28,7 @@ namespace EPlast.BLL.Services.Club
 
         ///<inheritdoc/>
 
-        public async Task<ClubAnnualReportDTO> GetByIdAsync(ClaimsPrincipal claimsPrincipal, int id)
+        public async Task<ClubAnnualReportDTO> GetByIdAsync(User user, int id)
         {
             var clubAnnualReport = await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == id,
@@ -43,12 +42,12 @@ namespace EPlast.BLL.Services.Club
                         .Include(ca => ca.Club)
                             .ThenInclude(cm => cm.ClubMembers)
                                 .ThenInclude(mc => mc.User));
-            return await _clubAccessService.HasAccessAsync(claimsPrincipal, clubAnnualReport.ClubId) ? _mapper.Map<ClubAnnualReport, ClubAnnualReportDTO>(clubAnnualReport)
+            return await _clubAccessService.HasAccessAsync(user, clubAnnualReport.ClubId) ? _mapper.Map<ClubAnnualReport, ClubAnnualReportDTO>(clubAnnualReport)
                 : throw new UnauthorizedAccessException();
         }
 
         ///<inheritdoc/>
-        public async Task<IEnumerable<ClubAnnualReportDTO>> GetAllAsync(ClaimsPrincipal claimsPrincipal)
+        public async Task<IEnumerable<ClubAnnualReportDTO>> GetAllAsync(User user)
         {
             var annualReports = await _repositoryWrapper.ClubAnnualReports.GetAllAsync(
                     include: source => source
@@ -59,7 +58,7 @@ namespace EPlast.BLL.Services.Club
             return _mapper.Map<IEnumerable<ClubAnnualReport>, IEnumerable<ClubAnnualReportDTO>>(annualReports);
         }
 
-        public async Task CreateAsync(ClaimsPrincipal claimsPrincipal, ClubAnnualReportDTO clubAnnualReportDTO)
+        public async Task CreateAsync(User user, ClubAnnualReportDTO clubAnnualReportDTO)
         {
             var club = await _repositoryWrapper.Club.GetFirstOrDefaultAsync(
                 predicate: a => a.ID == clubAnnualReportDTO.ClubId,
@@ -79,7 +78,7 @@ namespace EPlast.BLL.Services.Club
             {
                 throw new InvalidOperationException();
             }
-            if (!await _clubAccessService.HasAccessAsync(claimsPrincipal, club.ID))
+            if (!await _clubAccessService.HasAccessAsync(user, club.ID))
             {
                 throw new UnauthorizedAccessException();
             }
@@ -124,11 +123,11 @@ namespace EPlast.BLL.Services.Club
         }
 
         ///<inheritdoc/>
-        public async Task ConfirmAsync(ClaimsPrincipal claimsPrincipal, int id)
+        public async Task ConfirmAsync(User user, int id)
         {
             var clubAnnualReport = await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed);
-            if (!await _clubAccessService.HasAccessAsync(claimsPrincipal, clubAnnualReport.ClubId))
+            if (!await _clubAccessService.HasAccessAsync(user, clubAnnualReport.ClubId))
             {
                 throw new UnauthorizedAccessException();
             }
@@ -151,11 +150,11 @@ namespace EPlast.BLL.Services.Club
         }
 
         ///<inheritdoc/>
-        public async Task CancelAsync(ClaimsPrincipal claimsPrincipal, int id)
+        public async Task CancelAsync(User user, int id)
         {
             var clubAnnualReport = await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == id && a.Status == AnnualReportStatus.Confirmed);
-            if (!await _clubAccessService.HasAccessAsync(claimsPrincipal, clubAnnualReport.ClubId))
+            if (!await _clubAccessService.HasAccessAsync(user, clubAnnualReport.ClubId))
             {
                 throw new UnauthorizedAccessException();
             }
@@ -165,11 +164,11 @@ namespace EPlast.BLL.Services.Club
         }
 
         ///<inheritdoc/>
-        public async Task DeleteClubReportAsync(ClaimsPrincipal claimsPrincipal, int id)
+        public async Task DeleteClubReportAsync(User user, int id)
         {
             var clubAnnualReport = await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed);
-            if (!await _clubAccessService.HasAccessAsync(claimsPrincipal, clubAnnualReport.ClubId))
+            if (!await _clubAccessService.HasAccessAsync(user, clubAnnualReport.ClubId))
             {
                 throw new UnauthorizedAccessException();
             }
@@ -178,20 +177,20 @@ namespace EPlast.BLL.Services.Club
         }
 
         ///<inheritdoc/>
-        public async Task EditClubReportAsync(ClaimsPrincipal claimsPrincipal, ClubAnnualReportDTO clubAnnualReportDTO)
+        public async Task EditClubReportAsync(User user, ClubAnnualReportDTO clubAnnualReportDto)
         {
             var clubAnnualReport = await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(
-                    predicate: a => a.ClubId == clubAnnualReportDTO.ClubId
+                    predicate: a => a.ClubId == clubAnnualReportDto.ClubId
                       && a.Status == AnnualReportStatus.Unconfirmed);
-            if (clubAnnualReportDTO.Status != AnnualReportStatus.Unconfirmed)
+            if (clubAnnualReportDto.Status != AnnualReportStatus.Unconfirmed)
             {
                 throw new InvalidOperationException();
             }
-            if (!await _clubAccessService.HasAccessAsync(claimsPrincipal, clubAnnualReport.ClubId))
+            if (!await _clubAccessService.HasAccessAsync(user, clubAnnualReport.ClubId))
             {
                 throw new UnauthorizedAccessException();
             }
-            clubAnnualReport = _mapper.Map<ClubAnnualReportDTO, ClubAnnualReport>(clubAnnualReportDTO);
+            clubAnnualReport = _mapper.Map<ClubAnnualReportDTO, ClubAnnualReport>(clubAnnualReportDto);
             _repositoryWrapper.ClubAnnualReports.Update(clubAnnualReport);
             await _repositoryWrapper.SaveAsync();
         }
