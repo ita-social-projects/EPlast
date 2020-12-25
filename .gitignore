@@ -382,3 +382,5 @@ EPlast/EPlast/wwwroot/images/Club/*
 # don't checkin azurekeyvault.json
 **/azurekeyvault.json
 /EPlast/EPlast/package-lock.json
+/EPlast/EPlast.sln - Ярлик.lnk
+/EPlast/zzz_Start.bat - Ярлик.lnk
