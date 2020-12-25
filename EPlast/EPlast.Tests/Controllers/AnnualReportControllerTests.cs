@@ -16,6 +16,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.Interfaces.Club;
+using System.Linq;
+using EPlast.BLL.ExtensionMethods;
 
 namespace EPlast.Tests.Controllers
 {
@@ -51,6 +53,7 @@ namespace EPlast.Tests.Controllers
             );
 
 
+
         [Test]
         public async Task Get_Valid_Test()
         {
@@ -63,14 +66,13 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status200OK;
             var result = await annualController.Get();
             var actual = (result as ObjectResult).StatusCode;
+            
             // Assert
-
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
             Assert.IsInstanceOf<ObjectResult>(result);
 
         }
-
 
         [Test]
         public async Task Get_Invalid_NullRefException_Test()
@@ -144,8 +146,6 @@ namespace EPlast.Tests.Controllers
         }
 
 
-
-
         [Test]
         public async Task GetWithparam_Valid_Test()
         {
@@ -171,6 +171,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<ObjectResult>(result);
 
         }
+
 
 
 
@@ -260,8 +261,6 @@ namespace EPlast.Tests.Controllers
         }
 
 
-
-
         [Test]
         public async Task Create_Invalid_UnAuthorisedException_Test()
         {
@@ -298,7 +297,6 @@ namespace EPlast.Tests.Controllers
         }
 
 
-
         [Test]
         public async Task Create_Invalid_NullReferenceFoundException_Test()
         {
@@ -332,7 +330,6 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<ObjectResult>(result);
 
         }
-
 
 
 
@@ -386,7 +383,6 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
 
         }
-
 
 
         [Test]
@@ -492,6 +488,8 @@ namespace EPlast.Tests.Controllers
         }
 
 
+
+
         [Test]
         public async Task Confirm_Valid_Test()
         {
@@ -522,7 +520,6 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<ObjectResult>(result);
 
         }
-
 
 
         [Test]
@@ -690,6 +687,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<ObjectResult>(result);
 
         }
+
 
 
 
@@ -870,7 +868,6 @@ namespace EPlast.Tests.Controllers
         }
 
 
-
         [Test]
         public async Task CheckCreated_Invalid_UnauthorizedAccessException_Test()
         {
@@ -901,7 +898,33 @@ namespace EPlast.Tests.Controllers
 
 
 
-         
+
+        [Test]
+        public async Task GetStatuses_Valid_Test()
+        {
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            // Act
+            var result = annualController.GetStatuses();
+            var expected = StatusCodes.Status200OK;
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(actual, expected);
+            Assert.IsInstanceOf<ObjectResult>(result);
+
+            var statuses = new List<string>();
+            foreach (var enumValue in Enum.GetValues(typeof(AnnualReportStatusDTO)).Cast<AnnualReportStatusDTO>())
+            {
+                statuses.Add(enumValue.GetDescription());
+            }
+
+            //TO DO: ensure, that result is AnnualReportStatusDTO type
+            var w = (result as ObjectResult).Value;
+        }
+
+
         private LocalizedString GetDeleted()
         {
             var localizedString = new LocalizedString("Deleted",
