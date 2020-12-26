@@ -15,6 +15,7 @@ using Moq;
 using NUnit.Framework;
 using System.Threading.Tasks;
 using EPlast.BLL.Interfaces.Resources;
+using EPlast.BLL.Interfaces.Jwt;
 
 namespace EPlast.Tests.Controllers
 {
@@ -111,6 +112,41 @@ namespace EPlast.Tests.Controllers
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
             Assert.AreEqual(GetAccountLocked().ToString(), result.Value.ToString());
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task Test_LoginPost_Succeeded()
+        {
+            //Arrange
+            var (mockAuthService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+
+            mockAuthService
+                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
+
+            mockAuthService
+                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(true);
+
+            mockAuthService
+                .Setup(s => s.SignInAsync(It.IsAny<LoginDto>()))
+                .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
+            
+            Mock<IJwtService> _jwtService = new Mock<IJwtService>();
+
+            _jwtService
+                .Setup(s => s.GenerateJWTTokenAsync(new UserDTO()))
+                .ReturnsAsync(It.IsAny<string>);
+
+            //Act
+            var expected = StatusCodes.Status200OK;
+            var result = await AuthController.Login(GetTestLoginDto());
+            var actual = (result as ObjectResult).StatusCode;
+
+            //Assert
+            Assert.IsInstanceOf<ObjectResult>(result);
+            Assert.AreEqual(actual, expected);
             Assert.NotNull(result);
         }
 
