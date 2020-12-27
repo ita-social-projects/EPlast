@@ -154,7 +154,7 @@ namespace EPlast.Tests.Controllers
             int documentId = 1;
             _mockBiographyService
                 .Setup(x => x.DeleteFileAsync(documentId));
-            
+
             //Act
             var document = await _blanksController.RemoveDocument(documentId);
             var statusCodeDocument = document as StatusCodeResult;
@@ -303,5 +303,17 @@ namespace EPlast.Tests.Controllers
 
             };
         }
+        [Test]
+        public async Task GetPdfService_ReturnsObjRes()
+        {
+            _pdfService
+                .Setup(p => p.BlankCreatePDFAsync(It.IsAny<string>()));
+            var result = await _blanksController.GetGenerationFile(It.IsAny<string>());
+            _pdfService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+         
+        }
+        
     }
 }
