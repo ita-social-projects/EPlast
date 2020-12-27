@@ -25,14 +25,12 @@ namespace EPlast.Tests.Controllers
 {
     class AnnualReportControllerTest
     {
-
         private readonly Mock<IAnnualReportService> _annualReportService;
         private readonly Mock<IClubAnnualReportService> _clubAnnualReportService;
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<ILoggerService<AnnualReportController>> _loggerService;
         private readonly Mock<IStringLocalizer<AnnualReportControllerMessage>> _localizer;
         private readonly Mock<UserManager<User>> _userManager;
-
 
         public AnnualReportControllerTest()
         {
@@ -54,11 +52,10 @@ namespace EPlast.Tests.Controllers
             _mapper.Object
             );
 
-
-
         [Test]
         public async Task Get_Valid_Test()
         {
+            // Arrange
             _annualReportService.Setup(a => a.GetAllAsync(It.IsAny<User>()))
                .ReturnsAsync(new List<AnnualReportDTO>());
 
@@ -73,13 +70,11 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
             Assert.IsInstanceOf<ObjectResult>(result);
-
         }
 
         [Test]
         public async Task Get_Invalid_NullRefException_Test()
         {
-
             _annualReportService.Setup(a => a.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
                .Throws(new NullReferenceException());
 
@@ -172,8 +167,6 @@ namespace EPlast.Tests.Controllers
 
         }
 
-
-
         [Test]
         public async Task Create_Valid_Test()
         {
@@ -257,7 +250,6 @@ namespace EPlast.Tests.Controllers
 
         }
 
-
         [Test]
         public async Task Create_Invalid_UnAuthorisedException_Test()
         {
@@ -293,7 +285,6 @@ namespace EPlast.Tests.Controllers
 
         }
 
-
         [Test]
         public async Task Create_Invalid_NullReferenceFoundException_Test()
         {
@@ -327,8 +318,6 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<ObjectResult>(result);
 
         }
-
-
 
         [Test]
         public async Task Edit_Valid_Test()
@@ -479,12 +468,9 @@ namespace EPlast.Tests.Controllers
 
         }
 
-
-
         [Test]
         public async Task Confirm_Valid_Test()
         {
-
             _annualReportService.Setup(a => a.ConfirmAsync(It.IsAny<User>(), It.IsAny<int>()));
 
             _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
@@ -498,7 +484,6 @@ namespace EPlast.Tests.Controllers
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
-
             var result = await annualController.Confirm(5);
             var expected = StatusCodes.Status200OK;
             var actual = (result as ObjectResult).StatusCode;
@@ -509,7 +494,6 @@ namespace EPlast.Tests.Controllers
             _localizer
               .Verify(s => s["Confirmed"]);
             Assert.IsInstanceOf<ObjectResult>(result);
-
         }
 
         [Test]
@@ -577,8 +561,6 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<ObjectResult>(result);
 
         }
-
-
 
         [Test]
         public async Task Cancel_Valid_Test()
@@ -674,8 +656,6 @@ namespace EPlast.Tests.Controllers
 
         }
 
-
-
         [Test]
         public async Task Delete_Valid_Test()
         {
@@ -767,8 +747,6 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<ObjectResult>(result);
 
         }
-
-
 
         [Test]
         public async Task CheckCreated_Valid_Test()
@@ -875,11 +853,10 @@ namespace EPlast.Tests.Controllers
 
         }
 
-
-
         [Test]
         public void GetStatuses_Valid_Test()
         {
+            // Arrange
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
@@ -891,22 +868,12 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.AreEqual(actual, expected);
             Assert.IsInstanceOf<ObjectResult>(result);
-
-            var statuses = new List<string>();
-            foreach (var enumValue in Enum.GetValues(typeof(AnnualReportStatusDTO)).Cast<AnnualReportStatusDTO>())
-            {
-                statuses.Add(enumValue.GetDescription());
-            }
-
-            //TO DO: ensure, that result is AnnualReportStatusDTO type
-            //var w = (result as ObjectResult).Value;
         }
-
-
 
         [Test]
         public async Task GetAllClubAnnualReports_Valid_Test()
         {
+            // Arrange
             _annualReportService.Setup(a => a.GetAllAsync(It.IsAny<User>()))
               .ReturnsAsync(new List<AnnualReportDTO>());
 
@@ -923,11 +890,10 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<ObjectResult>(result);
         }
 
-
-
         [Test]
         public async Task GetClubAnnualReportById_Valid_Test()
         {
+            // Arrange
             _clubAnnualReportService.Setup(a => a.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
                 .ReturnsAsync(new ClubAnnualReportDTO());
 
@@ -947,8 +913,10 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task GetClubAnnualReportById_Invalid_NUllReferenceException_Test()
         {
+            // Arrange
             _clubAnnualReportService.Setup(a => a.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
                .Throws(new NullReferenceException());
+
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
@@ -965,10 +933,9 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task GetClubAnnualReportById_Invalid_UnauthorisedAccessException_Test()
         {
-
+            // Arrange
             _clubAnnualReportService.Setup(a => a.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
                .Throws(new UnauthorizedAccessException());
-
             _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
             AnnualReportController annualReportController = CreateAnnualReportController;
@@ -982,23 +949,19 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
             Assert.IsInstanceOf<StatusCodeResult>(result);
-
         }
-
-
 
         [Test]
         public async Task CreateClubAnnualReport_Valid_Test()
         {
-
+            // Arrange
             _clubAnnualReportService.Setup(a => a.CreateAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDTO>()));
-
             _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
             AnnualReportController _annualReportController = CreateAnnualReportController;
+            var _clubAnnualReportViewModel = new ClubAnnualReportViewModel();
 
             // Act
-            var _clubAnnualReportViewModel = new ClubAnnualReportViewModel();
             var result = await _annualReportController.CreateClubAnnualReport(_clubAnnualReportViewModel);
             var expected = StatusCodes.Status201Created;
             var actual = (result as StatusCodeResult).StatusCode;
@@ -1007,17 +970,17 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
             Assert.IsInstanceOf<StatusCodeResult>(result);
-
         }
 
         [Test]
         public async Task CreateClubAnnualReport_Invalid_InvalidModelState_Test()
         {
+            // Arrange
             AnnualReportController _annualReportController = CreateAnnualReportController;
-
-            // Act
             var _clubAnnualReportViewModel = new ClubAnnualReportViewModel();
             _annualReportController.ModelState.AddModelError("NameError", "Required");
+
+            // Act
             var result = await _annualReportController.CreateClubAnnualReport(_clubAnnualReportViewModel);
 
             // Assert
@@ -1028,14 +991,14 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task CreateClubAnnualReport_Invalid_InvalidOperationException_Test()
         {
-
+            // Arrange
             _clubAnnualReportService.Setup(a => a.CreateAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDTO>()))
                 .Throws(new InvalidOperationException());
 
             AnnualReportController _annualReportController = CreateAnnualReportController;
+            var _clubAnnualReportViewModel = new ClubAnnualReportViewModel();
 
             // Act
-            var _clubAnnualReportViewModel = new ClubAnnualReportViewModel();
             var result = await _annualReportController.CreateClubAnnualReport(_clubAnnualReportViewModel);
             var expected = StatusCodes.Status400BadRequest;
             var actual = (result as StatusCodeResult).StatusCode;
@@ -1049,7 +1012,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task CreateClubAnnualReport_Invalid_NullReferenceFoundException_Test()
         {
-
+            // Arrange
             _clubAnnualReportService.Setup(a => a.CreateAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDTO>()))
                 .Throws(new NullReferenceException());
 
@@ -1061,21 +1024,17 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status404NotFound;
             var actual = (result as StatusCodeResult).StatusCode;
 
-
             // Assert
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
             Assert.IsInstanceOf<StatusCodeResult>(result);
         }
 
-
-
         [Test]
         public async Task ConfirmClubAnnualReport_Valid_Test()
         {
-
+            // Arrange
             _clubAnnualReportService.Setup(a => a.ConfirmAsync(It.IsAny<User>(), It.IsAny<int>()));
-
             _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
             AnnualReportController _annualReportController = CreateAnnualReportController;
@@ -1094,6 +1053,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task ConfirmClubAnnualReport_Invalid_NullReferenceFoundException_Test()
         {
+            // Arrange
             _clubAnnualReportService.Setup(a => a.ConfirmAsync(It.IsAny<User>(), It.IsAny<int>()))
                 .Throws(new NullReferenceException());
 
@@ -1113,9 +1073,9 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task ConfirmClubAnnualReport_Invalid_UnauthorisedAccessException_Test()
         {
+            // Arrange
             _clubAnnualReportService.Setup(a => a.ConfirmAsync(It.IsAny<User>(), It.IsAny<int>()))
                .Throws(new UnauthorizedAccessException());
-
             _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
             AnnualReportController annualReportController = CreateAnnualReportController;
@@ -1131,13 +1091,11 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<StatusCodeResult>(result);
         }
 
-
-
         [Test]
         public async Task CancelClubAnnualReport_Valid_Test()
         {
+            // Arrange
             _clubAnnualReportService.Setup(a => a.CancelAsync(It.IsAny<User>(), It.IsAny<int>()));
-
             _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
             AnnualReportController annualController = CreateAnnualReportController;
@@ -1156,6 +1114,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task CancelClubAnnualReport_Invalid_NullReferenceFoundException_Test()
         {
+            // Arrange
             _clubAnnualReportService.Setup(a => a.CancelAsync(It.IsAny<User>(), It.IsAny<int>()))
                 .Throws(new NullReferenceException());
 
@@ -1175,9 +1134,9 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task CancelClubAnnualReport_Invalid_UnauthorisedAccessException_Test()
         {
+            // Arrange
             _clubAnnualReportService.Setup(a => a.CancelAsync(It.IsAny<User>(), It.IsAny<int>()))
                 .Throws(new UnauthorizedAccessException());
-
             _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
             AnnualReportController annualReportController = CreateAnnualReportController;
@@ -1193,13 +1152,11 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<StatusCodeResult>(result);
         }
 
-
-
         [Test]
         public async Task DeleteClubAnnualReport_Valid_Test()
         {
+            // Arrange
             _clubAnnualReportService.Setup(a => a.DeleteClubReportAsync(It.IsAny<User>(), It.IsAny<int>()));
-
             _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
             AnnualReportController annualController = CreateAnnualReportController;
@@ -1218,6 +1175,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task DeleteClubAnnualReport_Invalid_NullReferenceFoundException_Test()
         {
+            // Arrange
             _clubAnnualReportService.Setup(a => a.DeleteClubReportAsync(It.IsAny<User>(), It.IsAny<int>()))
                 .Throws(new NullReferenceException());
 
@@ -1237,9 +1195,9 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task DeleteClubAnnualReport_Invalid_UnauthorisedAccessException_Test()
         {
+            // Arrange
             _clubAnnualReportService.Setup(a => a.DeleteClubReportAsync(It.IsAny<User>(), It.IsAny<int>()))
                 .Throws(new UnauthorizedAccessException());
-
             _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
             AnnualReportController annualReportController = CreateAnnualReportController;
@@ -1255,13 +1213,11 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<StatusCodeResult>(result);
         }
 
-
-
         [Test]
         public async Task EditClubAnnualReport_Valid_Test()
         {
+            // Arrange
             _clubAnnualReportService.Setup(a => a.EditClubReportAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDTO>()));
-
             _clubAnnualReportService.Setup(a => a.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
                .ReturnsAsync(new ClubAnnualReportDTO());
 
@@ -1280,13 +1236,14 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task EditClubAnnualReport_Invalid_InvalidModelState_Test()
+        public async Task EditClubAnnualReport_Invalid_BadRequestObjectResult_Test()
         {
+            // Arrange
             AnnualReportController _annualReportController = CreateAnnualReportController;
-
-            // Act
             ClubAnnualReportDTO _clubAnnualReportViewModel = new ClubAnnualReportDTO();
             _annualReportController.ModelState.AddModelError("NameError", "Required");
+
+            // Act
             var result = await _annualReportController.EditClubAnnualReport(_clubAnnualReportViewModel);
 
             // Assert
@@ -1297,6 +1254,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task EditClubAnnualReport_Invalid_NullReferenceFoundException_Test()
         {
+            // Arrange
             _clubAnnualReportService.Setup(a => a.EditClubReportAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDTO>()))
                 .Throws(new NullReferenceException());
 
@@ -1317,9 +1275,9 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task EditClubAnnualReport_Invalid_UnauthorisedAccessException_Test()
         {
+            // Arrange
             _clubAnnualReportService.Setup(a => a.EditClubReportAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDTO>()))
                 .Throws(new UnauthorizedAccessException());
-
             _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
             AnnualReportController annualController = CreateAnnualReportController;
@@ -1335,8 +1293,6 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expected, actual);
             Assert.IsInstanceOf<StatusCodeResult>(result);
         }
-
-
 
         private LocalizedString GetDeleted()
         {
