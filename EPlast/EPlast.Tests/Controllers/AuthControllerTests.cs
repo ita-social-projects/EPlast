@@ -150,23 +150,6 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
         }
 
-        //[Test]
-        //public void Test_GetGoogleClientId()
-        //{
-        //    //Arrange
-        //    var (mockAuthService, moskJwtService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
-
-        //    //Act
-        //    var expected = StatusCodes.Status200OK;
-        //    var result = AuthController.GetGoogleClientId();
-        //    var actual = (result as StatusCodeResult).StatusCode;
-
-        //    //Assert
-        //    Assert.IsInstanceOf<StatusCodeResult>(result);
-        //    Assert.AreEqual(actual, expected);
-        //    Assert.NotNull(result);
-        //}
-
         [Test]
         public async Task Test_LoginPost_LoginInCorrectPassword()
         {
