@@ -20,7 +20,6 @@ namespace EPlast.DataAccess.Entities
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
         public string Link { get; set; }
-       
         public string Logo { get; set; }
         public string Street { get; set; }
         public string HouseNumber { get; set; }
