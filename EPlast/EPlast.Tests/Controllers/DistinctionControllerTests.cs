@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
 using Moq;
 using EPlast.BLL;
-using AutoMapper;
 using EPlast.WebApi.Controllers;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-using EPlast.DataAccess.Entities.UserEntities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc.Controllers;
-using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.Tests.Controllers
 {
@@ -22,7 +19,7 @@ namespace EPlast.Tests.Controllers
     {
         private Mock<IDistinctionService> _distinctionService;
         private Mock<IUserDistinctionService> _userDistinctionService;
-        private Mock<IMapper> _mapper;
+        private Mock<UserManager<User>> _userManager;
 
         private DistinctionController _distinctionController;
         
@@ -31,11 +28,13 @@ namespace EPlast.Tests.Controllers
         {
             _distinctionService = new Mock<IDistinctionService>();
             _userDistinctionService = new Mock<IUserDistinctionService>();
-            _mapper = new Mock<IMapper>();
+            var store = new Mock<IUserStore<User>>();
+            _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
 
             _distinctionController = new DistinctionController(
                 _distinctionService.Object,
-                _userDistinctionService.Object
+                _userDistinctionService.Object,
+                _userManager.Object
                 );
         }
 
@@ -173,7 +172,7 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             _distinctionController.ControllerContext = context;
             _distinctionService
-                .Setup(x => x.DeleteDistinctionAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()));
+                .Setup(x => x.DeleteDistinctionAsync(It.IsAny<int>(), It.IsAny<User>()));
             //Act
             var result = await _distinctionController.DeleteDistinction(It.IsAny<int>());
             //Assert
@@ -196,7 +195,7 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             _distinctionController.ControllerContext = context;
             _userDistinctionService
-                .Setup(x => x.DeleteUserDistinctionAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()));
+                .Setup(x => x.DeleteUserDistinctionAsync(It.IsAny<int>(), It.IsAny<User>()));
             //Act
             var result = await _distinctionController.DeleteUserDistinction(It.IsAny<int>());
             //Assert
@@ -219,7 +218,7 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             _distinctionController.ControllerContext = context;
             _userDistinctionService
-                .Setup(x => x.AddUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), It.IsAny<ClaimsPrincipal>()));
+                .Setup(x => x.AddUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), It.IsAny<User>()));
             //Act
             var result = await _distinctionController.AddUserDistinction(It.IsAny<UserDistinctionDTO>());
             //Assert
@@ -243,7 +242,7 @@ namespace EPlast.Tests.Controllers
             _distinctionController.ControllerContext = context;
             _distinctionController.ModelState.AddModelError("firstName", "First Name field is required");
             _userDistinctionService
-                .Setup(x => x.AddUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), It.IsAny<ClaimsPrincipal>()));
+                .Setup(x => x.AddUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), It.IsAny<User>()));
             //Act
             var result = await _distinctionController.AddUserDistinction(It.IsAny<UserDistinctionDTO>());
             //Assert
@@ -266,7 +265,7 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             _distinctionController.ControllerContext = context;
             _distinctionService
-                .Setup(x => x.AddDistinctionAsync(It.IsAny<DistinctionDTO>(), It.IsAny<ClaimsPrincipal>()));
+                .Setup(x => x.AddDistinctionAsync(It.IsAny<DistinctionDTO>(), It.IsAny<User>()));
             //Act
             var result = await _distinctionController.AddDistinction(It.IsAny<DistinctionDTO>());
             //Assert
@@ -290,7 +289,7 @@ namespace EPlast.Tests.Controllers
             _distinctionController.ControllerContext = context;
             _distinctionController.ModelState.AddModelError("name", "Name field is required");
             _distinctionService
-                .Setup(x => x.AddDistinctionAsync(It.IsAny<DistinctionDTO>(), It.IsAny<ClaimsPrincipal>()));
+                .Setup(x => x.AddDistinctionAsync(It.IsAny<DistinctionDTO>(), It.IsAny<User>()));
             //Act
             var result = await _distinctionController.AddDistinction(It.IsAny<DistinctionDTO>());
             //Assert
@@ -313,7 +312,7 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             _distinctionController.ControllerContext = context;
             _userDistinctionService
-                .Setup(x => x.ChangeUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), It.IsAny<ClaimsPrincipal>()));
+                .Setup(x => x.ChangeUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), It.IsAny<User>()));
             //Act
             var result = await _distinctionController.EditUserDistinction(It.IsAny<UserDistinctionDTO>());
             //Assert
@@ -337,7 +336,7 @@ namespace EPlast.Tests.Controllers
             _distinctionController.ControllerContext = context;
             _distinctionController.ModelState.AddModelError("firstName", "First Name field is required");
             _userDistinctionService
-                .Setup(x => x.ChangeUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), It.IsAny<ClaimsPrincipal>()));
+                .Setup(x => x.ChangeUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), It.IsAny<User>()));
             //Act
             var result = await _distinctionController.EditUserDistinction(It.IsAny<UserDistinctionDTO>());
             //Assert
@@ -360,7 +359,7 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             _distinctionController.ControllerContext = context;
             _distinctionService
-                .Setup(x => x.ChangeDistinctionAsync(It.IsAny<DistinctionDTO>(), It.IsAny<ClaimsPrincipal>()));
+                .Setup(x => x.ChangeDistinctionAsync(It.IsAny<DistinctionDTO>(), It.IsAny<User>()));
             //Act
             var result = await _distinctionController.EditDistinction(It.IsAny<DistinctionDTO>());
             //Assert
@@ -384,7 +383,7 @@ namespace EPlast.Tests.Controllers
             _distinctionController.ControllerContext = context;
             _distinctionController.ModelState.AddModelError("name", "Name field is required");
             _distinctionService
-                .Setup(x => x.ChangeDistinctionAsync(It.IsAny<DistinctionDTO>(), It.IsAny<ClaimsPrincipal>()));
+                .Setup(x => x.ChangeDistinctionAsync(It.IsAny<DistinctionDTO>(), It.IsAny<User>()));
             //Act
             var result = await _distinctionController.EditDistinction(It.IsAny<DistinctionDTO>());
             //Assert

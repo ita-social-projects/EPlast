@@ -74,7 +74,7 @@ namespace EPlast.BLL.Interfaces.Club
         /// <param name="user">Current user</param>
         /// <returns>An information about a new follower</returns>
         /// See <see cref="IClubParticipantsService.AddFollowerAsync(int, string)"/> to add user by id
-        Task<ClubMembersDTO> AddFollowerAsync(int ClubId, ClaimsPrincipal user);
+        Task<ClubMembersDTO> AddFollowerAsync(int ClubId, User user);
 
         /// <summary>
         /// Toggle approve status of a specific member

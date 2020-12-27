@@ -1,9 +1,13 @@
-﻿namespace EPlast.BLL.DTO.Events
+﻿using EPlast.DataAccess.Entities.Event;
+using System.Collections.Generic;
+
+namespace EPlast.BLL.DTO.Events
 {
     public class GeneralEventDTO
     {
         public int EventId { get; set; }
         public string EventName { get; set; }
+        public ICollection<EventAdministration> EventAdmins { get; set; }
         public bool IsUserEventAdmin { get; set; }
         public bool IsUserParticipant { get; set; }
         public bool IsUserApprovedParticipant { get; set; }

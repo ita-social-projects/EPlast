@@ -22,7 +22,7 @@ namespace EPlast.Tests.Controllers
         private readonly Mock<IUserManagerService> _userManagerService;
         private readonly Mock<IAdminService> _adminService;
         private readonly Mock<ICityService> _cityService;
-        private readonly Mock<ICityAdministrationService> _cityAdministrationService;
+        private readonly Mock<ICityParticipantsService> _cityAdministrationService;
 
         public AdminControllerTest()
         {
@@ -30,7 +30,7 @@ namespace EPlast.Tests.Controllers
             _userManagerService = new Mock<IUserManagerService>();
             _adminService = new Mock<IAdminService>();
             _cityService = new Mock<ICityService>();
-            _cityAdministrationService = new Mock<ICityAdministrationService>();
+            _cityAdministrationService = new Mock<ICityParticipantsService>();
         }
 
 

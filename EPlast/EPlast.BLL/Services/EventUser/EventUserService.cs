@@ -9,7 +9,6 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.EventUser
@@ -37,11 +36,11 @@ namespace EPlast.BLL.Services.EventUser
             this.eventAdmininistrationManager = eventAdmininistrationManager;
         }
 
-        public async Task<EventUserDTO> EventUserAsync(string userId, ClaimsPrincipal user)
+        public async Task<EventUserDTO> EventUserAsync(string userId, User user)
         {
             if (string.IsNullOrEmpty(userId))
             {
-                userId = userManager.GetUserId(user);
+                userId = await userManager.GetUserIdAsync(user);
             }
 
             var userWithRoles = await userManager.FindByIdAsync(userId);

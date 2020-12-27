@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.BLL.Services.CityClub;
 using DataAccessClub = EPlast.DataAccess.Entities;
@@ -23,24 +22,24 @@ namespace EPlast.BLL.Services.Club
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _env;
-        private readonly IClubBlobStorageRepository _ClubBlobStorage;
-        private readonly IClubAccessService _ClubAccessService;
+        private readonly IClubBlobStorageRepository _clubBlobStorage;
+        private readonly IClubAccessService _clubAccessService;
         private readonly UserManager<DataAccessClub.User> _userManager;
         private readonly IUniqueIdService _uniqueId;
 
         public ClubService(IRepositoryWrapper repoWrapper,
             IMapper mapper,
             IWebHostEnvironment env,
-            IClubBlobStorageRepository ClubBlobStorage,
-            IClubAccessService ClubAccessService,
+            IClubBlobStorageRepository clubBlobStorage,
+            IClubAccessService clubAccessService,
             UserManager<DataAccessClub.User> userManager,
             IUniqueIdService uniqueId)
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
             _env = env;
-            _ClubBlobStorage = ClubBlobStorage;
-            _ClubAccessService = ClubAccessService;
+            _clubBlobStorage = clubBlobStorage;
+            _clubAccessService = clubAccessService;
             _userManager = userManager;
             _uniqueId = uniqueId;
         }
@@ -128,13 +127,14 @@ namespace EPlast.BLL.Services.Club
         }
 
         /// <inheritdoc />
-        public async Task<ClubProfileDTO> GetClubProfileAsync(int ClubId, ClaimsPrincipal user)
+        public async Task<ClubProfileDTO> GetClubProfileAsync(int ClubId, DataAccessClub.User user)
         {
             var ClubProfileDto = await GetClubProfileAsync(ClubId);
-            var userId = _userManager.GetUserId(user);
+            var userId = await _userManager.GetUserIdAsync(user);
+            var userRoles = await _userManager.GetRolesAsync(user);
 
-            ClubProfileDto.Club.CanCreate = user.IsInRole("Admin");
-            ClubProfileDto.Club.CanEdit = await _ClubAccessService.HasAccessAsync(user, ClubId);
+            ClubProfileDto.Club.CanCreate = userRoles.Contains("Admin");
+            ClubProfileDto.Club.CanEdit = await _clubAccessService.HasAccessAsync(user, ClubId);
             ClubProfileDto.Club.CanJoin = (await _repoWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(u => u.User.Id == userId && u.ClubId == ClubId)) == null;
 
@@ -158,8 +158,11 @@ namespace EPlast.BLL.Services.Club
             {
                 var userId = member.UserId;
                 var cityMembers = await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(a => a.UserId == userId);
+                if (cityMembers != null)
+                {
                 var city = await _repoWrapper.City.GetFirstAsync(a => a.ID == cityMembers.CityId);
                 member.User.CityName = city.Name.ToString();
+                }
             }
 
             var ClubProfileDto = new ClubProfileDTO
@@ -223,8 +226,11 @@ namespace EPlast.BLL.Services.Club
             {
                 var userId = admin.UserId;
                 var cityMembers = await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(a => a.UserId == userId);
-                var city = await _repoWrapper.City.GetFirstAsync(a => a.ID == cityMembers.CityId);
-                admin.User.CityName= city.Name.ToString();
+                if (cityMembers != null)
+                {
+                    var city = await _repoWrapper.City.GetFirstAsync(a => a.ID == cityMembers.CityId);
+                    admin.User.CityName = city.Name.ToString();
+                }
             }
 
             var ClubProfileDto = new ClubProfileDTO
@@ -260,7 +266,7 @@ namespace EPlast.BLL.Services.Club
         /// <inheritdoc />
         public async Task<string> GetLogoBase64(string logoName)
         {
-            var logoBase64 = await _ClubBlobStorage.GetBlobBase64Async(logoName);
+            var logoBase64 = await _clubBlobStorage.GetBlobBase64Async(logoName);
 
             return logoBase64;
         }
@@ -272,7 +278,7 @@ namespace EPlast.BLL.Services.Club
 
             if (Club.Logo != null)
             {
-                await _ClubBlobStorage.DeleteBlobAsync(Club.Logo);
+                await _clubBlobStorage.DeleteBlobAsync(Club.Logo);
             }
 
             _repoWrapper.Club.Delete(Club);
@@ -346,6 +352,11 @@ namespace EPlast.BLL.Services.Club
         /// <inheritdoc />
         public async Task<int> CreateAsync(ClubDTO model)
         {
+            if (await CheckCreated(model.Name))
+            {
+                throw new InvalidOperationException();
+            }
+
             await UploadPhotoAsync(model);
             var Club = CreateClubAsync(model);
 
@@ -354,6 +365,12 @@ namespace EPlast.BLL.Services.Club
             await _repoWrapper.SaveAsync();
 
             return Club.ID;
+        }
+
+        private async Task<bool> CheckCreated(string name)
+        {
+            return await _repoWrapper.Club.GetFirstOrDefaultAsync(
+                predicate: a => a.Name == name) != null;
         }
 
         /// <inheritdoc />
@@ -406,13 +423,13 @@ namespace EPlast.BLL.Services.Club
 
                 var fileName = $"{_uniqueId.GetUniqueId()}{extension}";
 
-                await _ClubBlobStorage.UploadBlobForBase64Async(logoBase64Parts[1], fileName);
+                await _clubBlobStorage.UploadBlobForBase64Async(logoBase64Parts[1], fileName);
                 club.Logo = fileName;
             }
 
             if (!string.IsNullOrEmpty(oldImageName))
             {
-                await _ClubBlobStorage.DeleteBlobAsync(oldImageName);
+                await _clubBlobStorage.DeleteBlobAsync(oldImageName);
             }
         }
     }

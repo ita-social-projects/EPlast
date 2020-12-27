@@ -7,7 +7,7 @@ namespace EPlast.BLL.Interfaces.Club
 {
     public interface IClubAccessService
     {
-        Task<IEnumerable<ClubDTO>> GetClubsAsync(ClaimsPrincipal claimsPrincipal);
-        Task<bool> HasAccessAsync(ClaimsPrincipal claimsPrincipal, int ClubId);
+        Task<IEnumerable<ClubDTO>> GetClubsAsync(DataAccess.Entities.User user);
+        Task<bool> HasAccessAsync(DataAccess.Entities.User user, int ClubId);
     }
 }
