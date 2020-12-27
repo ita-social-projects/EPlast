@@ -76,13 +76,12 @@ namespace EPlast.BLL.Services.ActiveMembership
         public async Task<bool> AddDateEntryAsync(string userId)
         {
             var userDto = await _userManagerService.FindByIdAsync(userId);
-
             if (userDto != null)
             {
                 UserMembershipDates userMembershipDates = new UserMembershipDates() 
                 {
                     UserId = userId, 
-                    DateEntry = userDto.RegistredOn,
+                    DateEntry = default,
                     DateOath = default, 
                     DateEnd = default
                 };
