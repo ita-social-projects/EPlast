@@ -28,7 +28,6 @@ namespace EPlast.Tests.Services.Decision
         private static Mock<IDecisionBlobStorageRepository> _decisionBlobStorage;
         private static Mock<IDecisionVmInitializer> _decisionVmCreator;
         private static Mock<IUniqueIdService> _uniqueId;
-        //private static Mock<IMapper> _mapper;
 
         private static DecisionService CreateDecisionService(int decisionId = 1)
         {
@@ -76,59 +75,69 @@ namespace EPlast.Tests.Services.Decision
         [Test]
         public void CreateDecisionTest()
         {
+            //Arrange
             _decisionService = CreateDecisionService();
             _repository.Setup(rep => rep.DecesionTarget.GetAllAsync(It.IsAny<Expression<Func<DecesionTarget, bool>>>(),
                     It.IsAny<Func<IQueryable<DecesionTarget>, IIncludableQueryable<DecesionTarget, object>>>()))
                 .ReturnsAsync(GetTestDecisionTargetsQueryable);
           
+            //Act
             var decision = _decisionService.CreateDecision();
+
+            //Assert
             Assert.IsNotNull(decision);
             Assert.IsInstanceOf<DecisionWrapperDTO>(decision);
         }
-        /*
-          mapper.Setup(m => m.Map<DecisionDTO>(It.IsAny<DecisionDTO>())).Returns(new DecisionDTO());
-          */
+     
         [Theory]
         [TestCase(1)]
         [TestCase(2)]
         [TestCase(3)]
-        public async Task GetDecisionTest(int decisionId)
+        public async Task GetDecisionTest_ReturnsObj(int decisionId)
         {
+            //Arrange
             _decisionService = CreateDecisionService(decisionId);
             _repository.Setup(x => x.Decesion.GetFirstAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
                 It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
                 .ReturnsAsync(new Decesion());
-
-           
+            
+            //Act
             var decision = await _decisionService.GetDecisionAsync(decisionId);
+
+            //Assert
             Assert.IsInstanceOf<DecisionDTO>(decision);
             Assert.AreEqual(decisionId, decision.ID);
         }
 
-
-
         [Test]
         public async Task GetDecisionListTest()
         {
+            //Arrange
             _decisionService = CreateDecisionService();
             _repository.Setup(rep => rep.Decesion.GetAllAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
                     It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
                 .ReturnsAsync(GetTestDecesionQueryable().AsEnumerable);
 
+            //Act
             var decision = (await _decisionService.GetDecisionListAsync()).ToList();
 
+            //Assert
             Assert.IsInstanceOf<List<DecisionWrapperDTO>>(decision);
         }
 
         [Test]
         public async Task GetDecisionListCountTest()
         {
+            //Arrange
             _decisionService = CreateDecisionService();
             _repository.Setup(rep => rep.Decesion.GetAllAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
                     It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
                 .ReturnsAsync(GetTestDecesionQueryable());
+
+            //Act
             var decision = (await _decisionService.GetDecisionListAsync()).ToList();
 
+            //Assert
             Assert.AreEqual(GetTestDecisionsDtoList().Count, decision.Count);
         }
 
@@ -139,61 +148,38 @@ namespace EPlast.Tests.Services.Decision
         [TestCase("", "")]
         public async Task ChangeDecisionTest(string decisionNewName, string decisionNewDescription)
         {
+            //Arrange
             _decisionService = CreateDecisionService();
-
             _repository.Setup(rep => rep.Decesion.GetFirstAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
                     It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
                 .ReturnsAsync(GetTestDecesionQueryable().FirstOrDefault());
-            var changingDecisionDto = new DecisionDTO();
 
+            //Act
+            var changingDecisionDto = new DecisionDTO();
             changingDecisionDto.Name = decisionNewName;
             changingDecisionDto.Description = decisionNewDescription;
             await _decisionService.ChangeDecisionAsync(changingDecisionDto);
 
+            //Assert
             _repository.Verify(rep => rep.Decesion.GetFirstAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
                    It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()), Times.Once);
         }
         
-        
-       /* [TestCase("new name", "new text")]
-        [TestCase("", "new text")]
-        [TestCase("new name", "")]
-        [TestCase("", "")]
-        public void  ChangeDecisionTest(string decisionNewName, string decisionNewDescription)
-        {
-            
-            Decesion dec = new Decesion() {ID = 3};
-            dec.Name = decisionNewName;
-            dec.Description = decisionNewDescription;
-            DecisionDTO decdto = new DecisionDTO() { ID=5};
-            decdto.Name = decisionNewName;
-            decdto.Description = decisionNewDescription;
-            _repository.Setup(rep => rep.Decesion.GetFirstAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
-                    It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
-                .ReturnsAsync(dec);
-            _repository
-                .Setup(c => c.Decesion.Update(dec));
-            _repository
-                .Setup(c => c.SaveAsync());
-
-           
-            var result = _decisionService.ChangeDecisionAsync(decdto);
-
-            _repository.Verify();
-            Assert.NotNull(result);
-        }*/
         [Theory]
         [TestCase(1)]
         [TestCase(2)]
         public async Task DeleteDecisionTest(int decisionId)
         {
+            //Arrange
             _decisionService = CreateDecisionService();
             _repository.Setup(rep => rep.Decesion.GetFirstAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
                     It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
                 .ReturnsAsync(GetTestDecesionQueryable().FirstOrDefault(d => d.ID == decisionId));
 
+            //Act
             await _decisionService.DeleteDecisionAsync(decisionId);
 
+            //Assert
             _repository.Verify(rep => rep.Decesion.GetFirstAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
                     It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()), Times.Once);
         }
@@ -205,8 +191,8 @@ namespace EPlast.Tests.Services.Decision
         [TestCase(3)]
         public async Task SaveDecisionTest(int decisionId)
         {
+            //Arrange
             _decisionService = CreateDecisionService();
-
             var decision = new DecisionWrapperDTO
             {
                 Decision = new DecisionDTO
@@ -219,8 +205,11 @@ namespace EPlast.Tests.Services.Decision
                     }
                 },
             };
+
+            //Act
             var actualReturn = await _decisionService.SaveDecisionAsync(decision);
 
+            //Assert
             Assert.AreEqual(decisionId, actualReturn);
         }
 
@@ -229,82 +218,99 @@ namespace EPlast.Tests.Services.Decision
         [TestCase("")]
         public async Task GetDecisionOrganizationAsyncWithEmptyOrNullParameterTest(string organizationName)
         {
+            //Arrange
             _decisionService = CreateDecisionService();
             OrganizationDTO organization = GetTestOrganizationDtoList()[0];
             organization.OrganizationName = organizationName;
             _repository.Setup(rep => rep.Organization.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
                 It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new Organization() { ID = organization.ID });
 
+            //Act
             var actualReturn = await _decisionService.GetDecisionOrganizationAsync(organization);
 
+            //Assert
             Assert.AreEqual(organization.ID, actualReturn.ID);
         }
 
         [Test]
-
         public async Task GetDecisionOrganizationAsyncWithRightParameterTest()
         {
+            //Arrange
             _decisionService = CreateDecisionService();
             OrganizationDTO organization = GetTestOrganizationDtoList()[0];
             _repository.Setup(rep => rep.Organization.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
                 It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new Organization() { OrganizationName = organization.OrganizationName });
 
+            //Act
             var actualReturn = await _decisionService.GetDecisionOrganizationAsync(organization);
 
+            //Assert
             Assert.AreEqual(organization.OrganizationName, actualReturn.OrganizationName);
         }
+
         [Theory]
         [TestCase("filename1")]
         [TestCase("filename2")]
         public async Task DownloadDecisionFileFromBlobAsyncTest(string fileName)
         {
+            //Arrange
             _decisionService = CreateDecisionService();
             _decisionBlobStorage.Setup(blobStorage => blobStorage.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync(fileName);
 
-
+            //Act
             var actualReturn = await _decisionService.DownloadDecisionFileFromBlobAsync(fileName);
-
+            
+            //Assert
             Assert.AreEqual(fileName, actualReturn);
         }
 
         [Test]
         public async Task GetOrganizationListAsyncTest()
         {
+            //Arrange
             _decisionService = CreateDecisionService();
             List<OrganizationDTO> organizations = GetTestOrganizationDtoList();
             _repository.Setup(rep => rep.Organization.GetAllAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
                 It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new List<Organization>());
 
+            //Act
             var actualReturn = await _decisionService.GetOrganizationListAsync();
 
+            //Assert
             Assert.AreEqual(organizations.Aggregate("", (x, y) => x += y.OrganizationName), actualReturn.Aggregate("", (x, y) => x += y.OrganizationName));
         }
 
         [Test]
-
         public async Task GetDecisionTargetListAsyncTest()
         {
+            //Arrange
             _decisionService = CreateDecisionService();
             List<DecisionTargetDTO> decisionTargets = GetTestDecisionTargetsDtoList();
             _repository.Setup(rep => rep.DecesionTarget.GetAllAsync(It.IsAny<Expression<Func<DecesionTarget, bool>>>(),
                 It.IsAny<Func<IQueryable<DecesionTarget>, IIncludableQueryable<DecesionTarget, object>>>())).ReturnsAsync(new List<DecesionTarget>());
 
+            //Act
             var actualReturn = await _decisionService.GetDecisionTargetListAsync();
 
+            //Assert
             Assert.AreEqual(decisionTargets.Aggregate("", (x, y) => x += y.TargetName), actualReturn.Aggregate("", (x, y) => x += y.TargetName));
         }
 
         [Test]
-
         public void GetDecisionStatusTypesTest()
         {
+            //Arrange
             _decisionService = CreateDecisionService();
             _decisionVmCreator.Setup(vm => vm.GetDecesionStatusTypes()).Returns(new List<SelectListItem>());
+           
+            //Act
             var actualReturn = _decisionService.GetDecisionStatusTypes();
 
+            //Assert
             _decisionVmCreator.Verify();
             Assert.IsInstanceOf<List<SelectListItem>>(actualReturn);
         }
+
         private static IQueryable<DecesionTarget> GetTestDecisionTargetsQueryable()
         {
             return new List<DecesionTarget>
@@ -351,6 +357,7 @@ namespace EPlast.Tests.Services.Decision
         {
             return GetTestDecisionsDtoList().First(x => x.ID == id);
         }
+
         private static List<OrganizationDTO> GetTestOrganizationDtoList()
         {
             return new List<OrganizationDTO>
