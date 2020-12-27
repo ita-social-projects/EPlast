@@ -6,7 +6,6 @@ using EPlast.BLL.Settings;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using DatabaseEntities = EPlast.DataAccess.Entities;
 
@@ -25,22 +24,21 @@ namespace EPlast.BLL.Services.Region.RegionAccess
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<RegionDTO>> GetRegionsAsync(ClaimsPrincipal claimsPrincipal)
+        public async Task<IEnumerable<RegionDTO>> GetRegionsAsync(DatabaseEntities.User claimsPrincipal)
         {
-            var user = await _userManager.GetUserAsync(claimsPrincipal);
-            var roles = await _userManager.GetRolesAsync(user);
+            var roles = await _userManager.GetRolesAsync(claimsPrincipal);
             foreach (var key in _regionAccessGetters.Keys)
             {
                 if (roles.Contains(key))
                 {
-                    var regions = await _regionAccessGetters[key].GetRegionAsync(user.Id);
+                    var regions = await _regionAccessGetters[key].GetRegionAsync(claimsPrincipal.Id);
                     return _mapper.Map<IEnumerable<DatabaseEntities.Region>, IEnumerable<RegionDTO>>(regions);
                 }
             }
             return Enumerable.Empty<RegionDTO>();
         }
 
-        public async Task<bool> HasAccessAsync(ClaimsPrincipal claimsPrincipal, int regionId)
+        public async Task<bool> HasAccessAsync(DatabaseEntities.User claimsPrincipal, int regionId)
         {
             var regions = await GetRegionsAsync(claimsPrincipal);
             return regions.Any(c => c.ID == regionId);

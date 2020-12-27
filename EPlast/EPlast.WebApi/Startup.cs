@@ -139,7 +139,7 @@ namespace EPlast.WebApi
             TimeZoneInfo.Local
             );
             recurringJobManager.AddOrUpdate("Remove roles from previous admins",
-                () => serviceProvider.GetService<ICityAdministrationService>().CheckPreviousAdministratorsToDelete(),
+                () => serviceProvider.GetService<ICityParticipantsService>().CheckPreviousAdministratorsToDelete(),
             "59 23 * * *",
             TimeZoneInfo.Local
             );
