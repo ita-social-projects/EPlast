@@ -129,6 +129,7 @@ namespace EPlast.BLL.Services
             const string formerMember = "Колишній член пласту";
             var user = await _userManager.FindByIdAsync(userId);
             var roles = await _userManager.GetRolesAsync(user);
+            UserMembershipDates userMembershipDates = await _repoWrapper.UserMembershipDates.GetFirstOrDefaultAsync(umd => umd.UserId == userId);
             switch (role)
             {
                 case supporter:
@@ -150,6 +151,16 @@ namespace EPlast.BLL.Services
                     {
                         await _userManager.RemoveFromRoleAsync(user, formerMember);
                     }
+                    if (role == plastun)
+                    {
+                        userMembershipDates.DateEntry = DateTime.Now;
+                    }
+                    else 
+                    {
+                        userMembershipDates.DateEntry = default;
+                    }
+                    _repoWrapper.UserMembershipDates.Update(userMembershipDates);
+                    await _repoWrapper.SaveAsync();
                     await _userManager.AddToRoleAsync(user, role);
                     break;
                 case formerMember:
