@@ -95,7 +95,7 @@ namespace EPlast.BLL.Services.City
 
         private async Task ChangeMembershipDatesByApprove(string userId, bool isApproved) {
             var user = await _userManager.FindByIdAsync(userId);
-            if (!await _userManager.IsInRoleAsync(user, "Пластун"))
+            if (!await _userManager.IsInRoleAsync(user, "Пластун")&& user!=null)
             {
                 var userMembershipDates = await _repositoryWrapper.UserMembershipDates
                             .GetFirstOrDefaultAsync(umd => umd.UserId == userId);
