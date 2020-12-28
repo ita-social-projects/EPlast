@@ -187,6 +187,37 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
+        public async Task GetCityProfileAsync_WithUser_ReturnsCityProfile()
+        {
+            //// Arrange
+            ClubService clubService = CreateClubService();
+            _userManager
+                .Setup(u => u.GetUserIdAsync(It.IsAny<DataAccessClub.User>()))
+                .ReturnsAsync(stringId);
+            _userManager
+                .Setup(u => u.GetRolesAsync(It.IsAny<DataAccessClub.User>()))
+                .ReturnsAsync(new List<string>());
+            var mockList = new Mock<IList<string>>();
+            mockList
+                .Setup(m => m.Contains(It.IsAny<string>()))
+                .Returns(true);
+            _clubAccessService
+                .Setup(c => c.HasAccessAsync(It.IsAny<DataAccessClub.User>(), It.IsAny<int>()))
+                .ReturnsAsync(true);
+            _repoWrapper
+                .Setup(r => r.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
+                .ReturnsAsync(new ClubMembers());
+
+            //// Act
+            var result = await clubService.GetClubProfileAsync(Id, It.IsAny<DataAccessClub.User>());
+
+            //// Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<ClubProfileDTO>(result);
+        }
+
+        [Test]
         public async Task GetClubMembersAsync_ReturnsClubMembers()
         {
             // Arrange
@@ -667,6 +698,7 @@ namespace EPlast.Tests.Services.Club
         }
 
         private int Id => 1;
+        private string stringId => "1";
         private int count => 2;
         private string logoName => "logoName";
         private string clubName => "Club";
@@ -735,7 +767,7 @@ namespace EPlast.Tests.Services.Club
             _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
                 .ReturnsAsync(GetTestNewClub());
 
-            return new ClubService(_repoWrapper.Object, _mapper.Object, _env.Object, _clubBlobStorage.Object, _clubAccessService.Object, null,_uniqueId.Object);
+            return new ClubService(_repoWrapper.Object, _mapper.Object, _env.Object, _clubBlobStorage.Object, _clubAccessService.Object, _userManager.Object,_uniqueId.Object);
         }
 
         private IQueryable<DataAccessClub.Club> CreateFakeClubs(int count)

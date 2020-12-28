@@ -211,6 +211,37 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
+        public async Task GetCityProfileAsync_WithUser_ReturnsCityProfile()
+        {
+            //// Arrange
+            CityService cityService = CreateCityService();
+            _userManager
+                .Setup(u => u.GetUserIdAsync(It.IsAny<DataAccessCity.User>()))
+                .ReturnsAsync(stringId);
+            _userManager
+                .Setup(u => u.GetRolesAsync(It.IsAny<DataAccessCity.User>()))
+                .ReturnsAsync(new List<string>());
+            var mockList = new Mock<IList<string>>();
+            mockList
+                .Setup(m => m.Contains(It.IsAny<string>()))
+                .Returns(true);
+            _cityAccessService
+                .Setup(c => c.HasAccessAsync(It.IsAny<DataAccessCity.User>(), It.IsAny<int>()))
+                .ReturnsAsync(true);
+            _repoWrapper
+                .Setup(r => r.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityMembers>, IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync(new CityMembers());
+
+            //// Act
+            var result = await cityService.GetCityProfileAsync(Id, It.IsAny<DataAccessCity.User>());
+
+            //// Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<CityProfileDTO>(result);
+        }
+
+        [Test]
         public async Task GetCityMembersAsync_ReturnsCityMembers()
         {
             //// Arrange
@@ -697,6 +728,7 @@ namespace EPlast.Tests.Services.City
         }
 
         private int Id => 1;
+        private string stringId => "1";
         private int count => 2;
         private string logoName => "logoName";
         private string cityName => "cityName";
@@ -758,7 +790,7 @@ namespace EPlast.Tests.Services.City
             _repoWrapper.Setup(r => r.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessCity.City, bool>>>(), null))
                 .ReturnsAsync(GetTestNewCity());
 
-            return new CityService(_repoWrapper.Object, _mapper.Object, _env.Object, _cityBlobStorage.Object, _cityAccessService.Object, null, _uniqueId.Object);
+            return new CityService(_repoWrapper.Object, _mapper.Object, _env.Object, _cityBlobStorage.Object, _cityAccessService.Object, _userManager.Object, _uniqueId.Object);
         }
 
         private IQueryable<DataAccessCity.City> CreateFakeCities(int count)
