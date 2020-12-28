@@ -26,8 +26,8 @@ namespace EPlast.BLL.Interfaces.Blank
         /// <param name="documentId">The id of a specific document</param>
         Task DeleteFileAsync(int documentId);
 
-        Task<IEnumerable<AchievementDocumentsDTO>> GetDocumentsByUserId(string userid);
+        Task<IEnumerable<AchievementDocumentsDTO>> GetDocumentsByUserIdAsync(string userid);
 
-        Task<IEnumerable<AchievementDocumentsDTO>> GetPartOfAchievement(int pageNumber, int pageSize, string userid);
+        Task<IEnumerable<AchievementDocumentsDTO>> GetPartOfAchievementAsync(int pageNumber, int pageSize, string userid);
     }
 }
