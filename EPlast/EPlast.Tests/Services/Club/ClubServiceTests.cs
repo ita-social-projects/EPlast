@@ -189,7 +189,7 @@ namespace EPlast.Tests.Services.Club
         [Test]
         public async Task GetCityProfileAsync_WithUser_ReturnsCityProfile()
         {
-            //// Arrange
+            // Arrange
             ClubService clubService = CreateClubService();
             _userManager
                 .Setup(u => u.GetUserIdAsync(It.IsAny<DataAccessClub.User>()))
@@ -209,10 +209,10 @@ namespace EPlast.Tests.Services.Club
                     It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
                 .ReturnsAsync(new ClubMembers());
 
-            //// Act
+            // Act
             var result = await clubService.GetClubProfileAsync(Id, It.IsAny<DataAccessClub.User>());
 
-            //// Assert
+            // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<ClubProfileDTO>(result);
         }
@@ -443,10 +443,10 @@ namespace EPlast.Tests.Services.Club
             _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
                 .Returns(new List<ClubDTO>().FirstOrDefault());
 
-            //// Act
+            // Act
             var result = await clubService.EditAsync(Id);
 
-            //// Assert
+            // Assert
             Assert.Null(result);
         }
 
