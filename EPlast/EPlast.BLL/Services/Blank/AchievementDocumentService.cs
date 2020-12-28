@@ -27,7 +27,6 @@ namespace EPlast.BLL.Services.Blank
             _blobStorageRepo = blobStorageRepo;
         }
 
-
         public async Task<IEnumerable<AchievementDocumentsDTO>> AddDocumentAsync(IEnumerable<AchievementDocumentsDTO> achievementDocumentsDTO)
         {
             foreach (AchievementDocumentsDTO achievementDocumentDTO in achievementDocumentsDTO)
@@ -56,7 +55,6 @@ namespace EPlast.BLL.Services.Blank
 
             _repositoryWrapper.AchievementDocumentsRepository.Delete(document);
             await _repositoryWrapper.SaveAsync();
-
         }
 
         public async Task<string> DownloadFileAsync(string fileName)
@@ -64,16 +62,15 @@ namespace EPlast.BLL.Services.Blank
             return await _blobStorageRepo.GetBlobBase64Async(fileName);
         }
 
-        public async Task<IEnumerable<AchievementDocumentsDTO>> GetDocumentsByUserId(string userid)
+        public async Task<IEnumerable<AchievementDocumentsDTO>> GetDocumentsByUserIdAsync(string userid)
         {
             return _mapper.Map<IEnumerable<AchievementDocuments>,IEnumerable<AchievementDocumentsDTO>>(
-                await _repositoryWrapper.AchievementDocumentsRepository.FindByCondition(i => i.UserId == userid)
-                .ToListAsync());
+                await _repositoryWrapper.AchievementDocumentsRepository.GetAllAsync(i => i.UserId == userid));
         }
 
-        public async Task<IEnumerable<AchievementDocumentsDTO>> GetPartOfAchievement(int pageNumber, int pageSize, string userid)
+        public async Task<IEnumerable<AchievementDocumentsDTO>> GetPartOfAchievementAsync(int pageNumber, int pageSize, string userid)
         {
-            var partOfAchievements = await _repositoryWrapper.AchievementDocumentsRepository.FindByCondition(i => i.UserId == userid).Skip(pageSize * pageNumber).Take(pageSize).ToListAsync();
+            var partOfAchievements = (await _repositoryWrapper.AchievementDocumentsRepository.GetAllAsync(i => i.UserId == userid)).Skip(pageSize * pageNumber).Take(pageSize);
 
             return _mapper.Map<IEnumerable<AchievementDocuments>, IEnumerable<AchievementDocumentsDTO>>(partOfAchievements);
             

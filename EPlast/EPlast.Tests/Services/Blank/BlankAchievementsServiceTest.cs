@@ -66,12 +66,12 @@ namespace EPlast.Tests.Services.Blank
                 .ReturnsAsync(AchievementDocuments);
             _blankBlobRepository
                 .Setup(b => b.DeleteBlobAsync(AchievementDocuments.BlobName));
-
             _repoWrapper.Setup(rw => rw.AchievementDocumentsRepository.Delete(It.IsAny<AchievementDocuments>()));
             _repoWrapper.Setup(rw => rw.SaveAsync());
 
             //Act
-             await _achievementDocumentService.DeleteFileAsync(AchievementDocuments.ID);
+            await _achievementDocumentService.DeleteFileAsync(AchievementDocuments.ID);
+
             //Assert
             _repoWrapper.Verify();
 
@@ -100,6 +100,15 @@ namespace EPlast.Tests.Services.Blank
             FileName = "FileName",
             UserId = "fgh123",
         };
+
+        private AchievementDocumentsDTO AchievementDocumentsDTO => new AchievementDocumentsDTO
+        {
+            ID = 1,
+            BlobName = "newBlob,LastBlob",
+            FileName = "FileName",
+            UserId = "fgh123",
+        };
+
         public List<AchievementDocuments> GetTestAchievements()
         {
             return new List<AchievementDocuments>
@@ -121,25 +130,63 @@ namespace EPlast.Tests.Services.Blank
             };
 
         }
-        private List<AchievementDocumentsDTO> AchievementDocumentsListDTO ()
+
+        private List<AchievementDocumentsDTO> AchievementDocumentsListDTO()
         {
             return new List<AchievementDocumentsDTO>
             {
                 new AchievementDocumentsDTO
                 {
-                ID = 1,
-                BlobName = "newBlob,LastBlob",
-                FileName = "FileName",
-                UserId = "fgh123",
+                    ID = 1,
+                    BlobName = "newBlob,LastBlob",
+                    FileName = "FileName",
+                    UserId = "fgh123",
                 },
                  new AchievementDocumentsDTO
-                {
-                ID = 2,
-                BlobName = "newBlob1,LastBlob1",
-                FileName = "FileName1",
-                UserId = "fgh123",
-                }
+                 {
+                     ID = 2,
+                     BlobName = "newBlob1,LastBlob1",
+                     FileName = "FileName1",
+                     UserId = "fgh123",
+                 }
             };
+        }
+
+        [Test]
+        public async Task GetDocumentsByUserId_ReturnsListOfDocuments()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(b => b.AchievementDocumentsRepository.GetAllAsync(It.IsAny<Expression<Func<AchievementDocuments, bool>>>(),
+                    It.IsAny<Func<IQueryable<AchievementDocuments>, IIncludableQueryable<AchievementDocuments, object>>>())) 
+                .ReturnsAsync(GetTestAchievements());
+            _mapper
+                .Setup(m => m.Map<IEnumerable<AchievementDocuments>, IEnumerable<AchievementDocumentsDTO>>(It.IsAny<IEnumerable<AchievementDocuments>>()))
+                .Returns(new List<AchievementDocumentsDTO>().AsEnumerable());
+
+            //Act
+            var result = await _achievementDocumentService.GetDocumentsByUserIdAsync(It.IsAny<string>());
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<IEnumerable<AchievementDocumentsDTO>>(result);
+        }
+
+        [TestCase(1, 1, "someId")]
+        public async Task GetPartOfAchievement_ReturnsObj(int pageNumber, int pageSize, string userId)
+        {
+            //Arrange
+            _repoWrapper
+               .Setup(b => b.AchievementDocumentsRepository.GetAllAsync(It.IsAny<Expression<Func<AchievementDocuments, bool>>>(),
+                    It.IsAny<Func<IQueryable<AchievementDocuments>, IIncludableQueryable<AchievementDocuments, object>>>()))
+                .ReturnsAsync(GetTestAchievements());
+
+            //Act
+            var result = await _achievementDocumentService.GetPartOfAchievementAsync(pageNumber, pageSize, userId);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<AchievementDocumentsDTO>>(result);
         }
     }
 }
