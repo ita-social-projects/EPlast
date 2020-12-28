@@ -93,6 +93,10 @@ namespace EPlast.XUnitTest.Services.Events
             int fakeId = 3;
             User user = new User();
             user.Id = "abc-1";
+            var adm = new List<EventAdministration>()
+                { new EventAdministration()
+                      { Event = new Event(),
+                        EventID = fakeId } }.ToList();
             _eventWrapper.Setup(x => x.EventStatusManager.GetStatusIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(fakeId);
             _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
@@ -103,6 +107,8 @@ namespace EPlast.XUnitTest.Services.Events
                 .Returns(expectedID);
             _repoWrapper.Setup(x => x.Event.GetAllAsync(It.IsAny<Expression<Func<Event, bool>>>(), It.IsAny<Func<IQueryable<Event>, IIncludableQueryable<Event, object>>>()))
                 .ReturnsAsync(GetEvents());
+            _repoWrapper.Setup(x => x.EventAdministration.GetAllAsync(It.IsAny<Expression<Func<EventAdministration, bool>>>(), It.IsAny<Func<IQueryable<EventAdministration>, IIncludableQueryable<EventAdministration, object>>>()))
+                .ReturnsAsync(adm);
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
             var methodResult = await actionManager.GetEventsAsync(categoryId, typeId, user);
@@ -143,7 +149,7 @@ namespace EPlast.XUnitTest.Services.Events
             _repoWrapper.Setup(x => x.Event.GetFirstAsync(It.IsAny<Expression<Func<Event, bool>>>(), null))
                 .ReturnsAsync(GetEvents().First());
             //Act
-            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object); 
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
             var methodResult = await actionManager.DeleteEventAsync(testEventId);
             //Assert
             _repoWrapper.Verify(r => r.Event.Delete(It.IsAny<Event>()), Times.Once());
