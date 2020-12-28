@@ -255,8 +255,8 @@ namespace EPlast.BLL.Services.Events
 
             foreach (var eventToCheck in eventsToCheck)
             {
-                    eventToCheck.EventStatusID = finishedEventStatus;
-                    _repoWrapper.Event.Update(eventToCheck);
+                eventToCheck.EventStatusID = finishedEventStatus;
+                _repoWrapper.Event.Update(eventToCheck);
             }
             await _repoWrapper.SaveAsync();
         }
@@ -279,7 +279,7 @@ namespace EPlast.BLL.Services.Events
             {
                 events = await _repoWrapper.Event
                   .GetAllAsync(
-                      e => e.EventCategoryID == categoryId && e.EventTypeID == typeId ,
+                      e => e.EventCategoryID == categoryId && e.EventTypeID == typeId,
                       source => source
                           .Include(e => e.EventAdministrations)
                           .Include(e => e.Participants)
@@ -301,6 +301,8 @@ namespace EPlast.BLL.Services.Events
             int notApprovedEvent = await _eventWrapper.EventStatusManager.GetStatusIdAsync("Не затверджені");
             var userRoles = await _userManager.GetRolesAsync(user);
 
+            var eventAdmins = await _repoWrapper.EventAdministration.GetAllAsync();
+
             return events
                 .Select(ev => new GeneralEventDTO
                 {
@@ -313,7 +315,8 @@ namespace EPlast.BLL.Services.Events
                     IsUserRejectedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == rejectedStatus),
                     IsEventApproved = ev.EventStatusID == approvedEvent,
                     IsEventNotApproved = ev.EventStatusID == notApprovedEvent,
-                    IsEventFinished = ev.EventStatusID == finishedEvent
+                    IsEventFinished = ev.EventStatusID == finishedEvent,
+                    EventAdmins = eventAdmins.Where(p => p.EventID == ev.ID).ToList()
                 })
                 .ToList();
         }
