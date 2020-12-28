@@ -161,7 +161,7 @@ namespace EPlast.BLL.Services
             }
         }
 
-        private async Task UpdateUserDatesByChangeRole(string userId, string role) {
+        public async Task UpdateUserDatesByChangeRole(string userId, string role) {
             UserMembershipDates userMembershipDates = await _repoWrapper.UserMembershipDates
                            .GetFirstOrDefaultAsync(umd => umd.UserId == userId);
             var cityMember = await _repoWrapper.CityMembers
