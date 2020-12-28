@@ -53,7 +53,6 @@ namespace EPlast.Tests.Controllers
             return (mockAuthService, mockJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockResources, mockUserManager, AuthController);
         }
 
-        #region Login Tests
         [Test]
         public async Task Test_LoginPost_UserNull()
         {
@@ -218,9 +217,7 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(GetModelIsNotValid().ToString(), result.Value.ToString());
             Assert.NotNull(result);
         }
-        #endregion
 
-        #region GoogleLogin Tests
         [Test]
         public async Task Test_GoogleLogin_Valid()
         {
@@ -288,9 +285,7 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
         }
-        #endregion
 
-        #region FacebookLogin Tests
         [Test]
         public async Task FacebookLogin_Valid_Test()
         {
@@ -364,9 +359,7 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
         }
-        #endregion
 
-        #region Register Tests
         [Test]
         public async Task Register_Valid_Test()
         {
@@ -477,9 +470,7 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(GetRegisterInCorrectPassword().ToString(), result.Value.ToString());
             Assert.NotNull(result);
         }
-        #endregion
 
-        #region ConfirmingEmail tests
         [Test]
         public async Task ConfirmingEmail_Invalid_FindByIdAsyncReturnsNull_Test()
         {
@@ -574,9 +565,7 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(actual, expected);
             Assert.NotNull(result);
         }
-        #endregion
 
-        #region ResendEmailForRegistering tests
         [Test]
         public async Task ResendEmailForRegistering_Valid_Test()
         {
@@ -628,9 +617,7 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
         }
-        #endregion
 
-        #region Logout Tests
         [Test]
         public void Logout_Valid_Test()
         {
@@ -649,9 +636,6 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
         }
-        #endregion
-
-        #region ForgotPassword Tests
 
         [Test]
         public async Task Test_ForgotPost_ModelIsNotValid()
@@ -739,9 +723,7 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(GetForgotPasswordConfirmation().ToString(), result.Value.ToString());
             Assert.NotNull(result);
         }
-        #endregion
 
-        #region ResetPasswordGet Tests
         [Test]
         public async Task ResetPasswordGet_Valid_Test()
         {
@@ -815,9 +797,7 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expectedCode, actual);
             Assert.NotNull(result);
         }
-        #endregion
 
-        #region ResetPasswordPost Tests
         [Test]
         public async Task Test_ResetPost_ResetNotRegisteredUser()
         {
@@ -918,9 +898,7 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(GetModelIsNotValid().ToString(), result.Value.ToString());
             Assert.NotNull(result);
         }
-        #endregion
 
-        #region ChangePassword Test
         [Test]
         public async Task ChangePassword_Valid_Test()
         {
@@ -1013,9 +991,7 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
         }
-        #endregion
 
-        #region SendContacts Test
         [Test]
         public async Task SendContacts_Valid_Test()
         {
@@ -1059,9 +1035,7 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
         }
-        #endregion
 
-        #region Fakes
         private LocalizedString GetLoginNotRegistered()
         {
             var localizedString = new LocalizedString("Login-NotRegistered",
@@ -1245,6 +1219,5 @@ namespace EPlast.Tests.Controllers
             };
             return resetPasswordDto;
         }
-        #endregion
     }
 }
