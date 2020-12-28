@@ -68,7 +68,7 @@ namespace EPlast.WebApi.Controllers
             {
                 var time = await _userService.CheckOrAddPlastunRoleAsync(user.Id, user.RegistredOn);
                 var isUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун") 
-                    || (await _userManagerService.IsInRoleAsync(user, "Прихильник") && await _userService.IsApprovedCityMember(userId)?false:true);
+                    || !(await _userManagerService.IsInRoleAsync(user, "Прихильник") && await _userService.IsApprovedCityMember(userId));
                 var model = new PersonalDataViewModel
                 {
                     User = _mapper.Map<UserDTO, UserViewModel>(user),
@@ -205,7 +205,7 @@ namespace EPlast.WebApi.Controllers
                 IsUserHeadOfClub = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), "Голова Куреня"),
                 IsUserHeadOfRegion = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), "Голова Округу"),
                 IsUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун")
-                    || (await _userManagerService.IsInRoleAsync(user, "Прихильник") && await _userService.IsApprovedCityMember(userId) ? false : true),
+                    || !(await _userManagerService.IsInRoleAsync(user, "Прихильник") && await _userService.IsApprovedCityMember(userId)),
                 CurrentUserId = approverId
             };
             foreach (var item in model.ConfirmedUsers)
