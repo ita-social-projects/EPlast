@@ -15,29 +15,49 @@ using Moq;
 using NUnit.Framework;
 using System.Threading.Tasks;
 using EPlast.BLL.Interfaces.Resources;
+using EPlast.BLL.Interfaces.Jwt;
+using NLog.Extensions.Logging;
+using EPlast.BLL.Interfaces.ActiveMembership;
+using System;
+using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Models;
+using System.Collections.Generic;
 
 namespace EPlast.Tests.Controllers
 {
     public class AuthControllerTestsAuth
     {
-        public (Mock<IAuthService>, Mock<IUserService>, Mock<IResources>, Mock<UserManager<User>>, AuthController) CreateAuthController()
+        public (
+            Mock<IAuthService>, 
+            Mock<IJwtService>, 
+            Mock<IUserDatesService>, 
+            Mock<IHomeService>, 
+            Mock<ILoggerService<AuthController>>, 
+            Mock<IUserService>, Mock<IResources>, 
+            Mock<UserManager<User>>, 
+            AuthController
+            ) CreateAuthController()
         {
             Mock<IAuthService> mockAuthService = new Mock<IAuthService>();
             Mock<IUserService> mockUserService = new Mock<IUserService>();
             Mock<IResources> mockResources = new Mock<IResources>();
+            Mock<IHomeService> mockHomeService = new Mock<IHomeService>();
+            Mock<IJwtService> mockJwtService = new Mock<IJwtService>();
+            Mock<IUserDatesService> mockUserDataServices = new Mock<IUserDatesService>();
+            Mock<ILoggerService<AuthController>> mockLoggerService = new Mock<ILoggerService<AuthController>>();
             var store = new Mock<IUserStore<User>>();
+            
             Mock<UserManager<User>> mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
-
-            AuthController AuthController = new AuthController(mockAuthService.Object, null, null, null, null, mockUserManager.Object, mockResources.Object);
-            return (mockAuthService, mockUserService, mockResources, mockUserManager, AuthController);
+            
+            AuthController AuthController = new AuthController(mockAuthService.Object, mockLoggerService.Object, mockJwtService.Object, mockHomeService.Object, mockUserDataServices.Object, mockUserManager.Object, mockResources.Object);
+            return (mockAuthService, mockJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockResources, mockUserManager, AuthController);
         }
 
-        //Login
         [Test]
         public async Task Test_LoginPost_UserNull()
         {
             //Arrange
-            var (mockAuthService, mockUserService,  mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
@@ -60,7 +80,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_LoginPost_EmailNotConfirmed()
         {
             //Arrange
-            var (mockAuthService, mockUserService,  mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
@@ -87,7 +107,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_LoginPost_AccountLocked()
         {
             //Arrange
-            var (mockAuthService, mockUserService,  mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
@@ -115,10 +135,43 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task Test_LoginPost_Succeeded()
+        {
+            //Arrange
+            var (mockAuthService, mockJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+
+            mockAuthService
+                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
+
+            mockAuthService
+                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(true);
+
+            mockAuthService
+                .Setup(s => s.SignInAsync(It.IsAny<LoginDto>()))
+                .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
+
+            mockJwtService
+                .Setup(s => s.GenerateJWTTokenAsync(GetTestUserDtoWithAllFields()))
+                .ReturnsAsync(It.IsAny<string>);
+
+            //Act
+            var expected = StatusCodes.Status200OK;
+            var result = await AuthController.Login(GetTestLoginDto());
+            var actual = (result as ObjectResult).StatusCode;
+
+            //Assert
+            Assert.IsInstanceOf<ObjectResult>(result);
+            Assert.AreEqual(actual, expected);
+            Assert.NotNull(result);
+        }
+
+        [Test]
         public async Task Test_LoginPost_LoginInCorrectPassword()
         {
             //Arrange
-            var (mockAuthService, mockUserService,  mockStringLocalizer, mockUserManager,  AuthController) = CreateAuthController();
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
@@ -149,7 +202,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_LoginPost_ModelIsNotValid()
         {
             //Arrange
-            var (mockAuthService, mockUserService,  mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
             AuthController.ModelState.AddModelError("NameError", "Required");
 
             mockStringLocalizer
@@ -165,12 +218,194 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
         }
 
-        //Register
+        [Test]
+        public async Task Test_GoogleLogin_Valid()
+        {
+            // Arrange
+            var (mockAuthService, mockJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            string googleToken = It.IsAny<string>();
+            mockAuthService
+                .Setup(s => s.GetGoogleUserAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields);
+            mockUserDataServices
+                .Setup(s => s.UserHasMembership(It.IsAny<string>()))
+                .ReturnsAsync(true);
+            mockUserDataServices
+                .Setup(s => s.AddDateEntryAsync(It.IsAny<string>()))
+                .ReturnsAsync(true);
+
+            // Act
+            var expected = StatusCodes.Status200OK;
+            var result = await AuthController.GoogleLogin(googleToken);
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            Assert.IsInstanceOf<ObjectResult>(result);
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task GoogleLogin_Invalid_BadRequest_Test()
+        {
+            // Arrange
+            var (mockAuthService, mockJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            string googleToken = It.IsAny<string>();
+
+            // Act
+            var expected = StatusCodes.Status400BadRequest;
+            var result = await AuthController.GoogleLogin(googleToken);
+            var actual = (result as BadRequestResult).StatusCode;
+
+            // Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task GoogleLogin_Invalid_Exception_Test()
+        {
+            // Arrange
+            var (mockAuthService, mockJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            string googleToken = It.IsAny<string>();
+            mockAuthService
+                .Setup(s => s.GetGoogleUserAsync(It.IsAny<string>()))
+                .Throws(new Exception());
+            mockLoggerService
+                .Setup(s => s.LogError(It.IsAny<string>()));
+
+            // Act
+            var expected = StatusCodes.Status400BadRequest;
+            var result = await AuthController.GoogleLogin(googleToken);
+            var actual = (result as BadRequestResult).StatusCode;
+
+            // Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task FacebookLogin_Valid_Test()
+        {
+            // Arrange
+            var (mockAuthService, mockJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockResources, mockUserManager, AuthController) = CreateAuthController();
+            var userInfo = GetTestFacebookUserInfoWithSomeFields();
+
+            mockResources
+                .Setup(s => s.ResourceForGender[userInfo.Gender])
+                .Returns(new LocalizedString(userInfo.Gender, userInfo.Gender));
+            mockAuthService
+                .Setup(s => s.FacebookLoginAsync(userInfo))
+                .ReturnsAsync(new UserDTO());
+            mockUserDataServices
+                .Setup(s => s.AddDateEntryAsync(It.IsAny<string>()))
+                .ReturnsAsync(true);
+
+            // Act
+            var expected = StatusCodes.Status200OK;
+            var result = await AuthController.FacebookLogin(userInfo);
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            Assert.IsInstanceOf<ObjectResult>(result);
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task FacebookLogin_Inalid_BadRequest_Test()
+        {
+            // Arrange
+            var (mockAuthService, mockJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockResources, mockUserManager, AuthController) = CreateAuthController();
+            var userInfo = GetTestFacebookUserInfoWithSomeFields();
+
+            mockResources
+                .Setup(s => s.ResourceForGender[userInfo.Gender])
+                .Returns(new LocalizedString(userInfo.Gender, userInfo.Gender));
+            mockLoggerService
+                .Setup(s => s.LogError(It.IsAny<string>()));
+
+            // Act
+            var expected = StatusCodes.Status400BadRequest;
+            var result = await AuthController.FacebookLogin(userInfo);
+            var actual = (result as BadRequestResult).StatusCode;
+
+            // Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task FacebookLogin_Inalid_Exception_Test()
+        {
+            // Arrange
+            var (mockAuthService, mockJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockResources, mockUserManager, AuthController) = CreateAuthController();
+            var userInfo = GetTestFacebookUserInfoWithSomeFields();
+
+            mockResources
+                .Setup(s => s.ResourceForGender[userInfo.Gender])
+                .Throws(new Exception());
+
+            // Act
+            var expected = StatusCodes.Status400BadRequest;
+            var result = await AuthController.FacebookLogin(userInfo);
+            var actual = (result as BadRequestResult).StatusCode;
+
+            // Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task Register_Valid_Test()
+        {
+            // Arrange
+            var (mockAuthService, mockJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            RegisterDto registerDto = new RegisterDto();
+            mockAuthService
+                .Setup(s => s.CreateUserAsync(It.IsAny<RegisterDto>()))
+                .ReturnsAsync(IdentityResult.Success);
+            mockAuthService
+                .Setup(s => s.AddRoleAndTokenAsync(It.IsAny<RegisterDto>()))
+                .ReturnsAsync("token");
+            mockStringLocalizer
+                .Setup(s => s.ResourceForErrors["Confirm-Registration"])
+                .Returns(GetConfirmRegistration());
+
+            var queueStuff = new Queue<UserDTO>();
+            queueStuff.Enqueue(null); 
+            queueStuff.Enqueue(new UserDTO());
+            mockAuthService
+                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(queueStuff.Dequeue);
+
+            var mockUrlHelper = new Mock<IUrlHelper>(MockBehavior.Strict);
+            mockUrlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>()))
+                .Returns("callbackUrl")
+                .Verifiable();
+            AuthController.Url = mockUrlHelper.Object;
+            AuthController.ControllerContext.HttpContext = new DefaultHttpContext();
+
+            // Act
+            var expected = StatusCodes.Status200OK;
+            var result = await AuthController.Register(registerDto);
+            var actual = (result as OkObjectResult).StatusCode;
+
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+        }
+
         [Test]
         public async Task Test_RegisterPost_ModelIsNotValid()
         {
             //Arrange
-            var (mockAuthService, mockUserService,  mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
             AuthController.ModelState.AddModelError("NameError", "Required");
 
             mockStringLocalizer
@@ -190,7 +425,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_RegisterPost_RegisterRegisteredUser()
         {
             //Arrange
-            var (mockAuthService, mockUserService,  mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
@@ -213,7 +448,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_RegisterPost_RegisterInCorrectPassword()
         {
             //Arrange
-            var (mockAuthService, mockUserService,  mockStringLocalizer, mockUserManager,  AuthController) = CreateAuthController();
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
@@ -224,7 +459,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(IdentityResult.Failed(null));
 
             mockStringLocalizer
-                .Setup(s => s.ResourceForErrors["Register-InCorrectPassword"])
+                .Setup(s => s.ResourceForErrors[It.IsAny<string>()])
                 .Returns(GetRegisterInCorrectPassword());
 
             //Act
@@ -237,14 +472,180 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task ConfirmingEmail_Invalid_FindByIdAsyncReturnsNull_Test()
+        {
+            // Arrange
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            string userId = "userId";
+            string token = "token";
+
+            // Act
+            var expected = StatusCodes.Status400BadRequest;
+            var result = await AuthController.ConfirmingEmail(userId, token);
+            var actual = (result as BadRequestResult).StatusCode;
+
+            // Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task ConfirmingEmail_Invalid_TotallTimeGreaterThan180_Test()
+        {
+            // Arrange
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            string userId = "userId";
+            string token = "token";
+            mockAuthService
+                .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
+            mockAuthService
+                .Setup(s => s.GetTimeAfterRegistr(It.IsAny<UserDTO>()))
+                .Returns(180);
+            mockStringLocalizer
+                .Setup(s => s.ResourceForErrors[It.IsAny<string>()])
+                .Returns(GetConfirmedEmailNotAllowedMessage());
+
+            // Act
+            var expectedCode = StatusCodes.Status200OK;
+            var expectedMessage = GetConfirmedEmailNotAllowedMessage();
+            var result = await AuthController.ConfirmingEmail(userId, token);
+            var actualCode = (result as OkObjectResult).StatusCode;
+            var actualMessage = (result as OkObjectResult).Value;
+
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.AreEqual(expectedCode, actualCode);
+            Assert.AreEqual(expectedMessage.ToString(), actualMessage.ToString());
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task ConfirmingEmail_Invalid_TokenIsNull_Test()
+        {
+            // Arrange
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            string userId = "userId";
+            string token = "";
+
+            // Act
+            var expected = StatusCodes.Status400BadRequest;
+            var result = await AuthController.ConfirmingEmail(userId, token);
+            var actual = (result as BadRequestResult).StatusCode;
+
+            // Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task ConfirmingEmail_Inalid_ConfirmEmailAsyncReturnsFailed_Test()
+        {
+            //Arrange
+            var (mockAuthService, mockJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            string userId = "userId";
+            string token = "token";
+
+            mockAuthService
+                .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
+            mockAuthService
+                .Setup(s => s.ConfirmEmailAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(IdentityResult.Failed(null));
+
+            //Act
+            var expected = StatusCodes.Status400BadRequest;
+            var result = await AuthController.ConfirmingEmail(userId, token);
+            var actual = (result as BadRequestResult).StatusCode;
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
+            Assert.AreEqual(actual, expected);
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task ResendEmailForRegistering_Valid_Test()
+        {
+            // Arrange
+            var (mockAuthService, mockJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockResources, mockUserManager, AuthController) = CreateAuthController();
+            string userId = "userId";
+            RegisterDto registerDto = new RegisterDto();
+            mockAuthService
+                .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
+            mockAuthService
+                .Setup(s => s.GenerateConfToken(It.IsAny<UserDTO>()))
+                .ReturnsAsync("token");
+            mockAuthService
+                .Setup(s => s.SendEmailRegistr(It.IsAny<string>(), It.IsAny<RegisterDto>()));
+            var mockUrlHelper = new Mock<IUrlHelper>(MockBehavior.Strict);
+            mockUrlHelper
+                .Setup(x => x.Action(It.IsAny<UrlActionContext>()))
+                .Returns("callbackUrl")
+                .Verifiable();
+            AuthController.Url = mockUrlHelper.Object;
+            AuthController.ControllerContext.HttpContext = new DefaultHttpContext();
+
+            // Act
+            var expected = StatusCodes.Status200OK;
+            var result = await AuthController.ResendEmailForRegistering(userId);
+            var actual = (result as OkObjectResult).StatusCode;
+
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task ResendEmailForRegistering_Invalid_FindByIdAsyncReturnsNull_Test()
+        {
+            // Arrange
+            var (mockAuthService, mockJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockResources, mockUserManager, AuthController) = CreateAuthController();
+            string userId = "userId";
+
+            // Act
+            var expected = StatusCodes.Status400BadRequest;
+            var result = await AuthController.ResendEmailForRegistering(userId);
+            var actual = (result as BadRequestResult).StatusCode;
+
+            // Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public void Logout_Valid_Test()
+        {
+            // Arrange
+            var (mockAuthService, mockJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockResources, mockUserManager, AuthController) = CreateAuthController();
+            mockAuthService
+                .Setup(s => s.SignOutAsync());
+
+            // Act
+            var expected = StatusCodes.Status200OK;
+            var result = AuthController.Logout();
+            var actual = (result as OkResult).StatusCode;
+
+            // Assert
+            Assert.IsInstanceOf<OkResult>(result);
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+        }
+
+        [Test]
         public async Task Test_ForgotPost_ModelIsNotValid()
         {
             //Arrange
-            var (mockAuthService, mockUserService,  mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
             AuthController.ModelState.AddModelError("NameError", "Required");
 
             mockStringLocalizer
-                .Setup(s => s.ResourceForErrors["ModelIsNotValid"])
+                .Setup(s => s.ResourceForErrors[It.IsAny<string>()])
                 .Returns(GetModelIsNotValid());
 
             //Act
@@ -260,7 +661,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_ForgotPost_ForgotNotRegisteredUser()
         {
             //Arrange
-            var (mockAuthService, mockUserService,  mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
@@ -271,7 +672,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(GetTestUserDtoWithAllFields().EmailConfirmed);
 
             mockStringLocalizer
-                .Setup(s => s.ResourceForErrors["Forgot-NotRegisteredUser"])
+                .Setup(s => s.ResourceForErrors[It.IsAny<string>()])
                 .Returns(GetForgotNotRegisteredUser());
 
             //Act
@@ -287,7 +688,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_ForgotPost_ForgotPasswordConfirmation()
         {
             //Arrange
-            var (mockAuthService, mockUserService,  mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
@@ -303,11 +704,7 @@ namespace EPlast.Tests.Controllers
 
             var mockUrlHelper = new Mock<IUrlHelper>(MockBehavior.Strict);
             mockUrlHelper
-                .Setup(
-                    x => x.Action(
-                        It.IsAny<UrlActionContext>()
-                    )
-                )
+                .Setup(x => x.Action(It.IsAny<UrlActionContext>()))
                 .Returns("callbackUrl")
                 .Verifiable();
 
@@ -315,7 +712,7 @@ namespace EPlast.Tests.Controllers
             AuthController.ControllerContext.HttpContext = new DefaultHttpContext();
 
             mockStringLocalizer
-                .Setup(s => s.ResourceForErrors["ForgotPasswordConfirmation"])
+                .Setup(s => s.ResourceForErrors[It.IsAny<string>()])
                 .Returns(GetForgotPasswordConfirmation());
 
             //Act
@@ -327,19 +724,92 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
         }
 
-        //ResetPassword
+        [Test]
+        public async Task ResetPasswordGet_Valid_Test()
+        {
+            //Arrange
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            string userId = "userId";
+            string token = "token";
+
+            mockAuthService
+                .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
+
+            //Act
+            var expected = StatusCodes.Status200OK;
+            var result = await AuthController.ResetPassword(userId, token);
+            var actual = (result as OkObjectResult).StatusCode;
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task ResetPasswordGet_Invalid_TokenIsNull_Test()
+        {
+            //Arrange
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            string userId = "userId";
+            string token = null;
+
+            mockAuthService
+                .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
+
+            //Act
+            var expected = StatusCodes.Status400BadRequest;
+            var result = await AuthController.ResetPassword(userId, token);
+            var actual = (result as BadRequestResult).StatusCode;
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task ResetPasswordGet_Invalid_TotallTimeGreaterThan180_Test()
+        {
+            // Arrange
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            string userId = "userId";
+            string token = "token";
+            mockAuthService
+                .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
+            mockAuthService
+                .Setup(s => s.GetTimeAfterRegistr(It.IsAny<UserDTO>()))
+                .Returns(180);
+
+            mockStringLocalizer
+                .Setup(s => s.ResourceForErrors[It.IsAny<string>()]);
+
+            // Act
+            var expectedCode = StatusCodes.Status200OK;
+            var result = await AuthController.ResetPassword(userId, token);
+            var actual = (result as OkObjectResult).StatusCode;
+
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.AreEqual(expectedCode, actual);
+            Assert.NotNull(result);
+        }
+
         [Test]
         public async Task Test_ResetPost_ResetNotRegisteredUser()
         {
             //Arrange
-            var (mockAuthService, mockUserService,  mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync((UserDTO)null);
 
             mockStringLocalizer
-                .Setup(s => s.ResourceForErrors["Reset-NotRegisteredUser"])
+                .Setup(s => s.ResourceForErrors[It.IsAny<string>()])
                 .Returns(GetResetNotRegisteredUser());
 
             //Act
@@ -355,7 +825,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_ResetPost_ResetPasswordConfirmation()
         {
             //Arrange
-            var (mockAuthService, mockUserService,  mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
 
             mockAuthService
                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
@@ -370,7 +840,7 @@ namespace EPlast.Tests.Controllers
                 .Verifiable();
 
             mockStringLocalizer
-                .Setup(s => s.ResourceForErrors["ResetPasswordConfirmation"])
+                .Setup(s => s.ResourceForErrors[It.IsAny<string>()])
                 .Returns(GetResetPasswordConfirmation());
 
             //Act
@@ -386,7 +856,7 @@ namespace EPlast.Tests.Controllers
         public async Task Test_ResetPost_ResetPasswordProblems()
         {
             //Arrange
-            var (mockAuthService, mockUserService,  mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
@@ -397,7 +867,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(Task.FromResult(IdentityResult.Failed(null)));
 
             mockStringLocalizer
-                .Setup(s => s.ResourceForErrors["Reset-PasswordProblems"])
+                .Setup(s => s.ResourceForErrors[It.IsAny<string>()])
                 .Returns(GetResetPasswordProblems());
 
             //Act
@@ -413,11 +883,11 @@ namespace EPlast.Tests.Controllers
         public async Task Test_ResetPost_ModelIsNotValid()
         {
             //Arrange
-            var (mockAuthService, mockUserService,  mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            var (mockAuthService, mockJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
             AuthController.ModelState.AddModelError("NameError", "Required");
 
             mockStringLocalizer
-                .Setup(s => s.ResourceForErrors["ModelIsNotValid"])
+                .Setup(s => s.ResourceForErrors[It.IsAny<string>()])
                 .Returns(GetModelIsNotValid());
 
             //Act
@@ -429,7 +899,143 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
         }
 
-        //Fakes
+        [Test]
+        public async Task ChangePassword_Valid_Test()
+        {
+            //Arrange
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            ChangePasswordDto changePasswordDto = new ChangePasswordDto();
+            mockAuthService
+                .Setup(s => s.GetUser(It.IsAny<User>()))
+                .Returns(new UserDTO());
+            mockAuthService
+                .Setup(s => s.ChangePasswordAsync(It.IsAny<string>(), It.IsAny<ChangePasswordDto>()))
+                .ReturnsAsync(IdentityResult.Success);
+            mockAuthService
+                .Setup(s => s.RefreshSignInAsync(It.IsAny<UserDTO>()));
+            mockStringLocalizer
+                .Setup(s => s.ResourceForErrors[It.IsAny<string>()]);
+
+            //Act
+            var expected = StatusCodes.Status200OK;
+            var result = await AuthController.ChangePassword(changePasswordDto);
+            var actual = (result as OkObjectResult).StatusCode;
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task ChangePassword_InValid_ChangePasswordAsyncFailed_Test()
+        {
+            //Arrange
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            ChangePasswordDto changePasswordDto = new ChangePasswordDto();
+            mockAuthService
+                .Setup(s => s.GetUser(It.IsAny<User>()))
+                .Returns(new UserDTO());
+            mockAuthService
+                .Setup(s => s.ChangePasswordAsync(It.IsAny<string>(), It.IsAny<ChangePasswordDto>()))
+                .ReturnsAsync(IdentityResult.Failed(null));
+            mockStringLocalizer
+                .Setup(s => s.ResourceForErrors[It.IsAny<string>()]);
+
+            //Act
+            var expected = StatusCodes.Status400BadRequest;
+            var result = await AuthController.ChangePassword(changePasswordDto);
+            var actual = (result as BadRequestObjectResult).StatusCode;
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task ChangePassword_InValid_GetUserFailed_Test()
+        {
+            //Arrange
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            ChangePasswordDto changePasswordDto = new ChangePasswordDto();
+            
+            //Act
+            var expected = StatusCodes.Status400BadRequest;
+            var result = await AuthController.ChangePassword(changePasswordDto);
+            var actual = (result as BadRequestResult).StatusCode;
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task ChangePassword_InValid_ModelStateIsNotValid_Test()
+        {
+            //Arrange
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            ChangePasswordDto changePasswordDto = new ChangePasswordDto();
+            AuthController.ModelState.AddModelError("NameError", "Required");
+            mockStringLocalizer
+                .Setup(s => s.ResourceForErrors[It.IsAny<string>()]);
+
+            //Act
+            var expected = StatusCodes.Status400BadRequest;
+            var result = await AuthController.ChangePassword(changePasswordDto);
+            var actual = (result as BadRequestObjectResult).StatusCode;
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task SendContacts_Valid_Test()
+        {
+            //Arrange
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            ContactsDto contactsDto = new ContactsDto();
+            mockHomeService
+                .Setup(s => s.SendEmailAdmin(contactsDto));
+            mockStringLocalizer
+                .Setup(s => s.ResourceForErrors[It.IsAny<string>()]);
+
+            //Act
+            var expected = StatusCodes.Status200OK;
+            var result = await AuthController.SendContacts(contactsDto);
+            var actual = (result as OkObjectResult).StatusCode;
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task SendContacts_Invalid_ModelStateIsNotValid_Test()
+        {
+            //Arrange
+            var (mockAuthService, moskJwtService, mockUserDataServices, mockHomeService, mockLoggerService, mockUserService, mockStringLocalizer, mockUserManager, AuthController) = CreateAuthController();
+            ContactsDto contactsDto = new ContactsDto();
+            AuthController.ModelState.AddModelError("NameError", "Required");
+            
+            mockStringLocalizer
+                .Setup(s => s.ResourceForErrors[It.IsAny<string>()]);
+
+            //Act
+            var expected = StatusCodes.Status400BadRequest;
+            var result = await AuthController.SendContacts(contactsDto);
+            var actual = (result as BadRequestObjectResult).StatusCode;
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+        }
+
         private LocalizedString GetLoginNotRegistered()
         {
             var localizedString = new LocalizedString("Login-NotRegistered",
@@ -530,6 +1136,13 @@ namespace EPlast.Tests.Controllers
             return localizedString;
         }
 
+        private LocalizedString GetConfirmedEmailNotAllowedMessage()
+        {
+            var localizedString = new LocalizedString("ConfirmedEmailNotAllowed",
+                "Час очікування підтвердження електронної пошти вийшов");
+            return localizedString;
+        }
+
         private LoginDto GetTestLoginDto()
         {
             var loginDto = new LoginDto
@@ -572,6 +1185,14 @@ namespace EPlast.Tests.Controllers
                 LastName = "Shainoha",
                 EmailConfirmed = true,
                 SocialNetworking = true
+            };
+        }
+
+        private FacebookUserInfo GetTestFacebookUserInfoWithSomeFields()
+        {
+            return new FacebookUserInfo()
+            {
+                Gender = "Male"
             };
         }
 
