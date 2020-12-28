@@ -169,18 +169,18 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _mockBiographyService
-               .Setup(x => x.DownloadFileAsync(new string("Dogovir")))
-               .ReturnsAsync(new string("Dogovir"));
+               .Setup(x => x.DownloadFileAsync(It.IsAny<string>()))
+               .ReturnsAsync(GetExtractFromUPUDocumentsDTO().FileName);
 
             //Act
-            var document = await _blanksController.GetFileBase64("Dogovir");
+            var document = await _blanksController.GetFileBase64(GetExtractFromUPUDocumentsDTO().FileName);
             OkObjectResult result = document as OkObjectResult;
 
             //Assert
             _mockBiographyService.Verify();
             Assert.NotNull(document);
             Assert.IsInstanceOf<ObjectResult>(document);
-            Assert.AreEqual("Dogovir", result.Value);
+            Assert.AreEqual(GetExtractFromUPUDocumentsDTO().FileName, result.Value);
         }
 
         [Test]
@@ -207,7 +207,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _mockBlankAchievementDocumentService
-               .Setup(x => x.GetPartOfAchievement(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
+               .Setup(x => x.GetPartOfAchievementAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
                .ReturnsAsync(new List<AchievementDocumentsDTO>());
 
             //Act
@@ -223,7 +223,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetAchievementDocumentsByUserId_ReturnsOkObjectResult(string userId)
         {
             //Arrange
-            _mockBlankAchievementDocumentService.Setup(x => x.GetDocumentsByUserId(It.IsAny<string>()))
+            _mockBlankAchievementDocumentService.Setup(x => x.GetDocumentsByUserIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(new List<AchievementDocumentsDTO>());
 
             //Act
@@ -258,18 +258,18 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _mockBlankAchievementDocumentService
-               .Setup(x => x.DownloadFileAsync(new string("Dogovir")))
-               .ReturnsAsync(new string("Dogovir"));
+               .Setup(x => x.DownloadFileAsync(It.IsAny<string>()))
+               .ReturnsAsync(GetExtractFromUPUDocumentsDTO().FileName);
 
             //Act
-            var document = await _blanksController.GetFileAchievementBase64("Dogovir");
+            var document = await _blanksController.GetFileAchievementBase64(GetExtractFromUPUDocumentsDTO().FileName);
             OkObjectResult result = document as OkObjectResult;
 
             //Assert
             _mockBlankAchievementDocumentService.Verify();
             Assert.NotNull(document);
             Assert.IsInstanceOf<ObjectResult>(document);
-            Assert.AreEqual("Dogovir", result.Value);
+            Assert.AreEqual(GetExtractFromUPUDocumentsDTO().FileName, result.Value);
         }
 
         private BlankBiographyDocumentsDTO GetBlankBiographyDocumentsDTO()

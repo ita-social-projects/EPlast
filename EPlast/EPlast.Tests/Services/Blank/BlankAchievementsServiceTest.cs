@@ -151,5 +151,42 @@ namespace EPlast.Tests.Services.Blank
                  }
             };
         }
+
+        [Test]
+        public async Task GetDocumentsByUserId_ReturnsListOfDocuments()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(b => b.AchievementDocumentsRepository.GetAllAsync(It.IsAny<Expression<Func<AchievementDocuments, bool>>>(),
+                    It.IsAny<Func<IQueryable<AchievementDocuments>, IIncludableQueryable<AchievementDocuments, object>>>())) 
+                .ReturnsAsync(GetTestAchievements());
+            _mapper
+                .Setup(m => m.Map<IEnumerable<AchievementDocuments>, IEnumerable<AchievementDocumentsDTO>>(It.IsAny<IEnumerable<AchievementDocuments>>()))
+                .Returns(new List<AchievementDocumentsDTO>().AsEnumerable());
+
+            //Act
+            var result = await _achievementDocumentService.GetDocumentsByUserIdAsync(It.IsAny<string>());
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<IEnumerable<AchievementDocumentsDTO>>(result);
+        }
+
+        [TestCase(1, 1, "someId")]
+        public async Task GetPartOfAchievement_ReturnsObj(int pageNumber, int pageSize, string userId)
+        {
+            //Arrange
+            _repoWrapper
+               .Setup(b => b.AchievementDocumentsRepository.GetAllAsync(It.IsAny<Expression<Func<AchievementDocuments, bool>>>(),
+                    It.IsAny<Func<IQueryable<AchievementDocuments>, IIncludableQueryable<AchievementDocuments, object>>>()))
+                .ReturnsAsync(GetTestAchievements());
+
+            //Act
+            var result = await _achievementDocumentService.GetPartOfAchievementAsync(pageNumber, pageSize, userId);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<AchievementDocumentsDTO>>(result);
+        }
     }
 }
