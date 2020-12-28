@@ -28,11 +28,11 @@ namespace EPlast.WebApi.StartupExtensions
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
-                    Type = SecuritySchemeType.Http,
+                    Type = SecuritySchemeType.ApiKey,
                     Scheme = "Bearer",
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
-                    Description = "JWT Authorization header using the Bearer scheme."
+                    Description = "JWT Authorization header using the Bearer scheme.\nExample: 'Bearer {your token}'"
                 });
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
