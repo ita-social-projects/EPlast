@@ -256,6 +256,74 @@ namespace EPlast.Tests.Services
            
         }
 
+        [Test]
+        public void UpdateUserDatesByChangeRole_supporter_ReturnsCorrect()
+        {
+            // Arrange
+            var role = "Прихильник";
+            _repoWrapper
+                .Setup(x => x.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
+               It.IsAny<Func<IQueryable<UserMembershipDates>,
+               IIncludableQueryable<UserMembershipDates, object>>>()))
+                .ReturnsAsync(new UserMembershipDates() { DateEntry=default});
+            _repoWrapper
+                .Setup(x=>x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+               It.IsAny<Func<IQueryable<CityMembers>,
+               IIncludableQueryable<CityMembers, object>>>())).ReturnsAsync(new CityMembers() { IsApproved = true});
+
+            // Act
+             var result = service.UpdateUserDatesByChangeRole(It.IsAny<string>(), role);
+            // Assert
+            Assert.IsNotNull(result);
+        }
+
+        [Test]
+        public void UpdateUserDatesByChangeRole_plastun_ReturnsCorrect()
+        {
+            // Arrange
+            var role = "Пластун";
+            _repoWrapper
+                .Setup(x => x.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
+               It.IsAny<Func<IQueryable<UserMembershipDates>,
+               IIncludableQueryable<UserMembershipDates, object>>>()))
+                .ReturnsAsync(new UserMembershipDates() { DateEntry = default });
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+               It.IsAny<Func<IQueryable<CityMembers>,
+               IIncludableQueryable<CityMembers, object>>>())).ReturnsAsync(new CityMembers() { IsApproved = true });
+
+            // Act
+            var result = service.UpdateUserDatesByChangeRole(It.IsAny<string>(), role);
+            // Assert
+            Assert.IsNotNull(result);
+        }
+
+        [Test]
+        public void UpdateUserDatesByChangeRole_interested_ReturnsCorrect()
+        {
+            // Arrange
+            var role = "Зацікавлений";
+            _repoWrapper
+                .Setup(x => x.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
+               It.IsAny<Func<IQueryable<UserMembershipDates>,
+               IIncludableQueryable<UserMembershipDates, object>>>()))
+                .ReturnsAsync(new UserMembershipDates() { DateEntry = default });
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+               It.IsAny<Func<IQueryable<CityMembers>,
+               IIncludableQueryable<CityMembers, object>>>())).ReturnsAsync(new CityMembers() { IsApproved = true });
+
+            // Act
+            var result = service.UpdateUserDatesByChangeRole(It.IsAny<string>(), role);
+            // Assert
+            Assert.IsNotNull(result);
+        }
+
+
+
+
+
+
         private List<string> roles = new List<string>()
         {
             "Admin",
