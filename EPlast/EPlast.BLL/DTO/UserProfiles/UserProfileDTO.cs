@@ -28,6 +28,10 @@ namespace EPlast.BLL.DTO.UserProfiles
         [StringLength(30, MinimumLength = 3, ErrorMessage = "Домашня адреса повинна складати від 3 до 30 символів")]
         public string Address { get; set; }
         public string UserID { get; set; }
+        [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26})*$",
+            ErrorMessage = "Псевдо має містити тільки літери")]
+        [MaxLength(30, ErrorMessage = "Псевдо не може перевищувати 30 символів")]
+        public string Pseudo { get; set; }
         public UserDTO User { get; set; }
     }
 }
