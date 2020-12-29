@@ -781,7 +781,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
             mockAuthService
-                .Setup(s => s.GetTimeAfterRegistr(It.IsAny<UserDTO>()))
+                .Setup(s => s.GetTimeAfterReset(It.IsAny<UserDTO>()))
                 .Returns(180);
 
             mockStringLocalizer
