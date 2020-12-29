@@ -480,7 +480,7 @@ namespace EPlast.Tests.Services.City
             _repoWrapper
                 .Setup(s => s.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.CityMembers, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.CityMembers>, IIncludableQueryable<DataAccess.Entities.CityMembers, object>>>()))
-                .ReturnsAsync(new CityMembers());
+                .ReturnsAsync(new CityMembers() { UserId="someId", IsApproved=false});
 
             //Act
             await _cityParticipantsService.ToggleApproveStatusAsync(It.IsAny<int>());

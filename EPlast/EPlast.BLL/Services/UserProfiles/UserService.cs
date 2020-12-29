@@ -126,8 +126,6 @@ namespace EPlast.BLL.Services.UserProfiles
                     await _userManager.AddToRoleAsync(us, "Пластун");
                     return TimeSpan.Zero;
                 }
-
-
                 return timeToJoinPlast;
             }
             catch
@@ -287,6 +285,13 @@ namespace EPlast.BLL.Services.UserProfiles
             _repoWrapper.User.Update(userForUpdate);
             _repoWrapper.UserProfile.Update(userForUpdate.UserProfile);
             await _repoWrapper.SaveAsync();
+        }
+
+        public async Task<bool> IsApprovedCityMember(string userId)
+        {
+            var cityMember = await _repoWrapper.CityMembers
+                 .GetFirstOrDefaultAsync(u => u.UserId == userId, m => m.Include(u => u.User));
+            return cityMember!=null && cityMember.IsApproved;
         }
     }
 }
