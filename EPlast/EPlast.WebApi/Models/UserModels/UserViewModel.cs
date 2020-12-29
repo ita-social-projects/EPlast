@@ -47,7 +47,7 @@ namespace EPlast.WebApi.Models.UserModels
         public string Address { get; set; }
         [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26})*$",
             ErrorMessage = "Псевдо має містити тільки літери")]
-        [MaxLength(30, ErrorMessage = "Адреса не може перевищувати 30 символів")]
+        [MaxLength(30, ErrorMessage = "Псевдо не може перевищувати 30 символів")]
 
         public string Pseudo { get; set; }
         public string City { get; set; }
