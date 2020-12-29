@@ -98,7 +98,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetPartOfAchievement(int pageNumber, int pageSize, string userId)
         {
-            return Ok(await _blankAchievementDocumentService.GetPartOfAchievement(pageNumber, pageSize, userId));
+            return Ok(await _blankAchievementDocumentService.GetPartOfAchievementAsync(pageNumber, pageSize, userId));
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetAchievementDocumentsByUserId(string userId)
         {
-            return Ok(await _blankAchievementDocumentService.GetDocumentsByUserId(userId));
+            return Ok(await _blankAchievementDocumentService.GetDocumentsByUserIdAsync(userId));
         }
 
         /// <summary>

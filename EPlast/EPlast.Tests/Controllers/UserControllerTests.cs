@@ -451,7 +451,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsFalse(actual.IsUserHeadOfCity);
             Assert.IsFalse(actual.IsUserHeadOfClub);
             Assert.IsFalse(actual.IsUserHeadOfRegion);
-            Assert.IsFalse(actual.IsUserPlastun);
+            Assert.IsTrue(actual.IsUserPlastun);
             Assert.AreEqual(expectedApproverId, actual.CurrentUserId);
         }
 
