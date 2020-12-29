@@ -75,5 +75,7 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         /// <param name="fileName">The name of the image</param>
         /// <returns>Image in format base64</returns>
         Task<string> GetImageBase64Async(string fileName);
+
+        Task<bool> IsApprovedCityMember(string userId);
     }
 }
