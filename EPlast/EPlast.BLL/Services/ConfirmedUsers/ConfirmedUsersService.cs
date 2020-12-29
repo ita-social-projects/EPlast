@@ -24,7 +24,6 @@ namespace EPlast.BLL.Services
             var conUser = new ConfirmedUser { UserID = userId, ConfirmDate = DateTime.Now, isClubAdmin = isClubAdmin, isCityAdmin = isCityAdmin };
             var appUser = new Approver { UserID = id, ConfirmedUser = conUser };
             conUser.Approver = appUser;
-
             await _repoWrapper.ConfirmedUser.CreateAsync(conUser);
             await _repoWrapper.SaveAsync();
         }

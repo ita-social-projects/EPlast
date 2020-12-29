@@ -128,7 +128,7 @@ namespace EPlast.BLL.Services
         public async Task<string> AddRoleAndTokenAsync(RegisterDto registerDto) 
         {
             var user = await _userManager.FindByEmailAsync(registerDto.Email);
-            await _userManager.AddToRoleAsync(user, "Прихильник");
+            await _userManager.AddToRoleAsync(user, "Зареєстрований користувач");
             string code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             return code;
         }
