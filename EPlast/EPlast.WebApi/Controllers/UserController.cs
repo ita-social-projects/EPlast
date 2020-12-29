@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
+using EPlast.BLL.DTO.City;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -69,11 +70,12 @@ namespace EPlast.WebApi.Controllers
                 var time = await _userService.CheckOrAddPlastunRoleAsync(user.Id, user.RegistredOn);
                 var isUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун") 
                     || !(await _userManagerService.IsInRoleAsync(user, "Прихильник") && await _userService.IsApprovedCityMember(userId));
+
                 var model = new PersonalDataViewModel
                 {
                     User = _mapper.Map<UserDTO, UserViewModel>(user),
                     TimeToJoinPlast = ((int)time.TotalDays),
-                    IsUserPlastun = isUserPlastun
+                    IsUserPlastun = isUserPlastun,
                 };
 
                 return Ok(model);
