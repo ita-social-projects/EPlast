@@ -86,15 +86,25 @@ namespace EPlast.BLL.Services.City
         {
             var cityMember = await _repositoryWrapper.CityMembers
                 .GetFirstOrDefaultAsync(u => u.ID == memberId, m => m.Include(u => u.User));
-
             cityMember.IsApproved = !cityMember.IsApproved;
-
             _repositoryWrapper.CityMembers.Update(cityMember);
             await _repositoryWrapper.SaveAsync();
-
-            return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
+            await ChangeMembershipDatesByApprove(cityMember.UserId, cityMember.IsApproved); 
+             return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
         }
 
+        private async Task ChangeMembershipDatesByApprove(string userId, bool isApproved) {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (!await _userManager.IsInRoleAsync(user, "Пластун")&& user!=null)
+            {
+                var userMembershipDates = await _repositoryWrapper.UserMembershipDates
+                            .GetFirstOrDefaultAsync(umd => umd.UserId == userId);
+                userMembershipDates.DateEntry = isApproved ? DateTime.Now : default;
+                user.RegistredOn = DateTime.Now;
+                _repositoryWrapper.UserMembershipDates.Update(userMembershipDates);
+                await _repositoryWrapper.SaveAsync();
+            }
+        }
         /// <inheritdoc />
         public async Task RemoveFollowerAsync(int followerId)
         {
