@@ -129,6 +129,7 @@ namespace EPlast.BLL.Services
             const string formerMember = "Колишній член пласту";
             var user = await _userManager.FindByIdAsync(userId);
             var roles = await _userManager.GetRolesAsync(user);
+           
             switch (role)
             {
                 case supporter:
@@ -150,12 +151,36 @@ namespace EPlast.BLL.Services
                     {
                         await _userManager.RemoveFromRoleAsync(user, formerMember);
                     }
+                    await UpdateUserDatesByChangeRole(userId, role);
+                    await _repoWrapper.SaveAsync();
                     await _userManager.AddToRoleAsync(user, role);
                     break;
                 case formerMember:
                     await ChangeAsync(userId);
                     break;
             }
+        }
+
+        public async Task UpdateUserDatesByChangeRole(string userId, string role) {
+            UserMembershipDates userMembershipDates = await _repoWrapper.UserMembershipDates
+                           .GetFirstOrDefaultAsync(umd => umd.UserId == userId);
+            var cityMember = await _repoWrapper.CityMembers
+                 .GetFirstOrDefaultAsync(u => u.UserId == userId, m => m.Include(u => u.User));
+            if (role == "Прихильник" && cityMember.IsApproved)
+            {
+                userMembershipDates.DateEntry = DateTime.Now;
+            }
+            else if (role != "Пластун")
+            {
+                userMembershipDates.DateEntry = default;
+            }
+            else 
+            {
+                DateTime time = default;
+                userMembershipDates.DateEntry = userMembershipDates.DateEntry != time ? userMembershipDates.DateEntry : DateTime.Now;
+            }
+            _repoWrapper.UserMembershipDates.Update(userMembershipDates);
+            await _repoWrapper.SaveAsync();
         }
 
         /// <inheritdoc />
