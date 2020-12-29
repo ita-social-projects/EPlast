@@ -56,7 +56,7 @@ namespace EPlast.Tests.Services.Decision
         }
 
         [Test]
-        public void CreateDecisionTest()
+        public void CreateDecisionTest_ReturnsNewDecision()
         {
             //Arrange
             _repository.Setup(rep => rep.DecesionTarget.GetAllAsync(It.IsAny<Expression<Func<DecesionTarget, bool>>>(),
@@ -82,7 +82,7 @@ namespace EPlast.Tests.Services.Decision
         }
 
         [Test]
-        public async Task GetDecisionListTest()
+        public async Task GetDecisionListTest_ReturnDecisionList()
         {
             //Arrange
             _repository.Setup(rep => rep.Decesion.GetAllAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
@@ -97,7 +97,7 @@ namespace EPlast.Tests.Services.Decision
         }
 
         [Test]
-        public async Task GetDecisionListCountTest()
+        public async Task GetDecisionListCount_Valid_Test()
         {
             //Arrange
             _repository.Setup(rep => rep.Decesion.GetAllAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
@@ -111,12 +111,11 @@ namespace EPlast.Tests.Services.Decision
             Assert.AreEqual(GetTestDecisionsDtoList().Count, decision.Count);
         }
 
-        [Theory]
         [TestCase("new name", "new text")]
         [TestCase("", "new text")]
         [TestCase("new name", "")]
         [TestCase("", "")]
-        public async Task ChangeDecisionTest(string decisionNewName, string decisionNewDescription)
+        public async Task ChangeDecision_Valid_Test(string decisionNewName, string decisionNewDescription)
         {
             //Arrange
             _repository.Setup(rep => rep.Decesion.GetFirstAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
@@ -134,7 +133,6 @@ namespace EPlast.Tests.Services.Decision
                    It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()), Times.Once);
         }
         
-        [Theory]
         [TestCase(1)]
         [TestCase(2)]
         public async Task DeleteDecisionTest(int decisionId)
@@ -152,7 +150,6 @@ namespace EPlast.Tests.Services.Decision
                     It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()), Times.Once);
         }
 
-        [Theory]
         [TestCase(2)]
         [TestCase(4)]
         [TestCase(1)]
@@ -180,7 +177,6 @@ namespace EPlast.Tests.Services.Decision
             Assert.AreEqual(decisionId, actualReturn);
         }
 
-        [Theory]
         [TestCase(null)]
         [TestCase("")]
         public async Task GetDecisionOrganizationAsyncWithEmptyOrNullParameterTest(string organizationName)
@@ -213,7 +209,6 @@ namespace EPlast.Tests.Services.Decision
             Assert.AreEqual(organization.OrganizationName, actualReturn.OrganizationName);
         }
 
-        [Theory]
         [TestCase("filename1")]
         [TestCase("filename2")]
         public async Task DownloadDecisionFileFromBlobAsyncTest(string fileName)
