@@ -247,7 +247,7 @@ namespace EPlast.BLL.Services
                 var cityName = cityMembers.Where(x => x.UserId.Equals(user.Id) && x.EndDate == null)
                                           .Select(x => x.City.Name)
                                           .LastOrDefault() ?? string.Empty;
-                if (roles.Contains("Зацікавлений");)
+                if (roles.Contains("Зацікавлений"))
                 {
                     userTable.Add(new UserTableDTO
                     {
