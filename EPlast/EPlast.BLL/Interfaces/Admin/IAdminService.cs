@@ -33,11 +33,17 @@ namespace EPlast.BLL.Services.Interfaces
         /// <param name="userId">The id of the user, which must be deleted</param>
         Task DeleteUserAsync(string userId);
 
-         /// <summary>
+        /// <summary>
         /// Get all users with additional information
         /// </summary>
         /// <returns>Specify model with all users</returns>
         Task<IEnumerable<UserTableDTO>> UsersTableAsync();
+
+        /// <summary>
+        /// Get all users with role "Зацікавлений"
+        /// </summary>
+        /// <returns>Specify model with all users</returns>
+        Task<IEnumerable<UserTableDTO>> InterestedUsersTableAsync();
 
         /// <summary>
         /// Change Current Role of user

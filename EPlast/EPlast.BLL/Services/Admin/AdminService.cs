@@ -226,6 +226,50 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
+        public async Task<IEnumerable<UserTableDTO>> InterestedUsersTableAsync()
+        {
+            var users = await _repoWrapper.User.GetAllAsync(x => x.EmailConfirmed,
+                include:
+                    i => i.Include(x => x.UserProfile)
+                            .ThenInclude(x => x.Gender)
+                        .Include(x => x.UserPlastDegrees)
+                            .ThenInclude(x => x.PlastDegree));
+            var cities = await _repoWrapper.City.
+                GetAllAsync(null, x => x.Include(i => i.Region));
+            var clubMembers = await _repoWrapper.ClubMembers.
+                GetAllAsync(null, x => x.Include(i => i.Club));
+            var cityMembers = await _repoWrapper.CityMembers.
+                GetAllAsync(null, x => x.Include(i => i.City));
+            List<UserTableDTO> userTable = new List<UserTableDTO>();
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                var cityName = cityMembers.Where(x => x.UserId.Equals(user.Id) && x.EndDate == null)
+                                          .Select(x => x.City.Name)
+                                          .LastOrDefault() ?? string.Empty;
+                if (roles.Contains("Зацікавлений");)
+                {
+                    userTable.Add(new UserTableDTO
+                    {
+                        User = _mapper.Map<User, ShortUserInformationDTO>(user),
+                        ClubName = clubMembers.Where(x => x.UserId.Equals(user.Id) && x.IsApproved)
+                                              .Select(x => x.Club.Name).LastOrDefault() ?? string.Empty,
+                        CityName = cityName,
+                        RegionName = !string.IsNullOrEmpty(cityName) ? cities
+                            .FirstOrDefault(x => x.Name.Equals(cityName))
+                            ?.Region.RegionName : string.Empty,
+
+                        UserPlastDegreeName = user.UserPlastDegrees.Count != 0 ? user.UserPlastDegrees
+                            .FirstOrDefault(x => x.UserId == user.Id && x.DateFinish == null)
+                            ?.PlastDegree.Name : string.Empty,
+                        UserRoles = string.Join(", ", roles)
+                    });
+                }
+            }
+            return userTable;
+        }
+
+        /// <inheritdoc />
         public async Task<IEnumerable<CityDTO>> GetCityRegionAdminsOfUser(string userId)
         {
             var cities = await _repoWrapper.City.
