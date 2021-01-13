@@ -1755,8 +1755,8 @@ namespace EPlast.DataAccess.Migrations
                         .HasMaxLength(30);
 
                     b.Property<string>("PublicPoliticalActivity")
-                        .HasColumnType("nvarchar(500)")
-                        .HasMaxLength(500);
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
 
                     b.Property<int?>("ReligionId")
                         .HasColumnType("int");
