@@ -11,8 +11,7 @@ namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
-    [Authorize(AuthenticationSchemes = "Bearer")]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня, Пластун, Прихильник")]
     public class EducatorsStaffController : ControllerBase
     {
         private readonly ILoggerService<EducatorsStaffController> _logger;
