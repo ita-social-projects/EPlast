@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace EPlast.WebApi.Controllers
 {
     [ApiController, Route("api/[controller]")]
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Пласту, Голова Округу, Голова Станиці")]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Пласту, Голова Округу, Голова Станиці, Голова Куреня")]
     public class StatisticsController: ControllerBase
     {
         private readonly ICityStatisticsService cityStatisticsService;
