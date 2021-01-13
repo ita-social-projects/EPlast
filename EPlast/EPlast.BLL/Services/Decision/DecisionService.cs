@@ -16,7 +16,6 @@ namespace EPlast.BLL
     /// <inheritdoc />
     public class DecisionService : IDecisionService
     {
-
         private readonly IDecisionVmInitializer _decisionVMCreator;
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repoWrapper;

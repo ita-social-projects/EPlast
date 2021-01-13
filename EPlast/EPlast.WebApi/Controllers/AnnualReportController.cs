@@ -21,7 +21,7 @@ using Microsoft.AspNetCore.Identity;
 namespace EPlast.WebApi.Controllers
 {
     [ApiController, Route("api/[controller]")]
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці")]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня")]
     public class AnnualReportController : ControllerBase
     {
         private readonly IAnnualReportService _annualReportService;
