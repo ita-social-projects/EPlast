@@ -28,8 +28,8 @@ namespace EPlast.DataAccess.Entities
         [MaxLength(50,ErrorMessage = "Адреса не може перевищувати 50 символів")]
         [Required(ErrorMessage = "Поле домашня адреса є обов'язковим")]
         public string Address { get; set; }
-        [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.-]{1,31}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.-]{1,31})*$",
-            ErrorMessage = "Псевдо має містити тільки літери та цифри")]
+        [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,31}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,31})*$",
+            ErrorMessage = "Псевдо має містити тільки літери")]
         [MaxLength(30, ErrorMessage = "Псевдо не може перевищувати 30 символів")]
         public string Pseudo { get; set; }
         [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.-]{1,51}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.-]{1,51})*$",
