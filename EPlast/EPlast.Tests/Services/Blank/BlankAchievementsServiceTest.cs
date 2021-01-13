@@ -74,7 +74,6 @@ namespace EPlast.Tests.Services.Blank
 
             //Assert
             _repoWrapper.Verify();
-
         }
 
         [Test]
@@ -128,7 +127,6 @@ namespace EPlast.Tests.Services.Blank
                       UserId = "fgh123",
                 },
             };
-
         }
 
         private List<AchievementDocumentsDTO> AchievementDocumentsListDTO()

@@ -11,7 +11,9 @@ namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Bearer")]   
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [Authorize(Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня, Пластун, Прихильник")]
+
     public class DistinctionController : ControllerBase
     {
         private readonly IDistinctionService _distinctionService;
