@@ -15,7 +15,7 @@ namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня, Пластун, Прихильник")]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, ГѓР“РѕР»РѕРІР° РћРєСЂСѓРіСѓ, Р“РѕР»РѕРІР° РЎС‚Р°РЅРёС†С–, Р“РѕР»РѕРІР° РљСѓСЂРµРЅСЏ, РџР»Р°СЃС‚СѓРЅ, РџСЂРёС…РёР»СЊРЅРёРє")]
 
     public class ClubController : ControllerBase
     {
