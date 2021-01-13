@@ -33,6 +33,7 @@ namespace EPlast.DataAccess.Entities
         [StringLength(25, MinimumLength = 2, ErrorMessage = "Поле по-батькові повинне складати від 2 до 25 символів")]
         public string FatherName { get; set; }
         [StringLength(18, MinimumLength = 18, ErrorMessage = "Номер телефону повинен містити 10 цифр")]
+        [Required(ErrorMessage = "Поле номер телефону є обов'язковим")]
         public override string PhoneNumber { get => base.PhoneNumber; set => base.PhoneNumber = value; }
         public DateTime RegistredOn { get; set; }
         public DateTime EmailSendedOnRegister { get; set; }

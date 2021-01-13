@@ -26,6 +26,7 @@ namespace EPlast.WebApi.Models.UserModels
         //[StringLength(25, MinimumLength = 2, ErrorMessage = "Поле по-батькові повинне складати від 2 до 25 символів")]
         public string FatherName { get; set; }
         //[StringLength(18, MinimumLength = 10, ErrorMessage = "Номер телефону повинен містити 10 цифр")]
+        [Required(ErrorMessage = "Поле номер телефону є обов'язковим")]
         public string PhoneNumber { get; set; }
         public DateTime RegistredOn { get; set; }
         public DateTime EmailSendedOnRegister { get; set; }
@@ -35,6 +36,7 @@ namespace EPlast.WebApi.Models.UserModels
         public string UserProfileID { get; set; }
         [DataType(DataType.Date)]
         [Display(Name = "Дата народження")]
+        [Required(ErrorMessage = "Поле дата народження є обов'язковим")]
         public DateTime Birthday { get; set; }
         public EducationViewModel Education { get; set; }
         public DegreeViewModel Degree { get; set; }
@@ -44,12 +46,16 @@ namespace EPlast.WebApi.Models.UserModels
         public GenderViewModel Gender { get; set; }
         [Display(Name = "Домашня адреса")]
         [MaxLength(50, ErrorMessage = "Адреса не може перевищувати 50 символів")]
+        [Required(ErrorMessage = "Поле домашня адреса є обов'язковим")]
         public string Address { get; set; }
-        [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26})*$",
-            ErrorMessage = "Псевдо має містити тільки літери")]
+        [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.-]{1,31}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.-]{1,31})*$",
+            ErrorMessage = "Псевдо має містити тільки літери та цифри")]
         [MaxLength(30, ErrorMessage = "Псевдо не може перевищувати 30 символів")]
-
         public string Pseudo { get; set; }
+        [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.-]{1,51}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.-]{1,51})*$",
+            ErrorMessage = "Поле Громадська, політична діяльність має містити тільки літери та цифри")]
+        [MaxLength(500, ErrorMessage = "Поле Громадська, політична діяльність не може перевищувати 500 символів")]
+        public string PublicPoliticalActivity { get; set; }
         public string City { get; set; }
         public string Club { get; set; }
     }
