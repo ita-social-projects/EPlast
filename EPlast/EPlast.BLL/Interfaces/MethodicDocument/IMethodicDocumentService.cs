@@ -30,7 +30,7 @@ namespace EPlast.BLL
         /// </summary>
         /// <param name="decision">The wrapper which contains MethodicDocument dto and file as base64</param>
         /// <returns>An id of created MethodicDocument</returns>
-        Task<int> SaveMethodicDocumentAsync(MethodicDocumentWraperDTO decision);
+        Task<int> SaveMethodicDocumentAsync(MethodicDocumentWraperDTO document);
 
         /// <summary>
         /// Creates new MethodicDocument wrapper dto
