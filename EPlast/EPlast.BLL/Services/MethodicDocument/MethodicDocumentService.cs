@@ -102,13 +102,13 @@ namespace EPlast.BLL
 
         public async Task<int> SaveMethodicDocumentAsync(MethodicDocumentWraperDTO document)
         {
-            var repoDecision = _mapper.Map<MethodicDocument>(document.MethodicDocument);
-            _repoWrapper.MethodicDocument.Attach(repoDecision);
-            _repoWrapper.MethodicDocument.Create(repoDecision);
+            var repoDoc = _mapper.Map<MethodicDocument>(document.MethodicDocument);
+            _repoWrapper.MethodicDocument.Attach(repoDoc);
+            _repoWrapper.MethodicDocument.Create(repoDoc);
             if (document.FileAsBase64 != null)
             {
-                repoDecision.FileName = $"{_uniqueId.GetUniqueId()}{repoDecision.FileName}";
-                await UploadFileToBlobAsync(document.FileAsBase64, repoDecision.FileName);
+                repoDoc.FileName = $"{_uniqueId.GetUniqueId()}{repoDoc.FileName}";
+                await UploadFileToBlobAsync(document.FileAsBase64, repoDoc.FileName);
             }
             await _repoWrapper.SaveAsync();
 

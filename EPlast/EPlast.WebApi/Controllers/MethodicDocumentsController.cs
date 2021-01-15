@@ -18,11 +18,9 @@ namespace EPlast.WebApi.Controllers
     {
 
         private readonly IMethodicDocumentService _methodicDocService;
-        private readonly IPdfService _pdfService;
         private readonly IMapper _mapper;
-        public MethodicDocumentsController(IPdfService pdfService, IMethodicDocumentService docService, IMapper mapper)
+        public MethodicDocumentsController(IMethodicDocumentService docService, IMapper mapper)
         {
-            _pdfService = pdfService;
             _methodicDocService = docService;
             _mapper = mapper;
         }
