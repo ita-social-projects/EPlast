@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -59,6 +60,7 @@ namespace EPlast.WebApi
             services.AddLocalization();
             services.AddRequestLocalizationOptions();
             services.AddIdentityOptions();
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
             services.AddStackExchangeRedisCache(options =>
             {
