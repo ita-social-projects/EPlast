@@ -24,6 +24,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IUserDistinctionRepository _userDistinction;
         private IDocumentTemplateRepository _documentTemplate;
         private IDecesionRepository _decesion;
+        private IMethodicDocumentRepository _methodicDocument;
         private IEventRepository _event;
         private IParticipantStatusRepository _participantStatuses;
         private IGallaryRepository _gallary;
@@ -110,6 +111,18 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                     _decesion = new DecesionRepository(_dbContext);
                 }
                 return _decesion;
+            }
+        }
+
+        public IMethodicDocumentRepository MethodicDocument
+        {
+            get
+            {
+                if (_methodicDocument == null)
+                {
+                    _methodicDocument = new MethodicDocumentRepository(_dbContext);
+                }
+                return _methodicDocument;
             }
         }
 

@@ -107,6 +107,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IClubFilesBlobStorageRepository, ClubFilesBlobStorageRepository>();
             services.AddScoped<IClubBlobStorageRepository, ClubBlobStorageRepository>();
             services.AddScoped<IRegionBlobStorageRepository, RegionBlobStorageRepository>();
+            services.AddScoped<IMethodicDocumentBlobStorageRepository, MethodicDocumentBlobStarageRepository>();
             services.AddScoped<IRegionFilesBlobStorageRepository, RegionFilesBlobStorageRepository>();
             services.AddScoped<IEventBlobStorageRepository, EventBlobStorageRepository>();
             services.AddScoped<IBlankFilesBlobStorageRepository, BlankFilesBlobStorageRepository>();
@@ -135,7 +136,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddTransient<IUniqueIdService, UniqueIdService>();
             services.AddTransient<IEventUserService, EventUserService>();
             services.AddScoped<IResources, BLL.Services.Resources.Resources>();
-
+            services.AddScoped<IMethodicDocumentService, MethodicDocumentService>();
             return services;
         }
     }
