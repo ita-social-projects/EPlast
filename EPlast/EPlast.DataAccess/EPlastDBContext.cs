@@ -190,6 +190,7 @@ namespace EPlast.DataAccess
         public DbSet<Organization> Organization { get; set; }
         public DbSet<DecesionTarget> DecesionTargets { get; set; }
         public DbSet<Decesion> Decesions { get; set; }
+        public DbSet<MethodicDocument> MethodicDocuments { get; set; }
         public DbSet<AnnualReport> AnnualReports { get; set; }
         public DbSet<ClubAnnualReport> ClubAnnualReports { get; set; }
 
