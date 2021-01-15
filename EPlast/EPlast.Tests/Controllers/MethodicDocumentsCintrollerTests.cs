@@ -18,7 +18,6 @@ namespace EPlast.Tests.Controllers
     class MethodicDocumentsCintrollerTests
     {
         private Mock<IMethodicDocumentService> _service;
-        private Mock<IPdfService> _pdfService = new Mock<IPdfService>();
         private Mock<IMapper> _mapper;
 
         private MethodicDocumentsController _controller;
@@ -27,11 +26,9 @@ namespace EPlast.Tests.Controllers
         public void SetUp()
         {
             _service = new Mock<IMethodicDocumentService>();
-            _pdfService = new Mock<IPdfService>();
             _mapper = new Mock<IMapper>();
 
             _controller = new MethodicDocumentsController(
-                _pdfService.Object,
                 _service.Object,
                 _mapper.Object);
         }
