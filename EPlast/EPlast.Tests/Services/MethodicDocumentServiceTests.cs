@@ -200,8 +200,6 @@ namespace EPlast.Tests.Services
             //Assert
             Assert.IsInstanceOf<List<SelectListItem>>(actualReturn);
         }
-
-
         private static IQueryable<MethodicDocument> GetTestDocsQueryable()
         {
             return new List<MethodicDocument>
@@ -212,7 +210,6 @@ namespace EPlast.Tests.Services
                 new MethodicDocument  {ID = 4,Description = "old"}
             }.AsQueryable();
         }
-
          private static List<OrganizationDTO> GetTestOrganizationDtoList()
         {
             return new List<OrganizationDTO>
@@ -221,9 +218,5 @@ namespace EPlast.Tests.Services
                 new OrganizationDTO {ID = 2,OrganizationName = "Organization2"},
             };
         }
-
-
-
-
     }
 }

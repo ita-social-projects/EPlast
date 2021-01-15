@@ -8,6 +8,5 @@ namespace EPlast.BLL.DTO
     {
         public MethodicDocumentDTO MethodicDocument { get; set; }
         public string FileAsBase64 { get; set; }
-
     }
 }
