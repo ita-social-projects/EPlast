@@ -59,6 +59,11 @@ namespace EPlast.BLL.Services.UserProfiles
             return _mapper.Map<IEnumerable<Gender>, IEnumerable<GenderDTO>>(await _repoWrapper.Gender.GetAllAsync());
         }
 
+        public async Task<IEnumerable<UpuDegreeDTO>> GetAllUpuDegreesAsync()
+        {
+            return _mapper.Map<IEnumerable<UpuDegree>, IEnumerable<UpuDegreeDTO>>(await _repoWrapper.UpuDegree.GetAllAsync());
+        }
+
         /// <inheritdoc />
         public async Task<IEnumerable<NationalityDTO>> GetAllNationalityAsync()
         {

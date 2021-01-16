@@ -32,6 +32,8 @@ namespace EPlast.WebApi.Mapping.User
                 .ForMember(x => x.City, q => q.MapFrom(w => w.CityMembers.FirstOrDefault().City.Name))
                 .ForMember(x => x.Club, q => q.MapFrom(w => w.ClubMembers.FirstOrDefault().Club.Name))
                 .ForMember(x => x.PublicPoliticalActivity, q => q.MapFrom(w => w.UserProfile.PublicPoliticalActivity))
+                .ForPath(x => x.UpuDegree.Name, q => q.MapFrom(w => w.UserProfile.UpuDegree.Name))
+                .ForPath(x => x.UpuDegree.ID, q => q.MapFrom(w => w.UserProfile.UpuDegree.ID))
                 .ReverseMap();
         }
     }
