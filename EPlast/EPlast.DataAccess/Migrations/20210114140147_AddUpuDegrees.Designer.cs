@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20210114140147_AddUpuDegrees")]
+    partial class AddUpuDegrees
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1202,41 +1204,6 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("MembersStatistics");
                 });
 
-            modelBuilder.Entity("EPlast.DataAccess.Entities.MethodicDocument", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("OrganizationID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("OrganizationID");
-
-                    b.ToTable("MethodicDocuments");
-                });
-
             modelBuilder.Entity("EPlast.DataAccess.Entities.Nationality", b =>
                 {
                     b.Property<int>("ID")
@@ -1780,12 +1747,10 @@ namespace EPlast.DataAccess.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
                     b.Property<DateTime?>("Birthday")
-                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("DegreeId")
@@ -1805,8 +1770,8 @@ namespace EPlast.DataAccess.Migrations
                         .HasMaxLength(30);
 
                     b.Property<string>("PublicPoliticalActivity")
-                        .HasColumnType("nvarchar(500)")
-                        .HasMaxLength(500);
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
 
                     b.Property<int?>("ReligionId")
                         .HasColumnType("int");
@@ -2441,15 +2406,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasOne("EPlast.DataAccess.Entities.AnnualReport", "AnnualReport")
                         .WithOne("MembersStatistic")
                         .HasForeignKey("EPlast.DataAccess.Entities.MembersStatistic", "AnnualReportId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.MethodicDocument", b =>
-                {
-                    b.HasOne("EPlast.DataAccess.Entities.Organization", "Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

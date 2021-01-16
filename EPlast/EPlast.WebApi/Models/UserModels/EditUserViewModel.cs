@@ -14,6 +14,7 @@ namespace EPlast.WebApi.Models.UserModels
         public IEnumerable<GenderViewModel> Genders { get; set; }
         public IEnumerable<ReligionViewModel> Religions { get; set; }
         public IEnumerable<DegreeViewModel> Degrees { get; set; }
+        public IEnumerable<UpuDegreeViewModel> UpuDegrees { get; set; }
         public string ImageBase64 { get; set; }
     }
 }
