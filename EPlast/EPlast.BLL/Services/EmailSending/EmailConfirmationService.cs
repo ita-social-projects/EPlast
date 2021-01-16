@@ -31,16 +31,21 @@ namespace EPlast.BLL
             emailMessage.Subject = subject;
             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
             {
-                Text = message
-            };
-
-            using (var client = new SmtpClient())
-            {
-                await client.ConnectAsync(SMTPServer, Port, true);
-                await client.AuthenticateAsync(SMTPServerLogin, SMTPServerPassword);
-                await client.SendAsync(emailMessage);
-                await client.DisconnectAsync(true);
+                using (var client = new SmtpClient())
+                {
+                    throw new MailKit.Security.AuthenticationException();
+                    await client.ConnectAsync(SMTPServer, Port, true);
+                    await client.AuthenticateAsync(SMTPServerLogin, SMTPServerPassword);
+                    await client.SendAsync(emailMessage);
+                    await client.DisconnectAsync(true);
+                }
             }
+            catch (Exception exс)
+            {
+                _loggerService.LogError(exс.Message);
+                return false;
+            }
+            return true;
         }
     }
 }
