@@ -31,6 +31,7 @@ namespace EPlast.DataAccess.Repositories
         IDegreeRepository Degree { get; }
         IReligionRepository Religion { get; }
         IGenderRepository Gender { get; }
+        IUpuDegreeRepository UpuDegree { get; }
         IWorkRepository Work { get; }
         IConfirmedUserRepository ConfirmedUser { get; }
         IApproverRepository Approver { get; }
