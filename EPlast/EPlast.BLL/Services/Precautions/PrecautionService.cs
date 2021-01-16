@@ -21,19 +21,19 @@ namespace EPlast.BLL
             _userManager = userManager;
         }
 
-        public async Task AddPrecautionAsync(PrecautionDTO PrecautionDTO, User user)
+        public async Task AddPrecautionAsync(PrecautionDTO precautionDTO, User user)
         {
             await CheckIfAdminAsync(user);
-            var Precaution = _mapper.Map<PrecautionDTO, Precaution>(PrecautionDTO);
+            var Precaution = _mapper.Map<PrecautionDTO, Precaution>(precautionDTO);
             await _repoWrapper.Precaution.CreateAsync(Precaution);
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task ChangePrecautionAsync(PrecautionDTO PrecautionDTO, User user)
+        public async Task ChangePrecautionAsync(PrecautionDTO precautionDTO, User user)
         {
             await CheckIfAdminAsync(user);
-            var Precaution = await _repoWrapper.Precaution.GetFirstAsync(x => x.Id == PrecautionDTO.Id);
-            Precaution.Name = PrecautionDTO.Name;
+            var Precaution = await _repoWrapper.Precaution.GetFirstAsync(x => x.Id ==precautionDTO.Id);
+            Precaution.Name = precautionDTO.Name;
             _repoWrapper.Precaution.Update(Precaution);
             await _repoWrapper.SaveAsync();
         }
