@@ -23,6 +23,7 @@ namespace EPlast.DataAccess
         public DbSet<Education> Educations { get; set; }
         public DbSet<Degree> Degrees { get; set; }
         public DbSet<Gender> Genders { get; set; }
+        public DbSet<UpuDegree> UpuDegrees { get; set; }
         public DbSet<Work> Works { get; set; }
         public DbSet<ConfirmedUser> ConfirmedUsers { get; set; }
         public DbSet<Approver> Approvers { get; set; }
