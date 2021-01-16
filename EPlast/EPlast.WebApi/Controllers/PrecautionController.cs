@@ -81,8 +81,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("Precautions")]
         public async Task<IActionResult> GetPrecaution()
         {
-            IEnumerable<PrecautionDTO> Precautions = await _precautionService.GetAllPrecautionAsync();
-            return Ok(Precautions);
+             return Ok(await _precautionService.GetAllPrecautionAsync());
         }
 
         /// <summary>
