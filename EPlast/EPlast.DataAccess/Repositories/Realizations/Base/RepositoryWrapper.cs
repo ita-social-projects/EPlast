@@ -21,7 +21,9 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IOrganizationRepository _organization;
         private IDecesionTargetRepository _decesionTarget;
         private IDistinctionRepository _distinction;
+        private IPrecautionRepository _precaution;
         private IUserDistinctionRepository _userDistinction;
+        private IUserPrecautionRepository _userPrecaution;
         private IDocumentTemplateRepository _documentTemplate;
         private IDecesionRepository _decesion;
         private IMethodicDocumentRepository _methodicDocument;
@@ -739,6 +741,19 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 return _distinction;
             }
         }
+
+        public IPrecautionRepository Precaution
+        {
+            get
+            {
+                if (_precaution == null)
+                {
+                    _precaution = new PrecautionRepository(_dbContext);
+                }
+                return _precaution;
+            }
+        }
+
         public IUserDistinctionRepository UserDistinction
         {
             get
@@ -748,6 +763,17 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                     _userDistinction = new UserDistinctionRepository(_dbContext);
                 }
                 return _userDistinction;
+            }
+        }
+        public IUserPrecautionRepository UserPrecaution
+        {
+            get
+            {
+                if (_userPrecaution == null)
+                {
+                    _userPrecaution = new UserPrecautionRepository(_dbContext);
+                }
+                return _userPrecaution;
             }
         }
 
