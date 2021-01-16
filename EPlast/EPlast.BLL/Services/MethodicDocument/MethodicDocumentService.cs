@@ -66,7 +66,7 @@ namespace EPlast.BLL
         {
             var document = (await _repoWrapper.MethodicDocument.GetFirstAsync(d => d.ID == id));
             if (document == null)
-                throw new ArgumentNullException($"Decision with {id} id not found");
+                throw new ArgumentNullException($"Document with {id} id not found");
             _repoWrapper.MethodicDocument.Delete(document);
             if (document.FileName != null)
                 await _metodicDocsBlobStorage.DeleteBlobAsync(document.FileName);
