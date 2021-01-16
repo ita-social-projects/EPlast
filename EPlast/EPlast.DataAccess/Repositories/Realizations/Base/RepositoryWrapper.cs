@@ -38,6 +38,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IEventStatusRepository _eventStatus;
         private IReligionRepository _religion;
         private IGenderRepository _gender;
+        private IUpuDegreeRepository _upuDegree;
         private IWorkRepository _work;
         private IEducationRepository _education;
         private IDegreeRepository _degree;
@@ -381,6 +382,19 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 }
 
                 return _gender;
+            }
+        }
+
+        public IUpuDegreeRepository UpuDegree
+        {
+            get
+            {
+                if (_upuDegree == null)
+                {
+                    _upuDegree = new UpuDegreeRepository(_dbContext);
+                }
+
+                return _upuDegree;
             }
         }
 

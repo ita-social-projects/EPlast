@@ -68,8 +68,9 @@ namespace EPlast.WebApi.Controllers
             if (user != null)
             {
                 var time = await _userService.CheckOrAddPlastunRoleAsync(user.Id, user.RegistredOn);
-                var isUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун") 
-                    || !(await _userManagerService.IsInRoleAsync(user, "Прихильник") && await _userService.IsApprovedCityMember(userId));
+                var isUserPlastun = (await _userManagerService.IsInRoleAsync(user, "Пластун")
+                    || !(await _userManagerService.IsInRoleAsync(user, "Прихильник") && await _userService.IsApprovedCityMember(userId)))
+                    && user.UserProfile.UpuDegreeID != 1;
 
                 var model = new PersonalDataViewModel
                 {
@@ -123,6 +124,7 @@ namespace EPlast.WebApi.Controllers
                 var specialityUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(await _userPersonalDataService.GetAllEducationsGroupBySpecialityAsync());
                 var placeOfWorkUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(await _userPersonalDataService.GetAllWorkGroupByPlaceAsync());
                 var positionUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(await _userPersonalDataService.GetAllWorkGroupByPositionAsync());
+                var upuDegrees = _mapper.Map<IEnumerable<UpuDegreeDTO>, IEnumerable<UpuDegreeViewModel>>(await _userPersonalDataService.GetAllUpuDegreesAsync());
 
                 var educView = new UserEducationViewModel { PlaceOfStudyID = user.UserProfile.EducationId, SpecialityID = user.UserProfile.EducationId, PlaceOfStudyList = placeOfStudyUnique, SpecialityList = specialityUnique };
                 var workView = new UserWorkViewModel { PlaceOfWorkID = user.UserProfile.WorkId, PositionID = user.UserProfile.WorkId, PlaceOfWorkList = placeOfWorkUnique, PositionList = positionUnique };
@@ -135,6 +137,7 @@ namespace EPlast.WebApi.Controllers
                     WorkView = workView,
                     Degrees = _mapper.Map<IEnumerable<DegreeDTO>, IEnumerable<DegreeViewModel>>(await _userPersonalDataService.GetAllDegreesAsync()),
                     Genders = genders,
+                    UpuDegrees = upuDegrees,
                 };
 
                 return Ok(model);
