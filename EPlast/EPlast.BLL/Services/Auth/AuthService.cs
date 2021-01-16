@@ -65,7 +65,7 @@ namespace EPlast.BLL.Services
                 RegistredOn = DateTime.Now,
                 ImagePath = "default_user_image.png",
                 SocialNetworking = false,
-                UserProfile = new UserProfile()
+                UserProfile = new UserProfile { UpuDegreeID = 1 }
             };
 
             var result = await _userManager.CreateAsync(user, registerDto.Password);
