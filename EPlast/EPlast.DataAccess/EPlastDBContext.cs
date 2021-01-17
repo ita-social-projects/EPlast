@@ -225,7 +225,9 @@ namespace EPlast.DataAccess
         public DbSet<PlastDegree> PlastDegrees { get; set; }
         public DbSet<EducatorsStaff> KVs { get; set; }
         public DbSet<EducatorsStaffTypes> KVTypes { get; set; }
+        public DbSet<Precaution> Precautions { get; set; }
         public DbSet<Distinction> Distinctions { get; set; }
+        public DbSet<UserPrecaution> UserPrecautions { get; set; }
         public DbSet<UserDistinction> UserDistinctions { get; set; }
         public DbSet<BlankBiographyDocuments> BlankBiographyDocuments { get; set; }
         public DbSet<NotificationType> NotificationTypes { get; set; }

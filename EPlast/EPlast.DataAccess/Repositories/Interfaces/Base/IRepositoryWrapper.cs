@@ -70,7 +70,9 @@ namespace EPlast.DataAccess.Repositories
         IEventAdministrationRepository EventAdministration { get; }
         IEventCategoryTypeRepository EventCategoryType { get; }
         IDistinctionRepository Distinction { get; }
+        IPrecautionRepository Precaution { get; }
         IUserDistinctionRepository UserDistinction { get; }
+        IUserPrecautionRepository UserPrecaution { get; }
         IBlankBiographyDocumentsRepository  BiographyDocumentsRepository { get; }
         IAchievementDocumentsRepository AchievementDocumentsRepository { get; }
         IExtractFromUPUDocumentsRepository ExtractFromUPUDocumentsRepository { get; }

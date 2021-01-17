@@ -35,6 +35,7 @@ using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.Jwt;
 using EPlast.BLL.Services.Logging;
 using EPlast.BLL.Services.Notifications;
+using EPlast.BLL.Services.Precautions;
 using EPlast.BLL.Services.Region;
 using EPlast.BLL.Services.Region.RegionAccess;
 using EPlast.BLL.Services.Statistics;
@@ -118,7 +119,9 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IPlastDegreeService, PlastDegreeService>();
             services.AddScoped<IUserDatesService, UserDatesService>();
             services.AddScoped<IUserDistinctionService, UserDistinctionService>();
+            services.AddScoped<IUserPrecautionService, UserPrecautionService>();
             services.AddScoped<IDistinctionService, DistinctionService>();
+            services.AddScoped<IPrecautionService, PrecautionService>();
             services.AddScoped<IEducatorsStaffService, EducatorsStaffService>();
             services.AddScoped<IEducatorsStaffTypesService, EducatorsStaffTypesService>();
             services.AddScoped<IBlankBiographyDocumentService, BlankBiographyDocumentsService>();
