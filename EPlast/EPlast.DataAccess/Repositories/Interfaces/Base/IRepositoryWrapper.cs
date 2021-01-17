@@ -16,6 +16,7 @@ namespace EPlast.DataAccess.Repositories
         IDecesionTargetRepository DecesionTarget { get; }
         IDocumentTemplateRepository DocumentTemplate { get; }
         IDecesionRepository Decesion { get; }
+        IMethodicDocumentRepository MethodicDocument { get; }
         IEventRepository Event { get; }
         IGallaryRepository Gallary { get; }
         IParticipantStatusRepository ParticipantStatus { get; }
@@ -30,6 +31,7 @@ namespace EPlast.DataAccess.Repositories
         IDegreeRepository Degree { get; }
         IReligionRepository Religion { get; }
         IGenderRepository Gender { get; }
+        IUpuDegreeRepository UpuDegree { get; }
         IWorkRepository Work { get; }
         IConfirmedUserRepository ConfirmedUser { get; }
         IApproverRepository Approver { get; }
@@ -68,7 +70,9 @@ namespace EPlast.DataAccess.Repositories
         IEventAdministrationRepository EventAdministration { get; }
         IEventCategoryTypeRepository EventCategoryType { get; }
         IDistinctionRepository Distinction { get; }
+        IPrecautionRepository Precaution { get; }
         IUserDistinctionRepository UserDistinction { get; }
+        IUserPrecautionRepository UserPrecaution { get; }
         IBlankBiographyDocumentsRepository  BiographyDocumentsRepository { get; }
         IAchievementDocumentsRepository AchievementDocumentsRepository { get; }
         IExtractFromUPUDocumentsRepository ExtractFromUPUDocumentsRepository { get; }

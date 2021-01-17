@@ -2,21 +2,22 @@
 
 namespace EPlast.DataAccess.Migrations
 {
-    public partial class updatedReport : Migration
+    public partial class AddPublicPoliticalActivityToUserProfile : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "RegionName",
-                table: "RegionAnnualReports",
+                name: "PublicPoliticalActivity",
+                table: "UserProfiles",
+                maxLength: 50,
                 nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "RegionName",
-                table: "RegionAnnualReports");
+                name: "PublicPoliticalActivity",
+                table: "UserProfiles");
         }
     }
 }

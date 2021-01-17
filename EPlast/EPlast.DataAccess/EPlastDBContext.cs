@@ -23,6 +23,7 @@ namespace EPlast.DataAccess
         public DbSet<Education> Educations { get; set; }
         public DbSet<Degree> Degrees { get; set; }
         public DbSet<Gender> Genders { get; set; }
+        public DbSet<UpuDegree> UpuDegrees { get; set; }
         public DbSet<Work> Works { get; set; }
         public DbSet<ConfirmedUser> ConfirmedUsers { get; set; }
         public DbSet<Approver> Approvers { get; set; }
@@ -190,6 +191,7 @@ namespace EPlast.DataAccess
         public DbSet<Organization> Organization { get; set; }
         public DbSet<DecesionTarget> DecesionTargets { get; set; }
         public DbSet<Decesion> Decesions { get; set; }
+        public DbSet<MethodicDocument> MethodicDocuments { get; set; }
         public DbSet<AnnualReport> AnnualReports { get; set; }
         public DbSet<ClubAnnualReport> ClubAnnualReports { get; set; }
 
@@ -223,7 +225,9 @@ namespace EPlast.DataAccess
         public DbSet<PlastDegree> PlastDegrees { get; set; }
         public DbSet<EducatorsStaff> KVs { get; set; }
         public DbSet<EducatorsStaffTypes> KVTypes { get; set; }
+        public DbSet<Precaution> Precautions { get; set; }
         public DbSet<Distinction> Distinctions { get; set; }
+        public DbSet<UserPrecaution> UserPrecautions { get; set; }
         public DbSet<UserDistinction> UserDistinctions { get; set; }
         public DbSet<BlankBiographyDocuments> BlankBiographyDocuments { get; set; }
         public DbSet<NotificationType> NotificationTypes { get; set; }
