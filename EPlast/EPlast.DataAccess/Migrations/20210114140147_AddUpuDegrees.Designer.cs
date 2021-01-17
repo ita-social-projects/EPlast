@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    [Migration("20201109113635_updatedReport")]
-    partial class updatedReport
+    [Migration("20210114140147_AddUpuDegrees")]
+    partial class AddUpuDegrees
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -549,6 +549,9 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ClubMembersSummary")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClubName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClubPage")
@@ -1403,8 +1406,28 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Characteristic")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ChurchCooperation")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Fundraising")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImportantNeeds")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InvolvementOfVolunteers")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("NumberOfAdministrators")
                         .HasColumnType("int");
@@ -1469,10 +1492,38 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<int>("NumberOfUnatstvaSupporters")
                         .HasColumnType("int");
 
+                    b.Property<string>("ProblemSituations")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PublicFunding")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("RegionId")
                         .HasColumnType("int");
 
                     b.Property<string>("RegionName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SocialProjects")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StateOfPreparation")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StatusOfStrategy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SuccessStories")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TrainedNeeds")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
@@ -1522,6 +1573,21 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Religions");
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.UpuDegree", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("UpuDegrees");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.UserEntities.Distinction", b =>
@@ -1699,7 +1765,18 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<int?>("NationalityId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Pseudo")
+                        .HasColumnType("nvarchar(30)")
+                        .HasMaxLength(30);
+
+                    b.Property<string>("PublicPoliticalActivity")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
                     b.Property<int?>("ReligionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UpuDegreeID")
                         .HasColumnType("int");
 
                     b.Property<string>("UserID")
@@ -1719,6 +1796,8 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("NationalityId");
 
                     b.HasIndex("ReligionId");
+
+                    b.HasIndex("UpuDegreeID");
 
                     b.HasIndex("UserID")
                         .IsUnique()
@@ -2460,6 +2539,10 @@ namespace EPlast.DataAccess.Migrations
                     b.HasOne("EPlast.DataAccess.Entities.Religion", "Religion")
                         .WithMany("UserProfiles")
                         .HasForeignKey("ReligionId");
+
+                    b.HasOne("EPlast.DataAccess.Entities.UpuDegree", "UpuDegree")
+                        .WithMany("UserProfiles")
+                        .HasForeignKey("UpuDegreeID");
 
                     b.HasOne("EPlast.DataAccess.Entities.User", "User")
                         .WithOne("UserProfile")

@@ -35,6 +35,7 @@ using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.Jwt;
 using EPlast.BLL.Services.Logging;
 using EPlast.BLL.Services.Notifications;
+using EPlast.BLL.Services.Precautions;
 using EPlast.BLL.Services.Region;
 using EPlast.BLL.Services.Region.RegionAccess;
 using EPlast.BLL.Services.Statistics;
@@ -107,6 +108,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IClubFilesBlobStorageRepository, ClubFilesBlobStorageRepository>();
             services.AddScoped<IClubBlobStorageRepository, ClubBlobStorageRepository>();
             services.AddScoped<IRegionBlobStorageRepository, RegionBlobStorageRepository>();
+            services.AddScoped<IMethodicDocumentBlobStorageRepository, MethodicDocumentBlobStarageRepository>();
             services.AddScoped<IRegionFilesBlobStorageRepository, RegionFilesBlobStorageRepository>();
             services.AddScoped<IEventBlobStorageRepository, EventBlobStorageRepository>();
             services.AddScoped<IBlankFilesBlobStorageRepository, BlankFilesBlobStorageRepository>();
@@ -117,7 +119,9 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IPlastDegreeService, PlastDegreeService>();
             services.AddScoped<IUserDatesService, UserDatesService>();
             services.AddScoped<IUserDistinctionService, UserDistinctionService>();
+            services.AddScoped<IUserPrecautionService, UserPrecautionService>();
             services.AddScoped<IDistinctionService, DistinctionService>();
+            services.AddScoped<IPrecautionService, PrecautionService>();
             services.AddScoped<IEducatorsStaffService, EducatorsStaffService>();
             services.AddScoped<IEducatorsStaffTypesService, EducatorsStaffTypesService>();
             services.AddScoped<IBlankBiographyDocumentService, BlankBiographyDocumentsService>();
@@ -135,7 +139,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddTransient<IUniqueIdService, UniqueIdService>();
             services.AddTransient<IEventUserService, EventUserService>();
             services.AddScoped<IResources, BLL.Services.Resources.Resources>();
-
+            services.AddScoped<IMethodicDocumentService, MethodicDocumentService>();
             return services;
         }
     }
