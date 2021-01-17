@@ -36,6 +36,9 @@ namespace EPlast.DataAccess.Entities
             ErrorMessage = "Поле Громадська, політична діяльність має містити тільки літери та цифри")]
         [MaxLength(50, ErrorMessage = "Поле Громадська, політична діяльність не може перевищувати 50 символів")]
         public string PublicPoliticalActivity { get; set; }
+        public string FacebookLink { get; set; }
+        public string TwitterLink { get; set; }
+        public string InstagramLink { get; set; }
         public string UserID { get; set; }
         public User User { get; set; }
     }
