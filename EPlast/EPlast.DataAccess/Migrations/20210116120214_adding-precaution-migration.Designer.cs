@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20210116120214_adding-precaution-migration")]
+    partial class addingprecautionmigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1608,21 +1610,6 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("Religions");
                 });
 
-            modelBuilder.Entity("EPlast.DataAccess.Entities.UpuDegree", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("UpuDegrees");
-                });
-
             modelBuilder.Entity("EPlast.DataAccess.Entities.UserEntities.Distinction", b =>
                 {
                     b.Property<int>("Id")
@@ -1831,10 +1818,12 @@ namespace EPlast.DataAccess.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Address")
+                        .IsRequired()
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
                     b.Property<DateTime?>("Birthday")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("DegreeId")
@@ -1843,14 +1832,8 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<int?>("EducationId")
                         .HasColumnType("int");
 
-                    b.Property<string>("FacebookLink")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("GenderID")
                         .HasColumnType("int");
-
-                    b.Property<string>("InstagramLink")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("NationalityId")
                         .HasColumnType("int");
@@ -1860,16 +1843,10 @@ namespace EPlast.DataAccess.Migrations
                         .HasMaxLength(30);
 
                     b.Property<string>("PublicPoliticalActivity")
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
+                        .HasColumnType("nvarchar(500)")
+                        .HasMaxLength(500);
 
                     b.Property<int?>("ReligionId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TwitterLink")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("UpuDegreeID")
                         .HasColumnType("int");
 
                     b.Property<string>("UserID")
@@ -1889,8 +1866,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("NationalityId");
 
                     b.HasIndex("ReligionId");
-
-                    b.HasIndex("UpuDegreeID");
 
                     b.HasIndex("UserID")
                         .IsUnique()
@@ -2656,10 +2631,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasOne("EPlast.DataAccess.Entities.Religion", "Religion")
                         .WithMany("UserProfiles")
                         .HasForeignKey("ReligionId");
-
-                    b.HasOne("EPlast.DataAccess.Entities.UpuDegree", "UpuDegree")
-                        .WithMany("UserProfiles")
-                        .HasForeignKey("UpuDegreeID");
 
                     b.HasOne("EPlast.DataAccess.Entities.User", "User")
                         .WithOne("UserProfile")
