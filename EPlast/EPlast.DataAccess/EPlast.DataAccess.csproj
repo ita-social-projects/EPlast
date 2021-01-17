@@ -28,6 +28,8 @@
     <Compile Remove="Migrations\20210114090630_Add_UpuDegree_Migration.Designer.cs" />
     <Compile Remove="Migrations\20210114092306_Add_UpuDegree_Migration.cs" />
     <Compile Remove="Migrations\20210114092306_Add_UpuDegree_Migration.Designer.cs" />
+    <Compile Remove="Migrations\20210116201626_AddUserLinks.cs" />
+    <Compile Remove="Migrations\20210116201626_AddUserLinks.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
