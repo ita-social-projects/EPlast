@@ -34,6 +34,7 @@ namespace EPlast.BLL.Services.Precautions
                 Reason = userPrecautionDTO.Reason,
                 Reporter = userPrecautionDTO.Reporter,
                 Number = userPrecautionDTO.Number,
+                Status = userPrecautionDTO.Status
             };
             await _repoWrapper.UserPrecaution.CreateAsync(userPrecaution);
             await _repoWrapper.SaveAsync();
@@ -50,7 +51,8 @@ namespace EPlast.BLL.Services.Precautions
                 Date = userPrecautionDTO.Date,
                 Reason = userPrecautionDTO.Reason,
                 Reporter = userPrecautionDTO.Reporter,
-                Number = userPrecautionDTO.Number
+                Number = userPrecautionDTO.Number,
+                Status = userPrecautionDTO.Status
             };
             _repoWrapper.UserPrecaution.Update(userPrecaution);
             await _repoWrapper.SaveAsync();
