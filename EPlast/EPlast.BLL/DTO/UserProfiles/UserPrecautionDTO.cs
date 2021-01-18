@@ -10,6 +10,7 @@ namespace EPlast.BLL
         public PrecautionDTO Precaution { get; set; }
         public string Reporter { get; set; }
         public string Reason { get; set; }
+        public string Status { get; set; }
         public int Number { get; set; }
         public DateTime Date { get; set; }
         public string UserId { get; set; }
