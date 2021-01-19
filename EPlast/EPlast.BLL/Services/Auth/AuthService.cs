@@ -234,15 +234,12 @@ namespace EPlast.BLL.Services
         {
             string token = await this.AddRoleAndTokenAsync(email);
             var user = await _userManager.FindByEmailAsync(email);
-
             string confirmationLink = _Url.Action(
                         action: "confirmingEmail",
                         controller: "Auth",
                         values: new { token, userId = user.Id },
                         protocol: _contextAccessor.HttpContext.Request.Scheme);
-
             user.EmailSendedOnRegister = DateTime.Now;
-
             return (await _emailConfirmation.SendEmailAsync(
                 email: email,
                 subject: "Підтвердження реєстрації ",
@@ -255,7 +252,6 @@ namespace EPlast.BLL.Services
         {
             var user = await _userManager.FindByEmailAsync(userDTO.Email);
             user.EmailSendedOnRegister = DateTime.Now;
-            //await _userManager.UpdateAsync(user);
             await _emailConfirmation.SendEmailAsync(user.Email, "Вітаємо у системі!",
                 $"Ви успішно активували свій акаунт!\nНе забудьте доєднатись до осередку, перейшовши за :  <a href='{cityListUrl}'>посиланням</a> ", "Адміністрація сайту EPlast");
         }
@@ -348,6 +344,5 @@ namespace EPlast.BLL.Services
             await _signInManager.SignInAsync(user, isPersistent: false);
             return _mapper.Map<User, UserDTO>(user);
         }
-
     }
 }

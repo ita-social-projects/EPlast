@@ -40,7 +40,6 @@ namespace EPlast.BLL
             {
                 using (var client = new SmtpClient())
                 {
-                    throw new MailKit.Security.AuthenticationException();
                     await client.ConnectAsync(SMTPServer, Port, true);
                     await client.AuthenticateAsync(SMTPServerLogin, SMTPServerPassword);
                     await client.SendAsync(emailMessage);
