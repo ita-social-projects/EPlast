@@ -8,6 +8,8 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -74,10 +76,20 @@ namespace EPlast.XUnitTest.Services
             mockMapper
                .Setup(s => s.Map<UserDTO, User>(It.IsAny<UserDTO>()))
                .Returns(GetTestUserWithEmailsSendedTime());
+            Mock<IUrlHelperFactory> mockUrlHelperFactory = new Mock<IUrlHelperFactory>();
+            Mock<IActionContextAccessor> mockActionContextAccessor = new Mock<IActionContextAccessor>(); 
+            Mock<IHttpContextAccessor> mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            
 
-            AuthService AuthService = new AuthService(mockUserManager.Object, mockSignInManager.Object,
-               mockEmailConfirmation.Object, mockMapper.Object,null);
-
+            AuthService AuthService = new AuthService(mockUserManager.Object, 
+                mockSignInManager.Object, 
+                mockEmailConfirmation.Object, 
+                mockMapper.Object, 
+                mockRepositoryWrapper.Object,
+                mockUrlHelperFactory.Object,
+                mockActionContextAccessor.Object,
+                mockHttpContextAccessor.Object);
+                
             return (mockSignInManager, mockUserManager, mockEmailConfirmation, AuthService);
         }
 
@@ -258,9 +270,9 @@ namespace EPlast.XUnitTest.Services
             mockUserManager
                 .Setup(s => s.GenerateEmailConfirmationTokenAsync(It.IsAny<User>()))
                 .ReturnsAsync(GetTestCodeForResetPasswordAndConfirmEmail());
-
+            var registerDTO = GetTestRegisterDto();
             //Act
-            string token = await AuthService.AddRoleAndTokenAsync(GetTestRegisterDto());
+            string token = await AuthService.AddRoleAndTokenAsync(registerDTO.Email);
 
             //Assert
             var result = Assert.IsType<string>(token);

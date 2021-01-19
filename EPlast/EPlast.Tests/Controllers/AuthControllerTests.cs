@@ -370,7 +370,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(s => s.CreateUserAsync(It.IsAny<RegisterDto>()))
                 .ReturnsAsync(IdentityResult.Success);
             mockAuthService
-                .Setup(s => s.AddRoleAndTokenAsync(It.IsAny<RegisterDto>()))
+                .Setup(s => s.AddRoleAndTokenAsync(It.IsAny<string>()))
                 .ReturnsAsync("token");
             mockStringLocalizer
                 .Setup(s => s.ResourceForErrors["Confirm-Registration"])
@@ -382,6 +382,10 @@ namespace EPlast.Tests.Controllers
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync(queueStuff.Dequeue);
+            mockAuthService
+                .Setup(s => s.SendEmailRegistr(It.IsAny<string>()))
+                .ReturnsAsync(true);
+
 
             var mockUrlHelper = new Mock<IUrlHelper>(MockBehavior.Strict);
             mockUrlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>()))
@@ -502,7 +506,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
             mockAuthService
                 .Setup(s => s.GetTimeAfterRegistr(It.IsAny<UserDTO>()))
-                .Returns(180);
+                .Returns(1441);
             mockStringLocalizer
                 .Setup(s => s.ResourceForErrors[It.IsAny<string>()])
                 .Returns(GetConfirmedEmailNotAllowedMessage());
@@ -580,7 +584,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(s => s.GenerateConfToken(It.IsAny<UserDTO>()))
                 .ReturnsAsync("token");
             mockAuthService
-                .Setup(s => s.SendEmailRegistr(It.IsAny<string>(), It.IsAny<RegisterDto>()));
+                .Setup(s => s.SendEmailRegistr(It.IsAny<string>()));
             var mockUrlHelper = new Mock<IUrlHelper>(MockBehavior.Strict);
             mockUrlHelper
                 .Setup(x => x.Action(It.IsAny<UrlActionContext>()))

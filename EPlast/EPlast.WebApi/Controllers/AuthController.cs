@@ -202,7 +202,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">Problems with confirming email</response>
         [HttpGet("confirmingEmail")]
         [AllowAnonymous]
-        public async Task<IActionResult> ConfirmingEmail(string userId, string token) //+
+        public async Task<IActionResult> ConfirmingEmail(string userId, string token)
         {
             var userDto = await _authService.FindByIdAsync(userId);
             if (userDto == null)
@@ -210,7 +210,7 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest();
             }
             int totalTime = _authService.GetTimeAfterRegistr(userDto);
-            if (totalTime < 180)
+            if (totalTime < 1440)
             {
                 if (string.IsNullOrWhiteSpace(userId) && string.IsNullOrWhiteSpace(token))
                 {
@@ -220,9 +220,13 @@ namespace EPlast.WebApi.Controllers
 
                 if (result.Succeeded)
                 {
-                    await _authService.SendEmailReminder("http://localhost:3000/cities", userDto);
-                    return Redirect("http://localhost:3000/signin");
-                    //return Redirect(ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["SignIn"]);
+                    string signinurl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["SignIn"];
+                    string citiesurl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Сities"];
+                    signinurl = "http://localhost:3000/signin";
+                    citiesurl = "http://localhost:3000/cities";
+
+                    await _authService.SendEmailReminder(citiesurl, userDto);
+                    return Redirect(signinurl);
                 }
                 else
                 {
@@ -236,13 +240,13 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Method for resending email in system
+        /// Method for resending email after SMTPServer error
         /// </summary>
         /// <param name="userId">Id of user</param>
         /// <returns>Answer from backend for resending email method</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="404">Problems with resending email</response>
-        [HttpGet("resendEmailForRegistering")]
+        [HttpGet("resendEmailForRegistering/{userId}")]
         [AllowAnonymous]
         public async Task<IActionResult> ResendEmailForRegistering(string userId)
         {
@@ -251,14 +255,7 @@ namespace EPlast.WebApi.Controllers
             {
                 return BadRequest();
             }
-            string token = await _authService.GenerateConfToken(userDto);
-            var confirmationLink = Url.Action(
-                nameof(ConfirmingEmail),
-                "Auth",
-                new { token = token, userId = userDto.Id },
-                protocol: HttpContext.Request.Scheme);
-            //await _authService.SendEmailRegistr(confirmationLink, userDto);
-
+            await _authService.SendEmailRegistr(userDto.Email);
             return Ok("ResendEmailConfirmation");
         }
 
@@ -279,7 +276,6 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">Problems with forgotting password</response>
         [HttpPost("forgotPassword")]
         [AllowAnonymous]
-        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotpasswordDto)
         {
             if (ModelState.IsValid)
@@ -338,7 +334,6 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">Problems with resetting password</response>
         [HttpPost("resetPassword")]
         [AllowAnonymous]
-        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetpasswordDto) //+
         {
             if (!ModelState.IsValid)

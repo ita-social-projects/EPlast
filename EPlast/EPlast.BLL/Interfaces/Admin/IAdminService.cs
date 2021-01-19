@@ -45,6 +45,13 @@ namespace EPlast.BLL.Services.Interfaces
         /// <returns>Specify model with all users</returns>
         Task<IEnumerable<UserTableDTO>> InterestedUsersTableAsync();
 
+
+        /// <summary>
+        /// Get all users with no confirmed email
+        /// </summary>
+        /// <returns>Specify model with all users</returns>
+        Task<IEnumerable<UserTableDTO>> InactiveUsersTableAsync();
+
         /// <summary>
         /// Change Current Role of user
         /// </summary>

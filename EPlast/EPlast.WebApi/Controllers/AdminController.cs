@@ -59,6 +59,19 @@ namespace EPlast.WebApi.Controllers
             return Ok(result);
         }
 
+
+        /// <summary>
+        /// Get all users with additional information
+        /// </summary>
+        /// <returns>Specify model with all users</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("inactiveUsersTable")]
+        public async Task<IActionResult> inactiveUsersTable()
+        {
+            var result = await _adminService.InactiveUsersTableAsync();
+            return Ok(result);
+        }
+
         /// <summary>
         /// Get specify model for edit roles for selected user
         /// </summary>
@@ -152,6 +165,33 @@ namespace EPlast.WebApi.Controllers
             _loggerService.LogError("User id is null");
             return NotFound();
         }
+
+
+        ///// <summary>
+        ///// Method for resending email in system
+        ///// </summary>
+        ///// <param name="userId">Id of user</param>
+        ///// <returns>Answer from backend for resending email method</returns>
+        ///// <response code="200">Successful operation</response>
+        ///// <response code="404">Problems with resending email</response>
+        //[HttpGet("resendEmailForRegistering")]
+        //public async Task<IActionResult> ResendEmailForRegistering(string userId)
+        //{
+        //    var userDto = await _adminService.
+        //    if (userDto == null)
+        //    {
+        //        return BadRequest();
+        //    }
+        //    string token = await _authService.GenerateConfToken(userDto);
+        //    var confirmationLink = Url.Action(
+        //        nameof(ConfirmingEmail),
+        //        "Auth",
+        //        new { token = token, userId = userDto.Id },
+        //        protocol: HttpContext.Request.Scheme);
+        //    //await _authService.SendEmailRegistr(confirmationLink, userDto);
+
+        //    return Ok("ResendEmailConfirmation");
+        //}
 
         /// <summary>
         /// Confirmation of delete a user
