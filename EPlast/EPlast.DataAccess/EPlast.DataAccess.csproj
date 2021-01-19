@@ -18,6 +18,12 @@
     <Compile Remove="Migrations\20201007144938_Remove_Unused_Fields_Blank_Biography.Designer.cs" />
     <Compile Remove="Migrations\20201007150230_Remove_Unused_Fields_Blank_Biography.cs" />
     <Compile Remove="Migrations\20201007150230_Remove_Unused_Fields_Blank_Biography.Designer.cs" />
+    <Compile Remove="Migrations\20210105132752_AddPublicPoliticalActivityToUserProfile.cs" />
+    <Compile Remove="Migrations\20210105132752_AddPublicPoliticalActivityToUserProfile.Designer.cs" />
+    <Compile Remove="Migrations\20210105134847_AddPublicPoliticalActivityToUserProfile.cs" />
+    <Compile Remove="Migrations\20210105134847_AddPublicPoliticalActivityToUserProfile.Designer.cs" />
+    <Compile Remove="Migrations\20210105140946_RemoveUpdatedReport.cs" />
+    <Compile Remove="Migrations\20210105140946_RemoveUpdatedReport.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

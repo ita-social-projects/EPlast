@@ -63,6 +63,10 @@ namespace EPlast.BLL.Services.UserProfiles
                         ThenInclude(g => g.Religion).
                     Include(g => g.UserProfile).
                         ThenInclude(g => g.Work).
+                    Include(g => g.CityMembers).
+                        ThenInclude(g => g.City).
+                    Include(g => g.ClubMembers).
+                        ThenInclude(g => g.Club).
                     Include(x => x.ConfirmedUsers).
                         ThenInclude(q => (q as ConfirmedUser).Approver).
                             ThenInclude(q => q.User));

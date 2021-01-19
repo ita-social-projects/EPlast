@@ -91,6 +91,45 @@ namespace EPlast.Tests.Services.City
             _mapper.Verify(m => m.Map<IEnumerable<DataAccess.Entities.CityMembers>, IEnumerable<CityMembersDTO>>(It.IsAny<IEnumerable<DataAccess.Entities.CityMembers>>()));
         }
 
+
+        [Test]
+        public async Task AddFollowerAsync_ReturnsCityMembersDTO()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.CityMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.CityMembers>, IIncludableQueryable<DataAccess.Entities.CityMembers, object>>>()))
+                .ReturnsAsync(new CityMembers());
+            _repoWrapper
+                .Setup(x => x.CityMembers.Delete(It.IsAny<CityMembers>()));
+            _repoWrapper
+               .Setup(x => x.SaveAsync());
+            _repoWrapper
+                .Setup(x => x.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(GetCityAdministration());
+            _repoWrapper
+                .Setup(x => x.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new CityAdministration() { AdminTypeId = 2 });
+            _adminTypeService
+                .Setup(x => x.GetAdminTypeByIdAsync(It.IsAny<int>())).ReturnsAsync(new AdminTypeDTO() { AdminTypeName = "Голова Станиці" });
+            _repoWrapper
+                .Setup(x => x.CityAdministration.Update(new CityAdministration()));
+            _userManager
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+            _repoWrapper
+                .Setup(x => x.CityMembers.CreateAsync(It.IsAny<CityMembers>()));
+            _repoWrapper
+                .Setup(x => x.SaveAsync());
+            _mapper
+                .Setup(x => x.Map<CityMembers, CityMembersDTO>(It.IsAny<CityMembers>())).Returns(new CityMembersDTO());
+            // Act
+            var result = await _cityParticipantsService.AddFollowerAsync(It.IsAny<int>(), It.IsAny<string>());
+            // Assert
+            Assert.IsInstanceOf<CityMembersDTO>(result);
+        }
+
         [Test]
         public async Task AddAdministratorAsync_ReturnsAdministrator()
         {
@@ -495,6 +534,15 @@ namespace EPlast.Tests.Services.City
             {
                 new CityAdministrationDTO{UserId = "Голова Станиці"},
                 new CityAdministrationDTO{UserId = "Голова Станиці"}
+            }.AsEnumerable();
+        }
+
+        private IEnumerable<CityAdministration> GetCityAdministration()
+        {
+            return new List<CityAdministration>
+            {
+                new CityAdministration{UserId = "Голова Станиці", ID=2},
+                new CityAdministration{UserId = "Голова Станиці", ID=3}
             }.AsEnumerable();
         }
 
