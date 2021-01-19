@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace EPlast.Tests.Controllers
 {
@@ -22,6 +23,7 @@ namespace EPlast.Tests.Controllers
         private  Mock<IRegionAnnualReportService> _regionAnnualReportService;
         private Mock<UserManager<User>> _userManager;
         private RegionsController _regionController;
+        private Mock<IDistributedCache> _cache;
 
         [SetUp]
         public void SetUp()
@@ -32,8 +34,9 @@ namespace EPlast.Tests.Controllers
             _regionAnnualReportService = new Mock<IRegionAnnualReportService>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            _cache = new Mock<IDistributedCache>();
             _regionController = new RegionsController(
-                _logger.Object, _regionService.Object, _regionAdministrationService.Object, _regionAnnualReportService.Object, _userManager.Object);
+                _logger.Object, _regionService.Object, _regionAdministrationService.Object, _regionAnnualReportService.Object, _userManager.Object, _cache.Object);
         }
 
         [Test]

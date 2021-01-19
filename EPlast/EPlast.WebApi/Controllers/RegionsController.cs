@@ -9,6 +9,9 @@ using System;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
+using EPlast.WebApi.Extensions;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Collections.Generic;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -21,18 +24,21 @@ namespace EPlast.WebApi.Controllers
         private readonly IRegionAdministrationService _regionAdministrationService;
         private readonly IRegionAnnualReportService _RegionAnnualReportService;
         private readonly UserManager<User> _userManager;
+        private IDistributedCache _cache;
 
         public RegionsController(ILoggerService<CitiesController> logger,
             IRegionService regionService,
             IRegionAdministrationService regionAdministrationService,
             IRegionAnnualReportService RegionAnnualReportService,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IDistributedCache cache)
         {
             _logger = logger;
             _regionService = regionService;
             _regionAdministrationService = regionAdministrationService;
             _RegionAnnualReportService = RegionAnnualReportService;
             _userManager = userManager;
+            _cache = cache;
         }
 
         [HttpGet("Profiles")]
@@ -40,7 +46,6 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> Index()
         {
             var regions = await _regionService.GetAllRegionsAsync();
-
             return Ok(regions);
         }
 
@@ -72,7 +77,6 @@ namespace EPlast.WebApi.Controllers
             return Ok();
         }
 
-
         [HttpGet("LogoBase64")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetPhotoBase64(string logoName)
@@ -81,8 +85,6 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(logoBase64);
         }
-
-
 
         [HttpGet("GetAdministration/{regionId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
@@ -93,8 +95,6 @@ namespace EPlast.WebApi.Controllers
             return Ok(Admins);
         }
 
-
-
         [HttpGet("GetHead/{regionId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetRegionHead(int regionId)
@@ -103,9 +103,6 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(Head);
         }
-
-
-
 
         [HttpGet("Profile/{regionId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
@@ -153,12 +150,22 @@ namespace EPlast.WebApi.Controllers
             return NotFound();
         }
 
-
+        /// <summary>
+        /// Get all regions using redis cache
+        /// </summary>
+        /// <returns>List of regions</returns>
         [HttpGet("Profiles/{page}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetRegions(int page, int pageSize, string regionName)
         {
-            var regions = await _regionService.GetAllRegionsAsync();
+            string recordKey = "Regions_" + DateTime.Now.ToString("yyyyMMdd_hhmm");
+            IEnumerable<RegionDTO> regions = await _cache.GetRecordAsync<IEnumerable<RegionDTO>>(recordKey);
+            
+            if (regions is null)
+            {
+                regions = await _regionService.GetAllRegionsAsync();
+                await _cache.SetRecordAsync(recordKey, regions);
+            }
             var regionsViewModel = new RegionsViewModel(page, pageSize, regions, regionName, User.IsInRole("Admin"));
 
             return Ok(regionsViewModel);
@@ -176,8 +183,6 @@ namespace EPlast.WebApi.Controllers
             return Ok(regions);
         }
 
-
-
         [HttpDelete("RemoveAdministration/{Id}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
         public async Task<IActionResult> Remove(int Id)
@@ -185,7 +190,6 @@ namespace EPlast.WebApi.Controllers
             await _regionAdministrationService.DeleteAdminByIdAsync(Id);
             return Ok();
         }
-
 
         [HttpPost("AddDocument")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
@@ -196,7 +200,6 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(document);
         }
-
 
         [HttpDelete("RemoveRegion/{Id}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
@@ -212,7 +215,6 @@ namespace EPlast.WebApi.Controllers
         {
             var secretaries = await _regionAdministrationService.GetUsersAdministrations(userId);
             return Ok(secretaries);
-
         }
 
         [HttpGet("GetUserPreviousAdministrations/{userId}")]
@@ -221,9 +223,7 @@ namespace EPlast.WebApi.Controllers
         {
             var secretaries = await _regionAdministrationService.GetUsersPreviousAdministrations(userId);
             return Ok(secretaries);
-
         }
-
 
         [HttpDelete("RemoveDocument/{documentId}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
@@ -235,19 +235,13 @@ namespace EPlast.WebApi.Controllers
             return Ok();
         }
 
-
-
-
         [HttpGet("FileBase64/{fileName}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetFileBase64(string fileName)
         {
             var fileBase64 = await _regionService.DownloadFileAsync(fileName);
-
             return Ok(fileBase64);
         }
-
-
 
         [HttpGet("getDocs/{regionId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
@@ -255,9 +249,7 @@ namespace EPlast.WebApi.Controllers
         {
             var secretaries = await _regionService.GetRegionDocsAsync(regionId);
             return Ok(secretaries);
-
         }
-
 
         [HttpPost("AddFollower/{regionId}/{cityId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
@@ -267,7 +259,6 @@ namespace EPlast.WebApi.Controllers
             return Ok();
         }
 
-
         [HttpGet("GetMembers/{regionId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetMembers(int regionId)
@@ -276,7 +267,6 @@ namespace EPlast.WebApi.Controllers
             return Ok(members);
         }
 
-
         [HttpGet("GetAdminTypes")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetAdminTypes()
@@ -284,7 +274,6 @@ namespace EPlast.WebApi.Controllers
             var types = await _regionAdministrationService.GetAllAdminTypes();
             return Ok(types);
         }
-
 
         [HttpGet("GetAdminTypeId/{name}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
@@ -366,6 +355,5 @@ namespace EPlast.WebApi.Controllers
         {
             return Ok(await _RegionAnnualReportService.GetAllRegionsReportsAsync());
         }
-
     }
 }

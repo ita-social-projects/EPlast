@@ -86,7 +86,7 @@ namespace EPlast.BLL.Interfaces
         /// </summary>
         /// <param name="registerDto"></param>
         /// <returns>Result of adding role and token</returns>
-        Task<string> AddRoleAndTokenAsync(RegisterDto registerDto);
+        Task<string> AddRoleAndTokenAsync(string email);
 
         /// <summary>
         /// Generating confirmation token
@@ -171,7 +171,7 @@ namespace EPlast.BLL.Interfaces
         /// <param name="confirmationLink"></param>
         /// <param name="userDto"></param>
         /// <returns>Result of sending email</returns>
-        Task SendEmailRegistr(string confirmationLink, UserDTO userDto);
+        Task<bool> SendEmailRegistr(string email);
 
         /// <summary>
         /// Sending email for registration
@@ -179,15 +179,15 @@ namespace EPlast.BLL.Interfaces
         /// <param name="confirmationLink"></param>
         /// <param name="registerDto"></param>
         /// <returns>Result of sending email</returns>
-        Task SendEmailRegistr(string confirmationLink, RegisterDto registerDto);
+        Task SendEmailReseting(string confirmationLink, ForgotPasswordDto forgotPasswordDto);
 
         /// <summary>
-        /// Sending email for reseting
+        /// Sending email reminder
         /// </summary>
-        /// <param name="confirmationLink"></param>
-        /// <param name="forgotPasswordDto"></param>
+        /// <param name="cityListUrl"></param>
+        /// <param name="userDTO"></param>
         /// <returns>Result of sending email</returns>
-        Task SendEmailReseting(string confirmationLink, ForgotPasswordDto forgotPasswordDto);
+        Task SendEmailReminder(string cityListUrl, UserDTO userDTO);
 
         /// <summary>
         ///  Validates google token and gets user information

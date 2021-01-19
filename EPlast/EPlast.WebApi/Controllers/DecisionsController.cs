@@ -11,10 +11,9 @@ using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
-
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня, Пластун")]
     public class DecisionsController : ControllerBase
     {
         private readonly IDecisionService _decisionService;
@@ -143,6 +142,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">Decision was deleted</response>
         /// <response code="404">Decision does not exist</response>
         [HttpDelete("{id:int}")]
+
         public async Task<IActionResult> Delete(int id)
         {
             await _decisionService.DeleteDecisionAsync(id);
