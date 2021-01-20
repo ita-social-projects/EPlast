@@ -222,9 +222,6 @@ namespace EPlast.WebApi.Controllers
                 {
                     string signinurl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["SignIn"];
                     string citiesurl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Сities"];
-                    signinurl = "http://localhost:3000/signin";
-                    citiesurl = "http://localhost:3000/cities";
-
                     await _authService.SendEmailReminder(citiesurl, userDto);
                     return Redirect(signinurl);
                 }
