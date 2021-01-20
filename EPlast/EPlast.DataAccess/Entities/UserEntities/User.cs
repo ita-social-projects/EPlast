@@ -37,7 +37,6 @@ namespace EPlast.DataAccess.Entities
         public DateTime RegistredOn { get; set; }
         public DateTime EmailSendedOnRegister { get; set; }
         public DateTime EmailSendedOnForgotPassword { get; set; }
-        public string Comment { get; set; }
         public string ImagePath { get; set; }
         public bool SocialNetworking { get; set; }
         public UserProfile UserProfile { get; set; }

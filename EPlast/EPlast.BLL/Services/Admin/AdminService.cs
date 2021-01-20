@@ -223,7 +223,6 @@ namespace EPlast.BLL.Services
                         ?.PlastDegree.Name : string.Empty,
                     UserRoles = string.Join(", ", roles),
                     UPUDegree = user.UserProfile.UpuDegree.Name,
-                    Comment = user.Comment,
                     Email = user.UserName
                 });
             }
