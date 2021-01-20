@@ -11,5 +11,6 @@ namespace EPlast.BLL.DTO.UserProfiles
         public DateTime? Birthday { get; set; }
         public GenderDTO Gender { get; set; }
         public string Email { get; set; }
+        public bool EmailConfirmed { get; set; }
     }
 }

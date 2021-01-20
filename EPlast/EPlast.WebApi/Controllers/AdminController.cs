@@ -48,18 +48,6 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Get all users with additional information
-        /// </summary>
-        /// <returns>Specify model with all users</returns>
-        /// <response code="200">Successful operation</response>
-        [HttpGet("inactiveUsersTable")]
-        public async Task<IActionResult> inactiveUsersTable()
-        {
-            var result = await _adminService.InactiveUsersTableAsync();
-            return Ok(result);
-        }
-
-        /// <summary>
         /// Get specify model for edit roles for selected user
         /// </summary>
         /// <param name="userId">The id of the user</param>
