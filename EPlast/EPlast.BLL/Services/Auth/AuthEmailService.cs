@@ -37,7 +37,7 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async Task<bool> SendEmailRegistr(string email)
+        public async Task<bool> SendEmailRegistrAsync(string email)
         {
             string token = await _authService.AddRoleAndTokenAsync(email);
             var user = await _userManager.FindByEmailAsync(email);
@@ -56,7 +56,7 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async Task SendEmailReminder(string citiesUrl, UserDTO userDTO)
+        public async Task SendEmailReminderAsync(string citiesUrl, UserDTO userDTO)
         {
             var user = await _userManager.FindByEmailAsync(userDTO.Email);
             user.EmailSendedOnRegister = DateTime.Now;
@@ -65,7 +65,7 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async Task SendEmailReseting(string confirmationLink, ForgotPasswordDto forgotPasswordDto)
+        public async Task SendEmailResetingAsync(string confirmationLink, ForgotPasswordDto forgotPasswordDto)
         {
             var user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email);
             user.EmailSendedOnForgotPassword = DateTime.Now;
