@@ -80,6 +80,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IExtractFromUPUDocumentsRepository _extractFromUPUDocumentsRepository;
         private IClubAnnualReportsRepository _clubAnnualReports;
         private IRegionAnnualReportsRepository _regionAnnualReports;
+        private ICommentRepository _comments;
 
         public IEducatorsStaffTypesRepository KVTypes
         {
@@ -860,6 +861,18 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                     _extractFromUPUDocumentsRepository = new ExtractFromUPUDocumentsRepository(_dbContext);
                 }
                 return _extractFromUPUDocumentsRepository;
+            }
+        }
+
+        public ICommentRepository Comments 
+        {
+            get
+            {
+                if (_comments == null)
+                {
+                    _comments = new CommentRepository(_dbContext);
+                }
+                return _comments;
             }
         }
 

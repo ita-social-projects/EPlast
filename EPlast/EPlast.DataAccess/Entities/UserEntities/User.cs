@@ -37,7 +37,6 @@ namespace EPlast.DataAccess.Entities
         public DateTime RegistredOn { get; set; }
         public DateTime EmailSendedOnRegister { get; set; }
         public DateTime EmailSendedOnForgotPassword { get; set; }
-        public string Comment { get; set; }
         public string ImagePath { get; set; }
         public bool SocialNetworking { get; set; }
         public UserProfile UserProfile { get; set; }
@@ -57,6 +56,7 @@ namespace EPlast.DataAccess.Entities
         public ICollection<EducatorsStaff.EducatorsStaff> UsersKadras { get; set; }
         public ICollection<UserDistinction> UserDistinctions { get; set; }
         public ICollection<BlankBiographyDocuments> BlankBiographyDocuments { get; set; }
+        public ICollection<Comment> Comments { get; set; }
      
         public User()
         {

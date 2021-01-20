@@ -38,6 +38,7 @@ namespace EPlast.DataAccess
         public DbSet<EventStatus> EventStatuses { get; set; }
         public DbSet<EventAdministration> EventAdministration { get; set; }
         public DbSet<EventAdministrationType> EventAdministrationType { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -90,6 +91,11 @@ namespace EPlast.DataAccess
                 .HasOne(ct => ct.EventCategory)
                 .WithMany(c => c.EventTypes)
                 .HasForeignKey(ct => ct.EventCategoryId);
+
+            modelBuilder.Entity<Comment>()
+                .HasOne(x => x.User)
+                .WithMany(m => m.Comments)
+                .HasForeignKey(x => x.UserID);
 
             modelBuilder.Entity<User>()
                 .HasOne(x => x.UserProfile)

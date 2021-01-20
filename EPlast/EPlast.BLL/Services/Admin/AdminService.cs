@@ -28,7 +28,6 @@ namespace EPlast.BLL.Services
         private readonly IRegionAdministrationService _regionService;
         private readonly ICityParticipantsService _cityParticipants;
 
-
         public AdminService(IRepositoryWrapper repoWrapper, 
             UserManager<User> userManager, 
             IMapper mapper, 
@@ -191,13 +190,17 @@ namespace EPlast.BLL.Services
                     i => i.Include(x => x.UserProfile)
                             .ThenInclude(x => x.Gender)
                         .Include(x => x.UserPlastDegrees)
-                            .ThenInclude(x => x.PlastDegree));
+                            .ThenInclude(x => x.PlastDegree)
+                         .Include(x => x.UserProfile)
+                            .ThenInclude(x=>x.UpuDegree));
             var cities = await _repoWrapper.City.
                 GetAllAsync(null, x => x.Include(i => i.Region));
             var clubMembers = await _repoWrapper.ClubMembers.
                 GetAllAsync(null, x => x.Include(i => i.Club));
             var cityMembers = await _repoWrapper.CityMembers.
                 GetAllAsync(null, x => x.Include(i => i.City));
+           /* var comments = await _repoWrapper.Comments.
+                GetAllAsync(null, x => x.Include(i => i.User));*/
             List<UserTableDTO> userTable = new List<UserTableDTO>();
             foreach (var user in users)
             {
@@ -205,6 +208,7 @@ namespace EPlast.BLL.Services
                 var cityName = cityMembers.Where(x => x.UserId.Equals(user.Id) && x.EndDate == null)
                                           .Select(x => x.City.Name)
                                           .LastOrDefault() ?? string.Empty;
+                var upuDegree = user.UserProfile.UpuDegree;
 
                 userTable.Add(new UserTableDTO
                 {
@@ -221,8 +225,11 @@ namespace EPlast.BLL.Services
                         ?.PlastDegree.Name : string.Empty,
                     UserRoles = string.Join(", ", roles),
 
-                    Comment = user.Comment,
-                    Email = user.UserName
+                    Comment = user.Comments.Where(x => x.UserID.Equals(user.Id))
+                                           .Select(x => x.Text).LastOrDefault() ?? string.Empty,
+
+                    Email = user.UserName,
+                    UPUDegree = upuDegree.Name
                 });
             }
             return userTable;
