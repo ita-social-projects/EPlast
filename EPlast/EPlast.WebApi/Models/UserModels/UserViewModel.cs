@@ -44,6 +44,9 @@ namespace EPlast.WebApi.Models.UserModels
         public ReligionViewModel Religion { get; set; }
         public WorkViewModel Work { get; set; }
         public GenderViewModel Gender { get; set; }
+        [Display(Name = "Ступінь в УПЮ")]
+        [Required(ErrorMessage = "Поле ступінь в УПЮ є обов'язковим")]
+        public UpuDegreeViewModel UpuDegree { get; set; }
         [Display(Name = "Домашня адреса")]
         [MaxLength(50, ErrorMessage = "Адреса не може перевищувати 50 символів")]
         [Required(ErrorMessage = "Поле домашня адреса є обов'язковим")]
@@ -54,9 +57,12 @@ namespace EPlast.WebApi.Models.UserModels
         public string Pseudo { get; set; }
         [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.-]{1,51}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.-]{1,51})*$",
             ErrorMessage = "Поле Громадська, політична діяльність має містити тільки літери та цифри")]
-        [MaxLength(500, ErrorMessage = "Поле Громадська, політична діяльність не може перевищувати 500 символів")]
+        [MaxLength(50, ErrorMessage = "Поле Громадська, політична діяльність не може перевищувати 50 символів")]
         public string PublicPoliticalActivity { get; set; }
         public string City { get; set; }
         public string Club { get; set; }
+        public string FacebookLink { get; set; }
+        public string TwitterLink { get; set; }
+        public string InstagramLink { get; set; }
     }
 }

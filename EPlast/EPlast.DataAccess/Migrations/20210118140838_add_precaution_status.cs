@@ -2,21 +2,21 @@
 
 namespace EPlast.DataAccess.Migrations
 {
-    public partial class updatedReport : Migration
+    public partial class add_precaution_status : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "RegionName",
-                table: "RegionAnnualReports",
+                name: "Status",
+                table: "UserPrecautions",
                 nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "RegionName",
-                table: "RegionAnnualReports");
+                name: "Status",
+                table: "UserPrecautions");
         }
     }
 }

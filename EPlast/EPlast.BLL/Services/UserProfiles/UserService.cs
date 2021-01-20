@@ -67,6 +67,8 @@ namespace EPlast.BLL.Services.UserProfiles
                         ThenInclude(g => g.City).
                     Include(g => g.ClubMembers).
                         ThenInclude(g => g.Club).
+                    Include(g => g.UserProfile).
+                        ThenInclude(g => g.UpuDegree).
                     Include(x => x.ConfirmedUsers).
                         ThenInclude(q => (q as ConfirmedUser).Approver).
                             ThenInclude(q => q.User));
@@ -147,6 +149,7 @@ namespace EPlast.BLL.Services.UserProfiles
         /// <inheritdoc />
         public async Task UpdateAsyncForBase64(UserDTO user, string base64, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
+            user = GetCorrectLinks(user);
             user.ImagePath ??= await UploadPhotoAsyncFromBase64(user.Id, base64);
             await UpdateAsync(user, placeOfStudyId, specialityId, placeOfWorkId, positionId);
             await _repoWrapper.SaveAsync();
@@ -289,6 +292,22 @@ namespace EPlast.BLL.Services.UserProfiles
             _repoWrapper.User.Update(userForUpdate);
             _repoWrapper.UserProfile.Update(userForUpdate.UserProfile);
             await _repoWrapper.SaveAsync();
+        }
+        private UserDTO GetCorrectLinks(UserDTO user)
+        {
+            if (user.UserProfile.FacebookLink != null && user.UserProfile.FacebookLink != "" && !user.UserProfile.FacebookLink.Contains("http"))
+            {
+                user.UserProfile.FacebookLink = "https://" + user.UserProfile.FacebookLink;
+            }
+            if (user.UserProfile.TwitterLink != null && user.UserProfile.TwitterLink != "" && !user.UserProfile.TwitterLink.Contains("http"))
+            {
+                user.UserProfile.TwitterLink = "https://" + user.UserProfile.TwitterLink;
+            }
+            if (user.UserProfile.InstagramLink != null && user.UserProfile.InstagramLink != "" && !user.UserProfile.InstagramLink.Contains("http"))
+            {
+                user.UserProfile.InstagramLink = "https://" + user.UserProfile.InstagramLink;
+            }
+            return user;
         }
 
         public async Task<bool> IsApprovedCityMember(string userId)

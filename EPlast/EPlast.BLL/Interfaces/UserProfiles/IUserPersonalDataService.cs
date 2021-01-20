@@ -38,6 +38,12 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         public Task<IEnumerable<GenderDTO>> GetAllGendersAsync();
 
         /// <summary>
+        /// Get all UPU Degrees
+        /// </summary>
+        /// <returns>All UPU Degrees</returns>
+        public Task<IEnumerable<UpuDegreeDTO>> GetAllUpuDegreesAsync();
+
+        /// <summary>
         /// Get all nationalities
         /// </summary>
         /// <returns>All nationalities</returns>

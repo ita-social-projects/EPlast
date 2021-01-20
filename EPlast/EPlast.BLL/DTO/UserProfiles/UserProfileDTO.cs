@@ -23,6 +23,8 @@ namespace EPlast.BLL.DTO.UserProfiles
         public WorkDTO Work { get; set; }
         public int? GenderID { get; set; }
         public GenderDTO Gender { get; set; }
+        public int? UpuDegreeID { get; set; }
+        public UpuDegreeDTO UpuDegree { get; set; }
         [Display(Name = "Домашня адреса")]
         [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.-]{1,31}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.-]{1,31})*$",
             ErrorMessage = "Домашня адреса має містити тільки літери та цифри")]
@@ -36,8 +38,11 @@ namespace EPlast.BLL.DTO.UserProfiles
         public string Pseudo { get; set; }
         [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.-]{1,51}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.-]{1,51})*$",
             ErrorMessage = "Поле Громадська, політична діяльність має містити тільки літери та цифри")]
-        [MaxLength(500, ErrorMessage = "Поле Громадська, політична діяльність не може перевищувати 500 символів")]
+        [MaxLength(50, ErrorMessage = "Поле Громадська, політична діяльність не може перевищувати 50 символів")]
         public string PublicPoliticalActivity { get; set; }
+        public string FacebookLink { get; set; }
+        public string TwitterLink { get; set; }
+        public string InstagramLink { get; set; }
         public UserDTO User { get; set; }
     }
 }
