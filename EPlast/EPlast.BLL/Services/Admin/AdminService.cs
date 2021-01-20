@@ -256,7 +256,6 @@ namespace EPlast.BLL.Services
                 city.Region.Administration = _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(cities.First(c => c.ID == city.ID).Region.RegionAdministration);
             }
             return citiesDTO;
-
         }
     }
 }
