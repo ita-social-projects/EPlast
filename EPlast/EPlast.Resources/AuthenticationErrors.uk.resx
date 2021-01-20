@@ -187,7 +187,7 @@
     <value>Час для скидування пароля акаунта вичерпаний. Для того, щоб скинути пароль, повторно відвідайте сторінку
                 Забули Пароль та повторіть дану операцію.</value>
   </data>
-  <data name="SMTPServerError" xml:space="preserve">
+  <data name="Register-SMTPServerError" xml:space="preserve">
     <value>Помилка поштового серверу. Зверніться до адміністратора на вкладці Контакти.</value>
   </data>
 </root>

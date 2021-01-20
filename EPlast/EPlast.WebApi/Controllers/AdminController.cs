@@ -141,33 +141,6 @@ namespace EPlast.WebApi.Controllers
             return NotFound();
         }
 
-
-        ///// <summary>
-        ///// Method for resending email in system
-        ///// </summary>
-        ///// <param name="userId">Id of user</param>
-        ///// <returns>Answer from backend for resending email method</returns>
-        ///// <response code="200">Successful operation</response>
-        ///// <response code="404">Problems with resending email</response>
-        //[HttpGet("resendEmailForRegistering")]
-        //public async Task<IActionResult> ResendEmailForRegistering(string userId)
-        //{
-        //    var userDto = await _adminService.
-        //    if (userDto == null)
-        //    {
-        //        return BadRequest();
-        //    }
-        //    string token = await _authService.GenerateConfToken(userDto);
-        //    var confirmationLink = Url.Action(
-        //        nameof(ConfirmingEmail),
-        //        "Auth",
-        //        new { token = token, userId = userDto.Id },
-        //        protocol: HttpContext.Request.Scheme);
-        //    //await _authService.SendEmailRegistr(confirmationLink, userDto);
-
-        //    return Ok("ResendEmailConfirmation");
-        //}
-
         /// <summary>
         /// Confirmation of delete a user
         /// </summary>

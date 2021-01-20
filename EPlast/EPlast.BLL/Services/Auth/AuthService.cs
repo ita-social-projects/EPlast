@@ -32,15 +32,15 @@ namespace EPlast.BLL.Services
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IUrlHelper _Url;
         private readonly IHttpContextAccessor _contextAccessor;
-        public AuthService(UserManager<User> userManager,
+        public AuthService(
+            UserManager<User> userManager,
             SignInManager<User> signInManager,
             IEmailConfirmation emailConfirmation,
             IMapper mapper,
-            IRepositoryWrapper repoWrapper
-            , IUrlHelperFactory urlHelperFactory
-            , IActionContextAccessor actionContextAccessor
-            , IHttpContextAccessor contextAccessor
-            )
+            IRepositoryWrapper repoWrapper,
+            IUrlHelperFactory urlHelperFactory,
+            IActionContextAccessor actionContextAccessor,
+            IHttpContextAccessor contextAccessor)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -248,12 +248,12 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async Task SendEmailReminder(string cityListUrl, UserDTO userDTO)
+        public async Task SendEmailReminder(string citiesUrl, UserDTO userDTO)
         {
             var user = await _userManager.FindByEmailAsync(userDTO.Email);
             user.EmailSendedOnRegister = DateTime.Now;
             await _emailConfirmation.SendEmailAsync(user.Email, "Вітаємо у системі!",
-                $"Ви успішно активували свій акаунт!\nНе забудьте доєднатись до осередку, перейшовши за :  <a href='{cityListUrl}'>посиланням</a> ", "Адміністрація сайту EPlast");
+                $"Ви успішно активували свій акаунт!\nНе забудьте доєднатись до осередку, перейшовши за :  <a href='{citiesUrl}'>посиланням</a> ", "Адміністрація сайту EPlast");
         }
 
         ///<inheritdoc/>
