@@ -3,7 +3,6 @@ using EPlast.BLL.DTO.UserProfiles;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.BLL.Models;
 using EPlast.DataAccess.Entities;
@@ -164,30 +163,6 @@ namespace EPlast.BLL.Interfaces
         /// <param name="user"></param>
         /// <returns>User who was logged in</returns>
         UserDTO GetUser(User user);
-
-        /// <summary>
-        /// Sending email for registration
-        /// </summary>
-        /// <param name="confirmationLink"></param>
-        /// <param name="userDto"></param>
-        /// <returns>Result of sending email</returns>
-        Task<bool> SendEmailRegistr(string email);
-
-        /// <summary>
-        /// Sending email for password reset
-        /// </summary>
-        /// <param name="confirmationLink"></param>
-        /// <param name="forgotPasswordDto"></param>
-        /// <returns>Result of sending email</returns>
-        Task SendEmailReseting(string confirmationLink, ForgotPasswordDto forgotPasswordDto);
-
-        /// <summary>
-        /// Sending email reminder
-        /// </summary>
-        /// <param name="cityListUrl"></param>
-        /// <param name="userDTO"></param>
-        /// <returns>Result of sending email</returns>
-        Task SendEmailReminder(string cityListUrl, UserDTO userDTO);
 
         /// <summary>
         ///  Validates google token and gets user information

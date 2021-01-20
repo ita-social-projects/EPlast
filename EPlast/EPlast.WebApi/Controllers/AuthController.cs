@@ -23,26 +23,24 @@ namespace EPlast.WebApi.Controllers
         private readonly IAuthService _authService;
         private readonly ILoggerService<AuthController> _loggerService;
         private readonly IJwtService _jwtService;
-        private readonly IHomeService _homeService;
         private readonly IUserDatesService _userDatesService;
-        private readonly UserManager<User> _userManager;
         private readonly IResources _resources;
+        private readonly IAuthEmailService _authEmailServices;
 
-        public AuthController(IAuthService authService,
+        public AuthController(
+            IAuthService authService,
             ILoggerService<AuthController> loggerService,
             IJwtService jwtService,
-            IHomeService homeService,
             IUserDatesService userDatesService,
-            UserManager<User> userManager, 
-            IResources resources)
+            IResources resources,
+            IAuthEmailService authEmailServices)
         {
             _authService = authService;
             _loggerService = loggerService;
             _jwtService = jwtService;
-            _homeService = homeService;
             _userDatesService = userDatesService;
-            _userManager = userManager;
             _resources = resources;
+            _authEmailServices = authEmailServices;
         }
 
         /// <summary>
@@ -181,7 +179,7 @@ namespace EPlast.WebApi.Controllers
                 }
                 else
                 {
-                    if (!(await _authService.SendEmailRegistr(registerDto.Email)))
+                    if (!(await _authEmailServices.SendEmailRegistr(registerDto.Email)))
                     {
                         return BadRequest(_resources.ResourceForErrors["Register-SMTPServerError"]);
                     }
@@ -222,7 +220,7 @@ namespace EPlast.WebApi.Controllers
                 {
                     string signinurl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["SignIn"];
                     string citiesurl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Сities"];
-                    await _authService.SendEmailReminder(citiesurl, userDto);
+                    await _authEmailServices.SendEmailReminder(citiesurl, userDto);
                     return Redirect(signinurl);
                 }
                 else
@@ -252,7 +250,7 @@ namespace EPlast.WebApi.Controllers
             {
                 return BadRequest();
             }
-            await _authService.SendEmailRegistr(userDto.Email);
+            await _authEmailServices.SendEmailRegistr(userDto.Email);
             return Ok("ResendEmailConfirmation");
         }
 
@@ -284,7 +282,7 @@ namespace EPlast.WebApi.Controllers
                 }
                 string token = await _authService.GenerateResetTokenAsync(userDto);
                 var confirmationLink = string.Format("https://eplast.westeurope.cloudapp.azure.com/resetPassword?token={0}", HttpUtility.UrlEncode(token));
-                await _authService.SendEmailReseting(confirmationLink, forgotpasswordDto);
+                await _authEmailServices.SendEmailReseting(confirmationLink, forgotpasswordDto);
                 return Ok(_resources.ResourceForErrors["ForgotPasswordConfirmation"]);
             }
             return BadRequest(_resources.ResourceForErrors["ModelIsNotValid"]);
@@ -354,57 +352,9 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        /// <summary>
-        /// Method for changing password in system
-        /// </summary>
-        /// <param name="changepasswordDto">ChangePassword model(dto)</param>
-        /// <returns>Answer from backend for changing password method</returns>
-        /// <response code="200">Successful operation</response>
-        /// <response code="404">Problems with changing password</response>
-        [HttpPost("changePassword")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changepasswordDto)
-        {
-            if (ModelState.IsValid)
-            {
-                var userDto = _authService.GetUser(await _userManager.GetUserAsync(User));
-                if (userDto == null)
-                {
-                    return BadRequest();
-                }
-                var result = await _authService.ChangePasswordAsync(userDto.Id, changepasswordDto);
-                if (!result.Succeeded)
-                {
-                    return BadRequest(_resources.ResourceForErrors["Change-PasswordProblems"]);
-                }
-                _authService.RefreshSignInAsync(userDto); //тут
-                return Ok(_resources.ResourceForErrors["ChangePasswordConfirmation"]);
-            }
-            else
-            {
-                return BadRequest(_resources.ResourceForErrors["ModelIsNotValid"]);
-            }
-        }
+        
 
-        /// <summary>
-        /// Method for sending question to admin in system
-        /// </summary>
-        /// <param name="contactsDto">Contacts model(dto)</param>
-        /// <returns>Answer from backend sending question to admin in system</returns>
-        /// <response code="200">Successful operation</response>
-        /// <response code="404">Problems with sending question</response>
-        [HttpPost("sendQuestion")]
-        public async Task<IActionResult> SendContacts([FromBody]ContactsDto contactsDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                ModelState.AddModelError("", "Дані введені неправильно");
-                return BadRequest(_resources.ResourceForErrors["ModelIsNotValid"]);
-            }
-            await _homeService.SendEmailAdmin(contactsDto);
-
-            return Ok(_resources.ResourceForErrors["Feedback-Sended"]);
-        }
+        
 
         private async Task AddEntryMembershipDate(string userId)
         {
