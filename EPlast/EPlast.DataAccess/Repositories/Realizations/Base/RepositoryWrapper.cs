@@ -21,9 +21,12 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IOrganizationRepository _organization;
         private IDecesionTargetRepository _decesionTarget;
         private IDistinctionRepository _distinction;
+        private IPrecautionRepository _precaution;
         private IUserDistinctionRepository _userDistinction;
+        private IUserPrecautionRepository _userPrecaution;
         private IDocumentTemplateRepository _documentTemplate;
         private IDecesionRepository _decesion;
+        private IMethodicDocumentRepository _methodicDocument;
         private IEventRepository _event;
         private IParticipantStatusRepository _participantStatuses;
         private IGallaryRepository _gallary;
@@ -35,6 +38,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IEventStatusRepository _eventStatus;
         private IReligionRepository _religion;
         private IGenderRepository _gender;
+        private IUpuDegreeRepository _upuDegree;
         private IWorkRepository _work;
         private IEducationRepository _education;
         private IDegreeRepository _degree;
@@ -110,6 +114,18 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                     _decesion = new DecesionRepository(_dbContext);
                 }
                 return _decesion;
+            }
+        }
+
+        public IMethodicDocumentRepository MethodicDocument
+        {
+            get
+            {
+                if (_methodicDocument == null)
+                {
+                    _methodicDocument = new MethodicDocumentRepository(_dbContext);
+                }
+                return _methodicDocument;
             }
         }
 
@@ -366,6 +382,19 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 }
 
                 return _gender;
+            }
+        }
+
+        public IUpuDegreeRepository UpuDegree
+        {
+            get
+            {
+                if (_upuDegree == null)
+                {
+                    _upuDegree = new UpuDegreeRepository(_dbContext);
+                }
+
+                return _upuDegree;
             }
         }
 
@@ -726,6 +755,19 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 return _distinction;
             }
         }
+
+        public IPrecautionRepository Precaution
+        {
+            get
+            {
+                if (_precaution == null)
+                {
+                    _precaution = new PrecautionRepository(_dbContext);
+                }
+                return _precaution;
+            }
+        }
+
         public IUserDistinctionRepository UserDistinction
         {
             get
@@ -735,6 +777,17 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                     _userDistinction = new UserDistinctionRepository(_dbContext);
                 }
                 return _userDistinction;
+            }
+        }
+        public IUserPrecautionRepository UserPrecaution
+        {
+            get
+            {
+                if (_userPrecaution == null)
+                {
+                    _userPrecaution = new UserPrecautionRepository(_dbContext);
+                }
+                return _userPrecaution;
             }
         }
 

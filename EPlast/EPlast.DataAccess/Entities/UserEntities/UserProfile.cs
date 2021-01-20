@@ -10,7 +10,6 @@ namespace EPlast.DataAccess.Entities
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Дата народження")]
-        [Required(ErrorMessage = "Поле дата народження є обов'язковим")]
         public DateTime? Birthday { get; set; }
         public int? EducationId { get; set; }
         public Education Education { get; set; }
@@ -24,9 +23,10 @@ namespace EPlast.DataAccess.Entities
         public Work Work { get; set; }
         public int? GenderID { get; set; }
         public Gender Gender { get; set; }
+        public int? UpuDegreeID { get; set; }
+        public UpuDegree UpuDegree { get; set; }
         [Display(Name = "Домашня адреса")]
         [MaxLength(50,ErrorMessage = "Адреса не може перевищувати 50 символів")]
-        [Required(ErrorMessage = "Поле домашня адреса є обов'язковим")]
         public string Address { get; set; }
         [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,31}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,31})*$",
             ErrorMessage = "Псевдо має містити тільки літери")]
@@ -34,8 +34,11 @@ namespace EPlast.DataAccess.Entities
         public string Pseudo { get; set; }
         [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.-]{1,51}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.-]{1,51})*$",
             ErrorMessage = "Поле Громадська, політична діяльність має містити тільки літери та цифри")]
-        [MaxLength(500, ErrorMessage = "Поле Громадська, політична діяльність не може перевищувати 500 символів")]
+        [MaxLength(50, ErrorMessage = "Поле Громадська, політична діяльність не може перевищувати 50 символів")]
         public string PublicPoliticalActivity { get; set; }
+        public string FacebookLink { get; set; }
+        public string TwitterLink { get; set; }
+        public string InstagramLink { get; set; }
         public string UserID { get; set; }
         public User User { get; set; }
     }
