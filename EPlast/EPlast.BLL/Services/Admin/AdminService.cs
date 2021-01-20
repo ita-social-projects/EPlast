@@ -191,7 +191,9 @@ namespace EPlast.BLL.Services
                     i => i.Include(x => x.UserProfile)
                             .ThenInclude(x => x.Gender)
                         .Include(x => x.UserPlastDegrees)
-                            .ThenInclude(x => x.PlastDegree));
+                            .ThenInclude(x => x.PlastDegree)
+                         .Include(x => x.UserProfile)
+                            .ThenInclude(x => x.UpuDegree));
             var cities = await _repoWrapper.City.
                 GetAllAsync(null, x => x.Include(i => i.Region));
             var clubMembers = await _repoWrapper.ClubMembers.
@@ -220,7 +222,7 @@ namespace EPlast.BLL.Services
                         .FirstOrDefault(x => x.UserId == user.Id && x.DateFinish == null)
                         ?.PlastDegree.Name : string.Empty,
                     UserRoles = string.Join(", ", roles),
-
+                    UPUDegree = user.UserProfile.UpuDegree.Name,
                     Comment = user.Comment,
                     Email = user.UserName
                 });
