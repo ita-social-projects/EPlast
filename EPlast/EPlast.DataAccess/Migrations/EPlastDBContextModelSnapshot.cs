@@ -2127,9 +2127,6 @@ namespace EPlast.DataAccess.Migrations
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
-                    b.Property<string>("Comment")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("EmailSendedOnForgotPassword")
                         .HasColumnType("datetime2");
 
