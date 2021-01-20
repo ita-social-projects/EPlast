@@ -258,21 +258,5 @@ namespace EPlast.BLL.Services
             return citiesDTO;
 
         }
-
-        ///// <inheritdoc />
-        //public async Task ReactivateAsync(string userId)
-        //{
-        //    User user = await _userManager.FindByIdAsync(userId);
-        //    var userRoles = await _userManager.GetRolesAsync(user);
-            
-            
-        //    await _userManager.AddToRolesAsync(user, addedRoles);
-        //    await _userManager.RemoveFromRolesAsync(user, removedRoles);
-        //    var currentRoles = await _userManager.GetRolesAsync(user);
-        //    if (currentRoles.Count == 0)
-        //    {
-        //        await _userManager.AddToRoleAsync(user, "Прихильник");
-        //    }
-        //}
     }
 }

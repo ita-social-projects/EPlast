@@ -174,10 +174,10 @@ namespace EPlast.BLL.Interfaces
         Task<bool> SendEmailRegistr(string email);
 
         /// <summary>
-        /// Sending email for registration
+        /// Sending email for password reset
         /// </summary>
         /// <param name="confirmationLink"></param>
-        /// <param name="registerDto"></param>
+        /// <param name="forgotPasswordDto"></param>
         /// <returns>Result of sending email</returns>
         Task SendEmailReseting(string confirmationLink, ForgotPasswordDto forgotPasswordDto);
 
@@ -194,7 +194,6 @@ namespace EPlast.BLL.Interfaces
         /// </summary>
         /// <param name="providerToken"></param>
         /// <returns>Returns Google user information</returns>
-        /// 
         Task<UserDTO> GetGoogleUserAsync(string providerToken);
 
         /// <summary>
