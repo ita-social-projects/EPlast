@@ -179,7 +179,7 @@ namespace EPlast.WebApi.Controllers
                 }
                 else
                 {
-                    if (!(await _authEmailServices.SendEmailRegistr(registerDto.Email)))
+                    if (!(await _authEmailServices.SendEmailRegistrAsync(registerDto.Email)))
                     {
                         return BadRequest(_resources.ResourceForErrors["Register-SMTPServerError"]);
                     }
@@ -220,7 +220,7 @@ namespace EPlast.WebApi.Controllers
                 {
                     string signinurl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["SignIn"];
                     string citiesurl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Сities"];
-                    await _authEmailServices.SendEmailReminder(citiesurl, userDto);
+                    await _authEmailServices.SendEmailReminderAsync(citiesurl, userDto);
                     return Redirect(signinurl);
                 }
                 else
@@ -250,7 +250,7 @@ namespace EPlast.WebApi.Controllers
             {
                 return BadRequest();
             }
-            await _authEmailServices.SendEmailRegistr(userDto.Email);
+            await _authEmailServices.SendEmailRegistrAsync(userDto.Email);
             return Ok("ResendEmailConfirmation");
         }
 
@@ -282,7 +282,7 @@ namespace EPlast.WebApi.Controllers
                 }
                 string token = await _authService.GenerateResetTokenAsync(userDto);
                 var confirmationLink = string.Format("https://eplast.westeurope.cloudapp.azure.com/resetPassword?token={0}", HttpUtility.UrlEncode(token));
-                await _authEmailServices.SendEmailReseting(confirmationLink, forgotpasswordDto);
+                await _authEmailServices.SendEmailResetingAsync(confirmationLink, forgotpasswordDto);
                 return Ok(_resources.ResourceForErrors["ForgotPasswordConfirmation"]);
             }
             return BadRequest(_resources.ResourceForErrors["ModelIsNotValid"]);

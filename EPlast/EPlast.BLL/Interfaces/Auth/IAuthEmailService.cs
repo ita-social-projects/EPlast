@@ -12,7 +12,7 @@ namespace EPlast.BLL.Interfaces
         /// <param name="confirmationLink"></param>
         /// <param name="userDto"></param>
         /// <returns>Result of sending email</returns>
-        Task<bool> SendEmailRegistr(string email);
+        Task<bool> SendEmailRegistrAsync(string email);
 
         /// <summary>
         /// Sending email reminder
@@ -20,7 +20,7 @@ namespace EPlast.BLL.Interfaces
         /// <param name="citiesUrl"></param>
         /// <param name="userDTO"></param>
         /// <returns>Result of sending email</returns>
-        Task SendEmailReminder(string citiesUrl, UserDTO userDTO);
+        Task SendEmailReminderAsync(string citiesUrl, UserDTO userDTO);
 
         /// <summary>
         /// Sending email for password reset
@@ -28,6 +28,6 @@ namespace EPlast.BLL.Interfaces
         /// <param name="confirmationLink"></param>
         /// <param name="forgotPasswordDto"></param>
         /// <returns>Result of sending email</returns>
-        Task SendEmailReseting(string confirmationLink, ForgotPasswordDto forgotPasswordDto);
+        Task SendEmailResetingAsync(string confirmationLink, ForgotPasswordDto forgotPasswordDto);
     }
 }
