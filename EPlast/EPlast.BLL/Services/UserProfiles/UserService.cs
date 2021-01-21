@@ -315,7 +315,7 @@ namespace EPlast.BLL.Services.UserProfiles
                 }
                 return link;
             }
-            return null;
+            return link;
         }
 
         public async Task<bool> IsApprovedCityMember(string userId)
