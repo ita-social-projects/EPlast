@@ -1131,7 +1131,7 @@ namespace EPlast.Tests.Controllers
         private LocalizedString GetResetPasswordProblems()
         {
             var localizedString = new LocalizedString("Reset-PasswordProblems",
-                "Проблеми зі скидуванням пароля або введений новий пароль повинен вміщати 8символів, " +
+                "Проблеми зі скидуванням пароля або введений новий пароль повинен вміщати 8 символів, " +
                 "включаючи літери та цифри");
             return localizedString;
         }
