@@ -295,19 +295,27 @@ namespace EPlast.BLL.Services.UserProfiles
         }
         private UserDTO GetCorrectLinks(UserDTO user)
         {
-            if (user.UserProfile.FacebookLink != null && user.UserProfile.FacebookLink != "" && !user.UserProfile.FacebookLink.Contains("http"))
-            {
-                user.UserProfile.FacebookLink = "https://" + user.UserProfile.FacebookLink;
-            }
-            if (user.UserProfile.TwitterLink != null && user.UserProfile.TwitterLink != "" && !user.UserProfile.TwitterLink.Contains("http"))
-            {
-                user.UserProfile.TwitterLink = "https://" + user.UserProfile.TwitterLink;
-            }
-            if (user.UserProfile.InstagramLink != null && user.UserProfile.InstagramLink != "" && !user.UserProfile.InstagramLink.Contains("http"))
-            {
-                user.UserProfile.InstagramLink = "https://" + user.UserProfile.InstagramLink;
-            }
+            user.UserProfile.FacebookLink = GetCorrectLink(user.UserProfile.FacebookLink, "facebook");
+            user.UserProfile.TwitterLink = GetCorrectLink(user.UserProfile.TwitterLink, "twitter");
+            user.UserProfile.InstagramLink = GetCorrectLink(user.UserProfile.InstagramLink, "instagram");
+
             return user;
+        }
+        private string GetCorrectLink (string link, string socialMediaName)
+        {
+            if (link != null && link != "")
+            {
+                if (!link.Contains("http"))
+                {
+                    if (!link.Contains($"{socialMediaName}.com"))
+                    {
+                        link = $"www.{socialMediaName}.com/" + link;
+                    }
+                    link = "https://" + link;
+                }
+                return link;
+            }
+            return null;
         }
 
         public async Task<bool> IsApprovedCityMember(string userId)
