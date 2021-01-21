@@ -47,7 +47,7 @@ namespace EPlast.BLL.Services.Region
             var membersStatistics = (await _repositoryWrapper.MembersStatistics.GetAllAsync(predicate: m => m.AnnualReport.City.RegionId == id))
                 .Where(result => result != null).ToList();
 
-            DateTime reportDate = new DateTime();
+            DateTime reportDate;
 
             if(year == DateTime.Now.Year)
             {
