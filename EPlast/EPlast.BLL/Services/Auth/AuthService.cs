@@ -278,7 +278,6 @@ namespace EPlast.BLL.Services
                     EmailConfirmed = true,
                     RegistredOn = DateTime.Now,
                     UserProfile = new UserProfile { UpuDegreeID = 1 }
-
                 };
                var createResult = await _userManager.CreateAsync(user);
                if(createResult.Succeeded)
