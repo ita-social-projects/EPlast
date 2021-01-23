@@ -47,13 +47,24 @@ namespace EPlast.BLL.Services.Region
             var membersStatistics = (await _repositoryWrapper.MembersStatistics.GetAllAsync(predicate: m => m.AnnualReport.City.RegionId == id))
                 .Where(result => result != null).ToList();
 
+            DateTime reportDate;
+
+            if(year == DateTime.Now.Year)
+            {
+                reportDate = DateTime.Now;
+            }
+            else
+            {
+                reportDate = new DateTime(year, 12, 31);
+            }
+
             var regionAnnualReport = new RegionAnnualReport()
             {
                 RegionName = region.RegionName,
 
                 RegionId = id,
 
-                Date = DateTime.Now,
+                Date = reportDate,
 
                 NumberOfSeigneurMembers = membersStatistics.Select(x => x.NumberOfSeigneurMembers).Sum(),
 
