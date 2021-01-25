@@ -191,7 +191,9 @@ namespace EPlast.BLL.Services
                 include: i => i.Include(x => x.UserProfile)
                         .ThenInclude(x => x.Gender)
                     .Include(x => x.UserPlastDegrees)
-                        .ThenInclude(x => x.PlastDegree));
+                        .ThenInclude(x => x.PlastDegree)
+                    .Include(x => x.UserProfile)
+                            .ThenInclude(x => x.UpuDegree));
             var cities = await _repoWrapper.City.
                 GetAllAsync(null, x => x.Include(i => i.Region));
             var clubMembers = await _repoWrapper.ClubMembers.
