@@ -283,10 +283,38 @@ namespace EPlast.BLL.Services
             return result;
         }
 
-        ///<inheritdoc/>
-        public async void SignOutAsync()
+        }
+        public async Task<UserDTO> FacebookLoginAsync(FacebookUserInfo facebookUser)
         {
-            await _signInManager.SignOutAsync();
+            var user = await _userManager.FindByEmailAsync(facebookUser.Email);
+            if (user == null)
+            {
+                user = new User
+                {
+                    SocialNetworking = true,
+                    UserName = facebookUser.Email ?? facebookUser.UserId,
+                    FirstName = facebookUser.Name.Split(' ')[0],
+                    Email = facebookUser.Email ?? "facebookdefaultmail@gmail.com",
+                    LastName = facebookUser.Name.Split(' ')[1],
+                    ImagePath = "default_user_image.png",
+                    EmailConfirmed = true,
+                    RegistredOn = DateTime.Now,
+                    UserProfile = new UserProfile()
+                    {
+                        Birthday = DateTime.Parse(facebookUser.Birthday,CultureInfo.InvariantCulture),
+                        GenderID = _repoWrapper.Gender.FindByCondition(x=>x.Name == facebookUser.Gender).FirstOrDefault()?.ID,
+                    }
+                };
+                var createResult = await _userManager.CreateAsync(user);
+                if (createResult.Succeeded && user.Email!= "facebookdefaultmail@gmail.com")
+                {
+                    await _emailConfirmation.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
+                        "Ви зареєструвались в системі EPlast використовуючи свій Facebook-акаунт. ", "Адміністрація сайту EPlast");
+                }
+                await _userManager.AddToRoleAsync(user, "Прихильник");
+            }
+            await _signInManager.SignInAsync(user, isPersistent: false);
+            return _mapper.Map<User, UserDTO>(user);
         }
     }
 }
