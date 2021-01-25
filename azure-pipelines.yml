@@ -76,7 +76,7 @@ stages:
         extraProperties: |
           sonar.inclusions= EPlast/EPlast.BLL/Services/**, EPlast/EPlast.WebApi/Controllers/**
           sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/coverage.opencover.xml
-          sonar.cs.nunit.reportsPaths=$(Build.SourcesDirectory)/**/coverage.opencover.xml
+          sonar.cs.nunit.reportsPaths==$(Build.SourcesDirectory)/**/*.trx
           sonar.cs.vstest.reportsPaths=$(Build.SourcesDirectory)/**/*.trx        
     - task: DotNetCoreCLI@2
       displayName: Build
