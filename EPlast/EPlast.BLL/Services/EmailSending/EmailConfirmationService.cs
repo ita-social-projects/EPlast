@@ -11,16 +11,17 @@ namespace EPlast.BLL
 {
     public class EmailConfirmationService : IEmailConfirmation
     {
-        public IOptions<EmailServiceSettings> Settings { get; }
         private readonly ILoggerService<EmailConfirmationService> _loggerService;
 
-        public EmailConfirmationService(IOptions<EmailServiceSettings> settings,
-            ILoggerService<EmailConfirmationService> loggerService
-            )
+        public EmailConfirmationService(
+            IOptions<EmailServiceSettings> settings,
+            ILoggerService<EmailConfirmationService> loggerService)
         {
             Settings = settings;
             _loggerService = loggerService;
         }
+
+        public IOptions<EmailServiceSettings> Settings { get; }
 
         ///<inheritdoc/>
         public async Task<bool> SendEmailAsync(string email, string subject, string message, string title)
