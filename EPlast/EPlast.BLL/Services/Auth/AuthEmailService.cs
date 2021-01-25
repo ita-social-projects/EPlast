@@ -14,12 +14,6 @@ namespace EPlast.BLL.Services
 {
     public class AuthEmailService : IAuthEmailService
     {
-        private readonly IAuthService _authService;
-        private readonly IHttpContextAccessor _contextAccessor;
-        private readonly IEmailConfirmation _emailConfirmation;
-        private readonly IUrlHelper _Url;
-        private readonly UserManager<User> _userManager;
-
         public AuthEmailService(
             IEmailConfirmation emailConfirmation,
             IAuthService authService,
@@ -80,5 +74,11 @@ namespace EPlast.BLL.Services
             await _emailConfirmation.SendEmailAsync(forgotPasswordDto.Email, "Скидування пароля",
                 $"Для скидування пароля перейдіть за : <a href='{confirmationLink}'>посиланням</a>", "Адміністрація сайту EPlast");
         }
+
+        private readonly IAuthService _authService;
+        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IEmailConfirmation _emailConfirmation;
+        private readonly IUrlHelper _Url;
+        private readonly UserManager<User> _userManager;
     }
 }
