@@ -1,5 +1,6 @@
 ﻿using EPlast.BLL.DTO.Account;
 using EPlast.BLL.DTO.UserProfiles;
+using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Interfaces
@@ -29,5 +30,13 @@ namespace EPlast.BLL.Interfaces
         /// <param name="forgotPasswordDto"></param>
         /// <returns>Result of sending email</returns>
         Task SendEmailResetingAsync(string confirmationLink, ForgotPasswordDto forgotPasswordDto);
+
+        /// <summary>
+        /// Confirming Email after registration
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="code"></param>
+        /// <returns>Result of confirming email in system</returns>
+        Task<IdentityResult> ConfirmEmailAsync(string userId, string code);
     }
 }

@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using EPlast.BLL.DTO.Account;
+﻿using EPlast.BLL.DTO.Account;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.DataAccess.Entities;
@@ -15,12 +14,11 @@ namespace EPlast.BLL.Services
 {
     public class AuthEmailService : IAuthEmailService
     {
-        private readonly IEmailConfirmation _emailConfirmation;
         private readonly IAuthService _authService;
-        private readonly UserManager<User> _userManager;
-        private readonly IUrlHelper _Url;
         private readonly IHttpContextAccessor _contextAccessor;
-
+        private readonly IEmailConfirmation _emailConfirmation;
+        private readonly IUrlHelper _Url;
+        private readonly UserManager<User> _userManager;
         public AuthEmailService(
             IEmailConfirmation emailConfirmation,
             IAuthService authService,
@@ -37,6 +35,14 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
+        public async Task<IdentityResult> ConfirmEmailAsync(string userId, string code)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+            return result;
+        }
+
+        ///<inheritdoc/>
         public async Task<bool> SendEmailRegistrAsync(string email)
         {
             string token = await _authService.AddRoleAndTokenAsync(email);
@@ -47,7 +53,7 @@ namespace EPlast.BLL.Services
                         values: new { token, userId = user.Id },
                         protocol: _contextAccessor.HttpContext.Request.Scheme);
             user.EmailSendedOnRegister = DateTime.Now;
-            
+
             return (await _emailConfirmation.SendEmailAsync(
                 email: email,
                 subject: "Підтвердження реєстрації ",

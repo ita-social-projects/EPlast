@@ -1,18 +1,11 @@
-﻿using System;
-using EPlast.BLL.DTO.Account;
+﻿using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
-using EPlast.BLL.Interfaces.Jwt;
-using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Interfaces.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using System.Web;
-using EPlast.BLL.Interfaces.Resources;
-using EPlast.BLL.Models;
-using EPlast.DataAccess.Entities;
-using Microsoft.AspNetCore.Identity;
 using NLog.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -20,134 +13,75 @@ namespace EPlast.WebApi.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthService _authService;
-        private readonly ILoggerService<AuthController> _loggerService;
-        private readonly IJwtService _jwtService;
-        private readonly IUserDatesService _userDatesService;
-        private readonly IResources _resources;
         private readonly IAuthEmailService _authEmailServices;
-
+        private readonly IAuthService _authService;
+        private readonly IHomeService _homeService;
+        private readonly IResources _resources;
+        private readonly IUserDatesService _userDatesService;
         public AuthController(
             IAuthService authService,
-            ILoggerService<AuthController> loggerService,
-            IJwtService jwtService,
             IUserDatesService userDatesService,
+            IHomeService homeService,
             IResources resources,
             IAuthEmailService authEmailServices)
         {
             _authService = authService;
-            _loggerService = loggerService;
-            _jwtService = jwtService;
             _userDatesService = userDatesService;
+            _homeService = homeService;
             _resources = resources;
             _authEmailServices = authEmailServices;
         }
 
         /// <summary>
-        /// Method for logining in system
+        /// Method for confirming email in system
         /// </summary>
-        /// <param name="loginDto">Login model(dto)</param>
-        /// <returns>Answer from backend for login method</returns>
+        /// <param name="userId">Id of user</param>
+        /// <param name="token">Token for confirming email</param>
+        /// <returns>Answer from backend for confirming email method</returns>
         /// <response code="200">Successful operation</response>
-        /// <response code="404">Problems with logining</response>
-        [HttpPost("signin")]
+        /// <response code="404">Problems with confirming email</response>
+        [HttpGet("confirmingEmail")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+        public async Task<IActionResult> ConfirmingEmail(string userId, string token)
         {
-            if (ModelState.IsValid)
+            var userDto = await _authService.FindByIdAsync(userId);
+            if (userDto == null)
             {
-                var user = await _authService.FindByEmailAsync(loginDto.Email);
-                if (user == null)
+                return BadRequest();
+            }
+            int totalTime = _authService.GetTimeAfterRegistr(userDto);
+            if (totalTime < 1440)
+            {
+                if (string.IsNullOrWhiteSpace(userId) && string.IsNullOrWhiteSpace(token))
                 {
-                    return BadRequest(_resources.ResourceForErrors["Login-NotRegistered"]);
+                    return BadRequest();
                 }
-                else
-                {
-                    if (!await _authService.IsEmailConfirmedAsync(user))
-                    {
-                        return BadRequest(_resources.ResourceForErrors["Login-NotConfirmed"]);
-                    }
-                }
-                var result = await _authService.SignInAsync(loginDto);
-                if (result.IsLockedOut)
-                {
-                    return BadRequest(_resources.ResourceForErrors["Account-Locked"]);
-                }
+                var result = await _authEmailServices.ConfirmEmailAsync(userDto.Id, token);
+
                 if (result.Succeeded)
                 {
-                    var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
-                    return Ok(new { token = generatedToken });
+                    string signinurl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["SignIn"];
+                    string citiesurl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Сities"];
+                    await _authEmailServices.SendEmailReminderAsync(citiesurl, userDto);
+                    return Redirect(signinurl);
                 }
                 else
                 {
-                    return BadRequest(_resources.ResourceForErrors["Login-InCorrectPassword"]);
-                }
-            }
-            return Ok(_resources.ResourceForErrors["ModelIsNotValid"]);
-        }
-
-        [HttpGet("googleClientId")]
-        [AllowAnonymous]
-        public IActionResult GetGoogleClientId()
-        {
-            return Ok(new { id = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("GoogleAuthentication")["GoogleClientId"]});
-        }
-
-        [HttpGet("facebookAppId")]
-        [AllowAnonymous]
-        public IActionResult GetFacebookAppId()
-        {
-            return Ok(new { id = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("FacebookAuthentication")["FacebookAppId"] });
-        }
-
-        [HttpPost("signin/google")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GoogleLogin(string googleToken)
-        {
-            try
-            {
-                var user = await _authService.GetGoogleUserAsync(googleToken);
-                if (user == null)
-                {
                     return BadRequest();
                 }
-                await AddEntryMembershipDate(user.Id);
-                var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
-
-                return Ok(new {token = generatedToken});
             }
-            catch (Exception exc)
+            else
             {
-                _loggerService.LogError(exc.Message);
+                return Ok(_resources.ResourceForErrors["ConfirmedEmailNotAllowed"]);
             }
-            
-            return BadRequest();
         }
 
-        [HttpPost("signin/facebook")]
-        [AllowAnonymous]
-        public async Task<IActionResult> FacebookLogin([FromBody] FacebookUserInfo userInfo)
+        [HttpGet("logout")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public IActionResult Logout()
         {
-            try
-            {
-                string newGender = _resources.ResourceForGender[userInfo.Gender].Value;
-                userInfo.Gender = newGender;
-                var user = await _authService.FacebookLoginAsync(userInfo);
-                if (user == null)
-                {
-                    return BadRequest();
-                }
-                await AddEntryMembershipDate(user.Id);
-
-                var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
-                return Ok(new {token = generatedToken});
-            }
-            catch (Exception exc)
-            {
-                _loggerService.LogError(exc.Message);
-            }
-
-            return BadRequest();
+            _authService.SignOutAsync();
+            return Ok();
         }
 
         /// <summary>
@@ -189,51 +123,6 @@ namespace EPlast.WebApi.Controllers
                 }
             }
         }
-
-        /// <summary>
-        /// Method for confirming email in system
-        /// </summary>
-        /// <param name="userId">Id of user</param>
-        /// <param name="token">Token for confirming email</param>
-        /// <returns>Answer from backend for confirming email method</returns>
-        /// <response code="200">Successful operation</response>
-        /// <response code="404">Problems with confirming email</response>
-        [HttpGet("confirmingEmail")]
-        [AllowAnonymous]
-        public async Task<IActionResult> ConfirmingEmail(string userId, string token)
-        {
-            var userDto = await _authService.FindByIdAsync(userId);
-            if (userDto == null)
-            {
-                return BadRequest();
-            }
-            int totalTime = _authService.GetTimeAfterRegistr(userDto);
-            if (totalTime < 1440)
-            {
-                if (string.IsNullOrWhiteSpace(userId) && string.IsNullOrWhiteSpace(token))
-                {
-                    return BadRequest();
-                }
-                var result = await _authService.ConfirmEmailAsync(userDto.Id, token);
-
-                if (result.Succeeded)
-                {
-                    string signinurl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["SignIn"];
-                    string citiesurl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Сities"];
-                    await _authEmailServices.SendEmailReminderAsync(citiesurl, userDto);
-                    return Redirect(signinurl);
-                }
-                else
-                {
-                    return BadRequest();
-                }
-            }
-            else
-            {
-                return Ok(_resources.ResourceForErrors["ConfirmedEmailNotAllowed"]);
-            }
-        }
-
         /// <summary>
         /// Method for resending email after SMTPServer error
         /// </summary>
@@ -253,115 +142,24 @@ namespace EPlast.WebApi.Controllers
             await _authEmailServices.SendEmailRegistrAsync(userDto.Email);
             return Ok("ResendEmailConfirmation");
         }
-
-        [HttpGet("logout")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public IActionResult Logout()
-        {
-            _authService.SignOutAsync();
-            return Ok();
-        }
-
         /// <summary>
-        /// Method for forgotting password in system
+        /// Method for sending question to admin in system
         /// </summary>
-        /// <param name="forgotpasswordDto">Forgot Password model(dto)</param>
-        /// <returns>Answer from backend for forgoting password email method</returns>
+        /// <param name="contactsDto">Contacts model(dto)</param>
+        /// <returns>Answer from backend sending question to admin in system</returns>
         /// <response code="200">Successful operation</response>
-        /// <response code="404">Problems with forgotting password</response>
-        [HttpPost("forgotPassword")]
-        [AllowAnonymous]
-        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotpasswordDto)
-        {
-            if (ModelState.IsValid)
-            {
-                var userDto = await _authService.FindByEmailAsync(forgotpasswordDto.Email);
-                if (userDto == null || !(await _authService.IsEmailConfirmedAsync(userDto)))
-                {
-                    return BadRequest(_resources.ResourceForErrors["Forgot-NotRegisteredUser"]);
-                }
-                string token = await _authService.GenerateResetTokenAsync(userDto);
-                var confirmationLink = string.Format("https://eplast.westeurope.cloudapp.azure.com/resetPassword?token={0}", HttpUtility.UrlEncode(token));
-                await _authEmailServices.SendEmailResetingAsync(confirmationLink, forgotpasswordDto);
-                return Ok(_resources.ResourceForErrors["ForgotPasswordConfirmation"]);
-            }
-            return BadRequest(_resources.ResourceForErrors["ModelIsNotValid"]);
-        }
-
-        /// <summary>
-        /// Method for resetting password in system
-        /// </summary>
-        /// <param name="userId">Id of user</param>
-        /// <param name="token">Token for reseting password</param>
-        /// <returns>Answer from backend for resetting password method</returns>
-        /// <response code="200">Successful operation</response>
-        /// <response code="404">Problems with resetting password</response>
-        [HttpGet("resetPassword")]
-        [AllowAnonymous]
-        public async Task<IActionResult> ResetPassword([FromQuery(Name = "userId")] string userId, [FromQuery(Name = "token")] string token)
-        {
-            var userDto = await _authService.FindByIdAsync(userId);
-            var model = new ResetPasswordDto { Code = token, Email = userDto.Email };
-            int totalTime = _authService.GetTimeAfterReset(userDto);
-            if (totalTime < 180)
-            {
-                if (string.IsNullOrWhiteSpace(token))
-                {
-                    return BadRequest();
-                }
-                else
-                {
-                    return Ok(model);
-                }
-            }
-            else
-            {
-                return Ok(_resources.ResourceForErrors["ResetPasswordNotAllowed"]);
-            }
-        }
-
-        /// <summary>
-        /// Method for resetting password in system
-        /// </summary>
-        /// <param name="resetpasswordDto">ResetPassword model(dto)</param>
-        /// <returns>Answer from backend for resetting password method</returns>
-        /// <response code="200">Successful operation</response>
-        /// <response code="404">Problems with resetting password</response>
-        [HttpPost("resetPassword")]
-        [AllowAnonymous]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetpasswordDto) //+
+        /// <response code="404">Problems with sending question</response>
+        [HttpPost("sendQuestion")]
+        public async Task<IActionResult> SendContacts([FromBody] ContactsDto contactsDto)
         {
             if (!ModelState.IsValid)
             {
+                ModelState.AddModelError("", "Дані введені неправильно");
                 return BadRequest(_resources.ResourceForErrors["ModelIsNotValid"]);
             }
-            var userDto = await _authService.FindByEmailAsync(resetpasswordDto.Email);
-            if (userDto == null)
-            {
-                return BadRequest(_resources.ResourceForErrors["Reset-NotRegisteredUser"]);
-            }
-            var result = await _authService.ResetPasswordAsync(userDto.Id, resetpasswordDto);
-            if (result.Succeeded)
-            {
-                await _authService.CheckingForLocking(userDto);
-                return Ok(_resources.ResourceForErrors["ResetPasswordConfirmation"]);
-            }
-            else
-            {
-                return BadRequest(_resources.ResourceForErrors["Reset-PasswordProblems"]);
-            }
-        }
+            await _homeService.SendEmailAdmin(contactsDto);
 
-        
-
-        
-
-        private async Task AddEntryMembershipDate(string userId)
-        {
-            if (!(await _userDatesService.UserHasMembership(userId)))
-            {
-                await _userDatesService.AddDateEntryAsync(userId);
-            }
+            return Ok(_resources.ResourceForErrors["Feedback-Sended"]);
         }
     }
 }
