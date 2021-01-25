@@ -209,5 +209,72 @@ namespace EPlast.XUnitTest.Services.UserArea
             _repoWrapper.Verify(r => r.UserProfile.Update(It.IsAny<UserProfile>()), Times.Once());
             _repoWrapper.Verify(r => r.SaveAsync(), Times.AtLeast(2));
         }
+        [Fact]
+        public async Task UpdateAsyncForBase64Test()
+        {
+            var userDTO = new UserDTO
+            {
+                FirstName = "Vova",
+                LastName = "Vermii",
+                UserProfile = new UserProfileDTO
+                {
+                    Nationality = new NationalityDTO { Name = "Українець" },
+                    NationalityId = 1,
+                    Religion = new ReligionDTO { Name = "Християнство" },
+                    ReligionId = 1,
+                    Education = new EducationDTO() { PlaceOfStudy = "ЛНУ", Speciality = "КН" },
+                    EducationId = 1,
+                    Degree = new DegreeDTO { Name = "Бакалавр" },
+                    DegreeId = 1,
+                    Work = new WorkDTO { PlaceOfwork = "SoftServe", Position = "ProjectManager" },
+                    WorkId = 1,
+                    Gender = new GenderDTO { Name = "Чоловік" },
+                    GenderID = 1,
+                    FacebookLink = "vovan",
+                    TwitterLink = "twitter.com/vovasik",
+                    InstagramLink = "https://www.instagram.com/vov4ik",
+                }
+            };
+            var user = new User
+            {
+                FirstName = "Vova",
+                LastName = "Vermii",
+                UserProfile = new UserProfile
+                {
+                    Nationality = new Nationality { Name = "Українець" },
+                    Religion = new Religion { Name = "Християнство" },
+                    Education = new Education() { PlaceOfStudy = "ЛНУ", Speciality = "КН" },
+                    Degree = new Degree { Name = "Бакалавр" },
+                    Work = new Work { PlaceOfwork = "SoftServe", Position = "ProjectManager" },
+                    Gender = new Gender { Name = "Чоловік" },
+                    FacebookLink = "vovan",
+                    TwitterLink = "twitter.com/vovasik",
+                    InstagramLink = "https://www.instagram.com/vov4ik",
+                }
+            };
+            _repoWrapper.Setup(r => r.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(), null)).ReturnsAsync(user);
+            _repoWrapper.Setup(r => r.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null)).ReturnsAsync(new UserProfile());
+            _repoWrapper.Setup(r => r.Education.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Education, bool>>>(), null)).ReturnsAsync(new Education
+            {
+                PlaceOfStudy = "place",
+                Speciality = "spec",
+            });
+            _repoWrapper.Setup(r => r.Work.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Work, bool>>>(), null)).ReturnsAsync(new Work
+            {
+                PlaceOfwork = "place",
+                Position = "position",
+            });
+            _mapper.Setup(x => x.Map<UserDTO, User>(It.IsAny<UserDTO>())).Returns(user);
+            _userBlobStorage.Setup(u => u.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
+            _userBlobStorage.Setup(u => u.DeleteBlobAsync(It.IsAny<string>()));
+            _uniqueId.Setup(u => u.GetUniqueId()).Returns(It.IsAny< Guid>());
+
+            var service = GetService();            // Act
+            await service.UpdateAsyncForBase64(userDTO, "im/age.png;something,so/me.png;jkjk", 1, 1, 1, 1);
+            // Assert
+            _repoWrapper.Verify(r => r.User.Update(It.IsAny<User>()), Times.Once());
+            _repoWrapper.Verify(r => r.UserProfile.Update(It.IsAny<UserProfile>()), Times.Once());
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.AtLeast(2));
+        }
     }
 }
