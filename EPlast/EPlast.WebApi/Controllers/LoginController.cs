@@ -38,6 +38,14 @@ namespace EPlast.WebApi.Controllers
             _userDatesService = userDatesService;
         }
 
+        private async Task AddEntryMembershipDate(string userId)
+        {
+            if (!(await _userDatesService.UserHasMembership(userId)))
+            {
+                await _userDatesService.AddDateEntryAsync(userId);
+            }
+        }
+
         [HttpPost("signin/facebook")]
         [AllowAnonymous]
         public async Task<IActionResult> FacebookLogin([FromBody] FacebookUserInfo userInfo)
@@ -143,14 +151,6 @@ namespace EPlast.WebApi.Controllers
                 }
             }
             return Ok(_resources.ResourceForErrors["ModelIsNotValid"]);
-        }
-
-        private async Task AddEntryMembershipDate(string userId)
-        {
-            if (!(await _userDatesService.UserHasMembership(userId)))
-            {
-                await _userDatesService.AddDateEntryAsync(userId);
-            }
         }
     }
 }
