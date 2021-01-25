@@ -221,7 +221,9 @@ namespace EPlast.BLL.Services
                     UserPlastDegreeName = user.UserPlastDegrees.Count != 0 ? user.UserPlastDegrees
                         .FirstOrDefault(x => x.UserId == user.Id && x.DateFinish == null)
                         ?.PlastDegree.Name : string.Empty,
-                    UserRoles = string.Join(", ", roles)
+                    UserRoles = string.Join(", ", roles),
+                    UPUDegree = user.UserProfile.UpuDegree.Name,
+                    Email = user.UserName
                 });
             }
             return userTable;
