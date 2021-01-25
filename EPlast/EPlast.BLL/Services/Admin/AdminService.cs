@@ -27,6 +27,7 @@ namespace EPlast.BLL.Services
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<User> _userManager;
+
         public AdminService(IRepositoryWrapper repoWrapper,
             UserManager<User> userManager,
             IMapper mapper,
@@ -192,6 +193,7 @@ namespace EPlast.BLL.Services
                 ToListAsync();
             return allRoles;
         }
+
         public async Task UpdateUserDatesByChangeRole(string userId, string role)
         {
             UserMembershipDates userMembershipDates = await _repoWrapper.UserMembershipDates
