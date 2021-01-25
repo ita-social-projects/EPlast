@@ -14,11 +14,6 @@ namespace EPlast.WebApi.Controllers
     [ApiController]
     public class PasswordController : ControllerBase
     {
-        private readonly IAuthEmailService _authEmailServices;
-        private readonly IAuthService _authService;
-        private readonly IResources _resources;
-        private readonly UserManager<User> _userManager;
-
         public PasswordController(
             IAuthService authService,
             IResources resources,
@@ -153,5 +148,10 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest(_resources.ResourceForErrors["Reset-PasswordProblems"]);
             }
         }
+
+        private readonly IAuthEmailService _authEmailServices;
+        private readonly IAuthService _authService;
+        private readonly IResources _resources;
+        private readonly UserManager<User> _userManager;
     }
 }

@@ -17,12 +17,6 @@ namespace EPlast.WebApi.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
-        private readonly IAuthService _authService;
-        private readonly IJwtService _jwtService;
-        private readonly ILoggerService<LoginController> _loggerService;
-        private readonly IResources _resources;
-        private readonly IUserDatesService _userDatesService;
-
         public LoginController(
             IAuthService authService,
             IResources resources,
@@ -36,14 +30,6 @@ namespace EPlast.WebApi.Controllers
             _jwtService = jwtService;
             _loggerService = loggerService;
             _userDatesService = userDatesService;
-        }
-
-        private async Task AddEntryMembershipDate(string userId)
-        {
-            if (!(await _userDatesService.UserHasMembership(userId)))
-            {
-                await _userDatesService.AddDateEntryAsync(userId);
-            }
         }
 
         [HttpPost("signin/facebook")]
@@ -151,6 +137,28 @@ namespace EPlast.WebApi.Controllers
                 }
             }
             return Ok(_resources.ResourceForErrors["ModelIsNotValid"]);
+        }
+
+        [HttpGet("logout")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public IActionResult Logout()
+        {
+            _authService.SignOutAsync();
+            return Ok();
+        }
+
+        private readonly IAuthService _authService;
+        private readonly IJwtService _jwtService;
+        private readonly ILoggerService<LoginController> _loggerService;
+        private readonly IResources _resources;
+        private readonly IUserDatesService _userDatesService;
+
+        private async Task AddEntryMembershipDate(string userId)
+        {
+            if (!(await _userDatesService.UserHasMembership(userId)))
+            {
+                await _userDatesService.AddDateEntryAsync(userId);
+            }
         }
     }
 }
