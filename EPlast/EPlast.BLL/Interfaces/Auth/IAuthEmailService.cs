@@ -8,6 +8,14 @@ namespace EPlast.BLL.Interfaces
     public interface IAuthEmailService
     {
         /// <summary>
+        /// Confirming Email after registration
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="code"></param>
+        /// <returns>Result of confirming email in system</returns>
+        Task<IdentityResult> ConfirmEmailAsync(string userId, string code);
+
+        /// <summary>
         /// Sending email for registration
         /// </summary>
         /// <param name="confirmationLink"></param>
@@ -30,13 +38,5 @@ namespace EPlast.BLL.Interfaces
         /// <param name="forgotPasswordDto"></param>
         /// <returns>Result of sending email</returns>
         Task SendEmailResetingAsync(string confirmationLink, ForgotPasswordDto forgotPasswordDto);
-
-        /// <summary>
-        /// Confirming Email after registration
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="code"></param>
-        /// <returns>Result of confirming email in system</returns>
-        Task<IdentityResult> ConfirmEmailAsync(string userId, string code);
     }
 }

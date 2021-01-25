@@ -144,6 +144,7 @@ namespace EPlast.WebApi.Controllers
             }
             return Ok(_resources.ResourceForErrors["ModelIsNotValid"]);
         }
+
         private async Task AddEntryMembershipDate(string userId)
         {
             if (!(await _userDatesService.UserHasMembership(userId)))

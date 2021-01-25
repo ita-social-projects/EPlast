@@ -26,6 +26,7 @@ namespace EPlast.BLL.Services
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
+
         public AuthService(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
