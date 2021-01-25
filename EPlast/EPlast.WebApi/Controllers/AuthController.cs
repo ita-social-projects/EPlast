@@ -18,6 +18,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IHomeService _homeService;
         private readonly IResources _resources;
         private readonly IUserDatesService _userDatesService;
+
         public AuthController(
             IAuthService authService,
             IUserDatesService userDatesService,
@@ -123,6 +124,7 @@ namespace EPlast.WebApi.Controllers
                 }
             }
         }
+
         /// <summary>
         /// Method for resending email after SMTPServer error
         /// </summary>
@@ -142,6 +144,7 @@ namespace EPlast.WebApi.Controllers
             await _authEmailServices.SendEmailRegistrAsync(userDto.Email);
             return Ok("ResendEmailConfirmation");
         }
+
         /// <summary>
         /// Method for sending question to admin in system
         /// </summary>

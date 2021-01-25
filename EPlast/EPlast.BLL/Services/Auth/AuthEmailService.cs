@@ -19,6 +19,7 @@ namespace EPlast.BLL.Services
         private readonly IEmailConfirmation _emailConfirmation;
         private readonly IUrlHelper _Url;
         private readonly UserManager<User> _userManager;
+
         public AuthEmailService(
             IEmailConfirmation emailConfirmation,
             IAuthService authService,
