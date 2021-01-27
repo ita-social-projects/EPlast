@@ -80,7 +80,7 @@ namespace EPlast.BLL.Services.Precautions
                 .Include(c => c.User)
                 .Include(d => d.Precaution)
                 );
-            var precautions = await CheckEndDate(userPrecautions);
+            var precautions = await CheckEndDateAsync(userPrecautions);
             return _mapper.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDTO>>(precautions);
         }
 
@@ -113,10 +113,10 @@ namespace EPlast.BLL.Services.Precautions
                 throw new UnauthorizedAccessException();
         }
 
-        private async Task<IEnumerable<UserPrecaution>> CheckEndDate(IEnumerable<UserPrecaution> userPrecaution) {
+        private async Task<IEnumerable<UserPrecaution>> CheckEndDateAsync(IEnumerable<UserPrecaution> userPrecaution) {
             foreach (var item in userPrecaution)
             {
-                if (item.EndDate < DateTime.Now&& item.IsActive != false)
+                if (item.EndDate < DateTime.Now&& item.IsActive)
                 {
                     item.IsActive = false;
                      _repoWrapper.UserPrecaution.Update(item);
