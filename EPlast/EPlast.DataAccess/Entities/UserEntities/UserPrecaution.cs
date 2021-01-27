@@ -13,8 +13,11 @@ namespace EPlast.DataAccess.Entities.UserEntities
         public string Status { get; set; }
         public int Number { get; set; }
         public DateTime Date { get; set; }
+        public DateTime EndDate { get; set; }
+        public bool IsActive { get; set; }
         [Required]
         public string UserId { get; set; }
         public User User { get; set; }
+       
     }
 }
