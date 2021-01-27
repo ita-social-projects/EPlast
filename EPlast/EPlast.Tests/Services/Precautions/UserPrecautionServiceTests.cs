@@ -212,6 +212,7 @@ namespace EPlast.Tests.Services.Precautions
                .Setup(x => x.UserPrecaution.GetAllAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(GetTestUserPrecaution());
+
             mockMapper
                .Setup(m => m.Map<IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
                .Returns(GetTestUserPrecautionDTO());

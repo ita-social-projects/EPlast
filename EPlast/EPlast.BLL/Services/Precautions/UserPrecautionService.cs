@@ -114,13 +114,16 @@ namespace EPlast.BLL.Services.Precautions
         }
 
         private async Task<IEnumerable<UserPrecaution>> CheckEndDateAsync(IEnumerable<UserPrecaution> userPrecaution) {
-            foreach (var item in userPrecaution)
+            if (userPrecaution != null)
             {
-                if (item.EndDate < DateTime.Now&& item.IsActive)
+                foreach (var item in userPrecaution)
                 {
-                    item.IsActive = false;
-                     _repoWrapper.UserPrecaution.Update(item);
-                    await _repoWrapper.SaveAsync();
+                    if (item.EndDate < DateTime.Now && item.IsActive)
+                    {
+                        item.IsActive = false;
+                        _repoWrapper.UserPrecaution.Update(item);
+                        await _repoWrapper.SaveAsync();
+                    }
                 }
             }
              return userPrecaution;
