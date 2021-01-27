@@ -34,7 +34,10 @@ namespace EPlast.BLL.Services.Precautions
                 Reason = userPrecautionDTO.Reason,
                 Reporter = userPrecautionDTO.Reporter,
                 Number = userPrecautionDTO.Number,
-                Status = userPrecautionDTO.Status
+                Status = userPrecautionDTO.Status,
+                EndDate = userPrecautionDTO.PrecautionId == 1 ? userPrecautionDTO.Date.AddMonths(3) :
+                userPrecautionDTO.PrecautionId == 2 ? userPrecautionDTO.Date.AddMonths(6) : userPrecautionDTO.Date.AddMonths(12),
+                IsActive = userPrecautionDTO.IsActive
             };
             await _repoWrapper.UserPrecaution.CreateAsync(userPrecaution);
             await _repoWrapper.SaveAsync();
@@ -52,7 +55,9 @@ namespace EPlast.BLL.Services.Precautions
                 Reason = userPrecautionDTO.Reason,
                 Reporter = userPrecautionDTO.Reporter,
                 Number = userPrecautionDTO.Number,
-                Status = userPrecautionDTO.Status
+                Status = userPrecautionDTO.Status, 
+                EndDate = userPrecautionDTO.EndDate,
+                IsActive = userPrecautionDTO.Status=="Скасовано"?false:true
             };
             _repoWrapper.UserPrecaution.Update(userPrecaution);
             await _repoWrapper.SaveAsync();
@@ -75,7 +80,8 @@ namespace EPlast.BLL.Services.Precautions
                 .Include(c => c.User)
                 .Include(d => d.Precaution)
                 );
-            return _mapper.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDTO>>(userPrecautions);
+            var precautions = await CheckEndDate(userPrecautions);
+            return _mapper.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDTO>>(precautions);
         }
 
         public async Task<UserPrecautionDTO> GetUserPrecautionAsync(int id)
@@ -105,6 +111,19 @@ namespace EPlast.BLL.Services.Precautions
         {
             if (!(await _userManager.GetRolesAsync(user)).Contains("Admin"))
                 throw new UnauthorizedAccessException();
+        }
+
+        private async Task<IEnumerable<UserPrecaution>> CheckEndDate(IEnumerable<UserPrecaution> userPrecaution) {
+            foreach (var item in userPrecaution)
+            {
+                if (item.EndDate < DateTime.Now&& item.IsActive != false)
+                {
+                    item.IsActive = false;
+                     _repoWrapper.UserPrecaution.Update(item);
+                    await _repoWrapper.SaveAsync();
+                }
+            }
+             return userPrecaution;
         }
 
     }
