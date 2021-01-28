@@ -21,12 +21,6 @@ namespace EPlast.BLL.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly IEmailConfirmation _emailConfirmation;
-        private readonly IMapper _mapper;
-        private readonly IRepositoryWrapper _repoWrapper;
-        private readonly SignInManager<User> _signInManager;
-        private readonly UserManager<User> _userManager;
-
         public AuthService(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
@@ -92,22 +86,32 @@ namespace EPlast.BLL.Services
             var user = await _userManager.FindByEmailAsync(facebookUser.Email);
             if (user == null)
             {
-                user = new User
+                try
                 {
-                    SocialNetworking = true,
-                    UserName = facebookUser.Email ?? facebookUser.UserId,
-                    FirstName = facebookUser.Name.Split(' ')[0],
-                    Email = facebookUser.Email ?? "facebookdefaultmail@gmail.com",
-                    LastName = facebookUser.Name.Split(' ')[1],
-                    ImagePath = "default_user_image.png",
-                    EmailConfirmed = true,
-                    RegistredOn = DateTime.Now,
-                    UserProfile = new UserProfile()
+                    user = new User
                     {
-                        Birthday = DateTime.Parse(facebookUser.Birthday, CultureInfo.InvariantCulture),
-                        GenderID = _repoWrapper.Gender.FindByCondition(x => x.Name == facebookUser.Gender).FirstOrDefault()?.ID,
-                    }
-                };
+                        SocialNetworking = true,
+                        UserName = facebookUser.Email ?? facebookUser.UserId,
+                        FirstName = facebookUser.Name.Split(' ')[0],
+                        Email = facebookUser.Email ?? "facebookdefaultmail@gmail.com",
+                        LastName = facebookUser.Name.Split(' ')[1],
+                        ImagePath = "default_user_image.png",
+                        EmailConfirmed = true,
+                        RegistredOn = DateTime.Now,
+                        UserProfile = new UserProfile()
+                        {
+                            Birthday = DateTime.Parse(facebookUser.Birthday, CultureInfo.InvariantCulture),
+                            GenderID = _repoWrapper
+                                .Gender
+                                .FindByCondition(x => x.Name == facebookUser.Gender)
+                                .FirstOrDefault()?.ID,
+                        }
+                    };
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
                 var createResult = await _userManager.CreateAsync(user);
                 if (createResult.Succeeded && user.Email != "facebookdefaultmail@gmail.com")
                 {
@@ -116,7 +120,7 @@ namespace EPlast.BLL.Services
                 }
                 await _userManager.AddToRoleAsync(user, "Прихильник");
             }
-            await _signInManager.SignInAsync(user, isPersistent: false);
+            await _signInManager.SignInAsync(user, false, null);
             return _mapper.Map<User, UserDTO>(user);
         }
 
@@ -210,7 +214,7 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async Task<string> GetIdForUser(User user)
+        public async Task<string> GetIdForUserAsync(User user)
         {
             var currentUserId = await _userManager.GetUserIdAsync(user);
             return currentUserId;
@@ -289,5 +293,11 @@ namespace EPlast.BLL.Services
         {
             await _signInManager.SignOutAsync();
         }
+
+        private readonly IEmailConfirmation _emailConfirmation;
+        private readonly IMapper _mapper;
+        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<User> _userManager;
     }
 }

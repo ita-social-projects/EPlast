@@ -11,8 +11,6 @@ namespace EPlast.BLL
 {
     public class EmailConfirmationService : IEmailConfirmation
     {
-        private readonly ILoggerService<EmailConfirmationService> _loggerService;
-
         public EmailConfirmationService(
             IOptions<EmailServiceSettings> settings,
             ILoggerService<EmailConfirmationService> loggerService)
@@ -32,20 +30,24 @@ namespace EPlast.BLL
             var SMTPServerPassword = Settings.Value.SMTPServerPassword;
 
             var emailMessage = new MimeMessage();
-
-            emailMessage.From.Add(new MailboxAddress(title, SMTPServerLogin));
+            try
+            {
+                emailMessage.From.Add(new MailboxAddress(title, SMTPServerLogin));
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine(exc.Message);
+            }
             emailMessage.To.Add(new MailboxAddress("", email));
             emailMessage.Subject = subject;
             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = message };
             try
             {
-                using (var client = new SmtpClient())
-                {
-                    await client.ConnectAsync(SMTPServer, Port, true);
-                    await client.AuthenticateAsync(SMTPServerLogin, SMTPServerPassword);
-                    await client.SendAsync(emailMessage);
-                    await client.DisconnectAsync(true);
-                }
+                using var client = new SmtpClient();
+                await client.ConnectAsync(SMTPServer, Port, true);
+                await client.AuthenticateAsync(SMTPServerLogin, SMTPServerPassword);
+                await client.SendAsync(emailMessage);
+                await client.DisconnectAsync(true);
             }
             catch (Exception exс)
             {
@@ -54,5 +56,7 @@ namespace EPlast.BLL
             }
             return true;
         }
+
+        private readonly ILoggerService<EmailConfirmationService> _loggerService;
     }
 }
