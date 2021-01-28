@@ -489,10 +489,12 @@ namespace EPlast.XUnitTest.Services
 
         private AuthenticationProperties GetTestAuthenticationProperties()
         {
-            Dictionary<string, string> authenticationDictionary = new Dictionary<string, string>(3);
-            authenticationDictionary.Add("First", "Google");
-            authenticationDictionary.Add("Second", "Facebook");
-            authenticationDictionary.Add("Third", "Amazon");
+            Dictionary<string, string> authenticationDictionary = new Dictionary<string, string>(3)
+            {
+                { "First", "Google" },
+                { "Second", "Facebook" },
+                { "Third", "Amazon" }
+            };
             var authProperties = new AuthenticationProperties(authenticationDictionary);
             return authProperties;
         }
@@ -517,11 +519,6 @@ namespace EPlast.XUnitTest.Services
         private string GetTestCodeForResetPasswordAndConfirmEmail()
         {
             return new string("500");
-        }
-
-        private string GetTestIdForUser()
-        {
-            return "aaaa-bbbb-cccc";
         }
 
         private User GetTestUserWithEmailsSendedTime()

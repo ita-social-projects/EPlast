@@ -100,7 +100,7 @@ namespace EPlast.BLL.Interfaces
         /// </summary>
         /// <param name="user"></param>
         /// <returns>Returns id of user</returns>
-        Task<string> GetIdForUser(User user);
+        Task<string> GetIdForUserAsync(User user);
 
         /// <summary>
         /// Get information about external login

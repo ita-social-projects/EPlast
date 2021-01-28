@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Moq;
+using NLog.Extensions.Logging;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -52,6 +53,14 @@ namespace EPlast.Tests.Controllers
                 loginController
                 );
         }
+
+        //[Test]
+        //public async Task GetFacebookAppId_Valid_Test()
+        //{
+        //    // Arrange
+        //    var (_, _, _, _, _, loginController) = CreateLoginController();
+        //    var expected = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("FacebookAuthentication")["FacebookAppId"];
+        //}
 
         [Test]
         public async Task FacebookLogin_Inalid_BadRequest_Test()
