@@ -27,6 +27,12 @@ namespace EPlast.WebApi.Models.User
         [StringLength(18, MinimumLength = 18, ErrorMessage = "Номер телефону повинен містити 10 цифр")]
         [Required(ErrorMessage = "Поле номер телефону є обовязковим")]
         public override string PhoneNumber { get => base.PhoneNumber; set => base.PhoneNumber = value; }
+        [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,31}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,31})*$",
+            ErrorMessage = "Псевдо має містити тільки літери")]
+        [MaxLength(30, ErrorMessage = "Псевдо не може перевищувати 30 символів")]
+        public string Pseudo { get; set; }
         public string ImagePath { get; set; }
+        public string City { get; set; }
+        public string Club { get; set; }
     }
 }

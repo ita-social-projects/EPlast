@@ -149,7 +149,7 @@ namespace EPlast.BLL.Services.UserProfiles
         /// <inheritdoc />
         public async Task UpdateAsyncForBase64(UserDTO user, string base64, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
-            user = GetCorrectLinks(user);
+            user = SaveCorrectLinks(user);
             user.ImagePath ??= await UploadPhotoAsyncFromBase64(user.Id, base64);
             await UpdateAsync(user, placeOfStudyId, specialityId, placeOfWorkId, positionId);
             await _repoWrapper.SaveAsync();
@@ -293,25 +293,34 @@ namespace EPlast.BLL.Services.UserProfiles
             _repoWrapper.UserProfile.Update(userForUpdate.UserProfile);
             await _repoWrapper.SaveAsync();
         }
-        private UserDTO GetCorrectLinks(UserDTO user)
+
+        private UserDTO SaveCorrectLinks(UserDTO user)
         {
-            user.UserProfile.FacebookLink = GetCorrectLink(user.UserProfile.FacebookLink, "facebook");
-            user.UserProfile.TwitterLink = GetCorrectLink(user.UserProfile.TwitterLink, "twitter");
-            user.UserProfile.InstagramLink = GetCorrectLink(user.UserProfile.InstagramLink, "instagram");
+            user.UserProfile.FacebookLink = SaveCorrectLink(user.UserProfile.FacebookLink, "facebook");
+            user.UserProfile.TwitterLink = SaveCorrectLink(user.UserProfile.TwitterLink, "twitter");
+            user.UserProfile.InstagramLink = SaveCorrectLink(user.UserProfile.InstagramLink, "instagram");
 
             return user;
         }
-        private string GetCorrectLink (string link, string socialMediaName)
+        private string SaveCorrectLink(string link, string socialMediaName)
         {
             if (link != null && link != "")
             {
-                if (!link.Contains("http"))
+                if (link.Contains($"www.{socialMediaName}.com/"))
                 {
-                    if (!link.Contains($"{socialMediaName}.com"))
+                    if (link.Contains("https://"))
                     {
-                        link = $"www.{socialMediaName}.com/" + link;
+                        link = link.Substring(8);
                     }
-                    link = "https://" + link;
+                    link = link.Substring(socialMediaName.Length + 9);
+                }               
+                else if (link.Contains($"{socialMediaName}.com/"))
+                {
+                    if (link.Contains("https://"))
+                    {
+                        link = link.Substring(8);
+                    }
+                    link = link.Substring(socialMediaName.Length + 5);
                 }
                 return link;
             }
