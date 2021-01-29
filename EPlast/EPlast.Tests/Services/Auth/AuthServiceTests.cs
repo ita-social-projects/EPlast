@@ -13,12 +13,10 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using NLog.Extensions.Logging;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -252,6 +250,23 @@ namespace EPlast.Tests.Services
             Assert.IsInstanceOf(typeof(string), result);
         }
 
+        [Test]
+        public void GetUser_Valid_Test()
+        {
+            //Arrange
+            var (mockSignInManager,
+                mockUserManager,
+                mockEmailConfirmation,
+                AuthService) = CreateAuthService();
+
+            //Act
+            var result = AuthService.GetUser(GetTestUserWithAllFields());
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf(typeof(UserDTO), result);
+        }
+
         //[Test]
         //public async Task GetGoogleUserAsync_Valid_TestAsync()
         //{
@@ -260,7 +275,7 @@ namespace EPlast.Tests.Services
         //        mockUserManager,
         //        mockEmailConfirmation,
         //        AuthService) = CreateAuthService();
-        //    ConfigSettingLayoutRenderer
+        //    AuthService
 
         //    var result = AuthService.GetGoogleUserAsync("token");
         //}
