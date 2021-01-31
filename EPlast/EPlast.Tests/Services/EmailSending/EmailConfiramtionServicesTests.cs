@@ -45,7 +45,7 @@ namespace EPlast.Tests.Services
         {
             _mockOptions
                 .Setup(x => x.Value)
-                .Returns(new EmailServiceSettings());
+                .Returns(new EmailServiceSettings() { SMTPServerLogin = "SMTPServerLogin" });
 
             var result = await emailConfirmationService.SendEmailAsync("email", "subject", "message", "title");
 

@@ -86,32 +86,25 @@ namespace EPlast.BLL.Services
             var user = await _userManager.FindByEmailAsync(facebookUser.Email);
             if (user == null)
             {
-                try
+                user = new User
                 {
-                    user = new User
+                    SocialNetworking = true,
+                    UserName = facebookUser.Email ?? facebookUser.UserId,
+                    FirstName = facebookUser.Name.Split(' ')[0],
+                    Email = facebookUser.Email ?? "facebookdefaultmail@gmail.com",
+                    LastName = facebookUser.Name.Split(' ')[1],
+                    ImagePath = "default_user_image.png",
+                    EmailConfirmed = true,
+                    RegistredOn = DateTime.Now,
+                    UserProfile = new UserProfile()
                     {
-                        SocialNetworking = true,
-                        UserName = facebookUser.Email ?? facebookUser.UserId,
-                        FirstName = facebookUser.Name.Split(' ')[0],
-                        Email = facebookUser.Email ?? "facebookdefaultmail@gmail.com",
-                        LastName = facebookUser.Name.Split(' ')[1],
-                        ImagePath = "default_user_image.png",
-                        EmailConfirmed = true,
-                        RegistredOn = DateTime.Now,
-                        UserProfile = new UserProfile()
-                        {
-                            Birthday = DateTime.Parse(facebookUser.Birthday, CultureInfo.InvariantCulture),
-                            GenderID = _repoWrapper
-                                .Gender
-                                .FindByCondition(x => x.Name == facebookUser.Gender)
-                                .FirstOrDefault()?.ID,
-                        }
-                    };
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
+                        Birthday = DateTime.Parse(facebookUser.Birthday, CultureInfo.InvariantCulture),
+                        GenderID = _repoWrapper
+                            .Gender
+                            .FindByCondition(x => x.Name == facebookUser.Gender)
+                            .FirstOrDefault()?.ID,
+                    }
+                };
                 var createResult = await _userManager.CreateAsync(user);
                 if (createResult.Succeeded && user.Email != "facebookdefaultmail@gmail.com")
                 {
