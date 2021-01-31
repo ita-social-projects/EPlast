@@ -109,6 +109,27 @@ namespace EPlast.Tests.Services
         }
 
         [Test]
+        public async Task FacebookLoginAsync_Valid_FindByEmailAsync_Returns_User_TestAsync()
+        {
+            // Arrange
+            var (mockSignInManager,
+                mockUserManager,
+                mockEmailConfirmation,
+                AuthService) = CreateAuthService();
+            mockUserManager
+                .Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(new User());
+            mockSignInManager
+                .Setup(x => x.SignInAsync(It.IsAny<User>(), It.IsAny<bool>(), It.IsAny<string>()));
+
+            // Act
+            var result = await AuthService.FacebookLoginAsync(new BLL.Models.FacebookUserInfo());
+
+            // Assert
+            Assert.IsNotNull(result);
+        }
+
+        [Test]
         public async Task FindByIdAsync_Valid_TestAsync()
         {
             //Arrange
@@ -127,6 +148,42 @@ namespace EPlast.Tests.Services
             mockUserManager.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(UserDTO), result);
+        }
+
+        [Test]
+        public async Task RefreshSignInAsync_Valid_TestAsync()
+        {
+            //Arrange
+            var (mockSignInManager,
+                mockUserManager,
+                mockEmailConfirmation,
+                AuthService) = CreateAuthService();
+            mockSignInManager
+                .Setup(x => x.RefreshSignInAsync(It.IsAny<User>()));
+
+            //Act
+            AuthService.RefreshSignInAsync(new UserDTO());
+
+            //Assert
+            mockSignInManager.Verify();
+        }
+
+        [Test]
+        public async Task SignOutAsync_Valid_TestAsync()
+        {
+            //Arrange
+            var (mockSignInManager,
+                mockUserManager,
+                mockEmailConfirmation,
+                AuthService) = CreateAuthService();
+            mockSignInManager
+                .Setup(x => x.SignOutAsync());
+
+            //Act
+            AuthService.SignOutAsync();
+
+            //Assert
+            mockSignInManager.Verify();
         }
 
         [Test]
