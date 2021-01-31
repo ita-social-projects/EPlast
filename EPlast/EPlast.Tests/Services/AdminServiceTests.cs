@@ -22,19 +22,8 @@ using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services
 {
-    class AdminServiceTests
+    internal class AdminServiceTests
     {
-        private  Mock<IRepositoryWrapper> _repoWrapper;
-        private  Mock<UserManager<User>> _userManager;
-        private  Mock<RoleManager<IdentityRole>> _roleManager;
-        private  Mock<IMapper> _mapper;
-        private Mock<IUserStore<User>> _user;
-        private  Mock<ICityParticipantsService> _cityParticipantsService;
-        private  Mock<IClubParticipantsService> _clubParticipants;
-        private  Mock<IRegionAdministrationService> _regionService;
-        private Mock<IRoleStore<IdentityRole>> _store;
-        private AdminService service;
-
         [SetUp]
         public void SetUp()
         {
@@ -62,25 +51,27 @@ namespace EPlast.Tests.Services
                 _cityParticipantsService.Object
             );
         }
-      
+
         [Test]
         public void EditAsync_ReturnsCorrect()
         {
             // Arrange
             _userManager
-                .Setup(x=>x.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(new User() {FirstName="James", LastName="Bond" });
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(new User() { FirstName = "James", LastName = "Bond" });
             _userManager
-                .Setup(x=>x.GetRolesAsync(new User() { FirstName = "James", LastName = "Bond" }))
-                .ReturnsAsync(new List<string>() {"Прихильник"});
+                .Setup(x => x.GetRolesAsync(new User() { FirstName = "James", LastName = "Bond" }))
+                .ReturnsAsync(new List<string>() { "Прихильник" });
             _userManager
-                .Setup(x=>x.AddToRolesAsync(It.IsAny<User>(), It.IsAny<List<string>>()));
+                .Setup(x => x.AddToRolesAsync(It.IsAny<User>(), It.IsAny<List<string>>()));
             _userManager
                 .Setup(x => x.RemoveFromRolesAsync(It.IsAny<User>(), It.IsAny<List<string>>()));
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(roles);
+
             // Act
             var result = service.EditAsync(It.IsAny<string>(), roles);
+
             // Assert
             _userManager.Verify();
             Assert.NotNull(result);
@@ -96,28 +87,28 @@ namespace EPlast.Tests.Services
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
             _repoWrapper
-                .Setup(x=>x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
                 It.IsAny<Func<IQueryable<CityMembers>,
                 IIncludableQueryable<CityMembers, object>>>()))
                 .ReturnsAsync(new CityMembers());
             _cityParticipantsService
-                .Setup(x=>x.RemoveMemberAsync(It.IsAny<CityMembers>()));
+                .Setup(x => x.RemoveMemberAsync(It.IsAny<CityMembers>()));
             _repoWrapper
                .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
                It.IsAny<Func<IQueryable<ClubMembers>,
                IIncludableQueryable<ClubMembers, object>>>()))
                .ReturnsAsync(new ClubMembers());
             _clubParticipants
-                .Setup(x=>x.RemoveMemberAsync(It.IsAny<ClubMembers>()));
+                .Setup(x => x.RemoveMemberAsync(It.IsAny<ClubMembers>()));
             _repoWrapper
                .Setup(x => x.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
                It.IsAny<Func<IQueryable<RegionAdministration>,
                IIncludableQueryable<RegionAdministration, object>>>()))
                .ReturnsAsync(new RegionAdministration());
             _regionService
-                .Setup(x=>x.DeleteAdminByIdAsync(It.IsAny<int>()));
+                .Setup(x => x.DeleteAdminByIdAsync(It.IsAny<int>()));
             _userManager
-                .Setup(x=>x.AddToRoleAsync(It.IsAny<User>(), "Колишній член пласту"));
+                .Setup(x => x.AddToRoleAsync(It.IsAny<User>(), "Колишній член пласту"));
 
             // Act
             var result = service.ChangeAsync(It.IsAny<string>());
@@ -142,11 +133,13 @@ namespace EPlast.Tests.Services
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
             _repoWrapper
-                .Setup(x=>x.User.Delete(It.IsAny<User>()));
-           _repoWrapper
-                .Setup(x=>x.SaveAsync());
+                .Setup(x => x.User.Delete(It.IsAny<User>()));
+            _repoWrapper
+                 .Setup(x => x.SaveAsync());
+
             // Act
             var result = service.DeleteUserAsync(It.IsAny<string>());
+
             // Assert
             _userManager.Verify();
             _repoWrapper.Verify();
@@ -160,17 +153,19 @@ namespace EPlast.Tests.Services
             string supporter = "Прихильник";
             string admin = "Admin";
             _userManager
-                .Setup(x=>x.FindByIdAsync(It.IsAny<string>()))
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(new User());
             _userManager
               .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
               .ReturnsAsync(new List<string>() { supporter });
             _userManager
-                .Setup(x=>x.RemoveFromRoleAsync(It.IsAny<User>(), supporter));
+                .Setup(x => x.RemoveFromRoleAsync(It.IsAny<User>(), supporter));
             _userManager
-                .Setup(x=>x.AddToRoleAsync(It.IsAny<User>(), admin));
+                .Setup(x => x.AddToRoleAsync(It.IsAny<User>(), admin));
+
             // Act
             var result = service.ChangeCurrentRoleAsync(It.IsAny<string>(), admin);
+
             // Assert
             _userManager.Verify();
             Assert.NotNull(result);
@@ -192,8 +187,10 @@ namespace EPlast.Tests.Services
                 .Setup(x => x.RemoveFromRoleAsync(It.IsAny<User>(), plastun));
             _userManager
                 .Setup(x => x.AddToRoleAsync(It.IsAny<User>(), admin));
+
             // Act
             var result = service.ChangeCurrentRoleAsync(It.IsAny<string>(), admin);
+
             // Assert
             _userManager.Verify();
             Assert.NotNull(result);
@@ -213,11 +210,11 @@ namespace EPlast.Tests.Services
                It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
                IIncludableQueryable<DataAccess.Entities.City, object>>>()))
                 .ReturnsAsync(new List<DataAccess.Entities.City>());
-           _repoWrapper
-                .Setup(x=>x.ClubMembers.GetAllAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
-               It.IsAny<Func<IQueryable<ClubMembers>,
-               IIncludableQueryable<ClubMembers, object>>>()))
-                .ReturnsAsync(new List<ClubMembers>());
+            _repoWrapper
+                 .Setup(x => x.ClubMembers.GetAllAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                It.IsAny<Func<IQueryable<ClubMembers>,
+                IIncludableQueryable<ClubMembers, object>>>()))
+                 .ReturnsAsync(new List<ClubMembers>());
             _repoWrapper
                 .Setup(x => x.CityMembers.GetAllAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
                It.IsAny<Func<IQueryable<CityMembers>,
@@ -231,9 +228,10 @@ namespace EPlast.Tests.Services
 
             // Act
             var result = await service.UsersTableAsync();
+
             // Assert
-           Assert.NotNull(result);
-           Assert.IsInstanceOf<IEnumerable<UserTableDTO>>(result);
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<UserTableDTO>>(result);
         }
 
         [Test]
@@ -246,14 +244,15 @@ namespace EPlast.Tests.Services
                IIncludableQueryable<DataAccess.Entities.City, object>>>()))
                 .ReturnsAsync(new List<DataAccess.Entities.City>());
             _mapper
-                .Setup(x=>x.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<BLL.DTO.City.CityDTO>>(new List<DataAccess.Entities.City>()));
+                .Setup(x => x.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<BLL.DTO.City.CityDTO>>(new List<DataAccess.Entities.City>()));
             _mapper
                 .Setup(x => x.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(new List<RegionAdministration>()));
+
             // Act
             var result = await service.GetCityRegionAdminsOfUser(It.IsAny<string>());
+
             // Assert
             Assert.IsInstanceOf<IEnumerable<BLL.DTO.City.CityDTO>>(result);
-           
         }
 
         [Test]
@@ -265,14 +264,15 @@ namespace EPlast.Tests.Services
                 .Setup(x => x.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
                It.IsAny<Func<IQueryable<UserMembershipDates>,
                IIncludableQueryable<UserMembershipDates, object>>>()))
-                .ReturnsAsync(new UserMembershipDates() { DateEntry=default});
+                .ReturnsAsync(new UserMembershipDates() { DateEntry = default });
             _repoWrapper
-                .Setup(x=>x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
                It.IsAny<Func<IQueryable<CityMembers>,
-               IIncludableQueryable<CityMembers, object>>>())).ReturnsAsync(new CityMembers() { IsApproved = true});
+               IIncludableQueryable<CityMembers, object>>>())).ReturnsAsync(new CityMembers() { IsApproved = true });
 
             // Act
-             var result = service.UpdateUserDatesByChangeRole(It.IsAny<string>(), role);
+            var result = service.UpdateUserDatesByChangeRole(It.IsAny<string>(), role);
+
             // Assert
             Assert.IsNotNull(result);
         }
@@ -294,6 +294,7 @@ namespace EPlast.Tests.Services
 
             // Act
             var result = service.UpdateUserDatesByChangeRole(It.IsAny<string>(), role);
+
             // Assert
             Assert.IsNotNull(result);
         }
@@ -315,14 +316,21 @@ namespace EPlast.Tests.Services
 
             // Act
             var result = service.UpdateUserDatesByChangeRole(It.IsAny<string>(), role);
+
             // Assert
             Assert.IsNotNull(result);
         }
 
-
-
-
-
+        private Mock<IRepositoryWrapper> _repoWrapper;
+        private Mock<UserManager<User>> _userManager;
+        private Mock<RoleManager<IdentityRole>> _roleManager;
+        private Mock<IMapper> _mapper;
+        private Mock<IUserStore<User>> _user;
+        private Mock<ICityParticipantsService> _cityParticipantsService;
+        private Mock<IClubParticipantsService> _clubParticipants;
+        private Mock<IRegionAdministrationService> _regionService;
+        private Mock<IRoleStore<IdentityRole>> _store;
+        private AdminService service;
 
         private List<string> roles = new List<string>()
         {

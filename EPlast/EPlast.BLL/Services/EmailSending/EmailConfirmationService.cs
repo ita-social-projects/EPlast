@@ -28,16 +28,9 @@ namespace EPlast.BLL
             var Port = Settings.Value.Port;
             var SMTPServerLogin = Settings.Value.SMTPServerLogin;
             var SMTPServerPassword = Settings.Value.SMTPServerPassword;
-
             var emailMessage = new MimeMessage();
-            try
-            {
-                emailMessage.From.Add(new MailboxAddress(title, SMTPServerLogin));
-            }
-            catch (Exception exc)
-            {
-                Console.WriteLine(exc.Message);
-            }
+
+            emailMessage.From.Add(new MailboxAddress(title, SMTPServerLogin));
             emailMessage.To.Add(new MailboxAddress("", email));
             emailMessage.Subject = subject;
             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = message };

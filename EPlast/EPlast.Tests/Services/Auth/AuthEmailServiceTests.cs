@@ -8,10 +8,6 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services
 {
@@ -38,7 +34,6 @@ namespace EPlast.Tests.Services
             _mockHttpContextAccessor
                 .Setup(x => x.HttpContext.Request.Scheme)
                 .Returns("http");
-
             authEmailService = new AuthEmailService(
                 _mockEmailConfirmation.Object,
                 _mockAuthService.Object,

@@ -76,9 +76,6 @@ namespace EPlast.XUnitTest.Services
             mockMapper
                .Setup(s => s.Map<UserDTO, User>(It.IsAny<UserDTO>()))
                .Returns(GetTestUserWithEmailsSendedTime());
-            Mock<IUrlHelperFactory> mockUrlHelperFactory = new Mock<IUrlHelperFactory>();
-            Mock<IActionContextAccessor> mockActionContextAccessor = new Mock<IActionContextAccessor>();
-            Mock<IHttpContextAccessor> mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
 
             AuthService AuthService = new AuthService(
                 mockUserManager.Object,
@@ -114,6 +111,7 @@ namespace EPlast.XUnitTest.Services
                 mockUrlFactory.Object,
                 mockActioAccessor.Object,
                 mockHttpContextAccessor.Object);
+
             return (
                 mockEmailConfirmatioService,
                 mockAuthSerive,
@@ -133,7 +131,6 @@ namespace EPlast.XUnitTest.Services
             mockUserManager
                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                .ReturnsAsync(GetTestUserWithAllFields());
-
             mockSignInManager
                 .Setup(s => s.PasswordSignInAsync(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
                 .ReturnsAsync(SignInResult.Success);
@@ -178,7 +175,6 @@ namespace EPlast.XUnitTest.Services
             mockUserManager
                 .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetTestUserWithAllFields());
-
             mockUserManager
               .Setup(s => s.ConfirmEmailAsync(It.IsAny<User>(), It.IsAny<string>()))
               .Returns(Task.FromResult(IdentityResult.Success));
@@ -199,7 +195,6 @@ namespace EPlast.XUnitTest.Services
             mockUserManager
                 .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetTestUserWithAllFields());
-
             mockUserManager
               .Setup(s => s.ChangePasswordAsync(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()))
               .Returns(Task.FromResult(IdentityResult.Success));
@@ -276,7 +271,6 @@ namespace EPlast.XUnitTest.Services
             bool result = await AuthService.IsEmailConfirmedAsync(GetTestUserDtoWithAllFields());
 
             //Assert
-            var authResult = Assert.IsType<bool>(result);
             Assert.True(result);
         }
 
@@ -293,7 +287,6 @@ namespace EPlast.XUnitTest.Services
             bool result = await AuthService.IsEmailConfirmedAsync(GetTestUserDtoWithAllFields());
 
             //Assert
-            var authResult = Assert.IsType<bool>(result);
             Assert.False(result);
         }
 
@@ -310,6 +303,7 @@ namespace EPlast.XUnitTest.Services
                 .Setup(s => s.GenerateEmailConfirmationTokenAsync(It.IsAny<User>()))
                 .ReturnsAsync(GetTestCodeForResetPasswordAndConfirmEmail());
             var registerDTO = GetTestRegisterDto();
+
             //Act
             string token = await AuthService.AddRoleAndTokenAsync(registerDTO.Email);
 

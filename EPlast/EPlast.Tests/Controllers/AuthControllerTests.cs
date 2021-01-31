@@ -340,7 +340,6 @@ namespace EPlast.Tests.Controllers
                 _,
                 AuthController) = CreateAuthController();
             AuthController.ModelState.AddModelError("NameError", "Required");
-
             mockResources
                 .Setup(s => s.ResourceForErrors["Register-InCorrectData"])
                 .Returns(GetRegisterInCorrectData());
@@ -364,15 +363,12 @@ namespace EPlast.Tests.Controllers
                 mockResources,
                 _,
                 AuthController) = CreateAuthController();
-
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync((UserDTO)null);
-
             mockAuthService
                 .Setup(s => s.CreateUserAsync(It.IsAny<RegisterDto>()))
                 .ReturnsAsync(IdentityResult.Failed(null));
-
             mockResources
                 .Setup(s => s.ResourceForErrors[It.IsAny<string>()])
                 .Returns(GetRegisterInCorrectPassword());
@@ -396,11 +392,9 @@ namespace EPlast.Tests.Controllers
                 mockResources,
                 _,
                 AuthController) = CreateAuthController();
-
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
-
             mockResources
                 .Setup(s => s.ResourceForErrors["Register-RegisteredUser"])
                 .Returns(GetRegisterRegisteredUser());

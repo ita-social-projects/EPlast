@@ -11,11 +11,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Moq;
-using NLog.Extensions.Logging;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using BadRequestResult = Microsoft.AspNetCore.Mvc.BadRequestResult;
 
@@ -54,14 +51,6 @@ namespace EPlast.Tests.Controllers
                 );
         }
 
-        //[Test]
-        //public async Task GetFacebookAppId_Valid_Test()
-        //{
-        //    // Arrange
-        //    var (_, _, _, _, _, loginController) = CreateLoginController();
-        //    var expected = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("FacebookAuthentication")["FacebookAppId"];
-        //}
-
         [Test]
         public async Task FacebookLogin_Inalid_BadRequest_Test()
         {
@@ -73,7 +62,6 @@ namespace EPlast.Tests.Controllers
                 _,
                 loginController) = CreateLoginController();
             var userInfo = GetTestFacebookUserInfoWithSomeFields();
-
             mockResources
                 .Setup(s => s.ResourceForGender[userInfo.Gender])
                 .Returns(new LocalizedString(userInfo.Gender, userInfo.Gender));
@@ -102,7 +90,6 @@ namespace EPlast.Tests.Controllers
                 _,
                 loginController) = CreateLoginController();
             var userInfo = GetTestFacebookUserInfoWithSomeFields();
-
             mockResources
                 .Setup(s => s.ResourceForGender[userInfo.Gender])
                 .Throws(new Exception());
@@ -129,7 +116,6 @@ namespace EPlast.Tests.Controllers
                 mockUserDataServices,
                 loginController) = CreateLoginController();
             var userInfo = GetTestFacebookUserInfoWithSomeFields();
-
             mockResources
                 .Setup(s => s.ResourceForGender[userInfo.Gender])
                 .Returns(new LocalizedString(userInfo.Gender, userInfo.Gender));
@@ -268,19 +254,15 @@ namespace EPlast.Tests.Controllers
                 _,
                 _,
                 loginController) = CreateLoginController();
-
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
-
             mockAuthService
                 .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
                 .ReturnsAsync(true);
-
             mockAuthService
                 .Setup(s => s.SignInAsync(It.IsAny<LoginDto>()))
                 .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.LockedOut);
-
             mockResources
                 .Setup(s => s.ResourceForErrors["Account-Locked"])
                 .Returns(GetAccountLocked());
@@ -304,15 +286,12 @@ namespace EPlast.Tests.Controllers
                 _,
                 _,
                 loginController) = CreateLoginController();
-
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
-
             mockAuthService
                 .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
                 .ReturnsAsync(false);
-
             mockResources
                 .Setup(s => s.ResourceForErrors["Login-NotConfirmed"])
                 .Returns(GetLoginNotConfirmed());
@@ -340,15 +319,12 @@ namespace EPlast.Tests.Controllers
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
-
             mockAuthService
                 .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
                 .ReturnsAsync(true);
-
             mockAuthService
                 .Setup(s => s.SignInAsync(It.IsAny<LoginDto>()))
                 .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Failed);
-
             mockResources
                 .Setup(s => s.ResourceForErrors["Login-InCorrectPassword"])
                 .Returns(GetLoginInCorrectPassword());
@@ -373,7 +349,6 @@ namespace EPlast.Tests.Controllers
                 _,
                 loginController) = CreateLoginController();
             loginController.ModelState.AddModelError("NameError", "Required");
-
             mockResources
                 .Setup(s => s.ResourceForErrors["ModelIsNotValid"])
                 .Returns(GetModelIsNotValid());
@@ -397,19 +372,15 @@ namespace EPlast.Tests.Controllers
                 _,
                 _,
                 loginController) = CreateLoginController();
-
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
-
             mockAuthService
                 .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
                 .ReturnsAsync(true);
-
             mockAuthService
                 .Setup(s => s.SignInAsync(It.IsAny<LoginDto>()))
                 .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
-
             mockJwtService
                 .Setup(s => s.GenerateJWTTokenAsync(GetTestUserDtoWithAllFields()))
                 .ReturnsAsync(It.IsAny<string>);
@@ -435,11 +406,9 @@ namespace EPlast.Tests.Controllers
                 _,
                 _,
                 loginController) = CreateLoginController();
-
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync((UserDTO)null);
-
             mockResources
                 .Setup(s => s.ResourceForErrors["Login-NotRegistered"])
                 .Returns(GetLoginNotRegistered());

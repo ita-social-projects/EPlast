@@ -11,9 +11,6 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Localization;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
@@ -38,6 +35,7 @@ namespace EPlast.Tests.Controllers
                 mockResources.Object,
                 mockAuthEmailService.Object,
                 mockUserManager.Object);
+
             return (
                 mockAuthEmailService,
                 mockAuthService,
@@ -166,7 +164,6 @@ namespace EPlast.Tests.Controllers
                 passwordController) = CreatePasswordController();
             string userId = "userId";
             string token = null;
-
             mockAuthService
                 .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
@@ -199,7 +196,6 @@ namespace EPlast.Tests.Controllers
             mockAuthService
                 .Setup(s => s.GetTimeAfterReset(It.IsAny<UserDTO>()))
                 .Returns(180);
-
             mockResources
                 .Setup(s => s.ResourceForErrors[It.IsAny<string>()]);
 
@@ -250,15 +246,12 @@ namespace EPlast.Tests.Controllers
                 mockResources,
                 _,
                 passwordController) = CreatePasswordController();
-
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync((UserDTO)null);
-
             mockAuthService
                 .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
                 .ReturnsAsync(GetTestUserDtoWithAllFields().EmailConfirmed);
-
             mockResources
                 .Setup(s => s.ResourceForErrors[It.IsAny<string>()])
                 .Returns(GetForgotNotRegisteredUser());
@@ -281,28 +274,22 @@ namespace EPlast.Tests.Controllers
                 mockResources,
                 _,
                 passwordController) = CreatePasswordController();
-
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
-
             mockAuthService
                 .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
                 .ReturnsAsync(GetTestUserWithEmailConfirmed().EmailConfirmed);
-
             mockAuthService
                 .Setup(i => i.GenerateResetTokenAsync(It.IsAny<UserDTO>()))
                 .ReturnsAsync(GetTestCodeForResetPasswordAndConfirmEmail());
-
             var mockUrlHelper = new Mock<IUrlHelper>(MockBehavior.Strict);
             mockUrlHelper
                 .Setup(x => x.Action(It.IsAny<UrlActionContext>()))
                 .Returns("callbackUrl")
                 .Verifiable();
-
             passwordController.Url = mockUrlHelper.Object;
             passwordController.ControllerContext.HttpContext = new DefaultHttpContext();
-
             mockResources
                 .Setup(s => s.ResourceForErrors[It.IsAny<string>()])
                 .Returns(GetForgotPasswordConfirmation());
@@ -326,7 +313,6 @@ namespace EPlast.Tests.Controllers
                 _,
                 passwordController) = CreatePasswordController();
             passwordController.ModelState.AddModelError("NameError", "Required");
-
             mockResources
                 .Setup(s => s.ResourceForErrors[It.IsAny<string>()])
                 .Returns(GetModelIsNotValid());
@@ -350,7 +336,6 @@ namespace EPlast.Tests.Controllers
                 _,
                 passwordController) = CreatePasswordController();
             passwordController.ModelState.AddModelError("NameError", "Required");
-
             mockResources
                 .Setup(s => s.ResourceForErrors[It.IsAny<string>()])
                 .Returns(GetModelIsNotValid());
@@ -373,11 +358,9 @@ namespace EPlast.Tests.Controllers
                 mockResources,
                 _,
                 passwordController) = CreatePasswordController();
-
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync((UserDTO)null);
-
             mockResources
                 .Setup(s => s.ResourceForErrors[It.IsAny<string>()])
                 .Returns(GetResetNotRegisteredUser());
@@ -400,19 +383,15 @@ namespace EPlast.Tests.Controllers
                 mockResources,
                 mockUserManager,
                 passwordController) = CreatePasswordController();
-
             mockAuthService
                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                .ReturnsAsync(GetTestUserDtoWithAllFields());
-
             mockAuthService
                 .Setup(s => s.ResetPasswordAsync(It.IsAny<string>(), It.IsAny<ResetPasswordDto>()))
                 .Returns(Task.FromResult(IdentityResult.Success));
-
             mockAuthService
                 .Setup(s => s.CheckingForLocking(It.IsAny<UserDTO>()))
                 .Verifiable();
-
             mockResources
                 .Setup(s => s.ResourceForErrors[It.IsAny<string>()])
                 .Returns(GetResetPasswordConfirmation());
@@ -435,15 +414,12 @@ namespace EPlast.Tests.Controllers
                 mockResources,
                 _,
                 passwordController) = CreatePasswordController();
-
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
-
             mockAuthService
                 .Setup(s => s.ResetPasswordAsync(It.IsAny<string>(), It.IsAny<ResetPasswordDto>()))
                 .Returns(Task.FromResult(IdentityResult.Failed(null)));
-
             mockResources
                 .Setup(s => s.ResourceForErrors[It.IsAny<string>()])
                 .Returns(GetResetPasswordProblems());
