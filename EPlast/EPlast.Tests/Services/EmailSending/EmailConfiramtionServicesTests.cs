@@ -1,11 +1,8 @@
-﻿using Moq;
+﻿using EPlast.BLL;
+using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Settings;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using EPlast.BLL.Interfaces.Logging;
-using EPlast.BLL;
+using Moq;
 using NUnit.Framework;
 using System.Threading.Tasks;
 

@@ -116,71 +116,6 @@ namespace EPlast.Tests.Services
             Assert.IsNotNull(result);
         }
 
-        //[Test]
-        //public void FacebookLoginAsync_Valid_Test()
-        //{
-        //    //Arrange
-        //    var (mockSignInManager,
-        //        mockUserManager,
-        //        mockEmailConfirmation,
-        //        AuthService) = CreateAuthService();
-
-        // mockUserManager .Setup(s => s.FindByEmailAsync(It.IsAny<string>())) .ReturnsAsync(GetTestUserWithAllFields());
-
-        // //Act var result = AuthService.FacebookLoginAsync(new BLL.Models.FacebookUserInfo());
-
-        //    //Assert
-        //    mockUserManager.Verify();
-        //    Assert.IsNotNull(result);
-        //    Assert.IsNull(result.Result);
-        //}
-
-        //[Test]
-        //public void FacebookLoginAsync_Valid_UserIsNull_Test()
-        //{
-        //    //Arrange
-        //    var (mockSignInManager,
-        //        mockUserManager,
-        //        mockEmailConfirmation,
-        //        AuthService) = CreateAuthService();
-
-        // mockUserManager .Setup(s => s.FindByEmailAsync(It.IsAny<string>()));
-
-        // mockUserManager .Setup(s => s.CreateAsync(It.IsAny<User>(),
-        // It.IsAny<string>())) .Returns(Task.FromResult(IdentityResult.Success));
-
-        // mockEmailConfirmation .Setup(x =>
-        // x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(),
-        // It.IsAny<string>(), It.IsAny<string>())); //.ReturnsAsync(true);
-
-        // mockUserManager .Setup(x => x.AddToRoleAsync(It.IsAny<User>(), "Прихильник"));
-
-        // mockSignInManager .Setup(s =>
-        // s.SignInAsync(GetTestUserWithAllFields(), false, null));
-
-        // Mock<IMapper> mockMapper = new Mock<IMapper>(); mockMapper .Setup(s
-        // => s.Map<User, UserDTO>(It.IsAny<User>()))
-        // .Returns(GetTestUserDtoWithAllFields()); Mock<IRepositoryWrapper>
-        // mockRepoWrapper = new Mock<IRepositoryWrapper>(); //Type a = ; var
-        // items = new Gender[] { }.AsQueryable();
-
-        // mockRepoWrapper.Setup(x => x.Gender).Returns(); mockRepoWrapper
-        // .Setup(s => s.Gender
-        // .FindByCondition(It.IsAny<Expression<Func<Gender, bool>>>()))
-        // .Returns(items); Mock<Gender> mockGender = new Mock<Gender>();
-
-        // //.Returns(
-
-        // //Act var result = AuthService.FacebookLoginAsync(new
-        // BLL.Models.FacebookUserInfo() { Name = "Name Surname", Email =
-        // "email@com.ua", Birthday = "2008-11-01T19:35:00.0000000Z" });
-
-        //    //Assert
-        //    mockUserManager.Verify();
-        //    Assert.IsNotNull(result);
-        //    Assert.IsNull(result.Result);
-        //}
-
         [Test]
         public async Task FindByIdAsync_Valid_TestAsync()
         {
@@ -263,64 +198,6 @@ namespace EPlast.Tests.Services
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(UserDTO), result);
         }
-
-        //[Test]
-        //public async Task GetGoogleUserAsync_Valid_TestAsync()
-        //{
-        //    //Arrange
-        //    var (mockSignInManager,
-        //        mockUserManager,
-        //        mockEmailConfirmation,
-        //        AuthService) = CreateAuthService();
-        //    AuthService
-
-        //    var result = AuthService.GetGoogleUserAsync("token");
-        //}
-
-        //[Test]
-        //public void SendEmailResetingAsync_Valid_Test()
-        //{
-        //    //Arrange
-        //    _mockUserManager
-        //        .Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
-        //        .ReturnsAsync(new User());
-        //    _mockEmailConfirmation
-        //        .Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-        //        .ReturnsAsync(true);
-
-        // //Act var result =
-        // authEmailService.SendEmailResetingAsync("confirmationLink", new BLL.DTO.Account.ForgotPasswordDto());
-
-        //    //Assert
-        //    _mockEmailConfirmation.Verify();
-        //    _mockUserManager.Verify();
-        //    Assert.IsNotNull(result);
-        //}
-
-        //[Test]
-        //public void SendEmailReminderAsync_Valid_Test()
-        //{
-        //    //Arrange
-        //    _mockUserManager
-        //        .Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
-        //        .ReturnsAsync(new User());
-        //    _
-
-        // //Act var result =
-        // authEmailService.SendEmailReminderAsync("citiesUrl", new BLL.DTO.UserProfiles.UserDTO());
-
-        //    //Assert
-        //    _mockEmailConfirmation.Verify();
-        //    _mockUserManager.Verify();
-        //    Assert.IsNotNull(result);
-        //}
-
-        //private Mock<IEmailConfirmation> _mockEmailConfirmation;
-        //private Mock<IMapper> _mockMapper;
-        //private Mock<IRepositoryWrapper> _mockRepoWrapper;
-        //private Mock<SignInManager<User>> _mockSignInManager;
-        //private Mock<UserManager<User>> _mockUserManager;
-        //private AuthService authService;
 
         private User GetTestUserWithEmailsSendedTime()
         {
