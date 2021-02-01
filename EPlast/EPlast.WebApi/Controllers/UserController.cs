@@ -126,9 +126,9 @@ namespace EPlast.WebApi.Controllers
                 var isUserHeadOfRegion = await _userManagerService.IsInRoleAsync(currentUser, "Голова Округу");
                 var isCurrentUserSupporter = await _userManagerService.IsInRoleAsync(currentUser, "Прихильник");
                 var isCurrentUserPlastun = await _userManagerService.IsInRoleAsync(currentUser, "Пластун")
-                    || focusUser.UserProfile.UpuDegreeID != 1
+                    || currentUser.UserProfile.UpuDegreeID != 1
                     || !(isCurrentUserSupporter
-                    && await _userService.IsApprovedCityMember(focusUserId));
+                    && await _userService.IsApprovedCityMember(currentUserId));
                 var isFocusUserSupporter = await _userManagerService.IsInRoleAsync(focusUser, "Прихильник");
                 var isFocusUserPlastun = await _userManagerService.IsInRoleAsync(focusUser, "Пластун")
                     || focusUser.UserProfile.UpuDegreeID != 1
