@@ -244,25 +244,17 @@ namespace EPlast.Tests.Controllers
             var (mockAuthService,
                 _,
                 _,
-                _,
+                mockResources,
                 mockAuthEmailService,
                 AuthController) = CreateAuthController();
             string userId = "userId";
             mockAuthService
                 .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
-            mockAuthService
-                .Setup(s => s.GenerateConfToken(It.IsAny<UserDTO>()))
-                .ReturnsAsync("token");
             mockAuthEmailService
                 .Setup(s => s.SendEmailRegistrAsync(It.IsAny<string>()));
-            var mockUrlHelper = new Mock<IUrlHelper>(MockBehavior.Strict);
-            mockUrlHelper
-                .Setup(x => x.Action(It.IsAny<UrlActionContext>()))
-                .Returns("callbackUrl")
-                .Verifiable();
-            AuthController.Url = mockUrlHelper.Object;
-            AuthController.ControllerContext.HttpContext = new DefaultHttpContext();
+            mockResources
+                .Setup(s => s.ResourceForErrors[It.IsAny<string>()]);
 
             // Act
             var expected = StatusCodes.Status200OK;
