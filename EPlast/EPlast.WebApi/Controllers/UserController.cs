@@ -124,10 +124,15 @@ namespace EPlast.WebApi.Controllers
                 var isUserHeadOfCity = await _userManagerService.IsInRoleAsync(currentUser, "Голова Станиці");
                 var isUserHeadOfClub = await _userManagerService.IsInRoleAsync(currentUser, "Голова Куреня");
                 var isUserHeadOfRegion = await _userManagerService.IsInRoleAsync(currentUser, "Голова Округу");
-                var isUserSupporter = await _userManagerService.IsInRoleAsync(focusUser, "Прихильник");
-                var isUserPlastun = await _userManagerService.IsInRoleAsync(focusUser, "Пластун")
+                var isCurrentUserSupporter = await _userManagerService.IsInRoleAsync(currentUser, "Прихильник");
+                var isCurrentUserPlastun = await _userManagerService.IsInRoleAsync(currentUser, "Пластун")
+                    || currentUser.UserProfile.UpuDegreeID != 1
+                    || !(isCurrentUserSupporter
+                    && await _userService.IsApprovedCityMember(currentUserId));
+                var isFocusUserSupporter = await _userManagerService.IsInRoleAsync(focusUser, "Прихильник");
+                var isFocusUserPlastun = await _userManagerService.IsInRoleAsync(focusUser, "Пластун")
                     || focusUser.UserProfile.UpuDegreeID != 1
-                    || !(isUserSupporter
+                    || !(isFocusUserSupporter
                     && await _userService.IsApprovedCityMember(focusUserId));
 
                 if (isThisUser || 
@@ -135,24 +140,24 @@ namespace EPlast.WebApi.Controllers
                     (isUserHeadOfCity && isUserSameCity) ||
                     (isUserHeadOfClub && isUserSameClub) ||
                     (isUserHeadOfRegion && isUserSameRegion) ||
-                    (isUserPlastun && isUserSameCity))
+                    (isCurrentUserPlastun && isUserSameCity))
                 {
                     var model = new PersonalDataViewModel
                     {
                         User = _mapper.Map<UserDTO, UserViewModel>(focusUser),
                         TimeToJoinPlast = (int)time.TotalDays,
-                        IsUserPlastun = isUserPlastun,
+                        IsUserPlastun = isFocusUserPlastun,
                     };
 
                     return Ok(model);
                 }
-                else if (isUserSupporter || isUserHeadOfCity || isUserHeadOfClub || isUserHeadOfRegion || isUserPlastun )
+                else if (isCurrentUserSupporter || isUserHeadOfCity || isUserHeadOfClub || isUserHeadOfRegion || isCurrentUserPlastun )
                 {
                     var model = new PersonalDataViewModel
                     {
                         ShortUser = _mapper.Map<UserDTO, UserShortViewModel>(focusUser),
                         TimeToJoinPlast = (int)time.TotalDays,
-                        IsUserPlastun = isUserPlastun,
+                        IsUserPlastun = isFocusUserPlastun,
                     };
 
                     return Ok(model);
