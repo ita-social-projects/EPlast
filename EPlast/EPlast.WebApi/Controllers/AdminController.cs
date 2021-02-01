@@ -16,12 +16,6 @@ namespace EPlast.WebApi.Controllers
     [Authorize(Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня, Пластун")]
     public class AdminController : ControllerBase
     {
-        private readonly ILoggerService<AdminController> _loggerService;
-        private readonly IUserManagerService _userManagerService;
-        private readonly IAdminService _adminService;
-        private readonly ICityService _cityService;
-        private readonly ICityParticipantsService _cityAdministrationService;
-
         public AdminController(ILoggerService<AdminController> logger,
             IUserManagerService userManagerService,
             IAdminService adminService,
@@ -122,7 +116,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Change current user role 
+        /// Change current user role
         /// </summary>
         /// <param name="userId">The id of the user</param>
         /// <param name="role">The new current role of user</param>
@@ -218,9 +212,14 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Get City and Region Admins by userId of user which contained cityMembers
         /// </summary>
-        /// <returns>User object and CityDTO, which contains CityAdministration, region => RegionAdministration</returns>
+        /// <returns>
+        /// User object and CityDTO, which contains CityAdministration, region
+        /// =&gt; RegionAdministration
+        /// </returns>
         /// <response code="200">Successful operation</response>
-        /// <response code="500">userId is empty/null or user not contained in database</response>
+        /// <response code="500">
+        /// userId is empty/null or user not contained in database
+        /// </response>
         [HttpGet("CityRegionAdmins/{userId}")]
         public async Task<IActionResult> GetCityAndRegionAdminsOfUser(string userId)
         {
@@ -230,10 +229,16 @@ namespace EPlast.WebApi.Controllers
                 if (user != null)
                 {
                     var result = await _adminService.GetCityRegionAdminsOfUser(userId);
-                    return Ok(new { result, user});
+                    return Ok(new { result, user });
                 }
             }
             return BadRequest();
         }
+
+        private readonly ILoggerService<AdminController> _loggerService;
+        private readonly IUserManagerService _userManagerService;
+        private readonly IAdminService _adminService;
+        private readonly ICityService _cityService;
+        private readonly ICityParticipantsService _cityAdministrationService;
     }
 }

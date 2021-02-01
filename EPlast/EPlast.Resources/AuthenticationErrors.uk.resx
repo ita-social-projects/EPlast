@@ -190,4 +190,7 @@
   <data name="Register-SMTPServerError" xml:space="preserve">
     <value>Помилка поштового серверу. Зверніться до адміністратора на вкладці Контакти.</value>
   </data>
+  <data name="EmailForRegistering-Resended" xml:space="preserve">
+    <value>Лист для підтвердження реєстрації повторно відправлений на електронну пошту користувача.</value>
+  </data>
 </root>
