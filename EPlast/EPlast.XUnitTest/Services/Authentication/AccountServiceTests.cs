@@ -8,6 +8,8 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -74,11 +76,53 @@ namespace EPlast.XUnitTest.Services
             mockMapper
                .Setup(s => s.Map<UserDTO, User>(It.IsAny<UserDTO>()))
                .Returns(GetTestUserWithEmailsSendedTime());
+            Mock<IUrlHelperFactory> mockUrlHelperFactory = new Mock<IUrlHelperFactory>();
+            Mock<IActionContextAccessor> mockActionContextAccessor = new Mock<IActionContextAccessor>();
+            Mock<IHttpContextAccessor> mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
 
-            AuthService AuthService = new AuthService(mockUserManager.Object, mockSignInManager.Object,
-               mockEmailConfirmation.Object, mockMapper.Object,null);
+            AuthService AuthService = new AuthService(
+                mockUserManager.Object,
+                mockSignInManager.Object,
+                mockEmailConfirmation.Object,
+                mockMapper.Object,
+                mockRepositoryWrapper.Object);
 
             return (mockSignInManager, mockUserManager, mockEmailConfirmation, AuthService);
+        }
+
+        public (
+            Mock<IEmailConfirmation>,
+            Mock<IAuthService>,
+            Mock<UserManager<User>>,
+            Mock<IUrlHelperFactory>,
+            Mock<IActionContextAccessor>,
+            Mock<IHttpContextAccessor>,
+            AuthEmailService
+            ) CreateAuthEmailService()
+        {
+            Mock<IEmailConfirmation> mockEmailConfirmatioService = new Mock<IEmailConfirmation>();
+            Mock<IAuthService> mockAuthSerive = new Mock<IAuthService>();
+            var store = new Mock<IUserStore<User>>();
+            Mock<UserManager<User>> mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            Mock<IUrlHelperFactory> mockUrlFactory = new Mock<IUrlHelperFactory>();
+            Mock<IActionContextAccessor> mockActioAccessor = new Mock<IActionContextAccessor>();
+            Mock<IHttpContextAccessor> mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            AuthEmailService authEmailService = new AuthEmailService(
+                mockEmailConfirmatioService.Object,
+                mockAuthSerive.Object,
+                mockUserManager.Object,
+                mockUrlFactory.Object,
+                mockActioAccessor.Object,
+                mockHttpContextAccessor.Object);
+            return (
+                mockEmailConfirmatioService,
+                mockAuthSerive,
+                mockUserManager,
+                mockUrlFactory,
+                mockActioAccessor,
+                mockHttpContextAccessor,
+                authEmailService
+                );
         }
 
         [Fact]
@@ -123,7 +167,14 @@ namespace EPlast.XUnitTest.Services
         public async Task TestConfirmEmail()
         {
             //Arrange
-           var (mockSignInManager, mockUserManager, mockEmailConfirmation, AuthService) = CreateAuthService();
+            var (
+                _,
+                _,
+                mockUserManager,
+                _,
+                _,
+                _,
+                authEmailService) = CreateAuthEmailService();
             mockUserManager
                 .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetTestUserWithAllFields());
@@ -133,7 +184,7 @@ namespace EPlast.XUnitTest.Services
               .Returns(Task.FromResult(IdentityResult.Success));
 
             //Act
-            var result = await AuthService.ConfirmEmailAsync(GetTestCode(), GetTestCode());
+            var result = await authEmailService.ConfirmEmailAsync(GetTestCode(), GetTestCode());
 
             //Assert
             var identityResult = Assert.IsType<IdentityResult>(result);
@@ -212,7 +263,7 @@ namespace EPlast.XUnitTest.Services
             Assert.NotNull(authResult);
         }
 
-        [Fact]                                               
+        [Fact]
         public async Task TestIsEmailConfirmedAsync()
         {
             //Arrange
@@ -258,9 +309,9 @@ namespace EPlast.XUnitTest.Services
             mockUserManager
                 .Setup(s => s.GenerateEmailConfirmationTokenAsync(It.IsAny<User>()))
                 .ReturnsAsync(GetTestCodeForResetPasswordAndConfirmEmail());
-
+            var registerDTO = GetTestRegisterDto();
             //Act
-            string token = await AuthService.AddRoleAndTokenAsync(GetTestRegisterDto());
+            string token = await AuthService.AddRoleAndTokenAsync(registerDTO.Email);
 
             //Assert
             var result = Assert.IsType<string>(token);
@@ -438,10 +489,12 @@ namespace EPlast.XUnitTest.Services
 
         private AuthenticationProperties GetTestAuthenticationProperties()
         {
-           Dictionary<string, string> authenticationDictionary = new Dictionary<string, string>(3);
-            authenticationDictionary.Add("First", "Google");
-            authenticationDictionary.Add("Second", "Facebook");
-            authenticationDictionary.Add("Third", "Amazon");
+            Dictionary<string, string> authenticationDictionary = new Dictionary<string, string>(3)
+            {
+                { "First", "Google" },
+                { "Second", "Facebook" },
+                { "Third", "Amazon" }
+            };
             var authProperties = new AuthenticationProperties(authenticationDictionary);
             return authProperties;
         }
@@ -450,6 +503,7 @@ namespace EPlast.XUnitTest.Services
         {
             return new string("andriishainoha@gmail.com");
         }
+
         private string GetTestProvider()
         {
             return new string("fakeProvider");
@@ -464,12 +518,7 @@ namespace EPlast.XUnitTest.Services
 
         private string GetTestCodeForResetPasswordAndConfirmEmail()
         {
-           return new string("500");
-        }
-
-        private string GetTestIdForUser()
-        {
-            return "aaaa-bbbb-cccc";
+            return new string("500");
         }
 
         private User GetTestUserWithEmailsSendedTime()
