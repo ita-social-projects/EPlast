@@ -33,7 +33,7 @@ namespace EPlast.BLL.Services.Interfaces
         /// <param name="userId">The id of the user, which must be deleted</param>
         Task DeleteUserAsync(string userId);
 
-         /// <summary>
+        /// <summary>
         /// Get all users with additional information
         /// </summary>
         /// <returns>Specify model with all users</returns>
