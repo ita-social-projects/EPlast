@@ -212,10 +212,7 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Get City and Region Admins by userId of user which contained cityMembers
         /// </summary>
-        /// <returns>
-        /// User object and CityDTO, which contains CityAdministration, region
-        /// =&gt; RegionAdministration
-        /// </returns>
+        /// <returns>User object and CityDTO, which contains CityAdministration, region => RegionAdministration</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="500">
         /// userId is empty/null or user not contained in database
