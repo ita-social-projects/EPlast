@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
+using System.Linq;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -68,8 +69,8 @@ namespace EPlast.WebApi.Controllers
             {
                 var time = await _userService.CheckOrAddPlastunRoleAsync(user.Id, user.RegistredOn);
                 var isUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун")
-                    || !(await _userManagerService.IsInRoleAsync(user, "Прихильник")
                     || user.UserProfile.UpuDegreeID != 1
+                    || !(await _userManagerService.IsInRoleAsync(user, "Прихильник")
                     && await _userService.IsApprovedCityMember(userId));
 
                 var model = new PersonalDataViewModel
@@ -83,6 +84,87 @@ namespace EPlast.WebApi.Controllers
             }
 
             _loggerService.LogError($"User not found. UserId:{userId}");
+            return NotFound();
+        }
+
+        /// <summary>
+        /// Get a specify user profile
+        /// </summary>
+        /// <param name="focusUserId">The id of the focus user</param>
+        /// <param name="currentUserId">The id of the current user</param>
+        /// <returns>A focus user profile</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Focus user not found</response>
+        [HttpGet("{currentUserId}/{focusUserId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetUserProfile(string currentUserId, string focusUserId)
+        {
+            if (string.IsNullOrEmpty(focusUserId))
+            {
+                _loggerService.LogError("User id is null");
+                return NotFound();
+            }
+
+            var currentUser = await _userService.GetUserAsync(currentUserId);
+            var focusUser = await _userService.GetUserAsync(focusUserId);
+            if (focusUser != null)
+            {
+                var time = await _userService.CheckOrAddPlastunRoleAsync(focusUser.Id, focusUser.RegistredOn);
+                var isThisUser = currentUserId == focusUserId;
+                var isUserSameCity = currentUser.CityMembers.FirstOrDefault()?.CityId
+                    .Equals(focusUser.CityMembers.FirstOrDefault()?.CityId) 
+                    == true;
+                var isUserSameClub = currentUser.ClubMembers.FirstOrDefault()?.ClubId
+                    .Equals(focusUser.ClubMembers.FirstOrDefault()?.ClubId)
+                    == true;
+                var isUserSameRegion = currentUser.RegionAdministrations.FirstOrDefault()?.RegionId
+                    .Equals(focusUser.RegionAdministrations.FirstOrDefault()?.RegionId)
+                    == true;
+                var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, "Admin");
+                var isUserHeadOfCity = await _userManagerService.IsInRoleAsync(currentUser, "Голова Станиці");
+                var isUserHeadOfClub = await _userManagerService.IsInRoleAsync(currentUser, "Голова Куреня");
+                var isUserHeadOfRegion = await _userManagerService.IsInRoleAsync(currentUser, "Голова Округу");
+                var isCurrentUserSupporter = await _userManagerService.IsInRoleAsync(currentUser, "Прихильник");
+                var isCurrentUserPlastun = await _userManagerService.IsInRoleAsync(currentUser, "Пластун")
+                    || currentUser.UserProfile.UpuDegreeID != 1
+                    || !(isCurrentUserSupporter
+                    && await _userService.IsApprovedCityMember(currentUserId));
+                var isFocusUserSupporter = await _userManagerService.IsInRoleAsync(focusUser, "Прихильник");
+                var isFocusUserPlastun = await _userManagerService.IsInRoleAsync(focusUser, "Пластун")
+                    || focusUser.UserProfile.UpuDegreeID != 1
+                    || !(isFocusUserSupporter
+                    && await _userService.IsApprovedCityMember(focusUserId));
+
+                if (isThisUser || 
+                    isUserAdmin ||
+                    (isUserHeadOfCity && isUserSameCity) ||
+                    (isUserHeadOfClub && isUserSameClub) ||
+                    (isUserHeadOfRegion && isUserSameRegion) ||
+                    (isCurrentUserPlastun && isUserSameCity))
+                {
+                    var model = new PersonalDataViewModel
+                    {
+                        User = _mapper.Map<UserDTO, UserViewModel>(focusUser),
+                        TimeToJoinPlast = (int)time.TotalDays,
+                        IsUserPlastun = isFocusUserPlastun,
+                    };
+
+                    return Ok(model);
+                }
+                else if (isCurrentUserSupporter || isUserHeadOfCity || isUserHeadOfClub || isUserHeadOfRegion || isCurrentUserPlastun )
+                {
+                    var model = new PersonalDataViewModel
+                    {
+                        ShortUser = _mapper.Map<UserDTO, UserShortViewModel>(focusUser),
+                        TimeToJoinPlast = (int)time.TotalDays,
+                        IsUserPlastun = isFocusUserPlastun,
+                    };
+
+                    return Ok(model);
+                }
+            }
+
+            _loggerService.LogError($"User not found. UserId:{focusUserId}");
             return NotFound();
         }
 
@@ -210,8 +292,8 @@ namespace EPlast.WebApi.Controllers
                 IsUserHeadOfClub = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), "Голова Куреня"),
                 IsUserHeadOfRegion = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), "Голова Округу"),
                 IsUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун")
-                    || !(await _userManagerService.IsInRoleAsync(user, "Прихильник")
                     || user.UserProfile.UpuDegreeID != 1
+                    || !(await _userManagerService.IsInRoleAsync(user, "Прихильник")
                     && await _userService.IsApprovedCityMember(userId)),
                 CurrentUserId = approverId
             };
