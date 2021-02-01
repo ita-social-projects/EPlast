@@ -54,6 +54,7 @@ namespace EPlast.WebApi.StartupExtensions
         {
             services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IAuthEmailService, AuthEmailService>();
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
             services.AddScoped<IEmailConfirmation, EmailConfirmationService>();
             services.AddScoped<IDecisionVmInitializer, DecisionVmInitializer>();
