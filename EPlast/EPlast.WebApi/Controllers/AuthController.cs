@@ -118,8 +118,8 @@ namespace EPlast.WebApi.Controllers
         /// <returns>Answer from backend for resending email method</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="404">Problems with resending email</response>
-        [HttpGet("resendEmailForRegistering/{userId}")]
-        [AllowAnonymous]
+        [HttpPost("resendEmailForRegistering/{userId}")]
+        //[AllowAnonymous]
         public async Task<IActionResult> ResendEmailForRegistering(string userId)
         {
             var userDto = await _authService.FindByIdAsync(userId);
@@ -128,7 +128,7 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest();
             }
             await _authEmailServices.SendEmailRegistrAsync(userDto.Email);
-            return Ok("ResendEmailConfirmation");
+            return Ok(_resources.ResourceForErrors["EmailForRegistering-Resended"]);
         }
 
         /// <summary>
