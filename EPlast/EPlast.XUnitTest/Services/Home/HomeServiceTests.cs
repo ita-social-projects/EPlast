@@ -25,7 +25,7 @@ namespace EPlast.XUnitTest.Services.Home
             var (homeService, mockEmailConfirmation) = CreateHomeService();
             mockEmailConfirmation
                 .Setup(s => s.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns((Task)null);
+                .Returns((Task<bool>)null);
 
             //Act
             var result = homeService.SendEmailAdmin(GetTestContactDtoWithAllFields());

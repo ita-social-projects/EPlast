@@ -690,12 +690,10 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task Delete_Invalid_NullReferenceException_Test()
         {
-
+            // Arrange
             _annualReportService.Setup(a => a.DeleteAsync(It.IsAny<User>(), It.IsAny<int>()))
                  .Throws(new NullReferenceException());
-
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
-
             _localizer
                .Setup(s => s["NotFound"])
                .Returns(GetNotFound());
@@ -703,8 +701,7 @@ namespace EPlast.Tests.Controllers
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
-
-            var result = await annualController.Cancel(5);
+            var result = await annualController.Delete(5);
 
 
             // Assert
@@ -713,7 +710,6 @@ namespace EPlast.Tests.Controllers
               .Verify(s => s["NotFound"]);
             _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
             Assert.IsInstanceOf<ObjectResult>(result);
-
         }
 
         [Test]
