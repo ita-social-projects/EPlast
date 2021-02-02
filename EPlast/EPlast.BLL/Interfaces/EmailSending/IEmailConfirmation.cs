@@ -12,6 +12,6 @@ namespace EPlast.BLL.Interfaces
         /// <param name="message"></param>
         /// <param name="title"></param>
         /// <returns>Result of sending email</returns>
-        Task SendEmailAsync(string email, string subject, string message, string title);
+        Task<bool> SendEmailAsync(string email, string subject, string message, string title);
     }
 }
