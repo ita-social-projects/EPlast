@@ -35,12 +35,16 @@ namespace EPlast.BLL.Services.Precautions
                 Reporter = userPrecautionDTO.Reporter,
                 Number = userPrecautionDTO.Number,
                 Status = userPrecautionDTO.Status,
-                EndDate = userPrecautionDTO.PrecautionId == 1 ? userPrecautionDTO.Date.AddMonths(3) :
-                userPrecautionDTO.PrecautionId == 2 ? userPrecautionDTO.Date.AddMonths(6) : userPrecautionDTO.Date.AddMonths(12),
+                EndDate = getPrecautionEndDate(userPrecautionDTO.PrecautionId, userPrecautionDTO.Date),
                 IsActive = userPrecautionDTO.IsActive
             };
             await _repoWrapper.UserPrecaution.CreateAsync(userPrecaution);
             await _repoWrapper.SaveAsync();
+        }
+
+        private DateTime getPrecautionEndDate(int precautionId, DateTime startDate) {
+            if (precautionId == 1) { return startDate.AddMonths(3); }
+            return  precautionId == 2 ? startDate.AddMonths(6) : startDate.AddMonths(12);
         }
 
         public async Task ChangeUserPrecautionAsync(UserPrecautionDTO userPrecautionDTO, User user)
@@ -57,7 +61,7 @@ namespace EPlast.BLL.Services.Precautions
                 Number = userPrecautionDTO.Number,
                 Status = userPrecautionDTO.Status, 
                 EndDate = userPrecautionDTO.EndDate,
-                IsActive = userPrecautionDTO.Status=="Скасовано"?false:true
+                IsActive = userPrecautionDTO.IsActive
             };
             _repoWrapper.UserPrecaution.Update(userPrecaution);
             await _repoWrapper.SaveAsync();
