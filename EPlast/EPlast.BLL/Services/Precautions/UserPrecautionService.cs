@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
+using EPlast.BLL.DTO;
+using System.Linq;
+using EPlast.BLL.DTO.UserProfiles;
 
 namespace EPlast.BLL.Services.Precautions
 {
@@ -133,5 +136,54 @@ namespace EPlast.BLL.Services.Precautions
              return userPrecaution;
         }
 
+        public async Task<IEnumerable<UserTableDTO>> UsersTableWithotPrecautionAsync()
+        {
+            var users = await _repoWrapper.User.GetAllAsync(
+                predicate: null,
+                include: i => i.Include(x => x.UserProfile)
+                        .ThenInclude(x => x.Gender)
+                    .Include(x => x.UserPlastDegrees)
+                        .ThenInclude(x => x.PlastDegree)
+                    .Include(x => x.UserProfile)
+                            .ThenInclude(x => x.UpuDegree));
+            var cities = await _repoWrapper.City.
+                GetAllAsync(null, x => x.Include(i => i.Region));
+            var clubMembers = await _repoWrapper.ClubMembers.
+                GetAllAsync(null, x => x.Include(i => i.Club));
+            var cityMembers = await _repoWrapper.CityMembers.
+                GetAllAsync(null, x => x.Include(i => i.City));
+            var filterdUsers =  users.Where(x =>CheckUserPrecautions(x.UserProfile.UserID).Result);
+            List<UserTableDTO> userTable = new List<UserTableDTO>();
+            foreach (var user in filterdUsers)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                var cityName = cityMembers.Where(x => x.UserId.Equals(user.Id) && x.EndDate == null)
+                                          .Select(x => x.City.Name)
+                                          .LastOrDefault() ?? string.Empty;
+                userTable.Add(new UserTableDTO
+                {
+                    User = _mapper.Map<User, ShortUserInformationDTO>(user),
+                    ClubName = clubMembers.Where(x => x.UserId.Equals(user.Id) && x.IsApproved)
+                                          .Select(x => x.Club.Name).LastOrDefault() ?? string.Empty,
+                    CityName = cityName,
+                    RegionName = !string.IsNullOrEmpty(cityName) ? cities
+                        .FirstOrDefault(x => x.Name.Equals(cityName))
+                        ?.Region.RegionName : string.Empty,
+
+                    UserPlastDegreeName = user.UserPlastDegrees.Count != 0 ? user.UserPlastDegrees
+                        .FirstOrDefault(x => x.UserId == user.Id && x.DateFinish == null)
+                        ?.PlastDegree.Name : string.Empty,
+                    UserRoles = string.Join(", ", roles),
+                    UPUDegree = user.UserProfile.UpuDegree.Name,
+                    Email = user.UserName
+                });
+            }
+            return userTable;
+        }
+
+        private async Task<bool> CheckUserPrecautions(string userId) {
+           var result = (await GetUserPrecautionsOfUserAsync(userId)).Where(x => x.IsActive == true).Count() == 0;
+           return result;
+        }
     }
 }

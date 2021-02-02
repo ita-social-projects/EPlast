@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.BLL;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -19,16 +20,17 @@ namespace EPlast.WebApi.Controllers
         private readonly IPrecautionService _precautionService;
         private readonly IUserPrecautionService _userPrecautionService;
         private readonly UserManager<User> _userManager;
-
+        private readonly IAdminService _adminService;
 
         public PrecautionController(
             IPrecautionService PrecautionService,
             IUserPrecautionService userPrecautionService,
-            UserManager<User> userManager)
+            UserManager<User> userManager, IAdminService adminService)
         {
             _precautionService = PrecautionService;
             _userPrecautionService = userPrecautionService;
             _userManager = userManager;
+            _adminService = adminService;
         }
 
         /// <summary>
@@ -251,5 +253,14 @@ namespace EPlast.WebApi.Controllers
             bool distNumber = await _userPrecautionService.IsNumberExistAsync(number);
             return Ok(distNumber);
         }
+
+        [HttpGet("usersWithoutPrecautions")]
+        public async Task<IActionResult> UsersWithoutPrecautionsTable()
+        {
+            var result = await _userPrecautionService.UsersTableWithotPrecautionAsync();
+            return Ok(result);
+        }
+
+
     }
 }
