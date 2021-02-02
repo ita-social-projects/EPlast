@@ -43,8 +43,8 @@ namespace EPlast.BLL.Services.Precautions
         }
 
         private DateTime getPrecautionEndDate(int precautionId, DateTime startDate) {
-           return  precautionId == 1 ? startDate.AddMonths(3) :
-                   precautionId == 2 ? startDate.AddMonths(6) : startDate.AddMonths(12);
+            if (precautionId == 1) { return startDate.AddMonths(3); }
+            return  precautionId == 2 ? startDate.AddMonths(6) : startDate.AddMonths(12);
         }
 
         public async Task ChangeUserPrecautionAsync(UserPrecautionDTO userPrecautionDTO, User user)
