@@ -26,6 +26,8 @@ namespace EPlast.BLL.Services.Precautions
         public async Task AddUserPrecautionAsync(UserPrecautionDTO userPrecautionDTO, User user)
         {
             await CheckIfAdminAsync(user);
+            var endDate = userPrecautionDTO.PrecautionId == 1 ? userPrecautionDTO.Date.AddMonths(3) :
+                userPrecautionDTO.PrecautionId == 2 ? userPrecautionDTO.Date.AddMonths(6) : userPrecautionDTO.Date.AddMonths(12);
             var userPrecaution = new UserPrecaution()
             {
                 UserId = userPrecautionDTO.UserId,
@@ -35,8 +37,7 @@ namespace EPlast.BLL.Services.Precautions
                 Reporter = userPrecautionDTO.Reporter,
                 Number = userPrecautionDTO.Number,
                 Status = userPrecautionDTO.Status,
-                EndDate = userPrecautionDTO.PrecautionId == 1 ? userPrecautionDTO.Date.AddMonths(3) :
-                userPrecautionDTO.PrecautionId == 2 ? userPrecautionDTO.Date.AddMonths(6) : userPrecautionDTO.Date.AddMonths(12),
+                EndDate = endDate,
                 IsActive = userPrecautionDTO.IsActive
             };
             await _repoWrapper.UserPrecaution.CreateAsync(userPrecaution);
@@ -57,7 +58,7 @@ namespace EPlast.BLL.Services.Precautions
                 Number = userPrecautionDTO.Number,
                 Status = userPrecautionDTO.Status, 
                 EndDate = userPrecautionDTO.EndDate,
-                IsActive = userPrecautionDTO.Status=="Скасовано"?false:true
+                IsActive = userPrecautionDTO.IsActive
             };
             _repoWrapper.UserPrecaution.Update(userPrecaution);
             await _repoWrapper.SaveAsync();
