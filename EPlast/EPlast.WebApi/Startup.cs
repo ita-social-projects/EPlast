@@ -13,6 +13,7 @@ using EPlast.WebApi.WebSocketHandlers;
 using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -20,6 +21,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,6 +30,7 @@ namespace EPlast.WebApi
 {
     public class Startup
     {
+        private string[] _secrets = null; 
         public IConfiguration Configuration { get; }
 
         public Startup(IConfiguration configuration)
@@ -38,6 +41,18 @@ namespace EPlast.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            _secrets = new string[] 
+            { 
+                Configuration["StorageConnectionString"],
+                Configuration["GoogleAuthentication:GoogleClientSecret"],
+                Configuration["GoogleAuthentication:GoogleClientId"],
+                Configuration["FacebookAuthentication:FacebookAppSecret"],
+                Configuration["FacebookAuthentication:FacebookAppId"],
+                Configuration["EmailServiceSettings:SMTPServerPassword"],
+                Configuration["EmailServiceSettings:SMTPServerLogin"],
+                Configuration["Admin:Password"],
+                Configuration["Admin:Email"]
+            };
             services.AddMvc();
             services.AddAutoMapper();
             services.AddHangFire();
@@ -151,11 +166,20 @@ namespace EPlast.WebApi
             );
             recurringJobManager.AddOrUpdate("Changes status of region admins when the date expires",
               () => serviceProvider.GetService<IRegionService>().EndAdminsDueToDate(),
-           Cron.Daily(),
-           TimeZoneInfo.Local
-           );
+            Cron.Daily(),
+            TimeZoneInfo.Local
+            );
 
-          CreateRoles(serviceProvider).Wait();
+            app.Run(async (context) =>
+            {
+                foreach (string secret in _secrets)
+                {
+                    var result = string.IsNullOrEmpty(secret) ? "Null" : "Not Null";
+                    await context.Response.WriteAsync($"Secret is {result}");
+                }
+            });
+
+            CreateRoles(serviceProvider).Wait();
             recurringJobManager.AddOrUpdate("Remove roles from previous admins",
                 () => serviceProvider.GetService<IClubParticipantsService>().CheckPreviousAdministratorsToDelete(),
             "59 23 * * *",
