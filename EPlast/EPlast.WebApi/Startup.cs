@@ -45,7 +45,9 @@ namespace EPlast.WebApi
             { 
                 Configuration["StorageConnectionString"],
                 Configuration["GoogleAuthentication:GoogleClientSecret"],
+                Configuration["GoogleAuthentication:GoogleClientId"],
                 Configuration["FacebookAuthentication:FacebookAppSecret"],
+                Configuration["FacebookAuthentication:FacebookAppId"],
                 Configuration["EmailServiceSettings:SMTPServerPassword"],
                 Configuration["EmailServiceSettings:SMTPServerLogin"],
                 Configuration["Admin:Password"],
