@@ -186,13 +186,13 @@ namespace EPlast.BLL.Services
         /// <inheritdoc />
         public async Task<IEnumerable<UserTableDTO>> UsersTableAsync()
         {
-            var users = await _repoWrapper.User.GetAllAsync(x => x.EmailConfirmed,
-                include:
-                    i => i.Include(x => x.UserProfile)
-                            .ThenInclude(x => x.Gender)
-                        .Include(x => x.UserPlastDegrees)
-                            .ThenInclude(x => x.PlastDegree)
-                         .Include(x => x.UserProfile)
+            var users = await _repoWrapper.User.GetAllAsync(
+                predicate: null,
+                include: i => i.Include(x => x.UserProfile)
+                        .ThenInclude(x => x.Gender)
+                    .Include(x => x.UserPlastDegrees)
+                        .ThenInclude(x => x.PlastDegree)
+                    .Include(x => x.UserProfile)
                             .ThenInclude(x => x.UpuDegree));
             var cities = await _repoWrapper.City.
                 GetAllAsync(null, x => x.Include(i => i.Region));
@@ -260,8 +260,6 @@ namespace EPlast.BLL.Services
                 city.Region.Administration = _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(cities.First(c => c.ID == city.ID).Region.RegionAdministration);
             }
             return citiesDTO;
-
         }
-
     }
 }

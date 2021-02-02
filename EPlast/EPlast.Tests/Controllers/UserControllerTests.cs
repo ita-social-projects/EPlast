@@ -156,6 +156,179 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task GetUserProfile_NullCurrentUserIdString_ReturnsNotFoundResult()
+        {
+            // Arrange
+            string nullString = null;
+            string focusUserId = "1";
+
+            // Act
+            var result = await _userController.GetUserProfile(nullString, focusUserId);
+
+            // Assert
+            _loggerService.Verify((x) => x.LogError(It.IsAny<string>()), Times.Once);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task GetUserProfile_ShortUser_ReturnsOkObjectResult()
+        {
+            // Arrange
+            string currentUserId = "1";
+            string focusUserId = "2";
+
+            _userService
+                .Setup((x) => x.GetUserAsync(It.IsAny<string>()))
+                .ReturnsAsync(CreateFakeUserWithoutCity());
+
+            _userService
+                .Setup((x) => x.CheckOrAddPlastunRoleAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .ReturnsAsync(It.IsAny<TimeSpan>());
+
+            _userManagerService
+                .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
+                .ReturnsAsync(It.IsAny<bool>());
+
+            // Act
+            var result = await _userController.GetUserProfile(currentUserId, focusUserId);
+
+            // Assert
+            Assert.NotNull((result as ObjectResult).Value);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetUserProfile_ShortUser_ReturnsCreatedModel()
+        {
+            // Arrange
+            string currentUserId = "2";
+            string focusUserId = "1";
+            var isPlastun = false;
+            var time = new TimeSpan(1, 1, 1);
+            var timeInDays = 0;
+
+            _userService
+                .Setup((x) => x.GetUserAsync(It.IsAny<string>()))
+                .ReturnsAsync(CreateFakeUserWithoutCity());
+
+            _userService
+                .Setup((x) => x.CheckOrAddPlastunRoleAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .ReturnsAsync(time);
+
+            _userManagerService
+                .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
+                .ReturnsAsync(isPlastun);
+
+            _mapper
+                .Setup((x) => x.Map<UserDTO, UserShortViewModel>(It.IsAny<UserDTO>()))
+                .Returns(CreateFakeUserShortViewModel());
+
+            var expectedUserId = focusUserId;
+            var expectedTimeToJoinPlast = timeInDays;
+            var expectedIsUserPlastun = !isPlastun;
+
+            // Act
+            var result = await _userController.GetUserProfile(currentUserId, focusUserId);
+
+            var actual = (result as ObjectResult).Value as PersonalDataViewModel;
+
+            // Assert
+            Assert.NotNull(actual);
+            Assert.AreEqual(expectedUserId, actual.ShortUser.ID);
+            Assert.AreEqual(expectedTimeToJoinPlast, actual.TimeToJoinPlast);
+            Assert.AreEqual(expectedIsUserPlastun, actual.IsUserPlastun);
+        }
+
+        [Test]
+        public async Task GetUserProfile_NullUser_ReturnsNotFoundResult()
+        {
+            // Arrange
+            string currentUserId = "1";
+            string focusUserId = "1";
+
+            _userService
+                .Setup((x) => x.GetUserAsync(focusUserId))
+                .ReturnsAsync(It.IsAny<UserDTO>);
+
+            // Act
+            var result = await _userController.GetUserProfile(currentUserId, focusUserId);
+
+            // Assert
+            _loggerService.Verify((x) => x.LogError(It.IsAny<string>()), Times.Once);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task GetUserProfile_UserIsAdmin_ReturnsOkObjectResult()
+        {
+            // Arrange
+            string currentUserId = "2";
+            string focusUserId = "1";
+            bool isAdmin = true;
+
+            _userService
+                .Setup((x) => x.GetUserAsync(It.IsAny<string>()))
+                .ReturnsAsync(CreateFakeUserWithCity());
+
+            _userService
+                .Setup((x) => x.CheckOrAddPlastunRoleAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .ReturnsAsync(It.IsAny<TimeSpan>());
+
+            _userManagerService
+                .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
+                .ReturnsAsync(isAdmin);
+
+            // Act
+            var result = await _userController.GetUserProfile(currentUserId, focusUserId);
+
+            // Assert
+            Assert.NotNull((result as ObjectResult).Value);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetUserProfile_User_ReturnsCreatedModel()
+        {
+            // Arrange
+            string currentUserId = "2";
+            string focusUserId = "1";
+            var isPlastun = true;
+            var time = new TimeSpan(1, 1, 1);
+            var timeInDays = 0;
+
+            _userService
+                .Setup((x) => x.GetUserAsync(It.IsAny<string>()))
+                .ReturnsAsync(CreateFakeUserWithCity());
+
+            _userService
+                .Setup((x) => x.CheckOrAddPlastunRoleAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .ReturnsAsync(time);
+
+            _userManagerService
+                .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
+                .ReturnsAsync(isPlastun);
+
+            _mapper
+                .Setup((x) => x.Map<UserDTO, UserViewModel>(It.IsAny<UserDTO>()))
+                .Returns(CreateFakeUserViewModel());
+
+            var expectedUserId = focusUserId;
+            var expectedTimeToJoinPlast = timeInDays;
+            var expectedIsUserPlastun = isPlastun;
+
+            // Act
+            var result = await _userController.GetUserProfile(currentUserId, focusUserId);
+
+            var actual = (result as ObjectResult).Value as PersonalDataViewModel;
+
+            // Assert
+            Assert.NotNull(actual);
+            Assert.AreEqual(expectedUserId, actual.User.ID);
+            Assert.AreEqual(expectedTimeToJoinPlast, actual.TimeToJoinPlast);
+            Assert.AreEqual(expectedIsUserPlastun, actual.IsUserPlastun);
+        }
+
+        [Test]
         public async Task GetImage_ReturnsOkObjectResult()
         {
             // Assert
@@ -522,9 +695,49 @@ namespace EPlast.Tests.Controllers
                     WorkId = 1,
                 },
             };
-
+        private UserDTO CreateFakeUserWithCity()
+            => new UserDTO()
+            {
+                Id = "1",
+                FirstName = "SomeFirstName",
+                LastName = "SomeLastName",
+                CityMembers = new List<CityMembers>
+                {
+                    new CityMembers
+                    {
+                        CityId = 1
+                    }
+                },
+                ClubMembers = new List<ClubMembers>(),
+                RegionAdministrations = new List<RegionAdministration>(),
+                UserProfile = new UserProfileDTO()
+                {
+                    EducationId = 1,
+                    WorkId = 1,
+                },
+            };
+        private UserDTO CreateFakeUserWithoutCity()
+            => new UserDTO()
+            {
+                Id = "1",
+                FirstName = "SomeFirstName",
+                LastName = "SomeLastName",
+                CityMembers = new List<CityMembers>(),
+                ClubMembers = new List<ClubMembers>(),
+                RegionAdministrations = new List<RegionAdministration>(),
+                UserProfile = new UserProfileDTO()
+                {
+                    EducationId = 1,
+                    WorkId = 1,
+                },
+            };
         private UserViewModel CreateFakeUserViewModel()
             => new UserViewModel()
+            {
+                ID = "1",
+            };
+        private UserShortViewModel CreateFakeUserShortViewModel()
+            => new UserShortViewModel()
             {
                 ID = "1",
             };
