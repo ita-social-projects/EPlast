@@ -390,5 +390,18 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
+
+        [Test]
+        public async Task UsersTableWithoutPrecautions_Valid_Test()
+        {
+            _userPrecautionService.Setup(a => a.UsersTableWithotPrecautionAsync());
+ 
+            // Act
+            var result = await _PrecautionController.UsersWithoutPrecautionsTable();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
     }
 }

@@ -16,6 +16,8 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.DTO;
 
 namespace EPlast.Tests.Services.Precautions
 {
@@ -374,6 +376,44 @@ namespace EPlast.Tests.Services.Precautions
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<UserPrecautionDTO>(result);
         }
+
+        [Test]
+        public async Task UsersTableWithotPrecautionAsync_ReturnsIEnumerableUserTableDTO()
+        {
+            // Arrange
+            mockRepoWrapper
+                .Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
+               It.IsAny<Func<IQueryable<User>,
+               IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(new List<User>());
+            mockRepoWrapper
+                .Setup(x => x.City.GetAllAsync(It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
+               It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
+               IIncludableQueryable<DataAccess.Entities.City, object>>>()))
+                .ReturnsAsync(new List<DataAccess.Entities.City>());
+            mockRepoWrapper
+                 .Setup(x => x.ClubMembers.GetAllAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                It.IsAny<Func<IQueryable<ClubMembers>,
+                IIncludableQueryable<ClubMembers, object>>>()))
+                 .ReturnsAsync(new List<ClubMembers>());
+            mockRepoWrapper
+                .Setup(x => x.CityMembers.GetAllAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+               It.IsAny<Func<IQueryable<CityMembers>,
+               IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync(new List<CityMembers>());
+            userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRoles());
+            mockMapper
+                .Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDTO() { ID = "Admin" });
+
+            // Act
+            var result = await PrecautionService.UsersTableWithotPrecautionAsync();
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<UserTableDTO>>(result);
+        }
+
 
         UserPrecaution nullPrecaution = null;
         UserPrecautionDTO nullPrecautionDTO = null;
