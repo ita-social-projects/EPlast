@@ -374,7 +374,17 @@ namespace EPlast.Tests.Services.Precautions
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<UserPrecautionDTO>(result);
         }
+        [Test]
+        public async Task UsersTableWithotPrecautionAsync_ReturnsIEnumerableUserTableDTO()
+        {
+            // Arrange
 
+            // Act
+            var result = await PrecautionService.UsersTableWithotPrecautionAsync();
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<UserTableDTO>>(result);
+        }
         UserPrecaution nullPrecaution = null;
         UserPrecautionDTO nullPrecautionDTO = null;
         List<UserPrecaution> nulluserPrecautions = null;
