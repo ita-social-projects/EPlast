@@ -20,8 +20,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IPrecautionService _precautionService;
         private readonly IUserPrecautionService _userPrecautionService;
         private readonly UserManager<User> _userManager;
-        private readonly IAdminService _adminService;
-
+ 
         public PrecautionController(
             IPrecautionService PrecautionService,
             IUserPrecautionService userPrecautionService,
@@ -30,7 +29,7 @@ namespace EPlast.WebApi.Controllers
             _precautionService = PrecautionService;
             _userPrecautionService = userPrecautionService;
             _userManager = userManager;
-            _adminService = adminService;
+            
         }
 
         /// <summary>
