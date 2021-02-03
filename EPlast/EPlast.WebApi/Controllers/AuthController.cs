@@ -151,6 +151,13 @@ namespace EPlast.WebApi.Controllers
             return Ok(_resources.ResourceForErrors["Feedback-Sended"]);
         }
 
+        [HttpGet("send")]
+        public async Task<IActionResult> SendLonely()
+        {
+            _authService.SendLonelyUsers();
+            return Ok(_resources.ResourceForErrors["Feedback-Sended"]);
+        }
+
         private readonly IAuthEmailService _authEmailServices;
         private readonly IAuthService _authService;
         private readonly IHomeService _homeService;

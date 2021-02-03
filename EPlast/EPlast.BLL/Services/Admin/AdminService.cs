@@ -20,21 +20,12 @@ namespace EPlast.BLL.Services
 {
     public class AdminService : IAdminService
     {
-        private readonly IRepositoryWrapper _repoWrapper;
-        private readonly UserManager<User> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IMapper _mapper;
-        private readonly IClubParticipantsService _clubParticipants;
-        private readonly IRegionAdministrationService _regionService;
-        private readonly ICityParticipantsService _cityParticipants;
-
-
-        public AdminService(IRepositoryWrapper repoWrapper, 
-            UserManager<User> userManager, 
-            IMapper mapper, 
+        public AdminService(IRepositoryWrapper repoWrapper,
+            UserManager<User> userManager,
+            IMapper mapper,
             RoleManager<IdentityRole> roleManager,
             IClubParticipantsService clubParticipants,
-            IRegionAdministrationService regionService, 
+            IRegionAdministrationService regionService,
             ICityParticipantsService cityParticipants)
         {
             _repoWrapper = repoWrapper;
@@ -86,10 +77,10 @@ namespace EPlast.BLL.Services
                 var userRoles = await _userManager.GetRolesAsync(user);
                 await _userManager.RemoveFromRolesAsync(user, userRoles);
             }
-            
+
             var cityMember = await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(m => m.UserId == userId);
 
-            if(cityMember != null)
+            if (cityMember != null)
             {
                 await _cityParticipants.RemoveMemberAsync(cityMember);
             }
@@ -101,7 +92,7 @@ namespace EPlast.BLL.Services
             }
 
             var regionAdmin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.UserId == userId);
-            if(regionAdmin != null)
+            if (regionAdmin != null)
             {
                 await _regionService.DeleteAdminByIdAsync(regionAdmin.ID);
             }
@@ -129,7 +120,7 @@ namespace EPlast.BLL.Services
             const string formerMember = "Колишній член пласту";
             var user = await _userManager.FindByIdAsync(userId);
             var roles = await _userManager.GetRolesAsync(user);
-           
+
             switch (role)
             {
                 case supporter:
@@ -143,7 +134,7 @@ namespace EPlast.BLL.Services
                     {
                         await _userManager.RemoveFromRoleAsync(user, plastun);
                     }
-                    else if(roles.Contains(interested))
+                    else if (roles.Contains(interested))
                     {
                         await _userManager.RemoveFromRoleAsync(user, interested);
                     }
@@ -155,13 +146,15 @@ namespace EPlast.BLL.Services
                     await _repoWrapper.SaveAsync();
                     await _userManager.AddToRoleAsync(user, role);
                     break;
+
                 case formerMember:
                     await ChangeAsync(userId);
                     break;
             }
         }
 
-        public async Task UpdateUserDatesByChangeRole(string userId, string role) {
+        public async Task UpdateUserDatesByChangeRole(string userId, string role)
+        {
             UserMembershipDates userMembershipDates = await _repoWrapper.UserMembershipDates
                            .GetFirstOrDefaultAsync(umd => umd.UserId == userId);
             var cityMember = await _repoWrapper.CityMembers
@@ -174,7 +167,7 @@ namespace EPlast.BLL.Services
             {
                 userMembershipDates.DateEntry = default;
             }
-            else 
+            else
             {
                 DateTime time = default;
                 userMembershipDates.DateEntry = userMembershipDates.DateEntry != time ? userMembershipDates.DateEntry : DateTime.Now;
@@ -241,7 +234,7 @@ namespace EPlast.BLL.Services
             {
                 city.Region.RegionAdministration = city.Region.RegionAdministration.Where(r =>
                 {
-                    if(r.AdminType.AdminTypeName == "Голова Округу" && (r.EndDate > DateTime.Now || r.EndDate == null))
+                    if (r.AdminType.AdminTypeName == "Голова Округу" && (r.EndDate > DateTime.Now || r.EndDate == null))
                     {
                         r.Region = null;
                         return true;
@@ -261,5 +254,13 @@ namespace EPlast.BLL.Services
             }
             return citiesDTO;
         }
+
+        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly UserManager<User> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IMapper _mapper;
+        private readonly IClubParticipantsService _clubParticipants;
+        private readonly IRegionAdministrationService _regionService;
+        private readonly ICityParticipantsService _cityParticipants;
     }
 }

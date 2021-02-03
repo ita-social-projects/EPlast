@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Account;
+using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Models;
@@ -287,10 +288,39 @@ namespace EPlast.BLL.Services
             await _signInManager.SignOutAsync();
         }
 
+        public async void SendLonelyUsers()
+        {
+            var users = await _repoWrapper.User.GetAllAsync();
+            var a = await IsLonelyUser(users.AsEnumerable().FirstOrDefault().Id);
+            var lonelyusers = users.Where(x => IsLonelyUser(x.Id).Result);
+        }
+
+        public async Task<CityDTO> GetCityOfUser(string UserId)
+        {
+            var userCity = await _repoWrapper.CityMembers.GetAllAsync(x => x.UserId == UserId);
+
+            //var userCity = await _repoWrapper.UserPrecaution.GetAllAsync(u => u.UserId == UserId,
+            //    include: source => source
+            //    .Include(c => c.User)
+            //    .Include(d => d.Precaution));
+            //return _mapper.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDTO>>(userPrecautions);
+            var a = userCity.FirstOrDefault();
+            return _mapper.Map<CityMembers, CityDTO>(a);
+        }
+
         private readonly IEmailConfirmation _emailConfirmation;
+
         private readonly IMapper _mapper;
+
         private readonly IRepositoryWrapper _repoWrapper;
+
         private readonly SignInManager<User> _signInManager;
+
         private readonly UserManager<User> _userManager;
+
+        private async Task<bool> IsLonelyUser(string userId)
+        {
+            return (await GetCityOfUser(userId)) == null;
+        }
     }
 }

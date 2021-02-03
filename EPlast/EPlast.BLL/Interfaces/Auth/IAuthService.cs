@@ -168,5 +168,7 @@ namespace EPlast.BLL.Interfaces
         /// Logout in system
         /// </summary>
         void SignOutAsync();
+
+        void SendLonelyUsers();
     }
 }
