@@ -24,7 +24,7 @@ namespace EPlast.WebApi.Controllers
         public PrecautionController(
             IPrecautionService PrecautionService,
             IUserPrecautionService userPrecautionService,
-            UserManager<User> userManager, IAdminService adminService)
+            UserManager<User> userManager)
         {
             _precautionService = PrecautionService;
             _userPrecautionService = userPrecautionService;
