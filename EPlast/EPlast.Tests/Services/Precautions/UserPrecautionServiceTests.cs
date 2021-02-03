@@ -13,9 +13,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using EPlast.BLL.Services.Interfaces;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using EPlast.BLL.DTO;
 
 namespace EPlast.Tests.Services.Precautions
 {
@@ -25,6 +27,7 @@ namespace EPlast.Tests.Services.Precautions
         private Mock<IMapper> mockMapper;
         private UserPrecautionService PrecautionService;
         private Mock<UserManager<User>> userManager;
+        private Mock<IAdminService> adminService;
         private IUniqueIdService _uniqueId;
 
         [SetUp]
@@ -32,11 +35,12 @@ namespace EPlast.Tests.Services.Precautions
         {
             mockMapper = new Mock<IMapper>();
             mockRepoWrapper = new Mock<IRepositoryWrapper>();
+            adminService = new Mock<IAdminService>();
             _uniqueId = new UniqueIdService();
             var store = new Mock<IUserStore<User>>();
             userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             userManager.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRoles());
-            PrecautionService = new UserPrecautionService(mockMapper.Object, mockRepoWrapper.Object, userManager.Object);
+            PrecautionService = new UserPrecautionService(mockMapper.Object, mockRepoWrapper.Object, userManager.Object, adminService.Object);
         }
 
         [Test]

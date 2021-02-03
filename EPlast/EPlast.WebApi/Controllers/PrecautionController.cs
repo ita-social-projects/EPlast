@@ -251,5 +251,17 @@ namespace EPlast.WebApi.Controllers
             bool distNumber = await _userPrecautionService.IsNumberExistAsync(number);
             return Ok(distNumber);
         }
+
+        /// <summary>
+        /// Find all users without active precautions
+        /// </summary>
+        /// <returns>Table of users without active precautions</returns>
+        /// <response code="200">Table of all users without active precautions</response>
+        [HttpGet("usersWithoutPrecautions")]
+        public async Task<IActionResult> UsersWithoutPrecautionsTable()
+        {
+            var result = await _userPrecautionService.UsersTableWithotPrecautionAsync();
+            return Ok(result);
+        }
     }
 }
