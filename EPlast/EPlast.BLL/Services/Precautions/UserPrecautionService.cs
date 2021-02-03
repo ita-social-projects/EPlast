@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
+using EPlast.BLL.Services.Interfaces;
+using EPlast.BLL.DTO;
+using System.Linq;
 
 namespace EPlast.BLL.Services.Precautions
 {
@@ -15,12 +18,14 @@ namespace EPlast.BLL.Services.Precautions
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
+        private readonly IAdminService _adminService;
 
-        public UserPrecautionService(IMapper mapper, IRepositoryWrapper repoWrapper, UserManager<User> userManager)
+        public UserPrecautionService(IMapper mapper, IRepositoryWrapper repoWrapper, UserManager<User> userManager, IAdminService adminService)
         {
             _mapper = mapper;
             _repoWrapper = repoWrapper;
             _userManager = userManager;
+            _adminService = adminService;
         }
 
         public async Task AddUserPrecautionAsync(UserPrecautionDTO userPrecautionDTO, User user)
@@ -131,6 +136,17 @@ namespace EPlast.BLL.Services.Precautions
                 }
             }
              return userPrecaution;
+        }
+        public async Task<IEnumerable<UserTableDTO>> UsersTableWithotPrecautionAsync()
+        {
+            var userTable = await _adminService.UsersTableAsync();
+            var filteredtable = userTable.Where(x => !CheckUserPrecautions(x.User.ID).Result);
+            return filteredtable;
+        }
+
+        private async Task<bool> CheckUserPrecautions(string userId)
+        {
+            return (await GetUserPrecautionsOfUserAsync(userId)).Any(x => x.IsActive);
         }
 
     }
