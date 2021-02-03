@@ -32,5 +32,12 @@ spec:
             value: ___Admin__Email___
           - name: Admin__Password
             value: ___Admin__Password___
-            
+          - name: GoogleAuthentication__GoogleClientId
+            value: ___GoogleAuthentication__GoogleClientId___
+          - name: GoogleAuthentication__GoogleClientSecret
+            value: ___GoogleAuthentication__GoogleClientSecret___
+          - name: FacebookAuthentication__FacebookAppId
+            value: ___FacebookAuthentication__FacebookAppId___
+          - name: FacebookAuthentication__FacebookAppSecret
+            value: ___FacebookAuthentication__FacebookAppSecret___
             
