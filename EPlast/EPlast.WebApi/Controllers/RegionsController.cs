@@ -11,7 +11,9 @@ using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
 using EPlast.WebApi.Extensions;
 using Microsoft.Extensions.Caching.Distributed;
+using EPlast.BLL.ExtensionMethods;
 using System.Collections.Generic;
+using EPlast.BLL.Interfaces.GoverningBodies;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -32,6 +34,7 @@ namespace EPlast.WebApi.Controllers
             IRegionAnnualReportService RegionAnnualReportService,
             UserManager<User> userManager,
             IDistributedCache cache)
+            
         {
             _logger = logger;
             _regionService = regionService;
@@ -111,7 +114,7 @@ namespace EPlast.WebApi.Controllers
             try
             {
                 var region = await _regionService.GetRegionProfileByIdAsync(regionId, await _userManager.GetUserAsync(User));
-                if (region == null)
+                if (region == null||region.Status==BLL.DTO.RegionsStatusTypeDTO.RegionBoard)
                 {
                     return NotFound();
                 }
@@ -159,8 +162,8 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetRegions(int page, int pageSize, string regionName)
         {
             string recordKey = "Regions_" + DateTime.Now.ToString("yyyyMMdd_hhmm");
-            IEnumerable<RegionDTO> regions = await _cache.GetRecordAsync<IEnumerable<RegionDTO>>(recordKey);
-            
+            //IEnumerable<RegionDTO> regions = await _cache.GetRecordAsync<IEnumerable<RegionDTO>>(recordKey);
+            var regions = await _regionService.GetAllRegionsAsync();
             if (regions is null)
             {
                 regions = await _regionService.GetAllRegionsAsync();
@@ -354,6 +357,19 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetAllRegionsReportsAsync()
         {
             return Ok(await _RegionAnnualReportService.GetAllRegionsReportsAsync());
+        }
+
+        /// <summary>
+        /// Method to get regions board
+        /// </summary>
+        /// <returns>region "Крайовий Провід Пласту"</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="403">User hasn't access to region</response>
+        [HttpGet("regionsBoard")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetRegionsBoardAsync()
+        {
+            return Ok(await _regionService.GetRegionByNameAsync(EnumExtensions.GetDescription(RegionsStatusType.RegionBoard), await _userManager.GetUserAsync(User)));
         }
     }
 }
