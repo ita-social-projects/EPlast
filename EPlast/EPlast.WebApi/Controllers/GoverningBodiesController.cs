@@ -16,7 +16,6 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly IGoverningBodiesService _governingBodiesService;
         private readonly UserManager<User> _userManager;
-
         public GoverningBodiesController(IGoverningBodiesService service, UserManager<User> userManager) 
         {
             _governingBodiesService = service;
@@ -30,8 +29,5 @@ namespace EPlast.WebApi.Controllers
             var governingBodies = await _governingBodiesService.GetOrganizationListAsync();
             return Ok(governingBodies);
         }
-
-
-
     }
 }

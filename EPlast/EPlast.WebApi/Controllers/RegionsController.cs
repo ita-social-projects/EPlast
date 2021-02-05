@@ -34,7 +34,6 @@ namespace EPlast.WebApi.Controllers
             IRegionAnnualReportService RegionAnnualReportService,
             UserManager<User> userManager,
             IDistributedCache cache)
-            
         {
             _logger = logger;
             _regionService = regionService;
@@ -162,8 +161,8 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetRegions(int page, int pageSize, string regionName)
         {
             string recordKey = "Regions_" + DateTime.Now.ToString("yyyyMMdd_hhmm");
-            //IEnumerable<RegionDTO> regions = await _cache.GetRecordAsync<IEnumerable<RegionDTO>>(recordKey);
-            var regions = await _regionService.GetAllRegionsAsync();
+            IEnumerable<RegionDTO> regions = await _cache.GetRecordAsync<IEnumerable<RegionDTO>>(recordKey);
+            
             if (regions is null)
             {
                 regions = await _regionService.GetAllRegionsAsync();
