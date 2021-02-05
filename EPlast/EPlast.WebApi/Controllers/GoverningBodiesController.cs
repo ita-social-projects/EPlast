@@ -15,11 +15,9 @@ namespace EPlast.WebApi.Controllers
     public class GoverningBodiesController : ControllerBase
     {
         private readonly IGoverningBodiesService _governingBodiesService;
-        private readonly UserManager<User> _userManager;
-        public GoverningBodiesController(IGoverningBodiesService service, UserManager<User> userManager) 
+        public GoverningBodiesController(IGoverningBodiesService service) 
         {
             _governingBodiesService = service;
-            _userManager = userManager;
         }
 
         [HttpGet]
