@@ -71,7 +71,7 @@ namespace EPlast.BLL.Services
             var user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email);
             user.EmailSendedOnForgotPassword = DateTime.Now;
             await _userManager.UpdateAsync(user);
-            await _emailConfirmation.SendEmailAsync("antonpavlenko20@gmail.com", "Скидування пароля",
+            await _emailConfirmation.SendEmailAsync(forgotPasswordDto.Email, "Скидування пароля",
                 $"Для скидування пароля перейдіть за : <a href='{confirmationLink}'>посиланням</a>", "Адміністрація сайту EPlast");
         }
 
