@@ -21,7 +21,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,7 +29,7 @@ namespace EPlast.WebApi
 {
     public class Startup
     {
-        private string[] _secrets = null; 
+        private string[] _secrets = null;
         public IConfiguration Configuration { get; }
 
         public Startup(IConfiguration configuration)
@@ -41,8 +40,8 @@ namespace EPlast.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            _secrets = new string[] 
-            { 
+            _secrets = new string[]
+            {
                 Configuration["StorageConnectionString"],
                 Configuration["GoogleAuthentication:GoogleClientSecret"],
                 Configuration["GoogleAuthentication:GoogleClientId"],
@@ -81,7 +80,7 @@ namespace EPlast.WebApi
             {
                 options.Configuration = Configuration.GetConnectionString("Redis");
                 options.InstanceName = "Redis_";
-            });    
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
