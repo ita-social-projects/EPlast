@@ -119,16 +119,39 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
-        public async Task GetRegionByNameAsync_ReturnsRegionDTO()
+        public async Task GetRegionByNameAsync_ReturnsRegionProfileDTO()
         {
             // Arrange
              _repoWrapper
-                   .Setup(x => x.Region.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.Region, bool>>>(),
+                   .Setup(x => x.Region.GetFirstAsync(It.IsAny<Expression<Func<DataAccess.Entities.Region, bool>>>(),
                    It.IsAny<Func<IQueryable<DataAccess.Entities.Region>, IIncludableQueryable<DataAccess.Entities.Region, object>>>()))
                    .ReturnsAsync(new DataAccess.Entities.Region());
 
+            _mapper.Setup(x => x.Map<DataAccess.Entities.Region, RegionProfileDTO>(It.IsAny<DataAccess.Entities.Region>()))
+                .Returns(new RegionProfileDTO());
+
+            _userManager.
+                Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { "Admin" });
+            // Act
+            var result = await _regionService.GetRegionByNameAsync(It.IsAny<string>(), It.IsAny<User>());
+
+            // Assert
+            Assert.IsInstanceOf<RegionProfileDTO>(result);
+            Assert.IsNotNull(result);
+        }
+
+        [Test]
+        public async Task GetRegionByNameAsync_ReturnsRegionDTO()
+        {
+            // Arrange
+            _repoWrapper
+                  .Setup(x => x.Region.GetFirstAsync(It.IsAny<Expression<Func<DataAccess.Entities.Region, bool>>>(),
+                  It.IsAny<Func<IQueryable<DataAccess.Entities.Region>, IIncludableQueryable<DataAccess.Entities.Region, object>>>()))
+                  .ReturnsAsync(new DataAccess.Entities.Region());
+
             _mapper.Setup(x => x.Map<DataAccess.Entities.Region, RegionDTO>(It.IsAny<DataAccess.Entities.Region>()))
-                .Returns(regions.First);
+                .Returns(new RegionDTO());
+
             // Act
             var result = await _regionService.GetRegionByNameAsync(It.IsAny<string>());
 
@@ -136,7 +159,6 @@ namespace EPlast.Tests.Services.Regions
             Assert.IsInstanceOf<RegionDTO>(result);
             Assert.IsNotNull(result);
         }
-
 
         [Test]
         public async Task AddDocumentAsync_ReturnsRegionDocumentDTO()

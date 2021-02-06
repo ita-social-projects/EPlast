@@ -23,5 +23,6 @@ namespace EPlast.BLL.DTO.Region
         public IEnumerable<RegionDocumentDTO> Documents { get; set; }
         public IEnumerable<RegionAdministrationDTO> Administration { get; set; }
         public IEnumerable<CityDTO> Cities { get; set; }
+        public RegionsStatusTypeDTO Status { get; set; }
     }
 }
