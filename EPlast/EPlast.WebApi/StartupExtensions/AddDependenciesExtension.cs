@@ -11,6 +11,7 @@ using EPlast.BLL.Interfaces.EducatorsStaff;
 using EPlast.BLL.Interfaces.EventCalendar;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
+using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Notifications;
@@ -31,6 +32,7 @@ using EPlast.BLL.Services.Club.ClubAccess;
 using EPlast.BLL.Services.Distinctions;
 using EPlast.BLL.Services.Events;
 using EPlast.BLL.Services.EventUser;
+using EPlast.BLL.Services.GoverningBodies;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.Jwt;
 using EPlast.BLL.Services.Logging;
@@ -141,6 +143,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddTransient<IEventUserService, EventUserService>();
             services.AddScoped<IResources, BLL.Services.Resources.Resources>();
             services.AddScoped<IMethodicDocumentService, MethodicDocumentService>();
+            services.AddScoped<IGoverningBodiesService, GoverningBodiesService>();
             return services;
         }
     }

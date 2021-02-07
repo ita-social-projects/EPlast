@@ -12,7 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EPlast.BLL.ExtensionMethods;
 
-namespace EPlast.BLL
+namespace EPlast.BLL.Services
 {
     public class MethodicDocumentService : IMethodicDocumentService
     {

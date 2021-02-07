@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Distributed;
+using EPlast.BLL.ExtensionMethods;
+using EPlast.BLL.DTO;
 
 namespace EPlast.Tests.Controllers
 {
@@ -400,7 +402,41 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<IEnumerable<RegionAnnualReportDTO>>(actual);
 
         }
-       private IEnumerable<RegionDTO> GetRegions() {
+
+        [Test]
+        public async Task GetAllRegionsAnnualReportsAsync_ReturnsReportDTO()
+        {
+            // Arrange
+            _userManager
+                .Setup(x => x.GetUserAsync(new System.Security.Claims.ClaimsPrincipal())).ReturnsAsync(new User());
+            _regionAnnualReportService
+                .Setup(x=>x.GetAllAsync(It.IsAny<User>())).ReturnsAsync(new List<RegionAnnualReportDTO>());
+
+            // Act
+            var result = await _regionController.GetAllRegionAnnualReports();
+            // Assert
+
+            Assert.IsInstanceOf<ObjectResult>(result);
+        }
+        [Test]
+        public async Task GetRegionsBoardAsync_ReturnsRegionsBoard()
+        {
+            // Arrange
+            _userManager
+                .Setup(x => x.GetUserAsync(new System.Security.Claims.ClaimsPrincipal())).ReturnsAsync(new User());
+            _regionService
+                .Setup(x => x.GetRegionByNameAsync(EnumExtensions.GetDescription(RegionsStatusType.RegionBoard), It.IsAny<User>()))
+                .ReturnsAsync(new RegionProfileDTO() { Status = RegionsStatusTypeDTO.RegionBoard });
+            // Act
+            var result = await _regionController.GetRegionsBoardAsync();
+            var actual = (result as ObjectResult).Value;
+            // Assert
+
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsInstanceOf<RegionProfileDTO>(actual);
+
+        }
+        private IEnumerable<RegionDTO> GetRegions() {
             return new List<RegionDTO>()
             {
                 new RegionDTO(){ ID =2, RegionName="Lviv"},
