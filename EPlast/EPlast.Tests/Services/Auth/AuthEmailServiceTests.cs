@@ -1,5 +1,6 @@
 ﻿using EPlast.BLL.Interfaces;
 using EPlast.BLL.Services;
+using EPlast.BLL.Services.Auth;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -16,7 +17,7 @@ namespace EPlast.Tests.Services
         [SetUp]
         public void SetUp()
         {
-            _mockEmailConfirmation = new Mock<IEmailConfirmation>();
+            _mockEmailConfirmation = new Mock<IEmailSendingService>();
             _mockAuthService = new Mock<IAuthService>();
             var store = new Mock<IUserStore<User>>();
             _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
@@ -105,7 +106,7 @@ namespace EPlast.Tests.Services
             Assert.IsNotNull(result);
         }
 
-        private Mock<IEmailConfirmation> _mockEmailConfirmation;
+        private Mock<IEmailSendingService> _mockEmailConfirmation;
         private Mock<IAuthService> _mockAuthService;
         private Mock<UserManager<User>> _mockUserManager;
         private Mock<IUrlHelperFactory> _mockUrlHelperFactory;

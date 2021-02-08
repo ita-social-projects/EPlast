@@ -14,8 +14,8 @@ namespace EPlast.Tests.Services
         public void SetUp()
         {
             _mockOptions = new Mock<IOptions<EmailServiceSettings>>();
-            _mockLoggerService = new Mock<ILoggerService<EmailConfirmationService>>();
-            emailConfirmationService = new EmailConfirmationService(
+            _mockLoggerService = new Mock<ILoggerService<EmailSendingService>>();
+            emailConfirmationService = new EmailSendingService(
                 _mockOptions.Object,
                 _mockLoggerService.Object);
         }
@@ -56,7 +56,7 @@ namespace EPlast.Tests.Services
         }
 
         private Mock<IOptions<EmailServiceSettings>> _mockOptions;
-        private Mock<ILoggerService<EmailConfirmationService>> _mockLoggerService;
-        private EmailConfirmationService emailConfirmationService;
+        private Mock<ILoggerService<EmailSendingService>> _mockLoggerService;
+        private EmailSendingService emailConfirmationService;
     }
 }

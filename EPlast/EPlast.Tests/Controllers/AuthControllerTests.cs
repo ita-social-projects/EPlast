@@ -38,7 +38,8 @@ namespace EPlast.Tests.Controllers
                 mockUserDataServices.Object,
                 mockHomeService.Object,
                 mockResources.Object,
-                mockAuthEmailService.Object);
+                mockAuthEmailService.Object
+                );
 
             return (
                 mockAuthService,

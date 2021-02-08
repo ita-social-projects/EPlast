@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL
 {
-    public class EmailConfirmationService : IEmailConfirmation
+    public class EmailSendingService : IEmailSendingService
     {
-        public EmailConfirmationService(
+        public EmailSendingService(
             IOptions<EmailServiceSettings> settings,
-            ILoggerService<EmailConfirmationService> loggerService)
+            ILoggerService<EmailSendingService> loggerService)
         {
             Settings = settings;
             _loggerService = loggerService;
@@ -50,6 +50,6 @@ namespace EPlast.BLL
             return true;
         }
 
-        private readonly ILoggerService<EmailConfirmationService> _loggerService;
+        private readonly ILoggerService<EmailSendingService> _loggerService;
     }
 }

@@ -25,13 +25,13 @@ namespace EPlast.BLL.Services
         public AuthService(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
-            IEmailConfirmation emailConfirmation,
+            IEmailSendingService emailSendingService,
             IMapper mapper,
             IRepositoryWrapper repoWrapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _emailConfirmation = emailConfirmation;
+            _emailSendingService = emailSendingService;
             _mapper = mapper;
             _repoWrapper = repoWrapper;
         }
@@ -109,7 +109,7 @@ namespace EPlast.BLL.Services
                 var createResult = await _userManager.CreateAsync(user);
                 if (createResult.Succeeded && user.Email != "facebookdefaultmail@gmail.com")
                 {
-                    await _emailConfirmation.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
+                    await _emailSendingService.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
                         "Ви зареєструвались в системі EPlast використовуючи свій Facebook-акаунт. ", "Адміністрація сайту EPlast");
                 }
                 await _userManager.AddToRoleAsync(user, "Прихильник");
@@ -196,7 +196,7 @@ namespace EPlast.BLL.Services
                 var createResult = await _userManager.CreateAsync(user);
                 if (createResult.Succeeded)
                 {
-                    await _emailConfirmation.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
+                    await _emailSendingService.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
                      "Ви зареєструвались в системі EPlast використовуючи свій Google-акаунт. ", "Адміністрація сайту EPlast");
                 }
                 else
@@ -288,27 +288,7 @@ namespace EPlast.BLL.Services
             await _signInManager.SignOutAsync();
         }
 
-        public async void SendLonelyUsers()
-        {
-            var users = await _repoWrapper.User.GetAllAsync();
-            var a = await IsLonelyUser(users.AsEnumerable().FirstOrDefault().Id);
-            var lonelyusers = users.Where(x => IsLonelyUser(x.Id).Result);
-        }
-
-        public async Task<CityDTO> GetCityOfUser(string UserId)
-        {
-            var userCity = await _repoWrapper.CityMembers.GetAllAsync(x => x.UserId == UserId);
-
-            //var userCity = await _repoWrapper.UserPrecaution.GetAllAsync(u => u.UserId == UserId,
-            //    include: source => source
-            //    .Include(c => c.User)
-            //    .Include(d => d.Precaution));
-            //return _mapper.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDTO>>(userPrecautions);
-            var a = userCity.FirstOrDefault();
-            return _mapper.Map<CityMembers, CityDTO>(a);
-        }
-
-        private readonly IEmailConfirmation _emailConfirmation;
+        private readonly IEmailSendingService _emailSendingService;
 
         private readonly IMapper _mapper;
 
@@ -317,10 +297,5 @@ namespace EPlast.BLL.Services
         private readonly SignInManager<User> _signInManager;
 
         private readonly UserManager<User> _userManager;
-
-        private async Task<bool> IsLonelyUser(string userId)
-        {
-            return (await GetCityOfUser(userId)) == null;
-        }
     }
 }

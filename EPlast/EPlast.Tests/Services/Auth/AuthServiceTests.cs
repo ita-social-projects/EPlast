@@ -24,7 +24,7 @@ namespace EPlast.Tests.Services
 {
     internal class AuthServiceTests
     {
-        public (Mock<SignInManager<User>>, Mock<UserManager<User>>, Mock<IEmailConfirmation>, AuthService) CreateAuthService()
+        public (Mock<SignInManager<User>>, Mock<UserManager<User>>, Mock<IEmailSendingService>, AuthService) CreateAuthService()
         {
             Mock<IUserPasswordStore<User>> userPasswordStore = new Mock<IUserPasswordStore<User>>();
             userPasswordStore.Setup(s => s.CreateAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
@@ -71,7 +71,7 @@ namespace EPlast.Tests.Services
                            _contextAccessor.Object, _userPrincipalFactory.Object, null, null, null, null);
             Mock<IRepositoryWrapper> mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
             //mockRepositoryWrapper.Object.Gender = new Gender();
-            Mock<IEmailConfirmation> mockEmailConfirmation = new Mock<IEmailConfirmation>();
+            Mock<IEmailSendingService> mockEmailConfirmation = new Mock<IEmailSendingService>();
             Mock<IMapper> mockMapper = new Mock<IMapper>();
             mockMapper
                .Setup(s => s.Map<UserDTO, User>(It.IsAny<UserDTO>()))
@@ -239,14 +239,6 @@ namespace EPlast.Tests.Services
                 LastName = "Shainoha",
                 EmailConfirmed = true,
                 SocialNetworking = true
-            };
-        }
-
-        private FacebookUserInfo GetTestFacebookUserInfoWithSomeFields()
-        {
-            return new FacebookUserInfo()
-            {
-                Gender = "Male"
             };
         }
     }

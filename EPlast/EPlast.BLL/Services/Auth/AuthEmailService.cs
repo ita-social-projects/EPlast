@@ -1,5 +1,4 @@
 ﻿using EPlast.BLL.DTO.Account;
-using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Http;
@@ -7,29 +6,32 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
+using NLog.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
-namespace EPlast.BLL.Services
+namespace EPlast.BLL.Services.Auth
 {
     public class AuthEmailService : IAuthEmailService
     {
         public AuthEmailService(
-            IEmailConfirmation emailConfirmation,
+            IEmailSendingService emailSendingService,
             IAuthService authService,
             UserManager<User> userManager,
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor,
             IHttpContextAccessor contextAccessor)
         {
-            _emailConfirmation = emailConfirmation;
+            _emailSendingService = emailSendingService;
             _authService = authService;
             _userManager = userManager;
-            _Url = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
+
             _contextAccessor = contextAccessor;
+            _urlHelperFactory = urlHelperFactory;
+            _actionContextAccessor = actionContextAccessor;
         }
 
-        ///<inheritdoc/>
+        /// <inheritdoc />
         public async Task<IdentityResult> ConfirmEmailAsync(string userId, string code)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -37,48 +39,66 @@ namespace EPlast.BLL.Services
             return result;
         }
 
-        ///<inheritdoc/>
+        public async Task<bool> SendEmailJoinToCityReminderAsync(string email)
+        {
+            var citiesUrl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Cities"];
+            var sendResult = await _emailSendingService.SendEmailAsync(
+                email,
+                "Нагадування про приєднання до станиці",
+                "Нагадуємо, що вам необхідно приєднатись до станиці.\n" +
+                $"Зробити це можна, перейшовши за :  <a href='{citiesUrl}'>посиланням</a> ",
+                "Адміністрація сайту EPlast");
+            return sendResult;
+        }
+
+        /// <inheritdoc />
         public async Task<bool> SendEmailRegistrAsync(string email)
         {
-            string token = await _authService.AddRoleAndTokenAsync(email);
+            _url = _urlHelperFactory.GetUrlHelper(_actionContextAccessor.ActionContext);
+            var token = await _authService.AddRoleAndTokenAsync(email);
             var user = await _userManager.FindByEmailAsync(email);
-            string confirmationLink = _Url.Action(
-                        action: "confirmingEmail",
-                        controller: "Auth",
-                        values: new { token, userId = user.Id },
-                        protocol: _contextAccessor.HttpContext.Request.Scheme);
+            var confirmationLink = _url.Action(
+                "confirmingEmail",
+                "Auth",
+                new { token, userId = user.Id },
+                _contextAccessor.HttpContext.Request.Scheme);
             user.EmailSendedOnRegister = DateTime.Now;
 
-            return (await _emailConfirmation.SendEmailAsync(
-                email: email,
-                subject: "Підтвердження реєстрації ",
-                message: $"Підтвердіть реєстрацію, перейшовши за :  <a href='{confirmationLink}'>посиланням</a> ",
-                title: "Адміністрація сайту EPlast"));
+            return await _emailSendingService.SendEmailAsync(
+                email,
+                "Підтвердження реєстрації ",
+                $"Підтвердіть реєстрацію, перейшовши за :  <a href='{confirmationLink}'>посиланням</a> ",
+                "Адміністрація сайту EPlast");
         }
 
-        ///<inheritdoc/>
-        public async Task SendEmailReminderAsync(string citiesUrl, UserDTO userDTO)
+        /// <inheritdoc />
+        public async Task SendEmailGreetingAsync(string email)
         {
-            var user = await _userManager.FindByEmailAsync(userDTO.Email);
+            var citiesUrl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Cities"];
+            var user = await _userManager.FindByEmailAsync(email);
             user.EmailSendedOnRegister = DateTime.Now;
-            await _emailConfirmation.SendEmailAsync(user.Email, "Вітаємо у системі!",
-                $"Ви успішно активували свій акаунт!\nНе забудьте доєднатись до осередку, перейшовши за :  <a href='{citiesUrl}'>посиланням</a> ", "Адміністрація сайту EPlast");
+            await _emailSendingService.SendEmailAsync(user.Email, "Вітаємо у системі!",
+                $"Ви успішно активували свій акаунт!\nНе забудьте доєднатись до осередку, перейшовши за :  <a href='{citiesUrl}'>посиланням</a> ",
+                "Адміністрація сайту EPlast");
         }
 
-        ///<inheritdoc/>
+        /// <inheritdoc />
         public async Task SendEmailResetingAsync(string confirmationLink, ForgotPasswordDto forgotPasswordDto)
         {
             var user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email);
             user.EmailSendedOnForgotPassword = DateTime.Now;
             await _userManager.UpdateAsync(user);
-            await _emailConfirmation.SendEmailAsync(forgotPasswordDto.Email, "Скидування пароля",
-                $"Для скидування пароля перейдіть за : <a href='{confirmationLink}'>посиланням</a>", "Адміністрація сайту EPlast");
+            await _emailSendingService.SendEmailAsync(forgotPasswordDto.Email, "Скидування пароля",
+                $"Для скидування пароля перейдіть за : <a href='{confirmationLink}'>посиланням</a>",
+                "Адміністрація сайту EPlast");
         }
 
         private readonly IAuthService _authService;
         private readonly IHttpContextAccessor _contextAccessor;
-        private readonly IEmailConfirmation _emailConfirmation;
-        private readonly IUrlHelper _Url;
+        private readonly IEmailSendingService _emailSendingService;
         private readonly UserManager<User> _userManager;
+        private readonly IUrlHelperFactory _urlHelperFactory;
+        private IUrlHelper _url;
+        private IActionContextAccessor _actionContextAccessor;
     }
 }

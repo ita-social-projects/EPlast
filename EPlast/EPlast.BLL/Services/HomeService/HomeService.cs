@@ -6,9 +6,9 @@ namespace EPlast.BLL
 {
     public class HomeService : IHomeService
     {
-        private readonly IEmailConfirmation _emailConfirmation;
+        private readonly IEmailSendingService _emailConfirmation;
 
-        public HomeService(IEmailConfirmation emailConfirmation)
+        public HomeService(IEmailSendingService emailConfirmation)
         {
             _emailConfirmation = emailConfirmation;
         }

@@ -113,7 +113,7 @@ namespace EPlast.BLL.Interfaces
         /// </summary>
         /// <param name="externalLoginInfo"></param>
         /// <returns>Sign in result</returns>
-        Task<SignInResult> GetSignInResultAsync(ExternalLoginInfo externalLoginInfo);
+        Task<Microsoft.AspNetCore.Identity.SignInResult> GetSignInResultAsync(ExternalLoginInfo externalLoginInfo);
 
         /// <summary>
         /// Returns time after registration for user
@@ -162,13 +162,11 @@ namespace EPlast.BLL.Interfaces
         /// </summary>
         /// <param name="loginDto"></param>
         /// <returns>Result of logining in system</returns>
-        Task<SignInResult> SignInAsync(LoginDto loginDto);
+        Task<Microsoft.AspNetCore.Identity.SignInResult> SignInAsync(LoginDto loginDto);
 
         /// <summary>
         /// Logout in system
         /// </summary>
         void SignOutAsync();
-
-        void SendLonelyUsers();
     }
 }

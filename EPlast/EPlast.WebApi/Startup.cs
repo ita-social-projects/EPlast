@@ -1,4 +1,5 @@
-﻿using EPlast.BLL.Interfaces.ActiveMembership;
+﻿using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Events;
@@ -16,6 +17,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,19 +32,18 @@ namespace EPlast.WebApi
 {
     public class Startup
     {
-        private string[] _secrets = null; 
-        public IConfiguration Configuration { get; }
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
+        public IConfiguration Configuration { get; }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            _secrets = new string[] 
-            { 
+            _secrets = new string[]
+            {
                 Configuration["StorageConnectionString"],
                 Configuration["GoogleAuthentication:GoogleClientSecret"],
                 Configuration["GoogleAuthentication:GoogleClientId"],
@@ -66,6 +67,7 @@ namespace EPlast.WebApi
 
             services.AddCors();
             services.AddSwagger();
+
             services.AddDependency();
             services.AddControllers().AddNewtonsoftJson();
             services.AddLogging();
@@ -75,13 +77,32 @@ namespace EPlast.WebApi
             services.AddLocalization();
             services.AddRequestLocalizationOptions();
             services.AddIdentityOptions();
+
+            //services.AddHttpContextAccessor();
+            //services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
+
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            //.AddTransient<ActionContext>((s) =>
+            //{
+            //    var currentContextAccess =
+            //    serviceProvider.GetService<IHttpContextAccessor>();
+            //    if (currentContextAccess.HttpContext == null)
+            //    {
+            //        // create a manual actionContext
+            //        ActionContext actionContext = new ActionContext();
+
+            //        return actionContext;
+            //    }
+
+            //    var actionContextAccessor = serviceProvider.GetRequiredService<IActionContextAccessor>();
+            //    return actionContextAccessor.ActionContext;
+            //});
 
             services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = Configuration.GetConnectionString("Redis");
                 options.InstanceName = "Redis_";
-            });    
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -90,7 +111,6 @@ namespace EPlast.WebApi
                               IRecurringJobManager recurringJobManager,
                               IServiceProvider serviceProvider)
         {
-
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -128,7 +148,6 @@ namespace EPlast.WebApi
             app.UseWebSockets();
 
             app.MapWebSocketManager("/notifications", serviceProvider.GetService<UserNotificationHandler>());
-
 
             //app.UseAntiforgeryTokens();
             app.UseStatusCodePages();
@@ -170,6 +189,12 @@ namespace EPlast.WebApi
             TimeZoneInfo.Local
             );
 
+            recurringJobManager.AddOrUpdate("Reminder to join city",
+              () => serviceProvider.GetService<IEmailReminderService>().JoinCityReminder(),
+            Cron.Minutely(),
+            TimeZoneInfo.Local
+            );
+
             app.Run(async (context) =>
             {
                 foreach (string secret in _secrets)
@@ -187,6 +212,9 @@ namespace EPlast.WebApi
             );
             CreateRoles(serviceProvider).Wait();
         }
+
+        private string[] _secrets = null;
+
         private async Task CreateRoles(IServiceProvider serviceProvider)
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();

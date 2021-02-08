@@ -37,7 +37,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">Problems with confirming email</response>
         [HttpGet("confirmingEmail")]
         [AllowAnonymous]
-        public async Task<IActionResult> ConfirmingEmail(string userId, string token)
+        public async Task<IActionResult> ConfirmingEmailAsync(string userId, string token)
         {
             var userDto = await _authService.FindByIdAsync(userId);
             if (userDto == null)
@@ -56,8 +56,7 @@ namespace EPlast.WebApi.Controllers
                 if (result.Succeeded)
                 {
                     string signinurl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["SignIn"];
-                    string citiesurl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Сities"];
-                    await _authEmailServices.SendEmailReminderAsync(citiesurl, userDto);
+                    await _authEmailServices.SendEmailGreetingAsync(userDto.Email);
                     return Redirect(signinurl);
                 }
                 else
@@ -148,13 +147,6 @@ namespace EPlast.WebApi.Controllers
             }
             await _homeService.SendEmailAdmin(contactsDto);
 
-            return Ok(_resources.ResourceForErrors["Feedback-Sended"]);
-        }
-
-        [HttpGet("send")]
-        public async Task<IActionResult> SendLonely()
-        {
-            _authService.SendLonelyUsers();
             return Ok(_resources.ResourceForErrors["Feedback-Sended"]);
         }
 
