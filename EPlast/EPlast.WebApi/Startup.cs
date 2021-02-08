@@ -1,10 +1,4 @@
-﻿using EPlast.BLL.Interfaces;
-using EPlast.BLL.Interfaces.ActiveMembership;
-using EPlast.BLL.Interfaces.City;
-using EPlast.BLL.Interfaces.Club;
-using EPlast.BLL.Interfaces.Events;
-using EPlast.BLL.Interfaces.Region;
-using EPlast.BLL.Services.Jwt;
+﻿using EPlast.BLL.Services.Jwt;
 using EPlast.BLL.Settings;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
@@ -17,16 +11,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.WebApi
 {
@@ -77,26 +67,7 @@ namespace EPlast.WebApi
             services.AddLocalization();
             services.AddRequestLocalizationOptions();
             services.AddIdentityOptions();
-
-            //services.AddHttpContextAccessor();
-            //services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
-
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-            //.AddTransient<ActionContext>((s) =>
-            //{
-            //    var currentContextAccess =
-            //    serviceProvider.GetService<IHttpContextAccessor>();
-            //    if (currentContextAccess.HttpContext == null)
-            //    {
-            //        // create a manual actionContext
-            //        ActionContext actionContext = new ActionContext();
-
-            //        return actionContext;
-            //    }
-
-            //    var actionContextAccessor = serviceProvider.GetRequiredService<IActionContextAccessor>();
-            //    return actionContextAccessor.ActionContext;
-            //});
 
             services.AddStackExchangeRedisCache(options =>
             {
@@ -111,6 +82,7 @@ namespace EPlast.WebApi
                               IRecurringJobManager recurringJobManager,
                               IServiceProvider serviceProvider)
         {
+            serviceProvider.AddRecurringJobsAsync(recurringJobManager, Configuration);
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -168,32 +140,6 @@ namespace EPlast.WebApi
                 endpoints.MapControllers();
             });
             app.UseHangfireDashboard();
-            recurringJobManager.AddOrUpdate("Run every day",
-                () => serviceProvider.GetService<IPlastDegreeService>().GetDergeesAsync(),
-             "59 23 * * *",
-             TimeZoneInfo.Local
-             );
-            recurringJobManager.AddOrUpdate("Check and change event status",
-               () => serviceProvider.GetService<IActionManager>().CheckEventsStatusesAsync(),
-            "59 23 * * *",
-            TimeZoneInfo.Local
-            );
-            recurringJobManager.AddOrUpdate("Remove roles from previous admins",
-                () => serviceProvider.GetService<ICityParticipantsService>().CheckPreviousAdministratorsToDelete(),
-            "59 23 * * *",
-            TimeZoneInfo.Local
-            );
-            recurringJobManager.AddOrUpdate("Changes status of region admins when the date expires",
-              () => serviceProvider.GetService<IRegionService>().EndAdminsDueToDate(),
-            Cron.Daily(),
-            TimeZoneInfo.Local
-            );
-
-            recurringJobManager.AddOrUpdate("Reminder to join city",
-              () => serviceProvider.GetService<IEmailReminderService>().JoinCityReminder(),
-            Cron.Minutely(),
-            TimeZoneInfo.Local
-            );
 
             app.Run(async (context) =>
             {
@@ -203,59 +149,8 @@ namespace EPlast.WebApi
                     await context.Response.WriteAsync($"Secret is {result}");
                 }
             });
-
-            CreateRoles(serviceProvider).Wait();
-            recurringJobManager.AddOrUpdate("Remove roles from previous admins",
-                () => serviceProvider.GetService<IClubParticipantsService>().CheckPreviousAdministratorsToDelete(),
-            "59 23 * * *",
-            TimeZoneInfo.Local
-            );
-            CreateRoles(serviceProvider).Wait();
         }
 
         private string[] _secrets = null;
-
-        private async Task CreateRoles(IServiceProvider serviceProvider)
-        {
-            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
-            var roles = new[] { "Admin", "Прихильник", "Пластун", "Голова Пласту","Адміністратор подій", "Голова Куреня","Діловод Куреня",
-            "Голова Округу","Діловод Округу","Голова Станиці","Діловод Станиці", "Колишній член пласту", "Зареєстрований користувач", "Зацікавлений"};
-            foreach (var role in roles)
-            {
-                if (!(await roleManager.RoleExistsAsync(role)))
-                {
-                    var idRole = new IdentityRole
-                    {
-                        Name = role
-                    };
-
-                    var res = await roleManager.CreateAsync(idRole);
-                }
-            }
-            var admin = Configuration.GetSection("Admin");
-            var profile = new User
-            {
-                Email = admin["Email"],
-                UserName = admin["Email"],
-                FirstName = "Admin",
-                LastName = "Admin",
-                EmailConfirmed = true,
-                ImagePath = "default_user_image.png",
-                UserProfile = new UserProfile(),
-                RegistredOn = DateTime.Now
-            };
-            if (await userManager.FindByEmailAsync(admin["Email"]) == null)
-            {
-                var res = await userManager.CreateAsync(profile, admin["Password"]);
-                if (res.Succeeded)
-                    await userManager.AddToRoleAsync(profile, "Admin");
-            }
-            else if (!await userManager.IsInRoleAsync(userManager.Users.First(item => item.Email == profile.Email), "Admin"))
-            {
-                var user = userManager.Users.First(item => item.Email == profile.Email);
-                await userManager.AddToRoleAsync(user, "Admin");
-            }
-        }
     }
 }
