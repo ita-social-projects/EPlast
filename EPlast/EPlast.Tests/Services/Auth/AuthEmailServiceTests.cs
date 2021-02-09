@@ -14,19 +14,12 @@ namespace EPlast.Tests.Services
     internal class AuthEmailServiceTests
     {
         private Mock<IActionContextAccessor> _mockActionContextAccessor;
-
         private Mock<IAuthService> _mockAuthService;
-
-        private Mock<IEmailSendingService> _mockEmailConfirmation;
-
+        private Mock<IEmailSendingService> _mockEmailSendingService;
         private Mock<IHttpContextAccessor> _mockHttpContextAccessor;
-
         private Mock<IUrlHelperFactory> _mockUrlHelperFactory;
-
         private Mock<UserManager<User>> _mockUserManager;
-
         private Mock<IUrlHelper> _Url;
-
         private AuthEmailService authEmailService;
 
         [Test]
@@ -36,7 +29,7 @@ namespace EPlast.Tests.Services
             _mockUserManager
                 .Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync(new User());
-            _mockEmailConfirmation
+            _mockEmailSendingService
                 .Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(true);
             var expected = true;
@@ -45,7 +38,7 @@ namespace EPlast.Tests.Services
             var result = authEmailService.SendEmailRegistrAsync("email");
 
             //Assert
-            _mockEmailConfirmation.Verify();
+            _mockEmailSendingService.Verify();
             Assert.IsNotNull(result);
             Assert.AreEqual(expected, result.Result);
         }
@@ -57,7 +50,7 @@ namespace EPlast.Tests.Services
             _mockUserManager
                 .Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync(new User());
-            _mockEmailConfirmation
+            _mockEmailSendingService
                 .Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(true);
 
@@ -65,7 +58,7 @@ namespace EPlast.Tests.Services
             var result = authEmailService.SendEmailJoinToCityReminderAsync("email");
 
             //Assert
-            _mockEmailConfirmation.Verify();
+            _mockEmailSendingService.Verify();
             _mockUserManager.Verify();
             Assert.IsNotNull(result);
         }
@@ -77,7 +70,7 @@ namespace EPlast.Tests.Services
             _mockUserManager
                 .Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync(new User());
-            _mockEmailConfirmation
+            _mockEmailSendingService
                 .Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(true);
 
@@ -85,7 +78,7 @@ namespace EPlast.Tests.Services
             var result = authEmailService.SendEmailResetingAsync("confirmationLink", new BLL.DTO.Account.ForgotPasswordDto());
 
             //Assert
-            _mockEmailConfirmation.Verify();
+            _mockEmailSendingService.Verify();
             _mockUserManager.Verify();
             Assert.IsNotNull(result);
         }
@@ -93,7 +86,7 @@ namespace EPlast.Tests.Services
         [SetUp]
         public void SetUp()
         {
-            _mockEmailConfirmation = new Mock<IEmailSendingService>();
+            _mockEmailSendingService = new Mock<IEmailSendingService>();
             _mockAuthService = new Mock<IAuthService>();
             var store = new Mock<IUserStore<User>>();
             _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
@@ -113,7 +106,7 @@ namespace EPlast.Tests.Services
                 .Returns("http");
 
             authEmailService = new AuthEmailService(
-                _mockEmailConfirmation.Object,
+                _mockEmailSendingService.Object,
                 _mockAuthService.Object,
                 _mockUserManager.Object,
                 _mockUrlHelperFactory.Object,

@@ -20,7 +20,7 @@ namespace EPlast.BLL.Interfaces
         /// <param name="citiesUrl"></param>
         /// <param name="userDTO"></param>
         /// <returns>Result of sending email</returns>
-        Task SendEmailGreetingAsync(string email);
+        Task<bool> SendEmailGreetingAsync(string email);
 
         /// <summary>
         /// Sending email reminder to join city

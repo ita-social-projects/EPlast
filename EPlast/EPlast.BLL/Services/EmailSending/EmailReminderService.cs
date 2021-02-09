@@ -6,6 +6,7 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.EmailSending
@@ -30,11 +31,7 @@ namespace EPlast.BLL.Services.EmailSending
 
         public async Task JoinCityReminderAsync()
         {
-            var lonelyUsers = await GetLonelyUsersAsync();
-            foreach (var user in lonelyUsers)
-            {
-                await _authEmailServices.SendEmailJoinToCityReminderAsync(user.Email);
-            }
+            (await GetLonelyUsersAsync()).ToList().ForEach(async (user) => await _authEmailServices.SendEmailJoinToCityReminderAsync(user.Email));
         }
 
         private async Task<IEnumerable<User>> GetLonelyUsersAsync()

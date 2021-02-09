@@ -266,9 +266,17 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async void RefreshSignInAsync(UserDTO userDto)
+        public async Task<bool> RefreshSignInAsync(UserDTO userDto)
         {
-            await _signInManager.RefreshSignInAsync(_mapper.Map<UserDTO, User>(userDto));
+            try
+            {
+                await _signInManager.RefreshSignInAsync(_mapper.Map<UserDTO, User>(userDto));
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+            return true;
         }
 
         ///<inheritdoc/>

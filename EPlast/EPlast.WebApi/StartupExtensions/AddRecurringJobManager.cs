@@ -17,7 +17,7 @@ namespace EPlast.WebApi.StartupExtensions
 {
     public static class AddRecurringJobManager
     {
-        public static void AddRecurringJobsAsync(this IServiceProvider serviceProvider,
+        public static void AddRecurringJobs(this IServiceProvider serviceProvider,
                                                  IRecurringJobManager recurringJobManager,
                                                  IConfiguration Configuration)
         {

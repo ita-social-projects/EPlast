@@ -5,7 +5,7 @@ using NLog.Extensions.Logging;
 
 namespace EPlast.WebApi
 {
-    public class Program
+    public static class Program
     {
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) => WebHost.CreateDefaultBuilder(args)
             .ConfigureLogging((hostingContext, logging) =>

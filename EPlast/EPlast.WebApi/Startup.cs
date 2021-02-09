@@ -80,7 +80,7 @@ namespace EPlast.WebApi
                 app.UseHsts();
             }
 
-            serviceProvider.AddRecurringJobsAsync(recurringJobManager, Configuration);
+            serviceProvider.AddRecurringJobs(recurringJobManager, Configuration);
 
             app.Run(async (context) =>
             {

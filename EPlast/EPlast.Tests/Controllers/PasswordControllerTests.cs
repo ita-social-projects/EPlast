@@ -17,32 +17,6 @@ namespace EPlast.Tests.Controllers
 {
     internal class PasswordControllerTests
     {
-        public (
-            Mock<IAuthEmailService>,
-            Mock<IAuthService>,
-            Mock<IResources>,
-            Mock<UserManager<User>>,
-            PasswordController
-            ) CreatePasswordController()
-        {
-            Mock<IAuthEmailService> mockAuthEmailService = new Mock<IAuthEmailService>();
-            Mock<IAuthService> mockAuthService = new Mock<IAuthService>();
-            Mock<IResources> mockResources = new Mock<IResources>();
-            var store = new Mock<IUserStore<User>>();
-            Mock<UserManager<User>> mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
-            PasswordController passwordController = new PasswordController(
-                mockAuthService.Object,
-                mockResources.Object,
-                mockAuthEmailService.Object,
-                mockUserManager.Object);
-            return (
-                mockAuthEmailService,
-                mockAuthService,
-                mockResources,
-                mockUserManager,
-                passwordController);
-        }
-
         [Test]
         public async Task ChangePassword_InValid_ChangePasswordAsyncFailed_Test()
         {
@@ -140,6 +114,9 @@ namespace EPlast.Tests.Controllers
                 .Setup(s => s.RefreshSignInAsync(It.IsAny<UserDTO>()));
             mockResources
                 .Setup(s => s.ResourceForErrors[It.IsAny<string>()]);
+            mockAuthService
+                .Setup(x => x.RefreshSignInAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(true);
 
             //Act
             var expected = StatusCodes.Status200OK;
@@ -150,6 +127,32 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
+        }
+
+        public (
+                                            Mock<IAuthEmailService>,
+            Mock<IAuthService>,
+            Mock<IResources>,
+            Mock<UserManager<User>>,
+            PasswordController
+            ) CreatePasswordController()
+        {
+            Mock<IAuthEmailService> mockAuthEmailService = new Mock<IAuthEmailService>();
+            Mock<IAuthService> mockAuthService = new Mock<IAuthService>();
+            Mock<IResources> mockResources = new Mock<IResources>();
+            var store = new Mock<IUserStore<User>>();
+            Mock<UserManager<User>> mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            PasswordController passwordController = new PasswordController(
+                mockAuthService.Object,
+                mockResources.Object,
+                mockAuthEmailService.Object,
+                mockUserManager.Object);
+            return (
+                mockAuthEmailService,
+                mockAuthService,
+                mockResources,
+                mockUserManager,
+                passwordController);
         }
 
         [Test]
@@ -454,45 +457,11 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
         }
 
-        private UserDTO GetTestUserDtoWithAllFields()
-        {
-            return new UserDTO()
-            {
-                UserName = "andriishainoha@gmail.com",
-                FirstName = "Andrii",
-                LastName = "Shainoha",
-                EmailConfirmed = true,
-                SocialNetworking = true
-            };
-        }
-
         private LocalizedString GetForgotNotRegisteredUser()
         {
             var localizedString = new LocalizedString("Forgot-NotRegisteredUser",
                 "Користувача із заданою електронною поштою немає в системі або він не підтвердив свою реєстрацію.");
             return localizedString;
-        }
-
-        private ForgotPasswordDto GetTestForgotPasswordDto()
-        {
-            var forgotpasswordDto = new ForgotPasswordDto
-            {
-                Email = "andriishainoha@gmail.com"
-            };
-            return forgotpasswordDto;
-        }
-
-        private UserDTO GetTestUserWithEmailConfirmed()
-        {
-            return new UserDTO()
-            {
-                EmailConfirmed = true
-            };
-        }
-
-        private string GetTestCodeForResetPasswordAndConfirmEmail()
-        {
-            return new string("500");
         }
 
         private LocalizedString GetForgotPasswordConfirmation()
@@ -507,17 +476,6 @@ namespace EPlast.Tests.Controllers
             var localizedString = new LocalizedString("ModelIsNotValid",
                 "Введені дані є неправильними");
             return localizedString;
-        }
-
-        private ResetPasswordDto GetTestResetPasswordDto()
-        {
-            var resetPasswordDto = new ResetPasswordDto
-            {
-                Email = "andriishainoha@gmail.com",
-                Password = "andrii123",
-                ConfirmPassword = "andrii123"
-            };
-            return resetPasswordDto;
         }
 
         private LocalizedString GetResetNotRegisteredUser()
@@ -540,6 +498,51 @@ namespace EPlast.Tests.Controllers
                 "Проблеми зі скидуванням пароля або введений новий пароль повинен вміщати 8 символів, " +
                 "включаючи літери та цифри");
             return localizedString;
+        }
+
+        private string GetTestCodeForResetPasswordAndConfirmEmail()
+        {
+            return new string("500");
+        }
+
+        private ForgotPasswordDto GetTestForgotPasswordDto()
+        {
+            var forgotpasswordDto = new ForgotPasswordDto
+            {
+                Email = "andriishainoha@gmail.com"
+            };
+            return forgotpasswordDto;
+        }
+
+        private ResetPasswordDto GetTestResetPasswordDto()
+        {
+            var resetPasswordDto = new ResetPasswordDto
+            {
+                Email = "andriishainoha@gmail.com",
+                Password = "andrii123",
+                ConfirmPassword = "andrii123"
+            };
+            return resetPasswordDto;
+        }
+
+        private UserDTO GetTestUserDtoWithAllFields()
+        {
+            return new UserDTO()
+            {
+                UserName = "andriishainoha@gmail.com",
+                FirstName = "Andrii",
+                LastName = "Shainoha",
+                EmailConfirmed = true,
+                SocialNetworking = true
+            };
+        }
+
+        private UserDTO GetTestUserWithEmailConfirmed()
+        {
+            return new UserDTO()
+            {
+                EmailConfirmed = true
+            };
         }
     }
 }

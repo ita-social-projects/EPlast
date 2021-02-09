@@ -46,15 +46,16 @@ namespace EPlast.BLL.Services.Auth
         }
 
         /// <inheritdoc />
-        public async Task SendEmailGreetingAsync(string email)
+        public async Task<bool> SendEmailGreetingAsync(string email)
         {
             var citiesUrl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Cities"];
             var user = await _userManager.FindByEmailAsync(email);
             user.EmailSendedOnRegister = DateTime.Now;
-            await _emailSendingService.SendEmailAsync(user.Email,
-                                                      "Вітаємо у системі!",
-                                                      $"Ви успішно активували свій акаунт!\nНе забудьте доєднатись до осередку, перейшовши за :  <a href='{citiesUrl}'>посиланням</a> ",
-                                                      "Адміністрація сайту EPlast");
+            var sendResult = await _emailSendingService.SendEmailAsync(user.Email,
+                                                                       "Вітаємо у системі!",
+                                                                       $"Ви успішно активували свій акаунт!\nНе забудьте доєднатись до осередку, перейшовши за :  <a href='{citiesUrl}'>посиланням</a> ",
+                                                                       "Адміністрація сайту EPlast");
+            return sendResult;
         }
 
         public async Task<bool> SendEmailJoinToCityReminderAsync(string email)

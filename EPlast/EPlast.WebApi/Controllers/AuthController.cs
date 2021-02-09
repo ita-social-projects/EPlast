@@ -18,6 +18,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IHomeService _homeService;
         private readonly IResources _resources;
         private readonly IUserDatesService _userDatesService;
+
         public AuthController(
             IAuthService authService,
             IUserDatesService userDatesService,
@@ -61,8 +62,13 @@ namespace EPlast.WebApi.Controllers
                 if (result.Succeeded)
                 {
                     string signinurl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["SignIn"];
-                    await _authEmailServices.SendEmailGreetingAsync(userDto.Email);
-                    return Redirect(signinurl);
+                    var greetingSendResult = await _authEmailServices.SendEmailGreetingAsync(userDto.Email);
+                    if (greetingSendResult)
+                        return Redirect(signinurl);
+                    else
+                    {
+                        return BadRequest();
+                    }
                 }
                 else
                 {

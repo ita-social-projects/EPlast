@@ -84,6 +84,255 @@ namespace EPlast.Tests.Services
             _clubParticipants.Verify();
             Assert.NotNull(result);
         }
+
+        [Test]
+        public void ChangeAsync_Valid_FewRoles_Test()
+        {
+            // Arrange
+            _userManager
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(new User() { FirstName = "James", LastName = "Bond" });
+            roles.Add("First role");
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(roles);
+            _userManager
+                .Setup(x => x.RemoveFromRolesAsync(It.IsAny<User>(),
+                                                   It.IsAny<IEnumerable<string>>()));
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                It.IsAny<Func<IQueryable<CityMembers>,
+                IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync(new CityMembers());
+            _cityParticipantsService
+                .Setup(x => x.RemoveMemberAsync(It.IsAny<CityMembers>()));
+            _repoWrapper
+               .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+               It.IsAny<Func<IQueryable<ClubMembers>,
+               IIncludableQueryable<ClubMembers, object>>>()))
+               .ReturnsAsync(new ClubMembers());
+            _clubParticipants
+                .Setup(x => x.RemoveMemberAsync(It.IsAny<ClubMembers>()));
+            _repoWrapper
+               .Setup(x => x.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
+               It.IsAny<Func<IQueryable<RegionAdministration>,
+               IIncludableQueryable<RegionAdministration, object>>>()))
+               .ReturnsAsync(new RegionAdministration());
+            _regionService
+                .Setup(x => x.DeleteAdminByIdAsync(It.IsAny<int>()));
+            _userManager
+                .Setup(x => x.AddToRoleAsync(It.IsAny<User>(), "Колишній член пласту"));
+
+            // Act
+            var result = service.ChangeAsync(It.IsAny<string>());
+
+            // Assert
+            _userManager.Verify();
+            _repoWrapper.Verify();
+            _cityParticipantsService.Verify();
+            _clubParticipants.Verify();
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task ChangeCurrentRoleAsync_AddInterested_CaseFormer_ReturnsCorrectAsync()
+        {
+            // Arrange
+            string plastun = "Пластун";
+            string admin = "Admin";
+            string interested = "Зацікавлений";
+            string formerMember = "Колишній член пласту";
+
+            _userManager
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(new User());
+            _userManager
+              .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+              .ReturnsAsync(new List<string>() { formerMember });
+            _userManager
+                .Setup(x => x.RemoveFromRoleAsync(It.IsAny<User>(), plastun));
+
+            _repoWrapper
+                .Setup(x => x.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
+               It.IsAny<Func<IQueryable<UserMembershipDates>,
+               IIncludableQueryable<UserMembershipDates, object>>>()))
+                .ReturnsAsync(new UserMembershipDates() { DateEntry = default });
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+               It.IsAny<Func<IQueryable<CityMembers>,
+               IIncludableQueryable<CityMembers, object>>>())).ReturnsAsync(new CityMembers() { IsApproved = true });
+            _repoWrapper
+               .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+               It.IsAny<Func<IQueryable<ClubMembers>,
+               IIncludableQueryable<ClubMembers, object>>>()))
+               .ReturnsAsync(new ClubMembers());
+            _repoWrapper
+               .Setup(x => x.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
+               It.IsAny<Func<IQueryable<RegionAdministration>,
+               IIncludableQueryable<RegionAdministration, object>>>()))
+               .ReturnsAsync(new RegionAdministration());
+            _regionService
+                .Setup(x => x.DeleteAdminByIdAsync(It.IsAny<int>()));
+            _userManager
+                .Setup(x => x.AddToRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
+
+            // Act
+            await service.ChangeCurrentRoleAsync("id", formerMember);
+            // Assert
+            _userManager.Verify();
+        }
+
+        [Test]
+        public async Task ChangeCurrentRoleAsync_AddInterested_CaseInterFormer_ReturnsCorrectAsync()
+        {
+            // Arrange
+            string plastun = "Пластун";
+            string admin = "Admin";
+            string interested = "Зацікавлений";
+            string formerMember = "Колишній член пласту";
+
+            _userManager
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(new User());
+            _userManager
+              .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+              .ReturnsAsync(new List<string>() { formerMember });
+            _userManager
+                .Setup(x => x.RemoveFromRoleAsync(It.IsAny<User>(), plastun));
+
+            _repoWrapper
+                .Setup(x => x.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
+               It.IsAny<Func<IQueryable<UserMembershipDates>,
+               IIncludableQueryable<UserMembershipDates, object>>>()))
+                .ReturnsAsync(new UserMembershipDates() { DateEntry = default });
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+               It.IsAny<Func<IQueryable<CityMembers>,
+               IIncludableQueryable<CityMembers, object>>>())).ReturnsAsync(new CityMembers() { IsApproved = true });
+            _userManager
+                .Setup(x => x.AddToRoleAsync(It.IsAny<User>(), admin));
+
+            // Act
+            await service.ChangeCurrentRoleAsync("id", interested);
+            // Assert
+            _userManager.Verify();
+            _repoWrapper.Verify();
+        }
+
+        [Test]
+        public async Task ChangeCurrentRoleAsync_AddInterested_CaseInterInter_ReturnsCorrectAsync()
+        {
+            // Arrange
+            string plastun = "Пластун";
+            string admin = "Admin";
+            string interested = "Зацікавлений";
+
+            _userManager
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(new User());
+            _userManager
+              .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+              .ReturnsAsync(new List<string>() { interested });
+            _userManager
+                .Setup(x => x.RemoveFromRoleAsync(It.IsAny<User>(), plastun));
+
+            _repoWrapper
+                .Setup(x => x.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
+               It.IsAny<Func<IQueryable<UserMembershipDates>,
+               IIncludableQueryable<UserMembershipDates, object>>>()))
+                .ReturnsAsync(new UserMembershipDates() { DateEntry = default });
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+               It.IsAny<Func<IQueryable<CityMembers>,
+               IIncludableQueryable<CityMembers, object>>>())).ReturnsAsync(new CityMembers() { IsApproved = true });
+            _userManager
+                .Setup(x => x.AddToRoleAsync(It.IsAny<User>(), admin));
+
+            // Act
+            await service.ChangeCurrentRoleAsync("id", interested);
+            // Assert
+            _userManager.Verify();
+            _repoWrapper.Verify();
+        }
+
+        [Test]
+        public async Task ChangeCurrentRoleAsync_AddInterested_CaseInterPlastun_ReturnsCorrectAsync()
+        {
+            // Arrange
+            string plastun = "Пластун";
+            string admin = "Admin";
+            string interested = "Зацікавлений";
+
+            _userManager
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(new User());
+            _userManager
+              .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+              .ReturnsAsync(new List<string>() { plastun });
+            _userManager
+                .Setup(x => x.RemoveFromRoleAsync(It.IsAny<User>(), plastun));
+
+            _repoWrapper
+                .Setup(x => x.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
+               It.IsAny<Func<IQueryable<UserMembershipDates>,
+               IIncludableQueryable<UserMembershipDates, object>>>()))
+                .ReturnsAsync(new UserMembershipDates() { DateEntry = default });
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+               It.IsAny<Func<IQueryable<CityMembers>,
+               IIncludableQueryable<CityMembers, object>>>())).ReturnsAsync(new CityMembers() { IsApproved = true });
+            _userManager
+                .Setup(x => x.AddToRoleAsync(It.IsAny<User>(), admin));
+
+            // Act
+            await service.ChangeCurrentRoleAsync("id", interested);
+            // Assert
+            _userManager.Verify();
+            _repoWrapper.Verify();
+        }
+
+        [Test]
+        public async Task ChangeCurrentRoleAsync_AddInterested_ReturnsCorrectAsync()
+        {
+            // Arrange
+            string plastun = "Пластун";
+            string admin = "Admin";
+            string interested = "Зацікавлений";
+            const string supporter = "Прихильник";
+
+            _userManager
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(new User());
+            _userManager
+              .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+              .ReturnsAsync(new List<string>() { supporter });
+            _userManager
+                .Setup(x => x.RemoveFromRoleAsync(It.IsAny<User>(), plastun));
+
+            var role = "Зацікавлений";
+            _repoWrapper
+                .Setup(x => x.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
+               It.IsAny<Func<IQueryable<UserMembershipDates>,
+               IIncludableQueryable<UserMembershipDates, object>>>()))
+                .ReturnsAsync(new UserMembershipDates() { DateEntry = default });
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+               It.IsAny<Func<IQueryable<CityMembers>,
+               IIncludableQueryable<CityMembers, object>>>())).ReturnsAsync(new CityMembers() { IsApproved = true });
+            _userManager
+                .Setup(x => x.AddToRoleAsync(It.IsAny<User>(), admin));
+
+            List<string> newRoles = new List<string>()
+            {
+                "Пластун",
+            };
+            // Act
+            await service.ChangeCurrentRoleAsync("id", interested);
+            // Assert
+            _userManager.Verify();
+            _repoWrapper.Verify();
+        }
+
         [Test]
         public void ChangeCurrentRoleAsync_AddPlastun_ReturnsCorrect()
         {
@@ -106,6 +355,7 @@ namespace EPlast.Tests.Services
             _userManager.Verify();
             Assert.NotNull(result);
         }
+
         [Test]
         public void ChangeCurrentRoleAsync_AddSupporter_ReturnsCorrect()
         {
@@ -128,6 +378,7 @@ namespace EPlast.Tests.Services
             _userManager.Verify();
             Assert.NotNull(result);
         }
+
         [Test]
         public void DeleteUserAsync_ReturnsCorrect()
         {
@@ -150,6 +401,51 @@ namespace EPlast.Tests.Services
             _repoWrapper.Verify();
             Assert.NotNull(result);
         }
+
+        [Test]
+        public void DeleteUserAsync_userIsNull_ReturnsCorrect()
+        {
+            // Arrange
+            _repoWrapper
+               .Setup(x => x.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
+               It.IsAny<Func<IQueryable<User>,
+               IIncludableQueryable<User, object>>>()));
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
+
+            // Act
+            var result = service.DeleteUserAsync(It.IsAny<string>());
+
+            // Assert
+            _userManager.Verify();
+            _repoWrapper.Verify();
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public void EditAsync_countIsZero_ReturnsCorrect()
+        {
+            // Arrange
+            _userManager
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(new User() { FirstName = "James", LastName = "Bond" });
+            _userManager
+                .Setup(x => x.GetRolesAsync(new User() { FirstName = "James", LastName = "Bond" }))
+                .ReturnsAsync(new List<string>() { "Прихильник" });
+            _userManager
+                .Setup(x => x.AddToRolesAsync(It.IsAny<User>(), It.IsAny<List<string>>()));
+            _userManager
+                .Setup(x => x.RemoveFromRolesAsync(It.IsAny<User>(), It.IsAny<List<string>>()));
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string>());
+            // Act
+            var result = service.EditAsync(It.IsAny<string>(), roles);
+            // Assert
+            _userManager.Verify();
+            Assert.NotNull(result);
+        }
+
         [Test]
         public void EditAsync_ReturnsCorrect()
         {
@@ -172,6 +468,7 @@ namespace EPlast.Tests.Services
             _userManager.Verify();
             Assert.NotNull(result);
         }
+
         [Test]
         public async Task GetCityRegionAdminsOfUser_ReturnsCorrect()
         {
@@ -190,6 +487,7 @@ namespace EPlast.Tests.Services
             // Assert
             Assert.IsInstanceOf<IEnumerable<BLL.DTO.City.CityDTO>>(result);
         }
+
         [SetUp]
         public void SetUp()
         {
@@ -217,6 +515,7 @@ namespace EPlast.Tests.Services
                 _cityParticipantsService.Object
             );
         }
+
         [Test]
         public void UpdateUserDatesByChangeRoleAsyncAsync_interested_ReturnsCorrect()
         {
@@ -237,6 +536,7 @@ namespace EPlast.Tests.Services
             // Assert
             Assert.IsNotNull(result);
         }
+
         [Test]
         public void UpdateUserDatesByChangeRoleAsyncAsync_plastun_ReturnsCorrect()
         {
@@ -257,6 +557,7 @@ namespace EPlast.Tests.Services
             // Assert
             Assert.IsNotNull(result);
         }
+
         [Test]
         public void UpdateUserDatesByChangeRoleAsyncAsync_supporter_ReturnsCorrect()
         {
@@ -277,6 +578,7 @@ namespace EPlast.Tests.Services
             // Assert
             Assert.IsNotNull(result);
         }
+
         [Test]
         public async Task UsersTableAsync_ReturnsIEnumerableUserTableDTO()
         {

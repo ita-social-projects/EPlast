@@ -14,8 +14,16 @@ namespace EPlast.WebApi.Controllers
     [ApiController]
     public class PasswordController : ControllerBase
     {
+        private readonly IAuthEmailService _authEmailServices;
+
+        private readonly IAuthService _authService;
+
+        private readonly IResources _resources;
+
+        private readonly UserManager<User> _userManager;
+
         public PasswordController(
-            IAuthService authService,
+                                            IAuthService authService,
             IResources resources,
             IAuthEmailService authEmailService,
             UserManager<User> userManager
@@ -50,8 +58,11 @@ namespace EPlast.WebApi.Controllers
                 {
                     return BadRequest(_resources.ResourceForErrors["Change-PasswordProblems"]);
                 }
-                _authService.RefreshSignInAsync(userDto); //тут
-                return Ok(_resources.ResourceForErrors["ChangePasswordConfirmation"]);
+                var refreshResult = await _authService.RefreshSignInAsync(userDto);
+                if (refreshResult)
+                    return Ok(_resources.ResourceForErrors["ChangePasswordConfirmation"]);
+                else
+                    return BadRequest();
             }
             else
             {
@@ -148,10 +159,5 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest(_resources.ResourceForErrors["Reset-PasswordProblems"]);
             }
         }
-
-        private readonly IAuthEmailService _authEmailServices;
-        private readonly IAuthService _authService;
-        private readonly IResources _resources;
-        private readonly UserManager<User> _userManager;
     }
 }
