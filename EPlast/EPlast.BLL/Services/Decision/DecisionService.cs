@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EPlast.BLL
+namespace EPlast.BLL.Services
 {
     /// <inheritdoc />
     public class DecisionService : IDecisionService

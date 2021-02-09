@@ -97,8 +97,9 @@ namespace EPlast.BLL.Services
                     ImagePath = "default_user_image.png",
                     EmailConfirmed = true,
                     RegistredOn = DateTime.Now,
-                    UserProfile = new UserProfile()
+                    UserProfile = new UserProfile
                     {
+                        UpuDegreeID = 1,
                         Birthday = DateTime.Parse(facebookUser.Birthday, CultureInfo.InvariantCulture),
                         GenderID = _repoWrapper
                             .Gender
@@ -191,7 +192,7 @@ namespace EPlast.BLL.Services
                     ImagePath = "default_user_image.png",
                     EmailConfirmed = true,
                     RegistredOn = DateTime.Now,
-                    UserProfile = new UserProfile(),
+                    UserProfile = new UserProfile { UpuDegreeID = 1 }
                 };
                 var createResult = await _userManager.CreateAsync(user);
                 if (createResult.Succeeded)

@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Query;
 using Xunit;
 using EPlast.BLL.Interfaces;
+using EPlast.BLL.Services;
 
 namespace EPlast.XUnitTest
 {

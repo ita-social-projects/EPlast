@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
 
-namespace EPlast.BLL
+namespace EPlast.BLL.Services
 {
     public class PrecautionService: IPrecautionService
     {
