@@ -28,7 +28,7 @@ namespace EPlast.BLL.Services.EmailSending
             _userManager = userManager;
         }
 
-        public async Task JoinCityReminder()
+        public async Task JoinCityReminderAsync()
         {
             var lonelyUsers = await GetLonelyUsersAsync();
             foreach (var user in lonelyUsers)
