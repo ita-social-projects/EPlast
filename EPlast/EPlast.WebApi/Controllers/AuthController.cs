@@ -19,7 +19,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IResources _resources;
         private readonly IUserDatesService _userDatesService;
         public AuthController(
-                                                    IAuthService authService,
+            IAuthService authService,
             IUserDatesService userDatesService,
             IHomeService homeService,
             IResources resources,

@@ -40,16 +40,17 @@ namespace EPlast.WebApi.StartupExtensions
                                             () => serviceProvider.GetService<IRegionService>()
                                                                  .EndAdminsDueToDate(),
                                             Cron.Daily(), TimeZoneInfo.Local);
-            CreateRoles(serviceProvider, Configuration).Wait();
+            CreateRolesAsync(serviceProvider, Configuration).Wait();
             recurringJobManager.AddOrUpdate("Remove roles from previous admins",
                                             () => serviceProvider.GetService<IClubParticipantsService>()
                                                                  .CheckPreviousAdministratorsToDelete(),
                                             "59 23 * * *", TimeZoneInfo.Local);
-            CreateRoles(serviceProvider, Configuration).Wait();
+            CreateRolesAsync(serviceProvider, Configuration).Wait();
             recurringJobManager.AddOrUpdate("Reminder to join city",
                                             () => serviceProvider.GetService<IEmailReminderService>()
-                                                                 .JoinCityReminder(),
-                                            "0 12 * * Mon",
+                                                                 .JoinCityReminderAsync(),
+                                            //"0 12 * * Mon",
+                                            Cron.Minutely(),
                                             TimeZoneInfo.Local);
         }
 

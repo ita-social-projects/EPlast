@@ -109,7 +109,7 @@ namespace EPlast.BLL.Services
                     {
                         await _userManager.RemoveFromRoleAsync(user, formerMember);
                     }
-                    await UpdateUserDatesByChangeRole(userId, role);
+                    await UpdateUserDatesByChangeRoleAsyncAsync(userId, role);
                     await _repoWrapper.SaveAsync();
                     await _userManager.AddToRoleAsync(user, role);
                     break;
@@ -193,7 +193,7 @@ namespace EPlast.BLL.Services
             return allRoles;
         }
 
-        public async Task UpdateUserDatesByChangeRoleAsync(string userId, string role)
+        public async Task UpdateUserDatesByChangeRoleAsyncAsync(string userId, string role)
         {
             UserMembershipDates userMembershipDates = await _repoWrapper.UserMembershipDates
                            .GetFirstOrDefaultAsync(umd => umd.UserId == userId);
