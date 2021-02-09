@@ -49,8 +49,7 @@ namespace EPlast.WebApi.StartupExtensions
             recurringJobManager.AddOrUpdate("Reminder to join city",
                                             () => serviceProvider.GetService<IEmailReminderService>()
                                                                  .JoinCityReminderAsync(),
-                                            //"0 12 * * Mon",
-                                            Cron.Minutely(),
+                                            "0 12 * * Mon",
                                             TimeZoneInfo.Local);
         }
 
