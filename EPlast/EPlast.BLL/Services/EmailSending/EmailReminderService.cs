@@ -13,11 +13,8 @@ namespace EPlast.BLL.Services.EmailSending
     public class EmailReminderService : IEmailReminderService
     {
         private readonly IAuthEmailService _authEmailServices;
-
         private readonly IMapper _mapper;
-
         private readonly IRepositoryWrapper _repoWrapper;
-
         private readonly UserManager<User> _userManager;
 
         public EmailReminderService(IRepositoryWrapper repoWrapper,

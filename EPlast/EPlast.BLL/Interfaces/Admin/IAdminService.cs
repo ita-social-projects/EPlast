@@ -9,10 +9,21 @@ namespace EPlast.BLL.Services.Interfaces
     public interface IAdminService
     {
         /// <summary>
-        /// Get all roles except Admin role
+        /// Edit user roles
         /// </summary>
-        /// <returns>All roles except Admin role</returns>
-        Task<IEnumerable<IdentityRole>> GetRolesExceptAdminAsync();
+        /// <param name="userId">The id of the user</param>
+        Task ChangeAsync(string userId);
+
+        /// <summary>
+        /// Change Current Role of user
+        /// </summary>
+        Task ChangeCurrentRoleAsync(string userId, string role);
+
+        /// <summary>
+        /// Delete a user
+        /// </summary>
+        /// <param name="userId">The id of the user, which must be deleted</param>
+        Task DeleteUserAsync(string userId);
 
         /// <summary>
         /// Edit user roles
@@ -22,31 +33,20 @@ namespace EPlast.BLL.Services.Interfaces
         Task EditAsync(string userId, List<string> roles);
 
         /// <summary>
-        /// Edit user roles
+        /// Get City and Region Admins by userId of user which contained cityMembers
         /// </summary>
-        /// <param name="userId">The id of the user</param>
-        Task ChangeAsync(string userId);
+        Task<IEnumerable<CityDTO>> GetCityRegionAdminsOfUser(string userId);
 
         /// <summary>
-        /// Delete a user
+        /// Get all roles except Admin role
         /// </summary>
-        /// <param name="userId">The id of the user, which must be deleted</param>
-        Task DeleteUserAsync(string userId);
+        /// <returns>All roles except Admin role</returns>
+        Task<IEnumerable<IdentityRole>> GetRolesExceptAdminAsync();
 
         /// <summary>
         /// Get all users with additional information
         /// </summary>
         /// <returns>Specify model with all users</returns>
         Task<IEnumerable<UserTableDTO>> UsersTableAsync();
-
-        /// <summary>
-        /// Change Current Role of user
-        /// </summary>
-        Task ChangeCurrentRoleAsync(string userId, string role);
-
-        /// <summary>
-        /// Get City and Region Admins by userId of user which contained cityMembers
-        /// </summary>
-        Task<IEnumerable<CityDTO>> GetCityRegionAdminsOfUser(string userId);
     }
 }

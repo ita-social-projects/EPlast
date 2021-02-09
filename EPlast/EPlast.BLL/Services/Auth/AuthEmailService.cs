@@ -15,24 +15,18 @@ namespace EPlast.BLL.Services.Auth
     public class AuthEmailService : IAuthEmailService
     {
         private readonly IActionContextAccessor _actionContextAccessor;
-
         private readonly IAuthService _authService;
-
         private readonly IHttpContextAccessor _contextAccessor;
-
         private readonly IEmailSendingService _emailSendingService;
-
         private readonly IUrlHelperFactory _urlHelperFactory;
-
         private readonly UserManager<User> _userManager;
 
-        public AuthEmailService(
-            IEmailSendingService emailSendingService,
-            IAuthService authService,
-            UserManager<User> userManager,
-            IUrlHelperFactory urlHelperFactory,
-            IActionContextAccessor actionContextAccessor,
-            IHttpContextAccessor contextAccessor)
+        public AuthEmailService(IEmailSendingService emailSendingService,
+                                IAuthService authService,
+                                UserManager<User> userManager,
+                                IUrlHelperFactory urlHelperFactory,
+                                IActionContextAccessor actionContextAccessor,
+                                IHttpContextAccessor contextAccessor)
         {
             _emailSendingService = emailSendingService;
             _authService = authService;
@@ -85,11 +79,11 @@ namespace EPlast.BLL.Services.Auth
                                                new { token, userId = user.Id },
                                                _contextAccessor.HttpContext.Request.Scheme);
             user.EmailSendedOnRegister = DateTime.Now;
-
-            return await _emailSendingService.SendEmailAsync(email,
-                                                             "Підтвердження реєстрації ",
-                                                             $"Підтвердіть реєстрацію, перейшовши за :  <a href='{confirmationLink}'>посиланням</a> ",
-                                                             "Адміністрація сайту EPlast");
+            var sendResult = await _emailSendingService.SendEmailAsync(email,
+                                                                       "Підтвердження реєстрації ",
+                                                                       $"Підтвердіть реєстрацію, перейшовши за :  <a href='{confirmationLink}'>посиланням</a> ",
+                                                                       "Адміністрація сайту EPlast");
+            return sendResult;
         }
 
         /// <inheritdoc />

@@ -29,7 +29,7 @@ namespace EPlast.Tests.Controllers
             _governingBodiesService
                 .Setup(x=>x.GetOrganizationListAsync()).ReturnsAsync(new List<OrganizationDTO>());
             //Act
-            var result = await _controller.getOrganizations();
+            var result = await _controller.GetOrganizations();
             var resultValue = (result as ObjectResult).Value;
             //Assert
 

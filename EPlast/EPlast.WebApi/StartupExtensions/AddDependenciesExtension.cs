@@ -134,7 +134,6 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IRegionStatisticsService, StatisticsService>();
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
             services.AddScoped<IResources, BLL.Services.Resources.Resources>();
-            services.AddScoped<IResources, BLL.Services.Resources.Resources>();
             services.AddScoped<IUserBlobStorageRepository, UserBlobStorageRepository>();
             services.AddScoped<IUserDatesService, UserDatesService>();
             services.AddScoped<IUserDistinctionService, UserDistinctionService>();

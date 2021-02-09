@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Account;
-using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Models;
@@ -22,12 +21,17 @@ namespace EPlast.BLL.Services
 {
     public class AuthService : IAuthService
     {
-        public AuthService(
-            UserManager<User> userManager,
-            SignInManager<User> signInManager,
-            IEmailSendingService emailSendingService,
-            IMapper mapper,
-            IRepositoryWrapper repoWrapper)
+        private readonly IEmailSendingService _emailSendingService;
+        private readonly IMapper _mapper;
+        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<User> _userManager;
+
+        public AuthService(UserManager<User> userManager,
+                           SignInManager<User> signInManager,
+                           IEmailSendingService emailSendingService,
+                           IMapper mapper,
+                           IRepositoryWrapper repoWrapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -288,15 +292,5 @@ namespace EPlast.BLL.Services
         {
             await _signInManager.SignOutAsync();
         }
-
-        private readonly IEmailSendingService _emailSendingService;
-
-        private readonly IMapper _mapper;
-
-        private readonly IRepositoryWrapper _repoWrapper;
-
-        private readonly SignInManager<User> _signInManager;
-
-        private readonly UserManager<User> _userManager;
     }
 }

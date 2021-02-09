@@ -20,13 +20,21 @@ namespace EPlast.BLL.Services
 {
     public class AdminService : IAdminService
     {
+        private readonly ICityParticipantsService _cityParticipants;
+        private readonly IClubParticipantsService _clubParticipants;
+        private readonly IMapper _mapper;
+        private readonly IRegionAdministrationService _regionService;
+        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<User> _userManager;
+
         public AdminService(IRepositoryWrapper repoWrapper,
-            UserManager<User> userManager,
-            IMapper mapper,
-            RoleManager<IdentityRole> roleManager,
-            IClubParticipantsService clubParticipants,
-            IRegionAdministrationService regionService,
-            ICityParticipantsService cityParticipants)
+                            UserManager<User> userManager,
+                            IMapper mapper,
+                            RoleManager<IdentityRole> roleManager,
+                            IClubParticipantsService clubParticipants,
+                            IRegionAdministrationService regionService,
+                            ICityParticipantsService cityParticipants)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
@@ -35,35 +43,6 @@ namespace EPlast.BLL.Services
             _clubParticipants = clubParticipants;
             _regionService = regionService;
             _cityParticipants = cityParticipants;
-        }
-
-        /// <inheritdoc />
-        public async Task<IEnumerable<IdentityRole>> GetRolesExceptAdminAsync()
-        {
-            var admin = _roleManager.Roles.Where(i => i.Name == "Admin");
-            var allRoles = await _roleManager.Roles.
-                Except(admin).
-                OrderBy(i => i.Name).
-                ToListAsync();
-            return allRoles;
-        }
-
-        /// <inheritdoc />
-        public async Task EditAsync(string userId, List<string> roles)
-        {
-            User user = await _userManager.FindByIdAsync(userId);
-            var userRoles = await _userManager.GetRolesAsync(user);
-            var addedRoles = roles.Except(userRoles);
-            var removedRoles = userRoles.
-                Except(roles).
-                Except(new List<string> { "Admin" });
-            await _userManager.AddToRolesAsync(user, addedRoles);
-            await _userManager.RemoveFromRolesAsync(user, removedRoles);
-            var currentRoles = await _userManager.GetRolesAsync(user);
-            if (currentRoles.Count == 0)
-            {
-                await _userManager.AddToRoleAsync(user, "Прихильник");
-            }
         }
 
         /// <inheritdoc />
@@ -100,18 +79,6 @@ namespace EPlast.BLL.Services
             await _userManager.AddToRoleAsync(user, "Колишній член пласту");
         }
 
-        /// <inheritdoc />
-        public async Task DeleteUserAsync(string userId)
-        {
-            User user = await _repoWrapper.User.GetFirstOrDefaultAsync(x => x.Id == userId);
-            var roles = await _userManager.GetRolesAsync(user);
-            if (user != null && !roles.Contains("Admin"))
-            {
-                _repoWrapper.User.Delete(user);
-                await _repoWrapper.SaveAsync();
-            }
-        }
-
         public async Task ChangeCurrentRoleAsync(string userId, string role)
         {
             const string supporter = "Прихильник";
@@ -146,11 +113,84 @@ namespace EPlast.BLL.Services
                     await _repoWrapper.SaveAsync();
                     await _userManager.AddToRoleAsync(user, role);
                     break;
-
                 case formerMember:
                     await ChangeAsync(userId);
                     break;
             }
+        }
+
+        /// <inheritdoc />
+        public async Task DeleteUserAsync(string userId)
+        {
+            User user = await _repoWrapper.User.GetFirstOrDefaultAsync(x => x.Id == userId);
+            var roles = await _userManager.GetRolesAsync(user);
+            if (user != null && !roles.Contains("Admin"))
+            {
+                _repoWrapper.User.Delete(user);
+                await _repoWrapper.SaveAsync();
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task EditAsync(string userId, List<string> roles)
+        {
+            User user = await _userManager.FindByIdAsync(userId);
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var addedRoles = roles.Except(userRoles);
+            var removedRoles = userRoles.
+                Except(roles).
+                Except(new List<string> { "Admin" });
+            await _userManager.AddToRolesAsync(user, addedRoles);
+            await _userManager.RemoveFromRolesAsync(user, removedRoles);
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            if (currentRoles.Count == 0)
+            {
+                await _userManager.AddToRoleAsync(user, "Прихильник");
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<CityDTO>> GetCityRegionAdminsOfUser(string userId)
+        {
+            var cities = await _repoWrapper.City.
+                GetAllAsync(predicate: c => c.CityMembers.FirstOrDefault(c => c.UserId == userId) != null,
+                            include: x => x.Include(i => i.Region).ThenInclude(r => r.RegionAdministration).ThenInclude(a => a.AdminType)
+                                           .Include(c => c.CityAdministration).ThenInclude(c => c.AdminType));
+
+            foreach (var city in cities)
+            {
+                city.Region.RegionAdministration = city.Region.RegionAdministration.Where(r =>
+                {
+                    if (r.AdminType.AdminTypeName == "Голова Округу" && (r.EndDate > DateTime.Now || r.EndDate == null))
+                    {
+                        r.Region = null;
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }).ToList();
+            }
+
+            var citiesDTO = _mapper.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDTO>>(cities);
+
+            foreach (var city in citiesDTO)
+            {
+                city.Region.Administration = _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(cities.First(c => c.ID == city.ID).Region.RegionAdministration);
+            }
+            return citiesDTO;
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<IdentityRole>> GetRolesExceptAdminAsync()
+        {
+            var admin = _roleManager.Roles.Where(i => i.Name == "Admin");
+            var allRoles = await _roleManager.Roles.
+                Except(admin).
+                OrderBy(i => i.Name).
+                ToListAsync();
+            return allRoles;
         }
 
         public async Task UpdateUserDatesByChangeRole(string userId, string role)
@@ -221,46 +261,5 @@ namespace EPlast.BLL.Services
             }
             return userTable;
         }
-
-        /// <inheritdoc />
-        public async Task<IEnumerable<CityDTO>> GetCityRegionAdminsOfUser(string userId)
-        {
-            var cities = await _repoWrapper.City.
-                GetAllAsync(predicate: c => c.CityMembers.FirstOrDefault(c => c.UserId == userId) != null,
-                            include: x => x.Include(i => i.Region).ThenInclude(r => r.RegionAdministration).ThenInclude(a => a.AdminType)
-                                           .Include(c => c.CityAdministration).ThenInclude(c => c.AdminType));
-
-            foreach (var city in cities)
-            {
-                city.Region.RegionAdministration = city.Region.RegionAdministration.Where(r =>
-                {
-                    if (r.AdminType.AdminTypeName == "Голова Округу" && (r.EndDate > DateTime.Now || r.EndDate == null))
-                    {
-                        r.Region = null;
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }).ToList();
-            }
-
-            var citiesDTO = _mapper.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDTO>>(cities);
-
-            foreach (var city in citiesDTO)
-            {
-                city.Region.Administration = _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(cities.First(c => c.ID == city.ID).Region.RegionAdministration);
-            }
-            return citiesDTO;
-        }
-
-        private readonly IRepositoryWrapper _repoWrapper;
-        private readonly UserManager<User> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IMapper _mapper;
-        private readonly IClubParticipantsService _clubParticipants;
-        private readonly IRegionAdministrationService _regionService;
-        private readonly ICityParticipantsService _cityParticipants;
     }
 }
