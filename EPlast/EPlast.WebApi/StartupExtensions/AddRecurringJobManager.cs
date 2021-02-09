@@ -53,7 +53,7 @@ namespace EPlast.WebApi.StartupExtensions
                                             TimeZoneInfo.Local);
         }
 
-        private static async Task CreateRoles(IServiceProvider serviceProvider, IConfiguration Configuration)
+        private static async Task CreateRolesAsync(IServiceProvider serviceProvider, IConfiguration Configuration)
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
