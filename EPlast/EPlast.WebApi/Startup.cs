@@ -31,14 +31,7 @@ namespace EPlast.WebApi
                               IRecurringJobManager recurringJobManager,
                               IServiceProvider serviceProvider)
         {
-            app.Run(async (context) =>
-            {
-                foreach (string secret in _secrets)
-                {
-                    var result = string.IsNullOrEmpty(secret) ? "Null" : "Not Null";
-                    await context.Response.WriteAsync($"Secret is {result}");
-                }
-            });
+            app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
@@ -66,7 +59,7 @@ namespace EPlast.WebApi
                 // UI strings that we have localized.
                 SupportedUICultures = supportedCultures
             });
-            app.UseRouting();
+
             app.UseHttpsRedirection();
             app.UseStatusCodePages();
             app.UseSwagger();
@@ -87,6 +80,15 @@ namespace EPlast.WebApi
             }
 
             serviceProvider.AddRecurringJobsAsync(recurringJobManager, Configuration);
+
+            app.Run(async (context) =>
+            {
+                foreach (string secret in _secrets)
+                {
+                    var result = string.IsNullOrEmpty(secret) ? "Null" : "Not Null";
+                    await context.Response.WriteAsync($"Secret is {result}");
+                }
+            });
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
