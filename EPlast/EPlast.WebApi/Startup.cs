@@ -32,10 +32,6 @@ namespace EPlast.WebApi
                               IServiceProvider serviceProvider)
         {
             app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-            app.MapWebSocketManager("/notifications", serviceProvider.GetService<UserNotificationHandler>());
             app.UseCors(builder =>
             {
                 builder
@@ -43,6 +39,11 @@ namespace EPlast.WebApi
                 .AllowAnyHeader()
                 .AllowAnyOrigin();
             });
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.MapWebSocketManager("/notifications", serviceProvider.GetService<UserNotificationHandler>());
+
             app.UseHangfireDashboard();
             var supportedCultures = new[]
             {
