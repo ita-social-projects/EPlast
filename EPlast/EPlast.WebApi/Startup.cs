@@ -97,6 +97,7 @@ namespace EPlast.WebApi
 
             _secrets = new string[]
             {
+                Configuration["ConnectionStrings:EPlastDBConnection"],
                 Configuration["StorageConnectionString"],
                 Configuration["GoogleAuthentication:GoogleClientSecret"],
                 Configuration["GoogleAuthentication:GoogleClientId"],

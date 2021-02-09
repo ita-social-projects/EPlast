@@ -114,8 +114,10 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IFileManager, FileManager>();
             services.AddScoped<IFileStreamManager, FileStreamManager>();
             services.AddScoped<IGlobalLoggerService, GlobalLoggerService>();
+            services.AddScoped<IGoverningBodiesService, GoverningBodiesService>();
             services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IMethodicDocumentBlobStorageRepository, MethodicDocumentBlobStarageRepository>();
+            services.AddScoped<IMethodicDocumentService, MethodicDocumentService>();
             services.AddScoped<IMethodicDocumentService, MethodicDocumentService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IParticipantManager, ParticipantManager>();
@@ -132,6 +134,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IRegionStatisticsService, StatisticsService>();
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
             services.AddScoped<IResources, BLL.Services.Resources.Resources>();
+            services.AddScoped<IResources, BLL.Services.Resources.Resources>();
             services.AddScoped<IUserBlobStorageRepository, UserBlobStorageRepository>();
             services.AddScoped<IUserDatesService, UserDatesService>();
             services.AddScoped<IUserDistinctionService, UserDistinctionService>();
@@ -146,12 +149,9 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddSingleton<INotificationConnectionManager, NotificationConnectionManager>();
             services.AddSingleton<UserNotificationHandler>();
             services.AddTransient<IEventUserService, EventUserService>();
+            services.AddTransient<IEventUserService, EventUserService>();
             services.AddTransient<IJwtService, JwtService>();
             services.AddTransient<IUniqueIdService, UniqueIdService>();
-            services.AddTransient<IEventUserService, EventUserService>();
-            services.AddScoped<IResources, BLL.Services.Resources.Resources>();
-            services.AddScoped<IMethodicDocumentService, MethodicDocumentService>();
-            services.AddScoped<IGoverningBodiesService, GoverningBodiesService>();
             return services;
         }
     }
