@@ -13,8 +13,13 @@ namespace EPlast.WebApi.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
+        private readonly IAuthEmailService _authEmailServices;
+        private readonly IAuthService _authService;
+        private readonly IHomeService _homeService;
+        private readonly IResources _resources;
+        private readonly IUserDatesService _userDatesService;
         public AuthController(
-            IAuthService authService,
+                                                    IAuthService authService,
             IUserDatesService userDatesService,
             IHomeService homeService,
             IResources resources,
@@ -149,11 +154,5 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(_resources.ResourceForErrors["Feedback-Sended"]);
         }
-
-        private readonly IAuthEmailService _authEmailServices;
-        private readonly IAuthService _authService;
-        private readonly IHomeService _homeService;
-        private readonly IResources _resources;
-        private readonly IUserDatesService _userDatesService;
     }
 }

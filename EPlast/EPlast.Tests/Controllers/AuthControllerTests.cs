@@ -18,38 +18,6 @@ namespace EPlast.Tests.Controllers
 {
     public class AuthControllerTestsAuth
     {
-        public (
-            Mock<IAuthService>,
-            Mock<IUserDatesService>,
-            Mock<IHomeService>,
-            Mock<IResources>,
-            Mock<IAuthEmailService>,
-            AuthController
-            ) CreateAuthController()
-        {
-            Mock<IAuthService> mockAuthService = new Mock<IAuthService>();
-            Mock<IUserDatesService> mockUserDataServices = new Mock<IUserDatesService>();
-            Mock<IHomeService> mockHomeService = new Mock<IHomeService>();
-            Mock<IResources> mockResources = new Mock<IResources>();
-            Mock<IAuthEmailService> mockAuthEmailService = new Mock<IAuthEmailService>();
-
-            AuthController AuthController = new AuthController(
-                mockAuthService.Object,
-                mockUserDataServices.Object,
-                mockHomeService.Object,
-                mockResources.Object,
-                mockAuthEmailService.Object
-                );
-
-            return (
-                mockAuthService,
-                mockUserDataServices,
-                mockHomeService,
-                mockResources,
-                mockAuthEmailService,
-                AuthController);
-        }
-
         [Test]
         public async Task ConfirmingEmail_Inalid_ConfirmEmailAsyncReturnsFailed_Test()
         {
@@ -72,7 +40,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var expected = StatusCodes.Status400BadRequest;
-            var result = await AuthController.ConfirmingEmail(userId, token);
+            var result = await AuthController.ConfirmingEmailAsync(userId, token);
             var actual = (result as BadRequestResult).StatusCode;
 
             //Assert
@@ -96,7 +64,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
             var expected = StatusCodes.Status400BadRequest;
-            var result = await AuthController.ConfirmingEmail(userId, token);
+            var result = await AuthController.ConfirmingEmailAsync(userId, token);
             var actual = (result as BadRequestResult).StatusCode;
 
             // Assert
@@ -120,7 +88,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
             var expected = StatusCodes.Status400BadRequest;
-            var result = await AuthController.ConfirmingEmail(userId, token);
+            var result = await AuthController.ConfirmingEmailAsync(userId, token);
             var actual = (result as BadRequestResult).StatusCode;
 
             // Assert
@@ -154,7 +122,7 @@ namespace EPlast.Tests.Controllers
             // Act
             var expectedCode = StatusCodes.Status200OK;
             var expectedMessage = GetConfirmedEmailNotAllowedMessage();
-            var result = await AuthController.ConfirmingEmail(userId, token);
+            var result = await AuthController.ConfirmingEmailAsync(userId, token);
             var actualCode = (result as OkObjectResult).StatusCode;
             var actualMessage = (result as OkObjectResult).Value;
 
@@ -163,6 +131,38 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expectedCode, actualCode);
             Assert.AreEqual(expectedMessage.ToString(), actualMessage.ToString());
             Assert.NotNull(result);
+        }
+
+        public (
+                                            Mock<IAuthService>,
+            Mock<IUserDatesService>,
+            Mock<IHomeService>,
+            Mock<IResources>,
+            Mock<IAuthEmailService>,
+            AuthController
+            ) CreateAuthController()
+        {
+            Mock<IAuthService> mockAuthService = new Mock<IAuthService>();
+            Mock<IUserDatesService> mockUserDataServices = new Mock<IUserDatesService>();
+            Mock<IHomeService> mockHomeService = new Mock<IHomeService>();
+            Mock<IResources> mockResources = new Mock<IResources>();
+            Mock<IAuthEmailService> mockAuthEmailService = new Mock<IAuthEmailService>();
+
+            AuthController AuthController = new AuthController(
+                mockAuthService.Object,
+                mockUserDataServices.Object,
+                mockHomeService.Object,
+                mockResources.Object,
+                mockAuthEmailService.Object
+                );
+
+            return (
+                mockAuthService,
+                mockUserDataServices,
+                mockHomeService,
+                mockResources,
+                mockAuthEmailService,
+                AuthController);
         }
 
         [Test]
