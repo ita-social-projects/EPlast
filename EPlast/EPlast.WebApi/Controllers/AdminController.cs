@@ -220,10 +220,9 @@ namespace EPlast.WebApi.Controllers
         /// <returns>Specify model with all users</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("usersTable")]
-        public async Task<IActionResult> GetUsersTable()
+        public async Task<IActionResult> GetUsersTableAsync()
         {
-            var result = await _adminService.UsersTableAsync();
-            return Ok(result);
+            return Ok(await _adminService.UsersTableAsync());
         }
 
         /// <summary>
