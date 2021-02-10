@@ -17,8 +17,14 @@ namespace EPlast.WebApi.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
+        private readonly IAuthService _authService;
+        private readonly IJwtService _jwtService;
+        private readonly ILoggerService<LoginController> _loggerService;
+        private readonly IResources _resources;
+        private readonly IUserDatesService _userDatesService;
+
         public LoginController(
-            IAuthService authService,
+                                                    IAuthService authService,
             IResources resources,
             IJwtService jwtService,
             ILoggerService<LoginController> loggerService,
@@ -45,7 +51,7 @@ namespace EPlast.WebApi.Controllers
                 {
                     return BadRequest();
                 }
-                await AddEntryMembershipDate(user.Id);
+                await AddEntryMembershipDateAsync(user.Id);
 
                 var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
                 return Ok(new { token = generatedToken });
@@ -58,14 +64,14 @@ namespace EPlast.WebApi.Controllers
             return BadRequest();
         }
 
-        [HttpGet("facebookAppId")]
+        [HttpGet("FacebookAppId")]
         [AllowAnonymous]
         public IActionResult GetFacebookAppId()
         {
             return Ok(new { id = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("FacebookAuthentication")["FacebookAppId"] });
         }
 
-        [HttpGet("googleClientId")]
+        [HttpGet("GoogleClientId")]
         [AllowAnonymous]
         public IActionResult GetGoogleClientId()
         {
@@ -83,7 +89,7 @@ namespace EPlast.WebApi.Controllers
                 {
                     return BadRequest();
                 }
-                await AddEntryMembershipDate(user.Id);
+                await AddEntryMembershipDateAsync(user.Id);
                 var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
 
                 return Ok(new { token = generatedToken });
@@ -147,13 +153,7 @@ namespace EPlast.WebApi.Controllers
             return Ok();
         }
 
-        private readonly IAuthService _authService;
-        private readonly IJwtService _jwtService;
-        private readonly ILoggerService<LoginController> _loggerService;
-        private readonly IResources _resources;
-        private readonly IUserDatesService _userDatesService;
-
-        private async Task AddEntryMembershipDate(string userId)
+        private async Task AddEntryMembershipDateAsync(string userId)
         {
             if (!(await _userDatesService.UserHasMembership(userId)))
             {

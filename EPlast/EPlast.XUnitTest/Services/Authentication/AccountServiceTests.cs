@@ -18,13 +18,14 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using EPlast.BLL.Services.Auth;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services
 {
     public class AuthServiceTests
     {
-        public (Mock<SignInManager<User>>, Mock<UserManager<User>>, Mock<IEmailConfirmation>, AuthService) CreateAuthService()
+        public (Mock<SignInManager<User>>, Mock<UserManager<User>>, Mock<IEmailSendingService>, AuthService) CreateAuthService()
         {
             Mock<IUserPasswordStore<User>> userPasswordStore = new Mock<IUserPasswordStore<User>>();
             userPasswordStore.Setup(s => s.CreateAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
@@ -71,7 +72,7 @@ namespace EPlast.XUnitTest.Services
                            _contextAccessor.Object, _userPrincipalFactory.Object, null, null, null, null);
 
             Mock<IRepositoryWrapper> mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
-            Mock<IEmailConfirmation> mockEmailConfirmation = new Mock<IEmailConfirmation>();
+            Mock<IEmailSendingService> mockEmailConfirmation = new Mock<IEmailSendingService>();
             Mock<IMapper> mockMapper = new Mock<IMapper>();
             mockMapper
                .Setup(s => s.Map<UserDTO, User>(It.IsAny<UserDTO>()))
@@ -91,7 +92,7 @@ namespace EPlast.XUnitTest.Services
         }
 
         public (
-            Mock<IEmailConfirmation>,
+            Mock<IEmailSendingService>,
             Mock<IAuthService>,
             Mock<UserManager<User>>,
             Mock<IUrlHelperFactory>,
@@ -100,7 +101,7 @@ namespace EPlast.XUnitTest.Services
             AuthEmailService
             ) CreateAuthEmailService()
         {
-            Mock<IEmailConfirmation> mockEmailConfirmatioService = new Mock<IEmailConfirmation>();
+            Mock<IEmailSendingService> mockEmailConfirmatioService = new Mock<IEmailSendingService>();
             Mock<IAuthService> mockAuthSerive = new Mock<IAuthService>();
             var store = new Mock<IUserStore<User>>();
             Mock<UserManager<User>> mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);

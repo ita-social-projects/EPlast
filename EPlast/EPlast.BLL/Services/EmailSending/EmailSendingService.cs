@@ -7,13 +7,14 @@ using MimeKit;
 using System;
 using System.Threading.Tasks;
 
-namespace EPlast.BLL
+namespace EPlast.BLL.Services
 {
-    public class EmailConfirmationService : IEmailConfirmation
+    public class EmailSendingService : IEmailSendingService
     {
-        public EmailConfirmationService(
-            IOptions<EmailServiceSettings> settings,
-            ILoggerService<EmailConfirmationService> loggerService)
+        private readonly ILoggerService<EmailSendingService> _loggerService;
+
+        public EmailSendingService(IOptions<EmailServiceSettings> settings,
+                                   ILoggerService<EmailSendingService> loggerService)
         {
             Settings = settings;
             _loggerService = loggerService;
@@ -49,7 +50,5 @@ namespace EPlast.BLL
             }
             return true;
         }
-
-        private readonly ILoggerService<EmailConfirmationService> _loggerService;
     }
 }

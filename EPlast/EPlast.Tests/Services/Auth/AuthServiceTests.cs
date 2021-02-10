@@ -1,118 +1,46 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
-using EPlast.BLL.Models;
 using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services
 {
     internal class AuthServiceTests
     {
-        public (Mock<SignInManager<User>>, Mock<UserManager<User>>, Mock<IEmailConfirmation>, AuthService) CreateAuthService()
-        {
-            Mock<IUserPasswordStore<User>> userPasswordStore = new Mock<IUserPasswordStore<User>>();
-            userPasswordStore.Setup(s => s.CreateAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
-                 .Returns(Task.FromResult(IdentityResult.Success));
-
-            var options = new Mock<IOptions<IdentityOptions>>();
-            var idOptions = new IdentityOptions();
-
-            idOptions.SignIn.RequireConfirmedEmail = true;
-            idOptions.Password.RequireDigit = true;
-            idOptions.Password.RequiredLength = 8;
-            idOptions.Password.RequireUppercase = false;
-            idOptions.User.RequireUniqueEmail = true;
-            idOptions.Password.RequireNonAlphanumeric = false;
-            idOptions.Lockout.MaxFailedAccessAttempts = 5;
-            idOptions.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
-
-            options.Setup(o => o.Value).Returns(idOptions);
-            var userValidators = new List<IUserValidator<User>>();
-            UserValidator<User> validator = new UserValidator<User>();
-            userValidators.Add(validator);
-
-            var passValidator = new PasswordValidator<User>();
-            var pwdValidators = new List<IPasswordValidator<User>>();
-            pwdValidators.Add(passValidator);
-
-            var userStore = new Mock<IUserStore<User>>();
-            userStore.Setup(s => s.CreateAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult(IdentityResult.Success));
-
-            var mockUserManager = new Mock<UserManager<User>>(userStore.Object,
-                options.Object, new PasswordHasher<User>(),
-                userValidators, pwdValidators, new UpperInvariantLookupNormalizer(),
-                new IdentityErrorDescriber(), null,
-                new Mock<ILogger<UserManager<User>>>().Object);
-
-            mockUserManager
-                .Setup(s => s.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
-                .Returns(Task.FromResult(IdentityResult.Success));
-
-            var _contextAccessor = new Mock<IHttpContextAccessor>();
-            var _userPrincipalFactory = new Mock<IUserClaimsPrincipalFactory<User>>();
-            var mockSignInManager = new Mock<SignInManager<User>>(mockUserManager.Object,
-                           _contextAccessor.Object, _userPrincipalFactory.Object, null, null, null, null);
-            Mock<IRepositoryWrapper> mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
-            //mockRepositoryWrapper.Object.Gender = new Gender();
-            Mock<IEmailConfirmation> mockEmailConfirmation = new Mock<IEmailConfirmation>();
-            Mock<IMapper> mockMapper = new Mock<IMapper>();
-            mockMapper
-               .Setup(s => s.Map<UserDTO, User>(It.IsAny<UserDTO>()))
-               .Returns(GetTestUserWithEmailsSendedTime());
-            mockMapper
-                .Setup(s => s.Map<User, UserDTO>(It.IsAny<User>()))
-                .Returns(GetTestUserDtoWithAllFields());
-            Mock<IUrlHelperFactory> mockUrlHelperFactory = new Mock<IUrlHelperFactory>();
-            Mock<IActionContextAccessor> mockActionContextAccessor = new Mock<IActionContextAccessor>();
-            Mock<IHttpContextAccessor> mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
-
-            AuthService AuthService = new AuthService(
-                mockUserManager.Object,
-                mockSignInManager.Object,
-                mockEmailConfirmation.Object,
-                mockMapper.Object,
-                mockRepositoryWrapper.Object);
-
-            return (mockSignInManager, mockUserManager, mockEmailConfirmation, AuthService);
-        }
+        private AuthService authService;
+        private Mock<IHttpContextAccessor> contextAccessor;
+        private Mock<IEmailSendingService> emailSendingService;
+        private Mock<IMapper> mapper;
+        private Mock<IUserClaimsPrincipalFactory<User>> principalFactory;
+        private Mock<IRepositoryWrapper> repoWrapper;
+        private Mock<SignInManager<User>> signInManager;
+        private Mock<UserManager<User>> userManager;
 
         [Test]
         public void CheckingForLocking_Valid_Test()
         {
             //Arrange
-            var (mockSignInManager,
-                mockUserManager,
-                mockEmailConfirmation,
-                AuthService) = CreateAuthService();
-
-            mockUserManager
+            userManager
                 .Setup(x => x.IsLockedOutAsync(It.IsAny<User>()))
                 .ReturnsAsync(true);
-            mockUserManager
+            userManager
                 .Setup(x => x.SetLockoutEndDateAsync(It.IsAny<User>(), It.IsNotNull<DateTimeOffset>()));
 
             //Act
-            var result = AuthService.CheckingForLocking(new BLL.DTO.UserProfiles.UserDTO());
+            var result = authService.CheckingForLocking(new UserDTO());
 
             //Assert
-            mockUserManager.Verify();
+            userManager.Verify();
             Assert.IsNotNull(result);
         }
 
@@ -120,20 +48,15 @@ namespace EPlast.Tests.Services
         public async Task FindByIdAsync_Valid_TestAsync()
         {
             //Arrange
-            var (mockSignInManager,
-                mockUserManager,
-                mockEmailConfirmation,
-                AuthService) = CreateAuthService();
-
-            mockUserManager
+            userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetTestUserWithAllFields());
+                .ReturnsAsync(new User());
 
             //Act
-            var result = await AuthService.FindByIdAsync("id");
+            var result = await authService.FindByIdAsync("id");
 
             //Assert
-            mockUserManager.Verify();
+            userManager.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(UserDTO), result);
         }
@@ -142,21 +65,17 @@ namespace EPlast.Tests.Services
         public async Task GetAuthSchemesAsync_Valid_TestAsync()
         {
             //Arrange
-            var (mockSignInManager,
-                mockUserManager,
-                mockEmailConfirmation,
-                AuthService) = CreateAuthService();
             var items = new AuthenticationScheme[] { }.AsQueryable();
 
-            mockSignInManager
+            signInManager
                 .Setup(x => x.GetExternalAuthenticationSchemesAsync())
                 .ReturnsAsync(items);
 
             //Act
-            var result = await AuthService.GetAuthSchemesAsync();
+            var result = await authService.GetAuthSchemesAsync();
 
             //Assert
-            mockUserManager.Verify();
+            userManager.Verify();
             Assert.IsNotNull(result);
         }
 
@@ -164,20 +83,15 @@ namespace EPlast.Tests.Services
         public async Task GetIdForUserAsync_Valid_TestAsync()
         {
             //Arrange
-            var (mockSignInManager,
-                mockUserManager,
-                mockEmailConfirmation,
-                AuthService) = CreateAuthService();
-
-            mockUserManager
+            userManager
                 .Setup(u => u.GetUserIdAsync(It.IsAny<User>()))
                 .ReturnsAsync("1");
 
             //Act
-            var result = await AuthService.GetIdForUserAsync(GetTestUserWithAllFields());
+            var result = await authService.GetIdForUserAsync(GetTestUserWithAllFields());
 
             //Assert
-            mockUserManager.Verify();
+            userManager.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(string), result);
         }
@@ -186,48 +100,75 @@ namespace EPlast.Tests.Services
         public void GetUser_Valid_Test()
         {
             //Arrange
-            var (mockSignInManager,
-                mockUserManager,
-                mockEmailConfirmation,
-                AuthService) = CreateAuthService();
 
             //Act
-            var result = AuthService.GetUser(GetTestUserWithAllFields());
+            var result = authService.GetUser(GetTestUserWithAllFields());
 
             //Assert
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(UserDTO), result);
         }
 
-        private User GetTestUserWithEmailsSendedTime()
+        [Test]
+        public async Task RefreshSignInAsync_InValid_Except_Test()
         {
-            IDateTimeHelper dateTimeResetingPassword = new DateTimeHelper();
-            var timeEmailSended = dateTimeResetingPassword
-                    .GetCurrentTime()
-                    .AddMinutes(-GetTestDifferenceInTime());
+            //Arrange
+            signInManager
+                .Setup(x => x.RefreshSignInAsync(It.IsAny<User>()))
+                .Throws(new Exception());
 
-            return new User()
-            {
-                EmailSendedOnForgotPassword = timeEmailSended,
-                EmailSendedOnRegister = timeEmailSended
-            };
+            //Act
+            var result = await authService.RefreshSignInAsync(new UserDTO());
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(false, result);
+        }
+
+        [Test]
+        public async Task RefreshSignInAsync_Valid_Test()
+        {
+            //Arrange
+            signInManager
+                .Setup(x => x.RefreshSignInAsync(It.IsAny<User>()));
+
+            //Act
+            var result = await authService.RefreshSignInAsync(new UserDTO());
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(true, result);
+        }
+
+        [SetUp]
+        public void SetUp()
+        {
+            var store = new Mock<IUserStore<User>>();
+            userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            contextAccessor = new Mock<IHttpContextAccessor>();
+            principalFactory = new Mock<IUserClaimsPrincipalFactory<User>>();
+            signInManager = new Mock<SignInManager<User>>(userManager.Object,
+                           contextAccessor.Object, principalFactory.Object, null, null, null, null);
+            emailSendingService = new Mock<IEmailSendingService>();
+            mapper = new Mock<IMapper>();
+            mapper
+                .Setup(s => s.Map<User, UserDTO>(It.IsAny<User>()))
+                .Returns(GetTestUserDtoWithAllFields());
+            mapper
+                .Setup(s => s.Map<UserDTO, User>(It.IsAny<UserDTO>()))
+                .Returns(GetTestUserWithEmailsSendedTime());
+            repoWrapper = new Mock<IRepositoryWrapper>();
+
+            authService = new AuthService(userManager.Object,
+                                          signInManager.Object,
+                                          emailSendingService.Object,
+                                          mapper.Object,
+                                          repoWrapper.Object);
         }
 
         private int GetTestDifferenceInTime()
         {
             return 360;
-        }
-
-        private User GetTestUserWithAllFields()
-        {
-            return new User()
-            {
-                UserName = "andriishainoha@gmail.com",
-                FirstName = "Andrii",
-                LastName = "Shainoha",
-                EmailConfirmed = true,
-                SocialNetworking = true
-            };
         }
 
         private UserDTO GetTestUserDtoWithAllFields()
@@ -242,11 +183,29 @@ namespace EPlast.Tests.Services
             };
         }
 
-        private FacebookUserInfo GetTestFacebookUserInfoWithSomeFields()
+        private User GetTestUserWithAllFields()
         {
-            return new FacebookUserInfo()
+            return new User()
             {
-                Gender = "Male"
+                UserName = "andriishainoha@gmail.com",
+                FirstName = "Andrii",
+                LastName = "Shainoha",
+                EmailConfirmed = true,
+                SocialNetworking = true
+            };
+        }
+
+        private User GetTestUserWithEmailsSendedTime()
+        {
+            IDateTimeHelper dateTimeResetingPassword = new DateTimeHelper();
+            var timeEmailSended = dateTimeResetingPassword
+                    .GetCurrentTime()
+                    .AddMinutes(-GetTestDifferenceInTime());
+
+            return new User()
+            {
+                EmailSendedOnForgotPassword = timeEmailSended,
+                EmailSendedOnRegister = timeEmailSended
             };
         }
     }

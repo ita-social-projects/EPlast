@@ -17,18 +17,15 @@ using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
 {
-
-    class CityControllerTests
+    internal class CityControllerTests
     {
-
-        private readonly Mock<ICityService> _cityService;
-        private readonly Mock<ICityParticipantsService> _cityParticipantsService;
-        private readonly Mock<IMapper> _mapper;
-        private readonly Mock<ILoggerService<CitiesController>> _logger;
         private readonly Mock<ICityAccessService> _cityAccessService;
         private readonly Mock<ICityDocumentsService> _cityDocumentsService;
+        private readonly Mock<ICityParticipantsService> _cityParticipantsService;
+        private readonly Mock<ICityService> _cityService;
+        private readonly Mock<ILoggerService<CitiesController>> _logger;
+        private readonly Mock<IMapper> _mapper;
         private readonly Mock<Microsoft.AspNetCore.Identity.UserManager<User>> _userManager;
-
 
         public CityControllerTests()
         {
@@ -50,6 +47,316 @@ namespace EPlast.Tests.Controllers
            _userManager.Object,
         _cityParticipantsService.Object
           );
+
+        [Test]
+        public async Task AddAdmin_Valid_Test()
+        {
+            // Arrange
+            CityAdministrationViewModel admin = new CityAdministrationViewModel();
+            _mapper
+                .Setup(m => m.Map<CityAdministrationViewModel, CityAdministrationDTO>(It.IsAny<CityAdministrationViewModel>()))
+                .Returns(new CityAdministrationDTO() { AdminType = new BLL.DTO.Admin.AdminTypeDTO() });
+            _cityParticipantsService
+                .Setup(c => c.AddAdministratorAsync(It.IsAny<CityAdministrationDTO>()));
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.AddAdmin(admin);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task AddDocument_Valid_Test()
+        {
+            // Arrange
+            CityDocumentsViewModel document = new CityDocumentsViewModel();
+            _mapper
+                .Setup(m => m.Map<CityDocumentsViewModel, CityDocumentsDTO>(It.IsAny<CityDocumentsViewModel>()))
+                .Returns(new CityDocumentsDTO());
+            _cityDocumentsService
+                .Setup(c => c.AddDocumentAsync(It.IsAny<CityDocumentsDTO>()));
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.AddDocument(document);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task AddFollower_Valid_Test()
+        {
+            _cityParticipantsService.Setup(c => c.AddFollowerAsync(It.IsAny<int>(), It.IsAny<User>()))
+                .ReturnsAsync(new CityMembersDTO());
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.AddFollower(GetFakeID());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task AddFollowerWithId_Valid_Test()
+        {
+            // Arrange
+            _cityParticipantsService
+                .Setup(c => c.AddFollowerAsync(It.IsAny<int>(), It.IsAny<string>()))
+                .ReturnsAsync(new CityMembersDTO());
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.AddFollowerWithId(GetFakeID(), GetStringFakeId());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task ChangeApproveStatus_Valid_Test()
+        {
+            // Arrange
+            _cityParticipantsService
+                .Setup(c => c.ToggleApproveStatusAsync(It.IsAny<int>()))
+                .ReturnsAsync(new CityMembersDTO());
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.ChangeApproveStatus(GetFakeID());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task Create_InvalidModelState_Valid_Test()
+        {
+            // Arrange
+            CityViewModel TestVM = new CityViewModel();
+            _cityService
+                .Setup(c => c.CreateAsync(It.IsAny<CityDTO>()))
+                .ReturnsAsync(new int());
+            _mapper
+                .Setup(m => m.Map<CityViewModel, CityDTO>(It.IsAny<CityViewModel>()))
+                .Returns(new CityDTO());
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+            CitiesController citycon = CreateCityController;
+            citycon.ModelState.AddModelError("NameError", "Required");
+
+            // Act
+            var result = await citycon.Create(TestVM);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        }
+
+        [Test]
+        public async Task Create_Valid_Test()
+        {
+            // Arrange
+            CityViewModel TestVM = new CityViewModel();
+            _cityService
+                .Setup(c => c.CreateAsync(It.IsAny<CityDTO>()))
+                .ReturnsAsync(new int());
+            _mapper
+                .Setup(m => m.Map<CityViewModel, CityDTO>(It.IsAny<CityViewModel>()))
+                .Returns(new CityDTO());
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.Create(TestVM);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task Details_Invalid_Test()
+        {
+            // Arrange
+            _cityService
+                .Setup(c => c.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            _mapper
+                .Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
+                .Returns(new CityViewModel());
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.Details(GetFakeID());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task Details_Valid_Test()
+        {
+            // Arrange
+            _cityService
+                .Setup(c => c.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new CityDTO());
+            _mapper
+                .Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
+                .Returns(new CityViewModel());
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.Details(GetFakeID());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task Edit_InvalidModelState_Valid_Test()
+        {
+            // Arrange
+            CityViewModel TestVM = new CityViewModel();
+            _cityService
+                .Setup(c => c.EditAsync(It.IsAny<CityDTO>()));
+            _mapper
+                .Setup(m => m.Map<CityViewModel, CityDTO>(It.IsAny<CityViewModel>()))
+                .Returns(new CityDTO());
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+            CitiesController citycon = CreateCityController;
+            citycon.ModelState.AddModelError("NameError", "Required");
+
+            // Act
+            var result = await citycon.Edit(TestVM);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        }
+
+        [Test]
+        public async Task Edit_Valid_Test()
+        {
+            // Arrange
+            CityViewModel TestVM = new CityViewModel();
+            _cityService
+                .Setup(c => c.EditAsync(It.IsAny<CityDTO>()));
+            _mapper
+                .Setup(m => m.Map<CityViewModel, CityDTO>(It.IsAny<CityViewModel>()))
+                .Returns(new CityDTO());
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.Edit(TestVM);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
+        }
+
+        [Test]
+        public async Task EditAdmin_Valid_Test()
+        {
+            // Arrange
+            CityAdministrationViewModel admin = new CityAdministrationViewModel();
+            _mapper
+                .Setup(m => m.Map<CityAdministrationViewModel, CityAdministrationDTO>(It.IsAny<CityAdministrationViewModel>()))
+                .Returns(new CityAdministrationDTO());
+            _cityParticipantsService
+                .Setup(c => c.EditAdministratorAsync(It.IsAny<CityAdministrationDTO>()));
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.EditAdmin(admin);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [TestCase(2)]
+        public async Task GetAdmins_Invalid_Test(int id)
+        {
+            // Arrange
+            _cityService
+                .Setup(c => c.GetCityAdminsAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            _mapper.Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
+                .Returns(new CityViewModel());
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.GetAdmins(id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [TestCase(2)]
+        public async Task GetAdmins_Valid_Test(int id)
+        {
+            // Arrange
+            _cityService
+                .Setup(c => c.GetCityAdminsAsync(It.IsAny<int>()))
+                .ReturnsAsync(new CityProfileDTO());
+            _mapper
+                .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
+                .Returns(new CityViewModel());
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.GetAdmins(id);
+
+            // Assert
+            _mapper.Verify(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()));
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetAllAdministrationStatuses_Valid_Test()
+        {
+            // Arrange
+            _cityParticipantsService
+                .Setup(c => c.GetAdministrationStatuses(It.IsAny<string>()))
+                .ReturnsAsync(It.IsAny<IEnumerable<CityAdministrationStatusDTO>>());
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.GetAllAdministrationStatuses(GetStringFakeId());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
 
         [TestCase(1, 1, "Львів")]
         public async Task GetCities_Valid_Test(int page, int pageSize, string cityName)
@@ -104,181 +411,20 @@ namespace EPlast.Tests.Controllers
                 .Where(n => n.Name.Equals("Львів")));
         }
 
-        [TestCase(2)]
-        public async Task GetMembers_Valid_Test(int id)
-        {
-            // Arrange
-            _cityService
-                .Setup(cs => cs.GetCityMembersAsync(It.IsAny<int>()))
-                .ReturnsAsync(new CityProfileDTO());
-            _mapper
-                .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
-                .Returns(new CityViewModel());
-            CitiesController cityController = CreateCityController;
-
-            // Act
-            var result = await cityController.GetMembers(id);
-
-            // Assert
-            _mapper.Verify(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()));
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.NotNull(result);
-        }
-
-        [TestCase(2)]
-        public async Task GetProfile_Valid_Test(int id)
-        {
-
-            _cityService.Setup(c => c.GetCityProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
-                .ReturnsAsync(new CityProfileDTO());
-            _mapper
-                .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
-                .Returns(new CityViewModel());
-            CitiesController citycon = CreateCityController;
-
-            // Act
-            var result = await citycon.GetProfile(id);
-
-            // Assert
-            _mapper.Verify(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()));
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-        }
-
-        [TestCase(2)]
-        public async Task GetFollowers_Valid_Test(int id)
-        {
-            // Arrange
-            _cityService
-                .Setup(c => c.GetCityFollowersAsync(It.IsAny<int>()))
-                .ReturnsAsync(new CityProfileDTO());
-            _mapper
-                .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
-                .Returns(new CityViewModel());
-            CitiesController citycon = CreateCityController;
-
-            // Act
-            var result = await citycon.GetFollowers(id);
-
-            // Assert
-            _mapper.Verify(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()));
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-        }
-
-        [TestCase(2)]
-        public async Task GetFollowers_Invalid_Test(int id)
-        {
-            // Arrange
-            _cityService
-                .Setup(c => c.GetCityFollowersAsync(It.IsAny<int>()))
-                .ReturnsAsync(() => null);
-            _mapper
-                .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
-                .Returns(new CityViewModel());
-            CitiesController citycon = CreateCityController;
-
-            // Act
-            var result = await citycon.GetFollowers(id);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<NotFoundResult>(result);
-        }
-
-        [TestCase(2)]
-        public async Task GetProfile_Invalid_Test(int id)
-        {
-
-            _cityService.Setup(c => c.GetCityProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
-                .ReturnsAsync(() => null);
-            _mapper
-                .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
-                .Returns(new CityViewModel());
-            CitiesController citycon = CreateCityController;
-
-            // Act
-            var result = await citycon.GetProfile(id);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<NotFoundResult>(result);
-        }
-
-        [TestCase(2)]
-        public async Task GetMembers_Invalid_Test(int id)
-        {
-            // Arrange
-            _cityService
-                .Setup(cs => cs.GetCityMembersAsync(It.IsAny<int>()))
-                .ReturnsAsync(() => null);
-            _mapper
-                .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
-                .Returns(new CityViewModel());
-            CitiesController cityController = CreateCityController;
-
-            // Act
-            var result = await cityController.GetMembers(id);
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<NotFoundResult>(result);
-        }
-
         [Test]
-        public async Task GetProfile_Invalid_Test()
-        {
-
-            _cityService.Setup(c => c.GetCityProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
-                .ReturnsAsync(() => null);
-            CitiesController citycon = CreateCityController;
-
-            // Act
-            var result = await citycon.GetProfile(GetFakeID());
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<NotFoundResult>(result);
-        }
-
-        [TestCase(2)]
-        public async Task GetAdmins_Valid_Test(int id)
+        public async Task GetCitiesThatUserHasAccessTo_Valid_Test()
         {
             // Arrange
-            _cityService
-                .Setup(c => c.GetCityAdminsAsync(It.IsAny<int>()))
-                .ReturnsAsync(new CityProfileDTO());
-            _mapper
-                .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
-                .Returns(new CityViewModel());
+            _cityAccessService
+                .Setup(c => c.GetCitiesAsync(It.IsAny<User>()));
             CitiesController citycon = CreateCityController;
 
             // Act
-            var result = await citycon.GetAdmins(id);
+            var result = await citycon.GetCitiesThatUserHasAccessTo();
 
             // Assert
-            _mapper.Verify(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()));
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
-        }
-
-        [TestCase(2)]
-        public async Task GetAdmins_Invalid_Test(int id)
-        {
-            // Arrange
-            _cityService
-                .Setup(c => c.GetCityAdminsAsync(It.IsAny<int>()))
-                .ReturnsAsync(() => null);
-            _mapper.Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
-                .Returns(new CityViewModel());
-            CitiesController citycon = CreateCityController;
-
-            // Act
-            var result = await citycon.GetAdmins(id);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
         [TestCase(2)]
@@ -323,325 +469,16 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task Details_Valid_Test()
+        public async Task GetDocumentTypesAsync_Valid_Test()
         {
             // Arrange
-            _cityService
-                .Setup(c => c.GetByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(new CityDTO());
-            _mapper
-                .Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
-                .Returns(new CityViewModel());
-            CitiesController citycon = CreateCityController;
-
-            // Act
-            var result = await citycon.Details(GetFakeID());
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-        }
-
-        [Test]
-        public async Task Details_Invalid_Test()
-        {
-            // Arrange
-            _cityService
-                .Setup(c => c.GetByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(() => null);
-            _mapper
-                .Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
-                .Returns(new CityViewModel());
-            CitiesController citycon = CreateCityController;
-
-            // Act
-            var result = await citycon.Details(GetFakeID());
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<NotFoundResult>(result);
-        }
-
-        [TestCase("logoName")]
-        public async Task GetPhotoBase64_Valid_Test(string logoName)
-        {
-            // Arrange
-            _cityService
-                .Setup(c => c.GetLogoBase64(It.IsAny<string>()))
-                .ReturnsAsync(new string("some string"));
-            CitiesController citycon = CreateCityController;
-
-            // Act
-            var result = await citycon.GetPhotoBase64(logoName);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-        }
-
-        [Test]
-        public async Task Create_Valid_Test()
-        {
-            // Arrange
-            CityViewModel TestVM = new CityViewModel();
-            _cityService
-                .Setup(c => c.CreateAsync(It.IsAny<CityDTO>()))
-                .ReturnsAsync(new int());
-            _mapper
-                .Setup(m => m.Map<CityViewModel, CityDTO>(It.IsAny<CityViewModel>()))
-                .Returns(new CityDTO());
-            _logger
-                .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
-
-            // Act
-            var result = await citycon.Create(TestVM);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-        }
-
-        [Test]
-        public async Task Create_InvalidModelState_Valid_Test()
-        {
-            // Arrange
-            CityViewModel TestVM = new CityViewModel();
-            _cityService
-                .Setup(c => c.CreateAsync(It.IsAny<CityDTO>()))
-                .ReturnsAsync(new int());
-            _mapper
-                .Setup(m => m.Map<CityViewModel, CityDTO>(It.IsAny<CityViewModel>()))
-                .Returns(new CityDTO());
-            _logger
-                .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
-            citycon.ModelState.AddModelError("NameError", "Required");
-
-            // Act
-            var result = await citycon.Create(TestVM);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<BadRequestObjectResult>(result);
-        }
-
-        [Test]
-        public async Task Edit_InvalidModelState_Valid_Test()
-        {
-            // Arrange
-            CityViewModel TestVM = new CityViewModel();
-            _cityService
-                .Setup(c => c.EditAsync(It.IsAny<CityDTO>()));
-            _mapper
-                .Setup(m => m.Map<CityViewModel, CityDTO>(It.IsAny<CityViewModel>()))
-                .Returns(new CityDTO());
-            _logger
-                .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
-            citycon.ModelState.AddModelError("NameError", "Required");
-
-            // Act
-            var result = await citycon.Edit(TestVM);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<BadRequestObjectResult>(result);
-        }
-
-        [Test]
-        public async Task Edit_Valid_Test()
-        {
-            // Arrange
-            CityViewModel TestVM = new CityViewModel();
-            _cityService
-                .Setup(c => c.EditAsync(It.IsAny<CityDTO>()));
-            _mapper
-                .Setup(m => m.Map<CityViewModel, CityDTO>(It.IsAny<CityViewModel>()))
-                .Returns(new CityDTO());
-            _logger
-                .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
-
-            // Act
-            var result = await citycon.Edit(TestVM);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkResult>(result);
-        }
-
-        [Test]
-        public async Task AddFollower_Valid_Test()
-        {
-            _cityParticipantsService.Setup(c => c.AddFollowerAsync(It.IsAny<int>(), It.IsAny<User>()))
-                .ReturnsAsync(new CityMembersDTO());
-            _logger
-                .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
-
-            // Act
-            var result = await citycon.AddFollower(GetFakeID());
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-        }
-
-        [Test]
-        public async Task AddFollowerWithId_Valid_Test()
-        {
-            // Arrange
-            _cityParticipantsService
-                .Setup(c => c.AddFollowerAsync(It.IsAny<int>(), It.IsAny<string>()))
-                .ReturnsAsync(new CityMembersDTO());
-            _logger
-                .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
-
-            // Act
-            var result = await citycon.AddFollowerWithId(GetFakeID(), GetStringFakeId());
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-        }
-
-        [Test]
-        public async Task Remove_Valid_Test()
-        {
-            // Arrange
-            _cityService
-                .Setup(c => c.RemoveAsync(It.IsAny<int>()));
-            CitiesController citycon = CreateCityController;
-
-            // Act
-            var result = await citycon.Remove(GetFakeID());
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkResult>(result);
-        }
-
-        [Test]
-        public async Task RemoveFollower_Valid_Test()
-        {
-            // Arrange
-            _cityParticipantsService
-                .Setup(c => c.RemoveFollowerAsync(It.IsAny<int>()));
-            _logger
-                .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
-
-            // Act
-            var result = await citycon.RemoveFollower(GetFakeID());
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkResult>(result);
-        }
-
-        [Test]
-        public async Task ChangeApproveStatus_Valid_Test()
-        {
-            // Arrange
-            _cityParticipantsService
-                .Setup(c => c.ToggleApproveStatusAsync(It.IsAny<int>()))
-                .ReturnsAsync(new CityMembersDTO());
-            _logger
-                .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
-
-            // Act
-            var result = await citycon.ChangeApproveStatus(GetFakeID());
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-        }
-
-        [Test]
-        public async Task AddAdmin_Valid_Test()
-        {
-            // Arrange
-            CityAdministrationViewModel admin = new CityAdministrationViewModel();
-            _mapper
-                .Setup(m => m.Map<CityAdministrationViewModel, CityAdministrationDTO>(It.IsAny<CityAdministrationViewModel>()))
-                .Returns(new CityAdministrationDTO() { AdminType = new BLL.DTO.Admin.AdminTypeDTO() });
-            _cityParticipantsService
-                .Setup(c => c.AddAdministratorAsync(It.IsAny<CityAdministrationDTO>()));
-            _logger
-                .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
-
-            // Act
-            var result = await citycon.AddAdmin(admin);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-        }
-
-        [Test]
-        public async Task RemoveAdmin_Valid_Test()
-        {
-            // Arrange
-            _mapper
-                .Setup(m => m.Map<CityAdministrationViewModel, CityAdministrationDTO>(It.IsAny<CityAdministrationViewModel>()))
-                .Returns(new CityAdministrationDTO());
-            _cityParticipantsService
-                .Setup(c => c.RemoveAdministratorAsync(It.IsAny<int>()));
-            _logger
-                .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
-
-            _cityParticipantsService.Setup(c => c.EditAdministratorAsync(It.IsAny<CityAdministrationDTO>()));
-            // Act
-            var result = await citycon.RemoveAdmin(GetFakeID());
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkResult>(result);
-        }
-
-        [Test]
-        public async Task EditAdmin_Valid_Test()
-        {
-            // Arrange
-            CityAdministrationViewModel admin = new CityAdministrationViewModel();
-            _mapper
-                .Setup(m => m.Map<CityAdministrationViewModel, CityAdministrationDTO>(It.IsAny<CityAdministrationViewModel>()))
-                .Returns(new CityAdministrationDTO());
-            _cityParticipantsService
-                .Setup(c => c.EditAdministratorAsync(It.IsAny<CityAdministrationDTO>()));
-            _logger
-                .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
-
-            // Act
-            var result = await citycon.EditAdmin(admin);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-        }
-
-        [Test]
-        public async Task AddDocument_Valid_Test()
-        {
-            // Arrange
-            CityDocumentsViewModel document = new CityDocumentsViewModel();
-            _mapper
-                .Setup(m => m.Map<CityDocumentsViewModel, CityDocumentsDTO>(It.IsAny<CityDocumentsViewModel>()))
-                .Returns(new CityDocumentsDTO());
             _cityDocumentsService
-                .Setup(c => c.AddDocumentAsync(It.IsAny<CityDocumentsDTO>()));
-            _logger
-                .Setup(l => l.LogInformation(It.IsAny<string>()));
+                .Setup(c => c.GetAllCityDocumentTypesAsync())
+                .ReturnsAsync(It.IsAny<IEnumerable<CityDocumentTypeDTO>>());
             CitiesController citycon = CreateCityController;
 
             // Act
-            var result = await citycon.AddDocument(document);
+            var result = await citycon.GetDocumentTypesAsync();
 
             // Assert
             Assert.NotNull(result);
@@ -666,38 +503,43 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
-        [Test]
-        public async Task RemoveDocument_Valid_Test()
+        [TestCase(2)]
+        public async Task GetFollowers_Invalid_Test(int id)
         {
             // Arrange
-            _cityDocumentsService
-                .Setup(c => c.DeleteFileAsync(It.IsAny<int>()));
-            _logger
-                .Setup(l => l.LogInformation(It.IsAny<string>()));
+            _cityService
+                .Setup(c => c.GetCityFollowersAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            _mapper
+                .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
+                .Returns(new CityViewModel());
             CitiesController citycon = CreateCityController;
 
             // Act
-            var result = await citycon.RemoveDocument(GetFakeID());
+            var result = await citycon.GetFollowers(id);
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<OkResult>(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
-
-        [Test]
-        public async Task GetDocumentTypesAsync_Valid_Test()
+        [TestCase(2)]
+        public async Task GetFollowers_Valid_Test(int id)
         {
             // Arrange
-            _cityDocumentsService
-                .Setup(c => c.GetAllCityDocumentTypesAsync())
-                .ReturnsAsync(It.IsAny<IEnumerable<CityDocumentTypeDTO>>());
+            _cityService
+                .Setup(c => c.GetCityFollowersAsync(It.IsAny<int>()))
+                .ReturnsAsync(new CityProfileDTO());
+            _mapper
+                .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
+                .Returns(new CityViewModel());
             CitiesController citycon = CreateCityController;
 
             // Act
-            var result = await citycon.GetDocumentTypesAsync();
+            var result = await citycon.GetFollowers(id);
 
             // Assert
+            _mapper.Verify(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()));
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
@@ -716,18 +558,112 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
-        [Test]
-        public async Task GetCitiesThatUserHasAccessTo_Valid_Test()
+        [TestCase(2)]
+        public async Task GetMembers_Invalid_Test(int id)
         {
             // Arrange
-            _cityAccessService
-                .Setup(c => c.GetCitiesAsync(It.IsAny<User>()));
+            _cityService
+                .Setup(cs => cs.GetCityMembersAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            _mapper
+                .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
+                .Returns(new CityViewModel());
+            CitiesController cityController = CreateCityController;
+
+            // Act
+            var result = await cityController.GetMembers(id);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [TestCase(2)]
+        public async Task GetMembers_Valid_Test(int id)
+        {
+            // Arrange
+            _cityService
+                .Setup(cs => cs.GetCityMembersAsync(It.IsAny<int>()))
+                .ReturnsAsync(new CityProfileDTO());
+            _mapper
+                .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
+                .Returns(new CityViewModel());
+            CitiesController cityController = CreateCityController;
+
+            // Act
+            var result = await cityController.GetMembers(id);
+
+            // Assert
+            _mapper.Verify(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()));
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(result);
+        }
+
+        [TestCase("logoName")]
+        public async Task GetPhotoBase64_Valid_Test(string logoName)
+        {
+            // Arrange
+            _cityService
+                .Setup(c => c.GetLogoBase64(It.IsAny<string>()))
+                .ReturnsAsync(new string("some string"));
             CitiesController citycon = CreateCityController;
 
             // Act
-            var result = await citycon.GetCitiesThatUserHasAccessTo();
+            var result = await citycon.GetPhotoBase64(logoName);
 
             // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [TestCase(2)]
+        public async Task GetProfile_Invalid_NotFound_Test(int id)
+        {
+            _cityService.Setup(c => c.GetCityProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
+                .ReturnsAsync(() => null);
+            _mapper
+                .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
+                .Returns(new CityViewModel());
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.GetProfile(id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task GetProfile_Invalid_Test()
+        {
+            _cityService.Setup(c => c.GetCityProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
+                .ReturnsAsync(() => null);
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.GetProfile(GetFakeID());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [TestCase(2)]
+        public async Task GetProfile_Valid_Test(int id)
+        {
+            _cityService.Setup(c => c.GetCityProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
+                .ReturnsAsync(new CityProfileDTO());
+            _mapper
+                .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
+                .Returns(new CityViewModel());
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.GetProfile(id);
+
+            // Assert
+            _mapper.Verify(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()));
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
@@ -767,33 +703,77 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetAllAdministrationStatuses_Valid_Test()
+        public async Task Remove_Valid_Test()
         {
             // Arrange
-            _cityParticipantsService
-                .Setup(c => c.GetAdministrationStatuses(It.IsAny<string>()))
-                .ReturnsAsync(It.IsAny<IEnumerable<CityAdministrationStatusDTO>>());
+            _cityService
+                .Setup(c => c.RemoveAsync(It.IsAny<int>()));
             CitiesController citycon = CreateCityController;
 
             // Act
-            var result = await citycon.GetAllAdministrationStatuses(GetStringFakeId());
+            var result = await citycon.Remove(GetFakeID());
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsInstanceOf<OkResult>(result);
         }
 
-        private int GetFakeID()
+        [Test]
+        public async Task RemoveAdmin_Valid_Test()
         {
-            return 1;
+            // Arrange
+            _mapper
+                .Setup(m => m.Map<CityAdministrationViewModel, CityAdministrationDTO>(It.IsAny<CityAdministrationViewModel>()))
+                .Returns(new CityAdministrationDTO());
+            _cityParticipantsService
+                .Setup(c => c.RemoveAdministratorAsync(It.IsAny<int>()));
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+            CitiesController citycon = CreateCityController;
+
+            _cityParticipantsService.Setup(c => c.EditAdministratorAsync(It.IsAny<CityAdministrationDTO>()));
+            // Act
+            var result = await citycon.RemoveAdmin(GetFakeID());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
         }
-        private string GetStringFakeId()
+
+        [Test]
+        public async Task RemoveDocument_Valid_Test()
         {
-            return "1";
+            // Arrange
+            _cityDocumentsService
+                .Setup(c => c.DeleteFileAsync(It.IsAny<int>()));
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.RemoveDocument(GetFakeID());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
         }
-        private string GetFakeFileName()
+
+        [Test]
+        public async Task RemoveFollower_Valid_Test()
         {
-            return "FileName";
+            // Arrange
+            _cityParticipantsService
+                .Setup(c => c.RemoveFollowerAsync(It.IsAny<int>()));
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.RemoveFollower(GetFakeID());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
         }
 
         private List<CityDTO> GetCitiesBySearch()
@@ -816,6 +796,21 @@ namespace EPlast.Tests.Controllers
                     Name = "Львів"
                 }
             }.AsEnumerable();
+        }
+
+        private string GetFakeFileName()
+        {
+            return "FileName";
+        }
+
+        private int GetFakeID()
+        {
+            return 1;
+        }
+
+        private string GetStringFakeId()
+        {
+            return "1";
         }
     }
 }

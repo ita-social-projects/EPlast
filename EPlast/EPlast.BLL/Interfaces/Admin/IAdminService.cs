@@ -9,23 +9,15 @@ namespace EPlast.BLL.Services.Interfaces
     public interface IAdminService
     {
         /// <summary>
-        /// Get all roles except Admin role
-        /// </summary>
-        /// <returns>All roles except Admin role</returns>
-        Task<IEnumerable<IdentityRole>> GetRolesExceptAdminAsync();
-
-        /// <summary>
-        /// Edit user roles
-        /// </summary>
-        /// <param name="userId">The id of the user</param>
-        /// <param name="roles">List of new user roles</param>
-        Task EditAsync(string userId, List<string> roles);
-
-        /// <summary>
         /// Edit user roles
         /// </summary>
         /// <param name="userId">The id of the user</param>
         Task ChangeAsync(string userId);
+
+        /// <summary>
+        /// Change Current Role of user
+        /// </summary>
+        Task ChangeCurrentRoleAsync(string userId, string role);
 
         /// <summary>
         /// Delete a user
@@ -34,19 +26,27 @@ namespace EPlast.BLL.Services.Interfaces
         Task DeleteUserAsync(string userId);
 
         /// <summary>
-        /// Get all users with additional information
+        /// Edit user roles
         /// </summary>
-        /// <returns>Specify model with all users</returns>
-        Task<IEnumerable<UserTableDTO>> UsersTableAsync();
-
-        /// <summary>
-        /// Change Current Role of user
-        /// </summary>
-        Task ChangeCurrentRoleAsync(string userId, string role);
+        /// <param name="userId">The id of the user</param>
+        /// <param name="roles">List of new user roles</param>
+        Task EditAsync(string userId, IEnumerable<string> roles);
 
         /// <summary>
         /// Get City and Region Admins by userId of user which contained cityMembers
         /// </summary>
-        Task<IEnumerable<CityDTO>> GetCityRegionAdminsOfUser(string userId);
+        Task<IEnumerable<CityDTO>> GetCityRegionAdminsOfUserAsync(string userId);
+
+        /// <summary>
+        /// Get all roles except Admin role
+        /// </summary>
+        /// <returns>All roles except Admin role</returns>
+        IEnumerable<IdentityRole> GetRolesExceptAdmin();
+
+        /// <summary>
+        /// Get all users with additional information
+        /// </summary>
+        /// <returns>Specify model with all users</returns>
+        Task<IEnumerable<UserTableDTO>> GetUsersTableAsync();
     }
 }

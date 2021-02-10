@@ -13,6 +13,12 @@ namespace EPlast.WebApi.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
+        private readonly IAuthEmailService _authEmailServices;
+        private readonly IAuthService _authService;
+        private readonly IHomeService _homeService;
+        private readonly IResources _resources;
+        private readonly IUserDatesService _userDatesService;
+
         public AuthController(
             IAuthService authService,
             IUserDatesService userDatesService,
@@ -37,7 +43,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">Problems with confirming email</response>
         [HttpGet("confirmingEmail")]
         [AllowAnonymous]
-        public async Task<IActionResult> ConfirmingEmail(string userId, string token)
+        public async Task<IActionResult> ConfirmingEmailAsync(string userId, string token)
         {
             var userDto = await _authService.FindByIdAsync(userId);
             if (userDto == null)
@@ -56,9 +62,13 @@ namespace EPlast.WebApi.Controllers
                 if (result.Succeeded)
                 {
                     string signinurl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["SignIn"];
-                    string citiesurl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Сities"];
-                    await _authEmailServices.SendEmailReminderAsync(citiesurl, userDto);
-                    return Redirect(signinurl);
+                    var greetingSendResult = await _authEmailServices.SendEmailGreetingAsync(userDto.Email);
+                    if (greetingSendResult)
+                        return Redirect(signinurl);
+                    else
+                    {
+                        return BadRequest();
+                    }
                 }
                 else
                 {
@@ -150,11 +160,5 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(_resources.ResourceForErrors["Feedback-Sended"]);
         }
-
-        private readonly IAuthEmailService _authEmailServices;
-        private readonly IAuthService _authService;
-        private readonly IHomeService _homeService;
-        private readonly IResources _resources;
-        private readonly IUserDatesService _userDatesService;
     }
 }

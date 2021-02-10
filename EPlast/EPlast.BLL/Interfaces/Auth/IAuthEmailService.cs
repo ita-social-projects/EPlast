@@ -1,5 +1,4 @@
 ﻿using EPlast.BLL.DTO.Account;
-using EPlast.BLL.DTO.UserProfiles;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 
@@ -16,20 +15,27 @@ namespace EPlast.BLL.Interfaces
         Task<IdentityResult> ConfirmEmailAsync(string userId, string code);
 
         /// <summary>
+        /// Sending email reminder
+        /// </summary>
+        /// <param name="citiesUrl"></param>
+        /// <param name="userDTO"></param>
+        /// <returns>Result of sending email</returns>
+        Task<bool> SendEmailGreetingAsync(string email);
+
+        /// <summary>
+        /// Sending email reminder to join city
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns>Result of sending email</returns>
+        Task<bool> SendEmailJoinToCityReminderAsync(string email);
+
+        /// <summary>
         /// Sending email for registration
         /// </summary>
         /// <param name="confirmationLink"></param>
         /// <param name="userDto"></param>
         /// <returns>Result of sending email</returns>
         Task<bool> SendEmailRegistrAsync(string email);
-
-        /// <summary>
-        /// Sending email reminder
-        /// </summary>
-        /// <param name="citiesUrl"></param>
-        /// <param name="userDTO"></param>
-        /// <returns>Result of sending email</returns>
-        Task SendEmailReminderAsync(string citiesUrl, UserDTO userDTO);
 
         /// <summary>
         /// Sending email for password reset

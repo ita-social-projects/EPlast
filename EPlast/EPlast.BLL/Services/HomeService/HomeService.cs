@@ -2,20 +2,21 @@
 using EPlast.BLL.Interfaces;
 using System.Threading.Tasks;
 
-namespace EPlast.BLL
+namespace EPlast.BLL.Services
 {
     public class HomeService : IHomeService
     {
-        private readonly IEmailConfirmation _emailConfirmation;
+        private readonly IEmailSendingService _emailSendingService;
 
-        public HomeService(IEmailConfirmation emailConfirmation)
+        public HomeService(IEmailSendingService emailSendingService)
         {
-            _emailConfirmation = emailConfirmation;
+            _emailSendingService = emailSendingService;
         }
 
         public Task SendEmailAdmin(ContactsDto contactDTO)
         {
-            return _emailConfirmation.SendEmailAsync("eplastdmnstrtr@gmail.com",
+            return _emailSendingService.SendEmailAsync(
+                "eplastdmnstrtr@gmail.com",
                 "Питання користувачів",
                 $"Контактні дані користувача : Електронна пошта {contactDTO.Email}, " +
                 $"Ім'я {contactDTO.Name}," +

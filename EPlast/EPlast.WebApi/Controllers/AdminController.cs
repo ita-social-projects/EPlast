@@ -16,8 +16,18 @@ namespace EPlast.WebApi.Controllers
     [Authorize(Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня, Пластун")]
     public class AdminController : ControllerBase
     {
+        private readonly IAdminService _adminService;
+
+        private readonly ICityParticipantsService _cityAdministrationService;
+
+        private readonly ICityService _cityService;
+
+        private readonly ILoggerService<AdminController> _loggerService;
+
+        private readonly IUserManagerService _userManagerService;
+
         public AdminController(ILoggerService<AdminController> logger,
-            IUserManagerService userManagerService,
+                                                    IUserManagerService userManagerService,
             IAdminService adminService,
             ICityService cityService,
             ICityParticipantsService cityAdministrationService)
@@ -30,67 +40,20 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Get all users with additional information
-        /// </summary>
-        /// <returns>Specify model with all users</returns>
-        /// <response code="200">Successful operation</response>
-        [HttpGet("usersTable")]
-        public async Task<IActionResult> UsersTable()
-        {
-            var result = await _adminService.UsersTableAsync();
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Get specify model for edit roles for selected user
+        /// Change current user role
         /// </summary>
         /// <param name="userId">The id of the user</param>
-        /// <returns>A data of roles for editing user roles</returns>
-        /// <response code="200">Successful operation</response>
+        /// <param name="role">The new current role of user</param>
+        /// <response code="201">Successful operation</response>
         /// <response code="404">User not found</response>
-        [HttpGet("editRole/{userId}")]
-        public async Task<IActionResult> Edit(string userId)
+        [HttpPut("changeRole/{userId}/{role}")]
+        public async Task<IActionResult> ChangeCurrentUserRole(string userId, string role)
         {
             if (!string.IsNullOrEmpty(userId))
             {
-                var user = await _userManagerService.FindByIdAsync(userId);
-                if (user == null)
-                {
-                    _loggerService.LogError("User id is null");
-                    return NotFound();
-                }
-                var userRoles = await _userManagerService.GetRolesAsync(user);
-                var allRoles = await _adminService.GetRolesExceptAdminAsync();
-
-                RoleViewModel model = new RoleViewModel
-                {
-                    UserID = user.Id,
-                    UserEmail = user.Email,
-                    UserRoles = userRoles,
-                    AllRoles = allRoles
-                };
-
-                return Ok(model);
-            }
-            _loggerService.LogError("User id is null");
-            return NotFound();
-        }
-
-        /// <summary>
-        /// Edit user roles
-        /// </summary>
-        /// <param name="userId">The id of the user</param>
-        /// <param name="roles">List of new user roles</param>
-        /// <response code="200">Successful operation</response>
-        /// <response code="404">User not found</response>
-        [HttpPut("editedRole/{userId}")]
-        public async Task<IActionResult> Edit(string userId, [FromBody] List<string> roles)
-        {
-            if (!string.IsNullOrEmpty(userId))
-            {
-                await _adminService.EditAsync(userId, roles);
+                await _adminService.ChangeCurrentRoleAsync(userId, role);
                 _loggerService.LogInformation($"Successful change role for {userId}");
-                return Ok();
+                return NoContent();
             }
             _loggerService.LogError("User id is null");
             return NotFound();
@@ -108,26 +71,6 @@ namespace EPlast.WebApi.Controllers
             if (!string.IsNullOrEmpty(userId))
             {
                 await _adminService.ChangeAsync(userId);
-                _loggerService.LogInformation($"Successful change role for {userId}");
-                return NoContent();
-            }
-            _loggerService.LogError("User id is null");
-            return NotFound();
-        }
-
-        /// <summary>
-        /// Change current user role
-        /// </summary>
-        /// <param name="userId">The id of the user</param>
-        /// <param name="role">The new current role of user</param>
-        /// <response code="201">Successful operation</response>
-        /// <response code="404">User not found</response>
-        [HttpPut("changeRole/{userId}/{role}")]
-        public async Task<IActionResult> ChangeCurrentUserRole(string userId, string role)
-        {
-            if (!string.IsNullOrEmpty(userId))
-            {
-                await _adminService.ChangeCurrentRoleAsync(userId, role);
                 _loggerService.LogInformation($"Successful change role for {userId}");
                 return NoContent();
             }
@@ -177,19 +120,58 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Get all cities
+        /// Get specify model for edit roles for selected user
         /// </summary>
-        /// <returns>All cities in specify model</returns>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>A data of roles for editing user roles</returns>
         /// <response code="200">Successful operation</response>
-        [HttpGet("regionsAdmins")]
-        public async Task<IActionResult> RegionsAdmins()
+        /// <response code="404">User not found</response>
+        [HttpGet("editRole/{userId}")]
+        public async Task<IActionResult> Edit(string userId)
         {
-            var model = new CitiesAdminsViewModel()
+            if (!string.IsNullOrEmpty(userId))
             {
-                Cities = await _cityService.GetAllDTOAsync()
-            };
+                var user = await _userManagerService.FindByIdAsync(userId);
+                if (user == null)
+                {
+                    _loggerService.LogError("User id is null");
+                    return NotFound();
+                }
+                var userRoles = await _userManagerService.GetRolesAsync(user);
+                var allRoles = _adminService.GetRolesExceptAdmin();
 
-            return Ok(model);
+                RoleViewModel model = new RoleViewModel
+                {
+                    UserID = user.Id,
+                    UserEmail = user.Email,
+                    UserRoles = userRoles,
+                    AllRoles = allRoles
+                };
+
+                return Ok(model);
+            }
+            _loggerService.LogError("User id is null");
+            return NotFound();
+        }
+
+        /// <summary>
+        /// Edit user roles
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <param name="roles">List of new user roles</param>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">User not found</response>
+        [HttpPut("editedRole/{userId}")]
+        public async Task<IActionResult> Edit(string userId, [FromBody] List<string> roles)
+        {
+            if (!string.IsNullOrEmpty(userId))
+            {
+                await _adminService.EditAsync(userId, roles);
+                _loggerService.LogInformation($"Successful change role for {userId}");
+                return Ok();
+            }
+            _loggerService.LogError("User id is null");
+            return NotFound();
         }
 
         /// <summary>
@@ -225,17 +207,38 @@ namespace EPlast.WebApi.Controllers
                 var user = await _userManagerService.FindByIdAsync(userId);
                 if (user != null)
                 {
-                    var result = await _adminService.GetCityRegionAdminsOfUser(userId);
+                    var result = await _adminService.GetCityRegionAdminsOfUserAsync(userId);
                     return Ok(new { result, user });
                 }
             }
             return BadRequest();
         }
 
-        private readonly ILoggerService<AdminController> _loggerService;
-        private readonly IUserManagerService _userManagerService;
-        private readonly IAdminService _adminService;
-        private readonly ICityService _cityService;
-        private readonly ICityParticipantsService _cityAdministrationService;
+        /// <summary>
+        /// Get all users with additional information
+        /// </summary>
+        /// <returns>Specify model with all users</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("usersTable")]
+        public async Task<IActionResult> GetUsersTable()
+        {
+            return Ok(await _adminService.GetUsersTableAsync());
+        }
+
+        /// <summary>
+        /// Get all cities
+        /// </summary>
+        /// <returns>All cities in specify model</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("regionsAdmins")]
+        public async Task<IActionResult> RegionsAdmins()
+        {
+            var model = new CitiesAdminsViewModel()
+            {
+                Cities = await _cityService.GetAllDTOAsync()
+            };
+
+            return Ok(model);
+        }
     }
 }

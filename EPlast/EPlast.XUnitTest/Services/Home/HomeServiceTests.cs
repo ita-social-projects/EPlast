@@ -1,7 +1,6 @@
-﻿using EPlast.BLL;
-using EPlast.BLL.DTO;
-using EPlast.BLL.DTO.Account;
+﻿using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
+using EPlast.BLL.Services;
 using Moq;
 using System.Threading.Tasks;
 using Xunit;
@@ -10,9 +9,9 @@ namespace EPlast.XUnitTest.Services.Home
 {
     public class HomeServiceTests
     {
-        public (IHomeService, Mock<IEmailConfirmation>) CreateHomeService()
+        public (IHomeService, Mock<IEmailSendingService>) CreateHomeService()
         {
-            var mockEmailConfirmation = new Mock<IEmailConfirmation>();
+            var mockEmailConfirmation = new Mock<IEmailSendingService>();
             var homeService = new HomeService(mockEmailConfirmation.Object);
 
             return (homeService, mockEmailConfirmation);

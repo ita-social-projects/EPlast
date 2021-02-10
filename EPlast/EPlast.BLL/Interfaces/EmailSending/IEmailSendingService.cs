@@ -2,7 +2,7 @@
 
 namespace EPlast.BLL.Interfaces
 {
-    public interface IEmailConfirmation
+    public interface IEmailSendingService
     {
         /// <summary>
         /// Method for sending email through gmail

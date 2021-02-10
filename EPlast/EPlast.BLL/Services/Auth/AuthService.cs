@@ -21,16 +21,21 @@ namespace EPlast.BLL.Services
 {
     public class AuthService : IAuthService
     {
-        public AuthService(
-            UserManager<User> userManager,
-            SignInManager<User> signInManager,
-            IEmailConfirmation emailConfirmation,
-            IMapper mapper,
-            IRepositoryWrapper repoWrapper)
+        private readonly IEmailSendingService _emailSendingService;
+        private readonly IMapper _mapper;
+        private readonly IRepositoryWrapper _repoWrapper;
+        private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<User> _userManager;
+
+        public AuthService(UserManager<User> userManager,
+                           SignInManager<User> signInManager,
+                           IEmailSendingService emailSendingService,
+                           IMapper mapper,
+                           IRepositoryWrapper repoWrapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _emailConfirmation = emailConfirmation;
+            _emailSendingService = emailSendingService;
             _mapper = mapper;
             _repoWrapper = repoWrapper;
         }
@@ -109,7 +114,7 @@ namespace EPlast.BLL.Services
                 var createResult = await _userManager.CreateAsync(user);
                 if (createResult.Succeeded && user.Email != "facebookdefaultmail@gmail.com")
                 {
-                    await _emailConfirmation.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
+                    await _emailSendingService.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
                         "Ви зареєструвались в системі EPlast використовуючи свій Facebook-акаунт. ", "Адміністрація сайту EPlast");
                 }
                 await _userManager.AddToRoleAsync(user, "Прихильник");
@@ -196,7 +201,7 @@ namespace EPlast.BLL.Services
                 var createResult = await _userManager.CreateAsync(user);
                 if (createResult.Succeeded)
                 {
-                    await _emailConfirmation.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
+                    await _emailSendingService.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
                      "Ви зареєструвались в системі EPlast використовуючи свій Google-акаунт. ", "Адміністрація сайту EPlast");
                 }
                 else
@@ -261,9 +266,17 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async void RefreshSignInAsync(UserDTO userDto)
+        public async Task<bool> RefreshSignInAsync(UserDTO userDto)
         {
-            await _signInManager.RefreshSignInAsync(_mapper.Map<UserDTO, User>(userDto));
+            try
+            {
+                await _signInManager.RefreshSignInAsync(_mapper.Map<UserDTO, User>(userDto));
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            return true;
         }
 
         ///<inheritdoc/>
@@ -287,11 +300,5 @@ namespace EPlast.BLL.Services
         {
             await _signInManager.SignOutAsync();
         }
-
-        private readonly IEmailConfirmation _emailConfirmation;
-        private readonly IMapper _mapper;
-        private readonly IRepositoryWrapper _repoWrapper;
-        private readonly SignInManager<User> _signInManager;
-        private readonly UserManager<User> _userManager;
     }
 }

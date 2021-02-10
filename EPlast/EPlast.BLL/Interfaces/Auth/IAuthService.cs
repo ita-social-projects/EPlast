@@ -147,7 +147,7 @@ namespace EPlast.BLL.Interfaces
         /// Refresh signin credentials
         /// </summary>
         /// <param name="userDto"></param>
-        void RefreshSignInAsync(UserDTO userDto);
+        Task<bool> RefreshSignInAsync(UserDTO userDto);
 
         /// <summary>
         /// Reseting password for user
