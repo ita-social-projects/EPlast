@@ -133,6 +133,37 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
         }
 
+        [Test]
+        public async Task ConfirmingEmail_Invalid_userIdIsNull_Test()
+        {
+            //Arrange
+            var (mockAuthService,
+                _,
+                _,
+                _,
+                mockAuthEmailService,
+                AuthController) = CreateAuthController();
+            string userId = null;
+            string token = null;
+
+            mockAuthService
+                .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
+            mockAuthEmailService
+                .Setup(s => s.ConfirmEmailAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(IdentityResult.Failed(null));
+
+            //Act
+            var expected = StatusCodes.Status400BadRequest;
+            var result = await AuthController.ConfirmingEmailAsync(userId, token);
+            var actual = (result as BadRequestResult).StatusCode;
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+        }
+
         public (
                                             Mock<IAuthService>,
             Mock<IUserDatesService>,
@@ -163,6 +194,59 @@ namespace EPlast.Tests.Controllers
                 mockResources,
                 mockAuthEmailService,
                 AuthController);
+        }
+
+        [Test]
+        public async Task Register_InValid_SMTPEr_Test()
+        {
+            // Arrange
+            var (mockAuthService,
+                _,
+                _,
+                mockResources,
+                mockAuthEmailService,
+                AuthController) = CreateAuthController();
+
+            RegisterDto registerDto = new RegisterDto();
+            mockAuthService
+                .Setup(s => s.CreateUserAsync(It.IsAny<RegisterDto>()))
+                .ReturnsAsync(IdentityResult.Success);
+            mockAuthService
+                .Setup(s => s.AddRoleAndTokenAsync(It.IsAny<string>()))
+                .ReturnsAsync("token");
+            mockResources
+                .Setup(s => s.ResourceForErrors["Confirm-Registration"])
+                .Returns(GetConfirmRegistration());
+            mockResources
+                .Setup(s => s.ResourceForErrors["Register-SMTPServerError"])
+                .Returns(GetRegisterSMTPError());
+
+            var queueStuff = new Queue<UserDTO>();
+            queueStuff.Enqueue(null);
+            queueStuff.Enqueue(new UserDTO());
+            mockAuthService
+                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(queueStuff.Dequeue);
+            mockAuthEmailService
+                .Setup(s => s.SendEmailRegistrAsync(It.IsAny<string>()))
+                .ReturnsAsync(false);
+
+            var mockUrlHelper = new Mock<IUrlHelper>(MockBehavior.Strict);
+            mockUrlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>()))
+                .Returns("callbackUrl")
+                .Verifiable();
+            AuthController.Url = mockUrlHelper.Object;
+            AuthController.ControllerContext.HttpContext = new DefaultHttpContext();
+
+            // Act
+            var expected = StatusCodes.Status400BadRequest;
+            var result = await AuthController.Register(registerDto);
+            var actual = (result as BadRequestObjectResult).StatusCode;
+
+            // Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
         }
 
         [Test]
@@ -440,6 +524,13 @@ namespace EPlast.Tests.Controllers
             var localizedString = new LocalizedString("Register-RegisteredUser",
                 "Користувач з введеною електронною поштою вже зареєстрований в системі, " +
                 "можливо він не підтвердив свою реєстрацію");
+            return localizedString;
+        }
+
+        private LocalizedString GetRegisterSMTPError()
+        {
+            var localizedString = new LocalizedString("Register-SMTPServerError",
+                "Помилка поштового сервера");
             return localizedString;
         }
 

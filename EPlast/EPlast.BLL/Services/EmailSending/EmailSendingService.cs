@@ -7,7 +7,7 @@ using MimeKit;
 using System;
 using System.Threading.Tasks;
 
-namespace EPlast.BLL
+namespace EPlast.BLL.Services
 {
     public class EmailSendingService : IEmailSendingService
     {

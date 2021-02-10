@@ -4,6 +4,6 @@ namespace EPlast.BLL.Interfaces
 {
     public interface IEmailReminderService
     {
-        Task JoinCityReminderAsync();
+        Task<bool> JoinCityReminderAsync();
     }
 }

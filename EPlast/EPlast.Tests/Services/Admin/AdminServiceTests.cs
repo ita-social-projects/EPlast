@@ -139,8 +139,6 @@ namespace EPlast.Tests.Services
         {
             // Arrange
             string plastun = "Пластун";
-            string admin = "Admin";
-            string interested = "Зацікавлений";
             string formerMember = "Колишній член пласту";
 
             _userManager
@@ -308,8 +306,6 @@ namespace EPlast.Tests.Services
               .ReturnsAsync(new List<string>() { supporter });
             _userManager
                 .Setup(x => x.RemoveFromRoleAsync(It.IsAny<User>(), plastun));
-
-            var role = "Зацікавлений";
             _repoWrapper
                 .Setup(x => x.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
                It.IsAny<Func<IQueryable<UserMembershipDates>,

@@ -5,6 +5,7 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,9 +30,17 @@ namespace EPlast.BLL.Services.EmailSending
             _userManager = userManager;
         }
 
-        public async Task JoinCityReminderAsync()
+        public async Task<bool> JoinCityReminderAsync()
         {
-            (await GetLonelyUsersAsync()).ToList().ForEach(async (user) => await _authEmailServices.SendEmailJoinToCityReminderAsync(user.Email));
+            try
+            {
+                (await GetLonelyUsersAsync()).ToList().ForEach(async (user) => await _authEmailServices.SendEmailJoinToCityReminderAsync(user.Email));
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+            return true;
         }
 
         private async Task<IEnumerable<User>> GetLonelyUsersAsync()

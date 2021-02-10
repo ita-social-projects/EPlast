@@ -2,15 +2,15 @@
 using EPlast.BLL.Interfaces;
 using System.Threading.Tasks;
 
-namespace EPlast.BLL
+namespace EPlast.BLL.Services
 {
     public class HomeService : IHomeService
     {
         private readonly IEmailSendingService _emailSendingService;
 
-        public HomeService(IEmailSendingService emailConfirmation)
+        public HomeService(IEmailSendingService emailSendingService)
         {
-            _emailSendingService = emailConfirmation;
+            _emailSendingService = emailSendingService;
         }
 
         public Task SendEmailAdmin(ContactsDto contactDTO)
