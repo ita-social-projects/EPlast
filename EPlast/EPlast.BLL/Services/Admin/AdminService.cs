@@ -190,31 +190,8 @@ namespace EPlast.BLL.Services
             return allRoles;
         }
 
-        public async Task UpdateUserDatesByChangeRoleAsyncAsync(string userId, string role)
-        {
-            UserMembershipDates userMembershipDates = await _repoWrapper.UserMembershipDates
-                           .GetFirstOrDefaultAsync(umd => umd.UserId == userId);
-            var cityMember = await _repoWrapper.CityMembers
-                 .GetFirstOrDefaultAsync(u => u.UserId == userId, m => m.Include(u => u.User));
-            if (role == "Прихильник" && cityMember.IsApproved)
-            {
-                userMembershipDates.DateEntry = DateTime.Now;
-            }
-            else if (role != "Пластун")
-            {
-                userMembershipDates.DateEntry = default;
-            }
-            else
-            {
-                DateTime time = default;
-                userMembershipDates.DateEntry = userMembershipDates.DateEntry != time ? userMembershipDates.DateEntry : DateTime.Now;
-            }
-            _repoWrapper.UserMembershipDates.Update(userMembershipDates);
-            await _repoWrapper.SaveAsync();
-        }
-
         /// <inheritdoc />
-        public async Task<IEnumerable<UserTableDTO>> UsersTableAsync()
+        public async Task<IEnumerable<UserTableDTO>> GetUsersTableAsync()
         {
             var users = await _repoWrapper.User.GetAllAsync(
                 predicate: null,
@@ -257,6 +234,29 @@ namespace EPlast.BLL.Services
                 });
             }
             return userTable;
+        }
+
+        public async Task UpdateUserDatesByChangeRoleAsyncAsync(string userId, string role)
+        {
+            UserMembershipDates userMembershipDates = await _repoWrapper.UserMembershipDates
+                           .GetFirstOrDefaultAsync(umd => umd.UserId == userId);
+            var cityMember = await _repoWrapper.CityMembers
+                 .GetFirstOrDefaultAsync(u => u.UserId == userId, m => m.Include(u => u.User));
+            if (role == "Прихильник" && cityMember.IsApproved)
+            {
+                userMembershipDates.DateEntry = DateTime.Now;
+            }
+            else if (role != "Пластун")
+            {
+                userMembershipDates.DateEntry = default;
+            }
+            else
+            {
+                DateTime time = default;
+                userMembershipDates.DateEntry = userMembershipDates.DateEntry != time ? userMembershipDates.DateEntry : DateTime.Now;
+            }
+            _repoWrapper.UserMembershipDates.Update(userMembershipDates);
+            await _repoWrapper.SaveAsync();
         }
     }
 }

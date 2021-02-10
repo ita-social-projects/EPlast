@@ -200,12 +200,12 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task UsersTable_Valid_Test()
         {
-            _adminService.Setup(a => a.UsersTableAsync());
+            _adminService.Setup(a => a.GetUsersTableAsync());
 
             AdminController adminController = CreateAdminController;
 
             // Act
-            var result = await adminController.GetUsersTableAsync();
+            var result = await adminController.GetUsersTable();
 
             // Assert
             Assert.NotNull(result);

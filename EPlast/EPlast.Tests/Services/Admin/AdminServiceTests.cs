@@ -639,7 +639,7 @@ namespace EPlast.Tests.Services
                 .Returns(new ShortUserInformationDTO() { ID = "Admin" });
 
             // Act
-            var result = await service.UsersTableAsync();
+            var result = await service.GetUsersTableAsync();
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<UserTableDTO>>(result);
