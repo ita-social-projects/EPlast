@@ -16,6 +16,16 @@ namespace EPlast.Tests.Controllers
 {
     internal class AdminControllerTest
     {
+        private readonly Mock<IAdminService> _adminService;
+
+        private readonly Mock<ICityParticipantsService> _cityAdministrationService;
+
+        private readonly Mock<ICityService> _cityService;
+
+        private readonly Mock<ILoggerService<AdminController>> _logger;
+
+        private readonly Mock<IUserManagerService> _userManagerService;
+
         public AdminControllerTest()
         {
             _logger = new Mock<ILoggerService<AdminController>>();
@@ -25,19 +35,72 @@ namespace EPlast.Tests.Controllers
             _cityAdministrationService = new Mock<ICityParticipantsService>();
         }
 
+        private AdminController CreateAdminController => new AdminController(
+            _logger.Object,
+            _userManagerService.Object,
+            _adminService.Object,
+            _cityService.Object,
+            _cityAdministrationService.Object
+            );
+
         [Test]
-        public async Task UsersTable_Valid_Test()
+        public void ConfirmDelete_Invalid_Test()
         {
-            _adminService.Setup(a => a.UsersTableAsync());
+            AdminController adminController = CreateAdminController;
+
+            var result = adminController.ConfirmDelete("");
+
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<BadRequestResult>(result);
+        }
+
+        [Test]
+        public void ConfirmDelete_Valid_Test()
+        {
+            AdminController adminController = CreateAdminController;
+
+            var result = adminController.ConfirmDelete("UserId");
+
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task Delete_Invalid_Test()
+        {
+            _adminService.Setup(a => a.DeleteUserAsync(It.IsAny<string>()));
 
             AdminController adminController = CreateAdminController;
 
-            // Act
-            var result = await adminController.UsersTable();
+            var result = await adminController.Delete("");
 
-            // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsInstanceOf<BadRequestResult>(result);
+        }
+
+        [Test]
+        public async Task Delete_Valid_Test()
+        {
+            _adminService.Setup(a => a.DeleteUserAsync(It.IsAny<string>()));
+
+            AdminController adminController = CreateAdminController;
+
+            var result = await adminController.Delete("SomeUserId");
+
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
+        }
+
+        [Test]
+        public async Task Edit_Invalid_Test()
+        {
+            AdminController adminController = CreateAdminController;
+
+            // Act
+            var result = await adminController.Edit(null);
+
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
         [Test]
@@ -49,8 +112,8 @@ namespace EPlast.Tests.Controllers
             _userManagerService.Setup(u => u.GetRolesAsync(It.IsAny<UserDTO>()))
               .ReturnsAsync(It.IsAny<IEnumerable<string>>());
 
-            _adminService.Setup(a => a.GetRolesExceptAdminAsync())
-                .ReturnsAsync(It.IsAny<IEnumerable<IdentityRole>>());
+            _adminService.Setup(a => a.GetRolesExceptAdmin())
+                .Returns(It.IsAny<IEnumerable<IdentityRole>>());
 
             AdminController adminController = CreateAdminController;
 
@@ -62,12 +125,16 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task Edit_Invalid_Test()
+        public async Task EditRole_Invalid_Test()
         {
+            _adminService.Setup(a => a.EditAsync(It.IsAny<string>(), It.IsAny<List<string>>()));
+
             AdminController adminController = CreateAdminController;
 
-            // Act
-            var result = await adminController.Edit(null);
+            List<string> roles = new List<string>();
+            roles.Add("rendomRole");
+
+            var result = await adminController.Edit("", roles);
 
             Assert.NotNull(result);
             Assert.IsInstanceOf<NotFoundResult>(result);
@@ -90,56 +157,13 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task EditRole_Invalid_Test()
+        public async Task GetAdmins_Valid_Test()
         {
-            _adminService.Setup(a => a.EditAsync(It.IsAny<string>(), It.IsAny<List<string>>()));
+            _cityAdministrationService.Setup(c => c.GetAdministrationByIdAsync(It.IsAny<int>()));
 
             AdminController adminController = CreateAdminController;
 
-            List<string> roles = new List<string>();
-            roles.Add("rendomRole");
-
-            var result = await adminController.Edit("", roles);
-
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<NotFoundResult>(result);
-        }
-
-        [Test]
-        public async Task Delete_Valid_Test()
-        {
-            _adminService.Setup(a => a.DeleteUserAsync(It.IsAny<string>()));
-
-            AdminController adminController = CreateAdminController;
-
-            var result = await adminController.Delete("SomeUserId");
-
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkResult>(result);
-        }
-
-        [Test]
-        public async Task Delete_Invalid_Test()
-        {
-            _adminService.Setup(a => a.DeleteUserAsync(It.IsAny<string>()));
-
-            AdminController adminController = CreateAdminController;
-
-            var result = await adminController.Delete("");
-
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<BadRequestResult>(result);
-        }
-
-        [Test]
-        public async Task RegionsAdmins_Valid_Test()
-        {
-            _cityService.Setup(c => c.GetAllDTOAsync(null))
-                .ReturnsAsync(It.IsAny<IEnumerable<CityDTO>>());
-
-            AdminController adminController = CreateAdminController;
-
-            var result = await adminController.RegionsAdmins();
+            var result = await adminController.GetAdmins(2);
 
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
@@ -160,52 +184,32 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetAdmins_Valid_Test()
+        public async Task RegionsAdmins_Valid_Test()
         {
-            _cityAdministrationService.Setup(c => c.GetAdministrationByIdAsync(It.IsAny<int>()));
+            _cityService.Setup(c => c.GetAllDTOAsync(null))
+                .ReturnsAsync(It.IsAny<IEnumerable<CityDTO>>());
 
             AdminController adminController = CreateAdminController;
 
-            var result = await adminController.GetAdmins(2);
+            var result = await adminController.RegionsAdmins();
 
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
         [Test]
-        public void ConfirmDelete_Valid_Test()
+        public async Task UsersTable_Valid_Test()
         {
+            _adminService.Setup(a => a.UsersTableAsync());
+
             AdminController adminController = CreateAdminController;
 
-            var result = adminController.ConfirmDelete("UserId");
+            // Act
+            var result = await adminController.UsersTable();
 
+            // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
-
-        [Test]
-        public void ConfirmDelete_Invalid_Test()
-        {
-            AdminController adminController = CreateAdminController;
-
-            var result = adminController.ConfirmDelete("");
-
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<BadRequestResult>(result);
-        }
-
-        private readonly Mock<ILoggerService<AdminController>> _logger;
-        private readonly Mock<IUserManagerService> _userManagerService;
-        private readonly Mock<IAdminService> _adminService;
-        private readonly Mock<ICityService> _cityService;
-        private readonly Mock<ICityParticipantsService> _cityAdministrationService;
-
-        private AdminController CreateAdminController => new AdminController(
-            _logger.Object,
-            _userManagerService.Object,
-            _adminService.Object,
-            _cityService.Object,
-            _cityAdministrationService.Object
-            );
     }
 }

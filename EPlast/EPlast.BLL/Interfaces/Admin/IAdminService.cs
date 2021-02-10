@@ -41,7 +41,7 @@ namespace EPlast.BLL.Services.Interfaces
         /// Get all roles except Admin role
         /// </summary>
         /// <returns>All roles except Admin role</returns>
-        Task<IEnumerable<IdentityRole>> GetRolesExceptAdminAsync();
+        IEnumerable<IdentityRole> GetRolesExceptAdmin();
 
         /// <summary>
         /// Get all users with additional information

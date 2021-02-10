@@ -502,7 +502,7 @@ namespace EPlast.Tests.Services
         }
 
         [Test]
-        public async Task GetRolesExceptAdminAsync_Valid_Test()
+        public void GetRolesExceptAdmin_Valid_Test()
         {
             // Arrange
             var identityRoles = new IdentityRole[] { }.AsQueryable<IdentityRole>();
@@ -511,7 +511,7 @@ namespace EPlast.Tests.Services
                 .Returns(identityRoles);
 
             // Act
-            var result = await service.GetRolesExceptAdminAsync();
+            var result = service.GetRolesExceptAdmin();
 
             // Assert
             Assert.IsInstanceOf<IEnumerable<IdentityRole>>(result);

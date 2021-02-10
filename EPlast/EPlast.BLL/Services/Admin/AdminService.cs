@@ -183,7 +183,7 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<IdentityRole>> GetRolesExceptAdminAsync()
+        public IEnumerable<IdentityRole> GetRolesExceptAdmin()
         {
             var admin = _roleManager.Roles.Where(i => i.Name == "Admin");
             var allRoles = _roleManager.Roles.Except(admin).OrderBy(i => i.Name).ToList();
