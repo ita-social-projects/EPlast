@@ -464,7 +464,7 @@ namespace EPlast.Tests.Services
         }
 
         [Test]
-        public async Task GetCityRegionAdminsOfUser_ReturnsCorrect()
+        public async Task GetCityRegionAdminsOfUserAsync_ReturnsCorrect()
         {
             // Arrange
             AdminType adminType = new AdminType() { AdminTypeName = "Голова Округу" };
@@ -495,7 +495,7 @@ namespace EPlast.Tests.Services
                 .Returns(new List<RegionAdministrationDTO>());
 
             // Act
-            var result = await service.GetCityRegionAdminsOfUser("string");
+            var result = await service.GetCityRegionAdminsOfUserAsync("string");
 
             // Assert
             Assert.IsInstanceOf<IEnumerable<CityDTO>>(result);

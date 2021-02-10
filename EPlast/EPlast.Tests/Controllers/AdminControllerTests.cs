@@ -205,7 +205,7 @@ namespace EPlast.Tests.Controllers
             AdminController adminController = CreateAdminController;
 
             // Act
-            var result = await adminController.UsersTable();
+            var result = await adminController.GetUsersTable();
 
             // Assert
             Assert.NotNull(result);

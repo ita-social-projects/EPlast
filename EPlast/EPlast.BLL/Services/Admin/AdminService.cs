@@ -132,7 +132,7 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task EditAsync(string userId, List<string> roles)
+        public async Task EditAsync(string userId, IEnumerable<string> roles)
         {
             User user = await _userManager.FindByIdAsync(userId);
             var userRoles = await _userManager.GetRolesAsync(user);
@@ -150,7 +150,7 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<CityDTO>> GetCityRegionAdminsOfUser(string userId)
+        public async Task<IEnumerable<CityDTO>> GetCityRegionAdminsOfUserAsync(string userId)
         {
             var cities = await _repoWrapper.City.
                 GetAllAsync(predicate: c => c.CityMembers.FirstOrDefault(c => c.UserId == userId) != null,
@@ -186,7 +186,7 @@ namespace EPlast.BLL.Services
         public IEnumerable<IdentityRole> GetRolesExceptAdmin()
         {
             var admin = _roleManager.Roles.Where(i => i.Name == "Admin");
-            var allRoles = _roleManager.Roles.Except(admin).OrderBy(i => i.Name).ToList();
+            var allRoles = _roleManager.Roles.Except(admin).OrderBy(i => i.Name);
             return allRoles;
         }
 

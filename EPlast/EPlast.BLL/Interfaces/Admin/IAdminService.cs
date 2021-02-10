@@ -30,12 +30,12 @@ namespace EPlast.BLL.Services.Interfaces
         /// </summary>
         /// <param name="userId">The id of the user</param>
         /// <param name="roles">List of new user roles</param>
-        Task EditAsync(string userId, List<string> roles);
+        Task EditAsync(string userId, IEnumerable<string> roles);
 
         /// <summary>
         /// Get City and Region Admins by userId of user which contained cityMembers
         /// </summary>
-        Task<IEnumerable<CityDTO>> GetCityRegionAdminsOfUser(string userId);
+        Task<IEnumerable<CityDTO>> GetCityRegionAdminsOfUserAsync(string userId);
 
         /// <summary>
         /// Get all roles except Admin role

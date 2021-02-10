@@ -207,11 +207,23 @@ namespace EPlast.WebApi.Controllers
                 var user = await _userManagerService.FindByIdAsync(userId);
                 if (user != null)
                 {
-                    var result = await _adminService.GetCityRegionAdminsOfUser(userId);
+                    var result = await _adminService.GetCityRegionAdminsOfUserAsync(userId);
                     return Ok(new { result, user });
                 }
             }
             return BadRequest();
+        }
+
+        /// <summary>
+        /// Get all users with additional information
+        /// </summary>
+        /// <returns>Specify model with all users</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("usersTable")]
+        public async Task<IActionResult> GetUsersTable()
+        {
+            var result = await _adminService.UsersTableAsync();
+            return Ok(result);
         }
 
         /// <summary>
@@ -228,18 +240,6 @@ namespace EPlast.WebApi.Controllers
             };
 
             return Ok(model);
-        }
-
-        /// <summary>
-        /// Get all users with additional information
-        /// </summary>
-        /// <returns>Specify model with all users</returns>
-        /// <response code="200">Successful operation</response>
-        [HttpGet("usersTable")]
-        public async Task<IActionResult> UsersTable()
-        {
-            var result = await _adminService.UsersTableAsync();
-            return Ok(result);
         }
     }
 }
