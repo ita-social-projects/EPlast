@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.City;
@@ -318,12 +319,9 @@ namespace EPlast.Tests.Services
             _userManager
                 .Setup(x => x.AddToRoleAsync(It.IsAny<User>(), admin));
 
-            List<string> newRoles = new List<string>()
-            {
-                "Пластун",
-            };
             // Act
             await service.ChangeCurrentRoleAsync("id", interested);
+
             // Assert
             _userManager.Verify();
             _repoWrapper.Verify();
@@ -469,19 +467,54 @@ namespace EPlast.Tests.Services
         public async Task GetCityRegionAdminsOfUser_ReturnsCorrect()
         {
             // Arrange
+            AdminType adminType = new AdminType() { AdminTypeName = "Голова Округу" };
+            RegionAdministration regionAdministration = new RegionAdministration() { AdminType = adminType };
+            ICollection<RegionAdministration> regionAdministrations = new List<RegionAdministration>() { regionAdministration };
+            Region region = new Region { RegionAdministration = regionAdministrations };
+            DataAccess.Entities.City city = new DataAccess.Entities.City() { ID = 1, Region = region };
+            List<DataAccess.Entities.City> cities = new List<DataAccess.Entities.City> { city };
+
+            List<RegionAdministrationDTO> regionAdministrationDTOs = new List<RegionAdministrationDTO>();
+            RegionDTO regionDTO = new RegionDTO() { Administration = regionAdministrationDTOs };
+            CityDTO cityDTO = new CityDTO() { ID = 1, Region = regionDTO };
+            List<CityDTO> cityDTOs = new List<CityDTO>() { cityDTO };
+
             _repoWrapper
-                .Setup(x => x.City.GetAllAsync(It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
-               It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
-               IIncludableQueryable<DataAccess.Entities.City, object>>>()))
-                .ReturnsAsync(new List<DataAccess.Entities.City>());
+                .Setup(x => x.City.GetAllAsync
+                (
+                    It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
+                    IIncludableQueryable<DataAccess.Entities.City, object>>>())
+                )
+                .ReturnsAsync(cities);
             _mapper
-                .Setup(x => x.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<BLL.DTO.City.CityDTO>>(new List<DataAccess.Entities.City>()));
+                .Setup(x => x.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDTO>>(It.IsAny<List<DataAccess.Entities.City>>()))
+                .Returns(cityDTOs);
             _mapper
-                .Setup(x => x.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(new List<RegionAdministration>()));
+                .Setup(x => x.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(It.IsAny<IEnumerable<RegionAdministration>>()))
+                .Returns(new List<RegionAdministrationDTO>());
+
             // Act
-            var result = await service.GetCityRegionAdminsOfUser(It.IsAny<string>());
+            var result = await service.GetCityRegionAdminsOfUser("string");
+
             // Assert
-            Assert.IsInstanceOf<IEnumerable<BLL.DTO.City.CityDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<CityDTO>>(result);
+        }
+
+        [Test]
+        public async Task GetRolesExceptAdminAsync_Valid_Test()
+        {
+            // Arrange
+            var identityRoles = new IdentityRole[] { }.AsQueryable<IdentityRole>();
+            _roleManager
+                .Setup(x => x.Roles)
+                .Returns(identityRoles);
+
+            // Act
+            var result = await service.GetRolesExceptAdminAsync();
+
+            // Assert
+            Assert.IsInstanceOf<IEnumerable<IdentityRole>>(result);
         }
 
         [SetUp]

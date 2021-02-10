@@ -186,10 +186,7 @@ namespace EPlast.BLL.Services
         public async Task<IEnumerable<IdentityRole>> GetRolesExceptAdminAsync()
         {
             var admin = _roleManager.Roles.Where(i => i.Name == "Admin");
-            var allRoles = await _roleManager.Roles.
-                Except(admin).
-                OrderBy(i => i.Name).
-                ToListAsync();
+            var allRoles = _roleManager.Roles.Except(admin).OrderBy(i => i.Name).ToList();
             return allRoles;
         }
 

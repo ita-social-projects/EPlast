@@ -272,7 +272,7 @@ namespace EPlast.BLL.Services
             {
                 await _signInManager.RefreshSignInAsync(_mapper.Map<UserDTO, User>(userDto));
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
