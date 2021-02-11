@@ -22,11 +22,5 @@ namespace EPlast.DataAccess.Repositories
             user.PhoneNumber = item.PhoneNumber;
             EPlastDBContext.Users.Update(user);
         }
-        public async Task<int> GetTotalUsersCountAsync()
-        {
-            var usersCount = await EPlastDBContext.Users.Where(x => x.EmailConfirmed).CountAsync();
-
-           return usersCount;
-        }
     }
 }

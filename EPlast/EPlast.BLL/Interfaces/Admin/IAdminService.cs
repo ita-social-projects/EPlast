@@ -53,10 +53,5 @@ namespace EPlast.BLL.Services.Interfaces
                                                                         IEnumerable<string> regions,
                                                                         IEnumerable<string> clubs,
                                                                         IEnumerable<string> degrees);
-
-        Task<IEnumerable<UserTableDTO>> GetFilteredDataAsync(IEnumerable<string> cities,
-                                                                        IEnumerable<string> regions,
-                                                                        IEnumerable<string> clubs,
-                                                                        IEnumerable<string> degrees);
     }
 }
