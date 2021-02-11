@@ -1,5 +1,6 @@
 ﻿using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.WebApi.Models.Admin;
 using EPlast.WebApi.Models.Role;
@@ -223,6 +224,26 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetUsersTable()
         {
             return Ok(await _adminService.GetUsersTableAsync());
+        }
+
+        /// <summary>
+        /// Get a specific number of users
+        /// </summary>
+        /// <param name="tableFilterParameters">Items to filter</param>
+        /// <returns>A specific number of users</returns>
+        [HttpGet("Profiles")]
+        public async Task<IActionResult> UsersTable([FromQuery] TableFilterParameters tableFilterParameters)
+        {
+            var tuple = await _adminService.UsersTableForPageAsync(tableFilterParameters.Page, tableFilterParameters.PageSize, tableFilterParameters.Cities, tableFilterParameters.Regions, tableFilterParameters.Clubs, tableFilterParameters.Degrees);
+            var users = tuple.Item1;
+            var usersCount = tuple.Item2;
+            var tableViewModel = new AdminTypeViewModel()
+            {
+                Total = usersCount,
+                Users = users
+            };
+
+            return Ok(tableViewModel);
         }
 
         /// <summary>

@@ -190,16 +190,26 @@ namespace EPlast.BLL.Services
             return allRoles;
         }
 
+        public async Task<Tuple<IEnumerable<UserTableDTO>, int>> UsersTableForPageAsync(int page, int pageSize,
+         IEnumerable<string> cities, IEnumerable<string> regions, IEnumerable<string> clubs, IEnumerable<string> degrees)
+        {
+            var filteredTable = await GetFilteredDataAsync(cities, regions, clubs, degrees);
+            int usersCount = filteredTable.Count();
+            var userTable = filteredTable.OrderBy(x => x.User.UserProfileId)
+                .Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            return new Tuple<IEnumerable<UserTableDTO>, int>(userTable, usersCount);
+        }
+
         /// <inheritdoc />
         public async Task<IEnumerable<UserTableDTO>> GetUsersTableAsync()
         {
-            var users = await _repoWrapper.User.GetAllAsync(
-                predicate: null,
-                include: i => i.Include(x => x.UserProfile)
-                        .ThenInclude(x => x.Gender)
-                    .Include(x => x.UserPlastDegrees)
-                        .ThenInclude(x => x.PlastDegree)
-                    .Include(x => x.UserProfile)
+            var users = await _repoWrapper.User.GetAllAsync(x => x.EmailConfirmed,
+                include:
+                    i => i.Include(x => x.UserProfile)
+                            .ThenInclude(x => x.Gender)
+                        .Include(x => x.UserPlastDegrees)
+                            .ThenInclude(x => x.PlastDegree)
+                         .Include(x => x.UserProfile)
                             .ThenInclude(x => x.UpuDegree));
             var cities = await _repoWrapper.City.
                 GetAllAsync(null, x => x.Include(i => i.Region));
@@ -235,7 +245,96 @@ namespace EPlast.BLL.Services
             }
             return userTable;
         }
+        public async Task<IEnumerable<UserTableDTO>> GetFilteredDataAsync(IEnumerable<string> cities,
+                                                                        IEnumerable<string> regions,
+                                                                        IEnumerable<string> clubs,
+                                                                        IEnumerable<string> degrees)
+        {
+            var table = await GetUsersTableAsync();
+            var resultCityList = new List<UserTableDTO>();
+            var resultRegionList = new List<UserTableDTO>();
+            var resultClubList = new List<UserTableDTO>();
+            var resultDegreeList = new List<UserTableDTO>();
 
+            if (cities == null)
+            {
+                resultCityList.AddRange(table.ToList());
+            }
+            else
+            {
+                foreach (var city in cities)
+                {
+
+                    if (city == "Всі міста")
+                    {
+                        resultCityList.AddRange(table.Where(x => x.CityName != null).ToList());
+                        break;
+                    }
+                    else
+                    {
+                        resultCityList.AddRange(table.Where(x => x.CityName == city).ToList());
+                    }
+                }
+            }
+            if (regions == null)
+            {
+                resultRegionList.AddRange(resultCityList.ToList());
+            }
+            else
+            {
+                foreach (var region in regions)
+                {
+                    if (region == "Всі округи")
+                    {
+                        resultRegionList.AddRange(resultCityList.Where(x => x.RegionName != null).ToList());
+                        break;
+                    }
+                    else
+                    {
+                        resultRegionList.AddRange(resultCityList.Where(x => x.RegionName == region).ToList());
+                    }
+                }
+            }
+            if (clubs == null)
+            {
+                resultClubList.AddRange(resultRegionList.ToList());
+            }
+            else
+            {
+                foreach (var club in clubs)
+                {
+                    if (club == "Всі курені")
+                    {
+                        resultClubList.AddRange(resultRegionList.Where(x => x.ClubName != null).ToList());
+                        break;
+                    }
+                    else
+                    {
+                        resultClubList.AddRange(resultRegionList.Where(x => x.ClubName.Replace("'", "") == (club.Replace("'", ""))).ToList());
+                    }
+                }
+            }
+            if (degrees == null)
+            {
+                resultDegreeList.AddRange(resultClubList.ToList());
+            }
+            else
+            {
+                foreach (var degree in degrees)
+                {
+                    if (degree == "Всі ступені УПС/УСП")
+                    {
+                        resultDegreeList.AddRange(resultClubList.Where(x => x.UserPlastDegreeName != null).ToList());
+                        break;
+                    }
+                    else
+                    {
+                        resultDegreeList.AddRange(resultClubList.Where(x => x.UserPlastDegreeName == degree).ToList());
+                    }
+                }
+            }
+            return resultDegreeList;
+        }
         public async Task UpdateUserDatesByChangeRoleAsyncAsync(string userId, string role)
         {
             UserMembershipDates userMembershipDates = await _repoWrapper.UserMembershipDates
