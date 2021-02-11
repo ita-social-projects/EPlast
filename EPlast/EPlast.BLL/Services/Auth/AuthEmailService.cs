@@ -54,7 +54,7 @@ namespace EPlast.BLL.Services.Auth
             var sendResult = await _emailSendingService.SendEmailAsync(user.Email,
                                                                        "Вітаємо у системі!",
                                                                        $"Ви успішно активували свій акаунт!\nНе забудьте доєднатись до осередку, перейшовши за :  <a href='{citiesUrl}'>посиланням</a> ",
-                                                                       "Адміністрація сайту EPlast");
+                                                                       "EPlast");
             return sendResult;
         }
 
@@ -63,9 +63,12 @@ namespace EPlast.BLL.Services.Auth
             var citiesUrl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Cities"];
             var sendResult = await _emailSendingService.SendEmailAsync(email,
                                                                        "Нагадування про приєднання до станиці",
-                                                                       "Нагадуємо, що вам необхідно приєднатись до станиці.\n"
-                                                                       + $"Зробити це можна, перейшовши за :  <a href='{citiesUrl}'>посиланням</a> ",
-                                                                       "Адміністрація сайту EPlast");
+                                                                       "<h3>СКОБ!</h3>"
+                                                                        + "<p>Друже/подруго, просимо тебе доєднатись до пластового осередку впродовж цього тижня."
+                                                                        + $"<br>Зробити це можна, перейшовши за <a href='{citiesUrl}'>посиланням</a>."
+                                                                        + "<br>Профілі без осередку блокуються системою автоматично.</p>"
+                                                                        + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>",
+                                                                       "EPlast");
             return sendResult;
         }
 
@@ -83,7 +86,7 @@ namespace EPlast.BLL.Services.Auth
             var sendResult = await _emailSendingService.SendEmailAsync(email,
                                                                        "Підтвердження реєстрації ",
                                                                        $"Підтвердіть реєстрацію, перейшовши за :  <a href='{confirmationLink}'>посиланням</a> ",
-                                                                       "Адміністрація сайту EPlast");
+                                                                       "EPlast");
             return sendResult;
         }
 
