@@ -3,7 +3,7 @@ using EPlast.BLL.DTO.City;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using System;
 namespace EPlast.BLL.Services.Interfaces
 {
     public interface IAdminService
@@ -33,7 +33,7 @@ namespace EPlast.BLL.Services.Interfaces
         /// <param name="userId">The id of the user, which must be deleted</param>
         Task DeleteUserAsync(string userId);
 
-         /// <summary>
+        /// <summary>
         /// Get all users with additional information
         /// </summary>
         /// <returns>Specify model with all users</returns>
@@ -48,5 +48,15 @@ namespace EPlast.BLL.Services.Interfaces
         /// Get City and Region Admins by userId of user which contained cityMembers
         /// </summary>
         Task<IEnumerable<CityDTO>> GetCityRegionAdminsOfUser(string userId);
+        Task<Tuple<IEnumerable<UserTableDTO>, int>> UsersTableForPage(int page, int pageSize,
+                                                                        IEnumerable<string> cities,
+                                                                        IEnumerable<string> regions,
+                                                                        IEnumerable<string> clubs,
+                                                                        IEnumerable<string> degrees);
+
+        Task<IEnumerable<UserTableDTO>> GetFilteredDataAsync(IEnumerable<string> cities,
+                                                                        IEnumerable<string> regions,
+                                                                        IEnumerable<string> clubs,
+                                                                        IEnumerable<string> degrees);
     }
 }

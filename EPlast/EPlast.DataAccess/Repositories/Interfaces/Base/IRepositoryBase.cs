@@ -25,6 +25,7 @@ namespace EPlast.DataAccess.Repositories
         IQueryable<T> Include(params Expression<Func<T, object>>[] includes);
 
         Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null);
+        IQueryable<T> GetForPage(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null);
 
         Task<T> GetFirstAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null);
 

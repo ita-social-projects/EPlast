@@ -72,6 +72,10 @@ namespace EPlast.DataAccess.Repositories
         {
             return await this.GetQuery(predicate, include).ToListAsync();
         }
+        public IQueryable<T> GetForPage(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        {
+            return GetQuery(predicate, include);
+        }
 
         public async Task<T> GetFirstAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
         {

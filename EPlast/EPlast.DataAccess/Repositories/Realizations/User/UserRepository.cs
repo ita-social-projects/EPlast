@@ -1,4 +1,7 @@
 ﻿using EPlast.DataAccess.Entities;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -18,6 +21,12 @@ namespace EPlast.DataAccess.Repositories
             user.ImagePath = item.ImagePath;
             user.PhoneNumber = item.PhoneNumber;
             EPlastDBContext.Users.Update(user);
+        }
+        public async Task<int> GetTotalUsersCountAsync()
+        {
+            var usersCount = await EPlastDBContext.Users.Where(x => x.EmailConfirmed).CountAsync();
+
+           return usersCount;
         }
     }
 }

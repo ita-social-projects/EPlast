@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.DTO.UserProfiles;
@@ -29,12 +30,12 @@ namespace EPlast.BLL.Services
         private readonly ICityParticipantsService _cityParticipants;
 
 
-        public AdminService(IRepositoryWrapper repoWrapper, 
-            UserManager<User> userManager, 
-            IMapper mapper, 
+        public AdminService(IRepositoryWrapper repoWrapper,
+            UserManager<User> userManager,
+            IMapper mapper,
             RoleManager<IdentityRole> roleManager,
             IClubParticipantsService clubParticipants,
-            IRegionAdministrationService regionService, 
+            IRegionAdministrationService regionService,
             ICityParticipantsService cityParticipants)
         {
             _repoWrapper = repoWrapper;
@@ -86,10 +87,10 @@ namespace EPlast.BLL.Services
                 var userRoles = await _userManager.GetRolesAsync(user);
                 await _userManager.RemoveFromRolesAsync(user, userRoles);
             }
-            
+
             var cityMember = await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(m => m.UserId == userId);
 
-            if(cityMember != null)
+            if (cityMember != null)
             {
                 await _cityParticipants.RemoveMemberAsync(cityMember);
             }
@@ -101,7 +102,7 @@ namespace EPlast.BLL.Services
             }
 
             var regionAdmin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.UserId == userId);
-            if(regionAdmin != null)
+            if (regionAdmin != null)
             {
                 await _regionService.DeleteAdminByIdAsync(regionAdmin.ID);
             }
@@ -129,7 +130,7 @@ namespace EPlast.BLL.Services
             const string formerMember = "Колишній член пласту";
             var user = await _userManager.FindByIdAsync(userId);
             var roles = await _userManager.GetRolesAsync(user);
-           
+
             switch (role)
             {
                 case supporter:
@@ -143,7 +144,7 @@ namespace EPlast.BLL.Services
                     {
                         await _userManager.RemoveFromRoleAsync(user, plastun);
                     }
-                    else if(roles.Contains(interested))
+                    else if (roles.Contains(interested))
                     {
                         await _userManager.RemoveFromRoleAsync(user, interested);
                     }
@@ -161,7 +162,8 @@ namespace EPlast.BLL.Services
             }
         }
 
-        public async Task UpdateUserDatesByChangeRole(string userId, string role) {
+        public async Task UpdateUserDatesByChangeRole(string userId, string role)
+        {
             UserMembershipDates userMembershipDates = await _repoWrapper.UserMembershipDates
                            .GetFirstOrDefaultAsync(umd => umd.UserId == userId);
             var cityMember = await _repoWrapper.CityMembers
@@ -174,13 +176,23 @@ namespace EPlast.BLL.Services
             {
                 userMembershipDates.DateEntry = default;
             }
-            else 
+            else
             {
                 DateTime time = default;
                 userMembershipDates.DateEntry = userMembershipDates.DateEntry != time ? userMembershipDates.DateEntry : DateTime.Now;
             }
             _repoWrapper.UserMembershipDates.Update(userMembershipDates);
             await _repoWrapper.SaveAsync();
+        }
+
+        public async Task<Tuple<IEnumerable<UserTableDTO>, int>> UsersTableForPage(int page, int pageSize,
+         IEnumerable<string> cities, IEnumerable<string> regions, IEnumerable<string> clubs, IEnumerable<string> degrees)
+        {
+            var filteredTable = await GetFilteredDataAsync(cities, regions, clubs, degrees);
+            int usersCount = filteredTable.Count();
+            var userTable = filteredTable.OrderBy(x => x.User.UserProfileId)
+                .Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            return new Tuple<IEnumerable<UserTableDTO>, int>(userTable, usersCount);
         }
 
         /// <inheritdoc />
@@ -241,7 +253,7 @@ namespace EPlast.BLL.Services
             {
                 city.Region.RegionAdministration = city.Region.RegionAdministration.Where(r =>
                 {
-                    if(r.AdminType.AdminTypeName == "Голова Округу" && (r.EndDate > DateTime.Now || r.EndDate == null))
+                    if (r.AdminType.AdminTypeName == "Голова Округу" && (r.EndDate > DateTime.Now || r.EndDate == null))
                     {
                         r.Region = null;
                         return true;
@@ -263,5 +275,95 @@ namespace EPlast.BLL.Services
 
         }
 
+        public async Task<IEnumerable<UserTableDTO>> GetFilteredDataAsync(IEnumerable<string> cities,
+                                                                          IEnumerable<string> regions,
+                                                                          IEnumerable<string> clubs,
+                                                                          IEnumerable<string> degrees)
+        {
+            var table = await UsersTableAsync();
+            var resultCityList = new List<UserTableDTO>();
+            var resultRegionList = new List<UserTableDTO>();
+            var resultClubList = new List<UserTableDTO>();
+            var resultDegreeList = new List<UserTableDTO>();
+
+            if (cities == null)
+            {
+                resultCityList.AddRange(table.ToList());
+            }
+            else
+            {
+                foreach (var city in cities)
+                {
+
+                    if (city == "Всі міста")
+                    {
+                        resultCityList.AddRange(table.Where(x => x.CityName != null).ToList());
+                        break;
+                    }
+                    else
+                    {
+                        resultCityList.AddRange(table.Where(x => x.CityName == city).ToList());
+                    }
+                }
+            }
+            if (regions == null)
+            {
+                resultRegionList.AddRange(resultCityList.ToList());
+            }
+            else
+            {
+                foreach (var region in regions)
+                {
+                    if (region == "Всі округи")
+                    {
+                        resultRegionList.AddRange(resultCityList.Where(x => x.RegionName != null).ToList());
+                        break;
+                    }
+                    else
+                    {
+                        resultRegionList.AddRange(resultCityList.Where(x => x.RegionName == region).ToList());
+                    }
+                }
+            }
+            if (clubs == null)
+            {
+                resultClubList.AddRange(resultRegionList.ToList());
+            }
+            else
+            {
+                foreach (var club in clubs)
+                {
+                    if (club == "Всі курені")
+                    {
+                        resultClubList.AddRange(resultRegionList.Where(x => x.ClubName != null).ToList());
+                        break;
+                    }
+                    else
+                    {
+                        resultClubList.AddRange(resultRegionList.Where(x => x.ClubName.Replace("'", "") == (club.Replace("'", ""))).ToList());
+                    }
+                }
+            }
+            if (degrees == null)
+            {
+                resultDegreeList.AddRange(resultClubList.ToList());
+            }
+            else
+            {
+                foreach (var degree in degrees)
+                {
+                    if (degree == "Всі ступені УПС/УСП")
+                    {
+                        resultDegreeList.AddRange(resultClubList.Where(x => x.UserPlastDegreeName != null).ToList());
+                        break;
+                    }
+                    else
+                    {
+                        resultDegreeList.AddRange(resultClubList.Where(x => x.UserPlastDegreeName == degree).ToList());
+                    }
+                }
+            }
+            return resultDegreeList;
+        }
     }
 }
