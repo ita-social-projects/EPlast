@@ -203,7 +203,7 @@ namespace EPlast.BLL.Services
         /// <inheritdoc />
         public async Task<IEnumerable<UserTableDTO>> GetUsersTableAsync()
         {
-            var users = await _repoWrapper.User.GetAllAsync(x => x.EmailConfirmed,
+            var users = await _repoWrapper.User.GetAllAsync(predicate: null,
                 include:
                     i => i.Include(x => x.UserProfile)
                             .ThenInclude(x => x.Gender)
