@@ -18,7 +18,7 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="AuthenticationErrors.en.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
+      <Generator></Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="AuthenticationErrors.uk.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
