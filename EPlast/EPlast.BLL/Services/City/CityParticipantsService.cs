@@ -7,6 +7,7 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using NLog.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,10 +24,10 @@ namespace EPlast.BLL.Services.City
         private readonly UserManager<User> _userManager;
 
         public CityParticipantsService(IRepositoryWrapper repositoryWrapper,
-            IMapper mapper,
-            UserManager<User> userManager,
-            IAdminTypeService adminTypeService,
-            IEmailSendingService emailSendingService)
+                                       IMapper mapper,
+                                       UserManager<User> userManager,
+                                       IAdminTypeService adminTypeService,
+                                       IEmailSendingService emailSendingService)
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
@@ -244,13 +245,14 @@ namespace EPlast.BLL.Services.City
         public async Task<CityMembersDTO> ToggleApproveStatusAsync(int memberId)
         {
             var cityMember = await _repositoryWrapper.CityMembers
-                .GetFirstOrDefaultAsync(u => u.ID == memberId, m => m.Include(u => u.User));
+                .GetFirstOrDefaultAsync(u => u.ID == memberId,
+                                        m => m.Include(u => u.User)
+                                              .Include(u => u.City));
             cityMember.IsApproved = !cityMember.IsApproved;
             _repositoryWrapper.CityMembers.Update(cityMember);
             await _repositoryWrapper.SaveAsync();
             await ChangeMembershipDatesByApprove(cityMember.UserId, cityMember.IsApproved);
-            await SendEmail(cityMember.User.Email, cityMember.City.Name, cityMember.IsApproved);
-
+            await SendEmailCityApproveAsync(cityMember.User.Email, cityMember.City, cityMember.IsApproved);
             return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
         }
 
@@ -281,15 +283,16 @@ namespace EPlast.BLL.Services.City
             }
         }
 
-        private async Task SendEmail(string email, string cityName, bool isApproved)
+        private async Task SendEmailCityApproveAsync(string email, DataAccess.Entities.City city, bool isApproved)
         {
-            string message = isApproved ? "<h3>СКОБ!</h3>"
-                                                          + $"<p>Дружепод/руго, вітаємо тебе з переходом у статус 'Прихильник' станиці '{cityName}'!"
-                                                          + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>" :
-                                                          "<h3>СКОБ!</h3>"
-                                                          + $"<p>Друже/подруго, повідомляємо, що тебе було виключено зі станиці '{cityName}'."
-                                                          + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>";
-
+            string cityUrl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Cities"] + city.ID;
+            string approveMessage = "<h3>СКОБ!</h3>"
+                + $"<p>Друже / подруго, повідомляємо, що тебе прийнято до станиці <a href='{cityUrl}'>{city.Name}</a>!"
+                + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>";
+            string excludeMessage = "<h3>СКОБ!</h3>"
+                + $"<p>Друже / подруго, повідомляємо, що тебе було виключено зі станиці <a href='{cityUrl}'>{city.Name}</a>."
+                + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>";
+            string message = isApproved ? approveMessage : excludeMessage;
             await _emailSendingService.SendEmailAsync(email, "Зміна статусу членства у станиці", message, "EPlast");
         }
     }
