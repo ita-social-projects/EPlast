@@ -191,9 +191,9 @@ namespace EPlast.BLL.Services
         }
 
         public async Task<Tuple<IEnumerable<UserTableDTO>, int>> UsersTableForPageAsync(int page, int pageSize,
-         IEnumerable<string> cities, IEnumerable<string> regions, IEnumerable<string> clubs, IEnumerable<string> degrees)
+         IEnumerable<string> cities, IEnumerable<string> regions, IEnumerable<string> clubs, IEnumerable<string> degrees, string tab)
         {
-            var filteredTable = await GetFilteredDataAsync(cities, regions, clubs, degrees);
+            var filteredTable = await GetFilteredDataAsync(cities, regions, clubs, degrees, tab);
             int usersCount = filteredTable.Count();
             var userTable = filteredTable.OrderBy(x => x.User.UserProfileId)
                 .Skip((page - 1) * pageSize).Take(pageSize).ToList();
@@ -201,16 +201,34 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<UserTableDTO>> GetUsersTableAsync()
+        public async Task<IEnumerable<UserTableDTO>> GetUsersTableAsync(string tab)
         {
-            var users = await _repoWrapper.User.GetAllAsync(predicate: null,
-                include:
-                    i => i.Include(x => x.UserProfile)
-                            .ThenInclude(x => x.Gender)
-                        .Include(x => x.UserPlastDegrees)
-                            .ThenInclude(x => x.PlastDegree)
-                         .Include(x => x.UserProfile)
-                            .ThenInclude(x => x.UpuDegree));
+            var users = await _repoWrapper.User.GetAllAsync();
+            switch (tab)
+            {
+                case "confirmed":
+                    users = await _repoWrapper.User.GetAllAsync(x => x.EmailConfirmed,
+               include:
+                   i => i.Include(x => x.UserProfile)
+                           .ThenInclude(x => x.Gender)
+                       .Include(x => x.UserPlastDegrees)
+                           .ThenInclude(x => x.PlastDegree)
+                        .Include(x => x.UserProfile)
+                           .ThenInclude(x => x.UpuDegree));
+                    break;
+                case "unconfirmed":
+                    users = await _repoWrapper.User.GetAllAsync(x => x.EmailConfirmed == false,
+               include:
+                   i => i.Include(x => x.UserProfile)
+                           .ThenInclude(x => x.Gender)
+                       .Include(x => x.UserPlastDegrees)
+                           .ThenInclude(x => x.PlastDegree)
+                        .Include(x => x.UserProfile)
+                           .ThenInclude(x => x.UpuDegree));
+                    break;
+                default:
+                    break;
+            }
             var cities = await _repoWrapper.City.
                 GetAllAsync(null, x => x.Include(i => i.Region));
             var clubMembers = await _repoWrapper.ClubMembers.
@@ -248,9 +266,9 @@ namespace EPlast.BLL.Services
         public async Task<IEnumerable<UserTableDTO>> GetFilteredDataAsync(IEnumerable<string> cities,
                                                                         IEnumerable<string> regions,
                                                                         IEnumerable<string> clubs,
-                                                                        IEnumerable<string> degrees)
+                                                                        IEnumerable<string> degrees, string tab)
         {
-            var table = await GetUsersTableAsync();
+            var table = await GetUsersTableAsync(tab);
             var resultCityList = new List<UserTableDTO>();
             var resultRegionList = new List<UserTableDTO>();
             var resultClubList = new List<UserTableDTO>();

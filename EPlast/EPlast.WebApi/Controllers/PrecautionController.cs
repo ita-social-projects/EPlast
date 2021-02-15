@@ -258,9 +258,9 @@ namespace EPlast.WebApi.Controllers
         /// <returns>Table of users without active precautions</returns>
         /// <response code="200">Table of all users without active precautions</response>
         [HttpGet("usersWithoutPrecautions")]
-        public async Task<IActionResult> UsersWithoutPrecautionsTable()
+        public async Task<IActionResult> UsersWithoutPrecautionsTable(string tab)
         {
-            var result = await _userPrecautionService.UsersTableWithotPrecautionAsync();
+            var result = await _userPrecautionService.UsersTableWithotPrecautionAsync(tab);
             return Ok(result);
         }
     }
