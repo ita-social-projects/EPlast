@@ -246,27 +246,11 @@ namespace EPlast.BLL.Services.City
             var cityMember = await _repositoryWrapper.CityMembers
                 .GetFirstOrDefaultAsync(u => u.ID == memberId, m => m.Include(u => u.User));
             cityMember.IsApproved = !cityMember.IsApproved;
-            if (cityMember.IsApproved)
-            {
-                await _emailSendingService.SendEmailAsync(cityMember.User.Email,
-                                                          "Зміна статусу членства у станиці",
-                                                          "<h3>СКОБ!</h3>"
-                                                          + $"<p>Друже/подруго, вітаємо тебе з переходом у статус 'Прихильник' станиці '{cityMember.City.Name}'!"
-                                                          + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>",
-                                                          "EPlast");
-            }
-            else
-            {
-                await _emailSendingService.SendEmailAsync(cityMember.User.Email,
-                                                          "Зміна статусу членства у станиці",
-                                                          "<h3>СКОБ!</h3>"
-                                                          + $"<p>Друже/подруго, повідомляємо, що тебе було виключено зі станиці '{cityMember.City.Name}'."
-                                                          + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>",
-                                                          "EPlast");
-            }
             _repositoryWrapper.CityMembers.Update(cityMember);
             await _repositoryWrapper.SaveAsync();
             await ChangeMembershipDatesByApprove(cityMember.UserId, cityMember.IsApproved);
+            await SendEmail(cityMember.User.Email, cityMember.City.Name, cityMember.IsApproved);
+
             return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
         }
 
@@ -295,6 +279,18 @@ namespace EPlast.BLL.Services.City
             {
                 await RemoveAdministratorAsync(admin.ID);
             }
+        }
+
+        private async Task SendEmail(string email, string cityName, bool isApproved)
+        {
+            string message = isApproved ? "<h3>СКОБ!</h3>"
+                                                          + $"<p>Дружепод/руго, вітаємо тебе з переходом у статус 'Прихильник' станиці '{cityName}'!"
+                                                          + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>" :
+                                                          "<h3>СКОБ!</h3>"
+                                                          + $"<p>Друже/подруго, повідомляємо, що тебе було виключено зі станиці '{cityName}'."
+                                                          + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>";
+
+            await _emailSendingService.SendEmailAsync(email, "Зміна статусу членства у станиці", message, "EPlast");
         }
     }
 }
