@@ -23,7 +23,7 @@ namespace EPlast.WebApi
             Configuration = configuration;
         }
 
-        private IConfiguration Configuration { get; }
+        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app,
@@ -31,6 +31,47 @@ namespace EPlast.WebApi
                               IRecurringJobManager recurringJobManager,
                               IServiceProvider serviceProvider)
         {
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/V1/swagger.json", "MyApi");
+            });
+
+            var supportedCultures = new[]
+            {
+                new CultureInfo("uk-UA"),
+                new CultureInfo("en-US"),
+                new CultureInfo("en"),
+                new CultureInfo("uk")
+            };
+
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture("uk-UA"),
+                // Formatting numbers, dates, etc.
+                SupportedCultures = supportedCultures,
+                // UI strings that we have localized.
+                SupportedUICultures = supportedCultures
+            });
+
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.ConfigureCustomExceptionMiddleware();
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
+
+            app.UseWebSockets();
+
+            app.MapWebSocketManager("/notifications", serviceProvider.GetService<UserNotificationHandler>());
+
+            app.UseStatusCodePages();
+            app.UseHttpsRedirection();
+
             app.UseRouting();
             app.UseCors(builder =>
             {
@@ -41,46 +82,11 @@ namespace EPlast.WebApi
             });
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-            app.MapWebSocketManager("/notifications", serviceProvider.GetService<UserNotificationHandler>());
-
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
             app.UseHangfireDashboard();
-            var supportedCultures = new[]
-            {
-                new CultureInfo("uk-UA"),
-                new CultureInfo("en-US"),
-                new CultureInfo("en"),
-                new CultureInfo("uk")
-            };
-            app.UseRequestLocalization(new RequestLocalizationOptions
-            {
-                DefaultRequestCulture = new RequestCulture("uk-UA"),
-                // Formatting numbers, dates, etc.
-                SupportedCultures = supportedCultures,
-                // UI strings that we have localized.
-                SupportedUICultures = supportedCultures
-            });
-
-            app.UseHttpsRedirection();
-            app.UseStatusCodePages();
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/V1/swagger.json", "MyApi");
-            });
-            app.UseWebSockets();
-
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.ConfigureCustomExceptionMiddleware();
-                app.UseHsts();
-            }
-
-            serviceProvider.AddRecurringJobs(recurringJobManager, Configuration);
 
             app.Run(async (context) =>
             {
@@ -90,17 +96,15 @@ namespace EPlast.WebApi
                     await context.Response.WriteAsync($"Secret is {result}");
                 }
             });
+
+            serviceProvider.AddRecurringJobs(recurringJobManager, Configuration);
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddServices(Configuration);
-            services.AddDependency();
-
             _secrets = new string[]
             {
-                Configuration["ConnectionStrings:EPlastDBConnection"],
                 Configuration["StorageConnectionString"],
                 Configuration["GoogleAuthentication:GoogleClientSecret"],
                 Configuration["GoogleAuthentication:GoogleClientId"],
@@ -111,6 +115,8 @@ namespace EPlast.WebApi
                 Configuration["Admin:Password"],
                 Configuration["Admin:Email"]
             };
+
+            services.AddServices(Configuration);
         }
     }
 }

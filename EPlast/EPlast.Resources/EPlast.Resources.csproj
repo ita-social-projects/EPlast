@@ -17,6 +17,9 @@
     <EmbeddedResource Update="AnnualReportControllerMessage.uk.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Update="AuthenticationErrors.en.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="AuthenticationErrors.uk.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>AuthenticationErrors.uk.Designer.cs</LastGenOutput>
