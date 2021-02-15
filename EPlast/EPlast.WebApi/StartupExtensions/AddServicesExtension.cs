@@ -24,6 +24,9 @@ namespace EPlast.WebApi.StartupExtensions
                     .AddDefaultTokenProviders();
             services.AddCors();
             services.AddSwagger();
+
+            services.AddDependency();
+
             services.AddControllers()
                     .AddNewtonsoftJson();
             services.AddLogging();
