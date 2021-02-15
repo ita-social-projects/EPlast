@@ -249,20 +249,20 @@ namespace EPlast.BLL.Services.City
             if (cityMember.IsApproved)
             {
                 await _emailSendingService.SendEmailAsync(cityMember.User.Email,
-                                                            "Зміна статусу членства у станиці",
-                                                            "<h3>СКОБ!</h3>"
-                                                            + $"<p>Друже/подруго, вітаємо тебе з переходом у статус 'Прихильник' станиці '{cityMember.City.Name}'!"
-                                                            + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>",
-                                                            "EPlast");
+                                                          "Зміна статусу членства у станиці",
+                                                          "<h3>СКОБ!</h3>"
+                                                          + $"<p>Друже/подруго, вітаємо тебе з переходом у статус 'Прихильник' станиці '{cityMember.City.Name}'!"
+                                                          + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>",
+                                                          "EPlast");
             }
             else
             {
                 await _emailSendingService.SendEmailAsync(cityMember.User.Email,
-                                                            "Зміна статусу членства у станиці",
-                                                            "<h3>СКОБ!</h3>"
-                                                            + $"<p>Друже/подруго, повідомляємо, що тебе було виключено зі станиці '{cityMember.City.Name}'."
-                                                            + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>",
-                                                            "EPlast");
+                                                          "Зміна статусу членства у станиці",
+                                                          "<h3>СКОБ!</h3>"
+                                                          + $"<p>Друже/подруго, повідомляємо, що тебе було виключено зі станиці '{cityMember.City.Name}'."
+                                                          + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>",
+                                                          "EPlast");
             }
             _repositoryWrapper.CityMembers.Update(cityMember);
             await _repositoryWrapper.SaveAsync();
