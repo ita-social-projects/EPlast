@@ -28,7 +28,7 @@ namespace EPlast.BLL.Services
             confirmedUser.Approver = approver;
             await _repoWrapper.ConfirmedUser.CreateAsync(confirmedUser);
             await _repoWrapper.SaveAsync();
-            await SendEmailConfirmedNotification(await _userManager.FindByIdAsync(vaucheeId), vaucherUser, true);
+            await SendEmailConfirmedNotificationAsync(await _userManager.FindByIdAsync(vaucheeId), vaucherUser, true);
         }
 
         public async Task DeleteAsync(User vaucherUser, int confirmedUserId)
@@ -37,10 +37,10 @@ namespace EPlast.BLL.Services
             var vaucheeUser = await _userManager.FindByIdAsync(confirmedUser.UserID);
             _repoWrapper.ConfirmedUser.Delete(confirmedUser);
             await _repoWrapper.SaveAsync();
-            await SendEmailConfirmedNotification(vaucheeUser, vaucherUser, false);
+            await SendEmailConfirmedNotificationAsync(vaucheeUser, vaucherUser, false);
         }
 
-        private async Task<bool> SendEmailConfirmedNotification(User vaucheeUser, User vaucherUser, bool confirmed)
+        private async Task<bool> SendEmailConfirmedNotificationAsync(User vaucheeUser, User vaucherUser, bool confirmed)
         {
             var caseMessage = confirmed ? "поручився за тебе." : "скасував своє поручення за тебе.";
             var message = "<h3>СКОБ!</h3>"
