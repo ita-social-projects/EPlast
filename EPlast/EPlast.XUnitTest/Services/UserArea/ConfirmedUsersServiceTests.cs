@@ -13,10 +13,10 @@ namespace EPlast.XUnitTest.Services.UserArea
 {
     public class ConfirmedUsersServiceTests
     {
-        private Mock<IEmailSendingService> _emailSendingService;
-        private Mock<IRepositoryWrapper> _repoWrapper;
-        private Mock<UserManager<User>> _userManager;
-        private Mock<IUserStore<User>> _userStoreMock;
+        private readonly Mock<IEmailSendingService> _emailSendingService;
+        private readonly Mock<IRepositoryWrapper> _repoWrapper;
+        private readonly Mock<UserManager<User>> _userManager;
+        private readonly Mock<IUserStore<User>> _userStoreMock;
 
         public ConfirmedUsersServiceTests()
         {

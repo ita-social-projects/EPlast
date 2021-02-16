@@ -478,7 +478,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(It.IsAny<UserDTO>);
 
             // Act
-            var result = await _userController.Get(id);
+            var result = await _userController.Edit(id);
 
             // Assert
             _loggerService.Verify((x) => x.LogError(It.IsAny<string>()), Times.Once);
@@ -621,6 +621,8 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expectedListCount, (actual.ConfirmedUsers as List<ConfirmedUserViewModel>).Count);
             Assert.AreEqual(expectedId, actual.ClubApprover.ID);
             Assert.AreEqual(expectedId, actual.CityApprover.ID);
+            Assert.AreEqual(expectedCanApprove, actual.canApprove);
+            Assert.AreEqual(expectedIsUserHead, actual.IsUserHeadOfCity);
             Assert.IsFalse(actual.IsUserHeadOfCity);
             Assert.IsFalse(actual.IsUserHeadOfClub);
             Assert.IsFalse(actual.IsUserHeadOfRegion);
