@@ -81,5 +81,7 @@ namespace EPlast.DataAccess.Repositories
         IEducatorsStaffTypesRepository KVTypes { get; }
         void Save();
         Task SaveAsync();
+
+        string GetCitiesUrl { get; }
     }
 }

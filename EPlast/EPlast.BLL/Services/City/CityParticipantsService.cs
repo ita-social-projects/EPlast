@@ -285,13 +285,13 @@ namespace EPlast.BLL.Services.City
 
         private async Task SendEmailCityApproveAsync(string email, DataAccess.Entities.City city, bool isApproved)
         {
-            string cityUrl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Cities"] + city.ID;
+            string cityUrl = _repositoryWrapper.GetCitiesUrl + city.ID;
             string approveMessage = "<h3>СКОБ!</h3>"
-                + $"<p>Друже / подруго, повідомляємо, що тебе прийнято до станиці <a href='{cityUrl}'>{city.Name}</a>!"
-                + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>";
+                                    + $"<p>Друже / подруго, повідомляємо, що тебе прийнято до станиці <a href='{cityUrl}'>{city.Name}</a>!"
+                                    + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>";
             string excludeMessage = "<h3>СКОБ!</h3>"
-                + $"<p>Друже / подруго, повідомляємо, що тебе було виключено зі станиці <a href='{cityUrl}'>{city.Name}</a>."
-                + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>";
+                                    + $"<p>Друже / подруго, повідомляємо, що тебе було виключено зі станиці <a href='{cityUrl}'>{city.Name}</a>."
+                                    + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>";
             string message = isApproved ? approveMessage : excludeMessage;
             await _emailSendingService.SendEmailAsync(email, "Зміна статусу членства у станиці", message, "EPlast");
         }

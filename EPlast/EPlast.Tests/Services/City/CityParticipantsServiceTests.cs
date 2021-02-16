@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
+using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Services.City;
@@ -8,6 +9,7 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -52,6 +54,7 @@ namespace EPlast.Tests.Services.City
         private readonly int fakeId = 3;
         private Mock<IAdminTypeService> _adminTypeService;
         private ICityParticipantsService _cityParticipantsService;
+        private Mock<IEmailSendingService> _emailSendingService;
         private Mock<IMapper> _mapper;
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IUserStore<User>> _user;
@@ -127,6 +130,49 @@ namespace EPlast.Tests.Services.City
                 .Setup(x => x.Map<CityMembers, CityMembersDTO>(It.IsAny<CityMembers>())).Returns(new CityMembersDTO());
             // Act
             var result = await _cityParticipantsService.AddFollowerAsync(It.IsAny<int>(), It.IsAny<string>());
+            // Assert
+            Assert.IsInstanceOf<CityMembersDTO>(result);
+        }
+
+        [Test]
+        public async Task AddFollowerAsyncWithUser_Valit_Test()
+        {
+            //Arrange
+            _userManager
+                .Setup(u => u.GetUserIdAsync(It.IsAny<User>()))
+                .ReturnsAsync("1");
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.CityMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.CityMembers>, IIncludableQueryable<DataAccess.Entities.CityMembers, object>>>()))
+                .ReturnsAsync(new CityMembers());
+            _repoWrapper
+                .Setup(x => x.CityMembers.Delete(It.IsAny<CityMembers>()));
+            _repoWrapper
+               .Setup(x => x.SaveAsync());
+            _repoWrapper
+                .Setup(x => x.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(GetCityAdministration());
+            _repoWrapper
+                .Setup(x => x.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new CityAdministration() { AdminTypeId = 2 });
+            _adminTypeService
+                .Setup(x => x.GetAdminTypeByIdAsync(It.IsAny<int>())).ReturnsAsync(new AdminTypeDTO() { AdminTypeName = "Голова Станиці" });
+            _repoWrapper
+                .Setup(x => x.CityAdministration.Update(new CityAdministration()));
+            _userManager
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+            _repoWrapper
+                .Setup(x => x.CityMembers.CreateAsync(It.IsAny<CityMembers>()));
+            _repoWrapper
+                .Setup(x => x.SaveAsync());
+            _mapper
+                .Setup(x => x.Map<CityMembers, CityMembersDTO>(It.IsAny<CityMembers>())).Returns(new CityMembersDTO());
+
+            // Act
+            var result = await _cityParticipantsService.AddFollowerAsync(It.IsAny<int>(), It.IsAny<User>());
+
             // Assert
             Assert.IsInstanceOf<CityMembersDTO>(result);
         }
@@ -529,6 +575,42 @@ namespace EPlast.Tests.Services.City
             Assert.NotNull(result);
         }
 
+        [Test]
+        public async Task RemoveFollowerAsync_Valid_Test()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.CityMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.CityMembers>, IIncludableQueryable<DataAccess.Entities.CityMembers, object>>>()))
+                .ReturnsAsync(new CityMembers());
+            _repoWrapper
+                .Setup(x => x.CityMembers.Delete(It.IsAny<CityMembers>()));
+            _repoWrapper
+               .Setup(x => x.SaveAsync());
+
+            // Act
+            await _cityParticipantsService.RemoveFollowerAsync(fakeId);
+
+            // Assert
+            _repoWrapper.Verify();
+        }
+
+        [Test]
+        public async Task RemoveMemberAsync_Valid_Test()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.CityMembers.Delete(It.IsAny<CityMembers>()));
+            _repoWrapper
+               .Setup(x => x.SaveAsync());
+
+            // Act
+            await _cityParticipantsService.RemoveMemberAsync(new CityMembers());
+
+            // Assert
+            _repoWrapper.Verify();
+        }
+
         [SetUp]
         public void SetUp()
         {
@@ -537,7 +619,61 @@ namespace EPlast.Tests.Services.City
             _adminTypeService = new Mock<IAdminTypeService>();
             _user = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(_user.Object, null, null, null, null, null, null, null, null);
-            _cityParticipantsService = new CityParticipantsService(_repoWrapper.Object, _mapper.Object, _userManager.Object, _adminTypeService.Object, null);
+            _emailSendingService = new Mock<IEmailSendingService>();
+            _cityParticipantsService = new CityParticipantsService(_repoWrapper.Object, _mapper.Object, _userManager.Object, _adminTypeService.Object, _emailSendingService.Object);
+        }
+
+        [Test]
+        public async Task ToggleApproveStatusAsync_Valid_Test()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.CityMembers
+                             .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                                                     It.IsAny<Func<IQueryable<CityMembers>, IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync(new CityMembers()
+                {
+                    UserId = fakeId.ToString(),
+                    User = new User() { Email = "email" },
+                    City = new DataAccess.Entities.City() { Name = "CityName" },
+                    IsApproved = false
+                });
+            _repoWrapper
+                .Setup(x => x.CityMembers.Update(It.IsAny<CityMembers>()));
+            _repoWrapper
+                .Setup(x => x.SaveAsync());
+            _userManager
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(new User());
+            _userManager
+                .Setup(x => x.IsInRoleAsync(It.IsAny<User>(), It.IsAny<string>()))
+                .ReturnsAsync(false);
+            _repoWrapper
+                .Setup(m => m.UserMembershipDates
+                             .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
+                                                     It.IsAny<Func<IQueryable<UserMembershipDates>, IIncludableQueryable<UserMembershipDates, object>>>()))
+                .ReturnsAsync(new UserMembershipDates());
+            _repoWrapper
+                .Setup(x => x.UserMembershipDates.Update(It.IsAny<UserMembershipDates>()));
+            _mapper
+                .Setup(x => x.Map<CityMembers, CityMembersDTO>(It.IsAny<CityMembers>()))
+                .Returns(new CityMembersDTO());
+            _repoWrapper
+                .Setup(x => x.GetCitiesUrl)
+                .Returns("citiesUrl");
+            _emailSendingService
+                .Setup(x => x.SendEmailAsync(It.IsAny<string>(),
+                                             It.IsAny<string>(),
+                                             It.IsAny<string>(),
+                                             It.IsAny<string>()))
+                .ReturnsAsync(true);
+
+            // Act
+            var result = await _cityParticipantsService.ToggleApproveStatusAsync(fakeId);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<CityMembersDTO>(result);
         }
 
         private IEnumerable<CityAdministration> GetCityAdministration()
