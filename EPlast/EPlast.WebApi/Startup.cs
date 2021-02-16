@@ -32,11 +32,7 @@ namespace EPlast.WebApi
                               IServiceProvider serviceProvider)
         {
             app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/V1/swagger.json", "MyApi");
-            });
-
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/V1/swagger.json", "MyApi"); });
             var supportedCultures = new[]
             {
                 new CultureInfo("uk-UA"),
@@ -44,50 +40,33 @@ namespace EPlast.WebApi
                 new CultureInfo("en"),
                 new CultureInfo("uk")
             };
-
             app.UseRequestLocalization(new RequestLocalizationOptions
             {
                 DefaultRequestCulture = new RequestCulture("uk-UA"),
-                // Formatting numbers, dates, etc.
                 SupportedCultures = supportedCultures,
-                // UI strings that we have localized.
                 SupportedUICultures = supportedCultures
             });
-
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            if (env.IsDevelopment()) { app.UseDeveloperExceptionPage(); }
             else
             {
                 app.ConfigureCustomExceptionMiddleware();
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
             app.UseWebSockets();
-
             app.MapWebSocketManager("/notifications", serviceProvider.GetService<UserNotificationHandler>());
-
             app.UseStatusCodePages();
             app.UseHttpsRedirection();
-
             app.UseRouting();
             app.UseCors(builder =>
             {
-                builder
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowAnyOrigin();
+                builder.AllowAnyMethod()
+                       .AllowAnyHeader()
+                       .AllowAnyOrigin();
             });
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
             app.UseHangfireDashboard();
-
             app.Run(async (context) =>
             {
                 foreach (string secret in _secrets)
@@ -96,7 +75,6 @@ namespace EPlast.WebApi
                     await context.Response.WriteAsync($"Secret is {result}");
                 }
             });
-
             serviceProvider.AddRecurringJobs(recurringJobManager, Configuration);
         }
 

@@ -24,9 +24,7 @@ namespace EPlast.WebApi.StartupExtensions
                     .AddDefaultTokenProviders();
             services.AddCors();
             services.AddSwagger();
-
-            services.AddDependency();
-
+            
             services.AddControllers()
                     .AddNewtonsoftJson();
             services.AddLogging();
@@ -41,6 +39,8 @@ namespace EPlast.WebApi.StartupExtensions
                 options.Configuration = Configuration.GetConnectionString("Redis");
                 options.InstanceName = "Redis_";
             });
+
+            services.AddDependency();
 
             return services;
         }
