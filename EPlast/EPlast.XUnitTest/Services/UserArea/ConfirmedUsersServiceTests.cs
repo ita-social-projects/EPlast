@@ -31,7 +31,7 @@ namespace EPlast.XUnitTest.Services.UserArea
         {
             _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns("1");
             _repoWrapper.Setup(x =>  x.ConfirmedUser.GetAllAsync(null,null)).ReturnsAsync(new List<ConfirmedUser>().AsQueryable());
-            var service = new ConfirmedUsersService(_repoWrapper.Object, _userManager.Object);
+            var service = new ConfirmedUsersService(_repoWrapper.Object, _userManager.Object, null);
 
             await service.CreateAsync(It.IsAny<User>(), It.IsAny<string>());
 
@@ -43,9 +43,9 @@ namespace EPlast.XUnitTest.Services.UserArea
         {
 
             _repoWrapper.Setup(x =>  x.ConfirmedUser.GetFirstAsync(It.IsAny<Expression<Func<ConfirmedUser, bool>>>(), null)).ReturnsAsync(new ConfirmedUser());
-            var service = new ConfirmedUsersService(_repoWrapper.Object, _userManager.Object);
+            var service = new ConfirmedUsersService(_repoWrapper.Object, _userManager.Object, null);
 
-            await service.DeleteAsync(It.IsAny<int>());
+            await service.DeleteAsync(It.IsAny<User>(), It.IsAny<int>());
 
             _repoWrapper.Verify(r => r.ConfirmedUser.Delete(It.IsAny<ConfirmedUser>()), Times.Once());
             _repoWrapper.Verify(r => r.SaveAsync(), Times.Once());

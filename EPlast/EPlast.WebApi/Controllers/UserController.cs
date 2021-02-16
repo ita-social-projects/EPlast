@@ -326,13 +326,10 @@ namespace EPlast.WebApi.Controllers
         {
             if (userId != null)
             {
-
                 await _confirmedUserService.CreateAsync(await _userManager.GetUserAsync(User), userId, isClubAdmin, isCityAdmin);
-
                 return Ok();
             }
             _loggerService.LogError("User id is null");
-
             return NotFound();
         }
 
@@ -348,9 +345,8 @@ namespace EPlast.WebApi.Controllers
         {
             if (confirmedId != 0)
             {
-                await _confirmedUserService.DeleteAsync(confirmedId);
+                await _confirmedUserService.DeleteAsync(await _userManager.GetUserAsync(User), confirmedId);
                 _loggerService.LogInformation("Approve succesfuly deleted");
-
                 return Ok();
             }
             _loggerService.LogError("Confirmed id is 0");

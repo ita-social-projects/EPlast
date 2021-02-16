@@ -673,7 +673,7 @@ namespace EPlast.Tests.Controllers
             var confirmedId = 1;
 
             _confirmedUserService
-                .Setup((x) => x.DeleteAsync(It.IsAny<int>()));
+                .Setup((x) => x.DeleteAsync(It.IsAny<User>(), It.IsAny<int>()));
 
             // Act
             var result = await _userController.ApproverDelete(confirmedId);
