@@ -8,6 +8,7 @@ using EPlast.DataAccess.Repositories.Realizations.Club;
 using EPlast.DataAccess.Repositories.Realizations.EducatorsStaff;
 using EPlast.DataAccess.Repositories.Realizations.Events;
 using EPlast.DataAccess.Repositories.Realizations.Region;
+using NLog.Extensions.Logging;
 using System.Threading.Tasks;
 
 namespace EPlast.DataAccess.Repositories.Realizations.Base
@@ -876,6 +877,15 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         public async Task SaveAsync()
         {
             await _dbContext.SaveChangesAsync();
+        }
+
+        public string GetCitiesUrl
+        {
+            get
+            {
+                return ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Cities"];
+            }
+            
         }
     }
 }
