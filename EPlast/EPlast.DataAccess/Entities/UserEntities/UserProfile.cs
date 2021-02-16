@@ -23,7 +23,7 @@ namespace EPlast.DataAccess.Entities
         public Work Work { get; set; }
         public int? GenderID { get; set; }
         public Gender Gender { get; set; }
-        public int? UpuDegreeID { get; set; }
+        public int UpuDegreeID { get; set; } = 1;
         public UpuDegree UpuDegree { get; set; }
         [Display(Name = "Домашня адреса")]
         [MaxLength(50,ErrorMessage = "Адреса не може перевищувати 50 символів")]
