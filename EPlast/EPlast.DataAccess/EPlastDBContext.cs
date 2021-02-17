@@ -16,7 +16,7 @@ namespace EPlast.DataAccess
         {
         }
 
-        public DbSet<User> Users { get; set; }
+        new public DbSet<User> Users { get; set; }
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<Nationality> Nationalities { get; set; }
         public DbSet<Religion> Religions { get; set; }
@@ -39,139 +39,139 @@ namespace EPlast.DataAccess
         public DbSet<EventAdministration> EventAdministration { get; set; }
         public DbSet<EventAdministrationType> EventAdministrationType { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(builder);
 
-            modelBuilder.Entity<Event>()
+            builder.Entity<Event>()
                 .HasKey(x => x.ID);
 
-            modelBuilder.Entity<Gallary>()
+            builder.Entity<Gallary>()
                 .HasKey(x => x.ID);
 
-            modelBuilder.Entity<EventGallary>()
+            builder.Entity<EventGallary>()
                 .HasKey(x => new { x.EventID, x.GallaryID });
 
-            modelBuilder.Entity<EventGallary>()
+            builder.Entity<EventGallary>()
                 .HasOne(x => x.Event)
                 .WithMany(m => m.EventGallarys)
                 .HasForeignKey(x => x.EventID);
 
-            modelBuilder.Entity<EventGallary>()
+            builder.Entity<EventGallary>()
                 .HasOne(x => x.Gallary)
                 .WithMany(e => e.Events)
                 .HasForeignKey(x => x.GallaryID);
 
-            modelBuilder.Entity<Event>()
+            builder.Entity<Event>()
                 .HasKey(x => x.ID);
 
-            modelBuilder.Entity<EventAdmin>()
+            builder.Entity<EventAdmin>()
                 .HasKey(x => new { x.EventID, x.UserID });
 
-            modelBuilder.Entity<EventAdmin>()
+            builder.Entity<EventAdmin>()
                 .HasOne(x => x.Event)
                 .WithMany(m => m.EventAdmins)
                 .HasForeignKey(x => x.EventID);
 
-            modelBuilder.Entity<EventAdmin>()
+            builder.Entity<EventAdmin>()
                 .HasOne(x => x.User)
                 .WithMany(e => e.Events)
                 .HasForeignKey(x => x.UserID);
 
-            modelBuilder.Entity<EventCategoryType>()
+            builder.Entity<EventCategoryType>()
                 .HasKey(ct => new { ct.EventTypeId, ct.EventCategoryId });
 
-            modelBuilder.Entity<EventCategoryType>()
+            builder.Entity<EventCategoryType>()
                 .HasOne(ct => ct.EventType)
                 .WithMany(t => t.EventCategories)
                 .HasForeignKey(ct => ct.EventTypeId);
 
-            modelBuilder.Entity<EventCategoryType>()
+            builder.Entity<EventCategoryType>()
                 .HasOne(ct => ct.EventCategory)
                 .WithMany(c => c.EventTypes)
                 .HasForeignKey(ct => ct.EventCategoryId);
 
-            modelBuilder.Entity<User>()
+            builder.Entity<User>()
                 .HasOne(x => x.UserProfile)
                 .WithOne(x => x.User)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<User>()
+            builder.Entity<User>()
                .HasMany(x => x.CityMembers)
                .WithOne(x => x.User)
                .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<User>()
+            builder.Entity<User>()
                .HasMany(x => x.ClubMembers)
                .WithOne(x => x.User)
                .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<User>()
+            builder.Entity<User>()
                .HasMany(x => x.UserPlastDegrees)
                .WithOne(x => x.User)
                .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<User>()
+            builder.Entity<User>()
                .HasMany(x => x.UserMembershipDates)
                .WithOne(x => x.User)
                .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<User>()
+            builder.Entity<User>()
                .HasMany(x => x.RegionAdministrations)
                .WithOne(x => x.User)
                .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<User>()
+            builder.Entity<User>()
                .HasMany(x => x.CityAdministrations)
                .WithOne(x => x.User)
                .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<User>()
+            builder.Entity<User>()
                 .HasMany(x => x.ClubAdministrations)
                 .WithOne(x => x.User)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<CityDocumentType>()
+            builder.Entity<CityDocumentType>()
                 .HasMany(x => x.CityDocuments)
                 .WithOne(x => x.CityDocumentType)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<ClubDocumentType>()
+            builder.Entity<ClubDocumentType>()
                 .HasMany(x => x.ClubDocuments)
                 .WithOne(x => x.ClubDocumentType)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<User>()
+            builder.Entity<User>()
                .HasMany(x => x.Participants)
                .WithOne(x => x.User)
                .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<User>()
+            builder.Entity<User>()
                .HasMany(x => x.Events)
                .WithOne(x => x.User)
                .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<User>()
+            builder.Entity<User>()
                .HasMany(x => x.ConfirmedUsers)
                .WithOne(x => x.User)
                .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<User>()
+            builder.Entity<User>()
                .HasMany(x => x.Approvers)
                .WithOne(x => x.User)
                .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<User>()
+            builder.Entity<User>()
                 .HasMany(x => x.UserDistinctions)
                 .WithOne(x => x.User)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Distinction>()
+            builder.Entity<Distinction>()
                 .HasMany(x => x.UserDistinctions)
                 .WithOne(x => x.Distinction)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<AnnualReport>(annualReport =>
+            builder.Entity<AnnualReport>(annualReport =>
             {
                 annualReport.HasOne(a => a.Creator)
                     .WithMany(u => u.CreatedAnnualReports)
@@ -181,7 +181,7 @@ namespace EPlast.DataAccess
                     .HasForeignKey(a => a.NewCityAdminId);
             });
 
-            modelBuilder.Entity<ClubAnnualReport>(annualReport =>
+            builder.Entity<ClubAnnualReport>(annualReport =>
             {
                 annualReport.HasOne(a => a.Club);
             });
