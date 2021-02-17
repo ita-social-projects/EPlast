@@ -16,7 +16,7 @@ namespace EPlast.DataAccess
         {
         }
 
-        new public DbSet<User> Users { get; set; }
+        public DbSet<User> Users { get; set; }
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<Nationality> Nationalities { get; set; }
         public DbSet<Religion> Religions { get; set; }
