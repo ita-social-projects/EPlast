@@ -13,8 +13,8 @@ namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(AuthenticationSchemes = "Bearer")]
-    //[Authorize(Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня, Пластун")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [Authorize(Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня, Пластун")]
     public class AdminController : ControllerBase
     {
         private readonly IAdminService _adminService;
@@ -214,17 +214,6 @@ namespace EPlast.WebApi.Controllers
             }
             return BadRequest();
         }
-
-        /// <summary>
-        /// Get all users with additional information
-        /// </summary>
-        /// <returns>Specify model with all users</returns>
-        /// <response code="200">Successful operation</response>
-        //[HttpGet("usersTable")]
-        //public async Task<IActionResult> GetUsersTable(string tab)
-        //{
-        //    return Ok(await _adminService.GetUsersTableAsync(tab));
-        //}
 
         /// <summary>
         /// Get a specific number of users
