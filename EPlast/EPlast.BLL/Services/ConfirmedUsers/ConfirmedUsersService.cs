@@ -47,7 +47,7 @@ namespace EPlast.BLL.Services
                           + $"<p>Друже / подруго, повідомляємо, що користувач {vaucherUser.FirstName} {vaucherUser.LastName} "
                           + caseMessage
                           + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>";
-            var sendResult = await _emailSendingService.SendEmailAsync(vaucheeUser.Email, "За вас поручилися!", message, "EPlast");
+            var sendResult = await _emailSendingService.SendEmailAsync(vaucheeUser.Email, "Зміна статусу поручення", message, "EPlast");
             return sendResult;
         }
     }
