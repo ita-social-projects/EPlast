@@ -54,7 +54,7 @@ namespace EPlast.WebApi.StartupExtensions
             recurringJobManager.AddOrUpdate("New Plast members greeting",
                                             () => serviceProvider.GetService<INewPlastMemberEmailGreeting>()
                                                                  .NotifyNewPlastMembersAsync(),
-                                            Cron.Minutely(),
+                                            Cron.Daily(),
                                             TimeZoneInfo.Local);
         }
 
