@@ -116,7 +116,7 @@ namespace EPlast.BLL.Services.UserProfiles
         }
 
         /// <inheritdoc />
-        public async Task<TimeSpan> CheckOrAddPlastunRoleAsync(string userId, DateTime registeredOn)
+        public TimeSpan CheckOrAddPlastunRole(string userId, DateTime registeredOn)
         {
             try
             {
@@ -127,11 +127,8 @@ namespace EPlast.BLL.Services.UserProfiles
                     timeToJoinPlast = timeToJoinPlast.Subtract(halfOfYear);
                 }
                 if (timeToJoinPlast <= TimeSpan.Zero)
-                {
-                    var us = await _userManager.FindByIdAsync(userId);
-                    await _userManager.AddToRoleAsync(us, "Пластун");
                     return TimeSpan.Zero;
-                }
+
                 return timeToJoinPlast;
             }
             catch

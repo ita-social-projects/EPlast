@@ -36,7 +36,7 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         /// <param name="userId">The id of the user</param>
         /// <param name="registeredOn">User registration date</param>
         /// <returns>The time left before the role of "Plastun"</returns>
-        Task<TimeSpan> CheckOrAddPlastunRoleAsync(string userId, DateTime registeredOn);
+        TimeSpan CheckOrAddPlastunRole(string userId, DateTime registeredOn);
 
         /// <summary>
         /// Get confirmed users
