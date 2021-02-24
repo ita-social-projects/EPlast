@@ -120,7 +120,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IMethodicDocumentService, MethodicDocumentService>();
             services.AddScoped<IMethodicDocumentService, MethodicDocumentService>();
             services.AddScoped<INotificationService, NotificationService>();
-            services.AddScoped<INewPlastMemberEmailGreeting, NewPlastMemberEmailGreeting>();
+            services.AddScoped<INewPlastMemberEmailGreetingService, NewPlastMemberEmailGreetingService>();
             services.AddScoped<IParticipantManager, ParticipantManager>();
             services.AddScoped<IParticipantStatusManager, ParticipantStatusManager>();
             services.AddScoped<IPdfService, PdfService>();

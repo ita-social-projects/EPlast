@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services
 {
-    public class NewPlastMemberEmailGreeting : INewPlastMemberEmailGreeting
+    public class NewPlastMemberEmailGreetingService : INewPlastMemberEmailGreetingService
     {
         private readonly IEmailSendingService _emailSendingService;
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
 
-        public NewPlastMemberEmailGreeting(IRepositoryWrapper repoWrapper,
+        public NewPlastMemberEmailGreetingService(IRepositoryWrapper repoWrapper,
                                            UserManager<User> userManager,
                                            IEmailSendingService emailSendingService)
         {
@@ -24,17 +24,9 @@ namespace EPlast.BLL.Services
             _emailSendingService = emailSendingService;
         }
 
-        public async Task<bool> NotifyNewPlastMembersAsync()
+        public async Task NotifyNewPlastMembersAsync()
         {
-            try
-            {
-                (await GetNewPlastMembersAsync()).ToList().ForEach(async (user) => await SendEmailGreetingForNewPlastMemberAsync(user.Email));
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-            return true;
+            (await GetNewPlastMembersAsync()).ToList().ForEach(async (user) => await SendEmailGreetingForNewPlastMemberAsync(user.Email));
         }
 
         private async Task<IEnumerable<User>> GetNewPlastMembersAsync()

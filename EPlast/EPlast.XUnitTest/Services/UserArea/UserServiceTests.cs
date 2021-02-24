@@ -141,7 +141,7 @@ namespace EPlast.XUnitTest.Services.UserArea
             Assert.False(result);
         }
         [Fact]
-        public async Task CheckOrAddPlastunRoleTest()
+        public void CheckOrAddPlastunRoleTest()
         {
             _userManager.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
 

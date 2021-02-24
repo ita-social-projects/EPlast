@@ -21,7 +21,6 @@ namespace EPlast.BLL.Services.UserProfiles
     public class UserService : IUserService
     {
         private readonly IRepositoryWrapper _repoWrapper;
-        private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
         private readonly IUserPersonalDataService _userPersonalDataService;
         private readonly IWebHostEnvironment _env;
@@ -37,7 +36,6 @@ namespace EPlast.BLL.Services.UserProfiles
             IUniqueIdService uniqueId)
         {
             _repoWrapper = repoWrapper;
-            _userManager = userManager;
             _mapper = mapper;
             _userPersonalDataService = userPersonalDataService;
             _userBlobStorage = userBlobStorage;
