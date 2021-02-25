@@ -81,8 +81,8 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(CreateFakeUser());
 
             _userService
-                .Setup((x) => x.CheckOrAddPlastunRoleAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(It.IsAny<TimeSpan>());
+                .Setup((x) => x.CheckOrAddPlastunRole(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .Returns(It.IsAny<TimeSpan>());
 
             _userManagerService
                 .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
@@ -110,8 +110,8 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(CreateFakeUser());
 
             _userService
-                .Setup((x) => x.CheckOrAddPlastunRoleAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(time);
+                .Setup((x) => x.CheckOrAddPlastunRole(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .Returns(time);
 
             _userManagerService
                 .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
@@ -182,8 +182,8 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(CreateFakeUserWithoutCity());
 
             _userService
-                .Setup((x) => x.CheckOrAddPlastunRoleAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(It.IsAny<TimeSpan>());
+                .Setup((x) => x.CheckOrAddPlastunRole(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .Returns(It.IsAny<TimeSpan>());
 
             _userManagerService
                 .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
@@ -212,8 +212,8 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(CreateFakeUserWithoutCity());
 
             _userService
-                .Setup((x) => x.CheckOrAddPlastunRoleAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(time);
+                .Setup((x) => x.CheckOrAddPlastunRole(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .Returns(time);
 
             _userManagerService
                 .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
@@ -271,8 +271,8 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(CreateFakeUserWithCity());
 
             _userService
-                .Setup((x) => x.CheckOrAddPlastunRoleAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(It.IsAny<TimeSpan>());
+                .Setup((x) => x.CheckOrAddPlastunRole(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .Returns(It.IsAny<TimeSpan>());
 
             _userManagerService
                 .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
@@ -301,8 +301,8 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(CreateFakeUserWithCity());
 
             _userService
-                .Setup((x) => x.CheckOrAddPlastunRoleAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(time);
+                .Setup((x) => x.CheckOrAddPlastunRole(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .Returns(time);
 
             _userManagerService
                 .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
@@ -565,8 +565,8 @@ namespace EPlast.Tests.Controllers
                 .Returns(canApprove);
 
             _userService
-               .Setup((x) => x.CheckOrAddPlastunRoleAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(time);
+               .Setup((x) => x.CheckOrAddPlastunRole(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .Returns(time);
 
             _userService
                 .Setup((x) => x.GetClubAdminConfirmedUser(It.IsAny<UserDTO>()))

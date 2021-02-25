@@ -51,6 +51,11 @@ namespace EPlast.WebApi.StartupExtensions
                                                                  .JoinCityReminderAsync(),
                                             "0 12 * * Mon",
                                             TimeZoneInfo.Local);
+            recurringJobManager.AddOrUpdate("New Plast members greeting",
+                                            () => serviceProvider.GetService<INewPlastMemberEmailGreetingService>()
+                                                                 .NotifyNewPlastMembersAsync(),
+                                            Cron.Daily(),
+                                            TimeZoneInfo.Local);
         }
 
         private static async Task CreateRolesAsync(IServiceProvider serviceProvider, IConfiguration Configuration)
