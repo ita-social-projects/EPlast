@@ -15,12 +15,12 @@ namespace EPlast.DataAccess.Repositories
 
         public Task<int> GetUsersCountAsync()
         {
-           return EPlastDBContext.Users.CountAsync();
+            return EPlastDBContext.Users.CountAsync();
         }
 
-        public IEnumerable<UserTableObject> GetUserTableObjects(int pageNum, int pageSize)
+        public IEnumerable<UserTableObject> GetUserTableObjects(int pageNum, int pageSize, string tab)
         {
-            var items = EPlastDBContext.Set<UserTableObject>().FromSqlRaw("dbo.usp_GetUserInfo @PageIndex = {0}, @PageSize = {1}", pageNum, pageSize);
+            var items = EPlastDBContext.Set<UserTableObject>().FromSqlRaw("dbo.usp_GetUserInfo @PageIndex = {0}, @PageSize = {1}, @tab = {2}", pageNum, pageSize, tab);
             return items;
         }
     }

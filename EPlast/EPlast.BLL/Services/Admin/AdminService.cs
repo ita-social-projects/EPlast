@@ -194,9 +194,9 @@ namespace EPlast.BLL.Services
 
         /// <inheritdoc />
        
-        public async Task<IEnumerable<UserTableDTO>> GetUsersTableAsync(int pageNum, int pageSize)
+        public async Task<IEnumerable<UserTableDTO>> GetUsersTableAsync(int pageNum, int pageSize, string tab)
         {
-            return _mapper.Map< IEnumerable<UserTableObject>, IEnumerable<UserTableDTO>>(_repoWrapper.AdminType.GetUserTableObjects(pageNum, pageSize));
+            return _mapper.Map< IEnumerable<UserTableObject>, IEnumerable<UserTableDTO>>(_repoWrapper.AdminType.GetUserTableObjects(pageNum, pageSize, tab));
         }
        
         public async Task UpdateUserDatesByChangeRoleAsyncAsync(string userId, string role)

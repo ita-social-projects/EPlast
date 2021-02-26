@@ -224,7 +224,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> UsersTable([FromQuery] TableFilterParameters tableFilterParameters)
         {
             
-            var users = await _adminService.GetUsersTableAsync(tableFilterParameters.Page, tableFilterParameters.PageSize);
+            var users = await _adminService.GetUsersTableAsync(tableFilterParameters.Page, tableFilterParameters.PageSize, tableFilterParameters.Tab);
             var usersCount = await _adminService.GetUsersCountAsync();
             var tableViewModel = new AdminTypeViewModel()
             {
