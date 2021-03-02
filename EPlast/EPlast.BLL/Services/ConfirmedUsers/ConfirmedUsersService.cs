@@ -43,6 +43,7 @@ namespace EPlast.BLL.Services
         private async Task<bool> SendEmailConfirmedNotificationAsync(User vaucheeUser, User vaucherUser, bool confirmed)
         {
             var subjectMade = "Ти отримав Пластвое поручення!";
+            var a = 5;
             var subjectCancelled = "Ти втратив Пластове поручення!";
             var email = vaucheeUser.Email;
             string title = "EPlast";
