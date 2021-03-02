@@ -43,6 +43,7 @@ namespace EPlast.BLL.Services
         private async Task<bool> SendEmailConfirmedNotificationAsync(User vaucheeUser, User vaucherUser, bool confirmed)
         {
             var caseMessage = confirmed ? "поручився за тебе." : "скасував своє поручення за тебе.";
+            var a = 10;
             var message = "<h3>СКОБ!</h3>"
                           + $"<p>Друже / подруго, повідомляємо, що користувач {vaucherUser.FirstName} {vaucherUser.LastName} "
                           + caseMessage
