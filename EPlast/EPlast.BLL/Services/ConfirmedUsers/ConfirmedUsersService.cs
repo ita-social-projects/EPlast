@@ -42,12 +42,17 @@ namespace EPlast.BLL.Services
 
         private async Task<bool> SendEmailConfirmedNotificationAsync(User vaucheeUser, User vaucherUser, bool confirmed)
         {
+            var subjectMade = "Ти отримав Пластвое поручення!";
+            var subjectCancelled = "Ти втратив Пластове поручення!";
+            var email = vaucheeUser.Email;
+            string title = "EPlast";
             var caseMessage = confirmed ? "поручився за тебе." : "скасував своє поручення за тебе.";
+            var caseSubject = confirmed ? subjectMade : subjectCancelled;
             var message = "<h3>СКОБ!</h3>"
                           + $"<p>Друже / подруго, повідомляємо, що користувач {vaucherUser.FirstName} {vaucherUser.LastName} "
                           + caseMessage
                           + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>";
-            var sendResult = await _emailSendingService.SendEmailAsync(vaucheeUser.Email, "Зміна статусу поручення", message, "EPlast");
+            var sendResult = await _emailSendingService.SendEmailAsync(email, caseSubject, message, title);
             return sendResult;
         }
     }
