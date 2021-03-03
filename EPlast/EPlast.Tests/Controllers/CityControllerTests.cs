@@ -3,6 +3,7 @@ using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using EPlast.WebApi.Controllers;
 using EPlast.WebApi.Models.City;
 using Microsoft.AspNetCore.Http;
@@ -365,7 +366,7 @@ namespace EPlast.Tests.Controllers
             CitiesController citycon = CreateCityController;
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
+                .Setup(m => m.User.IsInRole(Roles.admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(

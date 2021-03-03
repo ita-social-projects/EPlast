@@ -7,6 +7,7 @@ using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Services.Region;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
@@ -131,7 +132,7 @@ namespace EPlast.Tests.Services.Regions
                 .Returns(new RegionProfileDTO());
 
             _userManager.
-                Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { "Admin" });
+                Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.admin });
             // Act
             var result = await _regionService.GetRegionByNameAsync(It.IsAny<string>(), It.IsAny<User>());
 

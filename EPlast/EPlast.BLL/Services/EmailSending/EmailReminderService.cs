@@ -3,6 +3,7 @@ using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -72,7 +73,7 @@ namespace EPlast.BLL.Services.EmailSending
         private async Task<bool> IsAdminAsync(User user)
         {
             var userRoles = await _userManager.GetRolesAsync(user);
-            return (userRoles.Contains("Admin"));
+            return (userRoles.Contains(Roles.admin));
         }
 
         private async Task<bool> IsLonelyUserAsync(User user)

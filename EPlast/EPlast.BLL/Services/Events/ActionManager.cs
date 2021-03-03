@@ -5,6 +5,7 @@ using EPlast.BLL.Interfaces.Events;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -88,7 +89,7 @@ namespace EPlast.BLL.Services.Events
             int rejectedStatus = await _participantStatusManager.GetStatusIdAsync("Відмовлено");
             int finishedEvent = await _eventWrapper.EventStatusManager.GetStatusIdAsync("Завершений(-на)");
             var userRoles = await _userManager.GetRolesAsync(user);
-            bool isUserGlobalEventAdmin = userRoles?.Contains("Адміністратор подій") ?? false;
+            bool isUserGlobalEventAdmin = userRoles?.Contains(Roles.eventAdministrator) ?? false;
 
             var targetEvent = await _repoWrapper.Event
                 .GetFirstAsync(
@@ -308,7 +309,7 @@ namespace EPlast.BLL.Services.Events
                 {
                     EventId = ev.ID,
                     EventName = ev.EventName,
-                    IsUserEventAdmin = ev.EventAdministrations.Any( e => e.UserID == _userManager.GetUserIdAsync(user).Result) || userRoles != null && userRoles.Contains("Адміністратор подій"),
+                    IsUserEventAdmin = ev.EventAdministrations.Any( e => e.UserID == _userManager.GetUserIdAsync(user).Result) || userRoles != null && userRoles.Contains(Roles.eventAdministrator),
                     IsUserParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result),
                     IsUserApprovedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == approvedStatus),
                     IsUserUndeterminedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == undeterminedStatus),

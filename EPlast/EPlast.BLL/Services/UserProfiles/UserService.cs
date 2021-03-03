@@ -6,6 +6,7 @@ using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -129,7 +130,7 @@ namespace EPlast.BLL.Services.UserProfiles
                 if (timeToJoinPlast <= TimeSpan.Zero)
                 {
                     var us = await _userManager.FindByIdAsync(userId);
-                    await _userManager.AddToRoleAsync(us, "Пластун");
+                    await _userManager.AddToRoleAsync(us, Roles.plastMember);
                     return TimeSpan.Zero;
                 }
                 return timeToJoinPlast;

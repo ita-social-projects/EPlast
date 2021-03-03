@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using Moq;
 using EPlast.BLL;
+using EPlast.Resources;
 using EPlast.WebApi.Controllers;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -163,7 +164,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
+                .Setup(m => m.User.IsInRole(Roles.admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -186,7 +187,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
+                .Setup(m => m.User.IsInRole(Roles.admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -209,7 +210,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
+                .Setup(m => m.User.IsInRole(Roles.admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -232,7 +233,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
+                .Setup(m => m.User.IsInRole(Roles.admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -256,7 +257,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
+                .Setup(m => m.User.IsInRole(Roles.admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -279,7 +280,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
+                .Setup(m => m.User.IsInRole(Roles.admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -303,7 +304,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
+                .Setup(m => m.User.IsInRole(Roles.admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -326,7 +327,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
+                .Setup(m => m.User.IsInRole(Roles.admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -350,7 +351,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
+                .Setup(m => m.User.IsInRole(Roles.admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -373,7 +374,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
+                .Setup(m => m.User.IsInRole(Roles.admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(

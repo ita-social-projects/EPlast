@@ -7,6 +7,7 @@ using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Moq;
@@ -231,7 +232,7 @@ namespace EPlast.XUnitTest.Services.City
 
                            AdminType = new AdminTypeDTO
                            {
-                               AdminTypeName = "Голова Станиці"
+                               AdminTypeName = Roles.cityHead
                            }
 
                         },
@@ -246,7 +247,7 @@ namespace EPlast.XUnitTest.Services.City
                         {
                             AdminType = new AdminTypeDTO
                             {
-                                AdminTypeName = "Голова Станиці"
+                                AdminTypeName = Roles.cityHead
                             }
                         },
                         new CityAdministrationDTO

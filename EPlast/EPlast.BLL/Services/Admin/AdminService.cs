@@ -9,6 +9,7 @@ using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -76,15 +77,15 @@ namespace EPlast.BLL.Services
                 await _regionService.DeleteAdminByIdAsync(regionAdmin.ID);
             }
 
-            await _userManager.AddToRoleAsync(user, "Колишній член пласту");
+            await _userManager.AddToRoleAsync(user, Roles.formerPlastMember);
         }
 
         public async Task ChangeCurrentRoleAsync(string userId, string role)
         {
-            const string supporter = "Прихильник";
-            const string plastun = "Пластун";
-            const string interested = "Зацікавлений";
-            const string formerMember = "Колишній член пласту";
+            const string supporter = Roles.supporter;
+            const string plastun = Roles.plastMember;
+            const string interested = Roles.interested;
+            const string formerMember = Roles.formerPlastMember;
             var user = await _userManager.FindByIdAsync(userId);
             var roles = await _userManager.GetRolesAsync(user);
 
@@ -124,7 +125,7 @@ namespace EPlast.BLL.Services
         {
             User user = await _repoWrapper.User.GetFirstOrDefaultAsync(x => x.Id == userId);
             var roles = await _userManager.GetRolesAsync(user);
-            if (user != null && !roles.Contains("Admin"))
+            if (user != null && !roles.Contains(Roles.admin))
             {
                 _repoWrapper.User.Delete(user);
                 await _repoWrapper.SaveAsync();
@@ -139,13 +140,13 @@ namespace EPlast.BLL.Services
             var addedRoles = roles.Except(userRoles);
             var removedRoles = userRoles.
                 Except(roles).
-                Except(new List<string> { "Admin" });
+                Except(new List<string> { Roles.admin });
             await _userManager.AddToRolesAsync(user, addedRoles);
             await _userManager.RemoveFromRolesAsync(user, removedRoles);
             var currentRoles = await _userManager.GetRolesAsync(user);
             if (currentRoles.Count == 0)
             {
-                await _userManager.AddToRoleAsync(user, "Прихильник");
+                await _userManager.AddToRoleAsync(user, Roles.supporter);
             }
         }
 
@@ -161,7 +162,7 @@ namespace EPlast.BLL.Services
             {
                 city.Region.RegionAdministration = city.Region.RegionAdministration.Where(r =>
                 {
-                    if (r.AdminType.AdminTypeName == "Голова Округу" && (r.EndDate > DateTime.Now || r.EndDate == null))
+                    if (r.AdminType.AdminTypeName == Roles.okrugaHead && (r.EndDate > DateTime.Now || r.EndDate == null))
                     {
                         r.Region = null;
                         return true;
@@ -185,7 +186,7 @@ namespace EPlast.BLL.Services
         /// <inheritdoc />
         public IEnumerable<IdentityRole> GetRolesExceptAdmin()
         {
-            var admin = _roleManager.Roles.Where(i => i.Name == "Admin");
+            var admin = _roleManager.Roles.Where(i => i.Name == Roles.admin);
             var allRoles = _roleManager.Roles.Except(admin).OrderBy(i => i.Name);
             return allRoles;
         }
@@ -242,11 +243,11 @@ namespace EPlast.BLL.Services
                            .GetFirstOrDefaultAsync(umd => umd.UserId == userId);
             var cityMember = await _repoWrapper.CityMembers
                  .GetFirstOrDefaultAsync(u => u.UserId == userId, m => m.Include(u => u.User));
-            if (role == "Прихильник" && cityMember.IsApproved)
+            if (role == Roles.supporter && cityMember.IsApproved)
             {
                 userMembershipDates.DateEntry = DateTime.Now;
             }
-            else if (role != "Пластун")
+            else if (role != Roles.plastMember)
             {
                 userMembershipDates.DateEntry = default;
             }

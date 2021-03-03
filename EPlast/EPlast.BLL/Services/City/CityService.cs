@@ -4,6 +4,7 @@ using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.City;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -97,10 +98,10 @@ namespace EPlast.BLL.Services
             }
 
             var cityHead = city.CityAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Станиці"
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.cityHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
             var cityAdmins = city.CityAdministration
-                .Where(a => a.AdminType.AdminTypeName != "Голова Станиці"
+                .Where(a => a.AdminType.AdminTypeName != Roles.cityHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .Take(6)
                 .ToList();
@@ -140,7 +141,7 @@ namespace EPlast.BLL.Services
             var cityProfileDto = await GetCityProfileAsync(cityId);
             var userId = await _userManager.GetUserIdAsync(user);
             var userRoles = await _userManager.GetRolesAsync(user);
-            cityProfileDto.City.CanCreate = userRoles.Contains("Admin");
+            cityProfileDto.City.CanCreate = userRoles.Contains(Roles.admin);
             cityProfileDto.City.CanEdit = await _cityAccessService.HasAccessAsync(user, cityId);
             cityProfileDto.City.CanJoin = (await _repoWrapper.CityMembers
                 .GetFirstOrDefaultAsync(u => u.User.Id == userId && u.CityId == cityId)) == null;
@@ -202,10 +203,10 @@ namespace EPlast.BLL.Services
             }
 
             var cityHead = city.CityAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Станиці"
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.cityHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
             var cityAdmins = city.CityAdministration
-                .Where(a => a.AdminType.AdminTypeName != "Голова Станиці"
+                .Where(a => a.AdminType.AdminTypeName != Roles.cityHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .ToList();
 

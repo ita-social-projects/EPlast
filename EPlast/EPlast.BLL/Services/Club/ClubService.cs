@@ -4,6 +4,7 @@ using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -90,10 +91,10 @@ namespace EPlast.BLL.Services.Club
             }
 
             var ClubHead = Club.ClubAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Куреня"
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.kurinHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
             var ClubAdmins = Club.ClubAdministration
-                .Where(a => a.AdminType.AdminTypeName != "Голова Куреня"
+                .Where(a => a.AdminType.AdminTypeName != Roles.kurinHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .Take(6)
                 .ToList();
@@ -133,7 +134,7 @@ namespace EPlast.BLL.Services.Club
             var userId = await _userManager.GetUserIdAsync(user);
             var userRoles = await _userManager.GetRolesAsync(user);
 
-            ClubProfileDto.Club.CanCreate = userRoles.Contains("Admin");
+            ClubProfileDto.Club.CanCreate = userRoles.Contains(Roles.admin);
             ClubProfileDto.Club.CanEdit = await _clubAccessService.HasAccessAsync(user, ClubId);
             ClubProfileDto.Club.CanJoin = (await _repoWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(u => u.User.Id == userId && u.ClubId == ClubId)) == null;
@@ -214,11 +215,11 @@ namespace EPlast.BLL.Services.Club
             }
 
             var ClubHead = Club.ClubAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Куреня"
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.kurinHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
 
             var ClubAdmins = Club.ClubAdministration
-               .Where(a => a.AdminType.AdminTypeName != "Голова Куреня"
+               .Where(a => a.AdminType.AdminTypeName != Roles.kurinHead
                    && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
 
 

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -100,7 +101,7 @@ namespace EPlast.BLL.Services.Distinctions
 
         public async Task CheckIfAdminAsync(User user)
         {
-            if (!(await _userManager.GetRolesAsync(user)).Contains("Admin"))
+            if (!(await _userManager.GetRolesAsync(user)).Contains(Roles.admin))
                 throw new UnauthorizedAccessException();
         }
 

@@ -6,6 +6,7 @@ using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -204,7 +205,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetAdminTypeId_TypeNameString_ReturnsAdminTypeId()
         {
             // Arrange
-            string TypeName = "Admin";
+            string TypeName = Roles.admin;
             _regionAdministrationService.Setup(x => x.GetAdminType(TypeName)).ReturnsAsync(2);
             // Act
             var result = await _regionController.GetAdminTypeId(TypeName);

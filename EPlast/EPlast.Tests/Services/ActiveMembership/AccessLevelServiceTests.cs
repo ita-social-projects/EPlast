@@ -6,6 +6,7 @@ using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Services;
 using EPlast.BLL.Services.ActiveMembership;
 using EPlast.BLL.Services.Interfaces;
+using EPlast.Resources;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -135,7 +136,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             return new List<string>
             {
                  RolesForActiveMembershipTypeDTO.Plastun.GetDescription(),
-                 "Admin"
+                 Roles.admin
             };
         }
         private IEnumerable<string> GetUserRolesAsFormerMember()

@@ -3,6 +3,7 @@ using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using EPlast.WebApi.Controllers;
 using EPlast.WebApi.Models.Club;
 using Microsoft.AspNetCore.Identity;
@@ -61,7 +62,7 @@ namespace EPlast.Tests.Controllers
             ClubController clubcon = CreateClubController;
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
+                .Setup(m => m.User.IsInRole(Roles.admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(

@@ -38,7 +38,7 @@ namespace EPlast.BLL.Services.Region
 
             if (await CheckCreatedAsync(id, year))
             {
-                throw new InvalidOperationException("Report is already crated!");
+                throw new InvalidOperationException("Report is already created!");
             }
 
             var annualReports = (await _repositoryWrapper.AnnualReports.GetAllAsync(a => a.Date.Year == year && a.City.RegionId == id && a.Status == AnnualReportStatus.Confirmed))

@@ -7,6 +7,7 @@ using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Services.Club;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -800,7 +801,7 @@ namespace EPlast.Tests.Services.Club
                         User = new ClubUserDTO(),
                         AdminType = new AdminTypeDTO
                         {
-                            AdminTypeName = "Голова Куреня"
+                            AdminTypeName = Roles.kurinHead
                         },
                         EndDate = DateTime.Now.AddMonths(-3)
                     },
@@ -837,7 +838,7 @@ namespace EPlast.Tests.Services.Club
                         User = new ClubUserDTO(),
                         AdminType = new AdminTypeDTO
                         {
-                            AdminTypeName = "Голова Куреня"
+                            AdminTypeName = Roles.kurinHead
                         }
                     },
                     new ClubAdministrationDTO
@@ -865,7 +866,7 @@ namespace EPlast.Tests.Services.Club
                       User = new ClubUserDTO(),
                       AdminType = new AdminTypeDTO
                       {
-                           AdminTypeName = "Голова Куреня"
+                           AdminTypeName = Roles.kurinHead
                       }
                  },
                  new ClubAdministrationDTO

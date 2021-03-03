@@ -1,14 +1,15 @@
 ﻿using EPlast.BLL.Services.City.CityAccess.CityAccessGetters;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using System.Collections.Generic;
 
 namespace EPlast.BLL.Settings
 {
     public class CityAccessSettings
     {
-        private const string AdminRoleName = "Admin";
-        private const string RegionAdminRoleName = "Голова Округу";
-        private const string CityAdminRoleName = "Голова Станиці";
+        private const string AdminRoleName = Roles.admin;
+        private const string RegionAdminRoleName = Roles.okrugaHead;
+        private const string CityAdminRoleName = Roles.cityHead;
 
         private readonly IRepositoryWrapper _repositoryWrapper;
 
