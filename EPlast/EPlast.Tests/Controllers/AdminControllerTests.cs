@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -42,6 +41,52 @@ namespace EPlast.Tests.Controllers
             _cityService.Object,
             _cityAdministrationService.Object
             );
+
+        [Test]
+        public void ChangeUserRoleToExpired_UserExists_Test()
+        {
+            AdminController adminController = CreateAdminController;
+
+            var result = adminController.ChangeUserRoleToExpired("user");
+
+            Assert.NotNull(result);
+            _adminService.Verify(x => x.ChangeAsync(It.IsAny<string>()), Times.AtLeastOnce);
+            _logger.Verify(x => x.LogInformation(It.IsAny<string>()), Times.AtLeastOnce);
+        }
+
+        [Test]
+        public void ChangeUserRoleToExpired_UserNotExists_Test()
+        {
+            AdminController adminController = CreateAdminController;
+
+            var result = adminController.ChangeUserRoleToExpired(null);
+
+            Assert.NotNull(result);
+            _logger.Verify(x => x.LogError(It.IsAny<string>()), Times.AtLeastOnce);
+        }
+
+        [Test]
+        public void ChangeCurrentUserRole_UserNotExists_Test()
+        {
+            AdminController adminController = CreateAdminController;
+
+            var result = adminController.ChangeCurrentUserRole(null, It.IsAny<string>());
+
+            Assert.NotNull(result);
+            _logger.Verify(x => x.LogError(It.IsAny<string>()), Times.AtLeastOnce);
+        }
+
+        [Test]
+        public void ChangeCurrentUserRole_UserExists_Test()
+        {
+            AdminController adminController = CreateAdminController;
+
+            var result = adminController.ChangeCurrentUserRole("user", It.IsAny<string>());
+
+            Assert.NotNull(result);
+            _adminService.Verify(x => x.ChangeCurrentRoleAsync(It.IsAny<string>(), It.IsAny<string>()), Times.AtLeastOnce);
+            _logger.Verify(x => x.LogInformation(It.IsAny<string>()), Times.AtLeastOnce);
+        }
 
         [Test]
         public void ConfirmDelete_Invalid_Test()
@@ -101,6 +146,20 @@ namespace EPlast.Tests.Controllers
 
             Assert.NotNull(result);
             Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task Edit_CouldNotFindUser_Test()
+        {
+            AdminController adminController = CreateAdminController;
+
+            // Act
+            var result = await adminController.Edit("user");
+            _userManagerService.Setup(x => x.FindByIdAsync(It.IsAny<string>())).Returns((Task<UserDTO>)null);
+
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+            _logger.Verify(x => x.LogError(It.IsAny<string>()), Times.AtLeastOnce);
         }
 
         [Test]
@@ -167,6 +226,41 @@ namespace EPlast.Tests.Controllers
 
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetAdmins_Invalid_Test()
+        {
+            AdminController adminController = CreateAdminController;
+
+            var result = await adminController.GetAdmins(0);
+
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<BadRequestResult>(result);
+            _logger.Verify(x => x.LogError(It.IsAny<string>()), Times.AtLeastOnce);
+        }
+
+        [Test]
+        public async Task GetCityAndRegionAdminsOfUser_Invalid_Test()
+        {
+            AdminController adminController = CreateAdminController;
+
+            var result = await adminController.GetCityAndRegionAdminsOfUser(null);
+
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<BadRequestResult>(result);
+        }
+
+        [Test]
+        public async Task GetCityAndRegionAdminsOfUser_Valid_Test()
+        {
+            AdminController adminController = CreateAdminController;
+
+            var result = await adminController.GetCityAndRegionAdminsOfUser("user");
+
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            _adminService.Verify(x => x.GetCityRegionAdminsOfUserAsync(It.IsAny<string>()), Times.AtLeastOnce);
         }
 
         [Test]
