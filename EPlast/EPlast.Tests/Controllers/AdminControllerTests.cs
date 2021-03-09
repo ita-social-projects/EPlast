@@ -241,7 +241,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetAdmins_WrongCityId_ReturnBadRequestResult()
+        public async Task GetAdmins_WrongCityId_Test()
         {
             //Arrange
             AdminController adminController = CreateAdminController;
@@ -256,7 +256,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetCityAndRegionAdminsOfUser_Null_ReturnBadRequsetResult()
+        public async Task GetCityAndRegionAdminsOfUser_UserNotExists_Test()
         {
             //Arrange
             AdminController adminController = CreateAdminController;
@@ -270,7 +270,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetCityAndRegionAdminsOfUser_User_OkObjectResult()
+        public async Task GetCityAndRegionAdminsOfUser_UserExists_Test()
         {
             //Arrange
             AdminController adminController = CreateAdminController;
