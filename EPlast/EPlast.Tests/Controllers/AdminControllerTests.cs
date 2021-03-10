@@ -83,14 +83,14 @@ namespace EPlast.Tests.Controllers
             _logger.Verify(x => x.LogError(It.IsAny<string>()), Times.AtLeastOnce);
         }
 
-        [Test]
-        public void ChangeCurrentUserRole_UserExists_Test()
+        [TestCase("user")]
+        public void ChangeCurrentUserRole_UserExists_Test( string username)
         {
             //Arrange
             AdminController adminController = CreateAdminController;
             
             //Act
-            var result = adminController.ChangeCurrentUserRole("user", It.IsAny<string>());
+            var result = adminController.ChangeCurrentUserRole(username, It.IsAny<string>());
             
             //Assert
             Assert.NotNull(result);
@@ -158,14 +158,14 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
-        [Test]
-        public async Task Edit_CouldNotFindUser_Test()
+        [TestCase("user")]
+        public async Task Edit_CouldNotFindUser_Test(string username)
         {
             //Arrange
             AdminController adminController = CreateAdminController;
 
             // Act
-            var result = await adminController.Edit("user");
+            var result = await adminController.Edit(username);
             _userManagerService.Setup(x => x.FindByIdAsync(It.IsAny<string>())).Returns((Task<UserDTO>)null);
 
             //Assert
@@ -240,14 +240,14 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
-        [Test]
-        public async Task GetAdmins_WrongCityId_Test()
+        [TestCase(0)]
+        public async Task GetAdmins_WrongCityId_Test(int cityId)
         {
             //Arrange
             AdminController adminController = CreateAdminController;
 
             //Act
-            var result = await adminController.GetAdmins(0);
+            var result = await adminController.GetAdmins(cityId);
 
             //Assert
             Assert.NotNull(result);
@@ -269,14 +269,14 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
-        [Test]
-        public async Task GetCityAndRegionAdminsOfUser_UserExists_Test()
+        [TestCase("user")]
+        public async Task GetCityAndRegionAdminsOfUser_UserExists_Test(string username)
         {
             //Arrange
             AdminController adminController = CreateAdminController;
 
             //Act
-            var result = await adminController.GetCityAndRegionAdminsOfUser("user");
+            var result = await adminController.GetCityAndRegionAdminsOfUser(username);
 
             //Assert
             Assert.NotNull(result);
