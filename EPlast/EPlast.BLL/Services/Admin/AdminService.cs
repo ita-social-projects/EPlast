@@ -2,7 +2,6 @@
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
-using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Region;
@@ -113,6 +112,7 @@ namespace EPlast.BLL.Services
                     await _repoWrapper.SaveAsync();
                     await _userManager.AddToRoleAsync(user, role);
                     break;
+
                 case formerMember:
                     await ChangeAsync(userId);
                     break;
@@ -190,15 +190,16 @@ namespace EPlast.BLL.Services
             return allRoles;
         }
 
-       
-
         /// <inheritdoc />
-       
-        public async Task<IEnumerable<UserTableDTO>> GetUsersTableAsync(int pageNum, int pageSize, string tab)
+        public async Task<IEnumerable<UserTableDTO>> GetUsersTableAsync(int pageNum, int pageSize, string tab, IEnumerable<string> regions, IEnumerable<string> cities, IEnumerable<string> clubs, IEnumerable<string> degrees)
         {
-            return _mapper.Map< IEnumerable<UserTableObject>, IEnumerable<UserTableDTO>>(_repoWrapper.AdminType.GetUserTableObjects(pageNum, pageSize, tab));
+            string strCities = cities == null ? null : string.Join(",", cities.ToArray());
+            string strRegions = regions == null ? null : string.Join(",", regions.ToArray());
+            string strClubs = clubs == null ? null : string.Join(",", clubs.ToArray());
+            string strDegrees = degrees == null ? null : string.Join(",", degrees.ToArray());
+            return _mapper.Map<IEnumerable<UserTableObject>, IEnumerable<UserTableDTO>>(_repoWrapper.AdminType.GetUserTableObjects(pageNum, pageSize, tab, strRegions, strCities, strClubs, strDegrees));
         }
-       
+
         public async Task UpdateUserDatesByChangeRoleAsyncAsync(string userId, string role)
         {
             UserMembershipDates userMembershipDates = await _repoWrapper.UserMembershipDates
@@ -221,6 +222,7 @@ namespace EPlast.BLL.Services
             _repoWrapper.UserMembershipDates.Update(userMembershipDates);
             await _repoWrapper.SaveAsync();
         }
+
         public Task<int> GetUsersCountAsync()
         {
             return _repoWrapper.AdminType.GetUsersCountAsync();

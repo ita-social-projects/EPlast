@@ -18,9 +18,11 @@ namespace EPlast.DataAccess.Repositories
             return EPlastDBContext.Users.CountAsync();
         }
 
-        public IEnumerable<UserTableObject> GetUserTableObjects(int pageNum, int pageSize, string tab)
+        public IEnumerable<UserTableObject> GetUserTableObjects(int pageNum, int pageSize, string tab, string regions, string cities, string clubs, string degrees)
         {
-            var items = EPlastDBContext.Set<UserTableObject>().FromSqlRaw("dbo.usp_GetUserInfo @PageIndex = {0}, @PageSize = {1}, @tab = {2}", pageNum, pageSize, tab);
+            var items = EPlastDBContext.Set<UserTableObject>().FromSqlRaw("dbo.usp_GetUserInfo @PageIndex = {0}, @PageSize = {1}, @tab = {2}, @filterRegion = {3}, " +
+                "@filterCity = {4}, @filterClub = {5}, @filterDegree = {6}", pageNum, pageSize, tab, regions, cities, clubs, degrees);
+
             return items;
         }
     }
