@@ -380,6 +380,27 @@ namespace EPlast.Tests.Controllers
             _educatorsStaffService.Verify(x => x.GetUserByEduStaff(It.IsAny<int>()));
         }
 
+        [TestCase(1)]
+        public async Task GetEduStaffById_ReturnsOkObjectResult(int kadraId)
+        {
+            // Arrange
+            var outputModel = new EducatorsStaffDTO
+            {
+                ID = 1
+            };
+
+            _educatorsStaffService.Setup(x => x.GetKadraById(It.IsAny<int>()))
+                .ReturnsAsync(outputModel);
+
+            // Act
+            var result = await _educatorsStaffController.GetEduStaffById(kadraId);
+
+            // Assert
+            Assert.NotNull(result);
+            _educatorsStaffService.Verify(x => x.GetKadraById(It.IsAny<int>()), Times.AtLeastOnce());
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
         private List<EducatorsStaffDTO> CreateFakeEducatorsStaffDTO()
             => new List<EducatorsStaffDTO>()
             {

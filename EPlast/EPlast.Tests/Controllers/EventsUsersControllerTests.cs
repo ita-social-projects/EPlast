@@ -191,6 +191,26 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<NoContentResult>(result);
         }
 
+        [TestCase(2)]
+        public async Task ApproveEvent_ReturnsOkObjectResult(int eventId)
+        {
+            // Arrange
+            var expectedId = 1;
+
+            eventUserManager.Setup(x => x.ApproveEventAsync(It.IsAny<int>()))
+                .ReturnsAsync(expectedId);
+
+            // Act
+            var result = await eventsUsersController.ApproveEvent(eventId);
+
+            var actual = (result as ObjectResult).Value;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(expectedId, actual);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
         private EventUserDTO CreateFakeEventUser()
             => new EventUserDTO()
             {
