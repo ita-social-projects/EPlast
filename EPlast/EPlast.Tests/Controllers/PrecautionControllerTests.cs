@@ -402,5 +402,21 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
+
+        [TestCase(1)]
+        public async Task CheckNumberExisting_ReturnsOkObjectResult(int number)
+        {
+            //Arrange
+            _userPrecautionService.Setup(x => x.IsNumberExistAsync(It.IsAny<int>()))
+                .ReturnsAsync(true);
+
+            //Act
+            var result = await _PrecautionController.CheckNumberExisting(number);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
     }
 }

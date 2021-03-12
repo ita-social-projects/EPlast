@@ -392,6 +392,20 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
 
+        [TestCase(1)]
+        public async Task CheckNumberExisting_ReturnsOkObjectResult(int number)
+        {
+            //Arrange
+            _userDistinctionService.Setup(x => x.IsNumberExistAsync(It.IsAny<int>()))
+                .ReturnsAsync(true);
+
+            //Act
+            var result = await _distinctionController.CheckNumberExisting(number);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
 
     }
 }
