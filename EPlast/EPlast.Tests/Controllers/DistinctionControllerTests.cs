@@ -1,28 +1,28 @@
-﻿using System.Collections.Generic;
-using NUnit.Framework;
-using Moq;
-using EPlast.BLL;
-using EPlast.WebApi.Controllers;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using System.Linq;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.Identity;
+﻿using EPlast.BLL;
 using EPlast.DataAccess.Entities;
+using EPlast.WebApi.Controllers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Routing;
+using Moq;
+using NUnit.Framework;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
 {
     [TestFixture]
-    class DistinctionControllerTests
+    internal class DistinctionControllerTests
     {
         private Mock<IDistinctionService> _distinctionService;
         private Mock<IUserDistinctionService> _userDistinctionService;
         private Mock<UserManager<User>> _userManager;
 
         private DistinctionController _distinctionController;
-        
+
         [SetUp]
         public void SetUp()
         {
@@ -157,7 +157,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(resultValue);
             Assert.IsInstanceOf<List<UserDistinctionDTO>>(resultValue);
         }
-        
+
         [Test]
         public async Task DeleteDistinction_ReturnsNoContentResult()
         {
@@ -406,6 +406,5 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
-
     }
 }

@@ -7,20 +7,18 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
 {
     [TestFixture]
-    class EventsUsersControllerTests
+    internal class EventsUsersControllerTests
     {
         private Mock<IEventUserManager> eventUserManager;
         private Mock<IEventUserService> eventUserService;
 
         private EventsUsersController eventsUsersController;
         private Mock<UserManager<User>> userManager;
-
 
         [SetUp]
         public void SetUp()
@@ -191,12 +189,10 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<NoContentResult>(result);
         }
 
-        [TestCase(2)]
-        public async Task ApproveEvent_ReturnsOkObjectResult(int eventId)
+        [TestCase(2, 1)]
+        public async Task ApproveEvent_ReturnsOkObjectResult(int eventId, int expectedId)
         {
             // Arrange
-            var expectedId = 1;
-
             eventUserManager.Setup(x => x.ApproveEventAsync(It.IsAny<int>()))
                 .ReturnsAsync(expectedId);
 
