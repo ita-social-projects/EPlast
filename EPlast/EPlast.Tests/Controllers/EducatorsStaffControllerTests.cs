@@ -382,7 +382,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _educatorsStaffService.Setup(x => x.GetKadraById(It.IsAny<int>()))
-                .ReturnsAsync(CreateFakeEducatorsStaff());
+                .ReturnsAsync(new EducatorsStaffDTO());
 
             // Act
             var result = await _educatorsStaffController.GetEduStaffById(kadraId);
@@ -392,12 +392,6 @@ namespace EPlast.Tests.Controllers
             _educatorsStaffService.Verify(x => x.GetKadraById(It.IsAny<int>()), Times.AtLeastOnce());
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
-
-        private EducatorsStaffDTO CreateFakeEducatorsStaff()
-            => new EducatorsStaffDTO()
-            {
-                ID = 1
-            };
 
         private List<EducatorsStaffDTO> CreateFakeEducatorsStaffDTO()
             => new List<EducatorsStaffDTO>()
