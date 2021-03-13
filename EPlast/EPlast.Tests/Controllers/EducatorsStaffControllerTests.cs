@@ -378,7 +378,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [TestCase(1)]
-        public async Task GetEduStaffById_ReturnsOkObjectResult(int kadraId)
+        public async Task GetEduStaffById_ReturnsOkObjectResult_Test(int kadraId)
         {
             // Arrange
             _educatorsStaffService.Setup(x => x.GetKadraById(It.IsAny<int>()))

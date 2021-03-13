@@ -393,7 +393,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [TestCase(1)]
-        public async Task CheckNumberExisting_ReturnsOkObjectResult(int number)
+        public async Task CheckNumberExisting_ReturnsOkObjectResult_Test(int number)
         {
             //Arrange
             _userDistinctionService.Setup(x => x.IsNumberExistAsync(It.IsAny<int>()))

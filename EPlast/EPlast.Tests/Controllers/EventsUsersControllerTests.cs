@@ -190,7 +190,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [TestCase(2, 1)]
-        public async Task ApproveEvent_ReturnsOkObjectResult(int eventId, int expectedId)
+        public async Task ApproveEvent_ReturnsOkObjectResult_Test(int eventId, int expectedId)
         {
             // Arrange
             eventUserManager.Setup(x => x.ApproveEventAsync(It.IsAny<int>()))
