@@ -1,20 +1,20 @@
-﻿using System.Collections.Generic;
-using NUnit.Framework;
-using Moq;
-using EPlast.BLL;
-using EPlast.WebApi.Controllers;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using System.Linq;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.Identity;
+﻿using EPlast.BLL;
 using EPlast.DataAccess.Entities;
+using EPlast.WebApi.Controllers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Routing;
+using Moq;
+using NUnit.Framework;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
 {
-    class PrecautionControllerTests
+    internal class PrecautionControllerTests
     {
         private Mock<IPrecautionService> _precautionService;
         private Mock<IUserPrecautionService> _userPrecautionService;
@@ -390,6 +390,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
+
         [Test]
         public async Task UsersTableWithoutPrecautions_Valid_Test()
         {
@@ -400,6 +401,21 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [TestCase(1)]
+        public async Task CheckNumberExisting_ReturnsOkObjectResult_Test(int number)
+        {
+            //Arrange
+            _userPrecautionService.Setup(x => x.IsNumberExistAsync(It.IsAny<int>()))
+                .ReturnsAsync(true);
+
+            //Act
+            var result = await _PrecautionController.CheckNumberExisting(number);
+
+            //Assert
+            Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
     }

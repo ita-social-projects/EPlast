@@ -6,17 +6,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using Org.BouncyCastle.Math.EC.Rfc7748;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-
 
 namespace EPlast.Tests.Controllers
 {
     [TestFixture]
-    class EducatorsStaffControllerTests
+    internal class EducatorsStaffControllerTests
     {
         private Mock<ILoggerService<EducatorsStaffController>> _loggerService;
         private Mock<IEducatorsStaffService> _educatorsStaffService;
@@ -32,7 +28,7 @@ namespace EPlast.Tests.Controllers
             _educatorsStaffTypesService = new Mock<IEducatorsStaffTypesService>();
 
             _educatorsStaffController = new EducatorsStaffController(
-                _loggerService.Object, 
+                _loggerService.Object,
                 _educatorsStaffService.Object,
                 _educatorsStaffTypesService.Object
                 );
@@ -140,11 +136,11 @@ namespace EPlast.Tests.Controllers
         public async Task Update_Kadra_ReturnsStatusCodes200()
         {
             // Arange
-            
+
             var expected = StatusCodes.Status200OK;
 
             // Act
-            var result = await _educatorsStaffController.Update(It.IsAny< EducatorsStaffDTO>());
+            var result = await _educatorsStaffController.Update(It.IsAny<EducatorsStaffDTO>());
             var actual = result as StatusCodeResult;
 
             // Assert
@@ -215,6 +211,7 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.IsInstanceOf<IActionResult>(result);
         }
+
         [Test]
         public async Task GetKVsWithType_User_CallsGetKVsWithKVType()
         {
@@ -378,6 +375,22 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             _educatorsStaffService.Verify(x => x.GetUserByEduStaff(It.IsAny<int>()));
+        }
+
+        [TestCase(1)]
+        public async Task GetEduStaffById_ReturnsOkObjectResult_Test(int kadraId)
+        {
+            // Arrange
+            _educatorsStaffService.Setup(x => x.GetKadraById(It.IsAny<int>()))
+                .ReturnsAsync(new EducatorsStaffDTO());
+
+            // Act
+            var result = await _educatorsStaffController.GetEduStaffById(kadraId);
+
+            // Assert
+            Assert.NotNull(result);
+            _educatorsStaffService.Verify(x => x.GetKadraById(It.IsAny<int>()), Times.AtLeastOnce());
+            Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
         private List<EducatorsStaffDTO> CreateFakeEducatorsStaffDTO()
