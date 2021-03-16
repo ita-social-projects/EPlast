@@ -11,7 +11,7 @@ namespace EPlast.WebApi.Models.UserModels
         [Display(Name = "Ім'я")]
         [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'().`]{1,26}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'().`]{1,26})*$",
             ErrorMessage = "Поле 'Ім'я' має містити тільки літери")]
-        [Required(ErrorMessage = "Поле 'ім'я' є обов'язковим")]
+        [Required(ErrorMessage = "Поле 'Ім'я' є обов'язковим")]
         [StringLength(25, MinimumLength = 2, ErrorMessage = "Поле 'Ім'я' повинне складати від 2 до 25 символів")]
         public string FirstName { get; set; }
         [Display(Name = "Прізвище")]
@@ -36,7 +36,7 @@ namespace EPlast.WebApi.Models.UserModels
         public string UserProfileID { get; set; }
         [DataType(DataType.Date)]
         [Display(Name = "Дата народження")]
-        [Required(ErrorMessage = "Поле 'дата народження' є обов'язковим")]
+        [Required(ErrorMessage = "Поле 'Дата народження' є обов'язковим")]
         public DateTime Birthday { get; set; }
         public EducationViewModel Education { get; set; }
         public DegreeViewModel Degree { get; set; }
@@ -45,11 +45,11 @@ namespace EPlast.WebApi.Models.UserModels
         public WorkViewModel Work { get; set; }
         public GenderViewModel Gender { get; set; }
         [Display(Name = "Ступінь в УПЮ")]
-        [Required(ErrorMessage = "Поле 'ступінь в УПЮ' є обов'язковим")]
+        [Required(ErrorMessage = "Поле 'Ступінь в УПЮ' є обов'язковим")]
         public UpuDegreeViewModel UpuDegree { get; set; }
         [Display(Name = "Домашня адреса")]
         [MaxLength(50, ErrorMessage = "Поле 'Адреса' не може перевищувати 50 символів")]
-        [Required(ErrorMessage = "Поле 'домашня адреса' є обов'язковим")]
+        [Required(ErrorMessage = "Поле 'Домашня адреса' є обов'язковим")]
         public string Address { get; set; }
         [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'().`]{1,31}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'().`]{1,31})*$",
             ErrorMessage = "Поле 'Псевдо' має містити тільки літери")]
