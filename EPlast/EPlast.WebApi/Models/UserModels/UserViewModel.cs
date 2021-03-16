@@ -9,19 +9,19 @@ namespace EPlast.WebApi.Models.UserModels
         public string ID { get; set; }
         public string Email { get; set; }
         [Display(Name = "Ім'я")]
-        [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26})*$",
+        [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'().`]{1,26}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'().`]{1,26})*$",
             ErrorMessage = "Ім'я має містити тільки літери")]
         [Required(ErrorMessage = "Поле ім'я є обов'язковим")]
         [StringLength(25, MinimumLength = 2, ErrorMessage = "Ім'я повинне складати від 2 до 25 символів")]
         public string FirstName { get; set; }
         [Display(Name = "Прізвище")]
-        [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26})*$",
+        [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'().`]{1,26}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'().`]{1,26})*$",
             ErrorMessage = "Прізвище має містити тільки літери")]
         [Required(ErrorMessage = "Поле прізвище є обов'язковим")]
         [StringLength(25, MinimumLength = 2, ErrorMessage = "Прізвище повинне складати від 2 до 25 символів")]
         public string LastName { get; set; }
         [Display(Name = "По-батькові")]
-        [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26})*$",
+        [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ()'.`]{1,26}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ()'.`]{1,26})*$",
             ErrorMessage = "По-батькові має містити тільки літери")]
         //[StringLength(25, MinimumLength = 2, ErrorMessage = "Поле по-батькові повинне складати від 2 до 25 символів")]
         public string FatherName { get; set; }
@@ -51,11 +51,11 @@ namespace EPlast.WebApi.Models.UserModels
         [MaxLength(50, ErrorMessage = "Адреса не може перевищувати 50 символів")]
         [Required(ErrorMessage = "Поле домашня адреса є обов'язковим")]
         public string Address { get; set; }
-        [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,31}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,31})*$",
+        [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'().`]{1,31}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'().`]{1,31})*$",
             ErrorMessage = "Псевдо має містити тільки літери")]
         [MaxLength(30, ErrorMessage = "Псевдо не може перевищувати 30 символів")]
         public string Pseudo { get; set; }
-        [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.-]{1,51}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.-]{1,51})*$",
+        [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.()-]{1,51}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.()-]{1,51})*$",
             ErrorMessage = "Поле Громадська, політична діяльність має містити тільки літери та цифри")]
         [MaxLength(50, ErrorMessage = "Поле Громадська, політична діяльність не може перевищувати 50 символів")]
         public string PublicPoliticalActivity { get; set; }
