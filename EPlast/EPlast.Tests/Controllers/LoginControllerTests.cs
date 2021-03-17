@@ -18,7 +18,7 @@ using BadRequestResult = Microsoft.AspNetCore.Mvc.BadRequestResult;
 
 namespace EPlast.Tests.Controllers
 {
-    public class LoginControllerTests
+    public class  LoginControllerTests
     {
         public (
             Mock<IAuthService>,

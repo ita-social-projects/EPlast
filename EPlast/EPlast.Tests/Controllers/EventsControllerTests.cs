@@ -516,6 +516,35 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.AreEqual(expectedCount, actual);
         }
+        [Test]
+        public async Task GetEventsByCategory_ReturnOkObjectResult()
+        {
+            // Arrange
+            _actionManager
+                .Setup((x) => x.GetEventsByStatusAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<User>()))
+                .ReturnsAsync(CreateListOfFakeGeneralEvents());
+
+            // Act
+            var result = await _eventsController.GetEventsByCategory(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>());
+
+            // Assert
+            Assert.NotNull((result as ObjectResult).Value);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+        [Test]
+        public async Task GetCategoriesByPage_ReturnOkObjectResult()
+        {
+            //Arrange
+            _actionManager
+                .Setup(x => x.GetActionCategoriesAsync());
+                
+            //Act
+            var result = await _eventsController.GetCategoriesByPage(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
 
         private List<EventTypeDTO> CreateListOfFakeEventTypes()
             => new List<EventTypeDTO>()
@@ -554,6 +583,7 @@ namespace EPlast.Tests.Controllers
                 { 
                     EventId = 0, 
                     EventName = "SomeGeneralEventName",
+                    
                 },
                 new GeneralEventDTO()
                 { 
