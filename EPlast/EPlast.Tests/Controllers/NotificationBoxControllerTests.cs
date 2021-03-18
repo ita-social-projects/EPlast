@@ -9,6 +9,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -34,13 +35,16 @@ namespace EPlast.Tests.Controllers
         public async Task GetAllTypes_Valid_Test()
         {
             //Arrange
-            _notificationService.Setup(cs => cs.GetAllNotificationTypesAsync()).ReturnsAsync(new List<NotificationTypeDTO>());
+            var list = new List<NotificationTypeDTO>() {new NotificationTypeDTO()};
+            _notificationService.Setup(cs => cs.GetAllNotificationTypesAsync()).ReturnsAsync(list);
 
             NotificationBoxController notificationBoxController = _notificationBoxController;
 
             //Act
             var result = await notificationBoxController.GetAllTypes();
+
             //Assert
+            Assert.AreEqual(((result as ObjectResult).Value as IEnumerable<NotificationTypeDTO>).Count(), list.Count);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(result);
         }
@@ -49,13 +53,16 @@ namespace EPlast.Tests.Controllers
         public async Task GetAllUserNotification_Valid_Test(string id)
         {
             //Arrange
-            _notificationService.Setup(cs => cs.GetAllUserNotificationsAsync(It.IsAny<string>())).ReturnsAsync(new List<UserNotificationDTO>());
+            var list = new List<UserNotificationDTO>() { new UserNotificationDTO() };
+            _notificationService.Setup(cs => cs.GetAllUserNotificationsAsync(It.IsAny<string>())).ReturnsAsync(list);
 
             NotificationBoxController notificationBoxController = _notificationBoxController;
 
             //Act
             var result = await notificationBoxController.GetAllUserNotification(id);
+
             //Assert
+            Assert.AreEqual(((result as ObjectResult).Value as IEnumerable<NotificationTypeDTO>).Count(), list.Count);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(result);
         }
@@ -71,6 +78,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await notificationBoxController.RemoveUserNotification(id);
+
             //Assert
             Assert.IsInstanceOf<NoContentResult>(result);
             
@@ -87,6 +95,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await notificationBoxController.RemoveUserNotification(id);
+
             //Assert
             Assert.IsInstanceOf<BadRequestResult>(result);
 
@@ -103,6 +112,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await notificationBoxController.RemoveAllUserNotifications(id);
+
             //Assert
             Assert.IsInstanceOf<NoContentResult>(result);
 
@@ -119,6 +129,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await notificationBoxController.RemoveAllUserNotifications(id);
+
             //Assert
             Assert.IsInstanceOf<BadRequestResult>(result);
 
@@ -135,6 +146,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await notificationBoxController.SetCheckForListNotification("2");
+
             //Assert
             Assert.IsInstanceOf<NoContentResult>(result);
 
@@ -151,6 +163,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await notificationBoxController.SetCheckForListNotification("2");
+
             //Assert
             Assert.IsInstanceOf<BadRequestResult>(result);
 
@@ -166,6 +179,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await notificationBoxController.AddNotificationList(new List<UserNotificationDTO>());
+
             //Assert
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
@@ -176,11 +190,11 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _notificationService.Setup(cs => cs.AddListUserNotificationAsync(It.IsAny<IEnumerable<UserNotificationDTO>>())).ReturnsAsync(new List<UserNotificationDTO>());
 
-
             NotificationBoxController notificationBoxController = _notificationBoxController;
 
             //Act
             var result = await notificationBoxController.AddNotificationList(new List<UserNotificationDTO>());
+
             //Assert
             Assert.IsInstanceOf<NoContentResult>(result);
            
