@@ -7,15 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Moq;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
 {
-    class MethodicDocumentsCintrollerTests
+    internal class MethodicDocumentsControllerTests
     {
         private Mock<IMethodicDocumentService> _service;
         private Mock<IMapper> _mapper;
@@ -39,19 +37,25 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _service
                 .Setup(x => x.GetOrganizationListAsync())
-                .ReturnsAsync(new List<OrganizationDTO>().AsEnumerable());
-           
+                .ReturnsAsync(GetFakeOrganizationDtos());
+
             _service
                 .Setup(x => x.GetMethodicDocumentTypes())
-                .Returns(new List<SelectListItem>().AsEnumerable());
+                .Returns(GetFakeSelectListItems);
 
             //Act
             var result = await _controller.GetMetaData();
+            var methodicDocument = (result.Result as OkObjectResult).Value;
+            var organizations = (methodicDocument as MethodicDocumentCreateViewModel)
+                .Organizations;
+            var methodicDocumentTypes = (methodicDocument as MethodicDocumentCreateViewModel)
+                .MethodicDocumentTypesItems;
 
             //Assert
-            _service.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<ActionResult<MethodicDocumentCreateViewModel>>(result);
+            Assert.AreEqual(2, organizations.Count());
+            Assert.AreEqual(2, methodicDocumentTypes.Count());
         }
 
         [Test]
@@ -90,12 +94,12 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task Update_ReturnsOkObjectResult()
+        public async Task Update_ReturnsNoContentResult()
         {
             //Arrange
             var mockDoc = new MethodicDocumentDTO();
             _service
-                .Setup(x => x.ChangeMethodicDocumentAsync(mockDoc));
+                .Setup(x => x.ChangeMethodicDocumentAsync(It.IsAny<MethodicDocumentDTO>()));
 
             //Act
             var result = await _controller.Update(It.IsAny<int>(), mockDoc);
@@ -127,14 +131,14 @@ namespace EPlast.Tests.Controllers
         public async Task Save_ReturnsCreatedResult()
         {
             //Arrange
-            var str = "file";
+            var organizationName = "SomeName";
             MethodicDocumentWraperDTO docWrapperDTO = new MethodicDocumentWraperDTO()
             {
                 MethodicDocument = new MethodicDocumentDTO()
                 {
                     Organization = new OrganizationDTO
                     {
-                        OrganizationName = str
+                        OrganizationName = organizationName
                     }
                 }
             };
@@ -169,10 +173,12 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await _controller.Save(docWrapper);
+            var resultValue = (result as BadRequestObjectResult).Value;
 
             //Assert
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.IsInstanceOf<string>(resultValue);
         }
 
         [Test]
@@ -197,22 +203,26 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _service
                 .Setup(x => x.GetMethodicDocumentListAsync())
-                .ReturnsAsync(new List<MethodicDocumentWraperDTO>().AsEnumerable());
+                .ReturnsAsync(GetFakeDocumentWraperDtos());
             _mapper
                 .Setup(m => m.Map<MethodicDocumentViewModel>(It.IsAny<MethodicDocumentDTO>()))
-                .Returns(new MethodicDocumentViewModel());
+                .Returns(GetFakeDocumentViewModel());
             _service
                 .Setup(x => x.GetMethodicDocumentTypes())
-                .Returns(new List<SelectListItem>().AsEnumerable());
+                .Returns(GetFakeSelectListItems());
 
             //Act
             var result = await _controller.Get();
+            var resultValue = (result as OkObjectResult).Value;
+            var methodicDocuments = resultValue as List<MethodicDocumentViewModel>;
 
             //Assert
             _service.Verify();
             _mapper.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsInstanceOf<List<MethodicDocumentViewModel>>(resultValue);
+            Assert.AreEqual(2, methodicDocuments.Count);
         }
 
         [Test]
@@ -231,8 +241,69 @@ namespace EPlast.Tests.Controllers
             //Assert
             _service.Verify();
             Assert.IsNotNull(resultValue);
+            Assert.IsInstanceOf<string>(resultValue);
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
+
+        public List<MethodicDocumentWraperDTO> GetFakeDocumentWraperDtos()
+            => new List<MethodicDocumentWraperDTO>
+            {
+                new MethodicDocumentWraperDTO
+                {
+                    MethodicDocument = new MethodicDocumentDTO
+                    {
+                        ID = 1,
+                        Type = MethodicDocumentTypeDTO.Other
+                    },
+                    FileAsBase64 = "file1"
+                },
+                new MethodicDocumentWraperDTO
+                {
+                    MethodicDocument = new MethodicDocumentDTO
+                    {
+                        ID = 2,
+                        Type = MethodicDocumentTypeDTO.Other
+                    },
+                    FileAsBase64 = "file2"
+                }
+            };
+
+        public MethodicDocumentViewModel GetFakeDocumentViewModel()
+            => new MethodicDocumentViewModel
+            {
+                Id = 1,
+                Type = "Value1"
+            };
+
+        public List<OrganizationDTO> GetFakeOrganizationDtos()
+            => new List<OrganizationDTO>
+            {
+                new OrganizationDTO
+                {
+                    ID = 1,
+                    OrganizationName = "OrganisationName1"
+                },
+                new OrganizationDTO
+                {
+                    ID = 2,
+                    OrganizationName = "OrganisationName2"
+                }
+            };
+
+        public List<SelectListItem> GetFakeSelectListItems()
+            => new List<SelectListItem>
+            {
+                new SelectListItem
+                {
+                    Value = "Other",
+                    Text = "Text1"
+                },
+                new SelectListItem
+                {
+                    Value = "Other",
+                    Text = "Text2"
+                },
+            };
     }
 }
