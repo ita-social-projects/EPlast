@@ -82,9 +82,6 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IClubAnnualReportsRepository _clubAnnualReports;
         private IRegionAnnualReportsRepository _regionAnnualReports;
 
-        public IOrganizationRepository GoverningBody { get; }
-
-
         public IEducatorsStaffTypesRepository KVTypes
         {
             get
@@ -157,7 +154,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             }
         }
 
-        public IOrganizationRepository Organization
+        public IOrganizationRepository GoverningBody
         {
             get
             {

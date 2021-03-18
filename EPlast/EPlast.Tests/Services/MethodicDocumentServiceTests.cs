@@ -16,6 +16,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Organization = EPlast.DataAccess.Entities.Organization;
 
 namespace EPlast.Tests.Services
 {
@@ -147,7 +148,7 @@ namespace EPlast.Tests.Services
         {
             //Arrange
             OrganizationDTO organization = GetTestOrganizationDtoList()[0];
-            _repository.Setup(rep => rep.Organization.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+            _repository.Setup(rep => rep.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
                 It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>()))
                 .ReturnsAsync(new Organization() { OrganizationName = organization.OrganizationName });
             _mapper
@@ -157,7 +158,7 @@ namespace EPlast.Tests.Services
             var actualReturn = await _service.GetMethodicDocumentOrganizationAsync(organization);
 
             //Assert
-            Assert.AreEqual(organization.OrganizationName, actualReturn.OrganizationName);
+            Assert.AreEqual(organization.OrganizationName, actualReturn.Name);
         }
 
         [TestCase("filename1")]
@@ -179,14 +180,14 @@ namespace EPlast.Tests.Services
         {
             //Arrange
             
-            _repository.Setup(rep => rep.Organization.GetAllAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+            _repository.Setup(rep => rep.GoverningBody.GetAllAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
                 It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new List<Organization>());
             _mapper
                 .Setup(x => x.Map<IEnumerable<OrganizationDTO>>(new List<Organization>()))
                 .Returns(GetTestOrganizationDtoList());
 
             //Act
-            var actualReturn = await _service.GetOrganizationListAsync();
+            var actualReturn = await _service.GetGoverningBodyListAsync();
 
             //Assert
             Assert.IsInstanceOf<List<OrganizationDTO>>(actualReturn);

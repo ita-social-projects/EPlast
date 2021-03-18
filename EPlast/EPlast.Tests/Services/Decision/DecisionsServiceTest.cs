@@ -19,6 +19,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Organization = EPlast.DataAccess.Entities.Organization;
 
 namespace EPlast.Tests.Services.Decision
 {
@@ -185,7 +186,7 @@ namespace EPlast.Tests.Services.Decision
             //Arrange
             OrganizationDTO organization = GetTestOrganizationDtoList()[0];
             organization.OrganizationName = organizationName;
-            _repository.Setup(rep => rep.Organization.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+            _repository.Setup(rep => rep.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
                 It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new Organization() { ID = organization.ID });
 
             //Act
@@ -200,14 +201,14 @@ namespace EPlast.Tests.Services.Decision
         {
             //Arrange
             OrganizationDTO organization = GetTestOrganizationDtoList()[0];
-            _repository.Setup(rep => rep.Organization.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+            _repository.Setup(rep => rep.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
                 It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new Organization() { OrganizationName = organization.OrganizationName });
 
             //Act
             var actualReturn = await _decisionService.GetDecisionOrganizationAsync(organization);
 
             //Assert
-            Assert.AreEqual(organization.OrganizationName, actualReturn.OrganizationName);
+            Assert.AreEqual(organization.OrganizationName, actualReturn.Name);
         }
 
         [TestCase("filename1")]
@@ -229,14 +230,14 @@ namespace EPlast.Tests.Services.Decision
         {
             //Arrange
             List<OrganizationDTO> organizations = GetTestOrganizationDtoList();
-            _repository.Setup(rep => rep.Organization.GetAllAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+            _repository.Setup(rep => rep.GoverningBody.GetAllAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
                 It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new List<Organization>());
 
             //Act
-            var actualReturn = await _decisionService.GetOrganizationListAsync();
+            var actualReturn = await _decisionService.GetGoverningBodyListAsync();
 
             //Assert
-            Assert.AreEqual(organizations.Aggregate("", (x, y) => x += y.OrganizationName), actualReturn.Aggregate("", (x, y) => x += y.OrganizationName));
+            Assert.AreEqual(organizations.Aggregate("", (x, y) => x += y.OrganizationName), actualReturn.Aggregate("", (x, y) => x += y.Name));
         }
 
         [Test]
@@ -303,10 +304,10 @@ namespace EPlast.Tests.Services.Decision
         {
             return new List<DecisionDTO>
             {
-                new DecisionDTO {ID = 1,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
-                new DecisionDTO {ID = 2,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
-                new DecisionDTO {ID = 3,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
-                new DecisionDTO {ID = 4,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()}
+                new DecisionDTO {ID = 1,Description = "old", GoverningBody = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
+                new DecisionDTO {ID = 2,Description = "old", GoverningBody = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
+                new DecisionDTO {ID = 3,Description = "old", GoverningBody = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
+                new DecisionDTO {ID = 4,Description = "old", GoverningBody = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()}
             };
         }
 

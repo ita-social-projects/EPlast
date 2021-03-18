@@ -35,7 +35,7 @@ namespace EPlast.WebApi.Controllers
         {
             MethodicDocumentCreateViewModel documentViewModel = new MethodicDocumentCreateViewModel
             {
-                Organizations = await _methodicDocService.GetOrganizationListAsync(),
+                GoverningBodies = await _methodicDocService.GetGoverningBodyListAsync(),
                 MethodicDocumentTypesItems = _methodicDocService.GetMethodicDocumentTypes()
             };
 
@@ -121,8 +121,8 @@ namespace EPlast.WebApi.Controllers
             }
             documentWrapper.MethodicDocument.ID = await _methodicDocService.SaveMethodicDocumentAsync(documentWrapper);
             var methodicDocumentOrganizations = (await _methodicDocService
-                        .GetMethodicDocumentOrganizationAsync(documentWrapper.MethodicDocument.Organization))
-                        .OrganizationName;
+                        .GetMethodicDocumentOrganizationAsync(documentWrapper.MethodicDocument.GoverningBody))
+                        .Name;
 
             return Created("MethodicDocument", new
             {

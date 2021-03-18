@@ -40,7 +40,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _decisionService
-                .Setup(x => x.GetOrganizationListAsync())
+                .Setup(x => x.GetGoverningBodyListAsync())
                 .ReturnsAsync(new List<OrganizationDTO>().AsEnumerable());
             _decisionService
                 .Setup(x => x.GetDecisionTargetListAsync())
@@ -136,7 +136,7 @@ namespace EPlast.Tests.Controllers
             {
                 Decision = new DecisionDTO()
                 {
-                    Organization = new OrganizationDTO
+                    GoverningBody = new OrganizationDTO
                     {
                         OrganizationName = str
                     }
@@ -146,8 +146,8 @@ namespace EPlast.Tests.Controllers
                 .Setup(x => x.SaveDecisionAsync(decisionWrapperDTO))
                 .ReturnsAsync(decisionWrapperDTO.Decision.ID);
             _decisionService
-                .Setup(x => x.GetDecisionOrganizationAsync(decisionWrapperDTO.Decision.Organization))
-                .ReturnsAsync(decisionWrapperDTO.Decision.Organization);
+                .Setup(x => x.GetDecisionOrganizationAsync(decisionWrapperDTO.Decision.GoverningBody))
+                .ReturnsAsync(decisionWrapperDTO.Decision.GoverningBody);
 
             //Act
             var result = await _decisionsController.Save(decisionWrapperDTO);

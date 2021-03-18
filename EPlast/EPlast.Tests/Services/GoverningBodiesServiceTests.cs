@@ -13,6 +13,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Organization = EPlast.DataAccess.Entities.Organization;
 
 namespace EPlast.Tests.Services
 {
@@ -36,7 +37,7 @@ namespace EPlast.Tests.Services
         {
             //Arrange
             _repoWrapper
-                .Setup(x => x.Organization.GetAllAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+                .Setup(x => x.GoverningBody.GetAllAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
                     It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>()))
                 .ReturnsAsync(new List<Organization>());
             _mapper
