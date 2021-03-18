@@ -40,9 +40,11 @@ namespace EPlast.Tests.Controllers
 
             // Act
             var result = await eventsUsersController.GetEventUserByUserId(It.IsAny<string>());
+            var resultValue = (result as ObjectResult).Value;
 
             // Assert
-            Assert.NotNull((result as ObjectResult).Value);
+            Assert.NotNull(resultValue);
+            Assert.IsInstanceOf<EventUserDTO>(resultValue);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
@@ -76,9 +78,11 @@ namespace EPlast.Tests.Controllers
 
             // Act
             var result = await eventsUsersController.GetEventsDataForCreate();
+            var resultValue = (result as ObjectResult).Value;
 
             // Assert
-            Assert.NotNull((result as ObjectResult).Value);
+            Assert.NotNull(resultValue);
+            Assert.IsInstanceOf<EventCreateDTO>(resultValue);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
@@ -112,9 +116,11 @@ namespace EPlast.Tests.Controllers
 
             // Act
             var result = await eventsUsersController.EventCreate(CreateFakeEventCreate());
+            var resultValue = (result as CreatedResult).Value;
 
             // Assert
-            Assert.NotNull((result as ObjectResult).Value as EventCreateDTO);
+            Assert.NotNull(resultValue);
+            Assert.IsInstanceOf<EventCreateDTO>(resultValue);
             Assert.IsInstanceOf<CreatedResult>(result);
         }
 
@@ -176,7 +182,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task EventEdit_EventCreate_ReturnsOkObjectResult()
+        public async Task EventEdit_EventCreate_ReturnsNoContentResult()
         {
             // Arrange
             eventUserManager
