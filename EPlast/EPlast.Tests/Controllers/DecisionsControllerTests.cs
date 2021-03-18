@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BLL;
 using EPlast.BLL.DTO;
 using EPlast.WebApi.Controllers;
@@ -10,11 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Moq;
 using NUnit.Framework;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
 {
     [TestFixture]
-    class DecisionsControllerTests
+    internal class DecisionsControllerTests
     {
         private Mock<IDecisionService> _decisionService;
         private Mock<IPdfService> _pdfService = new Mock<IPdfService>();
@@ -41,20 +41,29 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _decisionService
                 .Setup(x => x.GetOrganizationListAsync())
-                .ReturnsAsync(new List<OrganizationDTO>().AsEnumerable());
+                .ReturnsAsync(GetFakeOrganizationDtos());
             _decisionService
                 .Setup(x => x.GetDecisionTargetListAsync())
-                .ReturnsAsync(new List<DecisionTargetDTO>().AsEnumerable());
+                .ReturnsAsync(GetFakeDecisionTargetDtosDtos());
             _decisionService
                 .Setup(x => x.GetDecisionStatusTypes())
-                .Returns(new List<SelectListItem>().AsEnumerable());
+                .Returns(GetFakeSelectListItems());
 
             //Act
             var result = await _decisionsController.GetMetaData();
+            var resultValue = (result.Result as OkObjectResult).Value;
+            var decisionStatusTypes = (resultValue as DecisionCreateViewModel).DecisionStatusTypeListItems;
+            var decisionTargets = (resultValue as DecisionCreateViewModel).DecisionTargets;
+            var organisations = (resultValue as DecisionCreateViewModel).Organizations;
 
             //Assert
             _decisionService.Verify();
             Assert.IsNotNull(result);
+            Assert.NotNull(resultValue);
+            Assert.IsInstanceOf<DecisionCreateViewModel>(resultValue);
+            Assert.AreEqual(2, decisionStatusTypes.Count());
+            Assert.AreEqual(2, decisionTargets.Count());
+            Assert.AreEqual(2, organisations.Count());
             Assert.IsInstanceOf<ActionResult<DecisionCreateViewModel>>(result);
         }
 
@@ -76,7 +85,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
-      
+
         [Test]
         public async Task Get_ReturnsNotFoundResult()
         {
@@ -94,7 +103,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task Update_ReturnsOkObjectResult()
+        public async Task Update_ReturnsNoContentResult()
         {
             //Arrange
             var mockDecision = new DecisionDTO();
@@ -110,7 +119,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task Update_InvalidID()
+        public async Task Update_InvalidID_ReturnsBadRequestResult()
         {
             //Arrange
             var expected = 1;
@@ -131,14 +140,14 @@ namespace EPlast.Tests.Controllers
         public async Task Save_ReturnsCreatedResult()
         {
             //Arrange
-            var str = "file";
+            var organizationName = "SomeName";
             DecisionWrapperDTO decisionWrapperDTO = new DecisionWrapperDTO()
             {
                 Decision = new DecisionDTO()
                 {
                     Organization = new OrganizationDTO
                     {
-                        OrganizationName = str
+                        OrganizationName = organizationName
                     }
                 }
             };
@@ -173,10 +182,12 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await _decisionsController.Save(decisionWrapper);
+            var resultValue = (result as BadRequestObjectResult).Value;
 
             //Assert
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.IsInstanceOf<string>(resultValue);
         }
 
         [Test]
@@ -201,22 +212,26 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _decisionService
                 .Setup(x => x.GetDecisionListAsync())
-                .ReturnsAsync(new List<DecisionWrapperDTO>().AsEnumerable());
+                .ReturnsAsync(GetFakeDecisionWrapperDtos());
             _mapper
                 .Setup(m => m.Map<DecisionViewModel>(It.IsAny<DecisionDTO>()))
-                .Returns(new DecisionViewModel());
+                .Returns(GetFakeDecisionViewModel());
             _decisionService
                 .Setup(x => x.GetDecisionStatusTypes())
-                .Returns(new List<SelectListItem>().AsEnumerable());
+                .Returns(GetFakeSelectListItems());
 
             //Act
             var result = await _decisionsController.Get();
+            var resultValue = (result as OkObjectResult).Value;
+            var decisions = resultValue as List<DecisionViewModel>;
 
             //Assert
             _decisionService.Verify();
             _mapper.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsInstanceOf<List<DecisionViewModel>>(resultValue);
+            Assert.AreEqual(2, decisions.Count);
         }
 
         [Test]
@@ -235,6 +250,7 @@ namespace EPlast.Tests.Controllers
             //Assert
             _decisionService.Verify();
             Assert.IsNotNull(resultValue);
+            Assert.IsInstanceOf<string>(resultValue);
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
@@ -256,9 +272,83 @@ namespace EPlast.Tests.Controllers
             _pdfService.Verify();
             Assert.IsNotNull(resultValue);
             Assert.IsInstanceOf<string>(resultValue);
+            Assert.AreNotEqual(string.Empty, resultValue);
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
-
         }
+
+        public DecisionViewModel GetFakeDecisionViewModel()
+            => new DecisionViewModel
+            {
+                Id = 1
+            };
+
+        public List<DecisionWrapperDTO> GetFakeDecisionWrapperDtos()
+            => new List<DecisionWrapperDTO>
+            {
+                new DecisionWrapperDTO
+                {
+                    Decision = new DecisionDTO()
+                    {
+                        ID = 1,
+                        DecisionStatusType = DecisionStatusTypeDTO.Confirmed
+                    },
+                    FileAsBase64 = "file1"
+                },
+                new DecisionWrapperDTO
+                {
+                    Decision = new DecisionDTO()
+                    {
+                        ID = 2,
+                        DecisionStatusType = DecisionStatusTypeDTO.Confirmed
+                    },
+                    FileAsBase64 = "file2"
+                }
+            };
+
+        public List<OrganizationDTO> GetFakeOrganizationDtos()
+            => new List<OrganizationDTO>
+            {
+                new OrganizationDTO
+                {
+                    ID = 1,
+                    OrganizationName = "OrganisationName1"
+                },
+                new OrganizationDTO
+                {
+                    ID = 2,
+                    OrganizationName = "OrganisationName2"
+                }
+            };
+
+        public List<DecisionTargetDTO> GetFakeDecisionTargetDtosDtos()
+            => new List<DecisionTargetDTO>
+            {
+                new DecisionTargetDTO
+                {
+                    ID = 1,
+                    TargetName = "Name1"
+                },
+                new DecisionTargetDTO
+                {
+                    ID = 2,
+                    TargetName = "Name2"
+                }
+            };
+
+        public List<SelectListItem> GetFakeSelectListItems()
+            => new List<SelectListItem>
+            {
+                new SelectListItem
+                {
+                    Value = "Confirmed",
+                    Text = "Text1"
+                },
+                new SelectListItem
+                {
+                    Value = "Confirmed",
+                    Text = "Text2"
+                },
+            };
     }
 }
