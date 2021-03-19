@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping
     {
         public DecisionStatusTypeProfile()
         {
-            CreateMap<DataAccess.Entities.GoverningBody, GoverningBodyDTO>().ReverseMap();
+            CreateMap<DataAccess.Entities.Organization, GoverningBodyDTO>().ReverseMap();
         }
     }
 }

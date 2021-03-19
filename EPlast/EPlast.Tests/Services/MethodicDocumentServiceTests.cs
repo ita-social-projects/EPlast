@@ -16,7 +16,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using Organization = EPlast.DataAccess.Entities.GoverningBody;
 
 namespace EPlast.Tests.Services
 {
@@ -150,7 +149,7 @@ namespace EPlast.Tests.Services
             GoverningBodyDTO organization = GetTestOrganizationDtoList()[0];
             _repository.Setup(rep => rep.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
                 It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>()))
-                .ReturnsAsync(new GoverningBody() { GoverningBodyName = organization.GoverningBodyName });
+                .ReturnsAsync(new Organization() { OrganizationName = organization.GoverningBodyName });
             _mapper
                 .Setup(x => x.Map<GoverningBodyDTO>(It.IsAny<string>()))
                 .Returns(new GoverningBodyDTO() { GoverningBodyName = organization.GoverningBodyName });

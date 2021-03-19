@@ -45,13 +45,13 @@ namespace EPlast.BLL
             try
             {
                 var decision = await _repoWrapper.Decesion.GetFirstAsync(x => x.ID == decisionId, include: dec =>
-                    dec.Include(d => d.DecesionTarget).Include(d => d.GoverningBody));
+                    dec.Include(d => d.DecesionTarget).Include(d => d.Organization));
                 if (decision != null)
                 {
                     var base64 = await _decisionBlobStorage.GetBlobBase64Async("dafaultPhotoForPdf.jpg");
                     IPdfSettings pdfSettings = new PdfSettings
                     {
-                        Title = $"Decision of {decision.GoverningBody.GoverningBodyName}",
+                        Title = $"Decision of {decision.Organization.OrganizationName}",
                         ImagePath = base64,
                     };
                     IPdfCreator creator = new PdfCreator(new DecisionDocument(decision, pdfSettings));

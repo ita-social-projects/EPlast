@@ -14,7 +14,7 @@ namespace EPlast.DataAccess.Entities
         public string Type { get; set; }
 
         [Required(ErrorMessage = "Організація не вибрана.")]
-        public GoverningBody GoverningBody { get; set; }
+        public Organization Organization { get; set; }
 
         [Required(ErrorMessage = "Опис документу не заповнено.")]
         public string Description { get; set; }

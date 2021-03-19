@@ -14,7 +14,7 @@ namespace EPlast.DataAccess.Entities
         public DecesionStatusType DecesionStatusType { get; set; }
 
         [Required(ErrorMessage = "Організація не вибрана.")]
-        public GoverningBody GoverningBody { get; set; }
+        public Organization Organization { get; set; }
 
         [Required(ErrorMessage = "Тематика рішення не заповнена.")]
         public DecesionTarget DecesionTarget { get; set; }

@@ -40,7 +40,7 @@ namespace EPlast.BLL.Services
         {
             return _mapper.Map<DecisionDTO>(await _repoWrapper.Decesion
                 .GetFirstAsync(x => x.ID == decisionId, include: dec =>
-                dec.Include(d => d.DecesionTarget).Include(d => d.GoverningBody)));
+                dec.Include(d => d.DecesionTarget).Include(d => d.Organization)));
         }
 
         /// <inheritdoc />
@@ -91,7 +91,7 @@ namespace EPlast.BLL.Services
         {
             return _mapper.Map<GoverningBodyDTO>(string.IsNullOrEmpty(governingBody.GoverningBodyName)
                     ? await _repoWrapper.GoverningBody.GetFirstAsync(x => x.ID == governingBody.ID)
-                    : await _repoWrapper.GoverningBody.GetFirstAsync(x => x.GoverningBodyName.Equals(governingBody.GoverningBodyName)));
+                    : await _repoWrapper.GoverningBody.GetFirstAsync(x => x.OrganizationName.Equals(governingBody.GoverningBodyName)));
         }
 
         /// <inheritdoc />
@@ -134,7 +134,7 @@ namespace EPlast.BLL.Services
         private async Task<IEnumerable<DecisionWrapperDTO>> GetDecisionAsync()
         {
             IEnumerable<Decesion> decisions = await _repoWrapper.Decesion.GetAllAsync(include: dec =>
-                dec.Include(d => d.DecesionTarget).Include(d => d.GoverningBody));
+                dec.Include(d => d.DecesionTarget).Include(d => d.Organization));
 
             return _mapper
                 .Map<IEnumerable<DecisionDTO>>(decisions)

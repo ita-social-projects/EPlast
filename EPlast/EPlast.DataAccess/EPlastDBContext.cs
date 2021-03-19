@@ -188,7 +188,7 @@ namespace EPlast.DataAccess
         }
         public DbSet<RegionAnnualReport> RegionAnnualReports { get; set; }
         public DbSet<DocumentTemplate> DocumentTemplates { get; set; }
-        public DbSet<GoverningBody> Organization { get; set; }
+        public DbSet<Organization> Organization { get; set; }
         public DbSet<DecesionTarget> DecesionTargets { get; set; }
         public DbSet<Decesion> Decesions { get; set; }
         public DbSet<MethodicDocument> MethodicDocuments { get; set; }

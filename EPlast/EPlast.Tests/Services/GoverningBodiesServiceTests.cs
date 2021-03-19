@@ -36,11 +36,11 @@ namespace EPlast.Tests.Services
         {
             //Arrange
             _repoWrapper
-                .Setup(x => x.GoverningBody.GetAllAsync(It.IsAny<Expression<Func<GoverningBody, bool>>>(),
-                    It.IsAny<Func<IQueryable<GoverningBody>, IIncludableQueryable<GoverningBody, object>>>()))
-                .ReturnsAsync(new List<GoverningBody>());
+                .Setup(x => x.GoverningBody.GetAllAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+                    It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>()))
+                .ReturnsAsync(new List<Organization>());
             _mapper
-                .Setup(x => x.Map<IEnumerable<GoverningBodyDTO>>(new List<GoverningBody>())).Returns(new List<GoverningBodyDTO>());
+                .Setup(x => x.Map<IEnumerable<GoverningBodyDTO>>(new List<Organization>())).Returns(new List<GoverningBodyDTO>());
 
             //Act
             var result = await _service.GetGoverningBodiesListAsync();

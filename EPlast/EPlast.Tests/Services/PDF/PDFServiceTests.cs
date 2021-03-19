@@ -130,13 +130,13 @@ namespace EPlast.Tests.Services.PDF
             new Decesion()
             {
                 ID = 1, DecesionStatusType = DecesionStatusType.Confirmed, Date = new DateTime(), Description = "FDS",
-                Name = "FS", FileName = "dsf", DecesionTarget = new DecesionTarget(), GoverningBody = new GoverningBody()
+                Name = "FS", FileName = "dsf", DecesionTarget = new DecesionTarget(), Organization = new Organization()
             },
             new Decesion()
             {
                 ID = 546546, DecesionStatusType = DecesionStatusType.Confirmed, Date = new DateTime(),
                 Description = "FDS", Name = "FS", FileName = "dsf", DecesionTarget = new DecesionTarget(),
-                GoverningBody = new GoverningBody()
+                Organization = new Organization()
             }
         }.AsQueryable();
     }

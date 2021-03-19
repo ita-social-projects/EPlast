@@ -65,9 +65,9 @@ namespace EPlast.XUnitTest
             mapper.Setup(m => m.Map<DecisionDTO>(It.IsAny<Decesion>()))
                 .Returns(() => GetTestDecisionsDtoListElement(decisionId));
             mapper.Setup(m => m.Map<IEnumerable<DecisionDTO>>(It.IsAny<IEnumerable<Decesion>>())).Returns(GetTestDecisionsDtoList);
-            mapper.Setup(m => m.Map<GoverningBodyDTO>(It.IsAny<GoverningBody>()))
+            mapper.Setup(m => m.Map<GoverningBodyDTO>(It.IsAny<Organization>()))
                 .Returns(GetTestOrganizationDtoList()[0]);
-            mapper.Setup(m => m.Map<IEnumerable<GoverningBodyDTO>>(It.IsAny<IEnumerable<GoverningBody>>()))
+            mapper.Setup(m => m.Map<IEnumerable<GoverningBodyDTO>>(It.IsAny<IEnumerable<Organization>>()))
                 .Returns(GetTestOrganizationDtoList());
             return new DecisionService(_repository.Object, mapper.Object, _decisionVmCreator.Object, _decisionBlobStorage.Object, _uniqueId.Object);
         }
@@ -196,8 +196,8 @@ namespace EPlast.XUnitTest
             _decisionService = CreateDecisionService();
             GoverningBodyDTO organization = GetTestOrganizationDtoList()[0];
             organization.GoverningBodyName = organizationName;
-            _repository.Setup(rep => rep.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<GoverningBody, bool>>>(),
-                It.IsAny<Func<IQueryable<GoverningBody>, IIncludableQueryable<GoverningBody, object>>>())).ReturnsAsync(new GoverningBody() { ID = organization.ID });
+            _repository.Setup(rep => rep.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+                It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new Organization() { ID = organization.ID });
 
             var actualReturn = await _decisionService.GetDecisionOrganizationAsync(organization);
 
@@ -209,8 +209,8 @@ namespace EPlast.XUnitTest
         {
             _decisionService = CreateDecisionService();
             GoverningBodyDTO organization = GetTestOrganizationDtoList()[0];
-            _repository.Setup(rep => rep.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<GoverningBody, bool>>>(),
-                It.IsAny<Func<IQueryable<GoverningBody>, IIncludableQueryable<GoverningBody, object>>>())).ReturnsAsync(new GoverningBody() { GoverningBodyName = organization.GoverningBodyName });
+            _repository.Setup(rep => rep.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+                It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new Organization() { OrganizationName = organization.GoverningBodyName });
 
             var actualReturn = await _decisionService.GetDecisionOrganizationAsync(organization);
 
@@ -235,8 +235,8 @@ namespace EPlast.XUnitTest
         {
             _decisionService = CreateDecisionService();
             List<GoverningBodyDTO> organizations = GetTestOrganizationDtoList();
-            _repository.Setup(rep => rep.GoverningBody.GetAllAsync(It.IsAny<Expression<Func<GoverningBody, bool>>>(),
-                It.IsAny<Func<IQueryable<GoverningBody>, IIncludableQueryable<GoverningBody, object>>>())).ReturnsAsync(new List<GoverningBody>());
+            _repository.Setup(rep => rep.GoverningBody.GetAllAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+                It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new List<Organization>());
 
             var actualReturn = await _decisionService.GetGoverningBodyListAsync();
 

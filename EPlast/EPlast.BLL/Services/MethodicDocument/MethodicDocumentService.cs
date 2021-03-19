@@ -37,7 +37,7 @@ namespace EPlast.BLL.Services
         {
             return _mapper.Map<MethodicDocumentDTO>(await _repoWrapper.MethodicDocument
                 .GetFirstAsync(x => x.ID == documentId, include: dec =>
-                dec.Include(d => d.GoverningBody)));
+                dec.Include(d => d.Organization)));
         }
 
         public async Task<IEnumerable<MethodicDocumentWraperDTO>> GetMethodicDocumentListAsync()
@@ -82,7 +82,7 @@ namespace EPlast.BLL.Services
         {
             return _mapper.Map<GoverningBodyDTO>(string.IsNullOrEmpty(governingBody.GoverningBodyName)
                    ? await _repoWrapper.GoverningBody.GetFirstAsync(x => x.ID == governingBody.ID)
-                   : await _repoWrapper.GoverningBody.GetFirstAsync(x => x.GoverningBodyName.Equals(governingBody.GoverningBodyName)));
+                   : await _repoWrapper.GoverningBody.GetFirstAsync(x => x.OrganizationName.Equals(governingBody.GoverningBodyName)));
         }
 
         public IEnumerable<SelectListItem> GetMethodicDocumentTypes()
@@ -118,7 +118,7 @@ namespace EPlast.BLL.Services
         private async Task<IEnumerable<MethodicDocumentWraperDTO>> GetMethodicDocumentAsync()
         {
             IEnumerable<MethodicDocument> methodicDocument = await _repoWrapper.MethodicDocument.GetAllAsync(include: dec =>
-                dec.Include(d => d.GoverningBody));
+                dec.Include(d => d.Organization));
 
             return _mapper
                 .Map<IEnumerable<MethodicDocumentDTO>>(methodicDocument)

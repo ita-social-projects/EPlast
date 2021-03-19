@@ -2,7 +2,7 @@
 
 namespace EPlast.DataAccess.Repositories
 {
-    public class OrganizationRepository : RepositoryBase<GoverningBody>, IOrganizationRepository
+    public class OrganizationRepository : RepositoryBase<Organization>, IOrganizationRepository
     {
         public OrganizationRepository(EPlastDBContext dbContext) : base(dbContext)
         {
