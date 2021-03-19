@@ -6,6 +6,6 @@ namespace EPlast.BLL.Interfaces.GoverningBodies
 {
     public interface IGoverningBodiesService
     {
-        Task<IEnumerable<GoverningBodyDTO>> GetOrganizationListAsync();
+        Task<IEnumerable<GoverningBodyDTO>> GetGoverningBodiesListAsync();
     }
 }

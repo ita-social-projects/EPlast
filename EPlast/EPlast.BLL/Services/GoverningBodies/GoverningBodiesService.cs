@@ -20,7 +20,7 @@ namespace EPlast.BLL.Services.GoverningBodies
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<GoverningBodyDTO>> GetOrganizationListAsync()
+        public async Task<IEnumerable<GoverningBodyDTO>> GetGoverningBodiesListAsync()
         {
             return _mapper.Map<IEnumerable<GoverningBodyDTO>>((await _repoWrapper.GoverningBody.GetAllAsync()));
         }

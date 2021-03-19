@@ -44,7 +44,7 @@ namespace EPlast.Tests.Services
                 .Setup(x => x.Map<IEnumerable<OrganizationDTO>>(new List<Organization>())).Returns(new List<OrganizationDTO>());
 
             //Act
-            var result = await _service.GetOrganizationListAsync();
+            var result = await _service.GetGoverningBodiesListAsync();
             //Assert
             Assert.IsInstanceOf<IEnumerable<OrganizationDTO>>(result);
         }

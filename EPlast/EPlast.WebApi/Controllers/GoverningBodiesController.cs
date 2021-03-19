@@ -18,10 +18,11 @@ namespace EPlast.WebApi.Controllers
 
         [HttpGet]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetOrganizations()
+        public async Task<IActionResult> GetGoverningBodies()
         {
-            var governingBodies = await _governingBodiesService.GetOrganizationListAsync();
+            var governingBodies = await _governingBodiesService.GetGoverningBodiesListAsync();
             return Ok(governingBodies);
         }
+
     }
 }

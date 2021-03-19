@@ -27,14 +27,14 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _governingBodiesService
-                .Setup(x=>x.GetOrganizationListAsync()).ReturnsAsync(new List<OrganizationDTO>());
+                .Setup(x=>x.GetGoverningBodiesListAsync()).ReturnsAsync(new List<GoverningBodyDTO>());
             //Act
-            var result = await _controller.GetOrganizations();
+            var result = await _controller.GetGoverningBodies();
             var resultValue = (result as ObjectResult).Value;
             //Assert
 
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsInstanceOf<IEnumerable<OrganizationDTO>>(resultValue);
+            Assert.IsInstanceOf<IEnumerable<GoverningBodyDTO>>(resultValue);
         }
     }
 }
