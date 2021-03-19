@@ -198,7 +198,7 @@ namespace EPlast.Tests.Controllers
             var result = await notificationBoxController.AddNotificationList(new List<UserNotificationDTO>());
 
             //Assert
-            _notificationService.Verify(x => x.AddListUserNotificationAsync(It.IsAny<IEnumerable<UserNotificationDTO>>()), Times.Once);
+            _notificationService.Verify(x => x.AddListUserNotificationAsync(It.IsAny<IEnumerable<UserNotificationDTO>>()), Times.AtLeastOnce);
             Assert.IsInstanceOf<NoContentResult>(result);
         }
     }
