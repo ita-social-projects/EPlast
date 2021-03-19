@@ -60,10 +60,11 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await notificationBoxController.GetAllUserNotification(id);
+            var resultCount = ((IEnumerable<UserNotificationDTO>)(result as ObjectResult).Value).Count();
 
             //Assert
-            Assert.AreEqual(((result as ObjectResult).Value as IEnumerable<NotificationTypeDTO>).Count(), list.Count);
             Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.AreEqual(resultCount, list.Count);
             Assert.NotNull(result);
         }
 
@@ -181,6 +182,7 @@ namespace EPlast.Tests.Controllers
             var result = await notificationBoxController.AddNotificationList(new List<UserNotificationDTO>());
 
             //Assert
+            _notificationService.Verify(x => x.AddListUserNotificationAsync(It.IsAny<IEnumerable<UserNotificationDTO>>()), Times.Once);
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
@@ -196,9 +198,8 @@ namespace EPlast.Tests.Controllers
             var result = await notificationBoxController.AddNotificationList(new List<UserNotificationDTO>());
 
             //Assert
+            _notificationService.Verify(x => x.AddListUserNotificationAsync(It.IsAny<IEnumerable<UserNotificationDTO>>()), Times.Once);
             Assert.IsInstanceOf<NoContentResult>(result);
-           
         }
-
     }
 }
