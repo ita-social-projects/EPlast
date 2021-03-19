@@ -125,7 +125,7 @@ namespace EPlast.WebApi.Controllers
             decisionWrapper.Decision.ID = await _decisionService.SaveDecisionAsync(decisionWrapper);
             var decisionOrganizations = (await _decisionService
                         .GetDecisionOrganizationAsync(decisionWrapper.Decision.GoverningBody))
-                        .Name;
+                        .GoverningBodyName;
 
             return Created("Decisions", new
             {

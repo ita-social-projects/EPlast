@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping
     {
         public MethodicDocumentProfile() {
             CreateMap<MethodicDocument, MethodicDocumentDTO>()
-                    .ForMember(d => d.GoverningBody, o => o.MapFrom(s => s.Organization))
+                    .ForMember(d => d.GoverningBody, o => o.MapFrom(s => s.GoverningBody))
                     .ReverseMap();
         }
 

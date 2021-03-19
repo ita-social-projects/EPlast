@@ -39,7 +39,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _service
                 .Setup(x => x.GetGoverningBodyListAsync())
-                .ReturnsAsync(new List<OrganizationDTO>().AsEnumerable());
+                .ReturnsAsync(new List<GoverningBodyDTO>().AsEnumerable());
            
             _service
                 .Setup(x => x.GetMethodicDocumentTypes())
@@ -132,9 +132,9 @@ namespace EPlast.Tests.Controllers
             {
                 MethodicDocument = new MethodicDocumentDTO()
                 {
-                    GoverningBody = new OrganizationDTO
+                    GoverningBody = new GoverningBodyDTO
                     {
-                        OrganizationName = str
+                        GoverningBodyName = str
                     }
                 }
             };

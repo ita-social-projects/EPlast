@@ -11,7 +11,7 @@ namespace EPlast.DataAccess.Mapping
             CreateMap<Decesion, DecisionDTO>()
                 .ForMember(d => d.DecisionStatusType, o => o.MapFrom(s => s.DecesionStatusType))
                 .ForMember(d => d.DecisionTarget, o => o.MapFrom(s => s.DecesionTarget))
-                .ForMember(d => d.GoverningBody, o => o.MapFrom(s => s.Organization))
+                .ForMember(d => d.GoverningBody, o => o.MapFrom(s => s.GoverningBody))
                 .ReverseMap();
         }
     }

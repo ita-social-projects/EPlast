@@ -122,7 +122,7 @@ namespace EPlast.WebApi.Controllers
             documentWrapper.MethodicDocument.ID = await _methodicDocService.SaveMethodicDocumentAsync(documentWrapper);
             var methodicDocumentOrganizations = (await _methodicDocService
                         .GetMethodicDocumentOrganizationAsync(documentWrapper.MethodicDocument.GoverningBody))
-                        .Name;
+                        .GoverningBodyName;
 
             return Created("MethodicDocument", new
             {
