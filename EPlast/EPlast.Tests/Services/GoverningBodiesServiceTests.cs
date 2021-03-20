@@ -13,6 +13,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.AzureStorage;
 
 namespace EPlast.Tests.Services
 {
@@ -21,6 +23,8 @@ namespace EPlast.Tests.Services
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IMapper> _mapper;
         private GoverningBodiesService _service;
+        private Mock<IUniqueIdService> _uniqueIdService;
+        private Mock<IGoverningBodyBlobStorageRepository> _blobStorage;
         [SetUp]
         public void SetUp()
         {
@@ -28,7 +32,9 @@ namespace EPlast.Tests.Services
             _mapper = new Mock<IMapper>();
             _service = new GoverningBodiesService(
                 _repoWrapper.Object,
-                _mapper.Object);
+                _mapper.Object,
+                _uniqueIdService.Object,
+                _blobStorage.Object);
         }
 
         [Test]

@@ -6,12 +6,16 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
+using EPlast.BLL.Interfaces.Logging;
 
 namespace EPlast.Tests.Controllers
 {
     class GoverningBodiesControllerTests
     {
         private Mock<IGoverningBodiesService> _governingBodiesService;
+        private Mock<ILoggerService<GoverningBodiesController>> _logger;
+        private Mock<IMapper> _mapper; 
         private GoverningBodiesController _controller;
 
         [SetUp]
@@ -19,7 +23,9 @@ namespace EPlast.Tests.Controllers
         {
             _governingBodiesService = new Mock<IGoverningBodiesService>();
             _controller = new GoverningBodiesController(
-                _governingBodiesService.Object);
+                _governingBodiesService.Object,
+                _logger.Object,
+                _mapper.Object);
         }
 
         [Test]
