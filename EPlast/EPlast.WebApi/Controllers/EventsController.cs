@@ -98,8 +98,6 @@ namespace EPlast.WebApi.Controllers
        
         public async Task<IActionResult> GetEventsByCategory(int typeId, int categoryId, int status)
         {
-            var events = await _actionManager.GetEventsByStatusAsync(categoryId, typeId, status,
-                await _userManager.GetUserAsync(User));
             return Ok(await _actionManager.GetEventsByStatusAsync(categoryId, typeId, status, await _userManager.GetUserAsync(User)));
         }
 
