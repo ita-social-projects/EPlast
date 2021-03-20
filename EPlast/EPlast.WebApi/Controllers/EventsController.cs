@@ -70,9 +70,9 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetCategoriesByPage(int typeId, int page, int pageSize, string CategoryName = null)
         {
             var categories = await _actionManager.GetActionCategoriesAsync();
-            var CategoriesViewModel = new EventsCategoryViewModel(page, pageSize, categories);
+            var categoriesViewModel = new EventsCategoryViewModel(page, pageSize, categories);
 
-            return Ok(CategoriesViewModel);
+            return Ok(categoriesViewModel);
         }
 
         /// <summary>
@@ -98,6 +98,8 @@ namespace EPlast.WebApi.Controllers
        
         public async Task<IActionResult> GetEventsByCategory(int typeId, int categoryId, int status)
         {
+            var events = await _actionManager.GetEventsByStatusAsync(categoryId, typeId, status,
+                await _userManager.GetUserAsync(User));
             return Ok(await _actionManager.GetEventsByStatusAsync(categoryId, typeId, status, await _userManager.GetUserAsync(User)));
         }
 
@@ -145,9 +147,9 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetPictures(int eventId)
         {
-            var dto = await _actionManager.GetPicturesAsync(eventId);
+            var pictures = await _actionManager.GetPicturesAsync(eventId);
             
-            return Ok(dto);
+            return Ok(pictures);
         }
 
         /// <summary>
