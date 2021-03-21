@@ -2,9 +2,7 @@
 using EPlast.BLL.DTO;
 using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.DataAccess.Repositories;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
@@ -55,7 +53,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
         private async Task UploadPhotoAsync(GoverningBodyDTO governingBody)
         {
-            var oldImageName = (await _repoWrapper.City.GetFirstOrDefaultAsync(i => i.ID == governingBody.ID))?.Logo;
+            var oldImageName = (await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(i => i.ID == governingBody.ID))?.Logo;
             var logoBase64 = governingBody.Logo;
 
             if (!string.IsNullOrWhiteSpace(logoBase64) && logoBase64.Length > 0)

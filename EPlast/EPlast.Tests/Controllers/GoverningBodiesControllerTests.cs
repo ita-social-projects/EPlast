@@ -1,4 +1,5 @@
-﻿using EPlast.BLL.DTO;
+﻿using System;
+using EPlast.BLL.DTO;
 using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.Interfaces.Logging;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.Tests.Controllers
 {
@@ -22,6 +24,8 @@ namespace EPlast.Tests.Controllers
         public void SetUp()
         {
             _governingBodiesService = new Mock<IGoverningBodiesService>();
+            _logger = new Mock<ILoggerService<GoverningBodiesController>>();
+            _mapper = new Mock<IMapper>();
             _controller = new GoverningBodiesController(
                 _governingBodiesService.Object,
                 _logger.Object,
@@ -42,5 +46,63 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<IEnumerable<GoverningBodyDTO>>(resultValue);
         }
+
+        [Test]
+        public async Task Create_ModelStateNotValid_Test()
+        {
+            // Arrange
+            var testDTO = CreateGoverningBodyDTO;
+            _controller.ModelState.AddModelError("NameError", "Required");
+
+            // Act
+            var result = await _controller.Create(testDTO);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        }
+
+        [TestCase(2)]
+        public async Task Create_Valid_Test(int serviceReturnedId)
+        {
+            // Arrange
+            var testDTO = CreateGoverningBodyDTO;
+            _governingBodiesService.Setup(x => x.CreateAsync(It.IsAny<GoverningBodyDTO>())).ReturnsAsync(serviceReturnedId);
+
+            // Act
+            var result = await _controller.Create(testDTO);
+            var resultObject = result as OkObjectResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.AreEqual(resultObject.Value , serviceReturnedId);
+        }
+
+        [TestCase("logopath", "logo64path")]
+        public async Task GetPhotoBase64_Test(string logopath, string logo64path)
+        {
+            //Arrange
+            _governingBodiesService.Setup(x => x.GetLogoBase64(It.IsAny<string>())).ReturnsAsync(logo64path);
+
+            //Act
+            var result = await _controller.GetPhotoBase64(logopath);
+            var resultObject = result as OkObjectResult;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.AreEqual(resultObject.Value, logo64path);
+        }
+
+        private GoverningBodyDTO CreateGoverningBodyDTO => new GoverningBodyDTO()
+        {
+            ID = 1,
+            GoverningBodyName = "gbName",
+            Description = "gbDesc",
+            Email = "gbEmail",
+            Logo = null,
+            PhoneNumber = "12345"
+        };
     }
 }

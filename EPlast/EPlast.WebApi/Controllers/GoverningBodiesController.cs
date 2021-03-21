@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.Interfaces.Logging;
-using EPlast.WebApi.Models.City;
 
 namespace EPlast.WebApi.Controllers
 {
