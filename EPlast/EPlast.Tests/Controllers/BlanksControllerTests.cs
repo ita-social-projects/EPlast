@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
@@ -40,15 +41,15 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _mockBiographyService
                 .Setup(x => x.AddDocumentAsync(It.IsAny<BlankBiographyDocumentsDTO>()))
-                .ReturnsAsync(GetBlankBiographyDocumentsDTO());
+                .ReturnsAsync(GetBlankBiographyDocumentDTO());
 
             //Act
-            var document = await _blanksController.AddBiographyDocument(GetBlankBiographyDocumentsDTO());
+            var document = await _blanksController.AddBiographyDocument(GetBlankBiographyDocumentDTO());
             CreatedResult createdResult = document as CreatedResult;
 
             //Assert
-            _mockBiographyService.Verify();
             Assert.NotNull(document);
+            Assert.NotNull(createdResult.Value);
             Assert.IsInstanceOf<ObjectResult>(document);
             Assert.AreEqual(StatusCodes.Status201Created, createdResult.StatusCode);
         }
@@ -60,6 +61,7 @@ namespace EPlast.Tests.Controllers
             _mockBlankAchievementDocumentService
                 .Setup(x => x.AddDocumentAsync(It.IsAny<List<AchievementDocumentsDTO>>()))
                 .ReturnsAsync(new List<AchievementDocumentsDTO>());
+
             //Act
             var document = await _blanksController.AddAchievementDocument(new List<AchievementDocumentsDTO>());
             CreatedResult createdResult = document as CreatedResult;
@@ -67,6 +69,8 @@ namespace EPlast.Tests.Controllers
             //Assert
             _mockBlankAchievementDocumentService.Verify();
             Assert.NotNull(document);
+            Assert.NotNull(createdResult.Value);
+            Assert.NotNull(createdResult);
             Assert.IsInstanceOf<ObjectResult>(document);
             Assert.AreEqual(StatusCodes.Status201Created, createdResult.StatusCode);
         }
@@ -86,6 +90,7 @@ namespace EPlast.Tests.Controllers
             //Assert
             _mockBlankExtractFromUPUDocumentService.Verify();
             Assert.NotNull(document);
+            Assert.NotNull(createdResult.Value);
             Assert.IsInstanceOf<ObjectResult>(document);
             Assert.AreEqual(StatusCodes.Status201Created, createdResult.StatusCode);
         }
@@ -96,7 +101,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _mockBiographyService
                 .Setup(x => x.GetDocumentByUserId("gh34tg"))
-                .ReturnsAsync(GetBiographyDocumentsDTO());
+                .ReturnsAsync(GetBlankBiographyDocumentDTO());
 
             //Act
             var document = await _blanksController.GetDocumentByUserId("gh34tg");
@@ -105,6 +110,7 @@ namespace EPlast.Tests.Controllers
             //Assert
             _mockBiographyService.Verify();
             Assert.NotNull(document);
+            Assert.NotNull(result.Value);
             Assert.IsInstanceOf<ObjectResult>(document);
             Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
         }
@@ -117,13 +123,14 @@ namespace EPlast.Tests.Controllers
                 .Setup(x => x.GetDocumentByUserId("gh34tg"))
                 .ReturnsAsync(GetExtractFromUPUDocumentsDTO());
 
+
             //Act
             var document = await _blanksController.GetExtractFromUPUByUserId("gh34tg");
             OkObjectResult result = document as OkObjectResult;
 
             //Assert
             _mockBlankExtractFromUPUDocumentService.Verify();
-            Assert.NotNull(document);
+            Assert.NotNull(result.Value);
             Assert.IsInstanceOf<ObjectResult>(document);
             Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
         }
@@ -203,7 +210,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [TestCase(1, 1, "userId")]
-        public async Task GetPartOfAchievement(int pageNumber, int pageSize, string userId)
+        public async Task GetPartOfAchievement_ReturnsOkObjectResult(int pageNumber, int pageSize, string userId)
         {
             //Arrange
             _mockBlankAchievementDocumentService
@@ -212,10 +219,13 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await _blanksController.GetPartOfAchievement(pageNumber, pageSize, userId);
+            OkObjectResult okObjectResult = result as OkObjectResult;
 
             //Assert
             _mockBlankAchievementDocumentService.Verify();
             Assert.NotNull(result);
+            Assert.NotNull(okObjectResult.Value);
+            Assert.AreEqual("List`1",okObjectResult.Value.GetType().Name);
             Assert.IsInstanceOf<ObjectResult>(result);
         }
 
@@ -228,10 +238,13 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await _blanksController.GetAchievementDocumentsByUserId(userId);
+            OkObjectResult okObjectResult = result as OkObjectResult;
 
             //Assert
             _mockBlankAchievementDocumentService.Verify();
             Assert.NotNull(result);
+            Assert.NotNull(okObjectResult.Value);
+            Assert.AreEqual("List`1", okObjectResult.Value.GetType().Name);
             Assert.IsInstanceOf<ObjectResult>(result);
         }
 
@@ -272,19 +285,7 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(GetExtractFromUPUDocumentsDTO().FileName, result.Value);
         }
 
-        private BlankBiographyDocumentsDTO GetBlankBiographyDocumentsDTO()
-        {
-            BlankBiographyDocumentsDTO BlankBiographyDTO = new BlankBiographyDocumentsDTO()
-            {
-                ID = 1,
-                FileName = "Dogovir",
-                BlobName = "BlobName",
-                UserId = "gh34tg"
-            };
-            return BlankBiographyDTO;
-        }
-
-        public BlankBiographyDocumentsDTO GetBiographyDocumentsDTO()
+        private BlankBiographyDocumentsDTO GetBlankBiographyDocumentDTO()
         {
             return new BlankBiographyDocumentsDTO
             {
@@ -292,7 +293,6 @@ namespace EPlast.Tests.Controllers
                 FileName = "Dogovir",
                 BlobName = "BlobName",
                 UserId = "gh34tg"
-
             };
         }
 
@@ -309,7 +309,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetPdfService_ReturnsObjRes()
+        public async Task GetPdfService_OkReturnsObjRes()
         {
             //Arrange
             _pdfService
@@ -317,6 +317,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await _blanksController.GetGenerationFile(It.IsAny<string>());
+            ;
 
             //Assert
             _pdfService.Verify();

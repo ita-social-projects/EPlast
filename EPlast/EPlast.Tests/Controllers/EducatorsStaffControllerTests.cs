@@ -74,6 +74,7 @@ namespace EPlast.Tests.Controllers
             var result = await _educatorsStaffController.CreateKadra(inputModel);
 
             // Assert
+            _educatorsStaffService.Verify();
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
@@ -99,6 +100,7 @@ namespace EPlast.Tests.Controllers
             var actualResult = (result as ObjectResult).Value as EducatorsStaffDTO;
 
             // Assert
+            _educatorsStaffService.Verify();
             Assert.AreEqual(outputModel.ID, actualResult.ID);
         }
 
@@ -192,6 +194,7 @@ namespace EPlast.Tests.Controllers
             var result = await _educatorsStaffController.GetUsersKVs(id);
 
             // Assert
+            _educatorsStaffService.Verify();
             Assert.NotNull((result as ObjectResult).Value);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
@@ -257,6 +260,7 @@ namespace EPlast.Tests.Controllers
             var actual = result as StatusCodeResult;
 
             // Assert
+            _educatorsStaffTypesService.Verify();
             Assert.AreEqual(expected, actual.StatusCode);
             Assert.NotNull(result);
             Assert.IsInstanceOf<IActionResult>(result);
@@ -289,6 +293,7 @@ namespace EPlast.Tests.Controllers
             var actual = result as StatusCodeResult;
 
             // Assert
+            _educatorsStaffService.Verify();
             Assert.AreEqual(expected, actual.StatusCode);
             Assert.NotNull(result);
             Assert.IsInstanceOf<IActionResult>(result);
