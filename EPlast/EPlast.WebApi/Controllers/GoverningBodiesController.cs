@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.Interfaces.Logging;
 
@@ -14,14 +13,12 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly IGoverningBodiesService _governingBodiesService;
         private readonly ILoggerService<GoverningBodiesController> _logger;
-        private readonly IMapper _mapper;
 
 
-        public GoverningBodiesController(IGoverningBodiesService service, ILoggerService<GoverningBodiesController> logger, IMapper mapper)
+        public GoverningBodiesController(IGoverningBodiesService service, ILoggerService<GoverningBodiesController> logger)
         {
             _governingBodiesService = service;
             _logger = logger;
-            _mapper = mapper;
         }
 
         [HttpGet]

@@ -29,10 +29,10 @@ namespace EPlast.BLL.Services.GoverningBodies
             _governingBodyBlobStorage = governingBodyBlobStorage;
         }
 
-        public async Task<int> CreateAsync(GoverningBodyDTO model)
+        public async Task<int> CreateAsync(GoverningBodyDTO governingBodyDto)
         {
-            await UploadPhotoAsync(model);
-            var governingBody = await CreateGoverningBodyAsync(model);
+            await UploadPhotoAsync(governingBodyDto);
+            var governingBody = await CreateGoverningBodyAsync(governingBodyDto);
 
             _repoWrapper.GoverningBody.Attach(governingBody);
             await _repoWrapper.GoverningBody.CreateAsync(governingBody);
@@ -41,9 +41,9 @@ namespace EPlast.BLL.Services.GoverningBodies
             return governingBody.ID;
         }
 
-        private async Task<Organization> CreateGoverningBodyAsync(GoverningBodyDTO model)
+        private Task<Organization> CreateGoverningBodyAsync(GoverningBodyDTO governingBody)
         {
-            return _mapper.Map<GoverningBodyDTO, Organization>(model);
+            return Task.FromResult(_mapper.Map<GoverningBodyDTO, Organization>(governingBody));
         }
 
         public async Task<IEnumerable<GoverningBodyDTO>> GetGoverningBodiesListAsync()
