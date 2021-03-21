@@ -88,11 +88,6 @@ namespace EPlast.BLL.Services.Events
                 ))
                 .Select(eg => eg.Gallary);
 
-            if (galleries == null || !galleries.Any())
-            {
-                return null;
-            }
-
             List<EventGalleryDTO> pictures = new List<EventGalleryDTO>();
             foreach (var gallery in galleries)
             {
