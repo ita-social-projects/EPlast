@@ -152,6 +152,7 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             _loggerService.Verify((x) => x.LogError(It.IsAny<string>()), Times.Once);
+            _userService.Verify();
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
@@ -254,6 +255,7 @@ namespace EPlast.Tests.Controllers
             var result = await _userController.GetUserProfile(currentUserId, focusUserId);
 
             // Assert
+            _userService.Verify();
             _loggerService.Verify((x) => x.LogError(It.IsAny<string>()), Times.Once);
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
@@ -334,13 +336,14 @@ namespace EPlast.Tests.Controllers
             // Assert
             _userService
                 .Setup((x) => x.GetImageBase64Async(It.IsAny<string>()))
-                .ReturnsAsync(It.IsAny<string>());
+                .ReturnsAsync("");
 
             // Act
             var result = await _userController.GetImage(It.IsAny<string>());
 
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull((result as OkObjectResult).Value);
         }
 
         [Test]
@@ -481,6 +484,7 @@ namespace EPlast.Tests.Controllers
             var result = await _userController.Edit(id);
 
             // Assert
+            _userService.Verify();
             _loggerService.Verify((x) => x.LogError(It.IsAny<string>()), Times.Once);
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
@@ -500,6 +504,8 @@ namespace EPlast.Tests.Controllers
             var result = await _userController.EditBase64(CreateFakeEditUserViewModel());
 
             // Assert
+            _userService.Verify();
+            _mapper.Verify();
             _loggerService.Verify((x) => x.LogInformation(It.IsAny<string>()), Times.Once);
             Assert.IsInstanceOf<OkResult>(result);
         }
@@ -537,6 +543,7 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(actual);
             Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull((result as OkObjectResult).Value);
         }
 
         [Test]
@@ -654,6 +661,7 @@ namespace EPlast.Tests.Controllers
             var result = await _userController.ApproveUser(idString, It.IsAny<bool>(), It.IsAny<bool>());
 
             // Assert
+            _confirmedUserService.Verify();
             Assert.IsInstanceOf<OkResult>(result);
         }
 
@@ -681,6 +689,7 @@ namespace EPlast.Tests.Controllers
             var result = await _userController.ApproverDelete(confirmedId);
 
             // Assert
+            _confirmedUserService.Verify();
             _loggerService.Verify((x) => x.LogInformation(It.IsAny<string>()), Times.Once);
             Assert.IsInstanceOf<OkResult>(result);
         }
