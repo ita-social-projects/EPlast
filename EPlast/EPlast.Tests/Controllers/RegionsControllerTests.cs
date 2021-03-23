@@ -15,6 +15,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
@@ -218,13 +219,15 @@ namespace EPlast.Tests.Controllers
         public async Task GetAdminTypes_ReturnsOkObjectResult()
         {
             // Arrange
-            _regionAdministrationService.Setup(x => x.GetAllAdminTypes()).ReturnsAsync(new List<AdminTypeDTO>());
+            var list = new List<AdminTypeDTO>() { new AdminTypeDTO() };
+            _regionAdministrationService.Setup(x => x.GetAllAdminTypes())
+                .ReturnsAsync(list);
             // Act
             var result = await _regionController.GetAdminTypes();
-            var actual = (result as ObjectResult).Value;
+            var actual = ((IEnumerable<AdminTypeDTO>)(result as ObjectResult).Value);
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsInstanceOf<IEnumerable<AdminTypeDTO>>(actual);
+            Assert.AreEqual(actual, list);
         }
 
         [Test]
@@ -239,7 +242,8 @@ namespace EPlast.Tests.Controllers
             // Act
             var result = await _regionController.GetAllRegionAnnualReports();
             // Assert
-
+            _userManager.Verify();
+            _regionAdministrationService.Verify();
             Assert.IsInstanceOf<ObjectResult>(result);
         }
 
@@ -248,11 +252,13 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _regionAnnualReportService.Setup(x => x.GetAllRegionsReportsAsync()).ReturnsAsync(new List<RegionAnnualReportDTO>());
+
             // Act
             var result = await _regionController.GetAllRegionsReportsAsync();
             var actual = (result as ObjectResult).Value;
-            // Assert
 
+            // Assert
+            _regionAnnualReportService.Verify();
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<IEnumerable<RegionAnnualReportDTO>>(actual);
         }
@@ -311,16 +317,17 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetProfile_InValid_regioIsNull_Test()
+        public async Task GetProfile_InValid_regionsNotFound_Test()
         {
             // Arrange
             _regionService
-                .Setup(x => x.GetRegionProfileByIdAsync(It.IsAny<int>(), It.IsAny<User>()));
+               .Setup(x => x.GetRegionProfileByIdAsync(It.IsAny<int>(), It.IsAny<User>()));
 
             // Act
             var result = await _regionController.GetProfile(1);
 
             // Assert
+            _regionService.Verify();
             Assert.NotNull(result);
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
@@ -393,7 +400,9 @@ namespace EPlast.Tests.Controllers
             var result = await _regionController.GetRegions();
             var actual = (result as ObjectResult).Value;
             // Assert
+            _regionService.Verify();
             Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<RegionForAdministrationDTO>>(actual);
         }
 
@@ -419,14 +428,15 @@ namespace EPlast.Tests.Controllers
         public async Task GetReportByIdAsync_ReturnsReportDTO()
         {
             // Arrange
-            _regionAnnualReportService.Setup(x => x.GetReportByIdAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(new RegionAnnualReportDTO());
+            _regionAnnualReportService.Setup(x => x.GetReportByIdAsync(It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new RegionAnnualReportDTO());
             // Act
             var result = await _regionController.GetReportByIdAsync(1, 2);
             var actual = (result as ObjectResult).Value;
             // Assert
 
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsInstanceOf<RegionAnnualReportDTO>(actual);
+            Assert.IsInstanceOf<RegionAnnualReportDTO>(actual); 
         }
 
         [Test]

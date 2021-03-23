@@ -1,4 +1,5 @@
-﻿using EPlast.BLL;
+﻿using System;
+using EPlast.BLL;
 using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Http;
@@ -11,6 +12,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace EPlast.Tests.Controllers
 {
@@ -65,9 +67,12 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync((UserDistinctionDTO)null);
             //Act
             var result = await _distinctionController.GetUserDistinction(It.IsAny<int>());
+            var resultObject = (result as ObjectResult)?.Value;
+
             //Assert
             _userDistinctionService.Verify();
             Assert.IsNotNull(result);
+            Assert.IsNull(resultObject);
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
@@ -116,9 +121,11 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync((DistinctionDTO)null);
             //Act
             var result = await _distinctionController.GetDistinction(It.IsAny<int>());
+            var resultObject = (result as ObjectResult)?.Value;
             //Assert
             _distinctionService.Verify();
             Assert.IsNotNull(result);
+            Assert.IsNull(resultObject);
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
@@ -309,12 +316,13 @@ namespace EPlast.Tests.Controllers
             var context = new ControllerContext(
                 new ActionContext(
                     httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
+                    new ControllerActionDescriptor(), new ModelStateDictionary()));
             _distinctionController.ControllerContext = context;
             _userDistinctionService
                 .Setup(x => x.ChangeUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), It.IsAny<User>()));
             //Act
             var result = await _distinctionController.EditUserDistinction(It.IsAny<UserDistinctionDTO>());
+
             //Assert
             _userDistinctionService.Verify();
             Assert.IsNotNull(result);
@@ -401,9 +409,12 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await _distinctionController.CheckNumberExisting(number);
+            var resultObject = (result as ObjectResult).Value;
+            
 
             //Assert
             Assert.IsNotNull(result);
+            Assert.AreEqual(true, resultObject);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
     }
