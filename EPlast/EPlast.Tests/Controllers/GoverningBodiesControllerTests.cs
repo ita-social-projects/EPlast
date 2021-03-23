@@ -35,8 +35,8 @@ namespace EPlast.Tests.Controllers
             //Act
             var result = await _controller.GetOrganizations();
             var resultValue = (result as ObjectResult).Value;
+            
             //Assert
-
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotEmpty(resultValue as List<OrganizationDTO>);
             Assert.IsInstanceOf<IEnumerable<OrganizationDTO>>(resultValue);
