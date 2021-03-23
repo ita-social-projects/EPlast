@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Security.Principal;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
@@ -26,14 +27,18 @@ namespace EPlast.Tests.Controllers
         public async Task getOrganizations_ReturnsOrganizationsList()
         {
             //Arrange
+            List<OrganizationDTO> list = new List<OrganizationDTO>();
+            list.Add(new Mock<OrganizationDTO>().Object);
             _governingBodiesService
-                .Setup(x=>x.GetOrganizationListAsync()).ReturnsAsync(new List<OrganizationDTO>());
+                .Setup(x=>x.GetOrganizationListAsync()).ReturnsAsync(list);
+            
             //Act
             var result = await _controller.GetOrganizations();
             var resultValue = (result as ObjectResult).Value;
+            
             //Assert
-
             Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotEmpty(resultValue as List<OrganizationDTO>);
             Assert.IsInstanceOf<IEnumerable<OrganizationDTO>>(resultValue);
         }
     }
