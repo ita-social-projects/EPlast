@@ -317,7 +317,6 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await _blanksController.GetGenerationFile(It.IsAny<string>());
-            ;
 
             //Assert
             _pdfService.Verify();
