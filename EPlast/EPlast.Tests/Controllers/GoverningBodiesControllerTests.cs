@@ -31,6 +31,7 @@ namespace EPlast.Tests.Controllers
             list.Add(new Mock<OrganizationDTO>().Object);
             _governingBodiesService
                 .Setup(x=>x.GetOrganizationListAsync()).ReturnsAsync(list);
+            
             //Act
             var result = await _controller.GetOrganizations();
             var resultValue = (result as ObjectResult).Value;
