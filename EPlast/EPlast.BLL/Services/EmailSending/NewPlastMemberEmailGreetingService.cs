@@ -66,7 +66,7 @@ namespace EPlast.BLL.Services
             var email = userEmail;
             var subject = "Випробувальний термін завершився!";
             var message = "<h3>СКОБ!</h3>"
-                        + "<p>Друже/подруго, сьогодні завершився твій випробувальний піеріод в Пласт!"
+                        + "<p>Друже/подруго, сьогодні завершився твій випробувальний період в Пласт!"
                         + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>";
             var title = "EPlast";
             return await _emailSendingService.SendEmailAsync(email, subject, message, title);
