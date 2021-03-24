@@ -1,12 +1,13 @@
 ﻿using System.ComponentModel;
+using EPlast.Resources;
 
 namespace EPlast.BLL.DTO.ActiveMembership
 {
     public enum RolesForActiveMembershipTypeDTO
     {
-        [Description("Прихильник")]
+        [Description(Roles.supporter)]
         Supporter,
-        [Description("Пластун")]
+        [Description(Roles.plastMember)]
         Plastun
     }
 }

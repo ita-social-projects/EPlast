@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.Resources;
 
 namespace EPlast.BLL.Services.Region
 {
@@ -51,7 +52,7 @@ namespace EPlast.BLL.Services.Region
 
             var newUser = await _userManager.FindByIdAsync(newRegionAdmin.UserId);
 
-            var role = adminType.AdminTypeName == "Голова Округу" ? "Голова Округу" : "Діловод Округу";
+            var role = adminType.AdminTypeName == Roles.okrugaHead ? Roles.okrugaHead : Roles.okrugaSecretary;
             await _userManager.AddToRoleAsync(newUser, role);
 
             if (oldAdmin != null)
@@ -112,7 +113,7 @@ namespace EPlast.BLL.Services.Region
             var adminType = await _adminTypeService.GetAdminTypeByIdAsync(Admin.AdminTypeId);
 
             var user = await _userManager.FindByIdAsync(Admin.UserId);
-            var role = adminType.AdminTypeName == "Голова Округу" ? "Голова Округу" : "Діловод Округу";
+            var role = adminType.AdminTypeName == Roles.okrugaHead ? Roles.okrugaHead : Roles.okrugaSecretary;
             await _userManager.RemoveFromRoleAsync(user, role);
 
             _repoWrapper.RegionAdministration.Delete(Admin);
@@ -142,7 +143,7 @@ namespace EPlast.BLL.Services.Region
 
         public async Task<RegionAdministrationDTO> GetHead(int regionId)
         {
-            var head = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(d => d.RegionId == regionId && d.AdminType.AdminTypeName == "Голова Округу" && (d.EndDate > DateTime.Now || d.EndDate == null),
+            var head = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(d => d.RegionId == regionId && d.AdminType.AdminTypeName == Roles.okrugaHead && (d.EndDate > DateTime.Now || d.EndDate == null),
                 include: source => source
                 .Include(
                 d => d.User));

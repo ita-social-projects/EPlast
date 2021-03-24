@@ -4,6 +4,7 @@ using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.WebApi.Models.City;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -56,7 +57,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetCities(int page, int pageSize, string cityName = null)
         {
             var cities = await _cityService.GetAllDTOAsync(cityName);
-            var citiesViewModel = new CitiesViewModel(page, pageSize, cities, User.IsInRole("Admin"));
+            var citiesViewModel = new CitiesViewModel(page, pageSize, cities, User.IsInRole(Roles.admin));
 
             return Ok(citiesViewModel);
         }

@@ -5,6 +5,7 @@ using EPlast.BLL.Services.City.CityAccess;
 using EPlast.BLL.Settings;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
@@ -21,9 +22,9 @@ namespace EPlast.XUnitTest.Services.City
 {
     public class CityAccessServiceTests
     {
-        private const string AdminRoleName = "Admin";
-        private const string RegionAdminRoleName = "Голова Округу";
-        private const string CityAdminRoleName = "Голова Станиці";
+        private const string AdminRoleName = Roles.admin;
+        private const string RegionAdminRoleName = Roles.okrugaHead;
+        private const string CityAdminRoleName = Roles.cityHead;
 
         private readonly Mock<IRepositoryWrapper> _repositoryWrapper = new Mock<IRepositoryWrapper>();
         private readonly Mock<IMapper> _mapper = new Mock<IMapper>();

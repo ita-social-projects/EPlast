@@ -14,6 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using DataAccessRegion = EPlast.DataAccess.Entities;
+using EPlast.Resources;
 
 namespace EPlast.BLL.Services.Region
 {
@@ -98,7 +99,7 @@ namespace EPlast.BLL.Services.Region
             var cities = await _cityService.GetCitiesByRegionAsync(regionId);
             regionProfile.Cities = cities;
             regionProfile.City = region.City;
-            regionProfile.CanEdit = userRoles.Contains("Admin") || userRoles.Contains("Голова Округу");
+            regionProfile.CanEdit = userRoles.Contains(Roles.admin) || userRoles.Contains(Roles.okrugaHead);
 
             return regionProfile;
         }
@@ -128,7 +129,7 @@ namespace EPlast.BLL.Services.Region
         {
             var regionProfile = _mapper.Map<DataAccessRegion.Region, RegionProfileDTO>(await _repoWrapper.Region.GetFirstAsync(d => d.RegionName == Name));
             var userRoles = await _userManager.GetRolesAsync(user);
-            regionProfile.CanEdit = userRoles.Contains("Admin") || userRoles.Contains("Голова Округу");
+            regionProfile.CanEdit = userRoles.Contains(Roles.admin) || userRoles.Contains(Roles.okrugaHead);
             return regionProfile;
         }
 

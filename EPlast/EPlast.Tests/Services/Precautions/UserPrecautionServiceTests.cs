@@ -6,6 +6,7 @@ using EPlast.BLL.Services.Precautions;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
@@ -507,7 +508,7 @@ namespace EPlast.Tests.Services.Precautions
         {
             return new List<string>
             {
-                "Admin",
+                Roles.admin,
                 "Htos",
                 "Nixto"
 

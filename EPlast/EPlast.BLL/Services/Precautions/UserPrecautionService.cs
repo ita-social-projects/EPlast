@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.DTO;
 using System.Linq;
+using EPlast.Resources;
 
 namespace EPlast.BLL.Services.Precautions
 {
@@ -118,7 +119,7 @@ namespace EPlast.BLL.Services.Precautions
 
         public async Task CheckIfAdminAsync(User user)
         {
-            if (!(await _userManager.GetRolesAsync(user)).Contains("Admin"))
+            if (!(await _userManager.GetRolesAsync(user)).Contains(Roles.admin))
                 throw new UnauthorizedAccessException();
         }
 

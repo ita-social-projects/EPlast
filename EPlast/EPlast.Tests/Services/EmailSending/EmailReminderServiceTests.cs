@@ -3,6 +3,7 @@ using EPlast.BLL.Interfaces;
 using EPlast.BLL.Services.EmailSending;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
@@ -19,8 +20,8 @@ namespace EPlast.Tests.Services.EmailSending
     {
         private readonly List<string> roles = new List<string>()
         {
-            "Прихильник",
-            "Колишній член пласту"
+            Roles.supporter,
+            Roles.formerPlastMember
         };
         private EmailReminderService emailReminderService;
         private Mock<IAuthEmailService> mockAuthEmailServices;

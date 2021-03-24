@@ -3,6 +3,7 @@ using EPlast.BLL;
 using EPlast.BLL.DTO;
 using EPlast.WebApi.Models.Decision;
 using Microsoft.AspNetCore.Authorization;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня, Пластун")]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.headsAdminAndPlastun)]
     public class DecisionsController : ControllerBase
     {
         private readonly IDecisionService _decisionService;

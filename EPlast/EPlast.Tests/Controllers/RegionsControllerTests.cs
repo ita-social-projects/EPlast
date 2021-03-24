@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.Resources;
 
 namespace EPlast.Tests.Controllers
 {
@@ -205,7 +206,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetAdminTypeId_TypeNameString_ReturnsAdminTypeId()
         {
             // Arrange
-            string TypeName = "Admin";
+            string TypeName = Roles.admin;
             _regionAdministrationService.Setup(x => x.GetAdminType(TypeName)).ReturnsAsync(2);
             // Act
             var result = await _regionController.GetAdminTypeId(TypeName);

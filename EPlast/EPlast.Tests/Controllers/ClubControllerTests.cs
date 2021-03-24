@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using EPlast.Resources;
 
 namespace EPlast.Tests.Controllers
 {
@@ -61,7 +62,7 @@ namespace EPlast.Tests.Controllers
             ClubController clubcon = CreateClubController;
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
+                .Setup(m => m.User.IsInRole(Roles.admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(

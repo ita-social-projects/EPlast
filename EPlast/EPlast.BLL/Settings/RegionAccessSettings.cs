@@ -1,13 +1,14 @@
 ﻿using EPlast.BLL.Services.Region.RegionAccess.RegionAccessGetters;
 using EPlast.DataAccess.Repositories;
 using System.Collections.Generic;
+using EPlast.Resources;
 
 namespace EPlast.BLL.Settings
 {
     public class RegionAccessSettings
     {
-        private const string AdminRoleName = "Admin";
-        private const string RegionAdminRoleName = "Голова Округу";
+        private const string AdminRoleName = Roles.admin;
+        private const string RegionAdminRoleName = Roles.okrugaHead;
 
         private readonly IRepositoryWrapper _repositoryWrapper;
 

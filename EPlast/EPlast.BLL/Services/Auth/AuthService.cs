@@ -16,6 +16,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using EPlast.Resources;
 
 namespace EPlast.BLL.Services
 {
@@ -44,7 +45,7 @@ namespace EPlast.BLL.Services
         public async Task<string> AddRoleAndTokenAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            await _userManager.AddToRoleAsync(user, "Зареєстрований користувач");
+            await _userManager.AddToRoleAsync(user, Roles.registeredUser);
             string code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             return code;
         }
@@ -116,7 +117,7 @@ namespace EPlast.BLL.Services
                     await _emailSendingService.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
                         "Ви зареєструвались в системі EPlast використовуючи свій Facebook-акаунт. ", "Адміністрація сайту EPlast");
                 }
-                await _userManager.AddToRoleAsync(user, "Прихильник");
+                await _userManager.AddToRoleAsync(user, Roles.supporter);
             }
             await _signInManager.SignInAsync(user, false, null);
             return _mapper.Map<User, UserDTO>(user);
@@ -205,7 +206,7 @@ namespace EPlast.BLL.Services
                 }
                 else
                     throw new ArgumentException("Failed creation of user");
-                await _userManager.AddToRoleAsync(user, "Прихильник");
+                await _userManager.AddToRoleAsync(user, Roles.supporter);
             }
             await _signInManager.SignInAsync(user, isPersistent: false);
             return _mapper.Map<User, UserDTO>(user);

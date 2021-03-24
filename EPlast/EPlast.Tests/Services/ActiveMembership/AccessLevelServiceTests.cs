@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.Resources;
 
 namespace EPlast.Tests.Services.ActiveMembership
 {
@@ -135,7 +136,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             return new List<string>
             {
                  RolesForActiveMembershipTypeDTO.Plastun.GetDescription(),
-                 "Admin"
+                 Roles.admin
             };
         }
         private IEnumerable<string> GetUserRolesAsFormerMember()

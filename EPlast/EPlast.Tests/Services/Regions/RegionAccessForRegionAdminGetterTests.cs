@@ -1,6 +1,7 @@
 ﻿using EPlast.BLL.Services.Region.RegionAccess.RegionAccessGetters;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
@@ -25,7 +26,7 @@ namespace EPlast.Tests.Services.Regions
             _repositoryWrapper
                .Setup(x => x.AdminType.GetFirstAsync(It.IsAny<Expression<Func<AdminType, bool>>>(),
                It.IsAny<Func<IQueryable<AdminType>, IIncludableQueryable<AdminType, object>>>()))
-               .ReturnsAsync(new AdminType() { AdminTypeName = "Голова Округу", ID = 2 });
+               .ReturnsAsync(new AdminType() { AdminTypeName = Roles.okrugaHead, ID = 2 });
             _regionAccessGetter = new RegionAccessForRegionAdminGetter(_repositoryWrapper.Object);
         }
 
