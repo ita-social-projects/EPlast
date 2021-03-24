@@ -15,7 +15,8 @@ namespace EPlast.WebApi.Controllers
         private readonly ILoggerService<GoverningBodiesController> _logger;
 
 
-        public GoverningBodiesController(IGoverningBodiesService service, ILoggerService<GoverningBodiesController> logger)
+        public GoverningBodiesController(IGoverningBodiesService service,
+            ILoggerService<GoverningBodiesController> logger)
         {
             _governingBodiesService = service;
             _logger = logger;
@@ -45,13 +46,18 @@ namespace EPlast.WebApi.Controllers
             return Ok(governingBodyDTO.ID);
         }
 
-        [HttpGet("LogoBase64")]
+        [HttpGet("LogoBase64/{logoName}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetPhotoBase64(string logoName)
         {
-            var logoBase64 = await _governingBodiesService.GetLogoBase64(logoName);
-
-            return Ok(logoBase64);
+            if (logoName == null)
+            {
+                return BadRequest(logoName);
+            }
+            else
+            {
+                return Ok(await _governingBodiesService.GetLogoBase64(logoName));
+            }
         }
     }
 }

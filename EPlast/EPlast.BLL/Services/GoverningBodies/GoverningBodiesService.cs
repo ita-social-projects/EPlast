@@ -80,9 +80,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
         public async Task<string> GetLogoBase64(string logoName)
         {
-            var logoBase64 = await _governingBodyBlobStorage.GetBlobBase64Async(logoName);
-
-            return logoBase64;
+            return await _governingBodyBlobStorage.GetBlobBase64Async(logoName);
         }
     }
 }
