@@ -11,7 +11,7 @@ namespace EPlast.BLL.DTO
         [Required]
         public MethodicDocumentTypeDTO Type { get; set; }
         [Required]
-        public OrganizationDTO Organization { get; set; }
+        public GoverningBodyDTO GoverningBody { get; set; }
 
         [Required]
         public string Description { get; set; }

@@ -38,8 +38,8 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _service
-                .Setup(x => x.GetOrganizationListAsync())
-                .ReturnsAsync(new List<OrganizationDTO>().AsEnumerable());
+                .Setup(x => x.GetGoverningBodyListAsync())
+                .ReturnsAsync(new List<GoverningBodyDTO>().AsEnumerable());
            
             _service
                 .Setup(x => x.GetMethodicDocumentTypes())
@@ -132,9 +132,9 @@ namespace EPlast.Tests.Controllers
             {
                 MethodicDocument = new MethodicDocumentDTO()
                 {
-                    Organization = new OrganizationDTO
+                    GoverningBody = new GoverningBodyDTO
                     {
-                        OrganizationName = str
+                        GoverningBodyName = str
                     }
                 }
             };
@@ -142,8 +142,8 @@ namespace EPlast.Tests.Controllers
                 .Setup(x => x.SaveMethodicDocumentAsync(docWrapperDTO))
                 .ReturnsAsync(docWrapperDTO.MethodicDocument.ID);
             _service
-                .Setup(x => x.GetMethodicDocumentOrganizationAsync(docWrapperDTO.MethodicDocument.Organization))
-                .ReturnsAsync(docWrapperDTO.MethodicDocument.Organization);
+                .Setup(x => x.GetMethodicDocumentOrganizationAsync(docWrapperDTO.MethodicDocument.GoverningBody))
+                .ReturnsAsync(docWrapperDTO.MethodicDocument.GoverningBody);
 
             //Act
             var result = await _controller.Save(docWrapperDTO);

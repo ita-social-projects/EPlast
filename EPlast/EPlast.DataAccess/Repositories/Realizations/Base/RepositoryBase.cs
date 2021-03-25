@@ -75,7 +75,8 @@ namespace EPlast.DataAccess.Repositories
 
         public async Task<T> GetFirstAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
         {
-            return await this.GetQuery(predicate, include).FirstAsync();
+            var query = this.GetQuery(predicate, include);
+            return await query.FirstAsync();
         }
 
         public async Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)

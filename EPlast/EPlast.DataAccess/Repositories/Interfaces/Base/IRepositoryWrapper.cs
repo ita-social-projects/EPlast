@@ -53,7 +53,7 @@ namespace EPlast.DataAccess.Repositories
         IMethodicDocumentRepository MethodicDocument { get; }
         INationalityRepository Nationality { get; }
         INotificationTypeRepository NotificationTypes { get; }
-        IOrganizationRepository Organization { get; }
+        IOrganizationRepository GoverningBody { get; }
         IParticipantRepository Participant { get; }
         IParticipantStatusRepository ParticipantStatus { get; }
         IPlastDegreeRepository PlastDegrees { get; }
