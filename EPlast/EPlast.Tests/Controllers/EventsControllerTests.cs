@@ -6,6 +6,7 @@ using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Controllers;
+using EPlast.WebApi.Models.Events;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -38,16 +39,20 @@ namespace EPlast.Tests.Controllers
         public async Task GetTypes_ReturnsOkObjectResult()
         {
             //Arrange
+            var expectedCount = 2;
             _actionManager
                 .Setup((x) => x.GetEventTypesAsync())
                 .ReturnsAsync(CreateListOfFakeEventTypes());
 
             // Act
             var result = await _eventsController.GetTypes();
+            var types = (result as ObjectResult).Value as IEnumerable<EventTypeDTO>;
+            var typesList = types as List<EventTypeDTO>;
 
             // Assert
-            Assert.NotNull((result as ObjectResult).Value);
+            Assert.NotNull(types);
             Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.AreEqual(expectedCount, typesList.Count);
         }
 
         [Test]
@@ -79,12 +84,15 @@ namespace EPlast.Tests.Controllers
             _actionManager
                 .Setup((x) => x.GetCategoriesByTypeIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(CreateListOfFakeEventCategories());
+            var listCount = 2;
 
             // Act
             var result = await _eventsController.GetCategories(It.IsAny<int>());
+            var categoryList = (result as ObjectResult).Value as List<EventCategoryDTO>;
 
             // Assert
             Assert.NotNull((result as ObjectResult).Value);
+            Assert.AreEqual(listCount, categoryList.Count);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
@@ -93,21 +101,18 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             var listCount = 2;
-
             _actionManager
                 .Setup((x) => x.GetCategoriesByTypeIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(CreateListOfFakeEventCategories());
 
-            var expected = listCount;
-
             // Act
             var result = await _eventsController.GetCategories(It.IsAny<int>());
-
             var actual = (result as ObjectResult).Value as List<EventCategoryDTO>;
 
             // Assert
+            Assert.NotNull(result);
             Assert.NotNull((result as ObjectResult).Value);
-            Assert.AreEqual(expected, actual.Count);
+            Assert.AreEqual(listCount, actual.Count);
         }
 
         [Test]
@@ -117,13 +122,18 @@ namespace EPlast.Tests.Controllers
             _actionManager
                 .Setup((x) => x.GetEventsAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(CreateListOfFakeGeneralEvents());
+            var expectedCount = 2;
 
             // Act
             var result = await _eventsController.GetEvents(It.IsAny<int>(), It.IsAny<int>());
+            var resultObject = (result as ObjectResult).Value;
+            var eventList = resultObject as List<GeneralEventDTO>;
 
             // Assert
-            Assert.NotNull((result as ObjectResult).Value);
+            Assert.NotNull(resultObject);
             Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.AreEqual(expectedCount, eventList.Count);
+
         }
 
         [Test]
@@ -131,7 +141,6 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             var listCount = 2;
-
             _actionManager
                 .Setup((x) => x.GetEventsAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(CreateListOfFakeGeneralEvents());
@@ -174,7 +183,6 @@ namespace EPlast.Tests.Controllers
 
             // Act
             var result = await _eventsController.GetEventDetail(It.IsAny<int>());
-
             var actual = (result as ObjectResult).Value as EventDTO;
 
             // Assert
@@ -193,7 +201,6 @@ namespace EPlast.Tests.Controllers
 
             // Act
             var result = await _eventsController.Delete(It.IsAny<int>());
-
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
@@ -451,15 +458,20 @@ namespace EPlast.Tests.Controllers
         public async Task FillEventGallery_ReturnsOkObjectResult()
         {
             // Arrange
+            const int expectedCount = 2;
             _actionManager
                 .Setup((x) => x.FillEventGalleryAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
                 .ReturnsAsync(CreateListOfFakeEventGallery());
 
             // Act
             var result = await _eventsController.FillEventGallery(It.IsAny<int>(), It.IsAny<IList<IFormFile>>());
+            var resultObject = (result as ObjectResult).Value as IList<EventGalleryDTO>;
+
 
             // Assert
-            Assert.NotNull((result as ObjectResult).Value);
+            Assert.NotNull(result);
+            Assert.NotNull(resultObject);
+            Assert.AreEqual(expectedCount, resultObject.Count);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
@@ -483,38 +495,88 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetPictures_ReturnsOkObjectResult()
+        public async Task GetPictures_ReturnsOkObjectResult_GetTwoPicture()
         {
             // Arrange
             _actionManager
                 .Setup((x) => x.GetPicturesAsync(It.IsAny<int>()))
                 .ReturnsAsync(CreateListOfFakeEventGallery());
+            const int countPicture = 2;
 
             // Act
             var result = await _eventsController.GetPictures(It.IsAny<int>());
+            var okResult = result as ObjectResult;
+            var pictures = okResult.Value as IEnumerable<EventGalleryDTO>;
+            var picturesAsList = pictures as IList<EventGalleryDTO>;
+
+
 
             // Assert
-            Assert.NotNull((result as ObjectResult).Value);
             Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(okResult);
+            Assert.NotNull(pictures);
+            Assert.NotNull(picturesAsList);
+            Assert.AreEqual(countPicture, picturesAsList.Count);
         }
 
         [Test]
         public async Task GetPictures_ListOfTwoItems_ReturnsListOfTwoItems()
         {
             // Arrange
-            var expectedCount = 2;
-
+            const int expectedCount = 2;
+        
             _actionManager
                 .Setup((x) => x.GetPicturesAsync(It.IsAny<int>()))
                 .ReturnsAsync(CreateListOfFakeEventGallery());
-
+        
             // Act
             var result = await _eventsController.GetPictures(It.IsAny<int>());
-
+        
             var actual = ((result as ObjectResult).Value as List<EventGalleryDTO>).Count;
-
+        
             // Assert
             Assert.AreEqual(expectedCount, actual);
+        }
+        [Test]
+        public async Task GetEventsByCategory_ReturnOkObjectResult()
+        {
+            // Arrange
+            const int  expectedCount = 2;
+            _actionManager
+                .Setup((x) => x.GetEventsByStatusAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<User>()))
+                .ReturnsAsync(CreateListOfFakeGeneralEvents());
+
+            // Act
+            var result = await _eventsController.GetEventsByCategory(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>());
+            var okObject = result as ObjectResult;
+            var category = okObject?.Value as IEnumerable<GeneralEventDTO>;
+            var categoryList = category as List<GeneralEventDTO>;
+
+
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(okObject);
+            Assert.NotNull(category);
+            Assert.NotNull(categoryList);
+            Assert.AreEqual(expectedCount, categoryList.Count);
+
+        }
+        [Test]
+        public async Task GetCategoriesByPage_ReturnOkObjectResult()
+        {
+            //Arrange
+            var expectedCategories = 2;
+            _actionManager
+                .Setup(x => x.GetActionCategoriesAsync())
+                .ReturnsAsync(CreateListOfFakeEventCategories());
+            //Act
+            var result = await _eventsController.GetCategoriesByPage(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>());
+            var categories = (result as ObjectResult).Value as EventsCategoryViewModel;
+            
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(categories);
+            Assert.AreEqual(expectedCategories, categories.Total);
+            Assert.IsInstanceOf<EventsCategoryViewModel>(categories);
         }
 
         private List<EventTypeDTO> CreateListOfFakeEventTypes()
@@ -554,6 +616,7 @@ namespace EPlast.Tests.Controllers
                 { 
                     EventId = 0, 
                     EventName = "SomeGeneralEventName",
+                    
                 },
                 new GeneralEventDTO()
                 { 
@@ -570,6 +633,7 @@ namespace EPlast.Tests.Controllers
                     EventId = 0, 
                     EventName = "SomeEventName",
                 },
+                
             };
 
         private List<EventGalleryDTO> CreateListOfFakeEventGallery()

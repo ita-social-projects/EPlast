@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using EPlast.BLL;
 using EPlast.BLL.DTO;
 using EPlast.WebApi.Controllers;
@@ -36,8 +36,9 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _service
-                .Setup(x => x.GetOrganizationListAsync())
-                .ReturnsAsync(GetFakeOrganizationDtos());
+
+                .Setup(x => x.GetGoverningBodyListAsync())
+                .ReturnsAsync(new List<GoverningBodyDTO>().AsEnumerable());
 
             _service
                 .Setup(x => x.GetMethodicDocumentTypes())
@@ -46,15 +47,12 @@ namespace EPlast.Tests.Controllers
             //Act
             var result = await _controller.GetMetaData();
             var methodicDocument = (result.Result as OkObjectResult).Value;
-            var organizations = (methodicDocument as MethodicDocumentCreateViewModel)
-                .Organizations;
             var methodicDocumentTypes = (methodicDocument as MethodicDocumentCreateViewModel)
                 .MethodicDocumentTypesItems;
 
             //Assert
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<ActionResult<MethodicDocumentCreateViewModel>>(result);
-            Assert.AreEqual(2, organizations.Count());
             Assert.AreEqual(2, methodicDocumentTypes.Count());
         }
 
@@ -131,14 +129,14 @@ namespace EPlast.Tests.Controllers
         public async Task Save_ReturnsCreatedResult()
         {
             //Arrange
-            var organizationName = "SomeName";
+            var governingBodyName = "SomeName";
             MethodicDocumentWraperDTO docWrapperDTO = new MethodicDocumentWraperDTO()
             {
                 MethodicDocument = new MethodicDocumentDTO()
                 {
-                    Organization = new OrganizationDTO
+                    GoverningBody = new GoverningBodyDTO
                     {
-                        OrganizationName = organizationName
+                        GoverningBodyName = governingBodyName
                     }
                 }
             };
@@ -146,8 +144,8 @@ namespace EPlast.Tests.Controllers
                 .Setup(x => x.SaveMethodicDocumentAsync(docWrapperDTO))
                 .ReturnsAsync(docWrapperDTO.MethodicDocument.ID);
             _service
-                .Setup(x => x.GetMethodicDocumentOrganizationAsync(docWrapperDTO.MethodicDocument.Organization))
-                .ReturnsAsync(docWrapperDTO.MethodicDocument.Organization);
+                .Setup(x => x.GetMethodicDocumentOrganizationAsync(docWrapperDTO.MethodicDocument.GoverningBody))
+                .ReturnsAsync(docWrapperDTO.MethodicDocument.GoverningBody);
 
             //Act
             var result = await _controller.Save(docWrapperDTO);
@@ -274,21 +272,6 @@ namespace EPlast.Tests.Controllers
             {
                 Id = 1,
                 Type = "Value1"
-            };
-
-        public List<OrganizationDTO> GetFakeOrganizationDtos()
-            => new List<OrganizationDTO>
-            {
-                new OrganizationDTO
-                {
-                    ID = 1,
-                    OrganizationName = "OrganisationName1"
-                },
-                new OrganizationDTO
-                {
-                    ID = 2,
-                    OrganizationName = "OrganisationName2"
-                }
             };
 
         public List<SelectListItem> GetFakeSelectListItems()

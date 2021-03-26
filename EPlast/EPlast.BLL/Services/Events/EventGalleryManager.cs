@@ -87,16 +87,18 @@ namespace EPlast.BLL.Services.Events
                 source => source.Include(eg => eg.Gallary)
                 ))
                 .Select(eg => eg.Gallary);
-            List<EventGalleryDTO> dto = new List<EventGalleryDTO>();
+
+            List<EventGalleryDTO> pictures = new List<EventGalleryDTO>();
             foreach (var gallery in galleries)
             {
-                dto.Add(new EventGalleryDTO
+                pictures.Add(new EventGalleryDTO
                 {
                     GalleryId = gallery.ID,
                     FileName = await _eventBlobStorage.GetBlobBase64Async(gallery.GalaryFileName)
                 });
             }
-            return dto;
+
+            return pictures;
         }
     }
 }

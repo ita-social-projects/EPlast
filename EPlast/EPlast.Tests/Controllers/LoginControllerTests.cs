@@ -75,6 +75,8 @@ namespace EPlast.Tests.Controllers
             var actual = (result as BadRequestResult).StatusCode;
 
             // Assert
+            mockResources.Verify();
+            mockLoggerService.Verify();
             Assert.IsInstanceOf<BadRequestResult>(result);
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
@@ -102,6 +104,7 @@ namespace EPlast.Tests.Controllers
             var actual = (result as BadRequestResult).StatusCode;
 
             // Assert
+            mockResources.Verify();
             Assert.IsInstanceOf<BadRequestResult>(result);
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
@@ -135,6 +138,9 @@ namespace EPlast.Tests.Controllers
             var actual = (result as ObjectResult).StatusCode;
 
             // Assert
+            mockResources.Verify();
+            mockAuthService.Verify();
+            mockUserDataServices.Verify();
             Assert.IsInstanceOf<ObjectResult>(result);
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
@@ -186,6 +192,8 @@ namespace EPlast.Tests.Controllers
             var actual = (result as BadRequestResult).StatusCode;
 
             // Assert
+            mockAuthService.Verify();
+            mockLoggerService.Verify();
             Assert.IsInstanceOf<BadRequestResult>(result);
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
@@ -210,6 +218,7 @@ namespace EPlast.Tests.Controllers
             var actual = (result as OkResult).StatusCode;
 
             // Assert
+            mockAuthService.Verify();
             Assert.IsInstanceOf<OkResult>(result);
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
@@ -237,6 +246,8 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(true);
 
             // Act
+            mockAuthService.Verify();
+            mockUserDataServices.Verify();
             var expected = StatusCodes.Status200OK;
             var result = await loginController.GoogleLogin(googleToken);
             var actual = (result as ObjectResult).StatusCode;
@@ -278,6 +289,8 @@ namespace EPlast.Tests.Controllers
             var result = await loginController.Login(GetTestLoginDto()) as BadRequestObjectResult;
 
             //Assert
+            mockAuthService.Verify();
+            mockResources.Verify();
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
             Assert.AreEqual(GetAccountLocked().ToString(), result.Value.ToString());
             Assert.NotNull(result);
@@ -310,6 +323,8 @@ namespace EPlast.Tests.Controllers
             var result = await loginController.Login(GetTestLoginDto()) as BadRequestObjectResult;
 
             //Assert
+            mockAuthService.Verify();
+            mockResources.Verify();
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
             Assert.AreEqual(GetLoginNotConfirmed().ToString(), result.Value.ToString());
             Assert.NotNull(result);
@@ -346,6 +361,8 @@ namespace EPlast.Tests.Controllers
             var result = await loginController.Login(GetTestLoginDto()) as BadRequestObjectResult;
 
             //Assert
+            mockAuthService.Verify();
+            mockResources.Verify();
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
             Assert.AreEqual(GetLoginInCorrectPassword().ToString(), result.Value.ToString());
             Assert.NotNull(result);
@@ -371,6 +388,7 @@ namespace EPlast.Tests.Controllers
             var result = await loginController.Login(GetTestLoginDto()) as ObjectResult;
 
             //Assert
+            mockResources.Verify();
             Assert.IsInstanceOf<ObjectResult>(result);
             Assert.AreEqual(GetModelIsNotValid().ToString(), result.Value.ToString());
             Assert.NotNull(result);
@@ -409,6 +427,8 @@ namespace EPlast.Tests.Controllers
             var actual = (result as ObjectResult).StatusCode;
 
             //Assert
+            mockAuthService.Verify();
+            mockJwtService.Verify();
             Assert.IsInstanceOf<ObjectResult>(result);
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
@@ -437,6 +457,8 @@ namespace EPlast.Tests.Controllers
             var result = await loginController.Login(GetTestLoginDto()) as BadRequestObjectResult;
 
             //Assert
+            mockAuthService.Verify();
+            mockResources.Verify();
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
             Assert.AreEqual(GetLoginNotRegistered().ToString(), result.Value.ToString());
             Assert.NotNull(result);

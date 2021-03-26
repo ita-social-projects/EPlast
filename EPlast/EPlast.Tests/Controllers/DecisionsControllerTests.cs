@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using EPlast.BLL;
 using EPlast.BLL.DTO;
 using EPlast.WebApi.Controllers;
@@ -40,8 +40,8 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _decisionService
-                .Setup(x => x.GetOrganizationListAsync())
-                .ReturnsAsync(GetFakeOrganizationDtos());
+                .Setup(x => x.GetGoverningBodyListAsync())
+                .ReturnsAsync(new List<GoverningBodyDTO>().AsEnumerable());
             _decisionService
                 .Setup(x => x.GetDecisionTargetListAsync())
                 .ReturnsAsync(GetFakeDecisionTargetDtosDtos());
@@ -54,7 +54,6 @@ namespace EPlast.Tests.Controllers
             var resultValue = (result.Result as OkObjectResult).Value;
             var decisionStatusTypes = (resultValue as DecisionCreateViewModel).DecisionStatusTypeListItems;
             var decisionTargets = (resultValue as DecisionCreateViewModel).DecisionTargets;
-            var organisations = (resultValue as DecisionCreateViewModel).Organizations;
 
             //Assert
             _decisionService.Verify();
@@ -63,7 +62,6 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<DecisionCreateViewModel>(resultValue);
             Assert.AreEqual(2, decisionStatusTypes.Count());
             Assert.AreEqual(2, decisionTargets.Count());
-            Assert.AreEqual(2, organisations.Count());
             Assert.IsInstanceOf<ActionResult<DecisionCreateViewModel>>(result);
         }
 
@@ -140,14 +138,14 @@ namespace EPlast.Tests.Controllers
         public async Task Save_ReturnsCreatedResult()
         {
             //Arrange
-            var organizationName = "SomeName";
+            var governingBodyName = "SomeName";
             DecisionWrapperDTO decisionWrapperDTO = new DecisionWrapperDTO()
             {
                 Decision = new DecisionDTO()
                 {
-                    Organization = new OrganizationDTO
+                    GoverningBody = new GoverningBodyDTO
                     {
-                        OrganizationName = organizationName
+                        GoverningBodyName = governingBodyName
                     }
                 }
             };
@@ -155,8 +153,8 @@ namespace EPlast.Tests.Controllers
                 .Setup(x => x.SaveDecisionAsync(decisionWrapperDTO))
                 .ReturnsAsync(decisionWrapperDTO.Decision.ID);
             _decisionService
-                .Setup(x => x.GetDecisionOrganizationAsync(decisionWrapperDTO.Decision.Organization))
-                .ReturnsAsync(decisionWrapperDTO.Decision.Organization);
+                .Setup(x => x.GetDecisionOrganizationAsync(decisionWrapperDTO.Decision.GoverningBody))
+                .ReturnsAsync(decisionWrapperDTO.Decision.GoverningBody);
 
             //Act
             var result = await _decisionsController.Save(decisionWrapperDTO);
@@ -306,20 +304,6 @@ namespace EPlast.Tests.Controllers
                 }
             };
 
-        public List<OrganizationDTO> GetFakeOrganizationDtos()
-            => new List<OrganizationDTO>
-            {
-                new OrganizationDTO
-                {
-                    ID = 1,
-                    OrganizationName = "OrganisationName1"
-                },
-                new OrganizationDTO
-                {
-                    ID = 2,
-                    OrganizationName = "OrganisationName2"
-                }
-            };
 
         public List<DecisionTargetDTO> GetFakeDecisionTargetDtosDtos()
             => new List<DecisionTargetDTO>

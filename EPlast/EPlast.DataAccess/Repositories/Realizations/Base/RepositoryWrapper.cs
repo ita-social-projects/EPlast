@@ -154,7 +154,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             }
         }
 
-        public IOrganizationRepository Organization
+        public IOrganizationRepository GoverningBody
         {
             get
             {
