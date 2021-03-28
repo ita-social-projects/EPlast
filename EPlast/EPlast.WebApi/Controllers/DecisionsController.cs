@@ -37,7 +37,7 @@ namespace EPlast.WebApi.Controllers
         {
             DecisionCreateViewModel decisionViewModel = new DecisionCreateViewModel
             {
-                Organizations = await _decisionService.GetOrganizationListAsync(),
+                GoverningBodies = await _decisionService.GetGoverningBodyListAsync(),
                 DecisionTargets = await _decisionService.GetDecisionTargetListAsync(),
                 DecisionStatusTypeListItems = _decisionService.GetDecisionStatusTypes()
             };
@@ -125,8 +125,8 @@ namespace EPlast.WebApi.Controllers
             }
             decisionWrapper.Decision.ID = await _decisionService.SaveDecisionAsync(decisionWrapper);
             var decisionOrganizations = (await _decisionService
-                        .GetDecisionOrganizationAsync(decisionWrapper.Decision.Organization))
-                        .OrganizationName;
+                        .GetDecisionOrganizationAsync(decisionWrapper.Decision.GoverningBody))
+                        .GoverningBodyName;
 
             return Created("Decisions", new
             {

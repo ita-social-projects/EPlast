@@ -5,9 +5,17 @@ namespace EPlast.BLL.DTO.ActiveMembership
 {
     public enum RolesForActiveMembershipTypeDTO
     {
-        [Description(Roles.supporter)]
+
+        [Description("Зареєстрований користувач")]
+        RegisteredUser,
+
+        [Description("Колишній член пласту")]
+        ExPlastMember,
+
+        [Description("Прихильник")]
         Supporter,
-        [Description(Roles.plastMember)]
+
+        [Description("Пластун")]
         Plastun
     }
 }

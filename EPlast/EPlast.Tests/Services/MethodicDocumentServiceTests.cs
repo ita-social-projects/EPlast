@@ -146,18 +146,18 @@ namespace EPlast.Tests.Services
         public async Task GetDecisionOrganizationAsyncWithRightParameterTest()
         {
             //Arrange
-            OrganizationDTO organization = GetTestOrganizationDtoList()[0];
-            _repository.Setup(rep => rep.Organization.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+            GoverningBodyDTO organization = GetTestOrganizationDtoList()[0];
+            _repository.Setup(rep => rep.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
                 It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>()))
-                .ReturnsAsync(new Organization() { OrganizationName = organization.OrganizationName });
+                .ReturnsAsync(new Organization() { OrganizationName = organization.GoverningBodyName });
             _mapper
-                .Setup(x => x.Map<OrganizationDTO>(It.IsAny<string>()))
-                .Returns(new OrganizationDTO() { OrganizationName = organization.OrganizationName });
+                .Setup(x => x.Map<GoverningBodyDTO>(It.IsAny<string>()))
+                .Returns(new GoverningBodyDTO() { GoverningBodyName = organization.GoverningBodyName });
             //Act
             var actualReturn = await _service.GetMethodicDocumentOrganizationAsync(organization);
 
             //Assert
-            Assert.AreEqual(organization.OrganizationName, actualReturn.OrganizationName);
+            Assert.AreEqual(organization.GoverningBodyName, actualReturn.GoverningBodyName);
         }
 
         [TestCase("filename1")]
@@ -179,17 +179,17 @@ namespace EPlast.Tests.Services
         {
             //Arrange
             
-            _repository.Setup(rep => rep.Organization.GetAllAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+            _repository.Setup(rep => rep.GoverningBody.GetAllAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
                 It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new List<Organization>());
             _mapper
-                .Setup(x => x.Map<IEnumerable<OrganizationDTO>>(new List<Organization>()))
+                .Setup(x => x.Map<IEnumerable<GoverningBodyDTO>>(new List<Organization>()))
                 .Returns(GetTestOrganizationDtoList());
 
             //Act
-            var actualReturn = await _service.GetOrganizationListAsync();
+            var actualReturn = await _service.GetGoverningBodyListAsync();
 
             //Assert
-            Assert.IsInstanceOf<List<OrganizationDTO>>(actualReturn);
+            Assert.IsInstanceOf<List<GoverningBodyDTO>>(actualReturn);
         }
 
         [Test]
@@ -211,12 +211,12 @@ namespace EPlast.Tests.Services
                 new MethodicDocument  {ID = 4,Description = "old"}
             }.AsQueryable();
         }
-         private static List<OrganizationDTO> GetTestOrganizationDtoList()
+         private static List<GoverningBodyDTO> GetTestOrganizationDtoList()
         {
-            return new List<OrganizationDTO>
+            return new List<GoverningBodyDTO>
             {
-                new OrganizationDTO {ID = 1,OrganizationName = "Organization1"},
-                new OrganizationDTO {ID = 2,OrganizationName = "Organization2"},
+                new GoverningBodyDTO {ID = 1, GoverningBodyName = "Organization1"},
+                new GoverningBodyDTO {ID = 2, GoverningBodyName = "Organization2"},
             };
         }
     }

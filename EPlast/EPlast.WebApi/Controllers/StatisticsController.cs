@@ -50,8 +50,8 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetRegionsStatistics([FromQuery] RegionsStatisticsParameters statisticsParameters)
         {
                 return StatusCode(StatusCodes.Status200OK, await regionStatisticsService.GetRegionsStatisticsAsync(statisticsParameters.RegionIds,
-                                                                                                              statisticsParameters.Years,
-                                                                                                              statisticsParameters.Indicators));            
+                                                                                                                    statisticsParameters.Years,
+                                                                                                                    statisticsParameters.Indicators));            
         }
     }
 }
