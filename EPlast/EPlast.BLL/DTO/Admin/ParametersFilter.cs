@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EPlast.BLL.DTO.Admin
+﻿namespace EPlast.BLL.DTO.Admin
 {
     public class ParametersFilter
     {

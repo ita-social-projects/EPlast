@@ -1,21 +1,22 @@
 ﻿using AutoMapper;
+using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using EPlast.DataAccess.Entities;
-using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.BLL.Services
 {
-    public class PrecautionService: IPrecautionService
+    public class PrecautionService : IPrecautionService
     {
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
 
-        public PrecautionService(IMapper mapper, IRepositoryWrapper repoWrapper, UserManager<User> userManager) {
+        public PrecautionService(IMapper mapper, IRepositoryWrapper repoWrapper, UserManager<User> userManager)
+        {
             _mapper = mapper;
             _repoWrapper = repoWrapper;
             _userManager = userManager;
@@ -32,7 +33,7 @@ namespace EPlast.BLL.Services
         public async Task ChangePrecautionAsync(PrecautionDTO precautionDTO, User user)
         {
             await CheckIfAdminAsync(user);
-            var Precaution = await _repoWrapper.Precaution.GetFirstAsync(x => x.Id ==precautionDTO.Id);
+            var Precaution = await _repoWrapper.Precaution.GetFirstAsync(x => x.Id == precautionDTO.Id);
             Precaution.Name = precautionDTO.Name;
             _repoWrapper.Precaution.Update(Precaution);
             await _repoWrapper.SaveAsync();
@@ -47,6 +48,7 @@ namespace EPlast.BLL.Services
             _repoWrapper.Precaution.Delete(Precaution);
             await _repoWrapper.SaveAsync();
         }
+
         public async Task<IEnumerable<PrecautionDTO>> GetAllPrecautionAsync()
         {
             return _mapper.Map<IEnumerable<Precaution>, IEnumerable<PrecautionDTO>>(await _repoWrapper.Precaution.GetAllAsync());
