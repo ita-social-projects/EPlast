@@ -191,13 +191,17 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<UserTableDTO>> GetUsersTableAsync(int pageNum, int pageSize, string tab, IEnumerable<string> regions, IEnumerable<string> cities, IEnumerable<string> clubs, IEnumerable<string> degrees)
+        public async Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(int pageNum, int pageSize, string tab, IEnumerable<string> regions, IEnumerable<string> cities, IEnumerable<string> clubs, IEnumerable<string> degrees)
         {
             string strCities = cities == null ? null : string.Join(",", cities.ToArray());
             string strRegions = regions == null ? null : string.Join(",", regions.ToArray());
             string strClubs = clubs == null ? null : string.Join(",", clubs.ToArray());
             string strDegrees = degrees == null ? null : string.Join(",", degrees.ToArray());
-            return _mapper.Map<IEnumerable<UserTableObject>, IEnumerable<UserTableDTO>>(_repoWrapper.AdminType.GetUserTableObjects(pageNum, pageSize, tab, strRegions, strCities, strClubs, strDegrees));
+            var tuple = await _repoWrapper.AdminType.GetUserTableObjects(pageNum, pageSize, tab, strRegions, strCities, strClubs, strDegrees);
+            var users = tuple.Item1;
+            var count = tuple.Item2;
+
+            return new Tuple<IEnumerable<UserTableDTO>, int>(_mapper.Map<IEnumerable<UserTableObject>, IEnumerable<UserTableDTO>>(users), count);
         }
 
         public async Task UpdateUserDatesByChangeRoleAsyncAsync(string userId, string role)

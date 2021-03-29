@@ -223,9 +223,10 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("Profiles")]
         public async Task<IActionResult> UsersTable([FromQuery] TableFilterParameters tableFilterParameters)
         {
-            var users = await _adminService.GetUsersTableAsync(tableFilterParameters.Page, tableFilterParameters.PageSize, tableFilterParameters.Tab,
+            var tuple = await _adminService.GetUsersTableAsync(tableFilterParameters.Page, tableFilterParameters.PageSize, tableFilterParameters.Tab,
                               tableFilterParameters.Regions, tableFilterParameters.Cities, tableFilterParameters.Clubs, tableFilterParameters.Degrees);
-            var usersCount = await _adminService.GetUsersCountAsync();
+            var users = tuple.Item1;
+            var usersCount = tuple.Item2;
             var tableViewModel = new AdminTypeViewModel()
             {
                 Total = usersCount,
