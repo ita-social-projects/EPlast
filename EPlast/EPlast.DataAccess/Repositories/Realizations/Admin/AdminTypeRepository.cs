@@ -20,12 +20,11 @@ namespace EPlast.DataAccess.Repositories
             return EPlastDBContext.Users.CountAsync();
         }
 
-        
         public async Task<Tuple<IEnumerable<UserTableObject>, int>> GetUserTableObjects(int pageNum, int pageSize, string tab, string regions, string cities, string clubs, string degrees)
         {
             var items = EPlastDBContext.Set<UserTableObject>().FromSqlRaw("dbo.usp_GetUserInfo @PageIndex = {0}, @PageSize = {1}, @tab = {2}, @filterRegion = {3}, " +
                 "@filterCity = {4}, @filterClub = {5}, @filterDegree = {6}", pageNum, pageSize, tab, regions, cities, clubs, degrees);
-           
+
             var num = items.Select(u => u.cnt).ToList();
             int count = num[0];
 

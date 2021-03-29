@@ -48,8 +48,8 @@ namespace EPlast.BLL.Services.Interfaces
         /// Get all users with additional information
         /// </summary>
         /// <returns>Specify model with all users</returns>
-        Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(int pageNum, int pageSize, string tab, IEnumerable<string> cities,  IEnumerable<string> regions, IEnumerable<string> clubs, IEnumerable<string> degrees);
-     
+        Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(int pageNum, int pageSize, string tab, IEnumerable<string> cities, IEnumerable<string> regions, IEnumerable<string> clubs, IEnumerable<string> degrees);
+
         Task<int> GetUsersCountAsync();
     }
 }
