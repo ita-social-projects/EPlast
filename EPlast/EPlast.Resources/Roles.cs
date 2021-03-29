@@ -20,6 +20,7 @@ namespace EPlast.Resources
         public const string FormerPlastMember = "Колишній член пласту";
         public const string RegisteredUser = "Зареєстрований користувач";
         public const string Interested = "Зацікавлений";
+        public const string RegionBoardHead = "Голова Краю";
 
         public const string DegreeAssignRoles = Admin + "," + PlastHead + "," + EventAdministrator + "," + KurinHead + "," + KurinSecretary + "," +
             OkrugaHead + "," + OkrugaSecretary + "," + CityHead + "," + CitySecretary;
