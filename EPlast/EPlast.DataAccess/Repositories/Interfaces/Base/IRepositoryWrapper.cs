@@ -1,85 +1,80 @@
 ﻿using EPlast.DataAccess.Repositories.Contracts;
-using System.Threading.Tasks;
-using EPlast.DataAccess.Repositories.Interfaces.Events;
-using EPlast.DataAccess.Repositories.Interfaces.Region;
 using EPlast.DataAccess.Repositories.Interfaces.Blank;
 using EPlast.DataAccess.Repositories.Interfaces.Club;
+using EPlast.DataAccess.Repositories.Interfaces.Events;
+using EPlast.DataAccess.Repositories.Interfaces.Region;
+using System.Threading.Tasks;
 
 namespace EPlast.DataAccess.Repositories
 {
     public interface IRepositoryWrapper
     {
-        IUserRepository User { get; }
-        IUserProfileRepository UserProfile { get; }
-        INationalityRepository Nationality { get; }
-        IOrganizationRepository Organization { get; }
-        IDecesionTargetRepository DecesionTarget { get; }
-        IDocumentTemplateRepository DocumentTemplate { get; }
-        IDecesionRepository Decesion { get; }
-        IMethodicDocumentRepository MethodicDocument { get; }
-        IEventRepository Event { get; }
-        IGallaryRepository Gallary { get; }
-        IParticipantStatusRepository ParticipantStatus { get; }
-        IParticipantRepository Participant { get; }
-        IEventCategoryRepository EventCategory { get; }
-        IEventGallaryRepository EventGallary { get; }
-        IEventAdminRepository EventAdmin { get; }
-        IEventTypeRepository EventType { get; }
-        IEventStatusRepository EventStatus { get; }
-        IEventAdministrationTypeRepository EventAdministrationType { get; }
-        IEducationRepository Education { get; }
-        IDegreeRepository Degree { get; }
-        IReligionRepository Religion { get; }
-        IGenderRepository Gender { get; }
-        IUpuDegreeRepository UpuDegree { get; }
-        IWorkRepository Work { get; }
-        IConfirmedUserRepository ConfirmedUser { get; }
+        IAchievementDocumentsRepository AchievementDocumentsRepository { get; }
+        IAdminTypeRepository AdminType { get; }
+        IAnnualReportsRepository AnnualReports { get; }
         IApproverRepository Approver { get; }
-
+        IBlankBiographyDocumentsRepository BiographyDocumentsRepository { get; }
+        ICityRepository City { get; }
         ICityAdministrationRepository CityAdministration { get; }
         ICityDocumentsRepository CityDocuments { get; }
-        IRegionDocumentRepository RegionDocument { get; }
         ICityDocumentTypeRepository CityDocumentType { get; }
+        ICityLegalStatusesRepository CityLegalStatuses { get; }
         ICityMembersRepository CityMembers { get; }
-        ICityRepository City { get; }
-
-        IAdminTypeRepository AdminType { get; }
-
+        IClubRepository Club { get; }
         IClubAdministrationRepository ClubAdministration { get; }
+        IClubAnnualReportsRepository ClubAnnualReports { get; }
         IClubDocumentsRepository ClubDocuments { get; }
         IClubDocumentTypeRepository ClubDocumentType { get; }
-        IClubMembersRepository ClubMembers { get; }
-        IClubRepository Club { get; }
-
-        IRegionRepository Region { get; }
-        IRegionAdministrationRepository RegionAdministration { get; }
-        IAnnualReportsRepository AnnualReports { get; }
-        IClubAnnualReportsRepository ClubAnnualReports { get; }
-        IRegionAnnualReportsRepository RegionAnnualReports { get; }
-
-        IMembersStatisticsRepository MembersStatistics { get; }
-
-        ICityLegalStatusesRepository CityLegalStatuses { get; }
-
-        INotificationTypeRepository NotificationTypes { get; }
-        IUserNotificationRepository UserNotifications { get; }
         IClubLegalStatusesRepository ClubLegalStatuses { get; }
-
-        IUserPlastDegreesRepository UserPlastDegrees { get; }
-        IUserMembershipDatesRepository UserMembershipDates { get; }
-        IEventAdministrationRepository EventAdministration { get; }
-        IEventCategoryTypeRepository EventCategoryType { get; }
+        IClubMembersRepository ClubMembers { get; }
+        IConfirmedUserRepository ConfirmedUser { get; }
+        IDecesionRepository Decesion { get; }
+        IDecesionTargetRepository DecesionTarget { get; }
+        IDegreeRepository Degree { get; }
         IDistinctionRepository Distinction { get; }
-        IPrecautionRepository Precaution { get; }
-        IUserDistinctionRepository UserDistinction { get; }
-        IUserPrecautionRepository UserPrecaution { get; }
-        IBlankBiographyDocumentsRepository  BiographyDocumentsRepository { get; }
-        IAchievementDocumentsRepository AchievementDocumentsRepository { get; }
+        IDocumentTemplateRepository DocumentTemplate { get; }
+        IEducationRepository Education { get; }
+        IEventRepository Event { get; }
+        IEventAdminRepository EventAdmin { get; }
+        IEventAdministrationRepository EventAdministration { get; }
+        IEventAdministrationTypeRepository EventAdministrationType { get; }
+        IEventCategoryRepository EventCategory { get; }
+        IEventCategoryTypeRepository EventCategoryType { get; }
+        IEventGallaryRepository EventGallary { get; }
+        IEventStatusRepository EventStatus { get; }
+        IEventTypeRepository EventType { get; }
         IExtractFromUPUDocumentsRepository ExtractFromUPUDocumentsRepository { get; }
-        IPlastDegreeRepository PlastDegrees { get; }
+        IGallaryRepository Gallary { get; }
+        IGenderRepository Gender { get; }
+        string GetCitiesUrl { get; }
         IEducatorsStaffRepository KVs { get; }
         IEducatorsStaffTypesRepository KVTypes { get; }
+        IMembersStatisticsRepository MembersStatistics { get; }
+        IMethodicDocumentRepository MethodicDocument { get; }
+        INationalityRepository Nationality { get; }
+        INotificationTypeRepository NotificationTypes { get; }
+        IOrganizationRepository GoverningBody { get; }
+        IParticipantRepository Participant { get; }
+        IParticipantStatusRepository ParticipantStatus { get; }
+        IPlastDegreeRepository PlastDegrees { get; }
+        IPrecautionRepository Precaution { get; }
+        IRegionRepository Region { get; }
+        IRegionAdministrationRepository RegionAdministration { get; }
+        IRegionAnnualReportsRepository RegionAnnualReports { get; }
+        IRegionDocumentRepository RegionDocument { get; }
+        IReligionRepository Religion { get; }
+        IUpuDegreeRepository UpuDegree { get; }
+        IUserRepository User { get; }
+        IUserDistinctionRepository UserDistinction { get; }
+        IUserMembershipDatesRepository UserMembershipDates { get; }
+        IUserNotificationRepository UserNotifications { get; }
+        IUserPlastDegreesRepository UserPlastDegrees { get; }
+        IUserPrecautionRepository UserPrecaution { get; }
+        IUserProfileRepository UserProfile { get; }
+        IWorkRepository Work { get; }
+
         void Save();
+
         Task SaveAsync();
     }
 }

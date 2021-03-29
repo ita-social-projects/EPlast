@@ -21,7 +21,7 @@ Let's take a closer look at the technologies of each part.
 
 **Testing** - xUnit, NUnit, Selenium, Moq
 
-**SDLC** - Scrum/Kanban 
+**SDLC** - Scrum/Kanban  
 
 # 3. How to contribute
 You're encouraged to contribute to our project if you've found any issues or missing functionality that you would want to see.  [**Here**](https://github.com/ITA-Social-Projects/EPlast/issues) you can see the list of issues and [**here**](https://github.com/ITA-Social-Projects/EPlast/issues/new) you can create a new issue.

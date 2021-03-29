@@ -28,7 +28,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
         private readonly Mock<IWebHostEnvironment> _env;
         private readonly Mock<IClubBlobStorageRepository> _ClubBlobStorage;
         private readonly Mock<IClubAccessService> _ClubAccessService;
-        private Mock<IUniqueIdService> _uniqueId;
+        private readonly Mock<IUniqueIdService> _uniqueId;
 
         public ClubServiceTests()
         {
@@ -61,7 +61,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
             _repoWrapper.Setup(r => r.Region.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Region, bool>>>(), null))
                .ReturnsAsync(GetTestRegion());
             _repoWrapper.Setup(r => r.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(), null))
-               .ReturnsAsync(new User() { CityName = "Львів" });
+               .ReturnsAsync(new User() );
             _repoWrapper.Setup(r => r.Club.Update(It.IsAny<DataAccess.Entities.Club>()))
                 .Verifiable();
             _repoWrapper.Setup(r => r.Club.Create(It.IsAny<DataAccess.Entities.Club>()))
@@ -291,7 +291,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
                         new ClubDocumentsDTO(),
                         new ClubDocumentsDTO()
                     }
-                }); ;
+                });
             }
 
             return cities.AsQueryable();

@@ -1,28 +1,30 @@
-﻿using System.Collections.Generic;
-using NUnit.Framework;
-using Moq;
+﻿using System;
 using EPlast.BLL;
-using EPlast.WebApi.Controllers;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using System.Linq;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.Identity;
 using EPlast.DataAccess.Entities;
+using EPlast.WebApi.Controllers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Routing;
+using Moq;
+using NUnit.Framework;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace EPlast.Tests.Controllers
 {
     [TestFixture]
-    class DistinctionControllerTests
+    internal class DistinctionControllerTests
     {
         private Mock<IDistinctionService> _distinctionService;
         private Mock<IUserDistinctionService> _userDistinctionService;
         private Mock<UserManager<User>> _userManager;
 
         private DistinctionController _distinctionController;
-        
+
         [SetUp]
         public void SetUp()
         {
@@ -65,9 +67,12 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync((UserDistinctionDTO)null);
             //Act
             var result = await _distinctionController.GetUserDistinction(It.IsAny<int>());
+            var resultObject = (result as ObjectResult)?.Value;
+
             //Assert
             _userDistinctionService.Verify();
             Assert.IsNotNull(result);
+            Assert.IsNull(resultObject);
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
@@ -116,9 +121,11 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync((DistinctionDTO)null);
             //Act
             var result = await _distinctionController.GetDistinction(It.IsAny<int>());
+            var resultObject = (result as ObjectResult)?.Value;
             //Assert
             _distinctionService.Verify();
             Assert.IsNotNull(result);
+            Assert.IsNull(resultObject);
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
@@ -157,7 +164,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(resultValue);
             Assert.IsInstanceOf<List<UserDistinctionDTO>>(resultValue);
         }
-        
+
         [Test]
         public async Task DeleteDistinction_ReturnsNoContentResult()
         {
@@ -309,12 +316,13 @@ namespace EPlast.Tests.Controllers
             var context = new ControllerContext(
                 new ActionContext(
                     httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
+                    new ControllerActionDescriptor(), new ModelStateDictionary()));
             _distinctionController.ControllerContext = context;
             _userDistinctionService
                 .Setup(x => x.ChangeUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), It.IsAny<User>()));
             //Act
             var result = await _distinctionController.EditUserDistinction(It.IsAny<UserDistinctionDTO>());
+
             //Assert
             _userDistinctionService.Verify();
             Assert.IsNotNull(result);
@@ -392,6 +400,22 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
 
+        [TestCase(1)]
+        public async Task CheckNumberExisting_ReturnsOkObjectResult_Test(int number)
+        {
+            //Arrange
+            _userDistinctionService.Setup(x => x.IsNumberExistAsync(It.IsAny<int>()))
+                .ReturnsAsync(true);
 
+            //Act
+            var result = await _distinctionController.CheckNumberExisting(number);
+            var resultObject = (result as ObjectResult).Value;
+            
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(true, resultObject);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
     }
 }

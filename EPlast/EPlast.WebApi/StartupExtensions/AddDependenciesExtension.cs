@@ -115,11 +115,13 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IFileStreamManager, FileStreamManager>();
             services.AddScoped<IGlobalLoggerService, GlobalLoggerService>();
             services.AddScoped<IGoverningBodiesService, GoverningBodiesService>();
+            services.AddScoped<IGoverningBodyBlobStorageRepository, GoverningBodyBlobStorageRepository>();
             services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IMethodicDocumentBlobStorageRepository, MethodicDocumentBlobStarageRepository>();
             services.AddScoped<IMethodicDocumentService, MethodicDocumentService>();
             services.AddScoped<IMethodicDocumentService, MethodicDocumentService>();
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<INewPlastMemberEmailGreetingService, NewPlastMemberEmailGreetingService>();
             services.AddScoped<IParticipantManager, ParticipantManager>();
             services.AddScoped<IParticipantStatusManager, ParticipantStatusManager>();
             services.AddScoped<IPdfService, PdfService>();

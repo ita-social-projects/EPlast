@@ -141,12 +141,12 @@ namespace EPlast.XUnitTest.Services.UserArea
             Assert.False(result);
         }
         [Fact]
-        public async Task CheckOrAddPlastunRoleTest()
+        public void CheckOrAddPlastunRoleTest()
         {
             _userManager.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
 
             var service = GetService();            // Act
-            var result = await service.CheckOrAddPlastunRoleAsync("1", DateTime.MinValue);
+            var result = service.CheckOrAddPlastunRole("1", DateTime.MinValue);
             // Assert
             var res = Assert.IsType<TimeSpan>(result);
         }

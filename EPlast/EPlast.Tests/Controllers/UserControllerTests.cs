@@ -81,8 +81,8 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(CreateFakeUser());
 
             _userService
-                .Setup((x) => x.CheckOrAddPlastunRoleAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(It.IsAny<TimeSpan>());
+                .Setup((x) => x.CheckOrAddPlastunRole(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .Returns(It.IsAny<TimeSpan>());
 
             _userManagerService
                 .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
@@ -110,8 +110,8 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(CreateFakeUser());
 
             _userService
-                .Setup((x) => x.CheckOrAddPlastunRoleAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(time);
+                .Setup((x) => x.CheckOrAddPlastunRole(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .Returns(time);
 
             _userManagerService
                 .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
@@ -182,8 +182,8 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(CreateFakeUserWithoutCity());
 
             _userService
-                .Setup((x) => x.CheckOrAddPlastunRoleAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(It.IsAny<TimeSpan>());
+                .Setup((x) => x.CheckOrAddPlastunRole(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .Returns(It.IsAny<TimeSpan>());
 
             _userManagerService
                 .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
@@ -212,8 +212,8 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(CreateFakeUserWithoutCity());
 
             _userService
-                .Setup((x) => x.CheckOrAddPlastunRoleAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(time);
+                .Setup((x) => x.CheckOrAddPlastunRole(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .Returns(time);
 
             _userManagerService
                 .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
@@ -271,8 +271,8 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(CreateFakeUserWithCity());
 
             _userService
-                .Setup((x) => x.CheckOrAddPlastunRoleAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(It.IsAny<TimeSpan>());
+                .Setup((x) => x.CheckOrAddPlastunRole(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .Returns(It.IsAny<TimeSpan>());
 
             _userManagerService
                 .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
@@ -301,8 +301,8 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(CreateFakeUserWithCity());
 
             _userService
-                .Setup((x) => x.CheckOrAddPlastunRoleAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(time);
+                .Setup((x) => x.CheckOrAddPlastunRole(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .Returns(time);
 
             _userManagerService
                 .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
@@ -478,7 +478,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(It.IsAny<UserDTO>);
 
             // Act
-            var result = await _userController.Get(id);
+            var result = await _userController.Edit(id);
 
             // Assert
             _loggerService.Verify((x) => x.LogError(It.IsAny<string>()), Times.Once);
@@ -565,8 +565,8 @@ namespace EPlast.Tests.Controllers
                 .Returns(canApprove);
 
             _userService
-               .Setup((x) => x.CheckOrAddPlastunRoleAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(time);
+               .Setup((x) => x.CheckOrAddPlastunRole(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .Returns(time);
 
             _userService
                 .Setup((x) => x.GetClubAdminConfirmedUser(It.IsAny<UserDTO>()))
@@ -621,6 +621,8 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expectedListCount, (actual.ConfirmedUsers as List<ConfirmedUserViewModel>).Count);
             Assert.AreEqual(expectedId, actual.ClubApprover.ID);
             Assert.AreEqual(expectedId, actual.CityApprover.ID);
+            Assert.AreEqual(expectedCanApprove, actual.canApprove);
+            Assert.AreEqual(expectedIsUserHead, actual.IsUserHeadOfCity);
             Assert.IsFalse(actual.IsUserHeadOfCity);
             Assert.IsFalse(actual.IsUserHeadOfClub);
             Assert.IsFalse(actual.IsUserHeadOfRegion);
@@ -673,7 +675,7 @@ namespace EPlast.Tests.Controllers
             var confirmedId = 1;
 
             _confirmedUserService
-                .Setup((x) => x.DeleteAsync(It.IsAny<int>()));
+                .Setup((x) => x.DeleteAsync(It.IsAny<User>(), It.IsAny<int>()));
 
             // Act
             var result = await _userController.ApproverDelete(confirmedId);

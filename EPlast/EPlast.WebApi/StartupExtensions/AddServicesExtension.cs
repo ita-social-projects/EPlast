@@ -13,31 +13,34 @@ namespace EPlast.WebApi.StartupExtensions
     {
         public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration Configuration)
         {
-            services.AddAuthentication(Configuration);
-            services.AddAuthorization();
+            services.AddMvc();
             services.AddAutoMapper();
-            services.AddControllers()
-                    .AddNewtonsoftJson();
-            services.AddCors();
-            services.AddDataAccess(Configuration);
             services.AddHangFire();
             services.AddHangfireServer();
+            services.AddAuthentication(Configuration);
+            services.AddDataAccess(Configuration);
             services.AddIdentity<User, IdentityRole>()
                     .AddEntityFrameworkStores<EPlastDBContext>()
                     .AddDefaultTokenProviders();
-            services.AddIdentityOptions();
-            services.AddLocalization();
+            services.AddCors();
+            services.AddSwagger();
+            
+            services.AddControllers()
+                    .AddNewtonsoftJson();
             services.AddLogging();
-            services.AddMvc();
+            services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
+            services.Configure<JwtOptions>(Configuration.GetSection("Jwt"));
+            services.AddAuthorization();
+            services.AddLocalization();
             services.AddRequestLocalizationOptions();
+            services.AddIdentityOptions();
             services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = Configuration.GetConnectionString("Redis");
                 options.InstanceName = "Redis_";
             });
-            services.AddSwagger();
-            services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
-            services.Configure<JwtOptions>(Configuration.GetSection("Jwt"));
+
+            services.AddDependency();
 
             return services;
         }

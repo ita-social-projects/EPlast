@@ -291,7 +291,10 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetRegionsBoardAsync()
         {
-            return Ok(await _regionService.GetRegionByNameAsync(EnumExtensions.GetDescription(RegionsStatusType.RegionBoard), await _userManager.GetUserAsync(User)));
+            var desc = EnumExtensions.GetDescription(RegionsStatusType.RegionBoard);
+            var user = await _userManager.GetUserAsync(User);
+            var res = await _regionService.GetRegionByNameAsync(desc, user);
+            return Ok(res);
         }
 
         /// <summary>

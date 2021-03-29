@@ -6,7 +6,7 @@ namespace EPlast.BLL.Services.Interfaces
 {
     public interface IConfirmedUsersService
     {
-        Task CreateAsync(User user, string userId, bool isClubAdmin = false, bool isCityAdmin = false);
-        Task DeleteAsync(int confirmedUserId);
+        Task CreateAsync(User vaucherUser, string vaucheeId, bool isClubAdmin = false, bool isCityAdmin = false);
+        Task DeleteAsync(User vaucherUser, int confirmedUserId);
     }
 }

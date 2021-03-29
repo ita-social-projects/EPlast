@@ -137,9 +137,7 @@ namespace EPlast.BLL.Services.Events
         /// <inheritdoc />
         public async Task<IEnumerable<EventGalleryDTO>> GetPicturesAsync(int id)
         {
-            var dto = await _eventWrapper.EventGalleryManager.GetPicturesInBase64(id);
-
-            return dto;
+            return await _eventWrapper.EventGalleryManager.GetPicturesInBase64(id);
         }
 
         /// <inheritdoc />

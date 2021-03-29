@@ -21,7 +21,6 @@ namespace EPlast.BLL.Services.UserProfiles
     public class UserService : IUserService
     {
         private readonly IRepositoryWrapper _repoWrapper;
-        private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
         private readonly IUserPersonalDataService _userPersonalDataService;
         private readonly IWebHostEnvironment _env;
@@ -37,7 +36,6 @@ namespace EPlast.BLL.Services.UserProfiles
             IUniqueIdService uniqueId)
         {
             _repoWrapper = repoWrapper;
-            _userManager = userManager;
             _mapper = mapper;
             _userPersonalDataService = userPersonalDataService;
             _userBlobStorage = userBlobStorage;
@@ -116,7 +114,7 @@ namespace EPlast.BLL.Services.UserProfiles
         }
 
         /// <inheritdoc />
-        public async Task<TimeSpan> CheckOrAddPlastunRoleAsync(string userId, DateTime registeredOn)
+        public TimeSpan CheckOrAddPlastunRole(string userId, DateTime registeredOn)
         {
             try
             {
@@ -127,11 +125,8 @@ namespace EPlast.BLL.Services.UserProfiles
                     timeToJoinPlast = timeToJoinPlast.Subtract(halfOfYear);
                 }
                 if (timeToJoinPlast <= TimeSpan.Zero)
-                {
-                    var us = await _userManager.FindByIdAsync(userId);
-                    await _userManager.AddToRoleAsync(us, "Пластун");
                     return TimeSpan.Zero;
-                }
+
                 return timeToJoinPlast;
             }
             catch

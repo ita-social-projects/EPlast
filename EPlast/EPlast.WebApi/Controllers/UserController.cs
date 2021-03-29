@@ -67,7 +67,7 @@ namespace EPlast.WebApi.Controllers
             var user = await _userService.GetUserAsync(userId);
             if (user != null)
             {
-                var time = await _userService.CheckOrAddPlastunRoleAsync(user.Id, user.RegistredOn);
+                var time = _userService.CheckOrAddPlastunRole(user.Id, user.RegistredOn);
                 var isUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун")
                     || user.UserProfile.UpuDegreeID != 1
                     || !(await _userManagerService.IsInRoleAsync(user, "Прихильник")
@@ -109,7 +109,7 @@ namespace EPlast.WebApi.Controllers
             var focusUser = await _userService.GetUserAsync(focusUserId);
             if (focusUser != null)
             {
-                var time = await _userService.CheckOrAddPlastunRoleAsync(focusUser.Id, focusUser.RegistredOn);
+                var time = _userService.CheckOrAddPlastunRole(focusUser.Id, focusUser.RegistredOn);
                 var isThisUser = currentUserId == focusUserId;
                 var isUserSameCity = currentUser.CityMembers.FirstOrDefault()?.CityId
                     .Equals(focusUser.CityMembers.FirstOrDefault()?.CityId) 
@@ -276,7 +276,7 @@ namespace EPlast.WebApi.Controllers
             }
             var confirmedUsers = _userService.GetConfirmedUsers(user);
             var canApprove = _userService.CanApprove(confirmedUsers, userId, await _userManager.GetUserAsync(User));
-            var time = await _userService.CheckOrAddPlastunRoleAsync(user.Id, user.RegistredOn);
+            var time = _userService.CheckOrAddPlastunRole(user.Id, user.RegistredOn);
             var clubApprover = _userService.GetClubAdminConfirmedUser(user);
             var cityApprover = _userService.GetCityAdminConfirmedUser(user);
 
@@ -326,13 +326,10 @@ namespace EPlast.WebApi.Controllers
         {
             if (userId != null)
             {
-
                 await _confirmedUserService.CreateAsync(await _userManager.GetUserAsync(User), userId, isClubAdmin, isCityAdmin);
-
                 return Ok();
             }
             _loggerService.LogError("User id is null");
-
             return NotFound();
         }
 
@@ -348,9 +345,8 @@ namespace EPlast.WebApi.Controllers
         {
             if (confirmedId != 0)
             {
-                await _confirmedUserService.DeleteAsync(confirmedId);
+                await _confirmedUserService.DeleteAsync(await _userManager.GetUserAsync(User), confirmedId);
                 _loggerService.LogInformation("Approve succesfuly deleted");
-
                 return Ok();
             }
             _loggerService.LogError("Confirmed id is 0");

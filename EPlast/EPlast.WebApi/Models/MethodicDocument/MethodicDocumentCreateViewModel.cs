@@ -6,7 +6,7 @@ namespace EPlast.WebApi.Models.MethodicDocument
 {
     public class MethodicDocumentCreateViewModel
     {
-        public IEnumerable<OrganizationDTO> Organizations { get; set; }
+        public IEnumerable<GoverningBodyDTO> GoverningBodies { get; set; }
         public IEnumerable<SelectListItem> MethodicDocumentTypesItems { get; set; }
     }
 }

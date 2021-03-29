@@ -12,7 +12,6 @@ namespace EPlast.DataAccess.Entities
     public class User : IdentityUser
     {
         public string CityName;
-
         [Display(Name = "Ім'я")]
         [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26})*$",
             ErrorMessage = "Ім'я має містити тільки літери")]
