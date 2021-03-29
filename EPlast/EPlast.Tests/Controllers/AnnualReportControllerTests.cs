@@ -194,6 +194,8 @@ namespace EPlast.Tests.Controllers
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
+            _clubAnnualReportService.Verify();
+            _userManager.Verify();
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
             Assert.IsInstanceOf<StatusCodeResult>(result);
@@ -211,9 +213,13 @@ namespace EPlast.Tests.Controllers
             var result = await annualController.CheckCreated(5);
             var expected = StatusCodes.Status200OK;
             var actual = (result as ObjectResult).StatusCode;
+            var hasCreatedValue = (result as ObjectResult).Value.GetType()
+                .GetProperty("hasCreated").GetValue((result as ObjectResult).Value);
 
             // Assert
+            _clubAnnualReportService.Verify();
             Assert.AreEqual(expected, actual);
+            Assert.IsFalse((bool)hasCreatedValue);
             Assert.NotNull(result);
             Assert.IsInstanceOf<ObjectResult>(result);
         }
@@ -437,6 +443,8 @@ namespace EPlast.Tests.Controllers
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
+            _clubAnnualReportService.Verify(a => a.ConfirmAsync(It.IsAny<User>(), It.IsAny<int>()));
+            _userManager.Verify(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>()));
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
             Assert.IsInstanceOf<StatusCodeResult>(result);
@@ -635,6 +643,8 @@ namespace EPlast.Tests.Controllers
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
+            _clubAnnualReportService.Verify();
+            _userManager.Verify();
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
             Assert.IsInstanceOf<StatusCodeResult>(result);
@@ -795,6 +805,8 @@ namespace EPlast.Tests.Controllers
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
+            _clubAnnualReportService.Verify();
+            _userManager.Verify();
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
             Assert.IsInstanceOf<StatusCodeResult>(result);
@@ -911,11 +923,12 @@ namespace EPlast.Tests.Controllers
             _annualReportService.Setup(a => a.EditAsync(It.IsAny<User>(), It.IsAny<AnnualReportDTO>()));
 
             _annualReportService.Setup(a => a.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
-               .ReturnsAsync(new AnnualReportDTO());
+                .ReturnsAsync(new AnnualReportDTO());
 
             _localizer
-               .Setup(s => s["Edited"])
-               .Returns(GetEdited());
+                .Setup(s => s["Edited"])
+                .Returns(GetEdited());
+            _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
             var expected = StatusCodes.Status200OK;
 
@@ -929,7 +942,7 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(result);
             _localizer
-              .Verify(s => s["Edited"]);
+                .Verify(s => s["Edited"]);
             Assert.AreEqual(expected, actual);
             Assert.IsInstanceOf<ObjectResult>(result);
         }
@@ -1010,6 +1023,7 @@ namespace EPlast.Tests.Controllers
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
+            _clubAnnualReportService.Verify();
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
             Assert.IsInstanceOf<StatusCodeResult>(result);
@@ -1088,10 +1102,13 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status200OK;
             var result = await annualController.Get();
             var actual = (result as ObjectResult).StatusCode;
+            var resultValue = (result as ObjectResult).Value.GetType().GetProperty("annualReports")
+                .GetValue((result as ObjectResult).Value).GetType();
 
             // Assert
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
+            Assert.AreEqual("List`1", resultValue.Name);
             Assert.IsInstanceOf<ObjectResult>(result);
         }
 
@@ -1099,18 +1116,20 @@ namespace EPlast.Tests.Controllers
         public async Task GetAllClubAnnualReports_Valid_Test()
         {
             // Arrange
-            _annualReportService.Setup(a => a.GetAllAsync(It.IsAny<User>()))
-              .ReturnsAsync(new List<AnnualReportDTO>());
-
+            _clubAnnualReportService.Setup(s => s.GetAllAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<ClubAnnualReportDTO>());
             AnnualReportController annualReportController = CreateAnnualReportController;
 
             // Act
             var result = await annualReportController.GetAllClubAnnualReports();
             var expected = StatusCodes.Status200OK;
             var actual = (result as ObjectResult).StatusCode;
+            var resultValue = (result as ObjectResult).Value.GetType().GetProperty("clubAnnualReports")
+                .GetValue((result as ObjectResult).Value).GetType();
 
             //Assert
             Assert.AreEqual(expected, actual);
+            Assert.AreEqual("List`1", resultValue.Name);
             Assert.NotNull(result);
             Assert.IsInstanceOf<ObjectResult>(result);
         }
@@ -1169,9 +1188,12 @@ namespace EPlast.Tests.Controllers
             var result = await _annualReportController.GetClubAnnualReportById(5);
             var expected = StatusCodes.Status200OK;
             var actual = (result as ObjectResult).StatusCode;
+            var resultValue = (result as ObjectResult).Value.GetType().GetProperty("annualreport")
+                .GetValue((result as ObjectResult).Value);
 
             // Assert
             Assert.AreEqual(expected, actual);
+            Assert.NotNull(resultValue);
             Assert.NotNull(result);
             Assert.IsInstanceOf<ObjectResult>(result);
         }
@@ -1206,9 +1228,12 @@ namespace EPlast.Tests.Controllers
             var result = await annualController.Get(5);
             var expected = StatusCodes.Status200OK;
             var actual = (result as ObjectResult).StatusCode;
+            var resultValue = (result as ObjectResult).Value.GetType().GetProperty("annualReport")
+                .GetValue((result as ObjectResult).Value);
 
             // Assert
             Assert.AreEqual(expected, actual);
+            Assert.NotNull(resultValue);
             Assert.NotNull(result);
             Assert.IsInstanceOf<ObjectResult>(result);
         }
