@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
-using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Mapping
 {
@@ -8,7 +7,7 @@ namespace EPlast.BLL.Mapping
     {
         public DecisionStatusTypeProfile()
         {
-            CreateMap<Organization, OrganizationDTO>().ReverseMap();
+            CreateMap<DataAccess.Entities.Organization, GoverningBodyDTO>().ReverseMap();
         }
     }
 }

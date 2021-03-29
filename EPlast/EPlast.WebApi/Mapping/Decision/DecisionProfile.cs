@@ -9,7 +9,7 @@ namespace EPlast.WebApi.Mapping.Decision
         public DecisionProfile()
         {
             CreateMap<DecisionDTO, DecisionViewModel>()
-                .ForMember(dvw => dvw.Organization, dd => dd.MapFrom(f => f.Organization.OrganizationName))
+                .ForMember(dvw => dvw.Organization, dd => dd.MapFrom(f => f.GoverningBody.GoverningBodyName))
                 .ForMember(dvw => dvw.DecisionTarget, dd => dd.MapFrom(f => f.DecisionTarget.TargetName))
                 .ForMember(dvw => dvw.DecisionStatusType, dd => dd.MapFrom(f => f.DecisionTarget.TargetName))
                 .ForMember(dvw => dvw.Date, dd => dd.MapFrom(f => f.Date.ToString("MM.dd.yyyy")))

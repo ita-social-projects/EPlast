@@ -142,6 +142,7 @@ namespace EPlast.Tests.Controllers
 
             var result = await adminController.Delete("SomeUserId");
 
+            _adminService.Verify();
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkResult>(result);
         }
@@ -207,6 +208,7 @@ namespace EPlast.Tests.Controllers
 
             var result = await adminController.Edit("", roles);
 
+            _adminService.Verify();
             Assert.NotNull(result);
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
@@ -223,6 +225,7 @@ namespace EPlast.Tests.Controllers
 
             var result = await adminController.Edit("UserId", roles);
 
+            _adminService.Verify();
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkResult>(result);
         }
@@ -236,6 +239,7 @@ namespace EPlast.Tests.Controllers
 
             var result = await adminController.GetAdmins(2);
 
+            _adminService.Verify();
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
@@ -294,6 +298,7 @@ namespace EPlast.Tests.Controllers
 
             var result = await adminController.RegionsAdmins();
 
+            _adminService.Verify();
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
@@ -308,6 +313,7 @@ namespace EPlast.Tests.Controllers
 
             var result = await adminController.RegionsAdmins();
 
+            _cityService.Verify();
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
@@ -323,6 +329,7 @@ namespace EPlast.Tests.Controllers
             var result = await adminController.GetUsersTable();
 
             // Assert
+            _adminService.Verify();
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
