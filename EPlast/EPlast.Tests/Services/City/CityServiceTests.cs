@@ -844,7 +844,7 @@ namespace EPlast.Tests.Services.City
 
                       AdminType = new AdminTypeDTO
                       {
-                           AdminTypeName = Roles.cityHead
+                           AdminTypeName = Roles.CityHead
                       }
 
                  },
@@ -859,7 +859,7 @@ namespace EPlast.Tests.Services.City
                  {
                        AdminType = new AdminTypeDTO
                        {
-                            AdminTypeName = Roles.cityHead
+                            AdminTypeName = Roles.CityHead
                        }
                  },
                  new CityAdministrationDTO
@@ -885,7 +885,7 @@ namespace EPlast.Tests.Services.City
                     {
                         AdminType = new AdminTypeDTO
                         {
-                            AdminTypeName = Roles.cityHead
+                            AdminTypeName = Roles.CityHead
                         },
                         EndDate = DateTime.Now.AddMonths(-3)
                     },
@@ -918,7 +918,7 @@ namespace EPlast.Tests.Services.City
                     {
                         AdminType = new AdminTypeDTO
                         {
-                            AdminTypeName = Roles.cityHead
+                            AdminTypeName = Roles.CityHead
                         },
                     },
                     new CityAdministrationDTO

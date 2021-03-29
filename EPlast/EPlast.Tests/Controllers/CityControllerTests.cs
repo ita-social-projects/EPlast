@@ -366,7 +366,7 @@ namespace EPlast.Tests.Controllers
             CitiesController citycon = CreateCityController;
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole(Roles.admin))
+                .Setup(m => m.User.IsInRole(Roles.Admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(

@@ -217,12 +217,12 @@ namespace EPlast.Tests.Services.Regions
                 ID = 1,
                 AdminType = new AdminType()
                 {
-                    AdminTypeName = Roles.okrugaHead,
+                    AdminTypeName = Roles.OkrugaHead,
                     ID = 1
                 },
                 Status = true,
                 AdminTypeId = AdminType.ID,
-                UserId = Roles.okrugaHead
+                UserId = Roles.OkrugaHead
             };
             _repoWrapper
                 .Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
@@ -255,7 +255,7 @@ namespace EPlast.Tests.Services.Regions
             _userManager
                 .Setup(x=>x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User() { Id= "Some" });
             _userManager
-                .Setup(x=>x.AddToRoleAsync(new User() { Id = "Some" }, Roles.okrugaHead));
+                .Setup(x=>x.AddToRoleAsync(new User() { Id = "Some" }, Roles.OkrugaHead));
             _repoWrapper
                 .Setup(x=>x.RegionAdministration.CreateAsync(regionAdm));
             //Act
@@ -283,7 +283,7 @@ namespace EPlast.Tests.Services.Regions
                 .Callback(()=> _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User() { Id = "SomeNew" }));
             _userManager
-                .Setup(x => x.AddToRoleAsync(new User() { Id = "Some" }, Roles.okrugaHead));
+                .Setup(x => x.AddToRoleAsync(new User() { Id = "Some" }, Roles.OkrugaHead));
             _repoWrapper
                 .Setup(x => x.RegionAdministration.CreateAsync(regionAdm));
             //Act
@@ -296,7 +296,7 @@ namespace EPlast.Tests.Services.Regions
 
         private static AdminTypeDTO AdminType = new AdminTypeDTO
         {
-            AdminTypeName = Roles.cityHead,
+            AdminTypeName = Roles.CityHead,
             ID = 1
         };
  
@@ -305,12 +305,12 @@ namespace EPlast.Tests.Services.Regions
             ID = 1,
             AdminType = new AdminType()
             {
-                AdminTypeName = Roles.cityHead,
+                AdminTypeName = Roles.CityHead,
                 ID = 1
             },
             Status=true,
             AdminTypeId = AdminType.ID,
-            UserId = Roles.cityHead
+            UserId = Roles.CityHead
         };
 
         private RegionAdministrationDTO regionAdmDTO = new RegionAdministrationDTO
@@ -318,12 +318,12 @@ namespace EPlast.Tests.Services.Regions
             ID = 1,
             AdminType = new AdminTypeDTO()
             {
-                AdminTypeName = Roles.cityHead,
+                AdminTypeName = Roles.CityHead,
                 ID = 1
             },
             Status = true,
             AdminTypeId = AdminType.ID,
-            UserId = Roles.cityHead,
+            UserId = Roles.CityHead,
             RegionId=2
         };
 

@@ -26,7 +26,7 @@ namespace EPlast.Tests.Services.City
     {
         private static readonly AdminTypeDTO AdminType = new AdminTypeDTO
         {
-            AdminTypeName = Roles.cityHead,
+            AdminTypeName = Roles.CityHead,
             ID = 1
         };
         private readonly int anotherFakeId = 2;
@@ -35,11 +35,11 @@ namespace EPlast.Tests.Services.City
             ID = 1,
             AdminType = new AdminType()
             {
-                AdminTypeName = Roles.cityHead,
+                AdminTypeName = Roles.CityHead,
                 ID = 1
             },
             AdminTypeId = AdminType.ID,
-            UserId = Roles.cityHead
+            UserId = Roles.CityHead
         };
         private readonly CityAdministrationDTO cityAdmDTO = new CityAdministrationDTO
         {
@@ -50,7 +50,7 @@ namespace EPlast.Tests.Services.City
             StartDate = DateTime.Now,
             EndDate = DateTime.Today,
             User = new CityUserDTO(),
-            UserId = Roles.cityHead
+            UserId = Roles.CityHead
         };
         private readonly int fakeId = 3;
         private Mock<IAdminTypeService> _adminTypeService;
@@ -118,7 +118,7 @@ namespace EPlast.Tests.Services.City
                     It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
                 .ReturnsAsync(new CityAdministration() { AdminTypeId = 2 });
             _adminTypeService
-                .Setup(x => x.GetAdminTypeByIdAsync(It.IsAny<int>())).ReturnsAsync(new AdminTypeDTO() { AdminTypeName = Roles.cityHead });
+                .Setup(x => x.GetAdminTypeByIdAsync(It.IsAny<int>())).ReturnsAsync(new AdminTypeDTO() { AdminTypeName = Roles.CityHead });
             _repoWrapper
                 .Setup(x => x.CityAdministration.Update(new CityAdministration()));
             _userManager
@@ -159,7 +159,7 @@ namespace EPlast.Tests.Services.City
                     It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
                 .ReturnsAsync(new CityAdministration() { AdminTypeId = 2 });
             _adminTypeService
-                .Setup(x => x.GetAdminTypeByIdAsync(It.IsAny<int>())).ReturnsAsync(new AdminTypeDTO() { AdminTypeName = Roles.cityHead });
+                .Setup(x => x.GetAdminTypeByIdAsync(It.IsAny<int>())).ReturnsAsync(new AdminTypeDTO() { AdminTypeName = Roles.CityHead });
             _repoWrapper
                 .Setup(x => x.CityAdministration.Update(new CityAdministration()));
             _userManager
@@ -190,7 +190,7 @@ namespace EPlast.Tests.Services.City
                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                .ReturnsAsync(new AdminTypeDTO
                {
-                   AdminTypeName = Roles.cityHead,
+                   AdminTypeName = Roles.CityHead,
                    ID = fakeId
                });
             _userManager
@@ -222,7 +222,7 @@ namespace EPlast.Tests.Services.City
                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                .ReturnsAsync(new AdminTypeDTO
                {
-                   AdminTypeName = Roles.cityHead,
+                   AdminTypeName = Roles.CityHead,
                    ID = fakeId
                });
             _userManager
@@ -256,7 +256,7 @@ namespace EPlast.Tests.Services.City
                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                .ReturnsAsync(new AdminTypeDTO
                {
-                   AdminTypeName = Roles.cityHead,
+                   AdminTypeName = Roles.CityHead,
                    ID = anotherFakeId
                });
             _userManager
@@ -339,14 +339,14 @@ namespace EPlast.Tests.Services.City
                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                .ReturnsAsync(new AdminTypeDTO
                {
-                   AdminTypeName = Roles.cityHead,
+                   AdminTypeName = Roles.CityHead,
                    ID = fakeId
                });
             _adminTypeService
                .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
                .ReturnsAsync(new AdminTypeDTO
                {
-                   AdminTypeName = Roles.cityHead,
+                   AdminTypeName = Roles.CityHead,
                    ID = fakeId
                });
 
@@ -681,8 +681,8 @@ namespace EPlast.Tests.Services.City
         {
             return new List<CityAdministration>
             {
-                new CityAdministration{UserId = Roles.cityHead, ID=2},
-                new CityAdministration{UserId = Roles.cityHead, ID=3}
+                new CityAdministration{UserId = Roles.CityHead, ID=2},
+                new CityAdministration{UserId = Roles.CityHead, ID=3}
             }.AsEnumerable();
         }
 
@@ -690,8 +690,8 @@ namespace EPlast.Tests.Services.City
         {
             return new List<CityAdministrationDTO>
             {
-                new CityAdministrationDTO{UserId = Roles.cityHead},
-                new CityAdministrationDTO{UserId = Roles.cityHead}
+                new CityAdministrationDTO{UserId = Roles.CityHead},
+                new CityAdministrationDTO{UserId = Roles.CityHead}
             }.AsEnumerable();
         }
 
@@ -699,8 +699,8 @@ namespace EPlast.Tests.Services.City
         {
             return new List<CityAdministrationStatusDTO>
             {
-                new CityAdministrationStatusDTO{UserId = Roles.cityHead},
-                new CityAdministrationStatusDTO{UserId = Roles.cityHead}
+                new CityAdministrationStatusDTO{UserId = Roles.CityHead},
+                new CityAdministrationStatusDTO{UserId = Roles.CityHead}
             }.AsEnumerable();
         }
     }

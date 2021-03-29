@@ -206,7 +206,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetAdminTypeId_TypeNameString_ReturnsAdminTypeId()
         {
             // Arrange
-            string TypeName = Roles.admin;
+            string TypeName = Roles.Admin;
             _regionAdministrationService.Setup(x => x.GetAdminType(TypeName)).ReturnsAsync(2);
             // Act
             var result = await _regionController.GetAdminTypeId(TypeName);
@@ -455,7 +455,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetUserAdministrations_String_ReturnsOkResult()
         {
             // Arrange
-            string id = "admin";
+            string id = "Admin";
             _regionAdministrationService.Setup(x => x.GetUsersAdministrations(It.IsAny<string>())).ReturnsAsync(GetAdmins());
             // Act
             var result = await _regionController.GetUserAdministrations(id);
@@ -480,7 +480,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetUserPrevAdministrations_String_ReturnsOkResult()
         {
             // Arrange
-            string id = "admin";
+            string id = "Admin";
             _regionAdministrationService.Setup(x => x.GetUsersPreviousAdministrations(It.IsAny<string>())).ReturnsAsync(GetAdmins());
             // Act
             var result = await _regionController.GetUserAdministrations(id);

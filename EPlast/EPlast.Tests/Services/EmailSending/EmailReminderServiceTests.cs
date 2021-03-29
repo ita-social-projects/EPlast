@@ -20,8 +20,8 @@ namespace EPlast.Tests.Services.EmailSending
     {
         private readonly List<string> roles = new List<string>()
         {
-            Roles.supporter,
-            Roles.formerPlastMember
+            Roles.Supporter,
+            Roles.FormerPlastMember
         };
         private EmailReminderService emailReminderService;
         private Mock<IAuthEmailService> mockAuthEmailServices;

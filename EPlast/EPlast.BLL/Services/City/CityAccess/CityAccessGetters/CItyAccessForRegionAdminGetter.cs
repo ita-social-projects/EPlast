@@ -19,7 +19,7 @@ namespace EPlast.BLL.Services.City.CityAccess.CityAccessGetters
         {
             _repositoryWrapper = repositoryWrapper;
             _regionAdminType = _repositoryWrapper.AdminType.GetFirstAsync(
-                    predicate: a => a.AdminTypeName == Roles.okrugaHead).Result;
+                    predicate: a => a.AdminTypeName == Roles.OkrugaHead).Result;
         }
 
         public async Task<IEnumerable<DatabaseEntities.City>> GetCities(string userId)

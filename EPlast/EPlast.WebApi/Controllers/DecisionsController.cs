@@ -14,7 +14,7 @@ namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.headsAdminAndPlastun)]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAdminAndPlastun)]
     public class DecisionsController : ControllerBase
     {
         private readonly IDecisionService _decisionService;

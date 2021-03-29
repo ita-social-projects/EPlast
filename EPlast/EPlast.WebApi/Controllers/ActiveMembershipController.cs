@@ -43,7 +43,7 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _plastDegreeService.GetUserPlastDegreesAsync(userId));
         }
 
-        [Authorize(Roles = Roles.degreeAssignRoles)]
+        [Authorize(Roles = Roles.DegreeAssignRoles)]
         [HttpPost("degree")]
         public async Task<IActionResult> AddPlastDegreeForUser(UserPlastDegreePostDTO userPlastDegreePostDTO)
         {
@@ -55,7 +55,7 @@ namespace EPlast.WebApi.Controllers
             return BadRequest();
         }
 
-        [Authorize(Roles = Roles.degreeAssignRoles)]
+        [Authorize(Roles = Roles.DegreeAssignRoles)]
         [HttpDelete("degree/{userId}/{plastDegreeId}")]
         public async Task<IActionResult> DeletePlastDegreeForUser(string userId, int plastDegreeId)
         {
@@ -67,7 +67,7 @@ namespace EPlast.WebApi.Controllers
             return BadRequest();
         }
 
-        [Authorize(Roles = Roles.degreeAssignRoles)]
+        [Authorize(Roles = Roles.DegreeAssignRoles)]
         [HttpPut("degree/setAsCurrent/{userId}/{plastDegreeId}")]
         public async Task<IActionResult> SetPlastDegreeAsCurrent(string userId, int plastDegreeId)
         {
@@ -79,7 +79,7 @@ namespace EPlast.WebApi.Controllers
             return BadRequest();
         }
 
-        [Authorize(Roles = Roles.degreeAssignRoles)]
+        [Authorize(Roles = Roles.DegreeAssignRoles)]
         [HttpPut("degree/endDate")]
         public async Task<IActionResult> AddEndDatePlastDegreeForUser(UserPlastDegreePutDTO userPlastDegreePutDTO)
         {
@@ -104,7 +104,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [Authorize(Roles = Roles.degreeAssignRoles)]
+        [Authorize(Roles = Roles.DegreeAssignRoles)]
         [HttpPost("dates")]
         public async Task<IActionResult> ChangeUserDates(UserMembershipDatesDTO userMembershipDatesDTO)
         {

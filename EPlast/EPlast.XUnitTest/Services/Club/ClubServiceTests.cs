@@ -243,7 +243,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
                            User=new ClubUserDTO(),
                            AdminType = new AdminTypeDTO
                            {
-                               AdminTypeName = Roles.cityHead
+                               AdminTypeName = Roles.CityHead
                            }
 
                         },
@@ -262,7 +262,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
                             User=new ClubUserDTO(),
                             AdminType = new AdminTypeDTO
                             {
-                                AdminTypeName = Roles.cityHead
+                                AdminTypeName = Roles.CityHead
                             }
                         },
                         new ClubAdministrationDTO

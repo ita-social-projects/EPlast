@@ -22,9 +22,9 @@ namespace EPlast.XUnitTest.Services.City
 {
     public class CityAccessServiceTests
     {
-        private const string AdminRoleName = Roles.admin;
-        private const string RegionAdminRoleName = Roles.okrugaHead;
-        private const string CityAdminRoleName = Roles.cityHead;
+        private const string AdminRoleName = Roles.Admin;
+        private const string RegionAdminRoleName = Roles.OkrugaHead;
+        private const string CityAdminRoleName = Roles.CityHead;
 
         private readonly Mock<IRepositoryWrapper> _repositoryWrapper = new Mock<IRepositoryWrapper>();
         private readonly Mock<IMapper> _mapper = new Mock<IMapper>();

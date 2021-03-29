@@ -60,7 +60,7 @@ namespace EPlast.BLL.Services.Club
             };
 
             var user = await _userManager.FindByIdAsync(adminDTO.UserId);
-            var role = adminType.AdminTypeName == Roles.kurinHead ? Roles.kurinHead : Roles.kurinSecretary;
+            var role = adminType.AdminTypeName == Roles.KurinHead ? Roles.KurinHead : Roles.KurinSecretary;
             try
             {
 
@@ -112,7 +112,7 @@ namespace EPlast.BLL.Services.Club
 
             var adminType = await _adminTypeService.GetAdminTypeByIdAsync(admin.AdminTypeId);
             var user = await _userManager.FindByIdAsync(admin.UserId);
-            var role = adminType.AdminTypeName == Roles.kurinHead ? Roles.kurinHead : Roles.kurinSecretary;
+            var role = adminType.AdminTypeName == Roles.KurinHead ? Roles.KurinHead : Roles.KurinSecretary;
             await _userManager.RemoveFromRoleAsync(user, role);
 
             _repositoryWrapper.ClubAdministration.Update(admin);
@@ -123,16 +123,16 @@ namespace EPlast.BLL.Services.Club
         public async Task CheckPreviousAdministratorsToDelete()
         {
             var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.EndDate <= DateTime.Now);
-            var ClubHeadType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.kurinHead);
+            var ClubHeadType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.KurinHead);
 
             foreach (var admin in admins)
             {
-                var role = admin.AdminTypeId == ClubHeadType.ID ? Roles.kurinHead : Roles.kurinSecretary;
+                var role = admin.AdminTypeId == ClubHeadType.ID ? Roles.KurinHead : Roles.KurinSecretary;
 
                 var currentAdministration = await _repositoryWrapper.ClubAdministration
                     .GetAllAsync(a => (a.EndDate > DateTime.Now || a.EndDate == null) && a.UserId == admin.UserId);
 
-                if (currentAdministration.All(a => (a.AdminTypeId == ClubHeadType.ID ? Roles.kurinHead : Roles.kurinSecretary) != role)
+                if (currentAdministration.All(a => (a.AdminTypeId == ClubHeadType.ID ? Roles.KurinHead : Roles.KurinSecretary) != role)
                     || !currentAdministration.Any())
                 {
                     var user = await _userManager.FindByIdAsync(admin.UserId);

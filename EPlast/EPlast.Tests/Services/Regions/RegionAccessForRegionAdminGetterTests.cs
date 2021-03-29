@@ -26,7 +26,7 @@ namespace EPlast.Tests.Services.Regions
             _repositoryWrapper
                .Setup(x => x.AdminType.GetFirstAsync(It.IsAny<Expression<Func<AdminType, bool>>>(),
                It.IsAny<Func<IQueryable<AdminType>, IIncludableQueryable<AdminType, object>>>()))
-               .ReturnsAsync(new AdminType() { AdminTypeName = Roles.okrugaHead, ID = 2 });
+               .ReturnsAsync(new AdminType() { AdminTypeName = Roles.OkrugaHead, ID = 2 });
             _regionAccessGetter = new RegionAccessForRegionAdminGetter(_repositoryWrapper.Object);
         }
 

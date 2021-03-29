@@ -91,10 +91,10 @@ namespace EPlast.BLL.Services.Club
             }
 
             var ClubHead = Club.ClubAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.kurinHead
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
             var ClubAdmins = Club.ClubAdministration
-                .Where(a => a.AdminType.AdminTypeName != Roles.kurinHead
+                .Where(a => a.AdminType.AdminTypeName != Roles.KurinHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .Take(6)
                 .ToList();
@@ -134,7 +134,7 @@ namespace EPlast.BLL.Services.Club
             var userId = await _userManager.GetUserIdAsync(user);
             var userRoles = await _userManager.GetRolesAsync(user);
 
-            ClubProfileDto.Club.CanCreate = userRoles.Contains(Roles.admin);
+            ClubProfileDto.Club.CanCreate = userRoles.Contains(Roles.Admin);
             ClubProfileDto.Club.CanEdit = await _clubAccessService.HasAccessAsync(user, ClubId);
             ClubProfileDto.Club.CanJoin = (await _repoWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(u => u.User.Id == userId && u.ClubId == ClubId)) == null;
@@ -215,11 +215,11 @@ namespace EPlast.BLL.Services.Club
             }
 
             var ClubHead = Club.ClubAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.kurinHead
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
 
             var ClubAdmins = Club.ClubAdministration
-               .Where(a => a.AdminType.AdminTypeName != Roles.kurinHead
+               .Where(a => a.AdminType.AdminTypeName != Roles.KurinHead
                    && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
 
 

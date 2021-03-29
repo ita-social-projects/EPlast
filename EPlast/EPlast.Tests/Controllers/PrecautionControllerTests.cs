@@ -166,7 +166,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole(Roles.admin))
+                .Setup(m => m.User.IsInRole(Roles.Admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -190,7 +190,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole(Roles.admin))
+                .Setup(m => m.User.IsInRole(Roles.Admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -212,7 +212,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole(Roles.admin))
+                .Setup(m => m.User.IsInRole(Roles.Admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -235,7 +235,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole(Roles.admin))
+                .Setup(m => m.User.IsInRole(Roles.Admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -259,7 +259,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole(Roles.admin))
+                .Setup(m => m.User.IsInRole(Roles.Admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -282,7 +282,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole(Roles.admin))
+                .Setup(m => m.User.IsInRole(Roles.Admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -306,7 +306,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole(Roles.admin))
+                .Setup(m => m.User.IsInRole(Roles.Admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -329,7 +329,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole(Roles.admin))
+                .Setup(m => m.User.IsInRole(Roles.Admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -353,7 +353,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole(Roles.admin))
+                .Setup(m => m.User.IsInRole(Roles.Admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -376,7 +376,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole(Roles.admin))
+                .Setup(m => m.User.IsInRole(Roles.Admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(

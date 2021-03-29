@@ -62,7 +62,7 @@ namespace EPlast.BLL
 
         public async Task CheckIfAdminAsync(User user)
         {
-            if(!(await _userManager.GetRolesAsync(user)).Contains(Roles.admin))
+            if(!(await _userManager.GetRolesAsync(user)).Contains(Roles.Admin))
                 throw new UnauthorizedAccessException();
         }
     }

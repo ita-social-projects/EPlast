@@ -18,7 +18,7 @@ namespace EPlast.BLL.Services.Club.ClubAccess.ClubAccessGetters
         {
             _repositoryWrapper = repositoryWrapper;
             _ClubAdminType = _repositoryWrapper.AdminType.GetFirstAsync(
-                    predicate: a => a.AdminTypeName == Roles.kurinHead).Result;
+                    predicate: a => a.AdminTypeName == Roles.KurinHead).Result;
         }
 
         public async Task<IEnumerable<DatabaseEntities.Club>> GetClubs(string userId)

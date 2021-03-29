@@ -232,7 +232,7 @@ namespace EPlast.XUnitTest.Services.City
 
                            AdminType = new AdminTypeDTO
                            {
-                               AdminTypeName = Roles.cityHead
+                               AdminTypeName = Roles.CityHead
                            }
 
                         },
@@ -247,7 +247,7 @@ namespace EPlast.XUnitTest.Services.City
                         {
                             AdminType = new AdminTypeDTO
                             {
-                                AdminTypeName = Roles.cityHead
+                                AdminTypeName = Roles.CityHead
                             }
                         },
                         new CityAdministrationDTO

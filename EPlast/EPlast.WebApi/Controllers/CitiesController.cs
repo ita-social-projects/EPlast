@@ -57,7 +57,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetCities(int page, int pageSize, string cityName = null)
         {
             var cities = await _cityService.GetAllDTOAsync(cityName);
-            var citiesViewModel = new CitiesViewModel(page, pageSize, cities, User.IsInRole(Roles.admin));
+            var citiesViewModel = new CitiesViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
 
             return Ok(citiesViewModel);
         }
@@ -354,7 +354,7 @@ namespace EPlast.WebApi.Controllers
             var admin = _mapper.Map<CityAdministrationViewModel, CityAdministrationDTO>(newAdmin);
             await _cityParticipantsService.AddAdministratorAsync(admin);
 
-            _logger.LogInformation($"User {{{admin.UserId}}} became admin for city {{{admin.CityId}}}" +
+            _logger.LogInformation($"User {{{admin.UserId}}} became Admin for city {{{admin.CityId}}}" +
                 $" with role {{{admin.AdminType.AdminTypeName}}}.");
 
             return Ok(admin);

@@ -73,7 +73,7 @@ namespace EPlast.BLL.Services.EmailSending
         private async Task<bool> IsAdminAsync(User user)
         {
             var userRoles = await _userManager.GetRolesAsync(user);
-            return (userRoles.Contains(Roles.admin));
+            return (userRoles.Contains(Roles.Admin));
         }
 
         private async Task<bool> IsLonelyUserAsync(User user)

@@ -46,14 +46,14 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         IEnumerable<ConfirmedUserDTO> GetConfirmedUsers(UserDTO user);
 
         /// <summary>
-        /// Get confirmed users which have access "Club admin"
+        /// Get confirmed users which have access "Club Admin"
         /// </summary>
         /// <param name="user">User(dto) which contains confirmed users</param>
         /// <returns>Obtaining a "confirmed users" of the selected user</returns>
         ConfirmedUserDTO GetClubAdminConfirmedUser(UserDTO user);
 
         /// <summary>
-        /// Get confirmed users which have access "City admin"
+        /// Get confirmed users which have access "City Admin"
         /// </summary>
         /// <param name="user">User(dto) which contains confirmed users</param>
         /// <returns>Obtaining a "confirmed users" of the selected user</returns>

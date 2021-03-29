@@ -800,7 +800,7 @@ namespace EPlast.Tests.Services.Club
                         User = new ClubUserDTO(),
                         AdminType = new AdminTypeDTO
                         {
-                            AdminTypeName = Roles.kurinHead
+                            AdminTypeName = Roles.KurinHead
                         },
                         EndDate = DateTime.Now.AddMonths(-3)
                     },
@@ -837,7 +837,7 @@ namespace EPlast.Tests.Services.Club
                         User = new ClubUserDTO(),
                         AdminType = new AdminTypeDTO
                         {
-                            AdminTypeName = Roles.kurinHead
+                            AdminTypeName = Roles.KurinHead
                         }
                     },
                     new ClubAdministrationDTO
@@ -865,7 +865,7 @@ namespace EPlast.Tests.Services.Club
                       User = new ClubUserDTO(),
                       AdminType = new AdminTypeDTO
                       {
-                           AdminTypeName = Roles.kurinHead
+                           AdminTypeName = Roles.KurinHead
                       }
                  },
                  new ClubAdministrationDTO

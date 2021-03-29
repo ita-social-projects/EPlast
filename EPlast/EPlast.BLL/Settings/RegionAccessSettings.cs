@@ -7,8 +7,8 @@ namespace EPlast.BLL.Settings
 {
     public class RegionAccessSettings
     {
-        private const string AdminRoleName = Roles.admin;
-        private const string RegionAdminRoleName = Roles.okrugaHead;
+        private const string AdminRoleName = Roles.Admin;
+        private const string RegionAdminRoleName = Roles.OkrugaHead;
 
         private readonly IRepositoryWrapper _repositoryWrapper;
 

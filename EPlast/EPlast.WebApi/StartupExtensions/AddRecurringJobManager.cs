@@ -65,20 +65,20 @@ namespace EPlast.WebApi.StartupExtensions
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
             var roles = new[]
             {
-                Roles.admin,
-                Roles.supporter,
-                Roles.plastMember,
-                Roles.plastHead,
-                Roles.eventAdministrator,
-                Roles.kurinHead,"" +
-                                Roles.kurinSecretary,
-                Roles.okrugaHead,
-                Roles.okrugaSecretary,
-                Roles.cityHead,
-                Roles.citySecretary,
-                Roles.formerPlastMember,
-                Roles.registeredUser,
-                Roles.interested
+                Roles.Admin,
+                Roles.Supporter,
+                Roles.PlastMember,
+                Roles.PlastHead,
+                Roles.EventAdministrator,
+                Roles.KurinHead,"" +
+                                Roles.KurinSecretary,
+                Roles.OkrugaHead,
+                Roles.OkrugaSecretary,
+                Roles.CityHead,
+                Roles.CitySecretary,
+                Roles.FormerPlastMember,
+                Roles.RegisteredUser,
+                Roles.Interested
             };
             foreach (var role in roles)
             {
@@ -88,13 +88,13 @@ namespace EPlast.WebApi.StartupExtensions
                     await roleManager.CreateAsync(idRole);
                 }
             }
-            var admin = Configuration.GetSection(Roles.admin);
+            var admin = Configuration.GetSection(Roles.Admin);
             var profile = new User
             {
                 Email = admin["Email"],
                 UserName = admin["Email"],
-                FirstName = Roles.admin,
-                LastName = Roles.admin,
+                FirstName = Roles.Admin,
+                LastName = Roles.Admin,
                 EmailConfirmed = true,
                 ImagePath = "default_user_image.png",
                 UserProfile = new UserProfile(),
@@ -104,12 +104,12 @@ namespace EPlast.WebApi.StartupExtensions
             {
                 var idenResCreateAdmin = await userManager.CreateAsync(profile, admin["Password"]);
                 if (idenResCreateAdmin.Succeeded)
-                    await userManager.AddToRoleAsync(profile, Roles.admin);
+                    await userManager.AddToRoleAsync(profile, Roles.Admin);
             }
-            else if (!await userManager.IsInRoleAsync(userManager.Users.First(item => item.Email == profile.Email), Roles.admin))
+            else if (!await userManager.IsInRoleAsync(userManager.Users.First(item => item.Email == profile.Email), Roles.Admin))
             {
                 var user = userManager.Users.First(item => item.Email == profile.Email);
-                await userManager.AddToRoleAsync(user, Roles.admin);
+                await userManager.AddToRoleAsync(user, Roles.Admin);
             }
         }
     }

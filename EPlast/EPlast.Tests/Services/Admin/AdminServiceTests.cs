@@ -28,9 +28,9 @@ namespace EPlast.Tests.Services
     {
         private readonly List<string> roles = new List<string>()
         {
-            Roles.admin,
-            Roles.supporter,
-            Roles.formerPlastMember
+            Roles.Admin,
+            Roles.Supporter,
+            Roles.FormerPlastMember
         };
         private Mock<ICityParticipantsService> _cityParticipantsService;
         private Mock<IClubParticipantsService> _clubParticipants;
@@ -74,7 +74,7 @@ namespace EPlast.Tests.Services
             _regionService
                 .Setup(x => x.DeleteAdminByIdAsync(It.IsAny<int>()));
             _userManager
-                .Setup(x => x.AddToRoleAsync(It.IsAny<User>(), Roles.formerPlastMember));
+                .Setup(x => x.AddToRoleAsync(It.IsAny<User>(), Roles.FormerPlastMember));
 
             // Act
             var result = service.ChangeAsync(It.IsAny<string>());
@@ -140,8 +140,8 @@ namespace EPlast.Tests.Services
         public async Task ChangeCurrentRoleAsync_AddInterested_CaseFormer_ReturnsCorrectAsync()
         {
             // Arrange
-            string plastun = Roles.plastMember;
-            string formerMember = Roles.formerPlastMember;
+            string plastun = Roles.PlastMember;
+            string formerMember = Roles.FormerPlastMember;
 
             _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
@@ -186,10 +186,10 @@ namespace EPlast.Tests.Services
         public async Task ChangeCurrentRoleAsync_AddInterested_CaseInterFormer_ReturnsCorrectAsync()
         {
             // Arrange
-            string plastun = Roles.plastMember;
-            string admin = Roles.admin;
-            string interested = Roles.interested;
-            string formerMember = Roles.formerPlastMember;
+            string plastun = Roles.PlastMember;
+            string admin = Roles.Admin;
+            string interested = Roles.Interested;
+            string formerMember = Roles.FormerPlastMember;
 
             _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
@@ -223,9 +223,9 @@ namespace EPlast.Tests.Services
         public async Task ChangeCurrentRoleAsync_AddInterested_CaseInterInter_ReturnsCorrectAsync()
         {
             // Arrange
-            string plastun = Roles.plastMember;
-            string admin = Roles.admin;
-            string interested = Roles.interested;
+            string plastun = Roles.PlastMember;
+            string admin = Roles.Admin;
+            string interested = Roles.Interested;
 
             _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
@@ -259,9 +259,9 @@ namespace EPlast.Tests.Services
         public async Task ChangeCurrentRoleAsync_AddInterested_CaseInterPlastun_ReturnsCorrectAsync()
         {
             // Arrange
-            string plastun = Roles.plastMember;
-            string admin = Roles.admin;
-            string interested = Roles.interested;
+            string plastun = Roles.PlastMember;
+            string admin = Roles.Admin;
+            string interested = Roles.Interested;
 
             _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
@@ -295,10 +295,10 @@ namespace EPlast.Tests.Services
         public async Task ChangeCurrentRoleAsync_AddInterested_ReturnsCorrectAsync()
         {
             // Arrange
-            string plastun = Roles.plastMember;
-            string admin = Roles.admin;
-            string interested = Roles.interested;
-            const string supporter = Roles.supporter;
+            string plastun = Roles.PlastMember;
+            string admin = Roles.Admin;
+            string interested = Roles.Interested;
+            const string supporter = Roles.Supporter;
 
             _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
@@ -332,8 +332,8 @@ namespace EPlast.Tests.Services
         public void ChangeCurrentRoleAsync_AddPlastun_ReturnsCorrect()
         {
             // Arrange
-            string plastun = Roles.plastMember;
-            string admin = Roles.admin;
+            string plastun = Roles.PlastMember;
+            string admin = Roles.Admin;
             _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(new User());
@@ -355,8 +355,8 @@ namespace EPlast.Tests.Services
         public void ChangeCurrentRoleAsync_AddSupporter_ReturnsCorrect()
         {
             // Arrange
-            string supporter = Roles.supporter;
-            string admin = Roles.admin;
+            string supporter = Roles.Supporter;
+            string admin = Roles.Admin;
             _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(new User());
@@ -426,7 +426,7 @@ namespace EPlast.Tests.Services
                 .ReturnsAsync(new User() { FirstName = "James", LastName = "Bond" });
             _userManager
                 .Setup(x => x.GetRolesAsync(new User() { FirstName = "James", LastName = "Bond" }))
-                .ReturnsAsync(new List<string>() { Roles.supporter });
+                .ReturnsAsync(new List<string>() { Roles.Supporter });
             _userManager
                 .Setup(x => x.AddToRolesAsync(It.IsAny<User>(), It.IsAny<List<string>>()));
             _userManager
@@ -450,7 +450,7 @@ namespace EPlast.Tests.Services
                 .ReturnsAsync(new User() { FirstName = "James", LastName = "Bond" });
             _userManager
                 .Setup(x => x.GetRolesAsync(new User() { FirstName = "James", LastName = "Bond" }))
-                .ReturnsAsync(new List<string>() { Roles.supporter });
+                .ReturnsAsync(new List<string>() { Roles.Supporter });
             _userManager
                 .Setup(x => x.AddToRolesAsync(It.IsAny<User>(), It.IsAny<List<string>>()));
             _userManager
@@ -468,7 +468,7 @@ namespace EPlast.Tests.Services
         public async Task GetCityRegionAdminsOfUserAsync_ReturnsCorrect()
         {
             // Arrange
-            AdminType adminType = new AdminType() { AdminTypeName = Roles.okrugaHead };
+            AdminType adminType = new AdminType() { AdminTypeName = Roles.OkrugaHead };
             RegionAdministration regionAdministration = new RegionAdministration() { AdminType = adminType };
             ICollection<RegionAdministration> regionAdministrations = new List<RegionAdministration>() { regionAdministration };
             Region region = new Region { RegionAdministration = regionAdministrations };
@@ -550,7 +550,7 @@ namespace EPlast.Tests.Services
         public void UpdateUserDatesByChangeRoleAsyncAsync_interested_ReturnsCorrect()
         {
             // Arrange
-            var role = Roles.interested;
+            var role = Roles.Interested;
             _repoWrapper
                 .Setup(x => x.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
                It.IsAny<Func<IQueryable<UserMembershipDates>,
@@ -571,7 +571,7 @@ namespace EPlast.Tests.Services
         public void UpdateUserDatesByChangeRoleAsyncAsync_plastun_ReturnsCorrect()
         {
             // Arrange
-            var role = Roles.plastMember;
+            var role = Roles.PlastMember;
             _repoWrapper
                 .Setup(x => x.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
                It.IsAny<Func<IQueryable<UserMembershipDates>,
@@ -592,7 +592,7 @@ namespace EPlast.Tests.Services
         public void UpdateUserDatesByChangeRoleAsyncAsync_supporter_ReturnsCorrect()
         {
             // Arrange
-            var role = Roles.supporter;
+            var role = Roles.Supporter;
             _repoWrapper
                 .Setup(x => x.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
                It.IsAny<Func<IQueryable<UserMembershipDates>,
@@ -637,7 +637,7 @@ namespace EPlast.Tests.Services
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(roles);
             _mapper
                 .Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
-                .Returns(new ShortUserInformationDTO() { ID = Roles.admin });
+                .Returns(new ShortUserInformationDTO() { ID = Roles.Admin });
 
             // Act
             var result = await service.GetUsersTableAsync();

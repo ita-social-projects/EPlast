@@ -98,10 +98,10 @@ namespace EPlast.BLL.Services
             }
 
             var cityHead = city.CityAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.cityHead
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
             var cityAdmins = city.CityAdministration
-                .Where(a => a.AdminType.AdminTypeName != Roles.cityHead
+                .Where(a => a.AdminType.AdminTypeName != Roles.CityHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .Take(6)
                 .ToList();
@@ -141,7 +141,7 @@ namespace EPlast.BLL.Services
             var cityProfileDto = await GetCityProfileAsync(cityId);
             var userId = await _userManager.GetUserIdAsync(user);
             var userRoles = await _userManager.GetRolesAsync(user);
-            cityProfileDto.City.CanCreate = userRoles.Contains(Roles.admin);
+            cityProfileDto.City.CanCreate = userRoles.Contains(Roles.Admin);
             cityProfileDto.City.CanEdit = await _cityAccessService.HasAccessAsync(user, cityId);
             cityProfileDto.City.CanJoin = (await _repoWrapper.CityMembers
                 .GetFirstOrDefaultAsync(u => u.User.Id == userId && u.CityId == cityId)) == null;
@@ -203,10 +203,10 @@ namespace EPlast.BLL.Services
             }
 
             var cityHead = city.CityAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.cityHead
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
             var cityAdmins = city.CityAdministration
-                .Where(a => a.AdminType.AdminTypeName != Roles.cityHead
+                .Where(a => a.AdminType.AdminTypeName != Roles.CityHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .ToList();
 

@@ -189,7 +189,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             return new List<string>
             {
                  RolesForActiveMembershipTypeDTO.Plastun.GetDescription(),
-                 Roles.okrugaHead
+                 Roles.OkrugaHead
 
             };
         }
