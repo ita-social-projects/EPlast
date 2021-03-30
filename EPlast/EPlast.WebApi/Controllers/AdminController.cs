@@ -221,7 +221,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="tableFilterParameters">Items to filter</param>
         /// <returns>A specific number of users</returns>
         [HttpGet("Profiles")]
-        public async Task<IActionResult> UsersTable([FromQuery] TableFilterParameters tableFilterParameters)
+        public async Task<IActionResult> GetUsersTable([FromQuery] TableFilterParameters tableFilterParameters)
         {
             var tuple = await _adminService.GetUsersTableAsync(tableFilterParameters.Page, tableFilterParameters.PageSize, tableFilterParameters.Tab,
                               tableFilterParameters.Regions, tableFilterParameters.Cities, tableFilterParameters.Clubs, tableFilterParameters.Degrees);
