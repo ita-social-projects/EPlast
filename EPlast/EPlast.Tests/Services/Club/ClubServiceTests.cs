@@ -6,6 +6,7 @@ using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Services.Club;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -18,7 +19,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-
 using DataAccessClub = EPlast.DataAccess.Entities;
 
 namespace EPlast.Tests.Services.Club
@@ -800,7 +800,7 @@ namespace EPlast.Tests.Services.Club
                         User = new ClubUserDTO(),
                         AdminType = new AdminTypeDTO
                         {
-                            AdminTypeName = "Голова Куреня"
+                            AdminTypeName = Roles.KurinHead
                         },
                         EndDate = DateTime.Now.AddMonths(-3)
                     },
@@ -837,7 +837,7 @@ namespace EPlast.Tests.Services.Club
                         User = new ClubUserDTO(),
                         AdminType = new AdminTypeDTO
                         {
-                            AdminTypeName = "Голова Куреня"
+                            AdminTypeName = Roles.KurinHead
                         }
                     },
                     new ClubAdministrationDTO
@@ -865,7 +865,7 @@ namespace EPlast.Tests.Services.Club
                       User = new ClubUserDTO(),
                       AdminType = new AdminTypeDTO
                       {
-                           AdminTypeName = "Голова Куреня"
+                           AdminTypeName = Roles.KurinHead
                       }
                  },
                  new ClubAdministrationDTO

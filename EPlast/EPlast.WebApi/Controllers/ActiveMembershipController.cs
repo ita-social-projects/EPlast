@@ -1,5 +1,6 @@
 ﻿using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.Interfaces.ActiveMembership;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -42,8 +43,7 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _plastDegreeService.GetUserPlastDegreesAsync(userId));
         }
 
-        [Authorize(Roles = "Admin,Голова Пласту,Адміністратор подій,Голова Куреня,Діловод Куреня," +
-        "Голова Округу,Діловод Округу,Голова Станиці,Діловод Станиці")]
+        [Authorize(Roles = Roles.DegreeAssignRoles)]
         [HttpPost("degree")]
         public async Task<IActionResult> AddPlastDegreeForUser(UserPlastDegreePostDTO userPlastDegreePostDTO)
         {
@@ -55,8 +55,7 @@ namespace EPlast.WebApi.Controllers
             return BadRequest();
         }
 
-        [Authorize(Roles = "Admin,Голова Пласту,Адміністратор подій,Голова Куреня,Діловод Куреня," +
-        "Голова Округу,Діловод Округу,Голова Станиці,Діловод Станиці")]
+        [Authorize(Roles = Roles.DegreeAssignRoles)]
         [HttpDelete("degree/{userId}/{plastDegreeId}")]
         public async Task<IActionResult> DeletePlastDegreeForUser(string userId, int plastDegreeId)
         {
@@ -68,8 +67,7 @@ namespace EPlast.WebApi.Controllers
             return BadRequest();
         }
 
-        [Authorize(Roles = "Admin,Голова Пласту,Адміністратор подій,Голова Куреня,Діловод Куреня," +
-        "Голова Округу,Діловод Округу,Голова Станиці,Діловод Станиці")]
+        [Authorize(Roles = Roles.DegreeAssignRoles)]
         [HttpPut("degree/setAsCurrent/{userId}/{plastDegreeId}")]
         public async Task<IActionResult> SetPlastDegreeAsCurrent(string userId, int plastDegreeId)
         {
@@ -81,8 +79,7 @@ namespace EPlast.WebApi.Controllers
             return BadRequest();
         }
 
-        [Authorize(Roles = "Admin,Голова Пласту,Адміністратор подій,Голова Куреня,Діловод Куреня," +
-        "Голова Округу,Діловод Округу,Голова Станиці,Діловод Станиці")]
+        [Authorize(Roles = Roles.DegreeAssignRoles)]
         [HttpPut("degree/endDate")]
         public async Task<IActionResult> AddEndDatePlastDegreeForUser(UserPlastDegreePutDTO userPlastDegreePutDTO)
         {
@@ -107,8 +104,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin,Голова Пласту,Адміністратор подій,Голова Куреня,Діловод Куреня," +
-        "Голова Округу,Діловод Округу,Голова Станиці,Діловод Станиці")]
+        [Authorize(Roles = Roles.DegreeAssignRoles)]
         [HttpPost("dates")]
         public async Task<IActionResult> ChangeUserDates(UserMembershipDatesDTO userMembershipDatesDTO)
         {

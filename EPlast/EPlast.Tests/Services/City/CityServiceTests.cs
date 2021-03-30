@@ -21,6 +21,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccessCity = EPlast.DataAccess.Entities;
+using EPlast.Resources;
 
 namespace EPlast.Tests.Services.City
 {
@@ -843,7 +844,7 @@ namespace EPlast.Tests.Services.City
 
                       AdminType = new AdminTypeDTO
                       {
-                           AdminTypeName = "Голова Станиці"
+                           AdminTypeName = Roles.CityHead
                       }
 
                  },
@@ -858,7 +859,7 @@ namespace EPlast.Tests.Services.City
                  {
                        AdminType = new AdminTypeDTO
                        {
-                            AdminTypeName = "Голова Станиці"
+                            AdminTypeName = Roles.CityHead
                        }
                  },
                  new CityAdministrationDTO
@@ -884,7 +885,7 @@ namespace EPlast.Tests.Services.City
                     {
                         AdminType = new AdminTypeDTO
                         {
-                            AdminTypeName = "Голова Станиці"
+                            AdminTypeName = Roles.CityHead
                         },
                         EndDate = DateTime.Now.AddMonths(-3)
                     },
@@ -917,7 +918,7 @@ namespace EPlast.Tests.Services.City
                     {
                         AdminType = new AdminTypeDTO
                         {
-                            AdminTypeName = "Голова Станиці"
+                            AdminTypeName = Roles.CityHead
                         },
                     },
                     new CityAdministrationDTO

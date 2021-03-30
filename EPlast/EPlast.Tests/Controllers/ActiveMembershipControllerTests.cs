@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using EPlast.BLL.DTO.ActiveMembership;
+﻿using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.Interfaces.ActiveMembership;
-using Moq;
 using EPlast.WebApi.Controllers;
-using NUnit.Framework;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Moq;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
 {
-    class ActiveMembershipControllerTests
+    internal class ActiveMembershipControllerTests
     {
         private Mock<IPlastDegreeService> _plastDegreeService;
         private Mock<IAccessLevelService> _accessLevelService;
@@ -36,9 +36,13 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await activeMembershipController.GetAllDergees();
+            var resultValue = (result as OkObjectResult).Value;
+
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(result);
+            Assert.IsInstanceOf<List<PlastDegreeDTO>>(resultValue);
+            Assert.AreEqual(0, (resultValue as List<PlastDegreeDTO>).Count);
         }
 
         [TestCase("2")]
@@ -51,9 +55,13 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await activeMembershipController.GetAccessLevel(id);
+            var resultValue = (result as OkObjectResult).Value;
+
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(result);
+            Assert.IsInstanceOf<List<string>>(resultValue);
+            Assert.AreEqual(0, (resultValue as List<string>).Count);
         }
 
         [TestCase("2")]
@@ -66,9 +74,13 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await activeMembershipController.GetUserDegrees(id);
+            var resultValue = (result as OkObjectResult).Value;
+
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(result);
+            Assert.IsInstanceOf<List<UserPlastDegreeDTO>>(resultValue);
+            Assert.AreEqual(0, (resultValue as List<UserPlastDegreeDTO>).Count);
         }
 
         [TestCase(2)]
@@ -82,6 +94,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await activeMembershipController.AddPlastDegreeForUser(new UserPlastDegreePostDTO() { PlastDegreeId = id });
+
             //Assert
             Assert.IsInstanceOf<CreatedResult>(result);
             var cr = (CreatedResult)result;
@@ -101,6 +114,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await activeMembershipController.AddPlastDegreeForUser(new UserPlastDegreePostDTO() { PlastDegreeId = id });
+
             //Assert
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
@@ -116,6 +130,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await activeMembershipController.DeletePlastDegreeForUser("", 0);
+
             //Assert
             Assert.IsInstanceOf<NoContentResult>(result);
         }
@@ -131,6 +146,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await activeMembershipController.DeletePlastDegreeForUser("", 0);
+
             //Assert
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
@@ -146,6 +162,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await activeMembershipController.SetPlastDegreeAsCurrent("", 0);
+
             //Assert
             Assert.IsInstanceOf<NoContentResult>(result);
         }
@@ -161,6 +178,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await activeMembershipController.SetPlastDegreeAsCurrent("", 0);
+
             //Assert
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
@@ -177,6 +195,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await activeMembershipController.AddEndDatePlastDegreeForUser(new UserPlastDegreePutDTO());
+
             //Assert
             Assert.IsInstanceOf<NoContentResult>(result);
         }
@@ -193,6 +212,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await activeMembershipController.AddEndDatePlastDegreeForUser(new UserPlastDegreePutDTO());
+
             //Assert
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
@@ -207,6 +227,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await activeMembershipController.GetUserDates(id);
+
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(((OkObjectResult)result).Value);
@@ -223,6 +244,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await activeMembershipController.GetUserDates(null);
+
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
@@ -232,7 +254,6 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             bool successfulChangedDates = true;
-            //Arrange
             _userDatesService.Setup(cs => cs.ChangeUserMembershipDatesAsync(It.IsAny<UserMembershipDatesDTO>()))
                              .ReturnsAsync(successfulChangedDates);
 
@@ -240,6 +261,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await activeMembershipController.ChangeUserDates(new UserMembershipDatesDTO());
+
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(((OkObjectResult)result).Value);
@@ -251,7 +273,6 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             bool successfulChangedDates = false;
-            //Arrange
             _userDatesService.Setup(cs => cs.ChangeUserMembershipDatesAsync(It.IsAny<UserMembershipDatesDTO>()))
                              .ReturnsAsync(successfulChangedDates);
 
@@ -259,6 +280,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await activeMembershipController.ChangeUserDates(new UserMembershipDatesDTO());
+
             //Assert
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
@@ -268,7 +290,6 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             bool successfulInitedDates = true;
-            //Arrange
             _userDatesService.Setup(cs => cs.AddDateEntryAsync(It.IsAny<string>()))
                              .ReturnsAsync(successfulInitedDates);
 
@@ -276,6 +297,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await activeMembershipController.InitializeUserDates("2");
+
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(((OkObjectResult)result).Value);
@@ -287,7 +309,6 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             bool successfulInitedDates = false;
-            //Arrange
             _userDatesService.Setup(cs => cs.AddDateEntryAsync(It.IsAny<string>()))
                              .ReturnsAsync(successfulInitedDates);
 
@@ -295,9 +316,9 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await activeMembershipController.InitializeUserDates("");
+
             //Assert
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
-
     }
 }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
+using EPlast.Resources;
 
 namespace EPlast.BLL
 {
@@ -61,7 +62,7 @@ namespace EPlast.BLL
 
         public async Task CheckIfAdminAsync(User user)
         {
-            if(!(await _userManager.GetRolesAsync(user)).Contains("Admin"))
+            if(!(await _userManager.GetRolesAsync(user)).Contains(Roles.Admin))
                 throw new UnauthorizedAccessException();
         }
     }

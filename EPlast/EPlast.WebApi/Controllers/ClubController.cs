@@ -3,6 +3,7 @@ using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.WebApi.Models.Club;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,7 @@ namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня, Пластун, Прихильник")]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAdminPlastunAndSupporter)]
 
     public class ClubController : ControllerBase
     {
@@ -56,7 +57,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetClubs(int page, int pageSize, string ClubName = null)
         {
             var clubs = await _clubService.GetAllDTOAsync(ClubName);
-            var ClubsViewModel = new ClubsViewModel(page, pageSize, clubs, User.IsInRole("Admin"));
+            var ClubsViewModel = new ClubsViewModel(page, pageSize, clubs, User.IsInRole(Roles.Admin));
 
             return Ok(ClubsViewModel);
         }
@@ -361,7 +362,7 @@ namespace EPlast.WebApi.Controllers
             var admin = _mapper.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(newAdmin);
             await _clubParticipantsService.AddAdministratorAsync(admin);
 
-            _logger.LogInformation($"User {{{admin.UserId}}} became admin for Club {{{admin.ClubId}}}" +
+            _logger.LogInformation($"User {{{admin.UserId}}} became Admin for Club {{{admin.ClubId}}}" +
                 $" with role {{{admin.AdminType.AdminTypeName}}}.");
 
             return Ok(admin);

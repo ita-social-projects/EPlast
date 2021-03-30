@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.DataAccess.Entities;
