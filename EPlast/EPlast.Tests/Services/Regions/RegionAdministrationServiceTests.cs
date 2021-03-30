@@ -5,6 +5,7 @@ using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Services.Region;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
@@ -216,12 +217,12 @@ namespace EPlast.Tests.Services.Regions
                 ID = 1,
                 AdminType = new AdminType()
                 {
-                    AdminTypeName = "Голова Округу",
+                    AdminTypeName = Roles.OkrugaHead,
                     ID = 1
                 },
                 Status = true,
                 AdminTypeId = AdminType.ID,
-                UserId = "Голова Округу"
+                UserId = Roles.OkrugaHead
             };
             _repoWrapper
                 .Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
@@ -254,7 +255,7 @@ namespace EPlast.Tests.Services.Regions
             _userManager
                 .Setup(x=>x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User() { Id= "Some" });
             _userManager
-                .Setup(x=>x.AddToRoleAsync(new User() { Id = "Some" }, "Голова Округу"));
+                .Setup(x=>x.AddToRoleAsync(new User() { Id = "Some" }, Roles.OkrugaHead));
             _repoWrapper
                 .Setup(x=>x.RegionAdministration.CreateAsync(regionAdm));
             //Act
@@ -282,7 +283,7 @@ namespace EPlast.Tests.Services.Regions
                 .Callback(()=> _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User() { Id = "SomeNew" }));
             _userManager
-                .Setup(x => x.AddToRoleAsync(new User() { Id = "Some" }, "Голова Округу"));
+                .Setup(x => x.AddToRoleAsync(new User() { Id = "Some" }, Roles.OkrugaHead));
             _repoWrapper
                 .Setup(x => x.RegionAdministration.CreateAsync(regionAdm));
             //Act
@@ -295,7 +296,7 @@ namespace EPlast.Tests.Services.Regions
 
         private static AdminTypeDTO AdminType = new AdminTypeDTO
         {
-            AdminTypeName = "Голова Станиці",
+            AdminTypeName = Roles.CityHead,
             ID = 1
         };
  
@@ -304,12 +305,12 @@ namespace EPlast.Tests.Services.Regions
             ID = 1,
             AdminType = new AdminType()
             {
-                AdminTypeName = "Голова Станиці",
+                AdminTypeName = Roles.CityHead,
                 ID = 1
             },
             Status=true,
             AdminTypeId = AdminType.ID,
-            UserId = "Голова Станиці"
+            UserId = Roles.CityHead
         };
 
         private RegionAdministrationDTO regionAdmDTO = new RegionAdministrationDTO
@@ -317,12 +318,12 @@ namespace EPlast.Tests.Services.Regions
             ID = 1,
             AdminType = new AdminTypeDTO()
             {
-                AdminTypeName = "Голова Станиці",
+                AdminTypeName = Roles.CityHead,
                 ID = 1
             },
             Status = true,
             AdminTypeId = AdminType.ID,
-            UserId = "Голова Станиці",
+            UserId = Roles.CityHead,
             RegionId=2
         };
 

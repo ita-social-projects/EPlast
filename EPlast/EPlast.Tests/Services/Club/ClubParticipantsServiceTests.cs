@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using EPlast.Resources;
 
 namespace EPlast.Tests.Services.Club
 {
@@ -157,14 +158,14 @@ namespace EPlast.Tests.Services.Club
                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                .ReturnsAsync(new AdminTypeDTO
                {
-                   AdminTypeName = "Голова Куреня",
+                   AdminTypeName = Roles.KurinHead,
                    ID = 3
                });
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
                .ReturnsAsync(new AdminTypeDTO
                {
-                   AdminTypeName = "Голова Куреня",
+                   AdminTypeName = Roles.KurinHead,
                    ID = 3
                });
 
@@ -278,7 +279,7 @@ namespace EPlast.Tests.Services.Club
                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                .ReturnsAsync(new AdminTypeDTO
                {
-                   AdminTypeName = "Голова Куреня",
+                   AdminTypeName = Roles.KurinHead,
                    ID = 3
                });
             _userManager
@@ -312,7 +313,7 @@ namespace EPlast.Tests.Services.Club
                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                .ReturnsAsync(new AdminTypeDTO
                {
-                   AdminTypeName = "Голова Куреня",
+                   AdminTypeName = Roles.KurinHead,
                    ID = 2
                });
             _userManager
@@ -578,8 +579,8 @@ namespace EPlast.Tests.Services.Club
         {
             return new List<ClubAdministrationDTO>
             {
-                new ClubAdministrationDTO{UserId = "Голова Куреня"},
-                new ClubAdministrationDTO{UserId = "Голова Куреня"}
+                new ClubAdministrationDTO{UserId = Roles.KurinHead},
+                new ClubAdministrationDTO{UserId = Roles.KurinHead}
             }.AsEnumerable();
         }
 
@@ -587,14 +588,14 @@ namespace EPlast.Tests.Services.Club
         {
             return new List<ClubAdministrationStatusDTO>
             {
-                new ClubAdministrationStatusDTO{UserId = "Голова Куреня"},
-                new ClubAdministrationStatusDTO{UserId = "Голова Куреня"}
+                new ClubAdministrationStatusDTO{UserId = Roles.KurinHead},
+                new ClubAdministrationStatusDTO{UserId = Roles.KurinHead}
             }.AsEnumerable();
         }
 
         private static AdminTypeDTO AdminType = new AdminTypeDTO
         {
-            AdminTypeName = "Голова Куреня",
+            AdminTypeName = Roles.KurinHead,
             ID = 1
         };
 
@@ -607,7 +608,7 @@ namespace EPlast.Tests.Services.Club
             EndDate = DateTime.Today,
             StartDate = DateTime.Now,
             User = new ClubUserDTO(),
-            UserId = "Голова Куреня"
+            UserId = Roles.KurinHead
         };
 
         private ClubAdministration clubAdm = new ClubAdministration
@@ -615,11 +616,11 @@ namespace EPlast.Tests.Services.Club
             ID = 1,
             AdminType = new AdminType()
             {
-                AdminTypeName = "Голова Куреня",
+                AdminTypeName = Roles.KurinHead,
                 ID = 1
             },
             AdminTypeId = AdminType.ID,
-            UserId = "Голова Куреня"
+            UserId = Roles.KurinHead
         };
 
         private ClubAdministrationDTO clubFakeAdmDTO = new ClubAdministrationDTO
@@ -631,7 +632,7 @@ namespace EPlast.Tests.Services.Club
             EndDate = DateTime.Today,
             StartDate = DateTime.Now,
             User = new ClubUserDTO(),
-            UserId = "Голова Куреня"
+            UserId = Roles.KurinHead
         };
 
         private int fakeId => 3;

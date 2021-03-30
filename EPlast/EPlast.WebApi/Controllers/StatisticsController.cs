@@ -1,5 +1,6 @@
 ﻿using EPlast.BLL.DTO.Statistics;
 using EPlast.BLL.Interfaces.Statistics;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 namespace EPlast.WebApi.Controllers
 {
     [ApiController, Route("api/[controller]")]
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Пласту, Голова Округу, Голова Станиці, Голова Куреня")]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.StatisticsAccessRoles)]
     public class StatisticsController: ControllerBase
     {
         private readonly ICityStatisticsService cityStatisticsService;
