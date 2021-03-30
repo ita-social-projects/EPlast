@@ -169,6 +169,19 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             }
         }
 
+        public IGoverningBodyAdministrationRepository GoverningBodyAdministration
+        {
+            get
+            {
+                if (_cityAdministration == null)
+                {
+                    _governingBodyAdministration = new GoverningBodyAdministrationRepository(_dbContext);
+                }
+
+                return _governingBodyAdministration;
+            }
+        }
+
         public IUserRepository User
         {
             get

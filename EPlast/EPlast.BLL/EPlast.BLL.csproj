@@ -10,6 +10,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="SecurityModel\JSONSettingFiles\RegionsBoardAccessSettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="SecurityModel\JSONSettingFiles\RegionsBoardAccessSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="10.0.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />
     <PackageReference Include="MailKit" Version="2.8.0" />

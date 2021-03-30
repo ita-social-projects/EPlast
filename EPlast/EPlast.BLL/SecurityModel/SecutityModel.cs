@@ -18,36 +18,11 @@ namespace EPlast.BLL.SecurityModel
         {
             _userManagerService = userManagerService;
         }
-
-        /*public Dictionary<string, bool> GetUserAccess(string userId)
-        {
-            var user = _userManagerService.FindByIdAsync(userId).Result;
-            var userRoles = _userManagerService.GetRolesAsync(user).Result;
-            var userAccesses = accessDictionary.Where(userAcces => userRoles.Contains(userAcces.Key));
-            var accesses = new Dictionary<string, bool>();
-            foreach (var uAccess in userAccesses)
-            {
-                foreach (var roleAccesses in uAccess.Value)
-                {
-                    if (!accesses.ContainsKey(roleAccesses.Key))
-                    {
-                        accesses.Add(roleAccesses.Key, roleAccesses.Value);
-                    }
-                    else
-                    {
-                        accesses[roleAccesses.Key] |= roleAccesses.Value;
-                    }
-                }
-            }
-
-            return accesses;
-        }*/
-
         public Dictionary<string, bool> GetUserAccess(string userId, IEnumerable<string> userRoles = null)
         {
-            var user = _userManagerService.FindByIdAsync(userId).Result;
             if (userRoles == null)
             {
+                var user = _userManagerService.FindByIdAsync(userId).Result;
                 userRoles = _userManagerService.GetRolesAsync(user).Result;
             }
 
@@ -71,8 +46,10 @@ namespace EPlast.BLL.SecurityModel
             return accesses;
         }
 
-        public void SetSettingsFile(string jsonPath)
+        public void SetSettingsFile(string jsonFileName)
         {
+            string jsonPath = @"Properties\JSONAccessSettingFiles\" + jsonFileName;
+
             if (File.Exists(jsonPath))
             {
                 accessDictionary =

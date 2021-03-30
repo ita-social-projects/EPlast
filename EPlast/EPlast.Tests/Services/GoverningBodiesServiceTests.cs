@@ -12,10 +12,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
+using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.Tests.Services
 {
@@ -26,6 +28,8 @@ namespace EPlast.Tests.Services
         private GoverningBodiesService _service;
         private Mock<IUniqueIdService> _uniqueIdService;
         private Mock<IGoverningBodyBlobStorageRepository> _blobStorage;
+        private Mock<ISecurityModel> _securityModel;
+        private Mock<UserManager<User>> _userManager;
         [SetUp]
         public void SetUp()
         {
@@ -33,11 +37,16 @@ namespace EPlast.Tests.Services
             _mapper = new Mock<IMapper>();
             _blobStorage = new Mock<IGoverningBodyBlobStorageRepository>();
             _uniqueIdService = new Mock<IUniqueIdService>();
+            var store = new Mock<Microsoft.AspNetCore.Identity.IUserStore<User>>();
+            _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            _securityModel = new Mock<ISecurityModel>();
             _service = new GoverningBodiesService(
                 _repoWrapper.Object,
                 _mapper.Object,
                 _uniqueIdService.Object,
-                _blobStorage.Object);
+                _blobStorage.Object,
+                _securityModel.Object,
+                _userManager.Object);
         }
 
         [Test]
