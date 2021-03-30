@@ -7,6 +7,8 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.BLL.Interfaces.Logging;
+using EPlast.DataAccess.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.Tests.Controllers
 {
@@ -14,6 +16,7 @@ namespace EPlast.Tests.Controllers
     {
         private Mock<IGoverningBodiesService> _governingBodiesService;
         private Mock<ILoggerService<GoverningBodiesController>> _logger;
+        private Mock<UserManager<User>> _userManager;
         private GoverningBodiesController _controller;
 
         [SetUp]
@@ -21,23 +24,29 @@ namespace EPlast.Tests.Controllers
         {
             _governingBodiesService = new Mock<IGoverningBodiesService>();
             _logger = new Mock<ILoggerService<GoverningBodiesController>>();
+            var store = new Mock<Microsoft.AspNetCore.Identity.IUserStore<User>>();
+            _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _controller = new GoverningBodiesController(
                 _governingBodiesService.Object,
-                _logger.Object);
+                _logger.Object,
+                _userManager.Object);
         }
 
         [Test]
         public async Task getOrganizations_ReturnsOrganizationsList()
         {
             //Arrange
+            List<GoverningBodyDTO> list = new List<GoverningBodyDTO>();
+            list.Add(new Mock<GoverningBodyDTO>().Object);
             _governingBodiesService
-                .Setup(x=>x.GetGoverningBodiesListAsync()).ReturnsAsync(new List<GoverningBodyDTO>());
+                .Setup(x=>x.GetGoverningBodiesListAsync()).ReturnsAsync(list);
             //Act
             var result = await _controller.GetGoverningBodies();
             var resultValue = (result as ObjectResult)?.Value;
-            //Assert
 
+            //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotEmpty(resultValue as List<GoverningBodyDTO>);
             Assert.IsInstanceOf<IEnumerable<GoverningBodyDTO>>(resultValue);
         }
 

@@ -4,9 +4,11 @@ using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.DataAccess.Repositories;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.GoverningBody;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.DataAccess.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.BLL.Services.GoverningBodies
 {
@@ -16,13 +18,21 @@ namespace EPlast.BLL.Services.GoverningBodies
         private readonly IMapper _mapper;
         private readonly IUniqueIdService _uniqueId;
         private readonly IGoverningBodyBlobStorageRepository _governingBodyBlobStorage;
+        private readonly ISecurityModel _securityModel;
+        private readonly UserManager<User> _userManager;
 
+        private const string SecuritySettingsFilePath = @"../../SecurityModel/JSONSettingFiles/GoverningBodiesAcessSettings.json";
 
         public GoverningBodiesService(IRepositoryWrapper repoWrapper,
                                       IMapper mapper,
                                       IUniqueIdService uniqueId,
-                                      IGoverningBodyBlobStorageRepository governingBodyBlobStorage)
+                                      IGoverningBodyBlobStorageRepository governingBodyBlobStorage,
+                                      ISecurityModel securityModel,
+                                      UserManager<User> userManager)
         {
+            _userManager = userManager;
+            _securityModel = securityModel;
+            _securityModel.SetSettingsFile(SecuritySettingsFilePath);
             _uniqueId = uniqueId;
             _repoWrapper = repoWrapper;
             _mapper = mapper;
@@ -44,6 +54,16 @@ namespace EPlast.BLL.Services.GoverningBodies
         private Task<Organization> CreateGoverningBodyAsync(GoverningBodyDTO governingBody)
         {
             return Task.FromResult(_mapper.Map<GoverningBodyDTO, Organization>(governingBody));
+        }
+
+        public async Task EditAsync(GoverningBodyDTO governingBodyDto)
+        {
+            await UploadPhotoAsync(governingBodyDto);
+            var governingBody = await CreateGoverningBodyAsync(governingBodyDto);
+
+            _repoWrapper.GoverningBody.Attach(governingBody);
+            _repoWrapper.GoverningBody.Update(governingBody);
+            await _repoWrapper.SaveAsync();
         }
 
         public async Task<IEnumerable<GoverningBodyDTO>> GetGoverningBodiesListAsync()
@@ -78,9 +98,45 @@ namespace EPlast.BLL.Services.GoverningBodies
             }
         }
 
+        public async Task<Dictionary<string, bool>> UserAccessFor(string userId, int governingBodyId)
+        {
+            var userRoles = new List<string>();// should contain user roles depending to governingbodyid
+            var userAcesses = _securityModel.GetUserAccess(userId, userRoles);
+            return null;
+        }
+
         public async Task<string> GetLogoBase64(string logoName)
         {
             return await _governingBodyBlobStorage.GetBlobBase64Async(logoName);
         }
+
+        public async Task<GoverningBodyProfileDTO> GetProfileById(int id, User user)
+        {
+            GoverningBodyProfileDTO gbProfile = new GoverningBodyProfileDTO
+            {
+                GoverningBody = await GetProfileById(id),
+            };
+
+            return gbProfile;
+        }
+
+        public async Task<GoverningBodyDTO> GetProfileById(int id)
+        {
+            return _mapper.Map<GoverningBodyDTO>(await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync( gb => gb.ID == id ));
+        }
+
+        public async Task RemoveAsync(int governingBodyId)
+        {
+            var governingBody = await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(gb => gb.ID == governingBodyId);
+
+            if (governingBody.Logo != null)
+            {
+                await _governingBodyBlobStorage.DeleteBlobAsync(governingBody.Logo);
+            }
+
+            _repoWrapper.GoverningBody.Delete(governingBody);
+            await _repoWrapper.SaveAsync();
+        }
+
     }
 }

@@ -10,6 +10,7 @@ using EPlast.DataAccess.Repositories.Realizations.Events;
 using EPlast.DataAccess.Repositories.Realizations.Region;
 using NLog.Extensions.Logging;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Repositories.Interfaces.GoverningBody;
 
 namespace EPlast.DataAccess.Repositories.Realizations.Base
 {
@@ -19,7 +20,6 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IUserRepository _user;
         private IUserProfileRepository _userprofile;
         private INationalityRepository _nationality;
-        private IOrganizationRepository _organization;
         private IDecesionTargetRepository _decesionTarget;
         private IDistinctionRepository _distinction;
         private IPrecautionRepository _precaution;
@@ -45,6 +45,9 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IDegreeRepository _degree;
         private IConfirmedUserRepository _confirmedUser;
         private IApproverRepository _approver;
+
+        private IOrganizationRepository _governingBody;
+        private IGoverningBodyAdministrationRepository _governingBodyAdministration;
 
         private ICityAdministrationRepository _cityAdministration;
         private ICityDocumentsRepository _cityDocuments;
@@ -158,11 +161,11 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         {
             get
             {
-                if (_organization == null)
+                if (_governingBody == null)
                 {
-                    _organization = new OrganizationRepository(_dbContext);
+                    _governingBody = new OrganizationRepository(_dbContext);
                 }
-                return _organization;
+                return _governingBody;
             }
         }
 

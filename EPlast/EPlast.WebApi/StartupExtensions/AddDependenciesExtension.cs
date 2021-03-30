@@ -19,6 +19,7 @@ using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Interfaces.Resources;
 using EPlast.BLL.Interfaces.Statistics;
 using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.SecurityModel;
 using EPlast.BLL.Services;
 using EPlast.BLL.Services.ActiveMembership;
 using EPlast.BLL.Services.Admin;
@@ -145,6 +146,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<RegionAccessSettings>();
             services.AddScoped<StatisticsServiceSettings>();
+            services.AddScoped<ISecurityModel, SecurityModel>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddSingleton<INotificationConnectionManager, NotificationConnectionManager>();

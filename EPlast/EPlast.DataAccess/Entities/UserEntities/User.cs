@@ -48,6 +48,7 @@ namespace EPlast.DataAccess.Entities
         public ICollection<ClubAdministration> ClubAdministrations { get; set; }
         public ICollection<ClubMembers> ClubMembers { get; set; }
         public ICollection<RegionAdministration> RegionAdministrations { get; set; }
+        public ICollection<GoverningBodyAdministration> GoverningBodyAdministrations { get; set; }
         public ICollection<AnnualReport> CreatedAnnualReports { get; set; }
         public ICollection<AnnualReport> NewCityAdminAnnualReports { get; set; }
         public ICollection<UserPlastDegree> UserPlastDegrees { get; set; }

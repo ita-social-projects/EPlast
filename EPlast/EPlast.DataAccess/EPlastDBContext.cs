@@ -117,6 +117,11 @@ namespace EPlast.DataAccess
                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<User>()
+                .HasMany(x => x.GoverningBodyAdministrations)
+                .WithOne(x => x.User)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>()
                .HasMany(x => x.RegionAdministrations)
                .WithOne(x => x.User)
                .OnDelete(DeleteBehavior.Cascade);
@@ -188,7 +193,6 @@ namespace EPlast.DataAccess
         }
         public DbSet<RegionAnnualReport> RegionAnnualReports { get; set; }
         public DbSet<DocumentTemplate> DocumentTemplates { get; set; }
-        public DbSet<Organization> Organization { get; set; }
         public DbSet<DecesionTarget> DecesionTargets { get; set; }
         public DbSet<Decesion> Decesions { get; set; }
         public DbSet<MethodicDocument> MethodicDocuments { get; set; }
@@ -196,6 +200,9 @@ namespace EPlast.DataAccess
         public DbSet<ClubAnnualReport> ClubAnnualReports { get; set; }
 
         public DbSet<MembersStatistic> MembersStatistics { get; set; }
+
+        public DbSet<Organization> Organization { get; set; }
+        public DbSet<GoverningBodyAdministration> GoverningBodyAdministrations { get; set; }
 
 
         public DbSet<City> Cities { get; set; }
