@@ -8,13 +8,13 @@ namespace EPlast.Resources
     {
         public const string Admin = "Admin";
         public const string Supporter = "Прихильник";
-        public const string PlastMember = "Пластун";
+        public const string PlastMember = "Дійсний член організації";
         public const string PlastHead = "Голова Пласту";
         public const string EventAdministrator = "Адміністратор подій";
         public const string KurinHead = "Голова Куреня";
         public const string KurinSecretary = "Діловод Куреня";
-        public const string OkrugaHead = "Голова Округу";
-        public const string OkrugaSecretary = "Діловод Округу";
+        public const string OkrugaHead = "Голова Округи";
+        public const string OkrugaSecretary = "Діловод Округи";
         public const string CityHead = "Голова Станиці";
         public const string CitySecretary = "Діловод Станиці";
         public const string FormerPlastMember = "Колишній член пласту";
