@@ -20,7 +20,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetUserAccess(string userId)
         {
-            var accesses = await _regionsBoardService.GetUserAccess(userId);
+            var accesses = _regionsBoardService.GetUserAccess(userId);
 
             return Ok(accesses);
         }

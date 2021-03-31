@@ -11,6 +11,7 @@ namespace EPlast.BLL.SecurityModel
     {
         private Dictionary<string, Dictionary<string, bool>> _accessDictionary;
         private readonly IUserManagerService _userManagerService;
+        private const string SourceUrl = @"Properties\JSONAccessSettingFiles\";
         public SecurityModel(IUserManagerService userManagerService)
         {
             _userManagerService = userManagerService;
@@ -45,7 +46,7 @@ namespace EPlast.BLL.SecurityModel
 
         public void SetSettingsFile(string jsonFileName)
         {
-            string jsonPath = @"Properties\JSONAccessSettingFiles\" + jsonFileName;
+            string jsonPath = SourceUrl + jsonFileName;
 
             if (File.Exists(jsonPath))
             {

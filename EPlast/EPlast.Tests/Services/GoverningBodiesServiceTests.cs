@@ -45,8 +45,7 @@ namespace EPlast.Tests.Services
                 _mapper.Object,
                 _uniqueIdService.Object,
                 _blobStorage.Object,
-                _securityModel.Object,
-                _userManager.Object);
+                _securityModel.Object);
         }
 
         [Test]

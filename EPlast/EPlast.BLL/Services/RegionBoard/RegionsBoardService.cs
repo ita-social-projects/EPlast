@@ -17,7 +17,7 @@ namespace EPlast.BLL.Services
             _securityModel.SetSettingsFile(SecuritySettingsFile);
         }
 
-        public async Task<Dictionary<string, bool>> GetUserAccess(string userId)
+        public Dictionary<string, bool> GetUserAccess(string userId)
         {
             var userAcesses = _securityModel.GetUserAccess(userId);
             return userAcesses;

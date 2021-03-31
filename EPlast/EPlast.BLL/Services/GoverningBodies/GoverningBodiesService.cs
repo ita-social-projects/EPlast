@@ -51,7 +51,7 @@ namespace EPlast.BLL.Services.GoverningBodies
             return Task.FromResult(_mapper.Map<GoverningBodyDTO, Organization>(governingBody));
         }
 
-        public async Task EditAsync(GoverningBodyDTO governingBodyDto)
+        public async Task<int> EditAsync(GoverningBodyDTO governingBodyDto)
         {
             await UploadPhotoAsync(governingBodyDto);
             var governingBody = await CreateGoverningBodyAsync(governingBodyDto);
@@ -59,6 +59,8 @@ namespace EPlast.BLL.Services.GoverningBodies
             _repoWrapper.GoverningBody.Attach(governingBody);
             _repoWrapper.GoverningBody.Update(governingBody);
             await _repoWrapper.SaveAsync();
+
+            return governingBody.ID;
         }
 
         public async Task<IEnumerable<GoverningBodyDTO>> GetGoverningBodiesListAsync()
@@ -113,7 +115,7 @@ namespace EPlast.BLL.Services.GoverningBodies
             return _mapper.Map<GoverningBodyDTO>(await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync( gb => gb.ID == id ));
         }
 
-        public async Task RemoveAsync(int governingBodyId)
+        public async Task<int> RemoveAsync(int governingBodyId)
         {
             var governingBody = await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(gb => gb.ID == governingBodyId);
 
@@ -124,6 +126,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
             _repoWrapper.GoverningBody.Delete(governingBody);
             await _repoWrapper.SaveAsync();
+            return governingBodyId;
         }
 
         public async Task<Dictionary<string, bool>> GetUserAccess(string userId)

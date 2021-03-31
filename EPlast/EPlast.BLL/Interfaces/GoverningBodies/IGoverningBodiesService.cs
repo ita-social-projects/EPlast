@@ -16,9 +16,9 @@ namespace EPlast.BLL.Interfaces.GoverningBodies
 
         Task<GoverningBodyProfileDTO> GetProfileById(int id, User user);
 
-        Task RemoveAsync(int governingBodyId);
+        Task<int> RemoveAsync(int governingBodyId);
 
-        Task EditAsync(GoverningBodyDTO governingBody);
+        Task<int> EditAsync(GoverningBodyDTO governingBody);
 
         Task<Dictionary<string, bool>> GetUserAccess(string userId);
     }
