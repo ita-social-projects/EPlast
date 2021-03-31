@@ -110,9 +110,7 @@ namespace EPlast.WebApi.Controllers
             }
             catch (InvalidOperationException)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new {status= 400  });
-
-                //return StatusCode(StatusCodes.Status400BadRequest);
+                return StatusCode(StatusCodes.Status400BadRequest);
             }
         }
 
