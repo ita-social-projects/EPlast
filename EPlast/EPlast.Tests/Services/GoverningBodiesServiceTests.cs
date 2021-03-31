@@ -15,8 +15,10 @@ using System.Net;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Services;
 using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.Tests.Services
@@ -89,6 +91,126 @@ namespace EPlast.Tests.Services
             _repoWrapper.Verify(x => x.SaveAsync(), Times.Once);
         }
 
+        [Test]
+        public async Task EditAsync_WithModel_ReturnsCityEdited()
+        {
+            // Arrange
+            var testDTO = CreateGoverningBodyDTO;
+            _mapper
+                .Setup(x => x.Map<Organization>(It.IsAny<GoverningBodyDTO>())).Returns(new Organization() { ID = testDTO.ID, Logo = testDTO.Logo });
+            _mapper
+                .Setup(x => x.Map<GoverningBodyDTO, Organization>(It.IsAny<GoverningBodyDTO>()))
+                .Returns(_mapper.Object.Map<Organization>(testDTO));
+            _repoWrapper.Setup(r => r.GoverningBody.Attach(It.IsAny<Organization>()));
+            _repoWrapper.Setup(r => r.GoverningBody.Update(It.IsAny<Organization>()));
+            _repoWrapper.Setup(r => r.SaveAsync());
+
+            // Act
+            await _service.EditAsync(testDTO);
+
+            // Assert
+            _repoWrapper.Verify(r => r.GoverningBody.Attach(It.IsAny<Organization>()), Times.Once);
+            _repoWrapper.Verify(r => r.GoverningBody.Update(It.IsAny<Organization>()), Times.Once);
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
+        }
+
+        [TestCase("logopath", "logo64path")]
+        public async Task GetPhotoBase64_Valid_Test(string logopath, string logo64Path)
+        {
+            //Arrange
+            _blobStorage.Setup(x => x.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync(logo64Path);
+
+            //Act
+            var result = await _service.GetLogoBase64(logopath); ;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(result, logo64Path);
+        }
+
+        [TestCase(1)]
+        public async Task GetProfileById(int id)
+        {
+            //Arrange
+            var testDTO = CreateGoverningBodyDTO;
+            _mapper
+                .Setup(x => x.Map<GoverningBodyDTO>(It.IsAny<Organization>())).Returns(testDTO);
+            _mapper
+                .Setup(x => x.Map<Organization>(It.IsAny<GoverningBodyDTO>())).Returns(new Organization() { ID = testDTO.ID, Logo = testDTO.Logo });
+            _repoWrapper
+                .Setup(x => x.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+                    It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>()))
+                .ReturnsAsync(_mapper.Object.Map<Organization>(testDTO));
+
+            //Act
+            var result = await _service.GetProfileById(id, It.IsAny<User>());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(CreateGoverningBodyDTO.ID, result.GoverningBody.ID);
+        }
+
+        [Test]
+        public async Task RemoveAsync()
+        {
+            // Arrange
+            var testDTO = CreateGoverningBodyDTO;
+            _mapper
+                .Setup(x => x.Map<Organization>(It.IsAny<GoverningBodyDTO>())).Returns(new Organization() { ID = testDTO.ID, Logo = testDTO.Logo });
+            _repoWrapper
+                .Setup(x => x.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+                    It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>()))
+                .ReturnsAsync(_mapper.Object.Map<Organization>(testDTO));
+            _blobStorage.Setup(c => c.DeleteBlobAsync(It.IsAny<string>()));
+            _repoWrapper.Setup(r => r.GoverningBody.Delete(It.IsAny<Organization>()));
+            _repoWrapper.Setup(r => r.SaveAsync());
+
+            // Act
+            await _service.RemoveAsync(It.IsAny<int>());
+
+            // Assert
+            _blobStorage.Verify(c => c.DeleteBlobAsync(It.IsAny<string>()), Times.Once);
+            _repoWrapper.Verify(r => r.GoverningBody.Delete(It.IsAny<Organization>()), Times.Once);
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
+        }
+
+        [Test]
+        public async Task RemoveAsync_WithoutLogo()
+        {
+            // Arrange
+            _repoWrapper.Setup(r => r.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(), null))
+                .ReturnsAsync(CreateOrganizationWithoutLogo);
+            _blobStorage.Setup(c => c.DeleteBlobAsync(It.IsAny<string>()));
+            _repoWrapper.Setup(r => r.GoverningBody.Delete(It.IsAny<Organization>()));
+            _repoWrapper.Setup(r => r.SaveAsync());
+
+            // Act
+            await _service.RemoveAsync(It.IsAny<int>());
+
+            // Assert
+            _blobStorage.Verify(c => c.DeleteBlobAsync(It.IsAny<string>()), Times.Never);
+            _repoWrapper.Verify(r => r.GoverningBody.Delete(It.IsAny<Organization>()), Times.Once);
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
+        }
+
+        [TestCase("userId")]
+        public async Task GetUserAccess_Test(string userId)
+        {
+            //Arrange
+            var dict = new Dictionary<string, bool>()
+            {
+                {"action", true}
+            };
+            _securityModel.Setup(x => x.GetUserAccess(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(dict);
+
+            //Act
+            var result = await _service.GetUserAccess(userId);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(dict.Count, result.Count);
+        }
+
         private GoverningBodyDTO CreateGoverningBodyDTO => new GoverningBodyDTO()
         {
             ID = 1,
@@ -96,6 +218,16 @@ namespace EPlast.Tests.Services
             Description = "gbDesc",
             Email = "gbEmail",
             Logo = "daa1-4d27-b94d-/9ab2d890d9d0.jpeg,63cc77aa,",
+            PhoneNumber = "12345"
+        };
+
+        private Organization CreateOrganizationWithoutLogo => new Organization()
+        {
+            ID = 1,
+            OrganizationName = "gbName",
+            Description = "gbDesc",
+            Email = "gbEmail",
+            Logo = null,
             PhoneNumber = "12345"
         };
     }
