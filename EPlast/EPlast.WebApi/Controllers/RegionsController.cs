@@ -95,7 +95,9 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                var annualreport = await _RegionAnnualReportService.CreateByNameAsync(await _userManager.GetUserAsync(User), id, year, regionAnnualReportQuestions);
+                var annualreport =
+                    await _RegionAnnualReportService.CreateByNameAsync(await _userManager.GetUserAsync(User), id, year,
+                        regionAnnualReportQuestions);
                 return StatusCode(StatusCodes.Status200OK, annualreport);
             }
             catch (NullReferenceException)
@@ -105,6 +107,12 @@ namespace EPlast.WebApi.Controllers
             catch (UnauthorizedAccessException)
             {
                 return StatusCode(StatusCodes.Status403Forbidden);
+            }
+            catch (InvalidOperationException)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new {status= 400  });
+
+                //return StatusCode(StatusCodes.Status400BadRequest);
             }
         }
 
