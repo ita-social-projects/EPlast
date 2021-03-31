@@ -291,8 +291,8 @@ namespace EPlast.Tests.Services
             _repoWrapper.Verify();
         }
 
-        [Test]
-        public async Task ChangeCurrentRoleAsync_AddInterested_CaseRegistered_ReturnsCorrectAsync()
+        [TestCase("userId")]
+        public async Task ChangeCurrentRoleAsync_AddInterested_CaseRegistered_ReturnsCorrectAsync(string userId)
         {
             // Arrange
             var registeredUser = Roles.RegisteredUser;
@@ -321,7 +321,7 @@ namespace EPlast.Tests.Services
                 .Setup(x => x.AddToRoleAsync(It.IsAny<User>(), admin));
 
             // Act
-            await service.ChangeCurrentRoleAsync("id", interested);
+            await service.ChangeCurrentRoleAsync(userId, interested);
 
             // Assert
             _userManager.Verify();
