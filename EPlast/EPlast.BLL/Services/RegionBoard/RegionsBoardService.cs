@@ -19,7 +19,7 @@ namespace EPlast.BLL.Services
 
         public async Task<Dictionary<string, bool>> GetUserAccessAsync(string userId)
         {
-            var userAcesses = await _securityModel.GetUserAccess(userId);
+            var userAcesses = await _securityModel.GetUserAccessAsync(userId);
             return userAcesses;
         }
     }

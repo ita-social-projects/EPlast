@@ -121,7 +121,7 @@ namespace EPlast.Tests.Services
             _blobStorage.Setup(x => x.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync(logo64Path);
 
             //Act
-            var result = await _service.GetLogoBase64(logopath); ;
+            var result = await _service.GetLogoBase64Async(logopath); ;
 
             //Assert
             Assert.NotNull(result);
@@ -143,7 +143,7 @@ namespace EPlast.Tests.Services
                 .ReturnsAsync(_mapper.Object.Map<Organization>(testDTO));
 
             //Act
-            var result = await _service.GetProfileById(id, It.IsAny<User>());
+            var result = await _service.Async(id, It.IsAny<User>());
 
             //Assert
             Assert.NotNull(result);
@@ -201,10 +201,10 @@ namespace EPlast.Tests.Services
             {
                 {"action", true}
             };
-            _securityModel.Setup(x => x.GetUserAccess(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(dict);
+            _securityModel.Setup(x => x.GetUserAccessAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(dict);
 
             //Act
-            var result = await _service.GetUserAccess(userId);
+            var result = await _service.GetUserAccessAsync(userId);
 
             //Assert
             Assert.NotNull(result);

@@ -26,7 +26,7 @@ namespace EPlast.Tests.Services.RegionsBoard
             //Arrange
             Dictionary<string, bool> dict = new Dictionary<string, bool>();
             dict.Add("action", It.IsAny<bool>());
-            _securityModel.Setup(x => x.GetUserAccess(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(dict);
+            _securityModel.Setup(x => x.GetUserAccessAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(dict);
 
             //Act
             var result = await _regionsBoardService.GetUserAccessAsync(It.IsAny<string>());

@@ -95,12 +95,12 @@ namespace EPlast.BLL.Services.GoverningBodies
             }
         }
 
-        public async Task<string> GetLogoBase64(string logoName)
+        public async Task<string> GetLogoBase64Async(string logoName)
         {
             return await _governingBodyBlobStorage.GetBlobBase64Async(logoName);
         }
 
-        public async Task<GoverningBodyProfileDTO> GetProfileById(int id, User user)
+        public async Task<GoverningBodyProfileDTO> Async(int id, User user)
         {
             GoverningBodyProfileDTO gbProfile = new GoverningBodyProfileDTO
             {
@@ -129,9 +129,9 @@ namespace EPlast.BLL.Services.GoverningBodies
             return governingBodyId;
         }
 
-        public async Task<Dictionary<string, bool>> GetUserAccess(string userId)
+        public async Task<Dictionary<string, bool>> GetUserAccessAsync(string userId)
         {
-            var userAcesses = await _securityModel.GetUserAccess(userId);
+            var userAcesses = await _securityModel.GetUserAccessAsync(userId);
             return userAcesses;
         }
     }

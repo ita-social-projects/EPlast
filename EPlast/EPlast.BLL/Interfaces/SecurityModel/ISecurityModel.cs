@@ -5,7 +5,7 @@ namespace EPlast.BLL.Interfaces
 {
     public interface ISecurityModel
     {
-        Task<Dictionary<string, bool>> GetUserAccess(string userId, IEnumerable<string> userRoles= null);
+        Task<Dictionary<string, bool>> GetUserAccessAsync(string userId, IEnumerable<string> userRoles= null);
         void SetSettingsFile(string jsonFileName);
     }
 }

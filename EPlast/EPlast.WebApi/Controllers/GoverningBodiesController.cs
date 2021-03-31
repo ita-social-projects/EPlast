@@ -31,8 +31,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetGoverningBodies()
         {
-            var governingBodies = await _governingBodiesService.GetGoverningBodiesListAsync();
-            return Ok(governingBodies);
+            return Ok(await _governingBodiesService.GetGoverningBodiesListAsync());
         }
 
         [HttpPost("CreateGoverningBody")]
@@ -76,7 +75,7 @@ namespace EPlast.WebApi.Controllers
             }
             else
             {
-                return Ok(await _governingBodiesService.GetLogoBase64(logoName));
+                return Ok(await _governingBodiesService.GetLogoBase64Async(logoName));
             }
         }
 
@@ -84,7 +83,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetProfile(int governingBodyId)
         {
-            var governingBodyProgileDto = await _governingBodiesService.GetProfileById(governingBodyId, await _userManager.GetUserAsync(User));
+            var governingBodyProgileDto = await _governingBodiesService.Async(governingBodyId, await _userManager.GetUserAsync(User));
             if (governingBodyProgileDto == null)
             {
                 return NotFound();
@@ -107,9 +106,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetUserAccess(string userId)
         {
-            var accesses = await _governingBodiesService.GetUserAccess(userId);
-
-            return Ok(accesses);
+            return Ok(await _governingBodiesService.GetUserAccessAsync(userId));
         }
     }
 }

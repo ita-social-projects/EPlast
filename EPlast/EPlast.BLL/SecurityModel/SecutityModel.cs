@@ -17,7 +17,7 @@ namespace EPlast.BLL.SecurityModel
         {
             _userManagerService = userManagerService;
         }
-        public Task<Dictionary<string, bool>> GetUserAccess(string userId, IEnumerable<string> userRoles = null)
+        public Task<Dictionary<string, bool>> GetUserAccessAsync(string userId, IEnumerable<string> userRoles = null)
         {
             if (userRoles == null)
             {

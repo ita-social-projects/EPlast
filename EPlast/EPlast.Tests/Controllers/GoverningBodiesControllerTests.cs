@@ -118,7 +118,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetPhotoBase64_Valid_Test(string logopath, string logo64Path)
         {
             //Arrange
-            _governingBodiesService.Setup(x => x.GetLogoBase64(It.IsAny<string>())).ReturnsAsync(logo64Path);
+            _governingBodiesService.Setup(x => x.GetLogoBase64Async(It.IsAny<string>())).ReturnsAsync(logo64Path);
 
             //Act
             var result = await _controller.GetPhotoBase64(logopath);
@@ -145,7 +145,7 @@ namespace EPlast.Tests.Controllers
         public async Task Profile_GBExists_Test(int governingBodyid)
         {
             //Arrange
-            _governingBodiesService.Setup(x => x.GetProfileById(It.IsAny<int>(), It.IsAny<User>()))
+            _governingBodiesService.Setup(x => x.Async(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(CreateGoverningBodyProfileDto);
 
             //Act
@@ -162,7 +162,7 @@ namespace EPlast.Tests.Controllers
         public async Task Profile_GBNotExists_Test(int governingBodyid)
         {
             //Arrange
-            _governingBodiesService.Setup(x => x.GetProfileById(It.IsAny<int>(), It.IsAny<User>()))
+            _governingBodiesService.Setup(x => x.Async(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(null as GoverningBodyProfileDTO);
 
             //Act
@@ -192,7 +192,7 @@ namespace EPlast.Tests.Controllers
             {
                 {"action", true}
             };
-            _governingBodiesService.Setup(x => x.GetUserAccess(It.IsAny<string>())).ReturnsAsync(dict);
+            _governingBodiesService.Setup(x => x.GetUserAccessAsync(It.IsAny<string>())).ReturnsAsync(dict);
 
             //Act
             var result = await _controller.GetUserAccess(userId);
