@@ -5,6 +5,6 @@ namespace EPlast.BLL.Interfaces.RegionBoard
 {
     public interface IRegionsBoardService
     {
-        Dictionary<string, bool> GetUserAccess(string userId);
+        Task<Dictionary<string, bool>> GetUserAccessAsync(string userId);
     }
 }

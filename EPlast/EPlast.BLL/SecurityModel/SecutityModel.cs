@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Services.Interfaces;
 
@@ -16,7 +17,7 @@ namespace EPlast.BLL.SecurityModel
         {
             _userManagerService = userManagerService;
         }
-        public Dictionary<string, bool> GetUserAccess(string userId, IEnumerable<string> userRoles = null)
+        public Task<Dictionary<string, bool>> GetUserAccess(string userId, IEnumerable<string> userRoles = null)
         {
             if (userRoles == null)
             {
@@ -41,7 +42,7 @@ namespace EPlast.BLL.SecurityModel
                 }
             }
 
-            return accesses;
+            return Task.FromResult(accesses);
         }
 
         public void SetSettingsFile(string jsonFileName)

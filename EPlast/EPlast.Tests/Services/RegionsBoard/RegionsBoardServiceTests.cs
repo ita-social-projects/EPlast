@@ -21,15 +21,15 @@ namespace EPlast.Tests.Services.RegionsBoard
         }
 
         [Test]
-        public async Task getOrganizations_ReturnsOrganizationsList()
+        public async Task getGoverningBodies_ReturnsGoverningBodiesList()
         {
             //Arrange
             Dictionary<string, bool> dict = new Dictionary<string, bool>();
             dict.Add("action", It.IsAny<bool>());
-            _securityModel.Setup(x => x.GetUserAccess(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).Returns(dict);
+            _securityModel.Setup(x => x.GetUserAccess(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(dict);
 
             //Act
-            var result = _regionsBoardService.GetUserAccess(It.IsAny<string>());
+            var result = await _regionsBoardService.GetUserAccessAsync(It.IsAny<string>());
 
             //Assert
             Assert.IsNotEmpty(result);

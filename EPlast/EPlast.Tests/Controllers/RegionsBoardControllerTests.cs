@@ -26,7 +26,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             Dictionary<string, bool> dict = new Dictionary<string, bool>();
             dict.Add("action", It.IsAny<bool>());
-            _regionsBoardService.Setup(x => x.GetUserAccess(It.IsAny<string>())).Returns(dict);
+            _regionsBoardService.Setup(x => x.GetUserAccessAsync(It.IsAny<string>())).ReturnsAsync(dict);
 
             //Act
             var result = await _controller.GetUserAccess(It.IsAny<string>());
