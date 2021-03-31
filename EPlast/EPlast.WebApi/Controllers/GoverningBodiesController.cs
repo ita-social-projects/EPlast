@@ -102,5 +102,14 @@ namespace EPlast.WebApi.Controllers
 
             return Ok();
         }
+
+        [HttpGet("GetUserAccesses/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetUserAccess(string userId)
+        {
+            var accesses = await _governingBodiesService.GetUserAccess(userId);
+
+            return Ok(accesses);
+        }
     }
 }

@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Services.Interfaces;
-using EPlast.DataAccess.Repositories.Realizations.Blank;
 
 namespace EPlast.BLL.SecurityModel
 {
     public class SecurityModel : ISecurityModel
     {
-        private Dictionary<string, Dictionary<string, bool>> accessDictionary;
-        private IUserManagerService _userManagerService;
+        private Dictionary<string, Dictionary<string, bool>> _accessDictionary;
+        private readonly IUserManagerService _userManagerService;
         public SecurityModel(IUserManagerService userManagerService)
         {
             _userManagerService = userManagerService;
@@ -26,7 +23,7 @@ namespace EPlast.BLL.SecurityModel
                 userRoles = _userManagerService.GetRolesAsync(user).Result;
             }
 
-            var userAccesses = accessDictionary.Where(userAccess => userRoles.Contains(userAccess.Key));
+            var userAccesses = _accessDictionary.Where(userAccess => userRoles.Contains(userAccess.Key));
             var accesses = new Dictionary<string, bool>();
             foreach (var uAccess in userAccesses)
             {
@@ -52,7 +49,7 @@ namespace EPlast.BLL.SecurityModel
 
             if (File.Exists(jsonPath))
             {
-                accessDictionary =
+                _accessDictionary =
                     JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, bool>>>(File.ReadAllText(jsonPath));
             }
             else

@@ -1,6 +1,5 @@
 {
   "Admin": {
-    "CreateGB": true,
     "ViewInfo": true,
     "AddDecision": true,
     "EditGB": true,
@@ -12,11 +11,9 @@
     "DeleteGBMembers": true,
     "BecomeRBMember": true,
     "ManipulatePoster": true,
-    "AddDocument": true,
-    "DeleteDocument": true
+    "ManipulateDocument": true
   },
-  "Р“РѕР»РѕРІР° РљСЂР°СЋ": {
-    "CreateGB": true,
+  "Голова Краю": {
     "ViewInfo": true,
     "AddDecision": true,
     "EditGB": false,
@@ -28,11 +25,9 @@
     "DeleteGBMembers": true,
     "BecomeRBMember": true,
     "ManipulatePoster": true,
-    "AddDocument": true,
-    "DeleteDocument": true
+    "ManipulateDocument": true
   },
-  "Р“РѕР»РѕРІР° РћРєСЂСѓРіРё": {
-    "CreateGB": false,
+  "Голова Округи": {
     "ViewInfo": true,
     "AddDecision": false,
     "EditGB": false,
@@ -44,11 +39,9 @@
     "DeleteGBMembers": false,
     "BecomeRBMember": true,
     "ManipulatePoster": false,
-    "AddDocument": false,
-    "DeleteDocument": false
+    "ManipulateDocument": true
   },
-  "Р“РѕР»РѕРІР° РЎС‚Р°РЅРёС†С–": {
-    "CreateGB": false,
+  "Голова Станиці": {
     "ViewInfo": true,
     "AddDecision": false,
     "EditGB": false,
@@ -60,11 +53,9 @@
     "DeleteGBMembers": false,
     "BecomeRBMember": true,
     "ManipulatePoster": false,
-    "AddDocument": false,
-    "DeleteDocument": false
+    "ManipulateDocument": false
   },
-  "Р“РѕР»РѕРІР° РљСѓСЂРµРЅСЏ": {
-    "CreateGB": false,
+  "Голова Куреня": {
     "ViewInfo": true,
     "AddDecision": false,
     "EditGB": false,
@@ -76,11 +67,9 @@
     "DeleteGBMembers": false,
     "BecomeRBMember": true,
     "ManipulatePoster": false,
-    "AddDocument": false,
-    "DeleteDocument": false
+    "ManipulateDocument": false
   },
-  "РџСЂРёС…РёР»СЊРЅРёРє": {
-    "CreateGB": false,
+  "Прихильник": {
     "ViewInfo": true,
     "AddDecision": false,
     "EditGB": false,
@@ -92,11 +81,9 @@
     "DeleteGBMembers": false,
     "BecomeRBMember": false,
     "ManipulatePoster": false,
-    "AddDocument": false,
-    "DeleteDocument": false
+    "ManipulateDocument": false
   },
-  "Р”С–Р№СЃРЅРёР№ С‡Р»РµРЅ РѕСЂРіР°РЅС–Р·Р°С†С–С—": {
-    "CreateGB": false,
+  "Дійсний член організації": {
     "ViewInfo": true,
     "AddDecision": false,
     "EditGB": false,
@@ -108,7 +95,6 @@
     "DeleteGBMembers": false,
     "BecomeRBMember": true,
     "ManipulatePoster": false,
-    "AddDocument": false,
-    "DeleteDocument": false
+    "ManipulateDocument": false
   }
 }

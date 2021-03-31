@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace EPlast.BLL.DTO.GoverningBody
 {
@@ -8,6 +6,5 @@ namespace EPlast.BLL.DTO.GoverningBody
     {
         public GoverningBodyDTO GoverningBody { get; set; }
         public List<GoverningBodyDocumentsDTO> Documents { get; set; }
-        public bool CanEdit { get; set; }
     }
 }

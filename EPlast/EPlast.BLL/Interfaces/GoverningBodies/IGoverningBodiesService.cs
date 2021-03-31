@@ -19,5 +19,7 @@ namespace EPlast.BLL.Interfaces.GoverningBodies
         Task RemoveAsync(int governingBodyId);
 
         Task EditAsync(GoverningBodyDTO governingBody);
+
+        Task<Dictionary<string, bool>> GetUserAccess(string userId);
     }
 }

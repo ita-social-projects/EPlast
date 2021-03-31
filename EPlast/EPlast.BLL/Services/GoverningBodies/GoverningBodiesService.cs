@@ -3,15 +3,11 @@ using EPlast.BLL.DTO;
 using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.DataAccess.Repositories;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.GoverningBody;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
-using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
-using EPlast.Resources;
-using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.BLL.Services.GoverningBodies
 {
@@ -21,12 +17,17 @@ namespace EPlast.BLL.Services.GoverningBodies
         private readonly IMapper _mapper;
         private readonly IUniqueIdService _uniqueId;
         private readonly IGoverningBodyBlobStorageRepository _governingBodyBlobStorage;
+        private readonly ISecurityModel _securityModel; 
+        private const string SecuritySettingsFile = "GoverningBodyAccessSettings.json";
 
         public GoverningBodiesService(IRepositoryWrapper repoWrapper,
                                       IMapper mapper,
                                       IUniqueIdService uniqueId,
-                                      IGoverningBodyBlobStorageRepository governingBodyBlobStorage)
+                                      IGoverningBodyBlobStorageRepository governingBodyBlobStorage,
+                                      ISecurityModel securityModel)
         {
+            _securityModel = securityModel;
+            _securityModel.SetSettingsFile(SecuritySettingsFile);
             _uniqueId = uniqueId;
             _repoWrapper = repoWrapper;
             _mapper = mapper;
@@ -125,5 +126,10 @@ namespace EPlast.BLL.Services.GoverningBodies
             await _repoWrapper.SaveAsync();
         }
 
+        public async Task<Dictionary<string, bool>> GetUserAccess(string userId)
+        {
+            var userAcesses = _securityModel.GetUserAccess(userId);
+            return userAcesses;
+        }
     }
 }
