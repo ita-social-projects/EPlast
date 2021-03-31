@@ -1,5 +1,6 @@
 ﻿using EPlast.BLL;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,8 @@ namespace EPlast.WebApi.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [Authorize(Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня, Пластун, Прихильник, Зареєстрований користувач")]
+    [Authorize(Roles = Roles.HeadsAdminPlastunSupporterAndRegisteredUser)]
+
     public class PrecautionController : ControllerBase
     {
         private readonly IPrecautionService _precautionService;
@@ -37,7 +39,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">An instance of user Precaution</response>
         /// <response code="404">The user Precaution does not exist</response>
         [HttpGet("UserPrecaution/{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> GetUserPrecaution(int id)
         {
             UserPrecautionDTO userPrecaution = await _userPrecautionService.GetUserPrecautionAsync(id);
@@ -109,7 +111,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">Precaution type was successfully deleted</response>
         /// <response code="404">Precaution type does not exist</response>
         [HttpDelete("Delete/{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> DeletePrecaution(int id)
         {
             try
@@ -131,7 +133,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">User Precaution was successfully deleted</response>
         /// <response code="404">User Precaution does not exist</response>
         [HttpDelete("UserPrecaution/Delete/{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> DeleteUserPrecaution(int id)
         {
             try
@@ -154,7 +156,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">User does not exist</response>
         /// <response code="400">Model is not valid</response>
         [HttpPost("UserPrecaution/Create/{userId}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> AddUserPrecaution(UserPrecautionDTO userPrecautionDTO)
         {
             if (ModelState.IsValid)
@@ -180,7 +182,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">Precaution type was successfully created</response>
         /// <response code="400">Model is not valid</response>
         [HttpPost("Create")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> AddPrecaution(PrecautionDTO PrecautionDTO)
         {
             if (ModelState.IsValid)
@@ -200,7 +202,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">User Precaution does not exist</response>
         /// <response code="400">Model is not valid</response>
         [HttpPut("UserPrecaution/Edit/{userPrecautionId}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> EditUserPrecaution(UserPrecautionDTO userPrecautionDTO)
         {
             if (ModelState.IsValid)
@@ -227,7 +229,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">Precaution type does not exist</response>
         /// <response code="400">Model is not valid</response>
         [HttpPut("Edit/{PrecautionId}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> EditPrecaution(PrecautionDTO PrecautionDTO)
         {
             if (ModelState.IsValid)
@@ -253,7 +255,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>False if doesn't exist</returns>
         /// <response code="200">Check was successfull</response>
         [HttpGet("numberExist/{number}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> CheckNumberExisting(int number)
         {
             bool distNumber = await _userPrecautionService.IsNumberExistAsync(number);

@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using EPlast.Resources;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Precautions
@@ -120,7 +121,7 @@ namespace EPlast.BLL.Services.Precautions
 
         public async Task CheckIfAdminAsync(User user)
         {
-            if (!(await _userManager.GetRolesAsync(user)).Contains("Admin"))
+            if (!(await _userManager.GetRolesAsync(user)).Contains(Roles.Admin))
                 throw new UnauthorizedAccessException();
         }
 

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DatabaseEntities = EPlast.DataAccess.Entities;
+using EPlast.Resources;
 
 namespace EPlast.BLL.Services.Region.RegionAccess.RegionAccessGetters
 {
@@ -17,7 +18,7 @@ namespace EPlast.BLL.Services.Region.RegionAccess.RegionAccessGetters
         {
             _repositoryWrapper = repositoryWrapper;
             _RegionAdminType = _repositoryWrapper.AdminType.GetFirstAsync(
-                    predicate: a => a.AdminTypeName == "Голова Округу").Result;
+                    predicate: a => a.AdminTypeName == Roles.OkrugaHead).Result;
         }
 
         public async Task<IEnumerable<DatabaseEntities.Region>> GetRegionAsync(string userId)

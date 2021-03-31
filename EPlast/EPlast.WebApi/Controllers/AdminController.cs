@@ -2,6 +2,7 @@
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Services.Interfaces;
+using EPlast.Resources;
 using EPlast.WebApi.Models.Admin;
 using EPlast.WebApi.Models.Role;
 using Microsoft.AspNetCore.Authorization;
@@ -14,7 +15,7 @@ namespace EPlast.WebApi.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [Authorize(Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня, Пластун")]
+    [Authorize(Roles = Roles.HeadsAdminAndPlastun)]
     public class AdminController : ControllerBase
     {
         private readonly IAdminService _adminService;
@@ -87,7 +88,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">User id is null</response>
         [HttpGet("confirmDelete/{userId}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = Roles.Admin)]
         [ActionName("Delete")]
         public ActionResult ConfirmDelete(string userId)
         {
@@ -105,7 +106,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="userId">The id of the user, which must be deleted</param>
         /// <response code="200">Successful operation</response>
         /// <response code="404">User id is null</response>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = Roles.Admin)]
         [HttpDelete("deleteUser/{userId}")]
         public async Task<IActionResult> Delete(string userId)
         {
