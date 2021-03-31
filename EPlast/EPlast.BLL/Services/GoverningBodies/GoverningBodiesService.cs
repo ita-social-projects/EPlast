@@ -100,17 +100,17 @@ namespace EPlast.BLL.Services.GoverningBodies
             return await _governingBodyBlobStorage.GetBlobBase64Async(logoName);
         }
 
-        public async Task<GoverningBodyProfileDTO> Async(int id, User user)
+        public async Task<GoverningBodyProfileDTO> GetProfileAsync(int id, User user)
         {
             GoverningBodyProfileDTO gbProfile = new GoverningBodyProfileDTO
             {
-                GoverningBody = await GetProfileById(id),
+                GoverningBody = await GetProfileByIdAsync(id),
             };
 
             return gbProfile;
         }
 
-        public async Task<GoverningBodyDTO> GetProfileById(int id)
+        public async Task<GoverningBodyDTO> GetProfileByIdAsync(int id)
         {
             return _mapper.Map<GoverningBodyDTO>(await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync( gb => gb.ID == id ));
         }

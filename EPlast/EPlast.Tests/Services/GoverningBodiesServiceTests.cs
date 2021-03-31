@@ -143,7 +143,7 @@ namespace EPlast.Tests.Services
                 .ReturnsAsync(_mapper.Object.Map<Organization>(testDTO));
 
             //Act
-            var result = await _service.Async(id, It.IsAny<User>());
+            var result = await _service.GetProfileAsync(id, It.IsAny<User>());
 
             //Assert
             Assert.NotNull(result);

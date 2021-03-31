@@ -145,7 +145,7 @@ namespace EPlast.Tests.Controllers
         public async Task Profile_GBExists_Test(int governingBodyid)
         {
             //Arrange
-            _governingBodiesService.Setup(x => x.Async(It.IsAny<int>(), It.IsAny<User>()))
+            _governingBodiesService.Setup(x => x.GetProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(CreateGoverningBodyProfileDto);
 
             //Act
@@ -162,7 +162,7 @@ namespace EPlast.Tests.Controllers
         public async Task Profile_GBNotExists_Test(int governingBodyid)
         {
             //Arrange
-            _governingBodiesService.Setup(x => x.Async(It.IsAny<int>(), It.IsAny<User>()))
+            _governingBodiesService.Setup(x => x.GetProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(null as GoverningBodyProfileDTO);
 
             //Act

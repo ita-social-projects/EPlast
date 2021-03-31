@@ -83,7 +83,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetProfile(int governingBodyId)
         {
-            var governingBodyProgileDto = await _governingBodiesService.Async(governingBodyId, await _userManager.GetUserAsync(User));
+            var governingBodyProgileDto = await _governingBodiesService.GetProfileAsync(governingBodyId, await _userManager.GetUserAsync(User));
             if (governingBodyProgileDto == null)
             {
                 return NotFound();
