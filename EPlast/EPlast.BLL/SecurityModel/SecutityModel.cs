@@ -13,16 +13,18 @@ namespace EPlast.BLL.SecurityModel
         private Dictionary<string, Dictionary<string, bool>> _accessDictionary;
         private readonly IUserManagerService _userManagerService;
         private const string SourceUrl = @"Properties\JSONAccessSettingFiles\";
+
         public SecurityModel(IUserManagerService userManagerService)
         {
             _userManagerService = userManagerService;
         }
-        public Task<Dictionary<string, bool>> GetUserAccessAsync(string userId, IEnumerable<string> userRoles = null)
+
+        public async Task<Dictionary<string, bool>> GetUserAccessAsync(string userId, IEnumerable<string> userRoles = null)
         {
             if (userRoles == null)
             {
-                var user = _userManagerService.FindByIdAsync(userId).Result;
-                userRoles = _userManagerService.GetRolesAsync(user).Result;
+                var user = await _userManagerService.FindByIdAsync(userId);
+                userRoles = await _userManagerService.GetRolesAsync(user);
             }
 
             var userAccesses = _accessDictionary.Where(userAccess => userRoles.Contains(userAccess.Key));
@@ -42,7 +44,7 @@ namespace EPlast.BLL.SecurityModel
                 }
             }
 
-            return Task.FromResult(accesses);
+            return accesses;
         }
 
         public void SetSettingsFile(string jsonFileName)
