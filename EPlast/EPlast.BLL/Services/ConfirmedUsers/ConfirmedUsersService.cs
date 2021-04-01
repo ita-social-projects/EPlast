@@ -6,6 +6,7 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Threading.Tasks;
+using EPlast.Resources;
 
 namespace EPlast.BLL.Services
 {
@@ -51,8 +52,8 @@ namespace EPlast.BLL.Services
             var vaucheeUserGender = await _userService.GetUserGenderAsync(vaucheeUser.Id);
             var friend = vaucheeUserGender switch
             {
-                "Чоловік" => "Друже",
-                "Жінка" => "Подруго",
+                UserGenders.Male => "Друже",
+                UserGenders.Female => "Подруго",
                 _ => "Друже/подруго"
             };
             var title = "EPlast";
@@ -71,14 +72,14 @@ namespace EPlast.BLL.Services
             var vaucherUserGender = await _userService.GetUserGenderAsync(vaucherUser.Id);
             var got = vaucheeUserGender switch
             {
-                "Чоловік" => "отримав",
-                "Жінка" => "отримала",
+                UserGenders.Male => "отримав",
+                UserGenders.Female => "отримала",
                 _ => "отримав/-ла"
             };
             var friend = vaucherUserGender switch
             {
-                "Чоловік" => "друга",
-                "Жінка" => "подруги",
+                UserGenders.Male => "друга",
+                UserGenders.Female => "подруги",
                 _ => "друга/подруги"
             };
             var title = "EPlast";

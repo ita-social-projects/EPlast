@@ -71,8 +71,8 @@ namespace EPlast.BLL.Services
             var userGender = await _userService.GetUserGenderAsync(userId);
             var friend = userGender switch
             {
-                "Чоловік" => "Друже",
-                "Жінка" => "Подруго",
+                UserGenders.Male => "Друже",
+                UserGenders.Female => "Подруго",
                 _ => "Друже/подруго"
             };
             var email = userEmail;
