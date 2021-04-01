@@ -5,14 +5,13 @@ using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using NLog.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.Resources;
 
 namespace EPlast.BLL.Services.City
 {
@@ -20,6 +19,7 @@ namespace EPlast.BLL.Services.City
     {
         private readonly IAdminTypeService _adminTypeService;
         private readonly IEmailSendingService _emailSendingService;
+        private readonly IEmailsContentService _emailsContentService;
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly UserManager<User> _userManager;
@@ -28,13 +28,15 @@ namespace EPlast.BLL.Services.City
                                        IMapper mapper,
                                        UserManager<User> userManager,
                                        IAdminTypeService adminTypeService,
-                                       IEmailSendingService emailSendingService)
+                                       IEmailSendingService emailSendingService,
+                                       IEmailsContentService emailsContentService)
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
             _userManager = userManager;
             _adminTypeService = adminTypeService;
             _emailSendingService = emailSendingService;
+            _emailsContentService = emailsContentService;
         }
 
         /// <inheritdoc />
@@ -286,15 +288,9 @@ namespace EPlast.BLL.Services.City
 
         private async Task SendEmailCityApproveAsync(string email, DataAccess.Entities.City city, bool isApproved)
         {
-            string cityUrl = _repositoryWrapper.GetCitiesUrl + city.ID;
-            string approveMessage = "<h3>СКОБ!</h3>"
-                                    + $"<p>Друже / подруго, повідомляємо, що тебе прийнято до станиці <a href='{cityUrl}'>{city.Name}</a>!"
-                                    + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>";
-            string excludeMessage = "<h3>СКОБ!</h3>"
-                                    + $"<p>Друже / подруго, повідомляємо, що тебе було виключено зі станиці <a href='{cityUrl}'>{city.Name}</a>."
-                                    + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>";
-            string message = isApproved ? approveMessage : excludeMessage;
-            await _emailSendingService.SendEmailAsync(email, "Зміна статусу членства у станиці", message, "EPlast");
+            var cityUrl = _repositoryWrapper.GetCitiesUrl + city.ID;
+            var emailContent = _emailsContentService.GetCityApproveEmail(cityUrl, city.Name, isApproved);
+            await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message, emailContent.Title);
         }
     }
 }

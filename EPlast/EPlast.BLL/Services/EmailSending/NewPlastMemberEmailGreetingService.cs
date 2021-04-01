@@ -14,6 +14,7 @@ namespace EPlast.BLL.Services
     public class NewPlastMemberEmailGreetingService : INewPlastMemberEmailGreetingService
     {
         private readonly IEmailSendingService _emailSendingService;
+        private readonly IEmailsContentService _emailsContentService;
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IUserService _userService;
         private readonly UserManager<User> _userManager;
@@ -21,11 +22,13 @@ namespace EPlast.BLL.Services
         public NewPlastMemberEmailGreetingService(IRepositoryWrapper repoWrapper,
                                            UserManager<User> userManager,
                                            IEmailSendingService emailSendingService,
+                                           IEmailsContentService emailsContentService,
                                            IUserService userService)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
             _emailSendingService = emailSendingService;
+            _emailsContentService = emailsContentService;
             _userService = userService;
         }
 
@@ -68,20 +71,8 @@ namespace EPlast.BLL.Services
 
         private async Task<bool> SendEmailGreetingForNewPlastMemberAsync(string userEmail, string userId)
         {
-            var userGender = await _userService.GetUserGenderAsync(userId);
-            var friend = userGender switch
-            {
-                UserGenders.Male => "Друже",
-                UserGenders.Female => "Подруго",
-                _ => "Друже/подруго"
-            };
-            var email = userEmail;
-            var subject = "Випробувальний термін завершився!";
-            var message = "<h3>СКОБ!</h3>"
-                        + $"<p>{friend}, сьогодні завершився твій випробувальний період в Пласт!"
-                        + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>";
-            var title = "EPlast";
-            return await _emailSendingService.SendEmailAsync(email, subject, message, title);
+            var email = await _emailsContentService.GetGreetingForNewPlastMemberEmailAsync(userId);
+            return await _emailSendingService.SendEmailAsync(userEmail, email.Subject, email.Message, email.Title);
         }
     }
 }

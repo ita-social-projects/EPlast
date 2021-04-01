@@ -97,6 +97,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IDistinctionService, DistinctionService>();
             services.AddScoped<IEducatorsStaffService, EducatorsStaffService>();
             services.AddScoped<IEducatorsStaffTypesService, EducatorsStaffTypesService>();
+            services.AddScoped<IEmailsContentService, EmailsContentService>();
             services.AddScoped<IEmailReminderService, EmailReminderService>();
             services.AddScoped<IEmailSendingService, EmailSendingService>();
             services.AddScoped<IEventAdmininistrationManager, EventAdministrationManager>();

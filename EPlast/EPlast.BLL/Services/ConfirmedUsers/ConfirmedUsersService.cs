@@ -6,13 +6,13 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Threading.Tasks;
-using EPlast.Resources;
 
 namespace EPlast.BLL.Services
 {
     public class ConfirmedUsersService : IConfirmedUsersService
     {
         private readonly IEmailSendingService _emailSendingService;
+        private readonly IEmailsContentService _emailsContentService;
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IUserService _userService;
         private readonly UserManager<User> _userManager;
@@ -20,11 +20,13 @@ namespace EPlast.BLL.Services
         public ConfirmedUsersService(IRepositoryWrapper repoWrapper,
             UserManager<User> userManager,
             IEmailSendingService emailSendingService,
+            IEmailsContentService emailsContentService,
             IUserService userService)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
             _emailSendingService = emailSendingService;
+            _emailsContentService = emailsContentService;
             _userService = userService;
         }
 
@@ -49,53 +51,14 @@ namespace EPlast.BLL.Services
 
         private async Task<bool> SendEmailCanceledNotificationAsync(User vaucheeUser, User vaucherUser)
         {
-            var vaucheeUserGender = await _userService.GetUserGenderAsync(vaucheeUser.Id);
-            var friend = vaucheeUserGender switch
-            {
-                UserGenders.Male => "Друже",
-                UserGenders.Female => "Подруго",
-                _ => "Друже/подруго"
-            };
-            var title = "EPlast";
-            var subject = "Зміна статусу поручення";
-            var message = "<h3>СКОБ!</h3>"
-                          + $"<p>{friend}, повідомляємо, що користувач {vaucherUser.FirstName} {vaucherUser.LastName} "
-                          + "скасував своє поручення за тебе."
-                          + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>";
-            var sendResult = await _emailSendingService.SendEmailAsync(vaucheeUser.Email, subject, message, title);
-            return sendResult;
+            var email = await _emailsContentService.GetCanceledUserEmailAsync(vaucheeUser, vaucherUser);
+            return await _emailSendingService.SendEmailAsync(vaucheeUser.Email, email.Subject, email.Message, email.Title);
         }
 
         private async Task<bool> SendEmailConfirmedNotificationAsync(User vaucheeUser, User vaucherUser)
         {
-            var vaucheeUserGender = await _userService.GetUserGenderAsync(vaucheeUser.Id);
-            var vaucherUserGender = await _userService.GetUserGenderAsync(vaucherUser.Id);
-            var got = vaucheeUserGender switch
-            {
-                UserGenders.Male => "отримав",
-                UserGenders.Female => "отримала",
-                _ => "отримав/-ла"
-            };
-            var friend = vaucherUserGender switch
-            {
-                UserGenders.Male => "друга",
-                UserGenders.Female => "подруги",
-                _ => "друга/подруги"
-            };
-            var title = "EPlast";
-            var subject = "Ти отримав Пластове поручення!";
-            var message = "<h3>СКОБ!</h3>"
-                          + $"<p>Вітаємо, ти {got} поручення у своєму профілі від {friend} {vaucherUser.FirstName} {vaucherUser.LastName}."
-                          + "Виконуй усі завдання Пластового Чек-листа(мобільного додатку Старт Пласт)"
-                          + " та отримай ступінь “Дійсного члена організації”!<p/>"
-                          + "<p>Ми радіємо Твоїм успіхам!</p>"
-                          + "Опісля зібрання всіх поручень, повідом відповідального в осередку чи голову "
-                          + "осередку про виконання всіх вимог для дійсного членства, щоб отримати право на "
-                          + "складання Пластової присяги."
-                          + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>"
-                          + "При виникненні питань просимо звертатись на скриньку volunteering@plast.org.ua";
-            var sendResult = await _emailSendingService.SendEmailAsync(vaucheeUser.Email, subject, message, title);
-            return sendResult;
+            var email = await _emailsContentService.GetConfirmedUserEmailAsync(vaucheeUser, vaucherUser);
+            return await _emailSendingService.SendEmailAsync(vaucheeUser.Email, email.Subject, email.Message, email.Title);
         }
     }
 }
