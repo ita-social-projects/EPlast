@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using EPlast.BLL.Interfaces.RegionBoard;
+﻿using EPlast.BLL.Interfaces.RegionBoard;
 using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
 {

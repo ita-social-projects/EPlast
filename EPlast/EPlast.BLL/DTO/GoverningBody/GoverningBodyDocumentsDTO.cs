@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EPlast.BLL.DTO.GoverningBody
 {
     public class GoverningBodyDocumentsDTO
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public DateTime? SubmitDate { get; set; }
         public string BlobName { get; set; }
         public string FileName { get; set; }

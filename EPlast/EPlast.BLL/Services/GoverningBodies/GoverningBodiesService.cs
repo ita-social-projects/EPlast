@@ -1,23 +1,23 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
-using EPlast.BLL.Interfaces.GoverningBodies;
-using EPlast.DataAccess.Repositories;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using EPlast.BLL.DTO.GoverningBody;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.GoverningBodies
 {
-    public class GoverningBodiesService: IGoverningBodiesService
+    public class GoverningBodiesService : IGoverningBodiesService
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
         private readonly IUniqueIdService _uniqueId;
         private readonly IGoverningBodyBlobStorageRepository _governingBodyBlobStorage;
-        private readonly ISecurityModel _securityModel; 
+        private readonly ISecurityModel _securityModel;
         private const string SecuritySettingsFile = "GoverningBodyAccessSettings.json";
 
         public GoverningBodiesService(IRepositoryWrapper repoWrapper,
@@ -70,7 +70,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
         private async Task UploadPhotoAsync(GoverningBodyDTO governingBody)
         {
-            var oldImageName = (await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(i => i.ID == governingBody.ID))?.Logo;
+            var oldImageName = (await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(i => i.ID == governingBody.Id))?.Logo;
             var logoBase64 = governingBody.Logo;
 
             if (!string.IsNullOrWhiteSpace(logoBase64) && logoBase64.Length > 0)
@@ -112,7 +112,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
         public async Task<GoverningBodyDTO> GetProfileByIdAsync(int id)
         {
-            return _mapper.Map<GoverningBodyDTO>(await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync( gb => gb.ID == id ));
+            return _mapper.Map<GoverningBodyDTO>(await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(gb => gb.ID == id));
         }
 
         public async Task<int> RemoveAsync(int governingBodyId)
@@ -131,8 +131,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
         public async Task<Dictionary<string, bool>> GetUserAccessAsync(string userId)
         {
-            var userAcesses = await _securityModel.GetUserAccessAsync(userId);
-            return userAcesses;
+            return await _securityModel.GetUserAccessAsync(userId);
         }
     }
 }

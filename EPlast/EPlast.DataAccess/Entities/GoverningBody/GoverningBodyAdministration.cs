@@ -5,7 +5,7 @@ namespace EPlast.DataAccess.Entities
 {
     public class GoverningBodyAdministration
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
 

@@ -1,20 +1,19 @@
 ﻿using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.GoverningBody;
 using EPlast.BLL.Interfaces.GoverningBodies;
+using EPlast.BLL.Interfaces.Logging;
+using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Controllers;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
-using System.Security.Principal;
 using System.Threading.Tasks;
-using EPlast.BLL.DTO.GoverningBody;
-using EPlast.BLL.Interfaces.Logging;
-using EPlast.DataAccess.Entities;
-using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.Tests.Controllers
 {
-    class GoverningBodiesControllerTests
+    internal class GoverningBodiesControllerTests
     {
         private Mock<IGoverningBodiesService> _governingBodiesService;
         private Mock<ILoggerService<GoverningBodiesController>> _logger;
@@ -41,7 +40,7 @@ namespace EPlast.Tests.Controllers
             List<GoverningBodyDTO> list = new List<GoverningBodyDTO>();
             list.Add(new Mock<GoverningBodyDTO>().Object);
             _governingBodiesService
-                .Setup(x=>x.GetGoverningBodiesListAsync()).ReturnsAsync(list);
+                .Setup(x => x.GetGoverningBodiesListAsync()).ReturnsAsync(list);
             //Act
             var result = await _controller.GetGoverningBodies();
             var resultValue = (result as ObjectResult)?.Value;
@@ -81,7 +80,7 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.AreEqual(resultObject?.Value , serviceReturnedId);
+            Assert.AreEqual(resultObject?.Value, serviceReturnedId);
         }
 
         [Test]
@@ -154,7 +153,7 @@ namespace EPlast.Tests.Controllers
 
             //Assert
             Assert.NotNull(result);
-            Assert.AreEqual(CreateGoverningBodyProfileDto.GoverningBody.ID, resultValue.GoverningBody.ID);
+            Assert.AreEqual(CreateGoverningBodyProfileDto.GoverningBody.Id, resultValue.GoverningBody.Id);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
@@ -206,7 +205,7 @@ namespace EPlast.Tests.Controllers
 
         private GoverningBodyDTO CreateGoverningBodyDTO => new GoverningBodyDTO()
         {
-            ID = 1,
+            Id = 1,
             GoverningBodyName = "gbName",
             Description = "gbDesc",
             Email = "gbEmail",

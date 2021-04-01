@@ -1,8 +1,7 @@
-﻿using System;
+﻿using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.RegionBoard;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using EPlast.BLL.Interfaces;
 
 namespace EPlast.BLL.Services
 {
@@ -10,7 +9,7 @@ namespace EPlast.BLL.Services
     {
         private readonly ISecurityModel _securityModel;
         private const string SecuritySettingsFile = "RegionsBoardAccessSettings.json";
-
+        
         public RegionsBoardService(ISecurityModel securityModel)
         {
             _securityModel = securityModel;
@@ -19,8 +18,7 @@ namespace EPlast.BLL.Services
 
         public async Task<Dictionary<string, bool>> GetUserAccessAsync(string userId)
         {
-            var userAcesses = await _securityModel.GetUserAccessAsync(userId);
-            return userAcesses;
+            return await _securityModel.GetUserAccessAsync(userId);
         }
     }
 }

@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
+using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Services.GoverningBodies;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
@@ -11,19 +13,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Net;
-using System.Security;
-using System.Text;
 using System.Threading.Tasks;
-using EPlast.BLL.DTO.City;
-using EPlast.BLL.Interfaces;
-using EPlast.BLL.Interfaces.AzureStorage;
-using EPlast.BLL.Services;
-using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.Tests.Services
 {
-    class GoverningBodiesServiceTests
+    internal class GoverningBodiesServiceTests
     {
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IMapper> _mapper;
@@ -32,6 +26,7 @@ namespace EPlast.Tests.Services
         private Mock<IGoverningBodyBlobStorageRepository> _blobStorage;
         private Mock<ISecurityModel> _securityModel;
         private Mock<UserManager<User>> _userManager;
+
         [SetUp]
         public void SetUp()
         {
@@ -73,7 +68,7 @@ namespace EPlast.Tests.Services
             //Arrange
             var testDTO = CreateGoverningBodyDTO;
             _mapper
-                .Setup(x => x.Map<Organization>(It.IsAny<GoverningBodyDTO>())).Returns(new Organization() {ID = testDTO.ID, Logo = testDTO.Logo });
+                .Setup(x => x.Map<Organization>(It.IsAny<GoverningBodyDTO>())).Returns(new Organization() { ID = testDTO.Id, Logo = testDTO.Logo });
             _mapper
                 .Setup(x => x.Map<GoverningBodyDTO, Organization>(It.IsAny<GoverningBodyDTO>()))
                 .Returns(_mapper.Object.Map<Organization>(testDTO));
@@ -86,7 +81,7 @@ namespace EPlast.Tests.Services
             var result = await _service.CreateAsync(testDTO);
 
             //Assert
-            Assert.AreEqual(testDTO.ID, result);
+            Assert.AreEqual(testDTO.Id, result);
             _repoWrapper.Verify(x => x.GoverningBody.CreateAsync(_mapper.Object.Map<Organization>(testDTO)), Times.Once);
             _repoWrapper.Verify(x => x.SaveAsync(), Times.Once);
         }
@@ -97,7 +92,7 @@ namespace EPlast.Tests.Services
             // Arrange
             var testDTO = CreateGoverningBodyDTO;
             _mapper
-                .Setup(x => x.Map<Organization>(It.IsAny<GoverningBodyDTO>())).Returns(new Organization() { ID = testDTO.ID, Logo = testDTO.Logo });
+                .Setup(x => x.Map<Organization>(It.IsAny<GoverningBodyDTO>())).Returns(new Organization() { ID = testDTO.Id, Logo = testDTO.Logo });
             _mapper
                 .Setup(x => x.Map<GoverningBodyDTO, Organization>(It.IsAny<GoverningBodyDTO>()))
                 .Returns(_mapper.Object.Map<Organization>(testDTO));
@@ -136,7 +131,7 @@ namespace EPlast.Tests.Services
             _mapper
                 .Setup(x => x.Map<GoverningBodyDTO>(It.IsAny<Organization>())).Returns(testDTO);
             _mapper
-                .Setup(x => x.Map<Organization>(It.IsAny<GoverningBodyDTO>())).Returns(new Organization() { ID = testDTO.ID, Logo = testDTO.Logo });
+                .Setup(x => x.Map<Organization>(It.IsAny<GoverningBodyDTO>())).Returns(new Organization() { ID = testDTO.Id, Logo = testDTO.Logo });
             _repoWrapper
                 .Setup(x => x.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
                     It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>()))
@@ -147,7 +142,7 @@ namespace EPlast.Tests.Services
 
             //Assert
             Assert.NotNull(result);
-            Assert.AreEqual(CreateGoverningBodyDTO.ID, result.GoverningBody.ID);
+            Assert.AreEqual(CreateGoverningBodyDTO.Id, result.GoverningBody.Id);
         }
 
         [Test]
@@ -156,7 +151,7 @@ namespace EPlast.Tests.Services
             // Arrange
             var testDTO = CreateGoverningBodyDTO;
             _mapper
-                .Setup(x => x.Map<Organization>(It.IsAny<GoverningBodyDTO>())).Returns(new Organization() { ID = testDTO.ID, Logo = testDTO.Logo });
+                .Setup(x => x.Map<Organization>(It.IsAny<GoverningBodyDTO>())).Returns(new Organization() { ID = testDTO.Id, Logo = testDTO.Logo });
             _repoWrapper
                 .Setup(x => x.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
                     It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>()))
@@ -213,7 +208,7 @@ namespace EPlast.Tests.Services
 
         private GoverningBodyDTO CreateGoverningBodyDTO => new GoverningBodyDTO()
         {
-            ID = 1,
+            Id = 1,
             GoverningBodyName = "gbName",
             Description = "gbDesc",
             Email = "gbEmail",

@@ -43,11 +43,11 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            governingBodyDTO.ID = await _governingBodiesService.CreateAsync(governingBodyDTO);
+            governingBodyDTO.Id = await _governingBodiesService.CreateAsync(governingBodyDTO);
 
             _logger.LogInformation($"Governing body {{{governingBodyDTO.GoverningBodyName}}} was created.");
 
-            return Ok(governingBodyDTO.ID);
+            return Ok(governingBodyDTO.Id);
         }
 
         [HttpPut("EditGoverningBody/{governingBodyId}")]
@@ -73,10 +73,8 @@ namespace EPlast.WebApi.Controllers
             {
                 return BadRequest(logoName);
             }
-            else
-            {
-                return Ok(await _governingBodiesService.GetLogoBase64Async(logoName));
-            }
+            
+            return Ok(await _governingBodiesService.GetLogoBase64Async(logoName));
         }
 
         [HttpGet("Profile/{governingBodyId}")]

@@ -1,6 +1,5 @@
 ﻿using EPlast.BLL.Interfaces;
 using EPlast.BLL.Services;
-using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -10,7 +9,7 @@ namespace EPlast.Tests.Services.RegionsBoard
 {
     public class RegionsBoardServiceTests
     {
-        private  Mock<ISecurityModel> _securityModel;
+        private Mock<ISecurityModel> _securityModel;
         private RegionsBoardService _regionsBoardService;
 
         [SetUp]

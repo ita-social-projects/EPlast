@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using EPlast.DataAccess.Entities;
+﻿using EPlast.DataAccess.Entities;
 
 namespace EPlast.DataAccess.Repositories.Interfaces.GoverningBody
 {
