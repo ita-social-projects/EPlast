@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.UserProfiles;
 
 namespace EPlast.Tests.Services.EmailSending
 {
@@ -19,6 +20,7 @@ namespace EPlast.Tests.Services.EmailSending
         private Mock<IEmailSendingService> _mockEmailSendingService;
         private Mock<IRepositoryWrapper> _mockRepoWrapper;
         private Mock<UserManager<User>> _mockUserManager;
+        private Mock<IUserService> _mockUserService;
         private INewPlastMemberEmailGreetingService _newPlastMemberEmailGreetingService;
 
         [Test]
@@ -123,9 +125,11 @@ namespace EPlast.Tests.Services.EmailSending
             _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _mockRepoWrapper = new Mock<IRepositoryWrapper>();
             _mockEmailSendingService = new Mock<IEmailSendingService>();
+            _mockUserService = new Mock<IUserService>();
             _newPlastMemberEmailGreetingService = new NewPlastMemberEmailGreetingService(_mockRepoWrapper.Object,
                                                                                          _mockUserManager.Object,
-                                                                                         _mockEmailSendingService.Object);
+                                                                                         _mockEmailSendingService.Object,
+                                                                                         _mockUserService.Object);
         }
     }
 }

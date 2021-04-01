@@ -1,6 +1,8 @@
 ﻿using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -13,25 +15,28 @@ namespace EPlast.BLL.Services
     {
         private readonly IEmailSendingService _emailSendingService;
         private readonly IRepositoryWrapper _repoWrapper;
+        private readonly IUserService _userService;
         private readonly UserManager<User> _userManager;
 
         public NewPlastMemberEmailGreetingService(IRepositoryWrapper repoWrapper,
                                            UserManager<User> userManager,
-                                           IEmailSendingService emailSendingService)
+                                           IEmailSendingService emailSendingService,
+                                           IUserService userService)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
             _emailSendingService = emailSendingService;
+            _userService = userService;
         }
 
         public async Task NotifyNewPlastMembersAsync()
         {
-            (await GetNewPlastMembersAsync()).ToList().ForEach(async (user) => await SendEmailGreetingForNewPlastMemberAsync(user.Email));
+            (await GetNewPlastMembersAsync()).ToList().ForEach(async (user) => await SendEmailGreetingForNewPlastMemberAsync(user.Email, user.Id));
         }
 
         private async Task<IEnumerable<User>> GetNewPlastMembersAsync()
         {
-            var role = "Пластун";
+            var role = Roles.PlastMember;
             var allUsers = await _repoWrapper.User.GetAllAsync(u => u.EmailConfirmed);
             var newPlastuns = new List<User>();
 
@@ -61,12 +66,19 @@ namespace EPlast.BLL.Services
             return (userRoles.Contains("Admin"));
         }
 
-        private async Task<bool> SendEmailGreetingForNewPlastMemberAsync(string userEmail)
+        private async Task<bool> SendEmailGreetingForNewPlastMemberAsync(string userEmail, string userId)
         {
+            var userGender = await _userService.GetUserGenderAsync(userId);
+            var friend = userGender switch
+            {
+                "Чоловік" => "Друже",
+                "Жінка" => "Подруго",
+                _ => "Друже/подруго"
+            };
             var email = userEmail;
             var subject = "Випробувальний термін завершився!";
             var message = "<h3>СКОБ!</h3>"
-                        + "<p>Друже/подруго, сьогодні завершився твій випробувальний період в Пласт!"
+                        + $"<p>{friend}, сьогодні завершився твій випробувальний період в Пласт!"
                         + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>";
             var title = "EPlast";
             return await _emailSendingService.SendEmailAsync(email, subject, message, title);

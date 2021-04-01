@@ -7,6 +7,7 @@ using Moq;
 using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.UserProfiles;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.UserArea
@@ -16,6 +17,7 @@ namespace EPlast.XUnitTest.Services.UserArea
         private readonly Mock<IEmailSendingService> _emailSendingService;
         private readonly Mock<IRepositoryWrapper> _repoWrapper;
         private readonly Mock<UserManager<User>> _userManager;
+        private readonly Mock<IUserService> _userService;
         private readonly Mock<IUserStore<User>> _userStoreMock;
 
         public ConfirmedUsersServiceTests()
@@ -23,6 +25,7 @@ namespace EPlast.XUnitTest.Services.UserArea
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _userStoreMock = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(_userStoreMock.Object, null, null, null, null, null, null, null, null);
+            _userService = new Mock<IUserService>();
             _emailSendingService = new Mock<IEmailSendingService>();
         }
 
@@ -46,7 +49,7 @@ namespace EPlast.XUnitTest.Services.UserArea
             _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(new User() { Email = "email" });
-            var service = new ConfirmedUsersService(_repoWrapper.Object, _userManager.Object, _emailSendingService.Object);
+            var service = new ConfirmedUsersService(_repoWrapper.Object, _userManager.Object, _emailSendingService.Object, _userService.Object);
 
             // Act
             await service.CreateAsync(new User(), "vaucheeId");
@@ -79,7 +82,8 @@ namespace EPlast.XUnitTest.Services.UserArea
                 .ReturnsAsync(true);
             var service = new ConfirmedUsersService(_repoWrapper.Object,
                                                     _userManager.Object,
-                                                    _emailSendingService.Object);
+                                                    _emailSendingService.Object,
+                                                    _userService.Object);
 
             // Act
             await service.DeleteAsync(new User(), 1);

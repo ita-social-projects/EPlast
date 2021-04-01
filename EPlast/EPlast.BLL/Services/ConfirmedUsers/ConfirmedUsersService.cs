@@ -1,4 +1,5 @@
 ﻿using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -12,13 +13,18 @@ namespace EPlast.BLL.Services
     {
         private readonly IEmailSendingService _emailSendingService;
         private readonly IRepositoryWrapper _repoWrapper;
+        private readonly IUserService _userService;
         private readonly UserManager<User> _userManager;
 
-        public ConfirmedUsersService(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IEmailSendingService emailSendingService)
+        public ConfirmedUsersService(IRepositoryWrapper repoWrapper,
+            UserManager<User> userManager,
+            IEmailSendingService emailSendingService,
+            IUserService userService)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
             _emailSendingService = emailSendingService;
+            _userService = userService;
         }
 
         public async Task CreateAsync(User vaucherUser, string vaucheeId, bool isClubAdmin = false, bool isCityAdmin = false)
@@ -28,7 +34,7 @@ namespace EPlast.BLL.Services
             confirmedUser.Approver = approver;
             await _repoWrapper.ConfirmedUser.CreateAsync(confirmedUser);
             await _repoWrapper.SaveAsync();
-            await SendEmailConfirmedNotificationAsync(await _userManager.FindByIdAsync(vaucheeId), vaucherUser, true);
+            await SendEmailConfirmedNotificationAsync(await _userManager.FindByIdAsync(vaucheeId), vaucherUser);
         }
 
         public async Task DeleteAsync(User vaucherUser, int confirmedUserId)
@@ -37,17 +43,57 @@ namespace EPlast.BLL.Services
             var vaucheeUser = await _userManager.FindByIdAsync(confirmedUser.UserID);
             _repoWrapper.ConfirmedUser.Delete(confirmedUser);
             await _repoWrapper.SaveAsync();
-            await SendEmailConfirmedNotificationAsync(vaucheeUser, vaucherUser, false);
+            await SendEmailCanceledNotificationAsync(vaucheeUser, vaucherUser);
         }
 
-        private async Task<bool> SendEmailConfirmedNotificationAsync(User vaucheeUser, User vaucherUser, bool confirmed)
+        private async Task<bool> SendEmailCanceledNotificationAsync(User vaucheeUser, User vaucherUser)
         {
-            var caseMessage = confirmed ? "поручився за тебе." : "скасував своє поручення за тебе.";
+            var vaucheeUserGender = await _userService.GetUserGenderAsync(vaucheeUser.Id);
+            var friend = vaucheeUserGender switch
+            {
+                "Чоловік" => "Друже",
+                "Жінка" => "Подруго",
+                _ => "Друже/подруго"
+            };
+            var title = "EPlast";
+            var subject = "Зміна статусу поручення";
             var message = "<h3>СКОБ!</h3>"
-                          + $"<p>Друже / подруго, повідомляємо, що користувач {vaucherUser.FirstName} {vaucherUser.LastName} "
-                          + caseMessage
+                          + $"<p>{friend}, повідомляємо, що користувач {vaucherUser.FirstName} {vaucherUser.LastName} "
+                          + "скасував своє поручення за тебе."
                           + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>";
-            var sendResult = await _emailSendingService.SendEmailAsync(vaucheeUser.Email, "Зміна статусу поручення", message, "EPlast");
+            var sendResult = await _emailSendingService.SendEmailAsync(vaucheeUser.Email, subject, message, title);
+            return sendResult;
+        }
+
+        private async Task<bool> SendEmailConfirmedNotificationAsync(User vaucheeUser, User vaucherUser)
+        {
+            var vaucheeUserGender = await _userService.GetUserGenderAsync(vaucheeUser.Id);
+            var vaucherUserGender = await _userService.GetUserGenderAsync(vaucherUser.Id);
+            var got = vaucheeUserGender switch
+            {
+                "Чоловік" => "отримав",
+                "Жінка" => "отримала",
+                _ => "отримав/-ла"
+            };
+            var friend = vaucherUserGender switch
+            {
+                "Чоловік" => "друга",
+                "Жінка" => "подруги",
+                _ => "друга/подруги"
+            };
+            var title = "EPlast";
+            var subject = "Ти отримав Пластове поручення!";
+            var message = "<h3>СКОБ!</h3>"
+                          + $"<p>Вітаємо, ти {got} поручення у своєму профілі від {friend} {vaucherUser.FirstName} {vaucherUser.LastName}."
+                          + "Виконуй усі завдання Пластового Чек-листа(мобільного додатку Старт Пласт)"
+                          + " та отримай ступінь “Дійсного члена організації”!<p/>"
+                          + "<p>Ми радіємо Твоїм успіхам!</p>"
+                          + "Опісля зібрання всіх поручень, повідом відповідального в осередку чи голову "
+                          + "осередку про виконання всіх вимог для дійсного членства, щоб отримати право на "
+                          + "складання Пластової присяги."
+                          + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>"
+                          + "При виникненні питань просимо звертатись на скриньку volunteering@plast.org.ua";
+            var sendResult = await _emailSendingService.SendEmailAsync(vaucheeUser.Email, subject, message, title);
             return sendResult;
         }
     }

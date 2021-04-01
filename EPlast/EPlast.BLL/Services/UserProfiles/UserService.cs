@@ -328,5 +328,14 @@ namespace EPlast.BLL.Services.UserProfiles
                  .GetFirstOrDefaultAsync(u => u.UserId == userId, m => m.Include(u => u.User));
             return cityMember!=null && cityMember.IsApproved;
         }
+
+        public async Task<string> GetUserGenderAsync(string userId)
+        {
+            var user = await _repoWrapper.User.GetFirstAsync(
+                i => i.Id == userId,
+                i =>
+                    i.Include(g => g.UserProfile).ThenInclude(x => x.Gender));
+            return user.UserProfile.Gender.Name;
+        }
     }
 }
