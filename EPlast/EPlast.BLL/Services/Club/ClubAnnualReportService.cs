@@ -84,13 +84,22 @@ namespace EPlast.BLL.Services.Club
             }
 
             StringBuilder clubMembers = new StringBuilder();
+            string degreeStr, cityMemberStr;
             foreach (var item in club.ClubMembers)
             {
                 var userPlastDegrees = await _repositoryWrapper.UserPlastDegrees.GetAllAsync(upd => upd.UserId == item.UserId, include: pd => pd.Include(d => d.PlastDegree));
-                var degree = userPlastDegrees.FirstOrDefault(user => user.UserId == item.UserId);
+                var degree = userPlastDegrees.FirstOrDefault(u=> u.UserId == item.UserId);
                 var cityMember = await _repositoryWrapper.CityMembers.GetFirstOrDefaultAsync(predicate: a => a.UserId == item.UserId, include: source => source.Include(ar => ar.City));
-                clubMembers = clubMembers.Append(new StringBuilder(
-                    $"{degree.PlastDegree.Name}, {item.User.FirstName} {item.User.LastName}, {cityMember.City.Name};").Append("\n"));
+
+                if (degree == null) degreeStr = "";
+                else degreeStr = degree.PlastDegree.Name;
+
+                if (cityMember == null) cityMemberStr = "";
+                else cityMemberStr = cityMember.City.Name;
+
+                clubMembers.Append(
+                    new StringBuilder($"{ degreeStr}, {item.User.FirstName} {item.User.LastName}, {cityMemberStr};")
+                        .Append("\n"));
             }
 
             clubAnnualReportDTO.ClubMembersSummary = clubMembers.ToString();
@@ -102,8 +111,11 @@ namespace EPlast.BLL.Services.Club
                 var degree = userPlastDegrees.FirstOrDefault(user => user.UserId == item.UserId);
                 if (item.AdminTypeId == 69)
                 {
-                    clubAdmins = clubAdmins.Append(new StringBuilder(
-                        $"{degree.PlastDegree.Name}, {item.User.FirstName} {item.User.LastName}, {item.User.Email}, {item.User.PhoneNumber};").Append("\n"));
+                    if (degree == null) degreeStr = "";
+                    else degreeStr = degree.PlastDegree.Name;
+                    clubAdmins.Append(new StringBuilder(
+                            $"{degreeStr}, {item.User.FirstName} {item.User.LastName}, {item.User.Email}, {item.User.PhoneNumber};")
+                        .Append("\n"));
                 }
             }
 
