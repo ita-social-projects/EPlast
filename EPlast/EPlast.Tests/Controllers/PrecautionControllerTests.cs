@@ -394,13 +394,13 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
 
-        [Test]
-        public async Task UsersTableWithoutPrecautions_Valid_Test()
+        [TestCase("tab")]
+        public async Task UsersTableWithoutPrecautions_Valid_Test(string tab)
         {
             _userPrecautionService.Setup(a => a.UsersTableWithotPrecautionAsync());
 
             // Act
-            var result = await _PrecautionController.UsersWithoutPrecautionsTable();
+            var result = await _PrecautionController.UsersWithoutPrecautionsTable(tab);
             var resultValue = (result as OkObjectResult).Value;
 
             // Assert

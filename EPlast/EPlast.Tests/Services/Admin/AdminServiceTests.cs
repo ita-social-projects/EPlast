@@ -646,7 +646,7 @@ namespace EPlast.Tests.Services
             Assert.IsNotNull(result);
         }
 
-        [Test]
+        [TestCase]
         public async Task UsersTableAsync_ReturnsIEnumerableUserTableDTO()
         {
             // Arrange
@@ -670,6 +670,9 @@ namespace EPlast.Tests.Services
                It.IsAny<Func<IQueryable<CityMembers>,
                IIncludableQueryable<CityMembers, object>>>()))
                 .ReturnsAsync(new List<CityMembers>());
+            _repoWrapper
+                .Setup(x => x.AdminType.GetUserTableObjects(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
+                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(CreateTuple);
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(roles);
             _mapper
@@ -677,10 +680,19 @@ namespace EPlast.Tests.Services
                 .Returns(new ShortUserInformationDTO() { ID = Roles.Admin });
 
             // Act
-            var result = await service.GetUsersTableAsync();
+            var result = await service.GetUsersTableAsync(1, 2, null, null, null, null, null);
+
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<IEnumerable<UserTableDTO>>(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<UserTableDTO>, int>>(result);
         }
+
+        private Tuple<IEnumerable<UserTableObject>, int> CreateTuple => new Tuple<IEnumerable<UserTableObject>, int>(CreateUserTableObjects, 100);
+        private IEnumerable<UserTableObject> CreateUserTableObjects => new List<UserTableObject>()
+        {
+            new UserTableObject(),
+            new UserTableObject()
+        };
+
     }
 }
