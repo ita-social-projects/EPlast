@@ -26,9 +26,9 @@ namespace EPlast.DataAccess.Repositories
                 "@filterCity = {4}, @filterClub = {5}, @filterDegree = {6}", pageNum, pageSize, tab, regions, cities, clubs, degrees);
 
             var num = items.Select(u => u.cnt).ToList();
-            int count = num[0];
+            int rowCount = num[0];
 
-            return new Tuple<IEnumerable<UserTableObject>, int>(items, count);
+            return new Tuple<IEnumerable<UserTableObject>, int>(items, rowCount);
         }
     }
 }

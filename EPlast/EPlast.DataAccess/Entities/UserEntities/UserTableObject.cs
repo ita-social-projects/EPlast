@@ -17,6 +17,6 @@ namespace EPlast.DataAccess.Entities
         public string Roles { get; set; }
         public string Email { get; set; }
         public string UPUDegree { get; set; }
-        public int cnt { get; set; }
+        public int RowCount { get; set; }
     }
 }

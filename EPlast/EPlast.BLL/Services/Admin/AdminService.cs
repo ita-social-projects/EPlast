@@ -8,13 +8,13 @@ using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.Resources;
 
 namespace EPlast.BLL.Services
 {
@@ -200,9 +200,9 @@ namespace EPlast.BLL.Services
             string strDegrees = degrees == null ? null : string.Join(",", degrees.ToArray());
             var tuple = await _repoWrapper.AdminType.GetUserTableObjects(pageNum, pageSize, tab, strRegions, strCities, strClubs, strDegrees);
             var users = tuple.Item1;
-            var count = tuple.Item2;
+            var rowCount = tuple.Item2;
 
-            return new Tuple<IEnumerable<UserTableDTO>, int>(_mapper.Map<IEnumerable<UserTableObject>, IEnumerable<UserTableDTO>>(users), count);
+            return new Tuple<IEnumerable<UserTableDTO>, int>(_mapper.Map<IEnumerable<UserTableObject>, IEnumerable<UserTableDTO>>(users), rowCount);
         }
 
         public async Task UpdateUserDatesByChangeRoleAsyncAsync(string userId, string role)
