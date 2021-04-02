@@ -86,6 +86,7 @@ namespace EPlast.BLL.Services.City
                 IsApproved = false,
                 UserId = userId,
                 User = await _userManager.FindByIdAsync(userId)
+                
             };
 
             await _repositoryWrapper.CityMembers.CreateAsync(cityMember);
@@ -248,12 +249,24 @@ namespace EPlast.BLL.Services.City
                 .GetFirstOrDefaultAsync(u => u.ID == memberId,
                                         m => m.Include(u => u.User)
                                               .Include(u => u.City));
-            cityMember.IsApproved = !cityMember.IsApproved;
+            cityMember.IsApproved = !cityMember.IsApproved; 
             _repositoryWrapper.CityMembers.Update(cityMember);
             await _repositoryWrapper.SaveAsync();
             await ChangeMembershipDatesByApprove(cityMember.UserId, cityMember.IsApproved);
             await SendEmailCityApproveAsync(cityMember.User.Email, cityMember.City, cityMember.IsApproved);
             return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
+        }
+        ////////////////////////////////////////////////////////////////////////////////////////
+        public async Task<string> CityOfApprovedMember(string memberId)
+        {
+            var cityMember = await _repositoryWrapper.CityMembers
+                .GetFirstOrDefaultAsync(u => u.UserId == memberId,
+                                        m => m.Include(u => u.City));
+            if (cityMember.IsApproved == true)
+            {
+                return cityMember.City.Name;
+            }
+            else return cityMember.City.Name = null;
         }
 
         private async Task ChangeMembershipDatesByApprove(string userId, bool isApproved)

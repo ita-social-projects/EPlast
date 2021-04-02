@@ -340,6 +340,20 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(member);
         }
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// City name onlyfor approved member
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns>city name string</returns>
+        [HttpGet("CityNameOfApprovedMember/{memberId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> CityNameOfApprovedMember(string memberId)
+        {
+            var member = await _cityParticipantsService.CityOfApprovedMember(memberId);
+
+            return Ok(member);
+        }
 
         /// <summary>
         /// Add a new administrator to the city
