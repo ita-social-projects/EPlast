@@ -11,7 +11,7 @@ namespace EPlast.BLL.DTO.ActiveMembership
         Supporter,
 
         [Description("Доступ члена організації")]
-        Member,
+        PlastMember,
 
         [Description("Доступ члена проводу організації")]
         LeadershipMember
