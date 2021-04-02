@@ -41,7 +41,7 @@ namespace EPlast.BLL.Services.Precautions
                 Reporter = userPrecautionDTO.Reporter,
                 Number = userPrecautionDTO.Number,
                 Status = userPrecautionDTO.Status,
-                EndDate = getPrecautionEndDate(userPrecautionDTO.PrecautionId, userPrecautionDTO.Date),
+                EndDate = GetPrecautionEndDate(userPrecautionDTO.PrecautionId, userPrecautionDTO.Date),
                 IsActive = userPrecautionDTO.IsActive
             };
             await _repoWrapper.UserPrecaution.CreateAsync(userPrecaution);
