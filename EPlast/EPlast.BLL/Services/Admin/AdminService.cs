@@ -85,6 +85,7 @@ namespace EPlast.BLL.Services
             const string plastun = Roles.PlastMember;
             const string interested = Roles.Interested;
             const string formerMember = Roles.FormerPlastMember;
+            const string registeredUser = Roles.RegisteredUser;
             var user = await _userManager.FindByIdAsync(userId);
             var roles = await _userManager.GetRolesAsync(user);
 
@@ -105,9 +106,13 @@ namespace EPlast.BLL.Services
                     {
                         await _userManager.RemoveFromRoleAsync(user, interested);
                     }
-                    else
+                    else if (roles.Contains(formerMember))
                     {
                         await _userManager.RemoveFromRoleAsync(user, formerMember);
+                    }
+                    else
+                    {
+                        await _userManager.RemoveFromRoleAsync(user, registeredUser);
                     }
                     await UpdateUserDatesByChangeRoleAsyncAsync(userId, role);
                     await _repoWrapper.SaveAsync();

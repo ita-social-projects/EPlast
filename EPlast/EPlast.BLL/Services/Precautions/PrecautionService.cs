@@ -2,13 +2,11 @@
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using EPlast.DataAccess.Entities;
-using EPlast.Resources;
-using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.BLL.Services
 {
