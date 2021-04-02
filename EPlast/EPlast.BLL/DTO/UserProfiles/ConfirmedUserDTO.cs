@@ -7,8 +7,10 @@ namespace EPlast.BLL.DTO
     public class ConfirmedUserDTO
     {
         public int ID { get; set; }
+
         [Required]
         public UserDTO User { get; set; }
+
         public string UserID { get; set; }
         public int? ApproverID { get; set; }
         public ApproverDTO Approver { get; set; }

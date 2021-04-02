@@ -21,7 +21,6 @@ namespace EPlast.WebApi.Controllers
         private readonly IUserPrecautionService _userPrecautionService;
         private readonly UserManager<User> _userManager;
 
-
         public PrecautionController(
             IPrecautionService PrecautionService,
             IUserPrecautionService userPrecautionService,
@@ -48,6 +47,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             return Ok(userPrecaution);
         }
+
         /// <summary>
         /// Returns all user Precautions
         /// </summary>
@@ -59,6 +59,7 @@ namespace EPlast.WebApi.Controllers
             IEnumerable<UserPrecautionDTO> userPrecautions = await _userPrecautionService.GetAllUsersPrecautionAsync();
             return Ok(userPrecautions);
         }
+
         /// <summary>
         /// Returns the Precaution type by id
         /// </summary>
@@ -74,6 +75,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             return Ok(Precaution);
         }
+
         /// <summary>
         /// Returns all Precaution types
         /// </summary>
@@ -82,7 +84,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("Precautions")]
         public async Task<IActionResult> GetPrecaution()
         {
-             return Ok(await _precautionService.GetAllPrecautionAsync());
+            return Ok(await _precautionService.GetAllPrecautionAsync());
         }
 
         /// <summary>
@@ -100,6 +102,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             return Ok(userPrecautions);
         }
+
         /// <summary>
         /// Delete Precaution type by id
         /// </summary>
@@ -121,6 +124,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
         }
+
         /// <summary>
         /// Delete user Precaution by id
         /// </summary>
@@ -142,6 +146,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
         }
+
         /// <summary>
         /// Add user Precaution
         /// </summary>
@@ -168,6 +173,7 @@ namespace EPlast.WebApi.Controllers
             }
             return BadRequest(ModelState);
         }
+
         /// <summary>
         /// Add Precaution type
         /// </summary>
@@ -186,6 +192,7 @@ namespace EPlast.WebApi.Controllers
             }
             return BadRequest(ModelState);
         }
+
         /// <summary>
         /// Edit user Precaution
         /// </summary>
@@ -212,6 +219,7 @@ namespace EPlast.WebApi.Controllers
             }
             return BadRequest(ModelState);
         }
+
         /// <summary>
         /// Edit Precaution type
         /// </summary>
@@ -238,6 +246,7 @@ namespace EPlast.WebApi.Controllers
             }
             return BadRequest(ModelState);
         }
+
         /// <summary>
         /// Checks if theres already a Precaution with such number
         /// </summary>
@@ -259,7 +268,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>Table of users without active precautions</returns>
         /// <response code="200">Table of all users without active precautions</response>
         [HttpGet("usersWithoutPrecautions")]
-        public async Task<IActionResult> UsersWithoutPrecautionsTable()
+        public async Task<IActionResult> UsersWithoutPrecautionsTable(string tab)
         {
             var result = await _userPrecautionService.UsersTableWithotPrecautionAsync();
             return Ok(result);
