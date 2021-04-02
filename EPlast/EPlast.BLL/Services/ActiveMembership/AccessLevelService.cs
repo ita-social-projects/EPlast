@@ -2,6 +2,7 @@
 using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Services.Interfaces;
+using EPlast.Resources;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,12 +25,12 @@ namespace EPlast.BLL.Services.ActiveMembership
         {
             var leadershipLevelRoles = new List<string>
             {
-                "Голова Куреня",
-                "Діловод Куреня",
-                "Голова Станиці",
-                "Діловод Станиці",
-                "Голова Округу",
-                "Діловод Округу",
+                Roles.KurinHead,
+                Roles.KurinSecretary,
+                Roles.CityHead,
+                Roles.CitySecretary,
+                Roles.OkrugaHead,
+                Roles.OkrugaSecretary,
                 "Голова Керівного органу",
                 "Діловод Керівного органу"
             };
@@ -47,15 +48,15 @@ namespace EPlast.BLL.Services.ActiveMembership
             }
 
             if (userRoles.Contains(RolesForActiveMembershipTypeDTO.Supporter.GetDescription())
-                     || userRoles.Contains(RolesForActiveMembershipTypeDTO.ExPlastMember.GetDescription())
+                     || userRoles.Contains(RolesForActiveMembershipTypeDTO.FormerPlastMember.GetDescription())
                      || isInSupporterDegree)
             {
                 accessLevels.Add(AccessLevelTypeDTO.Supporter.GetDescription());
             }
 
-            if (userRoles.Contains(RolesForActiveMembershipTypeDTO.Plastun.GetDescription()))
+            if (userRoles.Contains(RolesForActiveMembershipTypeDTO.PlastMember.GetDescription()))
             {
-                accessLevels.Add(AccessLevelTypeDTO.Member.GetDescription());
+                accessLevels.Add(AccessLevelTypeDTO.PlastMember.GetDescription());
             }
 
             if (userRoles.Intersect(leadershipLevelRoles).Any())
