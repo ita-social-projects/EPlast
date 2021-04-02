@@ -192,7 +192,7 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(int pageNum, int pageSize, string tab, IEnumerable<string> regions, IEnumerable<string> cities, IEnumerable<string> clubs, IEnumerable<string> degrees)
+        public async Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(int pageNum, int pageSize, string tab, IEnumerable<string> cities, IEnumerable<string> regions, IEnumerable<string> clubs, IEnumerable<string> degrees)
         {
             string strCities = cities == null ? null : string.Join(",", cities.ToArray());
             string strRegions = regions == null ? null : string.Join(",", regions.ToArray());
