@@ -6,6 +6,7 @@ using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Services.Club;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using System;
@@ -242,7 +243,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
                            User=new ClubUserDTO(),
                            AdminType = new AdminTypeDTO
                            {
-                               AdminTypeName = "Голова Станиці"
+                               AdminTypeName = Roles.CityHead
                            }
 
                         },
@@ -261,7 +262,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
                             User=new ClubUserDTO(),
                             AdminType = new AdminTypeDTO
                             {
-                                AdminTypeName = "Голова Станиці"
+                                AdminTypeName = Roles.CityHead
                             }
                         },
                         new ClubAdministrationDTO

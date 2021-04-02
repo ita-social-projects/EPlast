@@ -6,7 +6,7 @@ namespace EPlast.WebApi.Models.Decision
 {
     public class DecisionCreateViewModel
     {
-        public IEnumerable<OrganizationDTO> Organizations { get; set; }
+        public IEnumerable<GoverningBodyDTO> GoverningBodies { get; set; }
         public IEnumerable<SelectListItem> DecisionStatusTypeListItems { get; set; }
         public IEnumerable<DecisionTargetDTO> DecisionTargets { get; set; }
 

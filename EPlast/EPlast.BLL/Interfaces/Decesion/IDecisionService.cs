@@ -42,14 +42,14 @@ namespace EPlast.BLL
         /// <summary>
         /// Returns the organizations dto 
         /// </summary>
-        /// <param name="organization"></param>
+        /// <param name="governingBody"></param>
         /// <returns>The organizations dto and  null if organization does now exist</returns>
-        Task<OrganizationDTO> GetDecisionOrganizationAsync(OrganizationDTO organization);
+        Task<GoverningBodyDTO> GetDecisionOrganizationAsync(GoverningBodyDTO governingBody);
         /// <summary>
         /// Returns the IEnumerable of the organizations dto
         /// </summary>
         /// <returns>The IEnumerable of the organizations dto</returns>
-        Task<IEnumerable<OrganizationDTO>> GetOrganizationListAsync();
+        Task<IEnumerable<GoverningBodyDTO>> GetGoverningBodyListAsync();
         /// <summary>
         /// Returns the IEnumerable of the decision targets dto
         /// </summary>

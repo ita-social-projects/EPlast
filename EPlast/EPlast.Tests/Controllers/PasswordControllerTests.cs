@@ -130,7 +130,7 @@ namespace EPlast.Tests.Controllers
         }
 
         public (
-                                            Mock<IAuthEmailService>,
+            Mock<IAuthEmailService>,
             Mock<IAuthService>,
             Mock<IResources>,
             Mock<UserManager<User>>,

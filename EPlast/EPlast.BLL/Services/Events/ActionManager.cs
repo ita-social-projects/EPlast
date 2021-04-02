@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.Resources;
 
 namespace EPlast.BLL.Services.Events
 {
@@ -88,7 +89,7 @@ namespace EPlast.BLL.Services.Events
             int rejectedStatus = await _participantStatusManager.GetStatusIdAsync("Відмовлено");
             int finishedEvent = await _eventWrapper.EventStatusManager.GetStatusIdAsync("Завершений(-на)");
             var userRoles = await _userManager.GetRolesAsync(user);
-            bool isUserGlobalEventAdmin = userRoles?.Contains("Адміністратор подій") ?? false;
+            bool isUserGlobalEventAdmin = userRoles?.Contains(Roles.EventAdministrator) ?? false;
 
             var targetEvent = await _repoWrapper.Event
                 .GetFirstAsync(
@@ -137,9 +138,7 @@ namespace EPlast.BLL.Services.Events
         /// <inheritdoc />
         public async Task<IEnumerable<EventGalleryDTO>> GetPicturesAsync(int id)
         {
-            var dto = await _eventWrapper.EventGalleryManager.GetPicturesInBase64(id);
-
-            return dto;
+            return await _eventWrapper.EventGalleryManager.GetPicturesInBase64(id);
         }
 
         /// <inheritdoc />
@@ -308,7 +307,7 @@ namespace EPlast.BLL.Services.Events
                 {
                     EventId = ev.ID,
                     EventName = ev.EventName,
-                    IsUserEventAdmin = ev.EventAdministrations.Any( e => e.UserID == _userManager.GetUserIdAsync(user).Result) || userRoles != null && userRoles.Contains("Адміністратор подій"),
+                    IsUserEventAdmin = ev.EventAdministrations.Any( e => e.UserID == _userManager.GetUserIdAsync(user).Result) || userRoles != null && userRoles.Contains(Roles.EventAdministrator),
                     IsUserParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result),
                     IsUserApprovedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == approvedStatus),
                     IsUserUndeterminedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == undeterminedStatus),

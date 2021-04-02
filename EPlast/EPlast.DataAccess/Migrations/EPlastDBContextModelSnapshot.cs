@@ -1276,8 +1276,23 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("OrganizationName")
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(1000)")
+                        .HasMaxLength(1000);
+
+                    b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Logo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OrganizationName")
+                        .HasColumnType("nvarchar(255)")
+                        .HasMaxLength(255);
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(18)")
+                        .HasMaxLength(18);
 
                     b.HasKey("ID");
 
@@ -1881,7 +1896,7 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<string>("TwitterLink")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UpuDegreeID")
+                    b.Property<int>("UpuDegreeID")
                         .HasColumnType("int");
 
                     b.Property<string>("UserID")
@@ -2671,7 +2686,9 @@ namespace EPlast.DataAccess.Migrations
 
                     b.HasOne("EPlast.DataAccess.Entities.UpuDegree", "UpuDegree")
                         .WithMany("UserProfiles")
-                        .HasForeignKey("UpuDegreeID");
+                        .HasForeignKey("UpuDegreeID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("EPlast.DataAccess.Entities.User", "User")
                         .WithOne("UserProfile")

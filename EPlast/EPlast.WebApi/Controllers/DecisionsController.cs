@@ -3,6 +3,7 @@ using EPlast.BLL;
 using EPlast.BLL.DTO;
 using EPlast.WebApi.Models.Decision;
 using Microsoft.AspNetCore.Authorization;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня, Пластун")]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAdminAndPlastun)]
     public class DecisionsController : ControllerBase
     {
         private readonly IDecisionService _decisionService;
@@ -36,7 +37,7 @@ namespace EPlast.WebApi.Controllers
         {
             DecisionCreateViewModel decisionViewModel = new DecisionCreateViewModel
             {
-                Organizations = await _decisionService.GetOrganizationListAsync(),
+                GoverningBodies = await _decisionService.GetGoverningBodyListAsync(),
                 DecisionTargets = await _decisionService.GetDecisionTargetListAsync(),
                 DecisionStatusTypeListItems = _decisionService.GetDecisionStatusTypes()
             };
@@ -124,8 +125,8 @@ namespace EPlast.WebApi.Controllers
             }
             decisionWrapper.Decision.ID = await _decisionService.SaveDecisionAsync(decisionWrapper);
             var decisionOrganizations = (await _decisionService
-                        .GetDecisionOrganizationAsync(decisionWrapper.Decision.Organization))
-                        .OrganizationName;
+                        .GetDecisionOrganizationAsync(decisionWrapper.Decision.GoverningBody))
+                        .GoverningBodyName;
 
             return Created("Decisions", new
             {
