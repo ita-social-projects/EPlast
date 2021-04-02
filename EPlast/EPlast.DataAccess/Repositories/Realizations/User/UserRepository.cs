@@ -1,4 +1,6 @@
 ﻿using EPlast.DataAccess.Entities;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -18,6 +20,11 @@ namespace EPlast.DataAccess.Repositories
             user.ImagePath = item.ImagePath;
             user.PhoneNumber = item.PhoneNumber;
             EPlastDBContext.Users.Update(user);
+        }
+
+        public IEnumerable<UserTableObject> GetUserTableObjects(int pageNum, int pageSize)
+        {
+            return EPlastDBContext.Set<UserTableObject>().FromSqlRaw("dbo.usp_GetUserInfo @PageIndex = {0}, @PageSize = {1}", pageNum, pageSize);
         }
     }
 }

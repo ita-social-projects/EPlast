@@ -1,9 +1,9 @@
-using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Admin
 {
@@ -34,9 +34,9 @@ namespace EPlast.BLL.Services.Admin
 
         public async Task<AdminTypeDTO> CreateByNameAsync(string adminTypeName)
         {
-            return await this.CreateAsync(new AdminTypeDTO() {AdminTypeName = adminTypeName});
+            return await this.CreateAsync(new AdminTypeDTO() { AdminTypeName = adminTypeName });
         }
-        
+
         public async Task<AdminTypeDTO> CreateAsync(AdminTypeDTO adminTypeDto)
         {
             var newAdminType = _mapper.Map<AdminTypeDTO, AdminType>(adminTypeDto);

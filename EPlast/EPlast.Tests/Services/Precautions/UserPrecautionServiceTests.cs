@@ -383,13 +383,21 @@ namespace EPlast.Tests.Services.Precautions
         public async Task UsersTableWithotPrecautionAsync_ReturnsIEnumerableUserTableDTO()
         {
             // Arrange
+            adminService.Setup(a => a.GetUsersTableAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
+                    It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>()))
+                .ReturnsAsync(CreateTuple);
+            mockRepoWrapper.Setup(x => x.UserPrecaution.GetAllAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
+                .ReturnsAsync(GetTestUserPrecaution());
 
             // Act
             var result = await PrecautionService.UsersTableWithotPrecautionAsync();
+
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<UserTableDTO>>(result);
         }
+
         UserPrecaution nullPrecaution = null;
         UserPrecautionDTO nullPrecautionDTO = null;
         List<UserPrecaution> nulluserPrecautions = null;
@@ -504,6 +512,7 @@ namespace EPlast.Tests.Services.Precautions
                }
             }.AsEnumerable();
         }
+
         private IList<string> GetRoles()
         {
             return new List<string>
@@ -514,6 +523,7 @@ namespace EPlast.Tests.Services.Precautions
 
             };
         }
+
         private IList<string> GetRolesWithoutAdmin()
         {
             return new List<string>
@@ -523,5 +533,14 @@ namespace EPlast.Tests.Services.Precautions
 
             };
         }
+
+        private Tuple<IEnumerable<UserTableDTO>, int> CreateTuple => new Tuple<IEnumerable<UserTableDTO>, int>(CreateUserTableObjects, 100);
+
+        private IEnumerable<UserTableDTO> CreateUserTableObjects => new List<UserTableDTO>()
+        {
+            new UserTableDTO(),
+            new UserTableDTO()
+        };
     }
 }
+
