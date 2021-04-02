@@ -48,7 +48,7 @@ namespace EPlast.BLL.Services.Precautions
             await _repoWrapper.SaveAsync();
         }
 
-        private DateTime getPrecautionEndDate(int precautionId, DateTime startDate)
+        private DateTime GetPrecautionEndDate(int precautionId, DateTime startDate)
         {
             if (precautionId == 1) { return startDate.AddMonths(3); }
             return precautionId == 2 ? startDate.AddMonths(6) : startDate.AddMonths(12);
