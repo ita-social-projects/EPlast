@@ -1,4 +1,5 @@
 ﻿using EPlast.BLL.Interfaces;
+using EPlast.BLL.Models;
 using EPlast.BLL.Services.Auth;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Http;
@@ -16,6 +17,7 @@ namespace EPlast.Tests.Services
         private Mock<IActionContextAccessor> _mockActionContextAccessor;
         private Mock<IAuthService> _mockAuthService;
         private Mock<IEmailSendingService> _mockEmailSendingService;
+        private Mock<IEmailsContentService> _mockEmailsContentService;
         private Mock<IHttpContextAccessor> _mockHttpContextAccessor;
         private Mock<IUrlHelperFactory> _mockUrlHelperFactory;
         private Mock<UserManager<User>> _mockUserManager;
@@ -32,6 +34,9 @@ namespace EPlast.Tests.Services
             _mockEmailSendingService
                 .Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(true);
+            _mockEmailsContentService
+                .Setup(x => x.GetAuthRegisterEmail(It.IsAny<string>()))
+                .Returns(new EmailModel());
             var expected = true;
 
             //Act
@@ -70,6 +75,9 @@ namespace EPlast.Tests.Services
             _mockUserManager
                 .Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync(new User());
+            _mockEmailsContentService
+                .Setup(x => x.GetAuthResetPasswordEmail(It.IsAny<string>()))
+                .Returns(new EmailModel());
             _mockEmailSendingService
                 .Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(true);
@@ -87,6 +95,7 @@ namespace EPlast.Tests.Services
         public void SetUp()
         {
             _mockEmailSendingService = new Mock<IEmailSendingService>();
+            _mockEmailsContentService = new Mock<IEmailsContentService>();
             _mockAuthService = new Mock<IAuthService>();
             var store = new Mock<IUserStore<User>>();
             _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
@@ -107,6 +116,7 @@ namespace EPlast.Tests.Services
 
             authEmailService = new AuthEmailService(
                 _mockEmailSendingService.Object,
+                _mockEmailsContentService.Object,
                 _mockAuthService.Object,
                 _mockUserManager.Object,
                 _mockUrlHelperFactory.Object,

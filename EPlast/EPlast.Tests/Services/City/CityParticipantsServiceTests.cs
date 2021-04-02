@@ -7,6 +7,7 @@ using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Services.City;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Configuration;
@@ -17,7 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using EPlast.Resources;
+using EPlast.BLL.Models;
 
 namespace EPlast.Tests.Services.City
 {
@@ -29,7 +30,9 @@ namespace EPlast.Tests.Services.City
             AdminTypeName = Roles.CityHead,
             ID = 1
         };
+
         private readonly int anotherFakeId = 2;
+
         private readonly CityAdministration cityAdm = new CityAdministration
         {
             ID = 1,
@@ -41,6 +44,7 @@ namespace EPlast.Tests.Services.City
             AdminTypeId = AdminType.ID,
             UserId = Roles.CityHead
         };
+
         private readonly CityAdministrationDTO cityAdmDTO = new CityAdministrationDTO
         {
             ID = 1,
@@ -52,10 +56,12 @@ namespace EPlast.Tests.Services.City
             User = new CityUserDTO(),
             UserId = Roles.CityHead
         };
+
         private readonly int fakeId = 3;
         private Mock<IAdminTypeService> _adminTypeService;
         private ICityParticipantsService _cityParticipantsService;
         private Mock<IEmailSendingService> _emailSendingService;
+        private Mock<IEmailsContentService> _emailsContentService;
         private Mock<IMapper> _mapper;
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IUserStore<User>> _user;
@@ -621,7 +627,8 @@ namespace EPlast.Tests.Services.City
             _user = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(_user.Object, null, null, null, null, null, null, null, null);
             _emailSendingService = new Mock<IEmailSendingService>();
-            _cityParticipantsService = new CityParticipantsService(_repoWrapper.Object, _mapper.Object, _userManager.Object, _adminTypeService.Object, _emailSendingService.Object);
+            _emailsContentService = new Mock<IEmailsContentService>();
+            _cityParticipantsService = new CityParticipantsService(_repoWrapper.Object, _mapper.Object, _userManager.Object, _adminTypeService.Object, _emailSendingService.Object, _emailsContentService.Object);
         }
 
         [Test]
@@ -668,6 +675,9 @@ namespace EPlast.Tests.Services.City
                                              It.IsAny<string>(),
                                              It.IsAny<string>()))
                 .ReturnsAsync(true);
+            _emailsContentService
+                .Setup(x => x.GetCityApproveEmail(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns(new EmailModel());
 
             // Act
             var result = await _cityParticipantsService.ToggleApproveStatusAsync(fakeId);

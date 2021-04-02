@@ -1,4 +1,6 @@
 ﻿using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Models;
 using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -7,7 +9,6 @@ using Moq;
 using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using EPlast.BLL.Interfaces.UserProfiles;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.UserArea
@@ -15,6 +16,7 @@ namespace EPlast.XUnitTest.Services.UserArea
     public class ConfirmedUsersServiceTests
     {
         private readonly Mock<IEmailSendingService> _emailSendingService;
+        private readonly Mock<IEmailsContentService> _emailsContentService;
         private readonly Mock<IRepositoryWrapper> _repoWrapper;
         private readonly Mock<UserManager<User>> _userManager;
         private readonly Mock<IUserService> _userService;
@@ -27,6 +29,7 @@ namespace EPlast.XUnitTest.Services.UserArea
             _userManager = new Mock<UserManager<User>>(_userStoreMock.Object, null, null, null, null, null, null, null, null);
             _userService = new Mock<IUserService>();
             _emailSendingService = new Mock<IEmailSendingService>();
+            _emailsContentService = new Mock<IEmailsContentService>();
         }
 
         [Fact]
@@ -46,10 +49,13 @@ namespace EPlast.XUnitTest.Services.UserArea
                                              It.IsAny<string>(),
                                              It.IsAny<string>()))
                 .ReturnsAsync(true);
+            _emailsContentService
+                .Setup(x => x.GetConfirmedUserEmailAsync(It.IsAny<User>(), It.IsAny<User>()))
+                .ReturnsAsync(new EmailModel());
             _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(new User() { Email = "email" });
-            var service = new ConfirmedUsersService(_repoWrapper.Object, _userManager.Object, _emailSendingService.Object, _userService.Object);
+            var service = new ConfirmedUsersService(_repoWrapper.Object, _userManager.Object, _emailSendingService.Object, _emailsContentService.Object, _userService.Object);
 
             // Act
             await service.CreateAsync(new User(), "vaucheeId");
@@ -80,9 +86,13 @@ namespace EPlast.XUnitTest.Services.UserArea
                                              It.IsAny<string>(),
                                              It.IsAny<string>()))
                 .ReturnsAsync(true);
+            _emailsContentService
+                .Setup(x => x.GetCanceledUserEmailAsync(It.IsAny<User>(), It.IsAny<User>()))
+                .ReturnsAsync(new EmailModel());
             var service = new ConfirmedUsersService(_repoWrapper.Object,
                                                     _userManager.Object,
                                                     _emailSendingService.Object,
+                                                    _emailsContentService.Object,
                                                     _userService.Object);
 
             // Act
