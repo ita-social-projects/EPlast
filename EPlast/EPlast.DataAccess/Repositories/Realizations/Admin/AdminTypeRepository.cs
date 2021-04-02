@@ -25,7 +25,7 @@ namespace EPlast.DataAccess.Repositories
             var items = EPlastDBContext.Set<UserTableObject>().FromSqlRaw("dbo.usp_GetUserInfo @PageIndex = {0}, @PageSize = {1}, @tab = {2}, @filterRegion = {3}, " +
                 "@filterCity = {4}, @filterClub = {5}, @filterDegree = {6}", pageNum, pageSize, tab, regions, cities, clubs, degrees);
 
-            var num = items.Select(u => u.RowCount).ToList();
+            var num = items.Select(u => u.Count).ToList();
             int rowCount = num[0];
 
             return new Tuple<IEnumerable<UserTableObject>, int>(items, rowCount);
