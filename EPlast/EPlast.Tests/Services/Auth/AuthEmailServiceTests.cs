@@ -48,8 +48,8 @@ namespace EPlast.Tests.Services
             Assert.AreEqual(expected, result.Result);
         }
 
-        [Test]
-        public void SendEmailReminderAsync_Valid_Test()
+        [TestCase("email", "userId")]
+        public void SendEmailReminderAsync_Valid_Test(string email, string userId)
         {
             //Arrange
             _mockUserManager
@@ -60,7 +60,7 @@ namespace EPlast.Tests.Services
                 .ReturnsAsync(true);
 
             //Act
-            var result = authEmailService.SendEmailJoinToCityReminderAsync("email");
+            var result = authEmailService.SendEmailJoinToCityReminderAsync(email, userId);
 
             //Assert
             _mockEmailSendingService.Verify();

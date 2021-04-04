@@ -32,8 +32,9 @@ namespace EPlast.BLL.Interfaces
         /// Get email for reminding to join city
         /// </summary>
         /// <param name="citiesUrl">Cities url</param>
+        /// <param name="userId">User Id</param>
         /// <returns>Email content</returns>
-        EmailModel GetAuthJoinToCityReminderEmail(string citiesUrl);
+        Task<EmailModel> GetAuthJoinToCityReminderEmailAsync(string citiesUrl, string userId);
 
         /// <summary>
         /// Get email for registration confirmation

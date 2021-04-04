@@ -50,14 +50,22 @@ namespace EPlast.BLL.Services.EmailSending
         }
 
         /// <inheritdoc />
-        public EmailModel GetAuthJoinToCityReminderEmail(string citiesUrl)
+        public async Task<EmailModel> GetAuthJoinToCityReminderEmailAsync(string citiesUrl, string userId)
         {
+            var userGender = await _userService.GetUserGenderAsync(userId);
+            var friend = userGender switch
+            {
+                UserGenders.Male => "Друже",
+                UserGenders.Female => "Подруго",
+                _ => "Друже/подруго"
+            };
+
             return new EmailModel
             {
                 Title = "EPlast",
                 Subject = "Нагадування про приєднання до станиці",
                 Message = "<h3>СКОБ!</h3>"
-                          + "<p>Друже/подруго, просимо тебе доєднатись до пластового осередку впродовж цього тижня."
+                          + $"<p>{friend}, просимо тебе доєднатись до пластового осередку впродовж цього тижня."
                           + $"<br>Зробити це можна, перейшовши за <a href='{citiesUrl}'>посиланням</a>."
                           + "<br>Профілі без осередку блокуються системою автоматично.</p>"
                           + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>"
