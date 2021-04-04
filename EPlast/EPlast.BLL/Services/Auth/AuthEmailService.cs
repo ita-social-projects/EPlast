@@ -18,12 +18,12 @@ namespace EPlast.BLL.Services.Auth
         private readonly IAuthService _authService;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly IEmailSendingService _emailSendingService;
-        private readonly IEmailsContentService _emailsContentService;
+        private readonly IEmailContentService _emailContentService;
         private readonly IUrlHelperFactory _urlHelperFactory;
         private readonly UserManager<User> _userManager;
 
         public AuthEmailService(IEmailSendingService emailSendingService,
-                                IEmailsContentService emailsContentService,
+                                IEmailContentService emailContentService,
                                 IAuthService authService,
                                 UserManager<User> userManager,
                                 IUrlHelperFactory urlHelperFactory,
@@ -31,7 +31,7 @@ namespace EPlast.BLL.Services.Auth
                                 IHttpContextAccessor contextAccessor)
         {
             _emailSendingService = emailSendingService;
-            _emailsContentService = emailsContentService;
+            _emailContentService = emailContentService;
             _authService = authService;
             _userManager = userManager;
 
@@ -54,15 +54,15 @@ namespace EPlast.BLL.Services.Auth
             var citiesUrl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Cities"];
             var user = await _userManager.FindByEmailAsync(email);
             user.EmailSendedOnRegister = DateTime.Now;
-            var emailContent = _emailsContentService.GetAuthGreetingEmail(citiesUrl);
+            var emailContent = _emailContentService.GetAuthGreetingEmail(citiesUrl);
             return await _emailSendingService.SendEmailAsync(user.Email, emailContent.Subject, emailContent.Message, emailContent.Title);
         }
 
         public async Task<bool> SendEmailJoinToCityReminderAsync(string email)
         {
             var citiesUrl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Cities"];
-            var emailContent = _emailsContentService.GetAuthJoinToCityReminderEmail(citiesUrl);
-            return await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message, emailContent.Title); ;
+            var emailContent = _emailContentService.GetAuthJoinToCityReminderEmail(citiesUrl);
+            return await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message, emailContent.Title);
         }
 
         /// <inheritdoc />
@@ -76,7 +76,7 @@ namespace EPlast.BLL.Services.Auth
                                                new { token, userId = user.Id },
                                                _contextAccessor.HttpContext.Request.Scheme);
             user.EmailSendedOnRegister = DateTime.Now;
-            var emailContent = _emailsContentService.GetAuthRegisterEmail(confirmationLink);
+            var emailContent = _emailContentService.GetAuthRegisterEmail(confirmationLink);
             return await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message, emailContent.Title);
         }
 
@@ -86,7 +86,7 @@ namespace EPlast.BLL.Services.Auth
             var user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email);
             user.EmailSendedOnForgotPassword = DateTime.Now;
             await _userManager.UpdateAsync(user);
-            var emailContent = _emailsContentService.GetAuthResetPasswordEmail(confirmationLink);
+            var emailContent = _emailContentService.GetAuthResetPasswordEmail(confirmationLink);
             await _emailSendingService.SendEmailAsync(forgotPasswordDto.Email, emailContent.Subject, emailContent.Message, emailContent.Title);
         }
     }

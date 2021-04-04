@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.EmailSending
 {
-    public class EmailsContentService : IEmailsContentService
+    public class EmailContentService : IEmailContentService
     {
         private readonly IUserService _userService;
 
-        public EmailsContentService(IUserService userService)
+        public EmailContentService(IUserService userService)
         {
             _userService = userService;
         }

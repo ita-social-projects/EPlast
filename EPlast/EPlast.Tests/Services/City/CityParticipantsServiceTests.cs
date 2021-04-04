@@ -61,7 +61,7 @@ namespace EPlast.Tests.Services.City
         private Mock<IAdminTypeService> _adminTypeService;
         private ICityParticipantsService _cityParticipantsService;
         private Mock<IEmailSendingService> _emailSendingService;
-        private Mock<IEmailsContentService> _emailsContentService;
+        private Mock<IEmailContentService> _emailContentService;
         private Mock<IMapper> _mapper;
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IUserStore<User>> _user;
@@ -627,8 +627,8 @@ namespace EPlast.Tests.Services.City
             _user = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(_user.Object, null, null, null, null, null, null, null, null);
             _emailSendingService = new Mock<IEmailSendingService>();
-            _emailsContentService = new Mock<IEmailsContentService>();
-            _cityParticipantsService = new CityParticipantsService(_repoWrapper.Object, _mapper.Object, _userManager.Object, _adminTypeService.Object, _emailSendingService.Object, _emailsContentService.Object);
+            _emailContentService = new Mock<IEmailContentService>();
+            _cityParticipantsService = new CityParticipantsService(_repoWrapper.Object, _mapper.Object, _userManager.Object, _adminTypeService.Object, _emailSendingService.Object, _emailContentService.Object);
         }
 
         [Test]
@@ -675,7 +675,7 @@ namespace EPlast.Tests.Services.City
                                              It.IsAny<string>(),
                                              It.IsAny<string>()))
                 .ReturnsAsync(true);
-            _emailsContentService
+            _emailContentService
                 .Setup(x => x.GetCityApproveEmail(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns(new EmailModel());
 

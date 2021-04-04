@@ -1,5 +1,4 @@
 ﻿using EPlast.BLL.Interfaces;
-using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -12,22 +11,19 @@ namespace EPlast.BLL.Services
     public class ConfirmedUsersService : IConfirmedUsersService
     {
         private readonly IEmailSendingService _emailSendingService;
-        private readonly IEmailsContentService _emailsContentService;
+        private readonly IEmailContentService _emailContentService;
         private readonly IRepositoryWrapper _repoWrapper;
-        private readonly IUserService _userService;
         private readonly UserManager<User> _userManager;
 
         public ConfirmedUsersService(IRepositoryWrapper repoWrapper,
             UserManager<User> userManager,
             IEmailSendingService emailSendingService,
-            IEmailsContentService emailsContentService,
-            IUserService userService)
+            IEmailContentService emailContentService)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
             _emailSendingService = emailSendingService;
-            _emailsContentService = emailsContentService;
-            _userService = userService;
+            _emailContentService = emailContentService;
         }
 
         public async Task CreateAsync(User vaucherUser, string vaucheeId, bool isClubAdmin = false, bool isCityAdmin = false)
@@ -51,13 +47,13 @@ namespace EPlast.BLL.Services
 
         private async Task<bool> SendEmailCanceledNotificationAsync(User vaucheeUser, User vaucherUser)
         {
-            var email = await _emailsContentService.GetCanceledUserEmailAsync(vaucheeUser, vaucherUser);
+            var email = await _emailContentService.GetCanceledUserEmailAsync(vaucheeUser, vaucherUser);
             return await _emailSendingService.SendEmailAsync(vaucheeUser.Email, email.Subject, email.Message, email.Title);
         }
 
         private async Task<bool> SendEmailConfirmedNotificationAsync(User vaucheeUser, User vaucherUser)
         {
-            var email = await _emailsContentService.GetConfirmedUserEmailAsync(vaucheeUser, vaucherUser);
+            var email = await _emailContentService.GetConfirmedUserEmailAsync(vaucheeUser, vaucherUser);
             return await _emailSendingService.SendEmailAsync(vaucheeUser.Email, email.Subject, email.Message, email.Title);
         }
     }

@@ -14,22 +14,19 @@ namespace EPlast.BLL.Services
     public class NewPlastMemberEmailGreetingService : INewPlastMemberEmailGreetingService
     {
         private readonly IEmailSendingService _emailSendingService;
-        private readonly IEmailsContentService _emailsContentService;
+        private readonly IEmailContentService _emailContentService;
         private readonly IRepositoryWrapper _repoWrapper;
-        private readonly IUserService _userService;
         private readonly UserManager<User> _userManager;
 
         public NewPlastMemberEmailGreetingService(IRepositoryWrapper repoWrapper,
                                            UserManager<User> userManager,
                                            IEmailSendingService emailSendingService,
-                                           IEmailsContentService emailsContentService,
-                                           IUserService userService)
+                                           IEmailContentService emailContentService)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
             _emailSendingService = emailSendingService;
-            _emailsContentService = emailsContentService;
-            _userService = userService;
+            _emailContentService = emailContentService;
         }
 
         public async Task NotifyNewPlastMembersAsync()
@@ -71,7 +68,7 @@ namespace EPlast.BLL.Services
 
         private async Task<bool> SendEmailGreetingForNewPlastMemberAsync(string userEmail, string userId)
         {
-            var email = await _emailsContentService.GetGreetingForNewPlastMemberEmailAsync(userId);
+            var email = await _emailContentService.GetGreetingForNewPlastMemberEmailAsync(userId);
             return await _emailSendingService.SendEmailAsync(userEmail, email.Subject, email.Message, email.Title);
         }
     }

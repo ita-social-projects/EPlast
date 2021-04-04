@@ -7,7 +7,7 @@ namespace EPlast.BLL.Interfaces
     /// <summary>
     /// Returns emails contents needed for EPlast
     /// </summary>
-    public interface IEmailsContentService
+    public interface IEmailContentService
     {
         /// <summary>
         /// Get email for Facebook registration 

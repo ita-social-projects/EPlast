@@ -19,7 +19,7 @@ namespace EPlast.BLL.Services.City
     {
         private readonly IAdminTypeService _adminTypeService;
         private readonly IEmailSendingService _emailSendingService;
-        private readonly IEmailsContentService _emailsContentService;
+        private readonly IEmailContentService _emailContentService;
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly UserManager<User> _userManager;
@@ -29,14 +29,14 @@ namespace EPlast.BLL.Services.City
                                        UserManager<User> userManager,
                                        IAdminTypeService adminTypeService,
                                        IEmailSendingService emailSendingService,
-                                       IEmailsContentService emailsContentService)
+                                       IEmailContentService emailContentService)
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
             _userManager = userManager;
             _adminTypeService = adminTypeService;
             _emailSendingService = emailSendingService;
-            _emailsContentService = emailsContentService;
+            _emailContentService = emailContentService;
         }
 
         /// <inheritdoc />
@@ -289,7 +289,7 @@ namespace EPlast.BLL.Services.City
         private async Task SendEmailCityApproveAsync(string email, DataAccess.Entities.City city, bool isApproved)
         {
             var cityUrl = _repositoryWrapper.GetCitiesUrl + city.ID;
-            var emailContent = _emailsContentService.GetCityApproveEmail(cityUrl, city.Name, isApproved);
+            var emailContent = _emailContentService.GetCityApproveEmail(cityUrl, city.Name, isApproved);
             await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message, emailContent.Title);
         }
     }

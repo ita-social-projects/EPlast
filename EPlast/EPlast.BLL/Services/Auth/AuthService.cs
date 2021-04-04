@@ -23,7 +23,7 @@ namespace EPlast.BLL.Services
     public class AuthService : IAuthService
     {
         private readonly IEmailSendingService _emailSendingService;
-        private readonly IEmailsContentService _emailsContentService;
+        private readonly IEmailContentService _emailContentService;
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly SignInManager<User> _signInManager;
@@ -32,14 +32,14 @@ namespace EPlast.BLL.Services
         public AuthService(UserManager<User> userManager,
                            SignInManager<User> signInManager,
                            IEmailSendingService emailSendingService,
-                           IEmailsContentService emailsContentService,
+                           IEmailContentService emailContentService,
                            IMapper mapper,
                            IRepositoryWrapper repoWrapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSendingService = emailSendingService;
-            _emailsContentService = emailsContentService;
+            _emailContentService = emailContentService;
             _mapper = mapper;
             _repoWrapper = repoWrapper;
         }
@@ -117,7 +117,7 @@ namespace EPlast.BLL.Services
                 var createResult = await _userManager.CreateAsync(user);
                 if (createResult.Succeeded && user.Email != "facebookdefaultmail@gmail.com")
                 {
-                    var emailContent = _emailsContentService.GetAuthFacebookRegisterEmail();
+                    var emailContent = _emailContentService.GetAuthFacebookRegisterEmail();
                     await _emailSendingService.SendEmailAsync(user.Email, emailContent.Subject, emailContent.Message, emailContent.Title);
                 }
                 await _userManager.AddToRoleAsync(user, Roles.Supporter);
@@ -204,7 +204,7 @@ namespace EPlast.BLL.Services
                 var createResult = await _userManager.CreateAsync(user);
                 if (createResult.Succeeded)
                 {
-                    var emailContent = _emailsContentService.GetAuthGoogleRegisterEmail();
+                    var emailContent = _emailContentService.GetAuthGoogleRegisterEmail();
                     await _emailSendingService.SendEmailAsync(user.Email, emailContent.Subject, emailContent.Message, emailContent.Title);
                 }
                 else
