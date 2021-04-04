@@ -262,6 +262,18 @@ namespace EPlast.BLL.Services.Club
             return _mapper.Map<ClubMembers, ClubMembersDTO>(ClubMember);
         }
 
+        public async Task<string> ClubOfApprovedMember(string memberId)
+        {
+            var clubMember = await _repositoryWrapper.ClubMembers
+                .GetFirstOrDefaultAsync(u => u.UserId == memberId, m => m.Include(u => u.Club));
+
+            if (clubMember.IsApproved == true)
+            {
+                return clubMember.Club.Name;
+            }
+            else return clubMember.Club.Name = null;
+        }
+
         /// <inheritdoc />
         public async Task RemoveFollowerAsync(int followerId)
         {

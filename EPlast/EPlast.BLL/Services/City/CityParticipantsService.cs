@@ -256,7 +256,7 @@ namespace EPlast.BLL.Services.City
             await SendEmailCityApproveAsync(cityMember.User.Email, cityMember.City, cityMember.IsApproved);
             return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
         }
-        ////////////////////////////////////////////////////////////////////////////////////////
+
         public async Task<string> CityOfApprovedMember(string memberId)
         {
             var cityMember = await _repositoryWrapper.CityMembers
