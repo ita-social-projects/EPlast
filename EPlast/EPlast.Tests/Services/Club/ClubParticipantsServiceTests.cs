@@ -542,6 +542,33 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
+        public async Task ClubOfApprovedMemberTest()
+        {
+            //Arrange 
+            _repoWrapper
+                .Setup(s => s.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>())).ReturnsAsync
+                    (new ClubMembers() 
+                    { 
+                        ID = 1,
+                        UserId = "123v",
+                        IsApproved = true,
+                        Club = new DataAccess.Entities.Club 
+                        { 
+                            ID = 1,
+                            Name = "club name"
+                        },
+                        ClubId = 1
+                    });
+            //Act
+            var result = await _clubParticipantsService.ClubOfApprovedMember("123v");
+
+            //Assert
+            Assert.IsNotNull(result);
+            _repoWrapper.Verify();
+        }
+
+        [Test]
         public async Task RemoveFollowerAsync()
         {
             // Arrange

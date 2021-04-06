@@ -355,7 +355,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>club name string</returns>
         [HttpGet("ClubNameOfApprovedMember/{memberId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> ClubNameOfApprovedMember(string memberId)
+        public async Task<IActionResult> GetClubNameOfApprovedMember(string memberId)
         {
             var member = await _clubParticipantsService.ClubOfApprovedMember(memberId);
 

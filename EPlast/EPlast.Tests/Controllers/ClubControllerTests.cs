@@ -590,6 +590,22 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task GetClubNameOfApprovedMemberTest()
+        {
+            //Arrange
+            _ClubParticipantsService
+                .Setup(c => c.ClubOfApprovedMember(It.IsAny<string>()));
+            ClubController Clubcon = CreateClubController;
+
+            //Act
+            var result = await Clubcon.GetClubNameOfApprovedMember(GetStringFakeId());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
         public async Task AddAdmin_Valid_Test()
         {
             // Arrange

@@ -262,7 +262,7 @@ namespace EPlast.BLL.Services.City
             var cityMember = await _repositoryWrapper.CityMembers
                 .GetFirstOrDefaultAsync(u => u.UserId == memberId,
                                         m => m.Include(u => u.City));
-            if (cityMember.IsApproved == true)
+            if (cityMember.IsApproved)
             {
                 return cityMember.City.Name;
             }

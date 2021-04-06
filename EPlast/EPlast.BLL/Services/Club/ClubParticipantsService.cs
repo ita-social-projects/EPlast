@@ -265,9 +265,9 @@ namespace EPlast.BLL.Services.Club
         public async Task<string> ClubOfApprovedMember(string memberId)
         {
             var clubMember = await _repositoryWrapper.ClubMembers
-                .GetFirstOrDefaultAsync(u => u.UserId == memberId, m => m.Include(u => u.Club));
-
-            if (clubMember.IsApproved == true)
+                .GetFirstOrDefaultAsync(u => u.UserId == memberId, 
+                                         m => m.Include(u => u.Club));
+            if (clubMember.IsApproved)
             {
                 return clubMember.Club.Name;
             }

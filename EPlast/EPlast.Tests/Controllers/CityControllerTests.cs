@@ -148,6 +148,21 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task GetCityNameOfApprovedMemberTest()
+        {
+            //Arrange
+            _cityParticipantsService
+                .Setup(c => c.CityOfApprovedMember(It.IsAny<string>()));
+            CitiesController citycon = CreateCityController;
+
+            //Act
+            var result = await citycon.GetCityNameOfApprovedMember(GetStringFakeId());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+        [Test]
         public async Task Create_InvalidModelState_Valid_Test()
         {
             // Arrange
