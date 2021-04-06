@@ -10,13 +10,13 @@ namespace EPlast.BLL.Interfaces
     public interface IEmailContentService
     {
         /// <summary>
-        /// Get email for Facebook registration 
+        /// Get email for Facebook registration
         /// </summary>
         /// <returns>Email content</returns>
         EmailModel GetAuthFacebookRegisterEmail();
 
         /// <summary>
-        /// Get email for Google registration 
+        /// Get email for Google registration
         /// </summary>
         /// <returns>Email content</returns>
         EmailModel GetAuthGoogleRegisterEmail();
@@ -27,14 +27,6 @@ namespace EPlast.BLL.Interfaces
         /// <param name="citiesUrl">Cities url</param>
         /// <returns>Email content</returns>
         EmailModel GetAuthGreetingEmail(string citiesUrl);
-
-        /// <summary>
-        /// Get email for reminding to join city
-        /// </summary>
-        /// <param name="citiesUrl">Cities url</param>
-        /// <param name="userId">User Id</param>
-        /// <returns>Email content</returns>
-        Task<EmailModel> GetAuthJoinToCityReminderEmailAsync(string citiesUrl, string userId);
 
         /// <summary>
         /// Get email for registration confirmation
@@ -60,6 +52,14 @@ namespace EPlast.BLL.Interfaces
         EmailModel GetCityApproveEmail(string cityUrl, string cityName, bool isApproved);
 
         /// <summary>
+        /// Get email for reminding to join city
+        /// </summary>
+        /// <param name="citiesUrl">Cities url</param>
+        /// <param name="userId">User Id</param>
+        /// <returns>Email content</returns>
+        Task<EmailModel> GetAuthJoinToCityReminderEmailAsync(string citiesUrl, string userId);
+
+        /// <summary>
         /// Get email to inform user that he was confirmed by other user
         /// </summary>
         /// <param name="vaucheeUser">User that was confirmed</param>
@@ -81,6 +81,5 @@ namespace EPlast.BLL.Interfaces
         /// <param name="userId">User id</param>
         /// <returns>Email content</returns>
         Task<EmailModel> GetGreetingForNewPlastMemberEmailAsync(string userId);
-
     }
 }

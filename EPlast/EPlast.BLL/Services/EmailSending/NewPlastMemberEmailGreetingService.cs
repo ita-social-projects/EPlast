@@ -1,5 +1,4 @@
 ﻿using EPlast.BLL.Interfaces;
-using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
