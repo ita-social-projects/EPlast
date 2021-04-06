@@ -191,8 +191,11 @@ namespace EPlast.BLL.Services.Club
             {
                 var userId = follower.UserId;
                 var cityMembers = await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(a => a.UserId == userId);
-                var city = await _repoWrapper.City.GetFirstAsync(a => a.ID == cityMembers.CityId);
-                follower.User.CityName = city.Name.ToString();
+                if (cityMembers!=null)
+                {
+                    var city = await _repoWrapper.City.GetFirstAsync(a => a.ID == cityMembers.CityId);
+                    follower.User.CityName = city.Name.ToString();
+                }
             }
 
             var ClubProfileDto = new ClubProfileDTO

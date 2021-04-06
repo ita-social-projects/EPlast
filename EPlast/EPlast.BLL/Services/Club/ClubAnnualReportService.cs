@@ -84,22 +84,19 @@ namespace EPlast.BLL.Services.Club
             }
 
             StringBuilder clubMembers = new StringBuilder();
-            string degreeStr, cityMemberStr;
             foreach (var item in club.ClubMembers)
             {
                 var userPlastDegrees = await _repositoryWrapper.UserPlastDegrees.GetAllAsync(upd => upd.UserId == item.UserId, include: pd => pd.Include(d => d.PlastDegree));
                 var degree = userPlastDegrees.FirstOrDefault(u=> u.UserId == item.UserId);
                 var cityMember = await _repositoryWrapper.CityMembers.GetFirstOrDefaultAsync(predicate: a => a.UserId == item.UserId, include: source => source.Include(ar => ar.City));
 
-                if (degree == null) degreeStr = "";
-                else degreeStr = degree.PlastDegree.Name;
+                if (degree != null)
+                    clubMembers.Append(new StringBuilder($"{degree.PlastDegree.Name.TrimEnd()}, "));
+                clubMembers.Append(new StringBuilder($"{item.User.FirstName} {item.User.LastName}"));
 
-                if (cityMember == null) cityMemberStr = "";
-                else cityMemberStr = cityMember.City.Name;
-
-                clubMembers.Append(
-                    new StringBuilder($"{ degreeStr}, {item.User.FirstName} {item.User.LastName}, {cityMemberStr};")
-                        .Append("\n"));
+                if (cityMember != null) 
+                    clubMembers.Append(new StringBuilder($", {cityMember.City.Name};\n"));
+                else clubMembers.Append(new StringBuilder(";\n"));
             }
 
             clubAnnualReportDTO.ClubMembersSummary = clubMembers.ToString();
@@ -111,11 +108,13 @@ namespace EPlast.BLL.Services.Club
                 var degree = userPlastDegrees.FirstOrDefault(user => user.UserId == item.UserId);
                 if (item.AdminTypeId == 69)
                 {
-                    if (degree == null) degreeStr = "";
-                    else degreeStr = degree.PlastDegree.Name;
-                    clubAdmins.Append(new StringBuilder(
-                            $"{degreeStr}, {item.User.FirstName} {item.User.LastName}, {item.User.Email}, {item.User.PhoneNumber};")
-                        .Append("\n"));
+                    if (degree != null)
+                        clubAdmins.Append(new StringBuilder($"{degree.PlastDegree.Name.TrimEnd()}, "));
+                    clubAdmins.Append(
+                        new StringBuilder($"{item.User.FirstName} {item.User.LastName}, {item.User.Email}"));
+                    if (item.User.PhoneNumber != "" && item.User.PhoneNumber != null)
+                        clubAdmins.Append(new StringBuilder($", {item.User.PhoneNumber};\n"));
+                    else clubAdmins.Append(";\n");
                 }
             }
 
