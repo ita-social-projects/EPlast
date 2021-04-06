@@ -31,7 +31,8 @@ namespace EPlast.BLL.Services
 
         public async Task NotifyNewPlastMembersAsync()
         {
-            (await GetNewPlastMembersAsync()).ToList().ForEach(async (user) => await SendEmailGreetingForNewPlastMemberAsync(user.Email, user.Id));
+            var tasks = (from user in await GetNewPlastMembersAsync() select SendEmailGreetingForNewPlastMemberAsync(user.Email, user.Id)).Cast<Task>().ToList();
+            await Task.WhenAll(tasks);
         }
 
         private async Task<IEnumerable<User>> GetNewPlastMembersAsync()
@@ -48,7 +49,7 @@ namespace EPlast.BLL.Services
                 TimeSpan halfOfYear = new TimeSpan(182, 0, 0, 0);
                 if (_repoWrapper.ConfirmedUser.FindByCondition(x => x.UserID == user.Id).Any(q => q.isClubAdmin))
                 {
-                    timeToJoinPlast.Subtract(halfOfYear);
+                    timeToJoinPlast = timeToJoinPlast.Subtract(halfOfYear);
                 }
                 if (timeToJoinPlast <= TimeSpan.Zero)
                 {

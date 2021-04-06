@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EPlast.BLL.Models
+﻿namespace EPlast.BLL.Models
 {
     public class EmailModel
     {
