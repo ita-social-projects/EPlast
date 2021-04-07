@@ -95,8 +95,8 @@ namespace EPlast.BLL.Services.Club
                 clubMembers.Append(new StringBuilder($"{item.User.FirstName} {item.User.LastName}"));
 
                 if (cityMember != null) 
-                    clubMembers.Append(new StringBuilder($", {cityMember.City.Name};\n"));
-                else clubMembers.Append(new StringBuilder(";\n"));
+                    clubMembers.Append(new StringBuilder($", {cityMember.City.Name}"));
+                clubMembers.Append(new StringBuilder("\n"));
             }
 
             clubAnnualReportDTO.ClubMembersSummary = clubMembers.ToString();
@@ -113,8 +113,8 @@ namespace EPlast.BLL.Services.Club
                     clubAdmins.Append(
                         new StringBuilder($"{item.User.FirstName} {item.User.LastName}, {item.User.Email}"));
                     if (item.User.PhoneNumber != "" && item.User.PhoneNumber != null)
-                        clubAdmins.Append(new StringBuilder($", {item.User.PhoneNumber};\n"));
-                    else clubAdmins.Append(";\n");
+                        clubAdmins.Append(new StringBuilder($", {item.User.PhoneNumber}"));
+                    clubAdmins.Append("\n");
                 }
             }
 
