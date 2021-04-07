@@ -339,12 +339,33 @@ namespace EPlast.Tests.Services.Club
                             FirstName = "",
                             LastName = "",
                         }
+                    },
+                    new ClubMembers()
+                    {
+                        UserId = "1",
+                        User = new User()
+                        {
+                            FirstName = "",
+                            LastName = "",
+                        }
                     }
                 },
                 ClubAdministration = new List<ClubAdministration>()
                 {
                     new ClubAdministration()
                     {
+                        AdminTypeId = 69,
+                        User = new User()
+                        {
+                            FirstName = "",
+                            LastName = "",
+                            Email = "",
+                            PhoneNumber = "",
+                        }
+                    },
+                    new ClubAdministration()
+                    {
+                        UserId = "1",
                         AdminTypeId = 69,
                         User = new User()
                         {
@@ -375,6 +396,14 @@ namespace EPlast.Tests.Services.Club
             {
                 new UserPlastDegree()
                 {
+                    PlastDegree = new PlastDegree()
+                    {
+                        Name = "",
+                    },
+                },
+                new UserPlastDegree()
+                {
+                    UserId = "1",
                     PlastDegree = new PlastDegree()
                     {
                         Name = "",
