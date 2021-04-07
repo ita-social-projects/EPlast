@@ -345,6 +345,7 @@ namespace EPlast.Tests.Services.Club
                 {
                     new ClubAdministration()
                     {
+                        AdminTypeId = 69,
                         User = new User()
                         {
                             FirstName = "",
