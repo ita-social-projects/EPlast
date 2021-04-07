@@ -191,7 +191,7 @@ namespace EPlast.Tests.Services.Club
                 .Returns(new ClubAnnualReport());
             _repositoryWrapper.Setup(x => x.CityMembers.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<CityMembers, bool>>>(), It.IsAny<Func<IQueryable<CityMembers>,
-                    IIncludableQueryable<CityMembers, object>>>())).ReturnsAsync(GetCityMembers());
+                    IIncludableQueryable<CityMembers, object>>>())).ReturnsAsync(null as CityMembers);
 
             // Act  
             var result = _service.CreateAsync(It.IsAny<User>(), reportDto);
