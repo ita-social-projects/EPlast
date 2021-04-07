@@ -348,7 +348,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>city name string</returns>
         [HttpGet("CityNameOfApprovedMember/{memberId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetCityNameOfApprovedMember(string memberId)
+        public async Task<IActionResult> CityNameOfApprovedMember(string memberId)
         {
             var member = await _cityParticipantsService.CityOfApprovedMember(memberId);
 

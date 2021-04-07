@@ -156,7 +156,7 @@ namespace EPlast.Tests.Controllers
             CitiesController citycon = CreateCityController;
 
             //Act
-            var result = await citycon.GetCityNameOfApprovedMember(GetStringFakeId());
+            var result = await citycon.CityNameOfApprovedMember(GetStringFakeId());
 
             //Assert
             Assert.NotNull(result);

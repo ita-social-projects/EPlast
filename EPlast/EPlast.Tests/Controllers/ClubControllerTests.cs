@@ -598,7 +598,7 @@ namespace EPlast.Tests.Controllers
             ClubController Clubcon = CreateClubController;
 
             //Act
-            var result = await Clubcon.GetClubNameOfApprovedMember(GetStringFakeId());
+            var result = await Clubcon.ClubNameOfApprovedMember(GetStringFakeId());
 
             //Assert
             Assert.NotNull(result);
