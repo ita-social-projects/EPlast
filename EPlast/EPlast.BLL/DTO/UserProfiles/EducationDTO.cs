@@ -18,6 +18,7 @@ namespace EPlast.BLL.DTO.UserProfiles
             ErrorMessage = "Спеціальність має містити тільки літери")]
         [StringLength(50, MinimumLength = 3, ErrorMessage = "Спеціальність повинна складати від 3 до 50 символів")]
         public string Speciality { get; set; }
+
         public IEnumerable<UserProfileDTO> UsersProfiles { get; set; }
     }
 }
