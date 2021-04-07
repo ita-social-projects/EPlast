@@ -141,34 +141,7 @@ namespace EPlast.Tests.Services.Club
             _repositoryWrapper
                .Setup(x => x.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.Club, bool>>>(),
                It.IsAny<Func<IQueryable<DataAccess.Entities.Club>,
-               IIncludableQueryable<DataAccess.Entities.Club, object>>>())).ReturnsAsync(new DataAccess.Entities.Club()
-               {
-                   ID = 2,
-                   ClubMembers=new List<ClubMembers>()
-                   {
-                       new ClubMembers()
-                       {
-                           User = new User()
-                           {
-                               FirstName = "",
-                               LastName = "",
-                           }
-                       }
-                   },
-                   ClubAdministration = new List<ClubAdministration>()
-                   {
-                       new ClubAdministration()
-                       {
-                           User = new User()
-                           {
-                               FirstName = "",
-                               LastName = "",
-                               Email = "",
-                               PhoneNumber = "",
-                           }
-                       },
-                   }
-               });
+               IIncludableQueryable<DataAccess.Entities.Club, object>>>())).ReturnsAsync(GetClub());
             _repositoryWrapper
                 .Setup(x => x.ClubAnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAnnualReport, bool>>>(),
                 It.IsAny<Func<IQueryable<ClubAnnualReport>,
@@ -184,13 +157,7 @@ namespace EPlast.Tests.Services.Club
                 .Returns(new ClubAnnualReport());
             _repositoryWrapper.Setup(x => x.CityMembers.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<CityMembers, bool>>>(), It.IsAny<Func<IQueryable<CityMembers>,
-                    IIncludableQueryable<CityMembers, object>>>())).ReturnsAsync(new CityMembers()
-            {
-                City = new DataAccess.Entities.City()
-                {
-                    Name = "",
-                }
-            });
+                    IIncludableQueryable<CityMembers, object>>>())).ReturnsAsync(GetCityMembers());
 
             // Act  
             var result = _service.CreateAsync(It.IsAny<User>(), reportDto);
@@ -355,6 +322,49 @@ namespace EPlast.Tests.Services.Club
             return new List<ClubAnnualReport>()
             {
                 new ClubAnnualReport()
+            };
+        }
+
+        private DataAccess.Entities.Club GetClub()
+        {
+            return new DataAccess.Entities.Club()
+            {
+                ID = 2,
+                ClubMembers = new List<ClubMembers>()
+                {
+                    new ClubMembers()
+                    {
+                        User = new User()
+                        {
+                            FirstName = "",
+                            LastName = "",
+                        }
+                    }
+                },
+                ClubAdministration = new List<ClubAdministration>()
+                {
+                    new ClubAdministration()
+                    {
+                        User = new User()
+                        {
+                            FirstName = "",
+                            LastName = "",
+                            Email = "",
+                            PhoneNumber = "",
+                        }
+                    },
+                }
+            };
+        }
+
+        private CityMembers GetCityMembers()
+        {
+            return new CityMembers()
+            {
+                City = new DataAccess.Entities.City()
+                {
+                    Name = "",
+                }
             };
         }
 
