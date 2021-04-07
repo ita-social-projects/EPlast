@@ -137,10 +137,38 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubAnnualReport report = null;
+            ClubAnnualReportDTO reportDto = new ClubAnnualReportDTO();
             _repositoryWrapper
                .Setup(x => x.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.Club, bool>>>(),
                It.IsAny<Func<IQueryable<DataAccess.Entities.Club>,
-               IIncludableQueryable<DataAccess.Entities.Club, object>>>())).ReturnsAsync(new DataAccess.Entities.Club() { ID = 2 });
+               IIncludableQueryable<DataAccess.Entities.Club, object>>>())).ReturnsAsync(new DataAccess.Entities.Club()
+               {
+                   ID = 2,
+                   ClubMembers=new List<ClubMembers>()
+                   {
+                       new ClubMembers()
+                       {
+                           User = new User()
+                           {
+                               FirstName = "",
+                               LastName = "",
+                           }
+                       }
+                   },
+                   ClubAdministration = new List<ClubAdministration>()
+                   {
+                       new ClubAdministration()
+                       {
+                           User = new User()
+                           {
+                               FirstName = "",
+                               LastName = "",
+                               Email = "",
+                               PhoneNumber = "",
+                           }
+                       },
+                   }
+               });
             _repositoryWrapper
                 .Setup(x => x.ClubAnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAnnualReport, bool>>>(),
                 It.IsAny<Func<IQueryable<ClubAnnualReport>,
@@ -154,8 +182,19 @@ namespace EPlast.Tests.Services.Club
             _mapper
                 .Setup(x=>x.Map<ClubAnnualReportDTO, ClubAnnualReport>(It.IsAny<ClubAnnualReportDTO>()))
                 .Returns(new ClubAnnualReport());
+            _repositoryWrapper.Setup(x => x.CityMembers.GetFirstOrDefaultAsync(
+                It.IsAny<Expression<Func<CityMembers, bool>>>(), It.IsAny<Func<IQueryable<CityMembers>,
+                    IIncludableQueryable<CityMembers, object>>>())).ReturnsAsync(new CityMembers()
+            {
+                City = new DataAccess.Entities.City()
+                {
+                    Name = "",
+                }
+            });
+
             // Act  
-            var result = _service.CreateAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDTO>());
+            var result = _service.CreateAsync(It.IsAny<User>(), reportDto);
+            
             // Assert
             Assert.IsNotNull(result);
         }
@@ -324,6 +363,12 @@ namespace EPlast.Tests.Services.Club
             return new List<UserPlastDegree>()
             {
                 new UserPlastDegree()
+                {
+                    PlastDegree = new PlastDegree()
+                    {
+                        Name = "",
+                    },
+                }
             };
         }
 
