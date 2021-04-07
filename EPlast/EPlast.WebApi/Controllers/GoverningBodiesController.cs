@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using EPlast.BLL.DTO;
-using EPlast.BLL.Interfaces.Logging;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -12,46 +10,18 @@ namespace EPlast.WebApi.Controllers
     public class GoverningBodiesController : ControllerBase
     {
         private readonly IGoverningBodiesService _governingBodiesService;
-        private readonly ILoggerService<GoverningBodiesController> _logger;
 
-
-        public GoverningBodiesController(IGoverningBodiesService service, ILoggerService<GoverningBodiesController> logger)
+        public GoverningBodiesController(IGoverningBodiesService service)
         {
             _governingBodiesService = service;
-            _logger = logger;
         }
 
         [HttpGet]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetGoverningBodies()
+        public async Task<IActionResult> GetOrganizations()
         {
-            var governingBodies = await _governingBodiesService.GetGoverningBodiesListAsync();
+            var governingBodies = await _governingBodiesService.GetOrganizationListAsync();
             return Ok(governingBodies);
-        }
-
-        [HttpPost("CreateGoverningBody")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> Create(GoverningBodyDTO governingBodyDTO)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            governingBodyDTO.ID = await _governingBodiesService.CreateAsync(governingBodyDTO);
-
-            _logger.LogInformation($"Governing body {{{governingBodyDTO.GoverningBodyName}}} was created.");
-
-            return Ok(governingBodyDTO.ID);
-        }
-
-        [HttpGet("LogoBase64")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetPhotoBase64(string logoName)
-        {
-            var logoBase64 = await _governingBodiesService.GetLogoBase64(logoName);
-
-            return Ok(logoBase64);
         }
     }
 }

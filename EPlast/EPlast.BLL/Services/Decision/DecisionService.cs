@@ -87,11 +87,11 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<GoverningBodyDTO> GetDecisionOrganizationAsync(GoverningBodyDTO governingBody)
+        public async Task<OrganizationDTO> GetDecisionOrganizationAsync(OrganizationDTO organization)
         {
-            return _mapper.Map<GoverningBodyDTO>(string.IsNullOrEmpty(governingBody.GoverningBodyName)
-                    ? await _repoWrapper.GoverningBody.GetFirstAsync(x => x.ID == governingBody.ID)
-                    : await _repoWrapper.GoverningBody.GetFirstAsync(x => x.OrganizationName.Equals(governingBody.GoverningBodyName)));
+            return _mapper.Map<OrganizationDTO>(string.IsNullOrEmpty(organization.OrganizationName)
+                    ? await _repoWrapper.Organization.GetFirstAsync(x => x.ID == organization.ID)
+                    : await _repoWrapper.Organization.GetFirstAsync(x => x.OrganizationName.Equals(organization.OrganizationName)));
         }
 
         /// <inheritdoc />
@@ -105,9 +105,9 @@ namespace EPlast.BLL.Services
             await _decisionBlobStorage.UploadBlobForBase64Async(base64, fileName);
         }
         /// <inheritdoc />
-        public async Task<IEnumerable<GoverningBodyDTO>> GetGoverningBodyListAsync()
+        public async Task<IEnumerable<OrganizationDTO>> GetOrganizationListAsync()
         {
-            return _mapper.Map<IEnumerable<GoverningBodyDTO>>((await _repoWrapper.GoverningBody.GetAllAsync()));
+            return _mapper.Map<IEnumerable<OrganizationDTO>>((await _repoWrapper.Organization.GetAllAsync()));
         }
         /// <inheritdoc />
         public async Task<IEnumerable<DecisionTargetDTO>> GetDecisionTargetListAsync()

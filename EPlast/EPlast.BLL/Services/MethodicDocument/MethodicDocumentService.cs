@@ -78,11 +78,11 @@ namespace EPlast.BLL.Services
             return await _metodicDocsBlobStorage.GetBlobBase64Async(fileName);
         }
 
-        public async Task<GoverningBodyDTO> GetMethodicDocumentOrganizationAsync(GoverningBodyDTO governingBody)
+        public async Task<OrganizationDTO> GetMethodicDocumentOrganizationAsync(OrganizationDTO organization)
         {
-            return _mapper.Map<GoverningBodyDTO>(string.IsNullOrEmpty(governingBody.GoverningBodyName)
-                   ? await _repoWrapper.GoverningBody.GetFirstAsync(x => x.ID == governingBody.ID)
-                   : await _repoWrapper.GoverningBody.GetFirstAsync(x => x.OrganizationName.Equals(governingBody.GoverningBodyName)));
+            return _mapper.Map<OrganizationDTO>(string.IsNullOrEmpty(organization.OrganizationName)
+                   ? await _repoWrapper.Organization.GetFirstAsync(x => x.ID == organization.ID)
+                   : await _repoWrapper.Organization.GetFirstAsync(x => x.OrganizationName.Equals(organization.OrganizationName)));
         }
 
         public IEnumerable<SelectListItem> GetMethodicDocumentTypes()
@@ -95,9 +95,9 @@ namespace EPlast.BLL.Services
              }).ToList();
         }
 
-        public async Task<IEnumerable<GoverningBodyDTO>> GetGoverningBodyListAsync()
+        public async Task<IEnumerable<OrganizationDTO>> GetOrganizationListAsync()
         {
-            return _mapper.Map<IEnumerable<GoverningBodyDTO>>((await _repoWrapper.GoverningBody.GetAllAsync()));
+            return _mapper.Map<IEnumerable<OrganizationDTO>>((await _repoWrapper.Organization.GetAllAsync()));
         }
 
         public async Task<int> SaveMethodicDocumentAsync(MethodicDocumentWraperDTO document)

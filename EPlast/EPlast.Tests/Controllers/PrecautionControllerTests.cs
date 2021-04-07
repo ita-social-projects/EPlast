@@ -1,5 +1,4 @@
 ﻿using EPlast.BLL;
-using EPlast.BLL.DTO;
 using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +10,6 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
-using EPlast.Resources;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
@@ -61,15 +59,14 @@ namespace EPlast.Tests.Controllers
         public async Task GetUserPrecaution_PrecautionById_ReturnsNotFoundResult()
         {
             //Arrange
-            int id = 0;
             _userPrecautionService
-                .Setup(x => x.GetUserPrecautionAsync(id))
+                .Setup(x => x.GetUserPrecautionAsync(It.IsAny<int>()))
                 .ReturnsAsync((UserPrecautionDTO)null);
             //Act
-            var result = await _PrecautionController.GetUserPrecaution(id);
-            
+            var result = await _PrecautionController.GetUserPrecaution(It.IsAny<int>());
             //Assert
             _userPrecautionService.Verify();
+            Assert.IsNotNull(result);
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
@@ -100,11 +97,12 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(new PrecautionDTO());
             //Act
             var result = await _PrecautionController.GetPrecaution(It.IsAny<int>());
-            var resultValue = (result as OkObjectResult).Value as PrecautionDTO;
+            var resultValue = (result as OkObjectResult).Value;
             //Assert
             _precautionService.Verify();
-            Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(resultValue);
             Assert.IsInstanceOf<PrecautionDTO>(resultValue);
         }
 
@@ -115,9 +113,8 @@ namespace EPlast.Tests.Controllers
             _precautionService
                 .Setup(x => x.GetPrecautionAsync(It.IsAny<int>()))
                 .ReturnsAsync((PrecautionDTO)null);
-            PrecautionController precautionController = _PrecautionController;
             //Act
-            var result = await precautionController.GetPrecaution(It.IsAny<int>());
+            var result = await _PrecautionController.GetPrecaution(It.IsAny<int>());
             //Assert
             _precautionService.Verify();
             Assert.IsNotNull(result);
@@ -166,7 +163,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Setup(m => m.User.IsInRole("Admin"))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -175,9 +172,8 @@ namespace EPlast.Tests.Controllers
             _PrecautionController.ControllerContext = context;
             _precautionService
                 .Setup(x => x.DeletePrecautionAsync(It.IsAny<int>(), It.IsAny<User>()));
-            PrecautionController precautionController = _PrecautionController;
             //Act
-            var result = await precautionController.DeletePrecaution(It.IsAny<int>());
+            var result = await _PrecautionController.DeletePrecaution(It.IsAny<int>());
             //Assert
             _precautionService.Verify();
             Assert.IsNotNull(result);
@@ -190,7 +186,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Setup(m => m.User.IsInRole("Admin"))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -203,6 +199,7 @@ namespace EPlast.Tests.Controllers
             var result = await _PrecautionController.DeleteUserPrecaution(It.IsAny<int>());
             //Assert
             _userPrecautionService.Verify();
+            Assert.IsNotNull(result);
             Assert.IsInstanceOf<NoContentResult>(result);
         }
 
@@ -212,7 +209,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Setup(m => m.User.IsInRole("Admin"))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -225,7 +222,7 @@ namespace EPlast.Tests.Controllers
             var result = await _PrecautionController.AddUserPrecaution(It.IsAny<UserPrecautionDTO>());
             //Assert
             _userPrecautionService.Verify();
-            _userManager.Verify();
+            Assert.IsNotNull(result);
             Assert.IsInstanceOf<NoContentResult>(result);
         }
 
@@ -235,7 +232,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Setup(m => m.User.IsInRole("Admin"))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -259,7 +256,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Setup(m => m.User.IsInRole("Admin"))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -272,7 +269,7 @@ namespace EPlast.Tests.Controllers
             var result = await _PrecautionController.AddPrecaution(It.IsAny<PrecautionDTO>());
             //Assert
             _precautionService.Verify();
-            _userManager.Verify();
+            Assert.IsNotNull(result);
             Assert.IsInstanceOf<NoContentResult>(result);
         }
 
@@ -282,7 +279,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Setup(m => m.User.IsInRole("Admin"))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -306,7 +303,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Setup(m => m.User.IsInRole("Admin"))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -319,7 +316,7 @@ namespace EPlast.Tests.Controllers
             var result = await _PrecautionController.EditUserPrecaution(It.IsAny<UserPrecautionDTO>());
             //Assert
             _userPrecautionService.Verify();
-            _userManager.Verify();
+            Assert.IsNotNull(result);
             Assert.IsInstanceOf<NoContentResult>(result);
         }
 
@@ -329,7 +326,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Setup(m => m.User.IsInRole("Admin"))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -353,7 +350,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Setup(m => m.User.IsInRole("Admin"))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -366,7 +363,7 @@ namespace EPlast.Tests.Controllers
             var result = await _PrecautionController.EditPrecaution(It.IsAny<PrecautionDTO>());
             //Assert
             _precautionService.Verify();
-            _userManager.Verify();
+            Assert.IsNotNull(result);
             Assert.IsInstanceOf<NoContentResult>(result);
         }
 
@@ -376,7 +373,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Setup(m => m.User.IsInRole("Admin"))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -394,22 +391,19 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
 
-        [TestCase("tab")]
-        public async Task UsersTableWithoutPrecautions_Valid_Test(string tab)
+        [Test]
+        public async Task UsersTableWithoutPrecautions_Valid_Test()
         {
             _userPrecautionService.Setup(a => a.UsersTableWithotPrecautionAsync());
 
             // Act
-            var result = await _PrecautionController.UsersWithoutPrecautionsTable(tab);
-            var resultValue = (result as OkObjectResult).Value;
+            var result = await _PrecautionController.UsersWithoutPrecautionsTable();
 
             // Assert
-            _userPrecautionService.Verify();
-            Assert.IsInstanceOf<IEnumerable<UserTableDTO>>(resultValue);
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
-        
+
         [TestCase(1)]
         public async Task CheckNumberExisting_ReturnsOkObjectResult_Test(int number)
         {
@@ -419,10 +413,8 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await _PrecautionController.CheckNumberExisting(number);
-            var resultValue = (result as OkObjectResult).Value;
 
             //Assert
-            Assert.IsInstanceOf<bool>(resultValue);
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }

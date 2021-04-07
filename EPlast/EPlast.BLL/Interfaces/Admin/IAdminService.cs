@@ -1,7 +1,6 @@
 ﻿using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.City;
 using Microsoft.AspNetCore.Identity;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -48,8 +47,6 @@ namespace EPlast.BLL.Services.Interfaces
         /// Get all users with additional information
         /// </summary>
         /// <returns>Specify model with all users</returns>
-        Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(int pageNum, int pageSize, string tab, IEnumerable<string> regions, IEnumerable<string> cities, IEnumerable<string> clubs, IEnumerable<string> degrees);
-
-        Task<int> GetUsersCountAsync();
+        Task<IEnumerable<UserTableDTO>> GetUsersTableAsync();
     }
 }

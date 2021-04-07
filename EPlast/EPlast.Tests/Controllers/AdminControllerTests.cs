@@ -1,5 +1,4 @@
-﻿using System;
-using EPlast.BLL.DTO.City;
+﻿using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Logging;
@@ -11,9 +10,6 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using EPlast.BLL.DTO;
-using EPlast.BLL.DTO.Admin;
-using EPlast.DataAccess.Entities;
 
 namespace EPlast.Tests.Controllers
 {
@@ -146,7 +142,6 @@ namespace EPlast.Tests.Controllers
 
             var result = await adminController.Delete("SomeUserId");
 
-            _adminService.Verify();
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkResult>(result);
         }
@@ -212,7 +207,6 @@ namespace EPlast.Tests.Controllers
 
             var result = await adminController.Edit("", roles);
 
-            _adminService.Verify();
             Assert.NotNull(result);
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
@@ -229,7 +223,6 @@ namespace EPlast.Tests.Controllers
 
             var result = await adminController.Edit("UserId", roles);
 
-            _adminService.Verify();
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkResult>(result);
         }
@@ -243,7 +236,6 @@ namespace EPlast.Tests.Controllers
 
             var result = await adminController.GetAdmins(2);
 
-            _adminService.Verify();
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
@@ -302,7 +294,6 @@ namespace EPlast.Tests.Controllers
 
             var result = await adminController.RegionsAdmins();
 
-            _adminService.Verify();
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
@@ -317,7 +308,6 @@ namespace EPlast.Tests.Controllers
 
             var result = await adminController.RegionsAdmins();
 
-            _cityService.Verify();
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
@@ -325,39 +315,16 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task UsersTable_Valid_Test()
         {
-            _adminService.Setup(a => a.GetUsersTableAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
-                It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>()))
-                .ReturnsAsync(CreateTuple);
+            _adminService.Setup(a => a.GetUsersTableAsync());
 
             AdminController adminController = CreateAdminController;
 
             // Act
-            var result = await adminController.GetUsersTable(CreateTableFilterParameters);
+            var result = await adminController.GetUsersTable();
 
             // Assert
-            _adminService.Verify();
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
-
-        private TableFilterParameters CreateTableFilterParameters => new TableFilterParameters()
-        {
-            Page = 1,
-            PageSize = 10,
-            TotalRow = 5,
-            Tab = "TAB",
-            Cities = new List<string>(),
-            Regions = new List<string>(),
-            Clubs = new List<string>(),
-            Degrees = new List<string>()
-        };
-
-        private Tuple<IEnumerable<UserTableDTO>, int> CreateTuple => new Tuple<IEnumerable<UserTableDTO>, int>(CreateUserTableObjects, 100);
-
-        private IEnumerable<UserTableDTO> CreateUserTableObjects => new List<UserTableDTO>()
-        {
-            new UserTableDTO(),
-            new UserTableDTO()
-        };
     }
 }
