@@ -49,9 +49,9 @@ namespace EPlast.Tests.Services.Decision
             mapper.Setup(m => m.Map<DecisionDTO>(It.IsAny<Decesion>()))
                 .Returns(() => GetTestDecisionsDtoListElement());
             mapper.Setup(m => m.Map<IEnumerable<DecisionDTO>>(It.IsAny<IEnumerable<Decesion>>())).Returns(GetTestDecisionsDtoList);
-            mapper.Setup(m => m.Map<OrganizationDTO>(It.IsAny<Organization>()))
+            mapper.Setup(m => m.Map<GoverningBodyDTO>(It.IsAny<Organization>()))
                 .Returns(GetTestOrganizationDtoList()[0]);
-            mapper.Setup(m => m.Map<IEnumerable<OrganizationDTO>>(It.IsAny<IEnumerable<Organization>>()))
+            mapper.Setup(m => m.Map<IEnumerable<GoverningBodyDTO>>(It.IsAny<IEnumerable<Organization>>()))
                 .Returns(GetTestOrganizationDtoList());
             _decisionService = new DecisionService(_repository.Object, mapper.Object, _decisionVmCreator.Object, _decisionBlobStorage.Object, _uniqueId.Object);
         }
@@ -183,31 +183,31 @@ namespace EPlast.Tests.Services.Decision
         public async Task GetDecisionOrganizationAsyncWithEmptyOrNullParameterTest(string organizationName)
         {
             //Arrange
-            OrganizationDTO organization = GetTestOrganizationDtoList()[0];
-            organization.OrganizationName = organizationName;
-            _repository.Setup(rep => rep.Organization.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
-                It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new Organization() { ID = organization.ID });
+            GoverningBodyDTO governingBody = GetTestOrganizationDtoList()[0];
+            governingBody.GoverningBodyName = organizationName;
+            _repository.Setup(rep => rep.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+                It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new Organization() { ID = governingBody.ID });
 
             //Act
-            var actualReturn = await _decisionService.GetDecisionOrganizationAsync(organization);
+            var actualReturn = await _decisionService.GetDecisionOrganizationAsync(governingBody);
 
             //Assert
-            Assert.AreEqual(organization.ID, actualReturn.ID);
+            Assert.AreEqual(governingBody.ID, actualReturn.ID);
         }
 
         [Test]
         public async Task GetDecisionOrganizationAsyncWithRightParameterTest()
         {
             //Arrange
-            OrganizationDTO organization = GetTestOrganizationDtoList()[0];
-            _repository.Setup(rep => rep.Organization.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
-                It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new Organization() { OrganizationName = organization.OrganizationName });
+            GoverningBodyDTO organization = GetTestOrganizationDtoList()[0];
+            _repository.Setup(rep => rep.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+                It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new Organization() { OrganizationName = organization.GoverningBodyName });
 
             //Act
             var actualReturn = await _decisionService.GetDecisionOrganizationAsync(organization);
 
             //Assert
-            Assert.AreEqual(organization.OrganizationName, actualReturn.OrganizationName);
+            Assert.AreEqual(organization.GoverningBodyName, actualReturn.GoverningBodyName);
         }
 
         [TestCase("filename1")]
@@ -228,15 +228,15 @@ namespace EPlast.Tests.Services.Decision
         public async Task GetOrganizationListAsyncTest()
         {
             //Arrange
-            List<OrganizationDTO> organizations = GetTestOrganizationDtoList();
-            _repository.Setup(rep => rep.Organization.GetAllAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+            List<GoverningBodyDTO> governingBodyDtos = GetTestOrganizationDtoList();
+            _repository.Setup(rep => rep.GoverningBody.GetAllAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
                 It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new List<Organization>());
 
             //Act
-            var actualReturn = await _decisionService.GetOrganizationListAsync();
+            var actualReturn = await _decisionService.GetGoverningBodyListAsync();
 
             //Assert
-            Assert.AreEqual(organizations.Aggregate("", (x, y) => x += y.OrganizationName), actualReturn.Aggregate("", (x, y) => x += y.OrganizationName));
+            Assert.AreEqual(governingBodyDtos.Aggregate("", (x, y) => x += y.GoverningBodyName), actualReturn.Aggregate("", (x, y) => x += y.GoverningBodyName));
         }
 
         [Test]
@@ -303,10 +303,10 @@ namespace EPlast.Tests.Services.Decision
         {
             return new List<DecisionDTO>
             {
-                new DecisionDTO {ID = 1,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
-                new DecisionDTO {ID = 2,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
-                new DecisionDTO {ID = 3,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()},
-                new DecisionDTO {ID = 4,Description = "old", Organization = new OrganizationDTO(), DecisionTarget = new DecisionTargetDTO()}
+                new DecisionDTO {ID = 1,Description = "old", GoverningBody = new GoverningBodyDTO(), DecisionTarget = new DecisionTargetDTO()},
+                new DecisionDTO {ID = 2,Description = "old", GoverningBody = new GoverningBodyDTO(), DecisionTarget = new DecisionTargetDTO()},
+                new DecisionDTO {ID = 3,Description = "old", GoverningBody = new GoverningBodyDTO(), DecisionTarget = new DecisionTargetDTO()},
+                new DecisionDTO {ID = 4,Description = "old", GoverningBody = new GoverningBodyDTO(), DecisionTarget = new DecisionTargetDTO()}
             };
         }
 
@@ -315,12 +315,12 @@ namespace EPlast.Tests.Services.Decision
             return GetTestDecisionsDtoList().First(x => x.ID == id);
         }
 
-        private static List<OrganizationDTO> GetTestOrganizationDtoList()
+        private static List<GoverningBodyDTO> GetTestOrganizationDtoList()
         {
-            return new List<OrganizationDTO>
+            return new List<GoverningBodyDTO>
             {
-                new OrganizationDTO {ID = 1,OrganizationName = "Organization1"},
-                new OrganizationDTO {ID = 2,OrganizationName = "Organization2"},
+                new GoverningBodyDTO {ID = 1,GoverningBodyName = "Organization1"},
+                new GoverningBodyDTO {ID = 2,GoverningBodyName = "Organization2"},
             };
         }
     }

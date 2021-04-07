@@ -1,6 +1,8 @@
-﻿using EPlast.BLL.Interfaces.City;
+﻿using EPlast.BLL.DTO.Admin;
+using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Services.Interfaces;
+using EPlast.Resources;
 using EPlast.WebApi.Models.Admin;
 using EPlast.WebApi.Models.Role;
 using Microsoft.AspNetCore.Authorization;
@@ -13,7 +15,7 @@ namespace EPlast.WebApi.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [Authorize(Roles = "Admin, Голова Округу, Голова Станиці, Голова Куреня, Пластун")]
+    [Authorize(Roles = Roles.HeadsAdminAndPlastun)]
     public class AdminController : ControllerBase
     {
         private readonly IAdminService _adminService;
@@ -86,7 +88,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">User id is null</response>
         [HttpGet("confirmDelete/{userId}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = Roles.Admin)]
         [ActionName("Delete")]
         public ActionResult ConfirmDelete(string userId)
         {
@@ -104,7 +106,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="userId">The id of the user, which must be deleted</param>
         /// <response code="200">Successful operation</response>
         /// <response code="404">User id is null</response>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = Roles.Admin)]
         [HttpDelete("deleteUser/{userId}")]
         public async Task<IActionResult> Delete(string userId)
         {
@@ -215,14 +217,24 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Get all users with additional information
+        /// Get a specific number of users
         /// </summary>
-        /// <returns>Specify model with all users</returns>
-        /// <response code="200">Successful operation</response>
-        [HttpGet("usersTable")]
-        public async Task<IActionResult> GetUsersTable()
+        /// <param name="tableFilterParameters">Items to filter</param>
+        /// <returns>A specific number of users</returns>
+        [HttpGet("Profiles")]
+        public async Task<IActionResult> GetUsersTable([FromQuery] TableFilterParameters tableFilterParameters)
         {
-            return Ok(await _adminService.GetUsersTableAsync());
+            var tuple = await _adminService.GetUsersTableAsync(tableFilterParameters.Page, tableFilterParameters.PageSize, tableFilterParameters.Tab,
+                              tableFilterParameters.Regions, tableFilterParameters.Cities, tableFilterParameters.Clubs, tableFilterParameters.Degrees);
+            var users = tuple.Item1;
+            var usersCount = tuple.Item2;
+            var tableViewModel = new AdminTypeViewModel()
+            {
+                Total = usersCount,
+                Users = users
+            };
+
+            return Ok(tableViewModel);
         }
 
         /// <summary>

@@ -9,7 +9,7 @@ namespace EPlast.WebApi.Models.UserModels.UserProfileFields
         public string PlaceOfwork { get; set; }
         [Display(Name = "Посада")]
         [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'().`]{1,31}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'().`]{1,31})*$",
-            ErrorMessage = "Посада має містити тільки літери")]
+            ErrorMessage = "Поле 'Посада' має містити тільки літери")]
         public string Position { get; set; }
     }
 }

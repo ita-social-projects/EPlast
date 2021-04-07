@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
@@ -40,6 +41,7 @@ namespace EPlast.Tests.Controllers
             //Assert
             _mockCalendarService.Verify();
             Assert.IsNotNull(result);
+            Assert.AreEqual(((result as ObjectResult).Value as IEnumerable<EventCalendarInfoDTO>).Count(), expectedCount);
             Assert.IsInstanceOf<ObjectResult>(result);
         }
 
@@ -75,6 +77,7 @@ namespace EPlast.Tests.Controllers
 
             //Assert
             _mockCalendarService.Verify();
+            Assert.AreEqual(((result as ObjectResult).Value as IEnumerable<EventCalendarInfoDTO>).Count(), expectedCount);
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
@@ -111,6 +114,7 @@ namespace EPlast.Tests.Controllers
 
             //Assert
             _mockCalendarService.Verify();
+            Assert.AreEqual(((result as ObjectResult).Value as IEnumerable<EventCalendarInfoDTO>).Count(), expectedCount);
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }

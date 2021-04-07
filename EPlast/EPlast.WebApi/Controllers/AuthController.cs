@@ -142,10 +142,10 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Method for sending question to admin in system
+        /// Method for sending question to Admin in system
         /// </summary>
         /// <param name="contactsDto">Contacts model(dto)</param>
-        /// <returns>Answer from backend sending question to admin in system</returns>
+        /// <returns>Answer from backend sending question to Admin in system</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="404">Problems with sending question</response>
         [HttpPost("sendQuestion")]

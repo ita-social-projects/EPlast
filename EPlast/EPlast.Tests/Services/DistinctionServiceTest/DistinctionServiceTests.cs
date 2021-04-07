@@ -4,6 +4,7 @@ using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
@@ -269,7 +270,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         {
             return new List<string>
             {
-                "Admin",
+                Roles.Admin,
                 "Htos",
                 "Nixto"
 

@@ -1,19 +1,19 @@
 ﻿using System.ComponentModel;
 
-
 namespace EPlast.BLL.DTO.ActiveMembership
 {
     public enum AccessLevelTypeDTO
     {
-        [Description("Колишній член (пласт сприят)")]
-        FormerMember,
+        [Description("Зареєстрований користувач")]
+        RegisteredUser,
+
         [Description("Доступ прихильника організації")]
         Supporter,
+
         [Description("Доступ члена організації")]
-        Member,
+        PlastMember,
+
         [Description("Доступ члена проводу організації")]
         LeadershipMember
-
-
     }
 }

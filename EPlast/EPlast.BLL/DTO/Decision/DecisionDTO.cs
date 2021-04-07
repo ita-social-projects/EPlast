@@ -11,7 +11,7 @@ namespace EPlast.BLL.DTO
         [Required]
         public DecisionStatusTypeDTO DecisionStatusType { get; set; }
         [Required]
-        public OrganizationDTO Organization { get; set; }
+        public GoverningBodyDTO GoverningBody { get; set; }
         [Required]
         public DecisionTargetDTO DecisionTarget { get; set; }
         [Required]
