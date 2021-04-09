@@ -137,10 +137,11 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubAnnualReport report = null;
+            ClubAnnualReportDTO reportDto = new ClubAnnualReportDTO();
             _repositoryWrapper
                .Setup(x => x.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.Club, bool>>>(),
                It.IsAny<Func<IQueryable<DataAccess.Entities.Club>,
-               IIncludableQueryable<DataAccess.Entities.Club, object>>>())).ReturnsAsync(new DataAccess.Entities.Club() { ID = 2 });
+               IIncludableQueryable<DataAccess.Entities.Club, object>>>())).ReturnsAsync(GetClub());
             _repositoryWrapper
                 .Setup(x => x.ClubAnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAnnualReport, bool>>>(),
                 It.IsAny<Func<IQueryable<ClubAnnualReport>,
@@ -154,8 +155,47 @@ namespace EPlast.Tests.Services.Club
             _mapper
                 .Setup(x=>x.Map<ClubAnnualReportDTO, ClubAnnualReport>(It.IsAny<ClubAnnualReportDTO>()))
                 .Returns(new ClubAnnualReport());
+            _repositoryWrapper.Setup(x => x.CityMembers.GetFirstOrDefaultAsync(
+                It.IsAny<Expression<Func<CityMembers, bool>>>(), It.IsAny<Func<IQueryable<CityMembers>,
+                    IIncludableQueryable<CityMembers, object>>>())).ReturnsAsync(GetCityMembers());
+
             // Act  
-            var result = _service.CreateAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDTO>());
+            var result = _service.CreateAsync(It.IsAny<User>(), reportDto);
+            
+            // Assert
+            Assert.IsNotNull(result);
+        }
+
+        [Test]
+        public void CreateAsync_DegreeNull_ReturnsCorrect()
+        {
+            // Arrange
+            ClubAnnualReport report = null;
+            ClubAnnualReportDTO reportDto = new ClubAnnualReportDTO();
+            _repositoryWrapper
+                .Setup(x => x.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.Club, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.Club>,
+                        IIncludableQueryable<DataAccess.Entities.Club, object>>>())).ReturnsAsync(GetClub());
+            _repositoryWrapper
+                .Setup(x => x.ClubAnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAnnualReport, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubAnnualReport>,
+                        IIncludableQueryable<ClubAnnualReport, object>>>())).ReturnsAsync(report);
+            _clubAccessService
+                .Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(true);
+            _repositoryWrapper
+                .Setup(x => x.UserPlastDegrees.GetAllAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
+                .ReturnsAsync( new List<UserPlastDegree>());
+            _mapper
+                .Setup(x => x.Map<ClubAnnualReportDTO, ClubAnnualReport>(It.IsAny<ClubAnnualReportDTO>()))
+                .Returns(new ClubAnnualReport());
+            _repositoryWrapper.Setup(x => x.CityMembers.GetFirstOrDefaultAsync(
+                It.IsAny<Expression<Func<CityMembers, bool>>>(), It.IsAny<Func<IQueryable<CityMembers>,
+                    IIncludableQueryable<CityMembers, object>>>())).ReturnsAsync(null as CityMembers);
+
+            // Act  
+            var result = _service.CreateAsync(It.IsAny<User>(), reportDto);
+
             // Assert
             Assert.IsNotNull(result);
         }
@@ -319,11 +359,90 @@ namespace EPlast.Tests.Services.Club
             };
         }
 
+        private DataAccess.Entities.Club GetClub()
+        {
+            return new DataAccess.Entities.Club()
+            {
+                ID = 2,
+                ClubMembers = new List<ClubMembers>()
+                {
+                    new ClubMembers()
+                    {
+                        User = new User()
+                        {
+                            FirstName = "",
+                            LastName = "",
+                        }
+                    },
+                    new ClubMembers()
+                    {
+                        UserId = "1",
+                        User = new User()
+                        {
+                            FirstName = "",
+                            LastName = "",
+                        }
+                    }
+                },
+                ClubAdministration = new List<ClubAdministration>()
+                {
+                    new ClubAdministration()
+                    {
+                        AdminTypeId = 69,
+                        User = new User()
+                        {
+                            FirstName = "",
+                            LastName = "",
+                            Email = "",
+                            PhoneNumber = "",
+                        }
+                    },
+                    new ClubAdministration()
+                    {
+                        UserId = "1",
+                        AdminTypeId = 69,
+                        User = new User()
+                        {
+                            FirstName = "",
+                            LastName = "",
+                            Email = "",
+                            PhoneNumber = "",
+                        }
+                    },
+                }
+            };
+        }
+
+        private CityMembers GetCityMembers()
+        {
+            return new CityMembers()
+            {
+                City = new DataAccess.Entities.City()
+                {
+                    Name = "",
+                }
+            };
+        }
+
         private List<UserPlastDegree> GetDegree()
         {
             return new List<UserPlastDegree>()
             {
                 new UserPlastDegree()
+                {
+                    PlastDegree = new PlastDegree()
+                    {
+                        Name = "",
+                    },
+                },
+                new UserPlastDegree()
+                {
+                    UserId = "1",
+                    PlastDegree = new PlastDegree()
+                    {
+                        Name = "",
+                    },
+                }
             };
         }
 
