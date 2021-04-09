@@ -90,7 +90,7 @@ namespace EPlast.BLL.Services
         public async Task<GoverningBodyDTO> GetDecisionOrganizationAsync(GoverningBodyDTO governingBody)
         {
             return _mapper.Map<GoverningBodyDTO>(string.IsNullOrEmpty(governingBody.GoverningBodyName)
-                    ? await _repoWrapper.GoverningBody.GetFirstAsync(x => x.ID == governingBody.ID)
+                    ? await _repoWrapper.GoverningBody.GetFirstAsync(x => x.ID == governingBody.Id)
                     : await _repoWrapper.GoverningBody.GetFirstAsync(x => x.OrganizationName.Equals(governingBody.GoverningBodyName)));
         }
 
