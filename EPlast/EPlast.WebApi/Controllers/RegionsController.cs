@@ -5,6 +5,7 @@ using EPlast.BLL.Interfaces.Region;
 using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Extensions;
 using EPlast.WebApi.Models.Region;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -43,7 +44,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("AddAdministrator")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHead)]
         public async Task<IActionResult> AddAdministrator(RegionAdministrationDTO admin)
         {
             await _regionAdministrationService.AddRegionAdministrator(admin);
@@ -52,7 +53,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("AddDocument")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHead)]
         public async Task<IActionResult> AddDocument(RegionDocumentDTO document)
         {
             await _regionService.AddDocumentAsync(document);
@@ -70,7 +71,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("AddRegion")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHead)]
         public async Task<IActionResult> CreateRegion(RegionDTO region)
         {
             await _regionService.AddRegionAsync(region);
@@ -89,7 +90,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The region annual report does not exist</response>
         [HttpPost("CreateRegionAnnualReportById/{id}/{year}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHead)]
         public async Task<IActionResult> CreateRegionAnnualReportById(int id, int year,
             [FromBody] RegionAnnualReportQuestions regionAnnualReportQuestions)
         {
@@ -115,13 +116,13 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("EditAdministrator")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHead)]
         public async Task<IActionResult> EditAdministrator(RegionAdministrationDTO admin)
         {
             if (admin != null)
             {
                 await _regionAdministrationService.EditRegionAdministrator(admin);
-                _logger.LogInformation($"Successful edit admin: {admin.UserId}");
+                _logger.LogInformation($"Successful edit Admin: {admin.UserId}");
                 return NoContent();
             }
             _logger.LogError("Admin is null");
@@ -160,7 +161,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>List of annual reports</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("GetAllRegionAnnualReports")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHead)]
         public async Task<IActionResult> GetAllRegionAnnualReports()
         {
             return StatusCode(StatusCodes.Status200OK,
@@ -270,7 +271,7 @@ namespace EPlast.WebApi.Controllers
                 regions = await _regionService.GetAllRegionsAsync();
                 await _cache.SetRecordAsync(recordKey, regions);
             }
-            var regionsViewModel = new RegionsViewModel(page, pageSize, regions, regionName, User.IsInRole("Admin"));
+            var regionsViewModel = new RegionsViewModel(page, pageSize, regions, regionName, User.IsInRole(Roles.Admin));
 
             return Ok(regionsViewModel);
         }
@@ -353,7 +354,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpDelete("RemoveAdministration/{Id}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHead)]
         public async Task<IActionResult> Remove(int Id)
         {
             await _regionAdministrationService.DeleteAdminByIdAsync(Id);
@@ -361,7 +362,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpDelete("RemoveRegion/{Id}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHead)]
         public async Task<IActionResult> RemoveAdmin(int Id)
         {
             await _regionService.DeleteRegionByIdAsync(Id);
@@ -369,7 +370,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpDelete("RemoveDocument/{documentId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHead)]
         public async Task<IActionResult> RemoveDocument(int documentId)
         {
             await _regionService.DeleteFileAsync(documentId);

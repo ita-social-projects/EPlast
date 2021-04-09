@@ -1,5 +1,4 @@
 ﻿using EPlast.BLL.DTO.City;
-using EPlast.BLL.DTO.UserProfiles;
 using System;
 
 namespace EPlast.BLL

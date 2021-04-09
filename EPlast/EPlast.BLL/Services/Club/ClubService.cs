@@ -14,6 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EPlast.BLL.Services.CityClub;
 using DataAccessClub = EPlast.DataAccess.Entities;
+using  EPlast.Resources;
 
 namespace EPlast.BLL.Services.Club
 {
@@ -90,10 +91,10 @@ namespace EPlast.BLL.Services.Club
             }
 
             var ClubHead = Club.ClubAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Куреня"
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
             var ClubAdmins = Club.ClubAdministration
-                .Where(a => a.AdminType.AdminTypeName != "Голова Куреня"
+                .Where(a => a.AdminType.AdminTypeName != Roles.KurinHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .Take(6)
                 .ToList();
@@ -133,7 +134,7 @@ namespace EPlast.BLL.Services.Club
             var userId = await _userManager.GetUserIdAsync(user);
             var userRoles = await _userManager.GetRolesAsync(user);
 
-            ClubProfileDto.Club.CanCreate = userRoles.Contains("Admin");
+            ClubProfileDto.Club.CanCreate = userRoles.Contains(Roles.Admin);
             ClubProfileDto.Club.CanEdit = await _clubAccessService.HasAccessAsync(user, ClubId);
             ClubProfileDto.Club.CanJoin = (await _repoWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(u => u.User.Id == userId && u.ClubId == ClubId)) == null;
@@ -217,11 +218,11 @@ namespace EPlast.BLL.Services.Club
             }
 
             var ClubHead = Club.ClubAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Куреня"
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
 
             var ClubAdmins = Club.ClubAdministration
-               .Where(a => a.AdminType.AdminTypeName != "Голова Куреня"
+               .Where(a => a.AdminType.AdminTypeName != Roles.KurinHead
                    && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
 
 
