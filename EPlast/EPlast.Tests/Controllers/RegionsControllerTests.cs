@@ -138,6 +138,24 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task CreateRegionAnnualReportById_InvalidOperationException_Test()
+        {
+            // Arrange
+            _regionAnnualReportService
+                .Setup(x => x.CreateByNameAsync(It.IsAny<User>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<RegionAnnualReportQuestions>()))
+                .Throws(new InvalidOperationException());
+
+            // Act
+            var expected = StatusCodes.Status400BadRequest;
+            var result = await _regionController.CreateRegionAnnualReportById(1, 2021, new RegionAnnualReportQuestions());
+            var actual = (result as StatusCodeResult).StatusCode;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
         public async Task CreateRegionAnnualReportById_Valid_Test()
         {
             // Arrange
