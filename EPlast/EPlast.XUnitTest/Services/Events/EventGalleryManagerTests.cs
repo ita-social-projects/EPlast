@@ -4,7 +4,6 @@ using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Services.Events;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
@@ -34,7 +33,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async void DeletePictureSuccessTest()
+        public async Task DeletePictureSuccessTest()
         {
             //Arrange
             int eventId = 145;
@@ -52,7 +51,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async void DeletePictureFailTest()
+        public async Task DeletePictureFailTest()
         {
             //Arrange
             int eventId = 145;
@@ -68,7 +67,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async void GetPicturesInBase64Test()
+        public async Task GetPicturesInBase64Test()
         {
             //Arrange
             int eventId = 145;
@@ -88,7 +87,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async void FillEventGalleryTest()
+        public async Task FillEventGalleryTest()
         {
             //Arrange
             int eventId = 145;

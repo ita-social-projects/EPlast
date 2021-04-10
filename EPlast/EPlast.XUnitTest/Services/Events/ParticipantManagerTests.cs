@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Moq;
 using System;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.Events
@@ -26,7 +27,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async void SubscribeOnEventSuccessTest()
+        public async Task SubscribeOnEventSuccessTest()
         {
             //Arrange
             var targetEvent = new Event() { ID = 1, EventStatusID = 3 };
@@ -48,7 +49,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async void SubscribeOnEventConflictTest()
+        public async Task SubscribeOnEventConflictTest()
         {
             //Arrange
             var targetEvent = new Event() { ID = 1, EventStatusID = 2 };
@@ -67,7 +68,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async void SubscribeOnEventFailTest()
+        public async Task SubscribeOnEventFailTest()
         {
             //Arrange
             var targetEvent = new Event() { ID = 1, EventStatusID = 2 };
@@ -85,7 +86,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async void UnSubscribeOnEventSuccessTest()
+        public async Task UnSubscribeOnEventSuccessTest()
         {
             //Arrange
             var targetEvent = new Event() { ID = 1, EventStatusID = 3 };
@@ -109,7 +110,7 @@ namespace EPlast.XUnitTest.Services.Events
             Assert.Equal(StatusCodes.Status200OK, methodResult);
         }
         [Fact]
-        public async void UnSubscribeOnEventConflictTest()
+        public async Task UnSubscribeOnEventConflictTest()
         {
             //Arrange
             var targetEvent = new Event() { ID = 1, EventStatusID = 3 };
@@ -132,7 +133,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async void UnSubscribeOnEventFailTest()
+        public async Task UnSubscribeOnEventFailTest()
         {
             //Arrange
             var targetEvent = new Event() { ID = 1, EventStatusID = 3 };
@@ -153,7 +154,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async void ChangeStatusToApprovedSuccessTest()
+        public async Task ChangeStatusToApprovedSuccessTest()
         {
             //Arrange
             int participantId = 1;
@@ -174,7 +175,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async void ChangeStatusToApprovedFailTest()
+        public async Task ChangeStatusToApprovedFailTest()
         {
             //Arrange
             int participantId = 1;
@@ -191,7 +192,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async void ChangeStatusToUnderReviewSuccessTest()
+        public async Task ChangeStatusToUnderReviewSuccessTest()
         {
             //Arrange
             int participantId = 1;
@@ -212,7 +213,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async void ChangeStatusToUnderReviewFailTest()
+        public async Task ChangeStatusToUnderReviewFailTest()
         {
             //Arrange
             int participantId = 1;
@@ -229,7 +230,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async void ChangeStatusToRejectedSuccessTest()
+        public async Task ChangeStatusToRejectedSuccessTest()
         {
             //Arrange
             int participantId = 1;
@@ -250,7 +251,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async void ChangeStatusToRejectedFailTest()
+        public async Task ChangeStatusToRejectedFailTest()
         {
             //Arrange
             int participantId = 1;
