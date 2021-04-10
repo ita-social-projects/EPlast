@@ -1,27 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using EPlast.BLL.Interfaces.UserProfiles;
+﻿using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Models;
 using EPlast.BLL.Services.EmailSending;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using Moq;
 using NUnit.Framework;
+using System;
+using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.EmailSending
 {
     internal class EmailContentServiceTests
     {
-        private EmailContentService emailContentService;
+        private EmailContentService _emailContentService;
         private Mock<IUserService> _mockUserService;
 
         [Test]
         public void GetAuthFacebookRegisterEmail_ReturnsEmailModel()
         {
             // Act
-            var result = emailContentService.GetAuthFacebookRegisterEmail();
+            var result = _emailContentService.GetAuthFacebookRegisterEmail();
 
             // Assert
             Assert.NotNull(result);
@@ -32,7 +30,7 @@ namespace EPlast.Tests.Services.EmailSending
         public void GetAuthGoogleRegisterEmail_ReturnsEmailModel()
         {
             // Act
-            var result = emailContentService.GetAuthGoogleRegisterEmail();
+            var result = _emailContentService.GetAuthGoogleRegisterEmail();
 
             // Assert
             Assert.NotNull(result);
@@ -43,7 +41,7 @@ namespace EPlast.Tests.Services.EmailSending
         public void GetAuthGreetingEmail_ReturnsEmailModel(string citiesUrl)
         {
             // Act
-            var result = emailContentService.GetAuthGreetingEmail(citiesUrl);
+            var result = _emailContentService.GetAuthGreetingEmail(citiesUrl);
 
             // Assert
             Assert.NotNull(result);
@@ -60,7 +58,7 @@ namespace EPlast.Tests.Services.EmailSending
                 .ReturnsAsync(userGender);
 
             // Act
-            var result = await emailContentService.GetAuthJoinToCityReminderEmailAsync(citiesUrl, userId);
+            var result = await _emailContentService.GetAuthJoinToCityReminderEmailAsync(citiesUrl, userId);
 
             // Assert
             Assert.NotNull(result);
@@ -71,7 +69,7 @@ namespace EPlast.Tests.Services.EmailSending
         public void GetAuthRegisterEmail_ReturnsEmailModel(string confirmationLink)
         {
             // Act
-            var result = emailContentService.GetAuthRegisterEmail(confirmationLink);
+            var result = _emailContentService.GetAuthRegisterEmail(confirmationLink);
 
             // Assert
             Assert.NotNull(result);
@@ -82,7 +80,7 @@ namespace EPlast.Tests.Services.EmailSending
         public void GetAuthResetPasswordEmail_ReturnsEmailModel(string confirmationLink)
         {
             // Act
-            var result = emailContentService.GetAuthResetPasswordEmail(confirmationLink);
+            var result = _emailContentService.GetAuthResetPasswordEmail(confirmationLink);
 
             // Assert
             Assert.NotNull(result);
@@ -99,7 +97,7 @@ namespace EPlast.Tests.Services.EmailSending
                 .ReturnsAsync(userGender);
 
             // Act
-            var result = await emailContentService.GetCanceledUserEmailAsync(new User(), new User());
+            var result = await _emailContentService.GetCanceledUserEmailAsync(new User(), new User());
 
             // Assert
             Assert.NotNull(result);
@@ -110,7 +108,18 @@ namespace EPlast.Tests.Services.EmailSending
         public void GetCityApproveEmail_ReturnsEmailModel(string cityUrl, string cityName, bool isApproved)
         {
             // Act
-            var result = emailContentService.GetCityApproveEmail(cityUrl, cityName, isApproved);
+            var result = _emailContentService.GetCityApproveEmail(cityUrl, cityName, isApproved);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<EmailModel>(result);
+        }
+
+        [TestCase("Name", "Surname")]
+        public void GetCityAdminAboutNewPlastMemberEmail_ReturnsEmailModel(string userFirstName, string userLastName)
+        {
+            // Act
+            var result = _emailContentService.GetCityAdminAboutNewPlastMemberEmail(userFirstName, userLastName, DateTime.Now);
 
             // Assert
             Assert.NotNull(result);
@@ -127,7 +136,7 @@ namespace EPlast.Tests.Services.EmailSending
                 .ReturnsAsync(userGender);
 
             // Act
-            var result = await emailContentService.GetConfirmedUserEmailAsync(new User(), new User());
+            var result = await _emailContentService.GetConfirmedUserEmailAsync(new User(), new User());
 
             // Assert
             Assert.NotNull(result);
@@ -144,7 +153,7 @@ namespace EPlast.Tests.Services.EmailSending
                 .ReturnsAsync(userGender);
 
             // Act
-            var result = await emailContentService.GetGreetingForNewPlastMemberEmailAsync(userId);
+            var result = await _emailContentService.GetGreetingForNewPlastMemberEmailAsync(userId);
 
             // Assert
             Assert.NotNull(result);
@@ -156,7 +165,7 @@ namespace EPlast.Tests.Services.EmailSending
         {
             _mockUserService = new Mock<IUserService>();
 
-            emailContentService = new EmailContentService(_mockUserService.Object);
+            _emailContentService = new EmailContentService(_mockUserService.Object);
         }
     }
 }
