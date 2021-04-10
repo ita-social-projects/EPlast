@@ -54,7 +54,7 @@ namespace EPlast.WebApi.StartupExtensions
                                             TimeZoneInfo.Local);
             recurringJobManager.AddOrUpdate("New Plast members greeting",
                                             () => serviceProvider.GetService<INewPlastMemberEmailGreetingService>()
-                                                                 .NotifyNewPlastMembersAsync(),
+                                                                 .NotifyNewPlastMembersAndCityAdminsAsync(),
                                             Cron.Daily(),
                                             TimeZoneInfo.Local);
         }

@@ -78,7 +78,7 @@ namespace EPlast.Tests.Services.EmailSending
                 .ReturnsAsync(new EmailModel());
 
             // Act
-            await _newPlastMemberEmailGreetingService.NotifyNewPlastMembersAsync();
+            await _newPlastMemberEmailGreetingService.NotifyNewPlastMembersAndCityAdminsAsync();
 
             // Assert
             _mockRepoWrapper.Verify();
@@ -115,7 +115,7 @@ namespace EPlast.Tests.Services.EmailSending
                 .ReturnsAsync(new EmailModel());
 
             // Act
-            await _newPlastMemberEmailGreetingService.NotifyNewPlastMembersAsync();
+            await _newPlastMemberEmailGreetingService.NotifyNewPlastMembersAndCityAdminsAsync();
 
             // Assert
             _mockRepoWrapper.Verify();

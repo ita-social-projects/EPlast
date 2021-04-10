@@ -1,4 +1,5 @@
-﻿using EPlast.BLL.Interfaces;
+﻿using System;
+using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Models;
 using EPlast.DataAccess.Entities;
@@ -162,6 +163,22 @@ namespace EPlast.BLL.Services.EmailSending
                             + "складання Пластової присяги."
                             + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>"
                             + "При виникненні питань просимо звертатись на скриньку volunteering@plast.org.ua"
+            };
+        }
+
+        /// <inheritdoc />
+        public EmailModel GetCityAdminAboutNewPlastMemberEmail(string userFirstName, string userLastName, DateTime? userBirthday)
+        {
+            var governingBodyName = userBirthday?.AddYears(35) - DateTime.Now <= TimeSpan.Zero
+                ? "КБ УПС"
+                : "КБ УСП";
+
+            return new EmailModel
+            {
+                Title = "EPlast",
+                Subject = "У члена вашої станиці завершився випробувальний термін",
+                Message = $"<p>У користувача {userFirstName} {userLastName} завершився випробувальний термін. "
+                          + $"Подай його справу до керівного органу: {governingBodyName}.</p>"
             };
         }
 

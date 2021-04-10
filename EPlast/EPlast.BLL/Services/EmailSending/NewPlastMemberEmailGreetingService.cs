@@ -1,4 +1,6 @@
 ﻿using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
@@ -14,23 +16,36 @@ namespace EPlast.BLL.Services
     {
         private readonly IEmailSendingService _emailSendingService;
         private readonly IEmailContentService _emailContentService;
+        private readonly ICityService _cityService;
+        private readonly IUserService _userService;
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
 
         public NewPlastMemberEmailGreetingService(IRepositoryWrapper repoWrapper,
                                            UserManager<User> userManager,
                                            IEmailSendingService emailSendingService,
-                                           IEmailContentService emailContentService)
+                                           IEmailContentService emailContentService,
+                                           ICityService cityService,
+                                           IUserService userService)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
             _emailSendingService = emailSendingService;
             _emailContentService = emailContentService;
+            _cityService = cityService;
+            _userService = userService;
         }
 
-        public async Task NotifyNewPlastMembersAsync()
+        public async Task NotifyNewPlastMembersAndCityAdminsAsync()
         {
-            var tasks = (from user in await GetNewPlastMembersAsync() select SendEmailGreetingForNewPlastMemberAsync(user.Email, user.Id)).Cast<Task>().ToList();
+            var tasks = new List<Task>();
+            var users = await GetNewPlastMembersAsync();
+            foreach (var user in users)
+            {
+                tasks.Add(SendEmailGreetingForNewPlastMemberAsync(user.Email, user.Id));
+                tasks.Add(NotifyCityAdminsAsync(user.Id));
+            }
+
             await Task.WhenAll(tasks);
         }
 
@@ -45,7 +60,7 @@ namespace EPlast.BLL.Services
                 if (await _userManager.IsInRoleAsync(user, role) || await IsAdminAsync(user)) continue;
 
                 var timeToJoinPlast = user.RegistredOn.AddYears(1) - DateTime.Now;
-                TimeSpan halfOfYear = new TimeSpan(182, 0, 0, 0);
+                var halfOfYear = new TimeSpan(182, 0, 0, 0);
                 if (_repoWrapper.ConfirmedUser.FindByCondition(x => x.UserID == user.Id).Any(q => q.isClubAdmin))
                 {
                     timeToJoinPlast = timeToJoinPlast.Subtract(halfOfYear);
@@ -57,19 +72,46 @@ namespace EPlast.BLL.Services
                     newPlastuns.Add(user);
                 }
             }
-            return (newPlastuns);
+            return newPlastuns;
+        }
+
+        public async Task NotifyCityAdminsAsync(string newPlastMemberId)
+        {
+            var newPlastMember = await _userService.GetUserAsync(newPlastMemberId);
+            var city = await _repoWrapper.City.GetFirstOrDefaultAsync(x => x.Name == newPlastMember.CityMembers.First().City.Name);
+            var cityProfile = await _cityService.GetCityAdminsAsync(city.ID);
+
+            foreach (var admin in cityProfile.Admins.Select(cityAdmin => cityAdmin.User))
+            {
+                await SendEmailCityAdminAboutNewPlastMemberAsync(admin.Email, newPlastMember.FirstName,
+                    newPlastMember.LastName, newPlastMember.UserProfile.Birthday);
+            }
+
+            var cityHead = cityProfile.Head.User;
+            await SendEmailCityAdminAboutNewPlastMemberAsync(cityHead.Email, newPlastMember.FirstName,
+                newPlastMember.LastName, newPlastMember.UserProfile.Birthday);
         }
 
         private async Task<bool> IsAdminAsync(User user)
         {
             var userRoles = await _userManager.GetRolesAsync(user);
-            return (userRoles.Contains("Admin"));
+            return userRoles.Contains(Roles.Admin);
         }
 
         private async Task<bool> SendEmailGreetingForNewPlastMemberAsync(string userEmail, string userId)
         {
-            var email = await _emailContentService.GetGreetingForNewPlastMemberEmailAsync(userId);
-            return await _emailSendingService.SendEmailAsync(userEmail, email.Subject, email.Message, email.Title);
+            var emailContent = await _emailContentService.GetGreetingForNewPlastMemberEmailAsync(userId);
+            return await _emailSendingService.SendEmailAsync(userEmail, emailContent.Subject, emailContent.Message,
+                emailContent.Title);
+        }
+
+        private async Task<bool> SendEmailCityAdminAboutNewPlastMemberAsync(string cityAdminEmail, string userFirstName,
+            string userLastName, DateTime? userBirthday)
+        {
+            var emailContent =
+                _emailContentService.GetCityAdminAboutNewPlastMemberEmail(userFirstName, userLastName, userBirthday);
+            return await _emailSendingService.SendEmailAsync(cityAdminEmail, emailContent.Subject, emailContent.Message,
+                emailContent.Title);
         }
     }
 }

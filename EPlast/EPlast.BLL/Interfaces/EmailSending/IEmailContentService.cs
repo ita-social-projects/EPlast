@@ -1,5 +1,6 @@
 ﻿using EPlast.BLL.Models;
 using EPlast.DataAccess.Entities;
+using System;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Interfaces
@@ -41,6 +42,15 @@ namespace EPlast.BLL.Interfaces
         /// <param name="confirmationLink">Password resetting confirmation link</param>
         /// <returns>Email content</returns>
         EmailModel GetAuthResetPasswordEmail(string confirmationLink);
+
+        /// <summary>
+        /// Get email for city admin to inform about new plast member in his city
+        /// </summary>
+        /// <param name="userFirstName">User first name</param>
+        /// <param name="userLastName">User last name</param>
+        /// <param name="userBirthday">User birthday</param>
+        /// <returns>Email content</returns>
+        EmailModel GetCityAdminAboutNewPlastMemberEmail(string userFirstName, string userLastName, DateTime? userBirthday);
 
         /// <summary>
         /// Get email to inform user about approve or exclude from city
