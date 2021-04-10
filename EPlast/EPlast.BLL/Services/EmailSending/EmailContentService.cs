@@ -170,8 +170,8 @@ namespace EPlast.BLL.Services.EmailSending
         public EmailModel GetCityAdminAboutNewPlastMemberEmail(string userFirstName, string userLastName, DateTime? userBirthday)
         {
             var governingBodyName = userBirthday?.AddYears(35) - DateTime.Now <= TimeSpan.Zero
-                ? "КБ УПС"
-                : "КБ УСП";
+                ? "КБ УСП"
+                : "КБ УПС";
 
             return new EmailModel
             {
