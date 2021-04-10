@@ -78,8 +78,7 @@ namespace EPlast.BLL.Services
         public async Task NotifyCityAdminsAsync(string newPlastMemberId)
         {
             var newPlastMember = await _userService.GetUserAsync(newPlastMemberId);
-            var city = await _repoWrapper.City.GetFirstOrDefaultAsync(x => x.Name == newPlastMember.CityMembers.First().City.Name);
-            var cityProfile = await _cityService.GetCityAdminsAsync(city.ID);
+            var cityProfile = await _cityService.GetCityAdminsAsync(newPlastMember.CityMembers.First().CityId);
 
             foreach (var admin in cityProfile.Admins.Select(cityAdmin => cityAdmin.User))
             {
