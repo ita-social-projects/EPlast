@@ -197,11 +197,11 @@ namespace EPlast.XUnitTest
             GoverningBodyDTO organization = GetTestOrganizationDtoList()[0];
             organization.GoverningBodyName = organizationName;
             _repository.Setup(rep => rep.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
-                It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new Organization() { ID = organization.ID });
+                It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new Organization() { ID = organization.Id });
 
             var actualReturn = await _decisionService.GetDecisionOrganizationAsync(organization);
 
-            Assert.Equal(organization.ID, actualReturn.ID);
+            Assert.Equal(organization.Id, actualReturn.Id);
         }
 
         [Fact]
@@ -316,8 +316,8 @@ namespace EPlast.XUnitTest
         {
             return new List<GoverningBodyDTO>
             {
-                new GoverningBodyDTO {ID = 1, GoverningBodyName = "Organization1"},
-                new GoverningBodyDTO {ID = 2, GoverningBodyName = "Organization2"},
+                new GoverningBodyDTO {Id = 1, GoverningBodyName = "Organization1"},
+                new GoverningBodyDTO {Id = 2, GoverningBodyName = "Organization2"},
             };
         }
     }

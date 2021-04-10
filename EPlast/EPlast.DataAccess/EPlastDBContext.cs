@@ -6,6 +6,7 @@ using EPlast.DataAccess.Entities.UserEntities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Math.EC.Rfc7748;
 
 namespace EPlast.DataAccess
 {
@@ -38,7 +39,6 @@ namespace EPlast.DataAccess
         public DbSet<EventAdministration> EventAdministration { get; set; }
         public DbSet<EventAdministrationType> EventAdministrationType { get; set; }
         public DbSet<UserTableObject> UserTableObjects { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -117,6 +117,11 @@ namespace EPlast.DataAccess
                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<User>()
+                .HasMany(x => x.GoverningBodyAdministrations)
+                .WithOne(x => x.User)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>()
                .HasMany(x => x.RegionAdministrations)
                .WithOne(x => x.User)
                .OnDelete(DeleteBehavior.Cascade);
@@ -186,10 +191,8 @@ namespace EPlast.DataAccess
                 annualReport.HasOne(a => a.Club);
             });
         }
-
         public DbSet<RegionAnnualReport> RegionAnnualReports { get; set; }
         public DbSet<DocumentTemplate> DocumentTemplates { get; set; }
-        public DbSet<Organization> Organization { get; set; }
         public DbSet<DecesionTarget> DecesionTargets { get; set; }
         public DbSet<Decesion> Decesions { get; set; }
         public DbSet<MethodicDocument> MethodicDocuments { get; set; }
@@ -197,6 +200,9 @@ namespace EPlast.DataAccess
         public DbSet<ClubAnnualReport> ClubAnnualReports { get; set; }
 
         public DbSet<MembersStatistic> MembersStatistics { get; set; }
+
+        public DbSet<Organization> Organization { get; set; }
+        public DbSet<GoverningBodyAdministration> GoverningBodyAdministrations { get; set; }
 
         public DbSet<City> Cities { get; set; }
         public DbSet<CityAdministration> CityAdministrations { get; set; }
