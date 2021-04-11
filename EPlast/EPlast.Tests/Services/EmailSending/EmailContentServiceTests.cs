@@ -104,11 +104,34 @@ namespace EPlast.Tests.Services.EmailSending
             Assert.IsInstanceOf<EmailModel>(result);
         }
 
-        [TestCase("cityUrl", "cityName", true)]
-        public void GetCityApproveEmail_ReturnsEmailModel(string cityUrl, string cityName, bool isApproved)
+        [TestCase("cityUrl", "cityName", "userId", UserGenders.Male)]
+        [TestCase("cityUrl", "cityName", "userId", UserGenders.Female)]
+        [TestCase("cityUrl", "cityName", "userId", UserGenders.Other)]
+        public async Task GetCityApproveEmailAsync_ReturnsEmailModel(string cityUrl, string cityName, string userId, string userGender)
         {
+            // Arrange
+            _mockUserService.Setup(x => x.GetUserGenderAsync(It.IsAny<string>()))
+                .ReturnsAsync(userGender);
+
             // Act
-            var result = _emailContentService.GetCityApproveEmail(cityUrl, cityName, isApproved);
+            var result = await _emailContentService.GetCityApproveEmailAsync(userId, cityUrl, cityName);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<EmailModel>(result);
+        }
+
+        [TestCase("cityUrl", "cityName", "userId", UserGenders.Male)]
+        [TestCase("cityUrl", "cityName", "userId", UserGenders.Female)]
+        [TestCase("cityUrl", "cityName", "userId", UserGenders.Other)]
+        public async Task GetCityExcludeEmailAsync_ReturnsEmailModel(string cityUrl, string cityName, string userId, string userGender)
+        {
+            // Arrange
+            _mockUserService.Setup(x => x.GetUserGenderAsync(It.IsAny<string>()))
+                .ReturnsAsync(userGender);
+
+            // Act
+            var result = await _emailContentService.GetCityExcludeEmailAsync(userId, cityUrl, cityName);
 
             // Assert
             Assert.NotNull(result);

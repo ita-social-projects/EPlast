@@ -93,11 +93,6 @@ namespace EPlast.Tests.Services.EmailSending
                     .Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
                                                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
                     .ReturnsAsync(users);
-            _mockRepoWrapper.Setup(x => x.City.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
-                    It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
-                        IIncludableQueryable<DataAccess.Entities.City, object>>>()))
-                .ReturnsAsync(new DataAccess.Entities.City());
             _mockUserManager
                 .Setup((x) => x.IsInRoleAsync(It.IsAny<User>(),
                                               It.IsAny<string>()))

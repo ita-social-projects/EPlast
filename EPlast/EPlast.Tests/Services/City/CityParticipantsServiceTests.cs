@@ -676,8 +676,8 @@ namespace EPlast.Tests.Services.City
                                              It.IsAny<string>()))
                 .ReturnsAsync(true);
             _emailContentService
-                .Setup(x => x.GetCityApproveEmail(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
-                .Returns(new EmailModel());
+                .Setup(x => x.GetCityApproveEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(new EmailModel());
 
             // Act
             var result = await _cityParticipantsService.ToggleApproveStatusAsync(fakeId);
