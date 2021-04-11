@@ -53,13 +53,22 @@ namespace EPlast.BLL.Interfaces
         EmailModel GetCityAdminAboutNewPlastMemberEmail(string userFirstName, string userLastName, DateTime? userBirthday);
 
         /// <summary>
-        /// Get email to inform user about approve or exclude from city
+        /// Get email to inform user about approve in city
         /// </summary>
+        /// <param name="userId">User id</param>
         /// <param name="cityUrl">City url</param>
         /// <param name="cityName">City name</param>
-        /// <param name="isApproved">Is user approved or removed</param>
         /// <returns>Email content</returns>
-        EmailModel GetCityApproveEmail(string cityUrl, string cityName, bool isApproved);
+        Task<EmailModel> GetCityApproveEmailAsync(string userId, string cityUrl, string cityName);
+
+        /// <summary>
+        /// Get email to inform user about exclude from city
+        /// </summary>
+        /// <param name="userId">User id</param>
+        /// <param name="cityUrl">City url</param>
+        /// <param name="cityName">City name</param>
+        /// <returns>Email content</returns>
+        Task<EmailModel> GetCityExcludeEmailAsync(string userId, string cityUrl, string cityName);
 
         /// <summary>
         /// Get email for reminding to join city

@@ -255,7 +255,7 @@ namespace EPlast.BLL.Services.City
             _repositoryWrapper.CityMembers.Update(cityMember);
             await _repositoryWrapper.SaveAsync();
             await ChangeMembershipDatesByApprove(cityMember.UserId, cityMember.IsApproved);
-            await SendEmailCityApproveAsync(cityMember.User.Email, cityMember.City, cityMember.IsApproved);
+            await SendEmailCityApproveStatusAsync(cityMember.User.Email, cityMember.UserId, cityMember.City, cityMember.IsApproved);
             return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
         }
 
@@ -286,10 +286,12 @@ namespace EPlast.BLL.Services.City
             }
         }
 
-        private async Task SendEmailCityApproveAsync(string email, DataAccess.Entities.City city, bool isApproved)
+        private async Task SendEmailCityApproveStatusAsync(string email, string userId, DataAccess.Entities.City city, bool isApproved)
         {
             var cityUrl = _repositoryWrapper.GetCitiesUrl + city.ID;
-            var emailContent = _emailContentService.GetCityApproveEmail(cityUrl, city.Name, isApproved);
+            var emailContent = isApproved
+                ? await _emailContentService.GetCityApproveEmailAsync(userId, cityUrl, city.Name)
+                : await _emailContentService.GetCityExcludeEmailAsync(userId, cityUrl, city.Name);
             await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message, emailContent.Title);
         }
     }
