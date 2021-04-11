@@ -232,10 +232,14 @@ namespace EPlast.BLL.Services.City
         public async Task RemoveFollowerAsync(int followerId)
         {
             var cityMember = await _repositoryWrapper.CityMembers
-                .GetFirstOrDefaultAsync(u => u.ID == followerId);
+                .GetFirstOrDefaultAsync(u => u.ID == followerId,
+                    m => m.Include(u => u.User)
+                        .Include(u => u.City));
 
             _repositoryWrapper.CityMembers.Delete(cityMember);
             await _repositoryWrapper.SaveAsync();
+
+            await SendEmailRemoveCityFollowerAsync(cityMember.User.Email, cityMember.City);
         }
 
         public async Task RemoveMemberAsync(CityMembers member)
@@ -293,6 +297,14 @@ namespace EPlast.BLL.Services.City
                 ? await _emailContentService.GetCityApproveEmailAsync(userId, cityUrl, city.Name)
                 : await _emailContentService.GetCityExcludeEmailAsync(userId, cityUrl, city.Name);
             await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message, emailContent.Title);
+        }
+
+        private async Task SendEmailRemoveCityFollowerAsync(string email, DataAccess.Entities.City city)
+        {
+            var cityUrl = _repositoryWrapper.GetCitiesUrl + city.ID;
+            var emailContent = _emailContentService.GetCityRemoveFollowerEmail(cityUrl, city.Name);
+            await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message,
+                emailContent.Title);
         }
     }
 }

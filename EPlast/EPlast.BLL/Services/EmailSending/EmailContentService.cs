@@ -261,5 +261,15 @@ namespace EPlast.BLL.Services.EmailSending
                           + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>"
             };
         }
+
+        public EmailModel GetCityRemoveFollowerEmail(string cityUrl, string cityName)
+        {
+            return new EmailModel
+            {
+                Title = "EPlast",
+                Subject = "Зміна статусу заявки у станицю",
+                Message = $"<p>На жаль, тебе було виключено з прихильників станиці: <a href='{cityUrl}'>{cityName}</a>."
+            };
+        }
     }
 }

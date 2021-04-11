@@ -53,6 +53,14 @@ namespace EPlast.BLL.Interfaces
         EmailModel GetCityAdminAboutNewPlastMemberEmail(string userFirstName, string userLastName, DateTime? userBirthday);
 
         /// <summary>
+        /// Get email to inform user about exclude from city followers
+        /// </summary>
+        /// <param name="cityUrl">City url</param>
+        /// <param name="cityName">City name</param>
+        /// <returns>Email content</returns>
+        EmailModel GetCityRemoveFollowerEmail(string cityUrl, string cityName);
+
+        /// <summary>
         /// Get email to inform user about approve in city
         /// </summary>
         /// <param name="userId">User id</param>
