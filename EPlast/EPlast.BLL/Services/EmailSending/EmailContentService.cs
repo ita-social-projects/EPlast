@@ -262,6 +262,7 @@ namespace EPlast.BLL.Services.EmailSending
             };
         }
 
+        /// <inheritdoc />
         public EmailModel GetCityRemoveFollowerEmail(string cityUrl, string cityName)
         {
             return new EmailModel

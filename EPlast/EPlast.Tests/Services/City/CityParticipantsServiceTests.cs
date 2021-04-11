@@ -582,18 +582,34 @@ namespace EPlast.Tests.Services.City
             Assert.NotNull(result);
         }
 
-        [Test]
-        public async Task RemoveFollowerAsync_Valid_Test()
+        [TestCase("email", "CityName")]
+        public async Task RemoveFollowerAsync_Valid_Test(string email, string cityName)
         {
             // Arrange
             _repoWrapper
-                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.CityMembers, bool>>>(),
-                    It.IsAny<Func<IQueryable<DataAccess.Entities.CityMembers>, IIncludableQueryable<DataAccess.Entities.CityMembers, object>>>()))
-                .ReturnsAsync(new CityMembers());
+                .Setup(x => x.CityMembers
+                    .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                        It.IsAny<Func<IQueryable<CityMembers>, IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync(new CityMembers
+                {
+                    UserId = fakeId.ToString(),
+                    User = new User { Email = email },
+                    City = new DataAccess.Entities.City { Name = cityName },
+                    IsApproved = false
+                });
             _repoWrapper
                 .Setup(x => x.CityMembers.Delete(It.IsAny<CityMembers>()));
             _repoWrapper
                .Setup(x => x.SaveAsync());
+            _emailSendingService
+                .Setup(x => x.SendEmailAsync(It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .ReturnsAsync(true);
+            _emailContentService
+                .Setup(x => x.GetCityRemoveFollowerEmail(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(new EmailModel());
 
             // Act
             await _cityParticipantsService.RemoveFollowerAsync(fakeId);

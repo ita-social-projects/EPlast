@@ -149,6 +149,17 @@ namespace EPlast.Tests.Services.EmailSending
             Assert.IsInstanceOf<EmailModel>(result);
         }
 
+        [TestCase("cityUrl", "cityName")]
+        public void GetCityRemoveFollowerEmail_ReturnsEmailModel(string cityUrl, string cityName)
+        {
+            // Act
+            var result = _emailContentService.GetCityRemoveFollowerEmail(cityUrl, cityName);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<EmailModel>(result);
+        }
+
         [TestCase(UserGenders.Male)]
         [TestCase(UserGenders.Female)]
         [TestCase(UserGenders.Other)]
