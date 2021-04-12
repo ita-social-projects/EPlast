@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using EPlast.BLL.DTO.EventUser;
 using Microsoft.EntityFrameworkCore.Query;
 using Xunit;
@@ -22,7 +23,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async void GetTypeIdTest()
+        public async Task GetTypeIdTest()
         {
             //Arrange
             string typeName = "Status Name";
@@ -37,7 +38,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async void GetDTOTest()
+        public async Task GetDTOTest()
         {
             //Arrange
             _repoWrapper.Setup(x => x.EventType.GetAllAsync(null, null))
@@ -52,7 +53,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async void GetTypeByIdTest()
+        public async Task GetTypeByIdTest()
         {
             //Arrange
             var eventTypeId = 1;

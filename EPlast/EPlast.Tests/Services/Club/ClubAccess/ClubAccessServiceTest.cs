@@ -63,7 +63,7 @@ namespace EPlast.Tests.Services.Club.ClubAccess
 
             //Act
             var result = _clubAccessService.GetClubsAsync(_user);
-            var actual = result.Result as IEnumerable<ClubDTO>;
+            var actual = result.Result;
 
             //Assert
             _mockUserManager.Verify();
@@ -136,7 +136,7 @@ namespace EPlast.Tests.Services.Club.ClubAccess
             Assert.IsFalse(result.Result);
         }
 
-        private int _clubId = 3;
+        private readonly int _clubId = 3;
 
         private DatabaseEntities.AdminType _adminType => new DatabaseEntities.AdminType() { };
         private DatabaseEntities.User _user => new DatabaseEntities.User() { };
