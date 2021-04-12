@@ -26,8 +26,9 @@ namespace EPlast.BLL.Interfaces
         /// Sending email reminder to join city
         /// </summary>
         /// <param name="email"></param>
+        /// <param name="userId">User Id</param>
         /// <returns>Result of sending email</returns>
-        Task<bool> SendEmailJoinToCityReminderAsync(string email);
+        Task<bool> SendEmailJoinToCityReminderAsync(string email, string userId);
 
         /// <summary>
         /// Sending email for registration

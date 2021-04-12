@@ -18,10 +18,12 @@ namespace EPlast.BLL.Services.Auth
         private readonly IAuthService _authService;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly IEmailSendingService _emailSendingService;
+        private readonly IEmailContentService _emailContentService;
         private readonly IUrlHelperFactory _urlHelperFactory;
         private readonly UserManager<User> _userManager;
 
         public AuthEmailService(IEmailSendingService emailSendingService,
+                                IEmailContentService emailContentService,
                                 IAuthService authService,
                                 UserManager<User> userManager,
                                 IUrlHelperFactory urlHelperFactory,
@@ -29,6 +31,7 @@ namespace EPlast.BLL.Services.Auth
                                 IHttpContextAccessor contextAccessor)
         {
             _emailSendingService = emailSendingService;
+            _emailContentService = emailContentService;
             _authService = authService;
             _userManager = userManager;
 
@@ -51,25 +54,15 @@ namespace EPlast.BLL.Services.Auth
             var citiesUrl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Cities"];
             var user = await _userManager.FindByEmailAsync(email);
             user.EmailSendedOnRegister = DateTime.Now;
-            var sendResult = await _emailSendingService.SendEmailAsync(user.Email,
-                                                                       "Вітаємо у системі!",
-                                                                       $"Ви успішно активували свій акаунт!\nНе забудьте доєднатись до осередку, перейшовши за :  <a href='{citiesUrl}'>посиланням</a> ",
-                                                                       "EPlast");
-            return sendResult;
+            var emailContent = _emailContentService.GetAuthGreetingEmail(citiesUrl);
+            return await _emailSendingService.SendEmailAsync(user.Email, emailContent.Subject, emailContent.Message, emailContent.Title);
         }
 
-        public async Task<bool> SendEmailJoinToCityReminderAsync(string email)
+        public async Task<bool> SendEmailJoinToCityReminderAsync(string email, string userId)
         {
             var citiesUrl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Cities"];
-            var sendResult = await _emailSendingService.SendEmailAsync(email,
-                                                                       "Нагадування про приєднання до станиці",
-                                                                       "<h3>СКОБ!</h3>"
-                                                                        + "<p>Друже/подруго, просимо тебе доєднатись до пластового осередку впродовж цього тижня."
-                                                                        + $"<br>Зробити це можна, перейшовши за <a href='{citiesUrl}'>посиланням</a>."
-                                                                        + "<br>Профілі без осередку блокуються системою автоматично.</p>"
-                                                                        + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>",
-                                                                       "EPlast");
-            return sendResult;
+            var emailContent = await _emailContentService.GetAuthJoinToCityReminderEmailAsync(citiesUrl, userId);
+            return await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message, emailContent.Title);
         }
 
         /// <inheritdoc />
@@ -83,11 +76,8 @@ namespace EPlast.BLL.Services.Auth
                                                new { token, userId = user.Id },
                                                _contextAccessor.HttpContext.Request.Scheme);
             user.EmailSendedOnRegister = DateTime.Now;
-            var sendResult = await _emailSendingService.SendEmailAsync(email,
-                                                                       "Підтвердження реєстрації ",
-                                                                       $"Підтвердіть реєстрацію, перейшовши за :  <a href='{confirmationLink}'>посиланням</a> ",
-                                                                       "EPlast");
-            return sendResult;
+            var emailContent = _emailContentService.GetAuthRegisterEmail(confirmationLink);
+            return await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message, emailContent.Title);
         }
 
         /// <inheritdoc />
@@ -96,10 +86,8 @@ namespace EPlast.BLL.Services.Auth
             var user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email);
             user.EmailSendedOnForgotPassword = DateTime.Now;
             await _userManager.UpdateAsync(user);
-            await _emailSendingService.SendEmailAsync(forgotPasswordDto.Email,
-                                                      "Скидування пароля",
-                                                      $"Для скидування пароля перейдіть за : <a href='{confirmationLink}'>посиланням</a>",
-                                                      "Адміністрація сайту EPlast");
+            var emailContent = _emailContentService.GetAuthResetPasswordEmail(confirmationLink);
+            await _emailSendingService.SendEmailAsync(forgotPasswordDto.Email, emailContent.Subject, emailContent.Message, emailContent.Title);
         }
     }
 }
