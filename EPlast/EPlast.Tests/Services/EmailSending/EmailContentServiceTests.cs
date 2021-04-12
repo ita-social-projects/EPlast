@@ -160,6 +160,17 @@ namespace EPlast.Tests.Services.EmailSending
             Assert.IsInstanceOf<EmailModel>(result);
         }
 
+        [Test]
+        public void GetCityToSupporterRoleOnApproveEmail_ReturnsEmailModel()
+        {
+            // Act
+            var result = _emailContentService.GetCityToSupporterRoleOnApproveEmail();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<EmailModel>(result);
+        }
+
         [TestCase(UserGenders.Male)]
         [TestCase(UserGenders.Female)]
         [TestCase(UserGenders.Other)]

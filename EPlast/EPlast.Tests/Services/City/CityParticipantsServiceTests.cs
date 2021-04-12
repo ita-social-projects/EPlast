@@ -647,8 +647,9 @@ namespace EPlast.Tests.Services.City
             _cityParticipantsService = new CityParticipantsService(_repoWrapper.Object, _mapper.Object, _userManager.Object, _adminTypeService.Object, _emailSendingService.Object, _emailContentService.Object);
         }
 
-        [Test]
-        public async Task ToggleApproveStatusAsync_Valid_Test()
+        [TestCase(true)]
+        [TestCase(false)]
+        public async Task ToggleApproveStatusAsync_Valid_Test(bool isInRole)
         {
             // Arrange
             _repoWrapper
@@ -671,7 +672,7 @@ namespace EPlast.Tests.Services.City
                 .ReturnsAsync(new User());
             _userManager
                 .Setup(x => x.IsInRoleAsync(It.IsAny<User>(), It.IsAny<string>()))
-                .ReturnsAsync(false);
+                .ReturnsAsync(isInRole);
             _repoWrapper
                 .Setup(m => m.UserMembershipDates
                              .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
@@ -694,6 +695,8 @@ namespace EPlast.Tests.Services.City
             _emailContentService
                 .Setup(x => x.GetCityApproveEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new EmailModel());
+            _emailContentService
+                .Setup(x => x.GetCityToSupporterRoleOnApproveEmail()).Returns(new EmailModel());
 
             // Act
             var result = await _cityParticipantsService.ToggleApproveStatusAsync(fakeId);
