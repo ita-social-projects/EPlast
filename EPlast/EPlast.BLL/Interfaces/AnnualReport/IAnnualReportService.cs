@@ -26,6 +26,14 @@ namespace EPlast.BLL.Services.Interfaces
         Task<IEnumerable<AnnualReportDTO>> GetAllAsync(User user);
 
         /// <summary>
+        /// Method to get all reports that the user has access to
+        /// </summary>
+        /// <param name="user">Authorized user</param>
+        /// <param name="searchedData">Searched Data</param>
+        /// <returns>List of AnnualReportTableObject</returns>
+        Task<IEnumerable<AnnualReportTableObject>> GetAllAsync(User user, string searchedData);
+
+        /// <summary>
         /// Method to create new annual report
         /// </summary>
         /// <param name="user">Authorized user</param>

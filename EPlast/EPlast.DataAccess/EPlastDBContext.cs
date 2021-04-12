@@ -39,6 +39,7 @@ namespace EPlast.DataAccess
         public DbSet<EventAdministration> EventAdministration { get; set; }
         public DbSet<EventAdministrationType> EventAdministrationType { get; set; }
         public DbSet<UserTableObject> UserTableObjects { get; set; }
+        public DbSet<AnnualReportTableObject> AnnualReportTableObjects { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

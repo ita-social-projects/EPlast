@@ -52,6 +52,16 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
+        public async Task<IEnumerable<AnnualReportTableObject>> GetAllAsync(User user, string searchedData)
+        {
+            IEnumerable<AnnualReportTableObject> annualReports = await _repositoryWrapper.AnnualReports.GetAnnualReports(searchedData);
+
+            var citiesDTO = await _cityAccessService.GetCitiesAsync(user);
+            var filteredAnnualReports = annualReports.Where(ar => citiesDTO.Any(c => c.ID == ar.CityId));
+            return filteredAnnualReports;
+        }
+
+        ///<inheritdoc/>
         public async Task CreateAsync(User user, AnnualReportDTO annualReportDTO)
         {
             var city = await _repositoryWrapper.City.GetFirstOrDefaultAsync(

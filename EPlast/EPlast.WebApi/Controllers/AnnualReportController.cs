@@ -57,6 +57,17 @@ namespace EPlast.WebApi.Controllers
             return StatusCode(StatusCodes.Status200OK, new { annualReports = await _annualReportService.GetAllAsync(await _userManager.GetUserAsync(User)) });
         }
 
+        /// <summary>
+        /// Method to get all searched reports that the user has access to
+        /// </summary>
+        /// <returns>List of AnnualReportTableObject</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("Cities")]
+        public async Task<IActionResult> Get(string searchedData)
+        {
+            return StatusCode(StatusCodes.Status200OK, new { annualReports = await _annualReportService.GetAllAsync(await _userManager.GetUserAsync(User), searchedData) });
+        }
+
 
         /// <summary>
         /// Method to get annual report
