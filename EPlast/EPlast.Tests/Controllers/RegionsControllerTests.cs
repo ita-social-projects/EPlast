@@ -15,7 +15,6 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using EPlast.Resources;
 
@@ -227,11 +226,11 @@ namespace EPlast.Tests.Controllers
             string TypeName = Roles.Admin;
             _regionAdministrationService.Setup(x => x.GetAdminType(TypeName)).ReturnsAsync(2);
             // Act
-            var result = await _regionController.GetAdminTypeId(TypeName);
+            var actual = await _regionController.GetAdminTypeId(TypeName);
 
             // Assert
 
-            Assert.AreEqual(result, 2);
+            Assert.AreEqual(2, actual );
         }
 
         [Test]
@@ -403,11 +402,11 @@ namespace EPlast.Tests.Controllers
             _regionAdministrationService.Setup(x => x.GetHead(id)).ReturnsAsync(head);
             // Act
             var result = await _regionController.GetRegionHead(id);
-            var actual = (result as ObjectResult).Value as RegionAdministrationDTO;
+            var actual = ((result as ObjectResult).Value as RegionAdministrationDTO).ID;
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<RegionAdministrationDTO>((result as ObjectResult).Value);
-            Assert.AreEqual(actual.ID, 2);
+            Assert.AreEqual(2, actual);
         }
 
         [Test]

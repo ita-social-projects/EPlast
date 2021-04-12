@@ -12,9 +12,9 @@ namespace EPlast.Tests.Controllers
 {
     internal class ActiveMembershipControllerTests
     {
-        private Mock<IPlastDegreeService> _plastDegreeService;
-        private Mock<IAccessLevelService> _accessLevelService;
-        private Mock<IUserDatesService> _userDatesService;
+        private readonly Mock<IPlastDegreeService> _plastDegreeService;
+        private readonly Mock<IAccessLevelService> _accessLevelService;
+        private readonly Mock<IUserDatesService> _userDatesService;
 
         private ActiveMembershipController _activeMembershipController =>
             new ActiveMembershipController(_plastDegreeService.Object, _accessLevelService.Object, _userDatesService.Object);
