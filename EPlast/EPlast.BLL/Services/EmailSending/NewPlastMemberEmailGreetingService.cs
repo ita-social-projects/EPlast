@@ -80,12 +80,6 @@ namespace EPlast.BLL.Services
             var newPlastMember = await _userService.GetUserAsync(newPlastMemberId);
             var cityProfile = await _cityService.GetCityAdminsAsync(newPlastMember.CityMembers.First().CityId);
 
-            foreach (var admin in cityProfile.Admins.Select(cityAdmin => cityAdmin.User))
-            {
-                await SendEmailCityAdminAboutNewPlastMemberAsync(admin.Email, newPlastMember.FirstName,
-                    newPlastMember.LastName, newPlastMember.UserProfile.Birthday);
-            }
-
             var cityHead = cityProfile.Head.User;
             await SendEmailCityAdminAboutNewPlastMemberAsync(cityHead.Email, newPlastMember.FirstName,
                 newPlastMember.LastName, newPlastMember.UserProfile.Birthday);

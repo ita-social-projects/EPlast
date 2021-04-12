@@ -61,6 +61,12 @@ namespace EPlast.BLL.Interfaces
         EmailModel GetCityRemoveFollowerEmail(string cityUrl, string cityName);
 
         /// <summary>
+        /// Get email to inform user about his new supporter role when he was approved
+        /// </summary>
+        /// <returns>Email content</returns>
+        EmailModel GetCityToSupporterRoleOnApproveEmail();
+
+        /// <summary>
         /// Get email to inform user about approve in city
         /// </summary>
         /// <param name="userId">User id</param>

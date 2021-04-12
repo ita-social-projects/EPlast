@@ -259,8 +259,15 @@ namespace EPlast.BLL.Services.City
             _repositoryWrapper.CityMembers.Update(cityMember);
             await _repositoryWrapper.SaveAsync();
             await ChangeMembershipDatesByApprove(cityMember.UserId, cityMember.IsApproved);
+            var cityMemberDto = _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
+            var user = await _userManager.FindByIdAsync(cityMember.UserId);
+            if (cityMember.IsApproved && await _userManager.IsInRoleAsync(user, Roles.FormerPlastMember))
+            {
+                await GiveUserSupporterRole(user);
+                cityMemberDto.WasInRegisteredUserRole = true;
+            }
             await SendEmailCityApproveStatusAsync(cityMember.User.Email, cityMember.UserId, cityMember.City, cityMember.IsApproved);
-            return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
+            return cityMemberDto;
         }
 
         private async Task ChangeMembershipDatesByApprove(string userId, bool isApproved)
@@ -288,6 +295,15 @@ namespace EPlast.BLL.Services.City
             {
                 await RemoveAdministratorAsync(admin.ID);
             }
+        }
+
+        private async Task GiveUserSupporterRole(User user)
+        {
+            await _userManager.RemoveFromRoleAsync(user, Roles.FormerPlastMember);
+            await _userManager.AddToRoleAsync(user, Roles.Supporter);
+            var emailContent = _emailContentService.GetCityToSupporterRoleOnApproveEmail();
+            await _emailSendingService.SendEmailAsync(user.Email, emailContent.Subject, emailContent.Message,
+                emailContent.Title);
         }
 
         private async Task SendEmailCityApproveStatusAsync(string email, string userId, DataAccess.Entities.City city, bool isApproved)

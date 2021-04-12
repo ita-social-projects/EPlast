@@ -272,5 +272,15 @@ namespace EPlast.BLL.Services.EmailSending
                 Message = $"<p>На жаль, тебе було виключено з прихильників станиці: <a href='{cityUrl}'>{cityName}</a>."
             };
         }
+
+        public EmailModel GetCityToSupporterRoleOnApproveEmail()
+        {
+            return new EmailModel
+            {
+                Title = "EPlast",
+                Subject = "Зміна ролі",
+                Message = "<p>Тобі надано нову роль: 'Прихильник'</p>"
+            };
+        }
     }
 }
