@@ -4,6 +4,7 @@ using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Models;
 using EPlast.BLL.Services.City;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -18,7 +19,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using EPlast.BLL.Models;
 
 namespace EPlast.Tests.Services.City
 {
@@ -135,14 +135,23 @@ namespace EPlast.Tests.Services.City
                 .Setup(x => x.SaveAsync());
             _mapper
                 .Setup(x => x.Map<CityMembers, CityMembersDTO>(It.IsAny<CityMembers>())).Returns(new CityMembersDTO());
+            _userManager
+                .Setup(x => x.IsInRoleAsync(It.IsAny<User>(), It.IsAny<string>()))
+                .ReturnsAsync(true);
+            _emailContentService
+                .Setup(x => x.GetCityAdminAboutNewFollowerEmailAsync(It.IsAny<string>(), It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .ReturnsAsync(new EmailModel());
+
             // Act
             var result = await _cityParticipantsService.AddFollowerAsync(It.IsAny<int>(), It.IsAny<string>());
+
             // Assert
             Assert.IsInstanceOf<CityMembersDTO>(result);
         }
 
         [Test]
-        public async Task AddFollowerAsyncWithUser_Valit_Test()
+        public async Task AddFollowerAsyncWithUser_Valid_Test()
         {
             //Arrange
             _userManager
@@ -710,8 +719,26 @@ namespace EPlast.Tests.Services.City
         {
             return new List<CityAdministration>
             {
-                new CityAdministration{UserId = Roles.CityHead, ID=2},
-                new CityAdministration{UserId = Roles.CityHead, ID=3}
+                new CityAdministration
+                {
+                    UserId = "userId",
+                    ID = 2,
+                    AdminType = new AdminType
+                    {
+                        AdminTypeName = Roles.CityHead
+                    },
+                    User = new User()
+                },
+                new CityAdministration
+                {
+                    UserId = "userId",
+                    ID = 3,
+                    AdminType = new AdminType
+                    {
+                        AdminTypeName = Roles.CityHead
+                    },
+                    User = new User()
+                }
             }.AsEnumerable();
         }
 

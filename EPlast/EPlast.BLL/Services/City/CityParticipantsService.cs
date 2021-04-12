@@ -94,6 +94,11 @@ namespace EPlast.BLL.Services.City
             await _repositoryWrapper.CityMembers.CreateAsync(cityMember);
             await _repositoryWrapper.SaveAsync();
 
+            if (await _userManager.IsInRoleAsync(cityMember.User, Roles.RegisteredUser))
+            {
+                await SendEmailCityAdminAboutNewFollowerAsync(cityMember.CityId, cityMember.User);
+            }
+
             return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
         }
 
@@ -303,6 +308,21 @@ namespace EPlast.BLL.Services.City
             await _userManager.AddToRoleAsync(user, Roles.Supporter);
             var emailContent = _emailContentService.GetCityToSupporterRoleOnApproveEmail();
             await _emailSendingService.SendEmailAsync(user.Email, emailContent.Subject, emailContent.Message,
+                emailContent.Title);
+        }
+
+        private async Task SendEmailCityAdminAboutNewFollowerAsync(int cityId, User user)
+        {
+            var cityAdministration = await _repositoryWrapper.CityAdministration
+                .GetAllAsync(i => i.CityId == cityId,
+                    i => i
+                        .Include(c => c.AdminType)
+                        .Include(a => a.User));
+            var cityHead = cityAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHead
+                                                                  && (DateTime.Now < a.EndDate || a.EndDate == null));
+            var emailContent = await _emailContentService.GetCityAdminAboutNewFollowerEmailAsync(user.Id,
+                user.FirstName, user.LastName);
+            await _emailSendingService.SendEmailAsync(cityHead.User.Email, emailContent.Subject, emailContent.Message,
                 emailContent.Title);
         }
 

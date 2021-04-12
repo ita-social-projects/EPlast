@@ -205,6 +205,24 @@ namespace EPlast.Tests.Services.EmailSending
             Assert.IsInstanceOf<EmailModel>(result);
         }
 
+        [TestCase("userId", "userFirstName", "userLastName", UserGenders.Male)]
+        [TestCase("userId", "userFirstName", "userLastName", UserGenders.Female)]
+        [TestCase("userId", "userFirstName", "userLastName", UserGenders.Other)]
+        public async Task GetCityAdminAboutNewFollowerEmailAsync_ReturnsEmailModel(string userId, string userFirstName,
+            string userLastName, string userGender)
+        {
+            // Arrange
+            _mockUserService.Setup(x => x.GetUserGenderAsync(It.IsAny<string>()))
+                .ReturnsAsync(userGender);
+
+            // Act
+            var result = await _emailContentService.GetCityAdminAboutNewFollowerEmailAsync(userId, userFirstName, userLastName);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<EmailModel>(result);
+        }
+
         [SetUp]
         public void SetUp()
         {

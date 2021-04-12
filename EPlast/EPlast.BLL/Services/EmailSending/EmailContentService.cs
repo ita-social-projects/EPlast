@@ -282,5 +282,38 @@ namespace EPlast.BLL.Services.EmailSending
                 Message = "<p>Тобі надано нову роль: 'Прихильник'</p>"
             };
         }
+
+        public async Task<EmailModel> GetCityAdminAboutNewFollowerEmailAsync(string userId, string userFirstName, string userLastName)
+        {
+            var userGender = await _userService.GetUserGenderAsync(userId);
+
+            var volunteered = userGender switch
+            {
+                UserGenders.Male => "зголосився",
+                UserGenders.Female => "зголосилась",
+                _ => "зголосився/зголосилась"
+            };
+
+            var follower = userGender switch
+            {
+                UserGenders.Male => "прихильника",
+                UserGenders.Female => "прихильниці",
+                _ => "прихильника/прихильниці"
+            };
+
+            return new EmailModel
+            {
+                Title = "EPlast",
+                Subject = "Підтвердіть профіль нового волонтера в системі ePlast",
+                Message = "<h3>СКОБ!</h3>"
+                          + $"<p>До твоєї станиці {volunteered} волонтер {userFirstName} {userLastName}."
+                          + "<p>Бажаємо цікавих знайомств та легкої адаптації :) Просимо переглянути профіль "
+                          + "користувача, а тоді підтвердити профіль волонтера, таким чином надавши ступінь "
+                          + $"'{follower}'. Або аргументовано його не підтвердити."
+                          + "Дякуємо Тобі за роботу.</p>"
+                          + "<p>Гарного дня.</p>"
+                          + "<p>При виникненні питань просимо звертатись на скриньку volunteering@plast.org.ua</p>"
+            };
+        }
     }
 }
