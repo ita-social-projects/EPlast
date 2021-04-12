@@ -398,10 +398,10 @@ namespace EPlast.Tests.Services.Precautions
             Assert.IsInstanceOf<IEnumerable<UserTableDTO>>(result);
         }
 
-        UserPrecaution nullPrecaution = null;
-        UserPrecautionDTO nullPrecautionDTO = null;
-        List<UserPrecaution> nulluserPrecautions = null;
-        List<UserPrecautionDTO> nulluserPrecautionsDTO = null;
+        readonly UserPrecaution nullPrecaution = null;
+        readonly UserPrecautionDTO nullPrecautionDTO = null;
+        readonly List<UserPrecaution> nulluserPrecautions = null;
+        readonly List<UserPrecautionDTO> nulluserPrecautionsDTO = null;
 
         private string UserId => _uniqueId.GetUniqueId().ToString();
 

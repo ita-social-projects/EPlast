@@ -23,16 +23,16 @@ namespace EPlast.XUnitTest.Services.UserArea
 {
     public class UserServiceTests
     {
-        private Mock<IRepositoryWrapper> _repoWrapper;
-        private Mock<IUserStore<User>> _userStoreMock;
-        private Mock<UserManager<User>> _userManager;
-        private Mock<IMapper> _mapper;
-        private Mock<IUserPersonalDataService> _userPersonalDataService;
-        private Mock<IUserBlobStorageRepository> _userBlobStorage;
-        private Mock<IWebHostEnvironment> _env;
-        private Mock<IUserManagerService> _userManagerService;
-        private Mock<IConfirmedUsersService> _confirmedUserService;
-        private Mock<IUniqueIdService> _uniqueId;
+        private readonly Mock<IRepositoryWrapper> _repoWrapper;
+        private readonly Mock<IUserStore<User>> _userStoreMock;
+        private readonly Mock<UserManager<User>> _userManager;
+        private readonly Mock<IMapper> _mapper;
+        private readonly Mock<IUserPersonalDataService> _userPersonalDataService;
+        private readonly Mock<IUserBlobStorageRepository> _userBlobStorage;
+        private readonly Mock<IWebHostEnvironment> _env;
+        private protected readonly Mock<IUserManagerService> _userManagerService;
+        private protected readonly Mock<IConfirmedUsersService> _confirmedUserService;
+        private readonly Mock<IUniqueIdService> _uniqueId;
         public UserServiceTests()
         {
             _repoWrapper = new Mock<IRepositoryWrapper>();
@@ -75,7 +75,7 @@ namespace EPlast.XUnitTest.Services.UserArea
             var result = await service.GetUserAsync("1");
             // Assert
             Assert.NotNull(result);
-            var viewResult = Assert.IsType<UserDTO>(result);
+            Assert.IsType<UserDTO>(result);
         }
         [Fact]
         public void GetConfirmedUsersTest()
@@ -97,7 +97,7 @@ namespace EPlast.XUnitTest.Services.UserArea
             var result = service.GetConfirmedUsers(user);
             // Assert
             Assert.NotNull(result);
-            var viewResult = Assert.IsAssignableFrom<IEnumerable<ConfirmedUserDTO>>(result);
+            Assert.IsAssignableFrom<IEnumerable<ConfirmedUserDTO>>(result);
         }
         [Fact]
         public void GetCityAdminConfirmedUserTest()
@@ -117,20 +117,18 @@ namespace EPlast.XUnitTest.Services.UserArea
             var appUser = new ApproverDTO { UserID = "3", ConfirmedUser = conUser };
             conUser.Approver = appUser;
 
-            UserDTO user = new UserDTO { ConfirmedUsers = new List<ConfirmedUserDTO>() };
             var confUsers = new List<ConfirmedUserDTO> { conUser, conUser };
             _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User { Id = "1" });
 
             var service = GetService();            // Act
             var result = service.CanApprove(confUsers, "2", new User());
             // Assert
-            var res = Assert.IsType<bool>(result);
+            Assert.IsType<bool>(result);
             Assert.True(result);
         }
         [Fact]
         public void CanApproveTestFailure()
         {
-            UserDTO user = new UserDTO { ConfirmedUsers = new List<ConfirmedUserDTO>() };
             var conUser = new ConfirmedUserDTO();
             var confUsers = new List<ConfirmedUserDTO> { conUser, conUser, conUser, conUser };
 
@@ -148,7 +146,7 @@ namespace EPlast.XUnitTest.Services.UserArea
             var service = GetService();            // Act
             var result = service.CheckOrAddPlastunRole("1", DateTime.MinValue);
             // Assert
-            var res = Assert.IsType<TimeSpan>(result);
+            Assert.IsType<TimeSpan>(result);
         }
         [Fact]
         public async Task UpdateTest()

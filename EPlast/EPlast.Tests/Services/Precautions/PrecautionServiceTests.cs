@@ -238,12 +238,12 @@ namespace EPlast.Tests.Services.Precautions
             Assert.DoesNotThrowAsync(async () => { await PrecautionService.AddPrecautionAsync(new PrecautionDTO(), new User()); });
         }
 
-        Precaution nullPrecaution = null;
-        PrecautionDTO nullPrecautionDTO = null;
-        List<PrecautionDTO> nullListPrecautionDTO = null;
-        List<Precaution> nullListPrecaution = null;
-        PrecautionDTO PrecautionDTO = new PrecautionDTO { Id = 1, Name = "За силу" };
-        Precaution Precaution = new Precaution { Id = 1, Name = "За силу" };
+        readonly Precaution nullPrecaution = null;
+        readonly PrecautionDTO nullPrecautionDTO = null;
+        readonly List<PrecautionDTO> nullListPrecautionDTO = null;
+        readonly List<Precaution> nullListPrecaution = null;
+        readonly PrecautionDTO PrecautionDTO = new PrecautionDTO { Id = 1, Name = "За силу" };
+        readonly Precaution Precaution = new Precaution { Id = 1, Name = "За силу" };
 
         private IEnumerable<Precaution> GetTestPlastPrecaution()
         {
