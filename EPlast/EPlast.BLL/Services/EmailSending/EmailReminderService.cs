@@ -35,7 +35,7 @@ namespace EPlast.BLL.Services.EmailSending
         {
             try
             {
-                (await GetLonelyUsersAsync()).ToList().ForEach(async (user) => await _authEmailServices.SendEmailJoinToCityReminderAsync(user.Email));
+                (await GetLonelyUsersAsync()).ToList().ForEach(async (user) => await _authEmailServices.SendEmailJoinToCityReminderAsync(user.Email, user.Id));
             }
             catch (Exception)
             {

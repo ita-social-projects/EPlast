@@ -11,14 +11,19 @@ namespace EPlast.BLL.Services
     public class ConfirmedUsersService : IConfirmedUsersService
     {
         private readonly IEmailSendingService _emailSendingService;
+        private readonly IEmailContentService _emailContentService;
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
 
-        public ConfirmedUsersService(IRepositoryWrapper repoWrapper, UserManager<User> userManager, IEmailSendingService emailSendingService)
+        public ConfirmedUsersService(IRepositoryWrapper repoWrapper,
+            UserManager<User> userManager,
+            IEmailSendingService emailSendingService,
+            IEmailContentService emailContentService)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
             _emailSendingService = emailSendingService;
+            _emailContentService = emailContentService;
         }
 
         public async Task CreateAsync(User vaucherUser, string vaucheeId, bool isClubAdmin = false, bool isCityAdmin = false)
@@ -28,7 +33,7 @@ namespace EPlast.BLL.Services
             confirmedUser.Approver = approver;
             await _repoWrapper.ConfirmedUser.CreateAsync(confirmedUser);
             await _repoWrapper.SaveAsync();
-            await SendEmailConfirmedNotificationAsync(await _userManager.FindByIdAsync(vaucheeId), vaucherUser, true);
+            await SendEmailConfirmedNotificationAsync(await _userManager.FindByIdAsync(vaucheeId), vaucherUser);
         }
 
         public async Task DeleteAsync(User vaucherUser, int confirmedUserId)
@@ -37,18 +42,19 @@ namespace EPlast.BLL.Services
             var vaucheeUser = await _userManager.FindByIdAsync(confirmedUser.UserID);
             _repoWrapper.ConfirmedUser.Delete(confirmedUser);
             await _repoWrapper.SaveAsync();
-            await SendEmailConfirmedNotificationAsync(vaucheeUser, vaucherUser, false);
+            await SendEmailCanceledNotificationAsync(vaucheeUser, vaucherUser);
         }
 
-        private async Task<bool> SendEmailConfirmedNotificationAsync(User vaucheeUser, User vaucherUser, bool confirmed)
+        private async Task<bool> SendEmailCanceledNotificationAsync(User vaucheeUser, User vaucherUser)
         {
-            var caseMessage = confirmed ? "поручився за тебе." : "скасував своє поручення за тебе.";
-            var message = "<h3>СКОБ!</h3>"
-                          + $"<p>Друже / подруго, повідомляємо, що користувач {vaucherUser.FirstName} {vaucherUser.LastName} "
-                          + caseMessage
-                          + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>";
-            var sendResult = await _emailSendingService.SendEmailAsync(vaucheeUser.Email, "Зміна статусу поручення", message, "EPlast");
-            return sendResult;
+            var email = await _emailContentService.GetCanceledUserEmailAsync(vaucheeUser, vaucherUser);
+            return await _emailSendingService.SendEmailAsync(vaucheeUser.Email, email.Subject, email.Message, email.Title);
+        }
+
+        private async Task<bool> SendEmailConfirmedNotificationAsync(User vaucheeUser, User vaucherUser)
+        {
+            var email = await _emailContentService.GetConfirmedUserEmailAsync(vaucheeUser, vaucherUser);
+            return await _emailSendingService.SendEmailAsync(vaucheeUser.Email, email.Subject, email.Message, email.Title);
         }
     }
 }
