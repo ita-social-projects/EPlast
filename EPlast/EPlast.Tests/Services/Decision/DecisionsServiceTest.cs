@@ -143,7 +143,7 @@ namespace EPlast.Tests.Services.Decision
                     It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
                 .ReturnsAsync(GetTestDecesionQueryable().FirstOrDefault(d => d.ID == decisionId));
 
-            //Actві
+            //Act
             await _decisionService.DeleteDecisionAsync(decisionId);
 
             //Assert
