@@ -38,7 +38,6 @@ namespace EPlast.Tests.Services.EducatorStaff
         public async Task Create_KVType_Test()
         {
             // Arange
-            var educatorStaffType = new EducatorsStaffTypes();
             _mapper.
                 Setup(x => x.Map<EducatorsStaffTypesDTO, EducatorsStaffTypes>
                 (It.IsAny<EducatorsStaffTypesDTO>())).
