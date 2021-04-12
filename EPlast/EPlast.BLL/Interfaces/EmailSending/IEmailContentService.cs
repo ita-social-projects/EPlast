@@ -67,13 +67,14 @@ namespace EPlast.BLL.Interfaces
         EmailModel GetCityToSupporterRoleOnApproveEmail();
 
         /// <summary>
-        /// Get email to inform admin about new city follower
+        /// Get email to inform or weekly remind admin about new city follower
         /// </summary>
         /// <param name="userId">User Id</param>
         /// <param name="userFirstName">User first name</param>
         /// <param name="userLastName">User last name</param>
+        /// <param name="isReminder">Determinate whether its first email or weekly reminder</param>
         /// <returns>Email content</returns>
-        Task<EmailModel> GetCityAdminAboutNewFollowerEmailAsync(string userId, string userFirstName, string userLastName);
+        Task<EmailModel> GetCityAdminAboutNewFollowerEmailAsync(string userId, string userFirstName, string userLastName, bool isReminder);
 
         /// <summary>
         /// Get email to inform user about approve in city

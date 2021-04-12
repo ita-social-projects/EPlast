@@ -140,7 +140,7 @@ namespace EPlast.Tests.Services.City
                 .ReturnsAsync(true);
             _emailContentService
                 .Setup(x => x.GetCityAdminAboutNewFollowerEmailAsync(It.IsAny<string>(), It.IsAny<string>(),
-                    It.IsAny<string>()))
+                    It.IsAny<string>(), It.IsAny<bool>()))
                 .ReturnsAsync(new EmailModel());
 
             // Act

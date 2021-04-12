@@ -283,7 +283,7 @@ namespace EPlast.BLL.Services.EmailSending
             };
         }
 
-        public async Task<EmailModel> GetCityAdminAboutNewFollowerEmailAsync(string userId, string userFirstName, string userLastName)
+        public async Task<EmailModel> GetCityAdminAboutNewFollowerEmailAsync(string userId, string userFirstName, string userLastName, bool isReminder)
         {
             var userGender = await _userService.GetUserGenderAsync(userId);
 
@@ -301,10 +301,14 @@ namespace EPlast.BLL.Services.EmailSending
                 _ => "прихильника/прихильниці"
             };
 
+            var title = isReminder
+                ? "Нагадування підтвердити профіль нового волонтера в системі ePlast"
+                : "Підтвердіть профіль нового волонтера в системі ePlast";
+
             return new EmailModel
             {
                 Title = "EPlast",
-                Subject = "Підтвердіть профіль нового волонтера в системі ePlast",
+                Subject = $"{title}",
                 Message = "<h3>СКОБ!</h3>"
                           + $"<p>До твоєї станиці {volunteered} волонтер {userFirstName} {userLastName}."
                           + "<p>Бажаємо цікавих знайомств та легкої адаптації :) Просимо переглянути профіль "
@@ -315,5 +319,6 @@ namespace EPlast.BLL.Services.EmailSending
                           + "<p>При виникненні питань просимо звертатись на скриньку volunteering@plast.org.ua</p>"
             };
         }
+        
     }
 }

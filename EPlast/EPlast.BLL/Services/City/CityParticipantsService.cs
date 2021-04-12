@@ -321,7 +321,7 @@ namespace EPlast.BLL.Services.City
             var cityHead = cityAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHead
                                                                   && (DateTime.Now < a.EndDate || a.EndDate == null));
             var emailContent = await _emailContentService.GetCityAdminAboutNewFollowerEmailAsync(user.Id,
-                user.FirstName, user.LastName);
+                user.FirstName, user.LastName, false);
             await _emailSendingService.SendEmailAsync(cityHead.User.Email, emailContent.Subject, emailContent.Message,
                 emailContent.Title);
         }
