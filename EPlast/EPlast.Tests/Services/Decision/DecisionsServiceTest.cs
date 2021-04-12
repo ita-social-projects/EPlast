@@ -143,7 +143,7 @@ namespace EPlast.Tests.Services.Decision
                     It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
                 .ReturnsAsync(GetTestDecesionQueryable().FirstOrDefault(d => d.ID == decisionId));
 
-            //Act
+            //Actві
             await _decisionService.DeleteDecisionAsync(decisionId);
 
             //Assert
@@ -236,7 +236,7 @@ namespace EPlast.Tests.Services.Decision
             var actualReturn = await _decisionService.GetGoverningBodyListAsync();
 
             //Assert
-            Assert.AreEqual(governingBodyDtos.Aggregate("", (x, y) => x += y.GoverningBodyName), actualReturn.Aggregate("", (x, y) => x += y.GoverningBodyName));
+            Assert.AreEqual(governingBodyDtos.Aggregate("", (x, y) => y.GoverningBodyName), actualReturn.Aggregate("", (x, y) => y.GoverningBodyName));
         }
 
         [Test]
@@ -251,7 +251,7 @@ namespace EPlast.Tests.Services.Decision
             var actualReturn = await _decisionService.GetDecisionTargetListAsync();
 
             //Assert
-            Assert.AreEqual(decisionTargets.Aggregate("", (x, y) => x += y.TargetName), actualReturn.Aggregate("", (x, y) => x += y.TargetName));
+            Assert.AreEqual(decisionTargets.Aggregate("", (x, y) => y.TargetName), actualReturn.Aggregate("", (x, y) => y.TargetName));
         }
 
         [Test]
