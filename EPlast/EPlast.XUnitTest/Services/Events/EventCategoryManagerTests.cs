@@ -6,6 +6,7 @@ using EPlast.DataAccess.Repositories;
 using Moq;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.Events
@@ -23,7 +24,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async void GetDTOTest()
+        public async Task GetDTOTest()
         {
             //Arrange
             _repoWrapper.Setup(x => x.EventCategory.GetAllAsync(null, null))
@@ -38,7 +39,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async void GetDTOByEventTypeIdTest()
+        public async Task GetDTOByEventTypeIdTest()
         {
             //Arrange
             _eventTypeManager.Setup(et => et.GetTypeByIdAsync(It.IsAny<int>()))
