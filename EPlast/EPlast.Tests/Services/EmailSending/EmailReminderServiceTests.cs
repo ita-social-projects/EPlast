@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using EPlast.BLL.Models;
 
 namespace EPlast.Tests.Services.EmailSending
 {
@@ -85,6 +86,41 @@ namespace EPlast.Tests.Services.EmailSending
             Assert.IsTrue(result);
         }
 
+        [Test]
+        public async Task RemindCityAdminsToApproveFollowers_ValidTest()
+        {
+            // Arrange
+            var users = new List<User>
+            {
+                new User()
+            };
+            _mockRepoWrapper
+                .Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                    It.IsAny<Func<IQueryable<User>,
+                        IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(users);
+            _mockUserManager
+                .Setup(x => x.IsInRoleAsync(It.IsAny<User>(), It.IsAny<string>()))
+                .ReturnsAsync(true);
+            _mockRepoWrapper
+                .Setup(x => x.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>,
+                        IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(GetCityAdministration());
+            _mockEmailContentService
+                .Setup(x => x.GetCityAdminAboutNewFollowerEmailAsync(It.IsAny<string>(), It.IsAny<string>(),
+                    It.IsAny<string>(), It.IsAny<bool>()))
+                .ReturnsAsync(new EmailModel());
+
+            //Act
+            await _emailReminderService.RemindCityAdminsToApproveFollowers();
+
+            //Assert
+            _mockRepoWrapper.Verify();
+            _mockUserManager.Verify();
+            _mockEmailContentService.Verify();
+        }
+
         [SetUp]
         public void SetUp()
         {
@@ -102,6 +138,33 @@ namespace EPlast.Tests.Services.EmailSending
                 _mockEmailSendingService.Object,
                 _mockMapper.Object,
                 _mockUserManager.Object);
+        }
+
+        private IEnumerable<CityAdministration> GetCityAdministration()
+        {
+            return new List<CityAdministration>
+            {
+                new CityAdministration
+                {
+                    UserId = "userId",
+                    ID = 2,
+                    AdminType = new AdminType
+                    {
+                        AdminTypeName = Roles.CityHead
+                    },
+                    User = new User()
+                },
+                new CityAdministration
+                {
+                    UserId = "userId",
+                    ID = 3,
+                    AdminType = new AdminType
+                    {
+                        AdminTypeName = Roles.CityHead
+                    },
+                    User = new User()
+                }
+            }.AsEnumerable();
         }
     }
 }
