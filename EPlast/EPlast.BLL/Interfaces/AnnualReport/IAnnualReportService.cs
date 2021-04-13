@@ -1,6 +1,5 @@
 ﻿using EPlast.BLL.DTO.AnnualReport;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 
@@ -26,12 +25,14 @@ namespace EPlast.BLL.Services.Interfaces
         Task<IEnumerable<AnnualReportDTO>> GetAllAsync(User user);
 
         /// <summary>
-        /// Method to get all reports that the user has access to
+        /// Method to get all searched reports that the user has access to
         /// </summary>
         /// <param name="user">Authorized user</param>
         /// <param name="searchedData">Searched Data</param>
+        /// <param name="page">current page on pagination</param>
+        /// <param name="pageSize">number of records per page</param>
         /// <returns>List of AnnualReportTableObject</returns>
-        Task<IEnumerable<AnnualReportTableObject>> GetAllAsync(User user, string searchedData);
+        Task<IEnumerable<AnnualReportTableObject>> GetAllAsync(User user, string searchedData, int page, int pageSize);
 
         /// <summary>
         /// Method to create new annual report

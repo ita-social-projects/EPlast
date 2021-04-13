@@ -2,7 +2,6 @@
 using EPlast.DataAccess.Repositories.Contracts;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPlast.DataAccess.Repositories
@@ -13,15 +12,11 @@ namespace EPlast.DataAccess.Repositories
             : base(dbContext)
         {
         }
-        public Task<int> GetAnnualReportsCount()
-        {
-            return EPlastDBContext.AnnualReports.CountAsync();
-        }
 
-        public async Task<IEnumerable<AnnualReportTableObject>> GetAnnualReports(string searchdata)
+        public async Task<IEnumerable<AnnualReportTableObject>> GetAnnualReportsAsync(string searchdata, int page, int pageSize)
         {
-            var items = EPlastDBContext.Set<AnnualReportTableObject>().FromSqlRaw("dbo.getCityAnnualReportsInfo @searchData = {0}", searchdata).AsEnumerable();
-            return items as IEnumerable<AnnualReportTableObject>;
+            var items = EPlastDBContext.Set<AnnualReportTableObject>().FromSqlRaw("dbo.getCityAnnualReportsInfo @searchData = {0}, @PageIndex ={1}, @PageSize={2}", searchdata, page, pageSize);
+            return items;
         }
     }
 }

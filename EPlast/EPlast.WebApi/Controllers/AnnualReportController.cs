@@ -60,12 +60,15 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Method to get all searched reports that the user has access to
         /// </summary>
+        /// <param name="searchedData">Searched Data</param>
+        /// <param name="page">current page on pagination</param>
+        /// <param name="pageSize">number of records per page</param>
         /// <returns>List of AnnualReportTableObject</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("Cities")]
-        public async Task<IActionResult> Get(string searchedData)
+        public async Task<IActionResult> Get(string searchedData, int page, int pageSize)
         {
-            return StatusCode(StatusCodes.Status200OK, new { annualReports = await _annualReportService.GetAllAsync(await _userManager.GetUserAsync(User), searchedData) });
+            return StatusCode(StatusCodes.Status200OK, new { annualReports = await _annualReportService.GetAllAsync(await _userManager.GetUserAsync(User), searchedData, page, pageSize) });
         }
 
 
@@ -331,6 +334,22 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetAllClubAnnualReports()
         {
             return StatusCode(StatusCodes.Status200OK, new { clubAnnualReports = await _clubAnnualReportService.GetAllAsync(await _userManager.GetUserAsync(User)) });
+        }
+
+        /// <summary>
+        /// Method to get all club reports that the user has access to
+        /// </summary>
+        /// <param name="searchedData">Searched Data</param>
+        /// <param name="page">current page on pagination</param>
+        /// <param name="pageSize">number of records per page</param>
+        /// <returns>List of ClubAnnualReportTableObject</returns>
+        /// <response code="200">Successful operation</response>
+
+        [HttpGet("~/api/Club/ClubAnnualReports")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
+        public async Task<IActionResult> GetAllClubAnnualReports(string searchedData, int page, int pageSize)
+        {
+            return StatusCode(StatusCodes.Status200OK, new { clubAnnualReports = await _clubAnnualReportService.GetAllAsync(await _userManager.GetUserAsync(User), searchedData, page, pageSize) });
         }
 
         /// <summary>
