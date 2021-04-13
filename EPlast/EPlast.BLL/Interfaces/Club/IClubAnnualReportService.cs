@@ -1,9 +1,5 @@
 ﻿using EPlast.BLL.DTO.Club;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 
@@ -27,6 +23,16 @@ namespace EPlast.BLL.Interfaces.Club
         /// <param name="user">Authorized user</param>
         /// <returns>List of annual report model</returns>
         Task<IEnumerable<ClubAnnualReportDTO>> GetAllAsync(User user);
+
+        /// <summary>
+        /// Method to get all club reports that the user has access to
+        /// </summary>
+        /// <param name="user">Authorized user</param>
+        /// <param name="searchedData">Authorized user</param>
+        /// <param name="page">Authorized user</param>
+        /// <param name="pageSize">Authorized user</param>
+        /// <returns>List of ClubAnnualReportTableObjectl</returns>
+        Task<IEnumerable<ClubAnnualReportTableObject>> GetAllAsync(User user, string searchedData, int page, int pageSize);
 
         /// <summary>
         /// Method to create new club annual report

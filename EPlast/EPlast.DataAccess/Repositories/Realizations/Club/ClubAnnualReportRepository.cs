@@ -1,10 +1,8 @@
 ﻿using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories.Interfaces.Club;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.DataAccess.Repositories.Realizations.Club
 {
@@ -12,8 +10,12 @@ namespace EPlast.DataAccess.Repositories.Realizations.Club
     {
         public ClubAnnualReportRepository(EPlastDBContext dbContext)
             : base(dbContext)
-        {
+        { }
 
+        public async Task<IEnumerable<ClubAnnualReportTableObject>> GetClubAnnualReportsAsync(string searchdata, int page, int pageSize)
+        {
+            var items = EPlastDBContext.Set<ClubAnnualReportTableObject>().FromSqlRaw("dbo.getClubAnnualReportsInfo @searchData = {0}, @PageIndex ={1}, @PageSize={2}", searchdata, page, pageSize);
+            return items;
         }
     }
 }
