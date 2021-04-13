@@ -17,30 +17,31 @@ namespace EPlast.Tests.Services
 {
     internal class AuthServiceTests
     {
-        private AuthService authService;
-        private Mock<IHttpContextAccessor> contextAccessor;
-        private Mock<IEmailSendingService> emailSendingService;
-        private Mock<IMapper> mapper;
-        private Mock<IUserClaimsPrincipalFactory<User>> principalFactory;
-        private Mock<IRepositoryWrapper> repoWrapper;
-        private Mock<SignInManager<User>> signInManager;
-        private Mock<UserManager<User>> userManager;
+        private AuthService _authService;
+        private Mock<IHttpContextAccessor> _contextAccessor;
+        private Mock<IEmailSendingService> _emailSendingService;
+        private Mock<IEmailContentService> _mockEmailContentService;
+        private Mock<IMapper> _mapper;
+        private Mock<IUserClaimsPrincipalFactory<User>> _principalFactory;
+        private Mock<IRepositoryWrapper> _repoWrapper;
+        private Mock<SignInManager<User>> _signInManager;
+        private Mock<UserManager<User>> _userManager;
 
         [Test]
         public void CheckingForLocking_Valid_Test()
         {
             //Arrange
-            userManager
+            _userManager
                 .Setup(x => x.IsLockedOutAsync(It.IsAny<User>()))
                 .ReturnsAsync(true);
-            userManager
+            _userManager
                 .Setup(x => x.SetLockoutEndDateAsync(It.IsAny<User>(), It.IsNotNull<DateTimeOffset>()));
 
             //Act
-            var result = authService.CheckingForLocking(new UserDTO());
+            var result = _authService.CheckingForLocking(new UserDTO());
 
             //Assert
-            userManager.Verify();
+            _userManager.Verify();
             Assert.IsNotNull(result);
         }
 
@@ -48,15 +49,15 @@ namespace EPlast.Tests.Services
         public async Task FindByIdAsync_Valid_TestAsync()
         {
             //Arrange
-            userManager
+            _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(new User());
 
             //Act
-            var result = await authService.FindByIdAsync("id");
+            var result = await _authService.FindByIdAsync("id");
 
             //Assert
-            userManager.Verify();
+            _userManager.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(UserDTO), result);
         }
@@ -67,15 +68,15 @@ namespace EPlast.Tests.Services
             //Arrange
             var items = new AuthenticationScheme[] { }.AsQueryable();
 
-            signInManager
+            _signInManager
                 .Setup(x => x.GetExternalAuthenticationSchemesAsync())
                 .ReturnsAsync(items);
 
             //Act
-            var result = await authService.GetAuthSchemesAsync();
+            var result = await _authService.GetAuthSchemesAsync();
 
             //Assert
-            userManager.Verify();
+            _userManager.Verify();
             Assert.IsNotNull(result);
         }
 
@@ -83,15 +84,15 @@ namespace EPlast.Tests.Services
         public async Task GetIdForUserAsync_Valid_TestAsync()
         {
             //Arrange
-            userManager
+            _userManager
                 .Setup(u => u.GetUserIdAsync(It.IsAny<User>()))
                 .ReturnsAsync("1");
 
             //Act
-            var result = await authService.GetIdForUserAsync(GetTestUserWithAllFields());
+            var result = await _authService.GetIdForUserAsync(GetTestUserWithAllFields());
 
             //Assert
-            userManager.Verify();
+            _userManager.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(string), result);
         }
@@ -102,7 +103,7 @@ namespace EPlast.Tests.Services
             //Arrange
 
             //Act
-            var result = authService.GetUser(GetTestUserWithAllFields());
+            var result = _authService.GetUser(GetTestUserWithAllFields());
 
             //Assert
             Assert.IsNotNull(result);
@@ -113,12 +114,12 @@ namespace EPlast.Tests.Services
         public async Task RefreshSignInAsync_InValid_Except_Test()
         {
             //Arrange
-            signInManager
+            _signInManager
                 .Setup(x => x.RefreshSignInAsync(It.IsAny<User>()))
                 .Throws(new Exception());
 
             //Act
-            var result = await authService.RefreshSignInAsync(new UserDTO());
+            var result = await _authService.RefreshSignInAsync(new UserDTO());
 
             //Assert
             Assert.IsNotNull(result);
@@ -129,11 +130,11 @@ namespace EPlast.Tests.Services
         public async Task RefreshSignInAsync_Valid_Test()
         {
             //Arrange
-            signInManager
+            _signInManager
                 .Setup(x => x.RefreshSignInAsync(It.IsAny<User>()));
 
             //Act
-            var result = await authService.RefreshSignInAsync(new UserDTO());
+            var result = await _authService.RefreshSignInAsync(new UserDTO());
 
             //Assert
             Assert.IsNotNull(result);
@@ -144,26 +145,28 @@ namespace EPlast.Tests.Services
         public void SetUp()
         {
             var store = new Mock<IUserStore<User>>();
-            userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
-            contextAccessor = new Mock<IHttpContextAccessor>();
-            principalFactory = new Mock<IUserClaimsPrincipalFactory<User>>();
-            signInManager = new Mock<SignInManager<User>>(userManager.Object,
-                           contextAccessor.Object, principalFactory.Object, null, null, null, null);
-            emailSendingService = new Mock<IEmailSendingService>();
-            mapper = new Mock<IMapper>();
-            mapper
+            _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            _contextAccessor = new Mock<IHttpContextAccessor>();
+            _principalFactory = new Mock<IUserClaimsPrincipalFactory<User>>();
+            _signInManager = new Mock<SignInManager<User>>(_userManager.Object,
+                           _contextAccessor.Object, _principalFactory.Object, null, null, null, null);
+            _emailSendingService = new Mock<IEmailSendingService>();
+            _mockEmailContentService = new Mock<IEmailContentService>();
+            _mapper = new Mock<IMapper>();
+            _mapper
                 .Setup(s => s.Map<User, UserDTO>(It.IsAny<User>()))
                 .Returns(GetTestUserDtoWithAllFields());
-            mapper
+            _mapper
                 .Setup(s => s.Map<UserDTO, User>(It.IsAny<UserDTO>()))
                 .Returns(GetTestUserWithEmailsSendedTime());
-            repoWrapper = new Mock<IRepositoryWrapper>();
+            _repoWrapper = new Mock<IRepositoryWrapper>();
 
-            authService = new AuthService(userManager.Object,
-                                          signInManager.Object,
-                                          emailSendingService.Object,
-                                          mapper.Object,
-                                          repoWrapper.Object);
+            _authService = new AuthService(_userManager.Object,
+                                          _signInManager.Object,
+                                          _emailSendingService.Object,
+                                          _mockEmailContentService.Object,
+                                          _mapper.Object,
+                                          _repoWrapper.Object);
         }
 
         private int GetTestDifferenceInTime()

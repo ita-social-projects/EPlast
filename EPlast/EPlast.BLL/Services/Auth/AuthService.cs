@@ -5,6 +5,7 @@ using EPlast.BLL.Interfaces;
 using EPlast.BLL.Models;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
@@ -16,13 +17,13 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using EPlast.Resources;
 
 namespace EPlast.BLL.Services
 {
     public class AuthService : IAuthService
     {
         private readonly IEmailSendingService _emailSendingService;
+        private readonly IEmailContentService _emailContentService;
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly SignInManager<User> _signInManager;
@@ -31,12 +32,14 @@ namespace EPlast.BLL.Services
         public AuthService(UserManager<User> userManager,
                            SignInManager<User> signInManager,
                            IEmailSendingService emailSendingService,
+                           IEmailContentService emailContentService,
                            IMapper mapper,
                            IRepositoryWrapper repoWrapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSendingService = emailSendingService;
+            _emailContentService = emailContentService;
             _mapper = mapper;
             _repoWrapper = repoWrapper;
         }
@@ -114,8 +117,8 @@ namespace EPlast.BLL.Services
                 var createResult = await _userManager.CreateAsync(user);
                 if (createResult.Succeeded && user.Email != "facebookdefaultmail@gmail.com")
                 {
-                    await _emailSendingService.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
-                        "Ви зареєструвались в системі EPlast використовуючи свій Facebook-акаунт. ", "Адміністрація сайту EPlast");
+                    var emailContent = _emailContentService.GetAuthFacebookRegisterEmail();
+                    await _emailSendingService.SendEmailAsync(user.Email, emailContent.Subject, emailContent.Message, emailContent.Title);
                 }
                 await _userManager.AddToRoleAsync(user, Roles.Supporter);
             }
@@ -201,8 +204,8 @@ namespace EPlast.BLL.Services
                 var createResult = await _userManager.CreateAsync(user);
                 if (createResult.Succeeded)
                 {
-                    await _emailSendingService.SendEmailAsync(user.Email, "Повідомлення про реєстрацію",
-                     "Ви зареєструвались в системі EPlast використовуючи свій Google-акаунт. ", "Адміністрація сайту EPlast");
+                    var emailContent = _emailContentService.GetAuthGoogleRegisterEmail();
+                    await _emailSendingService.SendEmailAsync(user.Email, emailContent.Subject, emailContent.Message, emailContent.Title);
                 }
                 else
                     throw new ArgumentException("Failed creation of user");
