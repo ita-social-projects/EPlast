@@ -72,7 +72,7 @@ namespace EPlast.Tests.Services
             Assert.AreEqual(1, result.Count);
         }
 
-        private List<DataAccess.Entities.Event.Event> EventsList =
+        private readonly List<DataAccess.Entities.Event.Event> EventsList =
             new List<DataAccess.Entities.Event.Event>()
             { 
                 new DataAccess.Entities.Event.Event() { ID = 2 } 

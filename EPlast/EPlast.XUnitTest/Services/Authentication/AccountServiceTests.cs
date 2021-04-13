@@ -78,9 +78,6 @@ namespace EPlast.XUnitTest.Services
             mockMapper
                .Setup(s => s.Map<UserDTO, User>(It.IsAny<UserDTO>()))
                .Returns(GetTestUserWithEmailsSendedTime());
-            Mock<IUrlHelperFactory> mockUrlHelperFactory = new Mock<IUrlHelperFactory>();
-            Mock<IActionContextAccessor> mockActionContextAccessor = new Mock<IActionContextAccessor>();
-            Mock<IHttpContextAccessor> mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
 
             AuthService AuthService = new AuthService(
                 mockUserManager.Object,
@@ -284,7 +281,7 @@ namespace EPlast.XUnitTest.Services
             bool result = await AuthService.IsEmailConfirmedAsync(GetTestUserDtoWithAllFields());
 
             //Assert
-            var authResult = Assert.IsType<bool>(result);
+            Assert.IsType<bool>(result);
             Assert.True(result);
         }
 
@@ -301,7 +298,7 @@ namespace EPlast.XUnitTest.Services
             bool result = await AuthService.IsEmailConfirmedAsync(GetTestUserDtoWithAllFields());
 
             //Assert
-            var authResult = Assert.IsType<bool>(result);
+            Assert.IsType<bool>(result);
             Assert.False(result);
         }
 
@@ -322,8 +319,8 @@ namespace EPlast.XUnitTest.Services
             string token = await AuthService.AddRoleAndTokenAsync(registerDTO.Email);
 
             //Assert
-            var result = Assert.IsType<string>(token);
-            Assert.NotNull(result);
+            Assert.NotNull(token);
+            Assert.IsType<string>(token);
         }
 
         [Fact]
