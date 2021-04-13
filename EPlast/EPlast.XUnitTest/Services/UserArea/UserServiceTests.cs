@@ -99,17 +99,7 @@ namespace EPlast.XUnitTest.Services.UserArea
             Assert.NotNull(result);
             Assert.IsAssignableFrom<IEnumerable<ConfirmedUserDTO>>(result);
         }
-        [Fact]
-        public void GetCityAdminConfirmedUserTest()
-        {
-            UserDTO user = new UserDTO { ConfirmedUsers = new List<ConfirmedUserDTO>() };
 
-            var service = GetService();            // Act
-            var result = service.GetConfirmedUsers(user);
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsAssignableFrom<IEnumerable<ConfirmedUserDTO>>(result);
-        }
         [Fact]
         public void CanApproveTest()
         {
