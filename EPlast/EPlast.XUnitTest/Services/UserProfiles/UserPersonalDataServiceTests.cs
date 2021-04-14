@@ -15,8 +15,8 @@ namespace EPlast.XUnitTest.Services.UserProfiles
 {
     public class UserPersonalDataServiceTests
     {
-        private Mock<IRepositoryWrapper> _repoWrapper;
-        private Mock<IMapper> _mapper;
+        private readonly Mock<IRepositoryWrapper> _repoWrapper;
+        private readonly Mock<IMapper> _mapper;
 
         public UserPersonalDataServiceTests()
         {
