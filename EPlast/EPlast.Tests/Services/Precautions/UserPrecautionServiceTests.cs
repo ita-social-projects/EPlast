@@ -549,8 +549,6 @@ namespace EPlast.Tests.Services.Precautions
             };
         }
 
-        private Tuple<IEnumerable<UserTableDTO>, int> CreateTuple => new Tuple<IEnumerable<UserTableDTO>, int>(CreateUserTableObjects, 100);
-
         private IEnumerable<UserTableDTO> CreateUserTableObjects => new List<UserTableDTO>()
         {
             new UserTableDTO(),
