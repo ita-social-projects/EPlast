@@ -391,7 +391,7 @@ namespace EPlast.Tests.Services.Precautions
                 .ReturnsAsync(GetTestUserPrecaution());
 
             // Act
-            var result = await PrecautionService.UsersTableWithotPrecautionAsync();
+            var result = await PrecautionService.UsersTableWithoutPrecautionAsync();
 
             // Assert
             Assert.NotNull(result);
