@@ -238,6 +238,17 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get all users with additional information
+        /// </summary>
+        /// <returns>Specify model with all users</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("usersTable")]
+        public async Task<IActionResult> GetUsers()
+        {
+            return Ok(await _adminService.GetUsersAsync());
+        }
+
+        /// <summary>
         /// Get all cities
         /// </summary>
         /// <returns>All cities in specify model</returns>
