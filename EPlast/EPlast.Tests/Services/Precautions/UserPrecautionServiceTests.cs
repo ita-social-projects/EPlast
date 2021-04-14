@@ -548,12 +548,6 @@ namespace EPlast.Tests.Services.Precautions
 
             };
         }
-
-        private IEnumerable<UserTableDTO> CreateUserTableObjects => new List<UserTableDTO>()
-        {
-            new UserTableDTO(),
-            new UserTableDTO()
-        };
     }
 }
 
