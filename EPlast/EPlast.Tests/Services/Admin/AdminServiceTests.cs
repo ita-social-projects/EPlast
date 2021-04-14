@@ -687,6 +687,137 @@ namespace EPlast.Tests.Services
             Assert.IsInstanceOf<Tuple<IEnumerable<UserTableDTO>, int>>(result);
         }
 
+        [Test]
+        public async Task GetUsersAsync_ReturnsIEnumerableUserTableDTO()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                    It.IsAny<Func<IQueryable<User>,
+                        IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(GetTestUsers());
+            _repoWrapper
+                .Setup(x => x.City.GetAllAsync(It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
+                        IIncludableQueryable<DataAccess.Entities.City, object>>>()))
+                .ReturnsAsync(GetTestCities());
+            _repoWrapper
+                .Setup(x => x.ClubMembers.GetAllAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubMembers>,
+                        IIncludableQueryable<ClubMembers, object>>>()))
+                .ReturnsAsync(GetTestClubMembers());
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetAllAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityMembers>,
+                        IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync(GetTestCityMembers());
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(roles);
+            _mapper
+                .Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDTO() { ID = "Admin" });
+
+            // Act
+            var result = await service.GetUsersAsync();
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<UserTableDTO>>(result);
+        }
+
+        private IEnumerable<User> GetTestUsers()
+        {
+            return new List<User>
+            {
+                new  User
+                {
+                    Id = "UserId1",
+                    UserProfile = new UserProfile
+                    {
+                        Gender = new Gender{ ID = 1, Name = UserGenders.Male },
+                        UpuDegree = new UpuDegree
+                        {
+                            Name = "UpuDegreeName"
+                        }
+                    },
+                    UserPlastDegrees = new List<UserPlastDegree>
+                    {
+                        new UserPlastDegree
+                        {
+                            PlastDegree = new PlastDegree()
+                        }
+                    }
+
+                },
+                new  User
+                {
+                    Id = "UserId2",
+                    UserProfile = new UserProfile
+                    {
+                        Gender = new Gender{ ID = 2, Name = UserGenders.Female },
+                        UpuDegree = new UpuDegree
+                        {
+                            Name = "UpuDegreeName"
+                        }
+                    },
+                    UserPlastDegrees = new List<UserPlastDegree>
+                    {
+                        new UserPlastDegree
+                        {
+                            PlastDegree = new PlastDegree()
+                        }
+                    }
+
+                },
+            }.AsEnumerable();
+        }
+
+        private IEnumerable<ClubMembers> GetTestClubMembers()
+        {
+            return new List<ClubMembers>
+            {
+                new  ClubMembers
+                {
+                    UserId = "UserId1",
+                    IsApproved = true,
+                    Club = new DataAccess.Entities.Club
+                    {
+                        Name = "ClubName"
+                    }
+                }
+            }.AsEnumerable();
+        }
+
+        private IEnumerable<CityMembers> GetTestCityMembers()
+        {
+            return new List<CityMembers>
+            {
+                new  CityMembers
+                {
+                    UserId = "UserId1",
+                    IsApproved = true,
+                    City = new DataAccess.Entities.City
+                    {
+                        Name = "CityName"
+                    }
+                }
+            }.AsEnumerable();
+        }
+
+        private IEnumerable<DataAccess.Entities.City> GetTestCities()
+        {
+            return new List<DataAccess.Entities.City>
+            {
+                new  DataAccess.Entities.City
+                {
+                    Name = "CityName",
+                    Region = new Region
+                    {
+                        RegionName = "RegionName"
+                    }
+                }
+            }.AsEnumerable();
+        }
+
         private Tuple<IEnumerable<UserTableObject>, int> CreateTuple => new Tuple<IEnumerable<UserTableObject>, int>(CreateUserTableObjects, 100);
         private IEnumerable<UserTableObject> CreateUserTableObjects => new List<UserTableObject>()
         {

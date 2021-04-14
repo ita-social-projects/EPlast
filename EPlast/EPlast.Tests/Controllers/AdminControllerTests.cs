@@ -339,6 +339,25 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
+        [Test]
+        public async Task GetUsers_Valid_Test()
+        {
+            _adminService.Setup(a => a.GetUsersAsync())
+                .ReturnsAsync(new List<UserTableDTO>());
+
+            AdminController adminController = CreateAdminController;
+
+            // Act
+            var result = await adminController.GetUsers();
+            var resultValue = (result as OkObjectResult)?.Value;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(resultValue);
+            Assert.IsInstanceOf<List<UserTableDTO>>(resultValue);
+        }
+
 
         private TableFilterParameters CreateTableFilterParameters => new TableFilterParameters()
         {

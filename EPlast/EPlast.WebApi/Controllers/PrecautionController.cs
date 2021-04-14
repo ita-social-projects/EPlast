@@ -270,7 +270,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("usersWithoutPrecautions")]
         public async Task<IActionResult> UsersWithoutPrecautionsTable(string tab)
         {
-            var result = await _userPrecautionService.UsersTableWithotPrecautionAsync();
+            var result = await _userPrecautionService.UsersTableWithoutPrecautionAsync();
             return Ok(result);
         }
     }

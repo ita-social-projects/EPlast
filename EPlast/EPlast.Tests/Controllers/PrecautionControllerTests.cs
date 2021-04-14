@@ -397,7 +397,7 @@ namespace EPlast.Tests.Controllers
         [TestCase("tab")]
         public async Task UsersTableWithoutPrecautions_Valid_Test(string tab)
         {
-            _userPrecautionService.Setup(a => a.UsersTableWithotPrecautionAsync());
+            _userPrecautionService.Setup(a => a.UsersTableWithoutPrecautionAsync());
 
             // Act
             var result = await _PrecautionController.UsersWithoutPrecautionsTable(tab);
