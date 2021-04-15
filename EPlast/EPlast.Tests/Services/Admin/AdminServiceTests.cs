@@ -672,7 +672,7 @@ namespace EPlast.Tests.Services
                 .ReturnsAsync(new List<CityMembers>());
             _repoWrapper
                 .Setup(x => x.AdminType.GetUserTableObjects(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
-                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(CreateTuple);
+                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),It.IsAny<string>())).ReturnsAsync(CreateTuple);
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(roles);
             _mapper
@@ -680,7 +680,7 @@ namespace EPlast.Tests.Services
                 .Returns(new ShortUserInformationDTO() { ID = Roles.Admin });
 
             // Act
-            var result = await service.GetUsersTableAsync(1, 2, null, null, null, null, null);
+            var result = await service.GetUsersTableAsync(1, 2, null, null, null, null, null, null);
 
             // Assert
             Assert.NotNull(result);
