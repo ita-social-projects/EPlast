@@ -68,7 +68,24 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("Cities")]
         public async Task<IActionResult> Get(string searchedData, int page, int pageSize)
         {
-            return StatusCode(StatusCodes.Status200OK, new { annualReports = await _annualReportService.GetAllAsync(await _userManager.GetUserAsync(User), searchedData, page, pageSize) });
+            var user = await _userManager.GetUserAsync(User);
+            try
+            {
+                return StatusCode(StatusCodes.Status200OK, new { annualReports = 
+                    await _annualReportService.GetAllAsync(user, 
+                        (await _userManager.GetRolesAsync(user)).Contains(Roles.Admin), 
+                        searchedData, page, pageSize) });
+            }
+            catch (NullReferenceException)
+            {
+                _loggerService.LogError($"Annual reports not found");
+                return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["NotFound"].Value });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                _loggerService.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to annual reports");
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["NoAccess"].Value });
+            }
         }
 
 
@@ -349,7 +366,25 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
         public async Task<IActionResult> GetAllClubAnnualReports(string searchedData, int page, int pageSize)
         {
-            return StatusCode(StatusCodes.Status200OK, new { clubAnnualReports = await _clubAnnualReportService.GetAllAsync(await _userManager.GetUserAsync(User), searchedData, page, pageSize) });
+            var user = await _userManager.GetUserAsync(User);
+            try
+            {
+                return StatusCode(StatusCodes.Status200OK, new
+                {
+                    clubAnnualReports = await _clubAnnualReportService.GetAllAsync(user,
+                        (await _userManager.GetRolesAsync(user)).Contains(Roles.Admin), searchedData, page, pageSize)
+                });
+            }
+            catch (NullReferenceException)
+            {
+                _loggerService.LogError($"Annual reports not found");
+                return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["NotFound"].Value });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                _loggerService.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to annual reports");
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["NoAccess"].Value });
+            }
         }
 
         /// <summary>

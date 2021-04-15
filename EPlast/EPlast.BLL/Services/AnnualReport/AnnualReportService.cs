@@ -4,11 +4,14 @@ using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.Resources;
+using DatabaseEntities = EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Services
 {
@@ -34,7 +37,7 @@ namespace EPlast.BLL.Services
                         .Include(a => a.NewCityAdmin)
                         .Include(a => a.MembersStatistic)
                         .Include(a => a.City));
-            return await _cityAccessService.HasAccessAsync(user, annualReport.CityId) ? _mapper.Map<AnnualReport, AnnualReportDTO>(annualReport)
+            return await _cityAccessService.HasAccessAsync(user) ? _mapper.Map<AnnualReport, AnnualReportDTO>(annualReport)
                 : throw new UnauthorizedAccessException();
         }
 
@@ -52,11 +55,13 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async Task<IEnumerable<AnnualReportTableObject>> GetAllAsync(User user, string searchedData, int page, int pageSize)
+        public async Task<IEnumerable<AnnualReportTableObject>> GetAllAsync(User user, bool isAdmin, string searchedData, int page, int pageSize)
         {
-            IEnumerable<AnnualReportTableObject> annualReports = await _repositoryWrapper.AnnualReports.GetAnnualReportsAsync(searchedData, page, pageSize);
-            
-            return annualReports;
+            if (await _cityAccessService.HasAccessAsync(user))
+                return await _repositoryWrapper.AnnualReports.GetAnnualReportsAsync(user.Id, isAdmin, searchedData, page,
+                    pageSize);
+
+            throw new UnauthorizedAccessException();
         }
 
         ///<inheritdoc/>
