@@ -11,6 +11,7 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using EPlast.Resources;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
@@ -165,7 +166,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
+                .Setup(m => m.User.IsInRole(Roles.Admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -189,7 +190,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
+                .Setup(m => m.User.IsInRole(Roles.Admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -211,7 +212,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
+                .Setup(m => m.User.IsInRole(Roles.Admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -234,7 +235,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
+                .Setup(m => m.User.IsInRole(Roles.Admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -258,7 +259,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
+                .Setup(m => m.User.IsInRole(Roles.Admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -281,7 +282,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
+                .Setup(m => m.User.IsInRole(Roles.Admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -305,7 +306,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
+                .Setup(m => m.User.IsInRole(Roles.Admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -328,7 +329,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
+                .Setup(m => m.User.IsInRole(Roles.Admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -352,7 +353,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
+                .Setup(m => m.User.IsInRole(Roles.Admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -375,7 +376,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var httpContext = new Mock<HttpContext>();
             httpContext
-                .Setup(m => m.User.IsInRole("Admin"))
+                .Setup(m => m.User.IsInRole(Roles.Admin))
                 .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
@@ -393,13 +394,13 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
 
-        [Test]
-        public async Task UsersTableWithoutPrecautions_Valid_Test()
+        [TestCase("tab")]
+        public async Task UsersTableWithoutPrecautions_Valid_Test(string tab)
         {
-            _userPrecautionService.Setup(a => a.UsersTableWithotPrecautionAsync());
+            _userPrecautionService.Setup(a => a.UsersTableWithoutPrecautionAsync());
 
             // Act
-            var result = await _PrecautionController.UsersWithoutPrecautionsTable();
+            var result = await _PrecautionController.UsersWithoutPrecautionsTable(tab);
             var resultValue = (result as OkObjectResult).Value;
 
             // Assert

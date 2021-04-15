@@ -23,7 +23,7 @@ namespace EPlast.Tests.Services.Club
     [TestFixture]
     public class ClubDocumentsServiceTest
     {
-        private ClubDocumentsService _clubDocumentsService;
+        private protected ClubDocumentsService _clubDocumentsService;
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IMapper> _mapper;
         private Mock<IClubFilesBlobStorageRepository> _clubFilesBlobStorage;
@@ -128,7 +128,7 @@ namespace EPlast.Tests.Services.Club
                 .ReturnsAsync(fakeFile);
             _uniqueId
                 .Setup(u => u.GetUniqueId())
-                .Returns(new Guid());
+                .Returns(Guid.NewGuid());
 
             return new ClubDocumentsService(_repoWrapper.Object, _mapper.Object, _clubFilesBlobStorage.Object, _uniqueId.Object);
         }

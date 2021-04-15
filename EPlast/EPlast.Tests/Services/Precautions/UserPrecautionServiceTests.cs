@@ -6,6 +6,7 @@ using EPlast.BLL.Services.Precautions;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
@@ -18,6 +19,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.UserProfiles;
 
 namespace EPlast.Tests.Services.Precautions
 {
@@ -379,20 +381,27 @@ namespace EPlast.Tests.Services.Precautions
             Assert.IsInstanceOf<UserPrecautionDTO>(result);
         }
         [Test]
-        public async Task UsersTableWithotPrecautionAsync_ReturnsIEnumerableUserTableDTO()
+        public async Task UsersTableWithoutPrecautionAsync_ReturnsIEnumerableUserTableDTO()
         {
             // Arrange
+            adminService.Setup(a => a.GetUsersAsync())
+                .ReturnsAsync(GetTestUserTableDTO());
+            mockRepoWrapper.Setup(x => x.UserPrecaution.GetAllAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
+                .ReturnsAsync(GetTestUserPrecaution());
 
             // Act
-            var result = await PrecautionService.UsersTableWithotPrecautionAsync();
+            var result = await PrecautionService.UsersTableWithoutPrecautionAsync();
+
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<UserTableDTO>>(result);
         }
-        UserPrecaution nullPrecaution = null;
-        UserPrecautionDTO nullPrecautionDTO = null;
-        List<UserPrecaution> nulluserPrecautions = null;
-        List<UserPrecautionDTO> nulluserPrecautionsDTO = null;
+
+        readonly UserPrecaution nullPrecaution = null;
+        readonly UserPrecautionDTO nullPrecautionDTO = null;
+        readonly List<UserPrecaution> nulluserPrecautions = null;
+        readonly List<UserPrecautionDTO> nulluserPrecautionsDTO = null;
 
         private string UserId => _uniqueId.GetUniqueId().ToString();
 
@@ -447,6 +456,21 @@ namespace EPlast.Tests.Services.Precautions
             Reason = "",
             Reporter = ""
         };
+
+        private IEnumerable<UserTableDTO> GetTestUserTableDTO()
+        {
+            return new List<UserTableDTO>
+            {
+                new  UserTableDTO
+                {
+                    User = new ShortUserInformationDTO { ID = UserId }
+                },
+                new  UserTableDTO
+                {
+                    User = new ShortUserInformationDTO { ID = UserId }
+                }
+            }.AsEnumerable();
+        }
 
         private IEnumerable<UserPrecaution> GetTestUserPrecaution()
         {
@@ -503,16 +527,18 @@ namespace EPlast.Tests.Services.Precautions
                }
             }.AsEnumerable();
         }
+
         private IList<string> GetRoles()
         {
             return new List<string>
             {
-                "Admin",
+                Roles.Admin,
                 "Htos",
                 "Nixto"
 
             };
         }
+
         private IList<string> GetRolesWithoutAdmin()
         {
             return new List<string>
@@ -524,3 +550,4 @@ namespace EPlast.Tests.Services.Precautions
         }
     }
 }
+

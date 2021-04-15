@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using EPlast.Resources;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services
@@ -27,9 +28,9 @@ namespace EPlast.Tests.Services
     {
         private readonly List<string> roles = new List<string>()
         {
-            "Admin",
-            "Прихильник",
-            "Колишній член пласту"
+            Roles.Admin,
+            Roles.Supporter,
+            Roles.FormerPlastMember
         };
         private Mock<ICityParticipantsService> _cityParticipantsService;
         private Mock<IClubParticipantsService> _clubParticipants;
@@ -73,7 +74,7 @@ namespace EPlast.Tests.Services
             _regionService
                 .Setup(x => x.DeleteAdminByIdAsync(It.IsAny<int>()));
             _userManager
-                .Setup(x => x.AddToRoleAsync(It.IsAny<User>(), "Колишній член пласту"));
+                .Setup(x => x.AddToRoleAsync(It.IsAny<User>(), Roles.FormerPlastMember));
 
             // Act
             var result = service.ChangeAsync(It.IsAny<string>());
@@ -139,8 +140,8 @@ namespace EPlast.Tests.Services
         public async Task ChangeCurrentRoleAsync_AddInterested_CaseFormer_ReturnsCorrectAsync()
         {
             // Arrange
-            string plastun = "Пластун";
-            string formerMember = "Колишній член пласту";
+            string plastun = Roles.PlastMember;
+            string formerMember = Roles.FormerPlastMember;
 
             _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
@@ -185,10 +186,10 @@ namespace EPlast.Tests.Services
         public async Task ChangeCurrentRoleAsync_AddInterested_CaseInterFormer_ReturnsCorrectAsync()
         {
             // Arrange
-            string plastun = "Пластун";
-            string admin = "Admin";
-            string interested = "Зацікавлений";
-            string formerMember = "Колишній член пласту";
+            string plastun = Roles.PlastMember;
+            string admin = Roles.Admin;
+            string interested = Roles.Interested;
+            string formerMember = Roles.FormerPlastMember;
 
             _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
@@ -222,9 +223,9 @@ namespace EPlast.Tests.Services
         public async Task ChangeCurrentRoleAsync_AddInterested_CaseInterInter_ReturnsCorrectAsync()
         {
             // Arrange
-            string plastun = "Пластун";
-            string admin = "Admin";
-            string interested = "Зацікавлений";
+            string plastun = Roles.PlastMember;
+            string admin = Roles.Admin;
+            string interested = Roles.Interested;
 
             _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
@@ -258,9 +259,9 @@ namespace EPlast.Tests.Services
         public async Task ChangeCurrentRoleAsync_AddInterested_CaseInterPlastun_ReturnsCorrectAsync()
         {
             // Arrange
-            string plastun = "Пластун";
-            string admin = "Admin";
-            string interested = "Зацікавлений";
+            string plastun = Roles.PlastMember;
+            string admin = Roles.Admin;
+            string interested = Roles.Interested;
 
             _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
@@ -290,14 +291,51 @@ namespace EPlast.Tests.Services
             _repoWrapper.Verify();
         }
 
+        [TestCase("userId")]
+        public async Task ChangeCurrentRoleAsync_AddInterested_CaseRegistered_ReturnsCorrectAsync(string userId)
+        {
+            // Arrange
+            var registeredUser = Roles.RegisteredUser;
+            var admin = Roles.Admin;
+            var interested = Roles.Interested;
+
+            _userManager
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(new User());
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string>() { registeredUser });
+            _userManager
+                .Setup(x => x.RemoveFromRoleAsync(It.IsAny<User>(), registeredUser));
+
+            _repoWrapper
+                .Setup(x => x.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserMembershipDates>,
+                        IIncludableQueryable<UserMembershipDates, object>>>()))
+                .ReturnsAsync(new UserMembershipDates() { DateEntry = default });
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityMembers>,
+                        IIncludableQueryable<CityMembers, object>>>())).ReturnsAsync(new CityMembers() { IsApproved = true });
+            _userManager
+                .Setup(x => x.AddToRoleAsync(It.IsAny<User>(), admin));
+
+            // Act
+            await service.ChangeCurrentRoleAsync(userId, interested);
+
+            // Assert
+            _userManager.Verify();
+            _repoWrapper.Verify();
+        }
+
         [Test]
         public async Task ChangeCurrentRoleAsync_AddInterested_ReturnsCorrectAsync()
         {
             // Arrange
-            string plastun = "Пластун";
-            string admin = "Admin";
-            string interested = "Зацікавлений";
-            const string supporter = "Прихильник";
+            string plastun = Roles.PlastMember;
+            string admin = Roles.Admin;
+            string interested = Roles.Interested;
+            const string supporter = Roles.Supporter;
 
             _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
@@ -331,8 +369,8 @@ namespace EPlast.Tests.Services
         public void ChangeCurrentRoleAsync_AddPlastun_ReturnsCorrect()
         {
             // Arrange
-            string plastun = "Пластун";
-            string admin = "Admin";
+            string plastun = Roles.PlastMember;
+            string admin = Roles.Admin;
             _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(new User());
@@ -354,8 +392,8 @@ namespace EPlast.Tests.Services
         public void ChangeCurrentRoleAsync_AddSupporter_ReturnsCorrect()
         {
             // Arrange
-            string supporter = "Прихильник";
-            string admin = "Admin";
+            string supporter = Roles.Supporter;
+            string admin = Roles.Admin;
             _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(new User());
@@ -425,7 +463,7 @@ namespace EPlast.Tests.Services
                 .ReturnsAsync(new User() { FirstName = "James", LastName = "Bond" });
             _userManager
                 .Setup(x => x.GetRolesAsync(new User() { FirstName = "James", LastName = "Bond" }))
-                .ReturnsAsync(new List<string>() { "Прихильник" });
+                .ReturnsAsync(new List<string>() { Roles.Supporter });
             _userManager
                 .Setup(x => x.AddToRolesAsync(It.IsAny<User>(), It.IsAny<List<string>>()));
             _userManager
@@ -449,7 +487,7 @@ namespace EPlast.Tests.Services
                 .ReturnsAsync(new User() { FirstName = "James", LastName = "Bond" });
             _userManager
                 .Setup(x => x.GetRolesAsync(new User() { FirstName = "James", LastName = "Bond" }))
-                .ReturnsAsync(new List<string>() { "Прихильник" });
+                .ReturnsAsync(new List<string>() { Roles.Supporter });
             _userManager
                 .Setup(x => x.AddToRolesAsync(It.IsAny<User>(), It.IsAny<List<string>>()));
             _userManager
@@ -467,7 +505,7 @@ namespace EPlast.Tests.Services
         public async Task GetCityRegionAdminsOfUserAsync_ReturnsCorrect()
         {
             // Arrange
-            AdminType adminType = new AdminType() { AdminTypeName = "Голова Округу" };
+            AdminType adminType = new AdminType() { AdminTypeName = Roles.OkrugaHead };
             RegionAdministration regionAdministration = new RegionAdministration() { AdminType = adminType };
             ICollection<RegionAdministration> regionAdministrations = new List<RegionAdministration>() { regionAdministration };
             Region region = new Region { RegionAdministration = regionAdministrations };
@@ -549,7 +587,7 @@ namespace EPlast.Tests.Services
         public void UpdateUserDatesByChangeRoleAsyncAsync_interested_ReturnsCorrect()
         {
             // Arrange
-            var role = "Зацікавлений";
+            var role = Roles.Interested;
             _repoWrapper
                 .Setup(x => x.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
                It.IsAny<Func<IQueryable<UserMembershipDates>,
@@ -570,7 +608,7 @@ namespace EPlast.Tests.Services
         public void UpdateUserDatesByChangeRoleAsyncAsync_plastun_ReturnsCorrect()
         {
             // Arrange
-            var role = "Пластун";
+            var role = Roles.PlastMember;
             _repoWrapper
                 .Setup(x => x.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
                It.IsAny<Func<IQueryable<UserMembershipDates>,
@@ -591,7 +629,7 @@ namespace EPlast.Tests.Services
         public void UpdateUserDatesByChangeRoleAsyncAsync_supporter_ReturnsCorrect()
         {
             // Arrange
-            var role = "Прихильник";
+            var role = Roles.Supporter;
             _repoWrapper
                 .Setup(x => x.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
                It.IsAny<Func<IQueryable<UserMembershipDates>,
@@ -608,7 +646,7 @@ namespace EPlast.Tests.Services
             Assert.IsNotNull(result);
         }
 
-        [Test]
+        [TestCase]
         public async Task UsersTableAsync_ReturnsIEnumerableUserTableDTO()
         {
             // Arrange
@@ -632,6 +670,47 @@ namespace EPlast.Tests.Services
                It.IsAny<Func<IQueryable<CityMembers>,
                IIncludableQueryable<CityMembers, object>>>()))
                 .ReturnsAsync(new List<CityMembers>());
+            _repoWrapper
+                .Setup(x => x.AdminType.GetUserTableObjects(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
+                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(CreateTuple);
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(roles);
+            _mapper
+                .Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDTO() { ID = Roles.Admin });
+
+            // Act
+            var result = await service.GetUsersTableAsync(1, 2, null, null, null, null, null);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<UserTableDTO>, int>>(result);
+        }
+
+        [Test]
+        public async Task GetUsersAsync_ReturnsIEnumerableUserTableDTO()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                    It.IsAny<Func<IQueryable<User>,
+                        IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(GetTestUsers());
+            _repoWrapper
+                .Setup(x => x.City.GetAllAsync(It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
+                        IIncludableQueryable<DataAccess.Entities.City, object>>>()))
+                .ReturnsAsync(GetTestCities());
+            _repoWrapper
+                .Setup(x => x.ClubMembers.GetAllAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubMembers>,
+                        IIncludableQueryable<ClubMembers, object>>>()))
+                .ReturnsAsync(GetTestClubMembers());
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetAllAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityMembers>,
+                        IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync(GetTestCityMembers());
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(roles);
             _mapper
@@ -639,10 +718,112 @@ namespace EPlast.Tests.Services
                 .Returns(new ShortUserInformationDTO() { ID = "Admin" });
 
             // Act
-            var result = await service.GetUsersTableAsync();
+            var result = await service.GetUsersAsync();
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<UserTableDTO>>(result);
         }
+
+        private IEnumerable<User> GetTestUsers()
+        {
+            return new List<User>
+            {
+                new  User
+                {
+                    Id = "UserId1",
+                    UserProfile = new UserProfile
+                    {
+                        Gender = new Gender{ ID = 1, Name = UserGenders.Male },
+                        UpuDegree = new UpuDegree
+                        {
+                            Name = "UpuDegreeName"
+                        }
+                    },
+                    UserPlastDegrees = new List<UserPlastDegree>
+                    {
+                        new UserPlastDegree
+                        {
+                            PlastDegree = new PlastDegree()
+                        }
+                    }
+
+                },
+                new  User
+                {
+                    Id = "UserId2",
+                    UserProfile = new UserProfile
+                    {
+                        Gender = new Gender{ ID = 2, Name = UserGenders.Female },
+                        UpuDegree = new UpuDegree
+                        {
+                            Name = "UpuDegreeName"
+                        }
+                    },
+                    UserPlastDegrees = new List<UserPlastDegree>
+                    {
+                        new UserPlastDegree
+                        {
+                            PlastDegree = new PlastDegree()
+                        }
+                    }
+
+                },
+            }.AsEnumerable();
+        }
+
+        private IEnumerable<ClubMembers> GetTestClubMembers()
+        {
+            return new List<ClubMembers>
+            {
+                new  ClubMembers
+                {
+                    UserId = "UserId1",
+                    IsApproved = true,
+                    Club = new DataAccess.Entities.Club
+                    {
+                        Name = "ClubName"
+                    }
+                }
+            }.AsEnumerable();
+        }
+
+        private IEnumerable<CityMembers> GetTestCityMembers()
+        {
+            return new List<CityMembers>
+            {
+                new  CityMembers
+                {
+                    UserId = "UserId1",
+                    IsApproved = true,
+                    City = new DataAccess.Entities.City
+                    {
+                        Name = "CityName"
+                    }
+                }
+            }.AsEnumerable();
+        }
+
+        private IEnumerable<DataAccess.Entities.City> GetTestCities()
+        {
+            return new List<DataAccess.Entities.City>
+            {
+                new  DataAccess.Entities.City
+                {
+                    Name = "CityName",
+                    Region = new Region
+                    {
+                        RegionName = "RegionName"
+                    }
+                }
+            }.AsEnumerable();
+        }
+
+        private Tuple<IEnumerable<UserTableObject>, int> CreateTuple => new Tuple<IEnumerable<UserTableObject>, int>(CreateUserTableObjects, 100);
+        private IEnumerable<UserTableObject> CreateUserTableObjects => new List<UserTableObject>()
+        {
+            new UserTableObject(),
+            new UserTableObject()
+        };
+
     }
 }

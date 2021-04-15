@@ -21,6 +21,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccessCity = EPlast.DataAccess.Entities;
+using EPlast.Resources;
 
 namespace EPlast.Tests.Services.City
 {
@@ -732,7 +733,6 @@ namespace EPlast.Tests.Services.City
         private int count => 2;
         private string logoName => "logoName";
         private string cityName => "cityName";
-        private string stream => "whatever";
 
         private IEnumerable<CityDTO> GetTestCityDTO()
         {
@@ -843,7 +843,7 @@ namespace EPlast.Tests.Services.City
 
                       AdminType = new AdminTypeDTO
                       {
-                           AdminTypeName = "Голова Станиці"
+                           AdminTypeName = Roles.CityHead
                       }
 
                  },
@@ -858,7 +858,7 @@ namespace EPlast.Tests.Services.City
                  {
                        AdminType = new AdminTypeDTO
                        {
-                            AdminTypeName = "Голова Станиці"
+                            AdminTypeName = Roles.CityHead
                        }
                  },
                  new CityAdministrationDTO
@@ -884,7 +884,7 @@ namespace EPlast.Tests.Services.City
                     {
                         AdminType = new AdminTypeDTO
                         {
-                            AdminTypeName = "Голова Станиці"
+                            AdminTypeName = Roles.CityHead
                         },
                         EndDate = DateTime.Now.AddMonths(-3)
                     },
@@ -898,8 +898,7 @@ namespace EPlast.Tests.Services.City
                     }
                 };
                 cities.Add(cityDto);
-            };
-
+            }
             return cities.AsQueryable();
         }
 
@@ -917,7 +916,7 @@ namespace EPlast.Tests.Services.City
                     {
                         AdminType = new AdminTypeDTO
                         {
-                            AdminTypeName = "Голова Станиці"
+                            AdminTypeName = Roles.CityHead
                         },
                     },
                     new CityAdministrationDTO
@@ -929,7 +928,7 @@ namespace EPlast.Tests.Services.City
                     }
                 };
                 cities.Add(cityDto);
-            };
+            }
             return cities.AsQueryable();
         }
 

@@ -11,12 +11,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Models;
 
 namespace EPlast.Tests.Services.EmailSending
 {
     public class NewPlastMemberEmailGreetingTests
     {
         private Mock<IEmailSendingService> _mockEmailSendingService;
+        private Mock<IEmailContentService> _mockEmailContentService;
         private Mock<IRepositoryWrapper> _mockRepoWrapper;
         private Mock<UserManager<User>> _mockUserManager;
         private INewPlastMemberEmailGreetingService _newPlastMemberEmailGreetingService;
@@ -71,6 +74,8 @@ namespace EPlast.Tests.Services.EmailSending
                                              It.IsAny<string>(),
                                              It.IsAny<string>()))
                 .ReturnsAsync(true);
+            _mockEmailContentService.Setup(x => x.GetGreetingForNewPlastMemberEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(new EmailModel());
 
             // Act
             await _newPlastMemberEmailGreetingService.NotifyNewPlastMembersAsync();
@@ -106,6 +111,8 @@ namespace EPlast.Tests.Services.EmailSending
                                              It.IsAny<string>(),
                                              It.IsAny<string>()))
                 .ReturnsAsync(true);
+            _mockEmailContentService.Setup(x => x.GetGreetingForNewPlastMemberEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(new EmailModel());
 
             // Act
             await _newPlastMemberEmailGreetingService.NotifyNewPlastMembersAsync();
@@ -123,9 +130,11 @@ namespace EPlast.Tests.Services.EmailSending
             _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _mockRepoWrapper = new Mock<IRepositoryWrapper>();
             _mockEmailSendingService = new Mock<IEmailSendingService>();
+            _mockEmailContentService = new Mock<IEmailContentService>();
             _newPlastMemberEmailGreetingService = new NewPlastMemberEmailGreetingService(_mockRepoWrapper.Object,
                                                                                          _mockUserManager.Object,
-                                                                                         _mockEmailSendingService.Object);
+                                                                                         _mockEmailSendingService.Object,
+                                                                                         _mockEmailContentService.Object);
         }
     }
 }

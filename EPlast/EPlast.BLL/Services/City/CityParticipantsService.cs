@@ -5,9 +5,9 @@ using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using NLog.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +19,7 @@ namespace EPlast.BLL.Services.City
     {
         private readonly IAdminTypeService _adminTypeService;
         private readonly IEmailSendingService _emailSendingService;
+        private readonly IEmailContentService _emailContentService;
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly UserManager<User> _userManager;
@@ -27,13 +28,15 @@ namespace EPlast.BLL.Services.City
                                        IMapper mapper,
                                        UserManager<User> userManager,
                                        IAdminTypeService adminTypeService,
-                                       IEmailSendingService emailSendingService)
+                                       IEmailSendingService emailSendingService,
+                                       IEmailContentService emailContentService)
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
             _userManager = userManager;
             _adminTypeService = adminTypeService;
             _emailSendingService = emailSendingService;
+            _emailContentService = emailContentService;
         }
 
         /// <inheritdoc />
@@ -50,7 +53,7 @@ namespace EPlast.BLL.Services.City
             };
 
             var user = await _userManager.FindByIdAsync(adminDTO.UserId);
-            var role = adminType.AdminTypeName == "Голова Станиці" ? "Голова Станиці" : "Діловод Станиці";
+            var role = adminType.AdminTypeName == Roles.CityHead ? Roles.CityHead : Roles.CitySecretary;
             await _userManager.AddToRoleAsync(user, role);
 
             await CheckCityHasAdmin(adminDTO.CityId, adminType.AdminTypeName);
@@ -105,16 +108,16 @@ namespace EPlast.BLL.Services.City
         public async Task CheckPreviousAdministratorsToDelete()
         {
             var admins = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.EndDate <= DateTime.Now);
-            var cityHeadType = await _adminTypeService.GetAdminTypeByNameAsync("Голова Станиці");
+            var cityHeadType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.CityHead);
 
             foreach (var admin in admins)
             {
-                var role = admin.AdminTypeId == cityHeadType.ID ? "Голова Станиці" : "Діловод Станиці";
+                var role = admin.AdminTypeId == cityHeadType.ID ? Roles.CityHead : Roles.CitySecretary;
 
                 var currentAdministration = await _repositoryWrapper.CityAdministration
                     .GetAllAsync(a => (a.EndDate > DateTime.Now || a.EndDate == null) && a.UserId == admin.UserId);
 
-                if (currentAdministration.All(a => (a.AdminTypeId == cityHeadType.ID ? "Голова Станиці" : "Діловод Станиці") != role)
+                if (currentAdministration.All(a => (a.AdminTypeId == cityHeadType.ID ? Roles.CityHead : Roles.CitySecretary) != role)
                     || !currentAdministration.Any())
                 {
                     var user = await _userManager.FindByIdAsync(admin.UserId);
@@ -219,7 +222,7 @@ namespace EPlast.BLL.Services.City
 
             var adminType = await _adminTypeService.GetAdminTypeByIdAsync(admin.AdminTypeId);
             var user = await _userManager.FindByIdAsync(admin.UserId);
-            var role = adminType.AdminTypeName == "Голова Станиці" ? "Голова Станиці" : "Діловод Станиці";
+            var role = adminType.AdminTypeName == Roles.CityHead ? Roles.CityHead : Roles.CitySecretary;
             await _userManager.RemoveFromRoleAsync(user, role);
 
             _repositoryWrapper.CityAdministration.Update(admin);
@@ -272,7 +275,7 @@ namespace EPlast.BLL.Services.City
         private async Task ChangeMembershipDatesByApprove(string userId, bool isApproved)
         {
             var user = await _userManager.FindByIdAsync(userId);
-            if (!await _userManager.IsInRoleAsync(user, "Пластун") && user != null)
+            if (!await _userManager.IsInRoleAsync(user, Roles.PlastMember) && user != null)
             {
                 var userMembershipDates = await _repositoryWrapper.UserMembershipDates
                             .GetFirstOrDefaultAsync(umd => umd.UserId == userId);
@@ -298,15 +301,9 @@ namespace EPlast.BLL.Services.City
 
         private async Task SendEmailCityApproveAsync(string email, DataAccess.Entities.City city, bool isApproved)
         {
-            string cityUrl = _repositoryWrapper.GetCitiesUrl + city.ID;
-            string approveMessage = "<h3>СКОБ!</h3>"
-                                    + $"<p>Друже / подруго, повідомляємо, що тебе прийнято до станиці <a href='{cityUrl}'>{city.Name}</a>!"
-                                    + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>";
-            string excludeMessage = "<h3>СКОБ!</h3>"
-                                    + $"<p>Друже / подруго, повідомляємо, що тебе було виключено зі станиці <a href='{cityUrl}'>{city.Name}</a>."
-                                    + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>";
-            string message = isApproved ? approveMessage : excludeMessage;
-            await _emailSendingService.SendEmailAsync(email, "Зміна статусу членства у станиці", message, "EPlast");
+            var cityUrl = _repositoryWrapper.GetCitiesUrl + city.ID;
+            var emailContent = _emailContentService.GetCityApproveEmail(cityUrl, city.Name, isApproved);
+            await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message, emailContent.Title);
         }
     }
 }

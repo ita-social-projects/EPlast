@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using EPlast.Resources;
 
 namespace EPlast.Tests.Services.Club
 {
@@ -63,7 +64,7 @@ namespace EPlast.Tests.Services.Club
         {
             //Arrange
             _repoWrapper
-                .Setup(s => s.ClubAdministration.CreateAsync(clubAdm));
+                .Setup(s => s.ClubAdministration.CreateAsync(_clubAdministration));
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(new AdminTypeDTO());
@@ -80,7 +81,7 @@ namespace EPlast.Tests.Services.Club
         {
             //Arrange
             _repoWrapper
-                .Setup(s => s.ClubAdministration.CreateAsync(clubAdm));
+                .Setup(s => s.ClubAdministration.CreateAsync(_clubAdministration));
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(new AdminTypeDTO());
@@ -157,14 +158,14 @@ namespace EPlast.Tests.Services.Club
                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                .ReturnsAsync(new AdminTypeDTO
                {
-                   AdminTypeName = "Голова Куреня",
+                   AdminTypeName = Roles.KurinHead,
                    ID = 3
                });
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
                .ReturnsAsync(new AdminTypeDTO
                {
-                   AdminTypeName = "Голова Куреня",
+                   AdminTypeName = Roles.KurinHead,
                    ID = 3
                });
 
@@ -184,7 +185,7 @@ namespace EPlast.Tests.Services.Club
                 .Setup(r => r.ClubAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<ClubAdministration>,
                     IIncludableQueryable<ClubAdministration, object>>>()))
-                .ReturnsAsync(clubAdm);
+                .ReturnsAsync(_clubAdministration);
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
                 .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminType));
@@ -214,7 +215,7 @@ namespace EPlast.Tests.Services.Club
                 .Setup(r => r.ClubAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<ClubAdministration>,
                     IIncludableQueryable<ClubAdministration, object>>>()))
-                .ReturnsAsync(clubAdm);
+                .ReturnsAsync(_clubAdministration);
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
                 .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminType));
@@ -246,7 +247,7 @@ namespace EPlast.Tests.Services.Club
                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                .ReturnsAsync(new AdminTypeDTO
                {
-                   AdminTypeName = "Голова Куреня",
+                   AdminTypeName = Roles.KurinHead,
                    ID = 3
                });
             _userManager
@@ -278,7 +279,7 @@ namespace EPlast.Tests.Services.Club
                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                .ReturnsAsync(new AdminTypeDTO
                {
-                   AdminTypeName = "Голова Куреня",
+                   AdminTypeName = Roles.KurinHead,
                    ID = 3
                });
             _userManager
@@ -312,7 +313,7 @@ namespace EPlast.Tests.Services.Club
                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                .ReturnsAsync(new AdminTypeDTO
                {
-                   AdminTypeName = "Голова Куреня",
+                   AdminTypeName = Roles.KurinHead,
                    ID = 2
                });
             _userManager
@@ -427,7 +428,7 @@ namespace EPlast.Tests.Services.Club
             // Arrange
             _repoWrapper.Setup(r => r.ClubMembers.GetAllAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
             It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
-            .ReturnsAsync(new List<ClubMembers> { new ClubMembers() }); ;
+            .ReturnsAsync(new List<ClubMembers> { new ClubMembers() });
 
             // Act
             var result = await _clubParticipantsService.GetMembersByClubIdAsync(It.IsAny<int>());
@@ -605,8 +606,8 @@ namespace EPlast.Tests.Services.Club
         {
             return new List<ClubAdministrationDTO>
             {
-                new ClubAdministrationDTO{UserId = "Голова Куреня"},
-                new ClubAdministrationDTO{UserId = "Голова Куреня"}
+                new ClubAdministrationDTO{UserId = Roles.KurinHead},
+                new ClubAdministrationDTO{UserId = Roles.KurinHead}
             }.AsEnumerable();
         }
 
@@ -614,18 +615,18 @@ namespace EPlast.Tests.Services.Club
         {
             return new List<ClubAdministrationStatusDTO>
             {
-                new ClubAdministrationStatusDTO{UserId = "Голова Куреня"},
-                new ClubAdministrationStatusDTO{UserId = "Голова Куреня"}
+                new ClubAdministrationStatusDTO{UserId = Roles.KurinHead},
+                new ClubAdministrationStatusDTO{UserId = Roles.KurinHead}
             }.AsEnumerable();
         }
 
         private static AdminTypeDTO AdminType = new AdminTypeDTO
         {
-            AdminTypeName = "Голова Куреня",
+            AdminTypeName = Roles.KurinHead,
             ID = 1
         };
 
-        private ClubAdministrationDTO clubAdmDTO = new ClubAdministrationDTO
+        private readonly ClubAdministrationDTO clubAdmDTO = new ClubAdministrationDTO
         {
             ID = 1,
             AdminType = AdminType,
@@ -634,31 +635,19 @@ namespace EPlast.Tests.Services.Club
             EndDate = DateTime.Today,
             StartDate = DateTime.Now,
             User = new ClubUserDTO(),
-            UserId = "Голова Куреня"
+            UserId = Roles.KurinHead
         };
 
-        private ClubAdministration clubAdm = new ClubAdministration
+        private readonly ClubAdministration _clubAdministration = new ClubAdministration
         {
             ID = 1,
             AdminType = new AdminType()
             {
-                AdminTypeName = "Голова Куреня",
+                AdminTypeName = Roles.KurinHead,
                 ID = 1
             },
             AdminTypeId = AdminType.ID,
-            UserId = "Голова Куреня"
-        };
-
-        private ClubAdministrationDTO clubFakeAdmDTO = new ClubAdministrationDTO
-        {
-            ID = 2,
-            AdminType = AdminType,
-            ClubId = 2,
-            AdminTypeId = 2,
-            EndDate = DateTime.Today,
-            StartDate = DateTime.Now,
-            User = new ClubUserDTO(),
-            UserId = "Голова Куреня"
+            UserId = Roles.KurinHead
         };
 
         private int fakeId => 3;

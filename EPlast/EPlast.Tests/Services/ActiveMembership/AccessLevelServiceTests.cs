@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.Resources;
 
 namespace EPlast.Tests.Services.ActiveMembership
 {
@@ -91,7 +92,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<string>>(result);
             Assert.AreEqual(GetUserRolesAsPlastun().ToList().Count, listResult.Count);
-            Assert.AreEqual(AccessLevelTypeDTO.Member.GetDescription(), listResult[0]);
+            Assert.AreEqual(AccessLevelTypeDTO.PlastMember.GetDescription(), listResult[0]);
         }
 
         [Test]
@@ -131,7 +132,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<string>>(result);
             Assert.AreEqual(GetUserRolesAsLeadershipMember().ToList().Count, listResult.Count);
-            Assert.AreEqual(AccessLevelTypeDTO.Member.GetDescription(), listResult[0]);
+            Assert.AreEqual(AccessLevelTypeDTO.PlastMember.GetDescription(), listResult[0]);
             Assert.AreEqual(AccessLevelTypeDTO.LeadershipMember.GetDescription(), listResult[1]);
         }
 
@@ -171,7 +172,7 @@ namespace EPlast.Tests.Services.ActiveMembership
         {
             return new List<string>
             {
-                RolesForActiveMembershipTypeDTO.Plastun.GetDescription()
+                RolesForActiveMembershipTypeDTO.PlastMember.GetDescription()
             };
         }
 
@@ -187,8 +188,9 @@ namespace EPlast.Tests.Services.ActiveMembership
         {
             return new List<string>
             {
-                 RolesForActiveMembershipTypeDTO.Plastun.GetDescription(),
-                 "Голова Округу"
+                 RolesForActiveMembershipTypeDTO.PlastMember.GetDescription(),
+                 Roles.OkrugaHead
+
             };
         }
 

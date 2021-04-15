@@ -38,7 +38,7 @@ namespace EPlast.DataAccess
         public DbSet<EventStatus> EventStatuses { get; set; }
         public DbSet<EventAdministration> EventAdministration { get; set; }
         public DbSet<EventAdministrationType> EventAdministrationType { get; set; }
-
+        public DbSet<UserTableObject> UserTableObjects { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -117,6 +117,11 @@ namespace EPlast.DataAccess
                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<User>()
+                .HasMany(x => x.GoverningBodyAdministrations)
+                .WithOne(x => x.User)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>()
                .HasMany(x => x.RegionAdministrations)
                .WithOne(x => x.User)
                .OnDelete(DeleteBehavior.Cascade);
@@ -188,7 +193,6 @@ namespace EPlast.DataAccess
         }
         public DbSet<RegionAnnualReport> RegionAnnualReports { get; set; }
         public DbSet<DocumentTemplate> DocumentTemplates { get; set; }
-        public DbSet<Organization> Organization { get; set; }
         public DbSet<DecesionTarget> DecesionTargets { get; set; }
         public DbSet<Decesion> Decesions { get; set; }
         public DbSet<MethodicDocument> MethodicDocuments { get; set; }
@@ -197,6 +201,8 @@ namespace EPlast.DataAccess
 
         public DbSet<MembersStatistic> MembersStatistics { get; set; }
 
+        public DbSet<Organization> Organization { get; set; }
+        public DbSet<GoverningBodyAdministration> GoverningBodyAdministrations { get; set; }
 
         public DbSet<City> Cities { get; set; }
         public DbSet<CityAdministration> CityAdministrations { get; set; }
@@ -204,16 +210,13 @@ namespace EPlast.DataAccess
         public DbSet<CityDocumentType> CityDocumentTypes { get; set; }
         public DbSet<CityMembers> CityMembers { get; set; }
 
-
         public DbSet<AdminType> AdminTypes { get; set; }
-
 
         public DbSet<Club> Clubs { get; set; }
         public DbSet<ClubAdministration> ClubAdministrations { get; set; }
         public DbSet<ClubDocuments> ClubDocuments { get; set; }
         public DbSet<ClubDocumentType> ClubDocumentTypes { get; set; }
         public DbSet<ClubMembers> ClubMembers { get; set; }
-
 
         public DbSet<Region> Regions { get; set; }
         public DbSet<RegionDocuments> RegionDocs { get; set; }

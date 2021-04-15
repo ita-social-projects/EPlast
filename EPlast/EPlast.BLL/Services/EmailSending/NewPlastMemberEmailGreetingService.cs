@@ -1,6 +1,7 @@
 ﻿using EPlast.BLL.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -12,26 +13,30 @@ namespace EPlast.BLL.Services
     public class NewPlastMemberEmailGreetingService : INewPlastMemberEmailGreetingService
     {
         private readonly IEmailSendingService _emailSendingService;
+        private readonly IEmailContentService _emailContentService;
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
 
         public NewPlastMemberEmailGreetingService(IRepositoryWrapper repoWrapper,
                                            UserManager<User> userManager,
-                                           IEmailSendingService emailSendingService)
+                                           IEmailSendingService emailSendingService,
+                                           IEmailContentService emailContentService)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
             _emailSendingService = emailSendingService;
+            _emailContentService = emailContentService;
         }
 
         public async Task NotifyNewPlastMembersAsync()
         {
-            (await GetNewPlastMembersAsync()).ToList().ForEach(async (user) => await SendEmailGreetingForNewPlastMemberAsync(user.Email));
+            var tasks = (from user in await GetNewPlastMembersAsync() select SendEmailGreetingForNewPlastMemberAsync(user.Email, user.Id)).Cast<Task>().ToList();
+            await Task.WhenAll(tasks);
         }
 
         private async Task<IEnumerable<User>> GetNewPlastMembersAsync()
         {
-            var role = "Пластун";
+            var role = Roles.PlastMember;
             var allUsers = await _repoWrapper.User.GetAllAsync(u => u.EmailConfirmed);
             var newPlastuns = new List<User>();
 
@@ -43,7 +48,7 @@ namespace EPlast.BLL.Services
                 TimeSpan halfOfYear = new TimeSpan(182, 0, 0, 0);
                 if (_repoWrapper.ConfirmedUser.FindByCondition(x => x.UserID == user.Id).Any(q => q.isClubAdmin))
                 {
-                    timeToJoinPlast.Subtract(halfOfYear);
+                    timeToJoinPlast = timeToJoinPlast.Subtract(halfOfYear);
                 }
                 if (timeToJoinPlast <= TimeSpan.Zero)
                 {
@@ -61,15 +66,10 @@ namespace EPlast.BLL.Services
             return (userRoles.Contains("Admin"));
         }
 
-        private async Task<bool> SendEmailGreetingForNewPlastMemberAsync(string userEmail)
+        private async Task<bool> SendEmailGreetingForNewPlastMemberAsync(string userEmail, string userId)
         {
-            var email = userEmail;
-            var subject = "Випробувальний термін завершився!";
-            var message = "<h3>СКОБ!</h3>"
-                        + "<p>Друже/подруго, сьогодні завершився твій випробувальний період в Пласт!"
-                        + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>";
-            var title = "EPlast";
-            return await _emailSendingService.SendEmailAsync(email, subject, message, title);
+            var email = await _emailContentService.GetGreetingForNewPlastMemberEmailAsync(userId);
+            return await _emailSendingService.SendEmailAsync(userEmail, email.Subject, email.Message, email.Title);
         }
     }
 }

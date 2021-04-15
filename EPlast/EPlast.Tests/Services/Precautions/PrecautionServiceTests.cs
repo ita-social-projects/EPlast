@@ -4,6 +4,7 @@ using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
@@ -237,12 +238,12 @@ namespace EPlast.Tests.Services.Precautions
             Assert.DoesNotThrowAsync(async () => { await PrecautionService.AddPrecautionAsync(new PrecautionDTO(), new User()); });
         }
 
-        Precaution nullPrecaution = null;
-        PrecautionDTO nullPrecautionDTO = null;
-        List<PrecautionDTO> nullListPrecautionDTO = null;
-        List<Precaution> nullListPrecaution = null;
-        PrecautionDTO PrecautionDTO = new PrecautionDTO { Id = 1, Name = "За силу" };
-        Precaution Precaution = new Precaution { Id = 1, Name = "За силу" };
+        readonly Precaution nullPrecaution = null;
+        readonly PrecautionDTO nullPrecautionDTO = null;
+        readonly List<PrecautionDTO> nullListPrecautionDTO = null;
+        readonly List<Precaution> nullListPrecaution = null;
+        readonly PrecautionDTO PrecautionDTO = new PrecautionDTO { Id = 1, Name = "За силу" };
+        readonly Precaution Precaution = new Precaution { Id = 1, Name = "За силу" };
 
         private IEnumerable<Precaution> GetTestPlastPrecaution()
         {
@@ -268,7 +269,7 @@ namespace EPlast.Tests.Services.Precautions
         {
             return new List<string>
             {
-                "Admin",
+                Roles.Admin,
                 "Htos",
                 "Nixto"
 

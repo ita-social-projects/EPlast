@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.Resources;
 
 namespace EPlast.BLL.Services.EmailSending
 {
@@ -34,7 +35,7 @@ namespace EPlast.BLL.Services.EmailSending
         {
             try
             {
-                (await GetLonelyUsersAsync()).ToList().ForEach(async (user) => await _authEmailServices.SendEmailJoinToCityReminderAsync(user.Email));
+                (await GetLonelyUsersAsync()).ToList().ForEach(async (user) => await _authEmailServices.SendEmailJoinToCityReminderAsync(user.Email, user.Id));
             }
             catch (Exception)
             {
@@ -72,7 +73,7 @@ namespace EPlast.BLL.Services.EmailSending
         private async Task<bool> IsAdminAsync(User user)
         {
             var userRoles = await _userManager.GetRolesAsync(user);
-            return (userRoles.Contains("Admin"));
+            return (userRoles.Contains(Roles.Admin));
         }
 
         private async Task<bool> IsLonelyUserAsync(User user)

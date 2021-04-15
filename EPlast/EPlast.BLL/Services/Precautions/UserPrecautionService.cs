@@ -1,19 +1,20 @@
 ﻿using AutoMapper;
+using EPlast.BLL.DTO;
+using EPlast.BLL.Services.Interfaces;
+using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using EPlast.DataAccess.Entities;
-using Microsoft.AspNetCore.Identity;
-using EPlast.BLL.Services.Interfaces;
-using EPlast.BLL.DTO;
 using System.Linq;
+using EPlast.Resources;
+using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Precautions
 {
-    public class UserPrecautionService: IUserPrecautionService
+    public class UserPrecautionService : IUserPrecautionService
     {
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repoWrapper;
@@ -40,16 +41,17 @@ namespace EPlast.BLL.Services.Precautions
                 Reporter = userPrecautionDTO.Reporter,
                 Number = userPrecautionDTO.Number,
                 Status = userPrecautionDTO.Status,
-                EndDate = getPrecautionEndDate(userPrecautionDTO.PrecautionId, userPrecautionDTO.Date),
+                EndDate = GetPrecautionEndDate(userPrecautionDTO.PrecautionId, userPrecautionDTO.Date),
                 IsActive = userPrecautionDTO.IsActive
             };
             await _repoWrapper.UserPrecaution.CreateAsync(userPrecaution);
             await _repoWrapper.SaveAsync();
         }
 
-        private DateTime getPrecautionEndDate(int precautionId, DateTime startDate) {
+        private DateTime GetPrecautionEndDate(int precautionId, DateTime startDate)
+        {
             if (precautionId == 1) { return startDate.AddMonths(3); }
-            return  precautionId == 2 ? startDate.AddMonths(6) : startDate.AddMonths(12);
+            return precautionId == 2 ? startDate.AddMonths(6) : startDate.AddMonths(12);
         }
 
         public async Task ChangeUserPrecautionAsync(UserPrecautionDTO userPrecautionDTO, User user)
@@ -64,7 +66,7 @@ namespace EPlast.BLL.Services.Precautions
                 Reason = userPrecautionDTO.Reason,
                 Reporter = userPrecautionDTO.Reporter,
                 Number = userPrecautionDTO.Number,
-                Status = userPrecautionDTO.Status, 
+                Status = userPrecautionDTO.Status,
                 EndDate = userPrecautionDTO.EndDate,
                 IsActive = userPrecautionDTO.IsActive
             };
@@ -104,13 +106,14 @@ namespace EPlast.BLL.Services.Precautions
 
         public async Task<IEnumerable<UserPrecautionDTO>> GetUserPrecautionsOfUserAsync(string UserId)
         {
-            var userPrecautions = await _repoWrapper.UserPrecaution.GetAllAsync(u => u.UserId == UserId, 
+            var userPrecautions = await _repoWrapper.UserPrecaution.GetAllAsync(u => u.UserId == UserId,
                 include: source => source
                 .Include(c => c.User)
                 .Include(d => d.Precaution));
             return _mapper.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDTO>>(userPrecautions);
         }
-        public async Task<bool> IsNumberExistAsync(int number) 
+
+        public async Task<bool> IsNumberExistAsync(int number)
         {
             var distNum = await _repoWrapper.UserPrecaution.GetFirstOrDefaultAsync(x => x.Number == number);
             return distNum != null;
@@ -118,11 +121,12 @@ namespace EPlast.BLL.Services.Precautions
 
         public async Task CheckIfAdminAsync(User user)
         {
-            if (!(await _userManager.GetRolesAsync(user)).Contains("Admin"))
+            if (!(await _userManager.GetRolesAsync(user)).Contains(Roles.Admin))
                 throw new UnauthorizedAccessException();
         }
 
-        private async Task<IEnumerable<UserPrecaution>> CheckEndDateAsync(IEnumerable<UserPrecaution> userPrecaution) {
+        private async Task<IEnumerable<UserPrecaution>> CheckEndDateAsync(IEnumerable<UserPrecaution> userPrecaution)
+        {
             if (userPrecaution != null)
             {
                 foreach (var item in userPrecaution)
@@ -135,26 +139,26 @@ namespace EPlast.BLL.Services.Precautions
                     }
                 }
             }
-             return userPrecaution;
+            return userPrecaution;
         }
-        public async Task<IEnumerable<UserTableDTO>> UsersTableWithotPrecautionAsync()
+
+        public async Task<IEnumerable<UserTableDTO>> UsersTableWithoutPrecautionAsync()
         {
-            var userTable = await _adminService.GetUsersTableAsync();
-            var filteredtable = new List<UserTableDTO>();
+            var userTable = await _adminService.GetUsersAsync();
+            var filteredTable = new List<UserTableDTO>();
             foreach (var user in userTable)
             {
                 if (!await CheckUserPrecautions(user.User.ID))
                 {
-                    filteredtable.Add(user);
+                    filteredTable.Add(user);
                 }
             }
-            return filteredtable;
+            return filteredTable;
         }
 
         private async Task<bool> CheckUserPrecautions(string userId)
         {
             return (await GetUserPrecautionsOfUserAsync(userId)).Any(x => x.IsActive);
         }
-
     }
 }

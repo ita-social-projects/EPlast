@@ -8,6 +8,7 @@ using EPlast.WebApi.Models.Approver;
 using EPlast.WebApi.Models.User;
 using EPlast.WebApi.Models.UserModels;
 using EPlast.WebApi.Models.UserModels.UserProfileFields;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -68,9 +69,9 @@ namespace EPlast.WebApi.Controllers
             if (user != null)
             {
                 var time = _userService.CheckOrAddPlastunRole(user.Id, user.RegistredOn);
-                var isUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун")
+                var isUserPlastun = await _userManagerService.IsInRoleAsync(user, Roles.PlastMember)
                     || user.UserProfile.UpuDegreeID != 1
-                    || !(await _userManagerService.IsInRoleAsync(user, "Прихильник")
+                    || !(await _userManagerService.IsInRoleAsync(user, Roles.Supporter)
                     && await _userService.IsApprovedCityMember(userId));
 
                 var model = new PersonalDataViewModel
@@ -120,17 +121,17 @@ namespace EPlast.WebApi.Controllers
                 var isUserSameRegion = currentUser.RegionAdministrations.FirstOrDefault()?.RegionId
                     .Equals(focusUser.RegionAdministrations.FirstOrDefault()?.RegionId)
                     == true;
-                var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, "Admin");
-                var isUserHeadOfCity = await _userManagerService.IsInRoleAsync(currentUser, "Голова Станиці");
-                var isUserHeadOfClub = await _userManagerService.IsInRoleAsync(currentUser, "Голова Куреня");
-                var isUserHeadOfRegion = await _userManagerService.IsInRoleAsync(currentUser, "Голова Округу");
-                var isCurrentUserSupporter = await _userManagerService.IsInRoleAsync(currentUser, "Прихильник");
-                var isCurrentUserPlastun = await _userManagerService.IsInRoleAsync(currentUser, "Пластун")
+                var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
+                var isUserHeadOfCity = await _userManagerService.IsInRoleAsync(currentUser, Roles.CityHead);
+                var isUserHeadOfClub = await _userManagerService.IsInRoleAsync(currentUser, Roles.KurinHead);
+                var isUserHeadOfRegion = await _userManagerService.IsInRoleAsync(currentUser, Roles.OkrugaHead);
+                var isCurrentUserSupporter = await _userManagerService.IsInRoleAsync(currentUser, Roles.Supporter);
+                var isCurrentUserPlastun = await _userManagerService.IsInRoleAsync(currentUser, Roles.PlastMember)
                     || currentUser.UserProfile.UpuDegreeID != 1
                     || !(isCurrentUserSupporter
                     && await _userService.IsApprovedCityMember(currentUserId));
-                var isFocusUserSupporter = await _userManagerService.IsInRoleAsync(focusUser, "Прихильник");
-                var isFocusUserPlastun = await _userManagerService.IsInRoleAsync(focusUser, "Пластун")
+                var isFocusUserSupporter = await _userManagerService.IsInRoleAsync(focusUser, Roles.Supporter);
+                var isFocusUserPlastun = await _userManagerService.IsInRoleAsync(focusUser, Roles.PlastMember)
                     || focusUser.UserProfile.UpuDegreeID != 1
                     || !(isFocusUserSupporter
                     && await _userService.IsApprovedCityMember(focusUserId));
@@ -288,12 +289,12 @@ namespace EPlast.WebApi.Controllers
                 ConfirmedUsers = _mapper.Map<IEnumerable<ConfirmedUserDTO>, IEnumerable<ConfirmedUserViewModel>>(confirmedUsers),
                 ClubApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(clubApprover),
                 CityApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(cityApprover),
-                IsUserHeadOfCity = await _userManagerService.IsInRoleAsync(_mapper.Map<User,UserDTO>(await _userManager.GetUserAsync(User)), "Голова Станиці"),
-                IsUserHeadOfClub = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), "Голова Куреня"),
-                IsUserHeadOfRegion = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), "Голова Округу"),
-                IsUserPlastun = await _userManagerService.IsInRoleAsync(user, "Пластун")
+                IsUserHeadOfCity = await _userManagerService.IsInRoleAsync(_mapper.Map<User,UserDTO>(await _userManager.GetUserAsync(User)), Roles.CityHead),
+                IsUserHeadOfClub = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.KurinHead),
+                IsUserHeadOfRegion = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.OkrugaHead),
+                IsUserPlastun = await _userManagerService.IsInRoleAsync(user, Roles.PlastMember)
                     || user.UserProfile.UpuDegreeID != 1
-                    || !(await _userManagerService.IsInRoleAsync(user, "Прихильник")
+                    || !(await _userManagerService.IsInRoleAsync(user, Roles.Supporter)
                     && await _userService.IsApprovedCityMember(userId)),
                 CurrentUserId = approverId
             };
@@ -316,12 +317,12 @@ namespace EPlast.WebApi.Controllers
         /// Approving user
         /// </summary>
         /// <param name="userId">The user ID which is confirmed</param>
-        /// <param name="isClubAdmin">Confirm as an club admin</param>
-        /// <param name="isCityAdmin">Confirm as an city admin</param>
+        /// <param name="isClubAdmin">Confirm as an club Admin</param>
+        /// <param name="isCityAdmin">Confirm as an city Admin</param>
         /// <response code="200">Successful operation</response>
         /// <response code="404">User not found</response>
         [HttpPost("approveUser/{userId}/{isClubAdmin}/{isCityAdmin}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Пластун, Голова Куреня, Голова Станиці, Голова Округу, Admin")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAdminAndPlastun)]
         public async Task<IActionResult> ApproveUser(string userId, bool isClubAdmin = false, bool isCityAdmin = false)
         {
             if (userId != null)

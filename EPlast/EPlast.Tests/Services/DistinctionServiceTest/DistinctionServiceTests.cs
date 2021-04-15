@@ -4,6 +4,7 @@ using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
@@ -238,12 +239,12 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
             Assert.DoesNotThrowAsync(async () => { await distinctionService.AddDistinctionAsync( new DistinctionDTO(), new User()); });
         }
 
-        Distinction nullDistinction = null;
-        DistinctionDTO nullDistinctionDTO = null;
-        List<DistinctionDTO> nullListDistinctionDTO = null;
-        List<Distinction> nullListDistinction = null;
-        DistinctionDTO distinctionDTO = new DistinctionDTO { Id = 1, Name = "За силу" };
-        Distinction distinction = new Distinction { Id = 1, Name = "За силу" };
+        readonly Distinction nullDistinction = null;
+        readonly DistinctionDTO nullDistinctionDTO = null;
+        readonly List<DistinctionDTO> nullListDistinctionDTO = null;
+        readonly List<Distinction> nullListDistinction = null;
+        readonly DistinctionDTO distinctionDTO = new DistinctionDTO { Id = 1, Name = "За силу" };
+        readonly Distinction distinction = new Distinction { Id = 1, Name = "За силу" };
 
         private IEnumerable<Distinction> GetTestPlastDistinction()
         {
@@ -269,7 +270,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         {
             return new List<string>
             {
-                "Admin",
+                Roles.Admin,
                 "Htos",
                 "Nixto"
 
