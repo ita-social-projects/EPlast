@@ -349,6 +349,19 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(member);
         }
+        /// <summary>
+        /// Club name only for approved member
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns>club name string</returns>
+        [HttpGet("ClubNameOfApprovedMember/{memberId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> ClubNameOfApprovedMember(string memberId)
+        {
+            var member = await _clubParticipantsService.ClubOfApprovedMember(memberId);
+
+            return Ok(member);
+        }
 
         /// <summary>
         /// Add a new administrator to the Club
