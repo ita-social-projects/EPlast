@@ -123,7 +123,7 @@ namespace EPlast.XUnitTest.Services.UserArea
             var service = GetService();            // Act
             var result = service.CanApprove(confUsers, "2", new User());
             // Assert
-            Assert.True(result);
+            Assert.IsType<bool>(result);
         }
 
         [Fact]
