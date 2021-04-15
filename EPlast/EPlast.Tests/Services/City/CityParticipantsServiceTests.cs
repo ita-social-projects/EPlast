@@ -686,6 +686,31 @@ namespace EPlast.Tests.Services.City
             Assert.NotNull(result);
             Assert.IsInstanceOf<CityMembersDTO>(result);
         }
+        [Test]
+        public async Task CityOfApprovedMemberTest()
+        {
+            //Arrange 
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                             It.IsAny<Func<IQueryable<CityMembers>, IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync(new CityMembers() 
+                {
+                    ID = 1,
+                    UserId = "123v",
+                    IsApproved = true,
+                    City = new DataAccess.Entities.City
+                    {
+                        ID = 1,
+                        Name = "city name"
+                    },
+                    CityId = 1
+                });
+            //Act
+            var result = await _cityParticipantsService.CityOfApprovedMember("123v");
+            //Assert
+            Assert.IsNotNull(result);
+            _repoWrapper.Verify();
+        }
 
         private IEnumerable<CityAdministration> GetCityAdministration()
         {
