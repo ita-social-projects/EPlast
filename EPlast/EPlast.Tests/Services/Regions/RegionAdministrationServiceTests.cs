@@ -300,7 +300,7 @@ namespace EPlast.Tests.Services.Regions
             ID = 1
         };
  
-        private RegionAdministration regionAdm = new RegionAdministration
+        private readonly RegionAdministration regionAdm = new RegionAdministration
         {
             ID = 1,
             AdminType = new AdminType()
@@ -313,7 +313,7 @@ namespace EPlast.Tests.Services.Regions
             UserId = Roles.CityHead
         };
 
-        private RegionAdministrationDTO regionAdmDTO = new RegionAdministrationDTO
+        private readonly RegionAdministrationDTO regionAdmDTO = new RegionAdministrationDTO
         {
             ID = 1,
             AdminType = new AdminTypeDTO()
