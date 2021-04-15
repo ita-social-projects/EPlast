@@ -347,7 +347,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         }
 
         [Fact]
-        public async Task GetAllAsync_Succeded()
+        public void GetAllAsync_Succeded()
         {
             // Arrange
             _cityAccessService.Setup(r => r.HasAccessAsync(It.IsAny<User>())).ReturnsAsync(true);
@@ -364,16 +364,19 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         }
 
         [Fact]
-        public async Task GetAllAsync_UnauthorizedAccessException()
+        public void GetAllAsync_UnauthorizedAccessException()
         {
             // Arrange
             _cityAccessService.Setup(r => r.HasAccessAsync(It.IsAny<User>())).ReturnsAsync(false);
            
             // Act
             // Assert
-            Assert.ThrowsAsync<UnauthorizedAccessException>(async () => await _annualReportService.GetAllAsync(
-                It.IsAny<User>(), It.IsAny<bool>(),
-                It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()));
+            Assert.ThrowsAsync<UnauthorizedAccessException>(async () =>
+            {
+                await _annualReportService.GetAllAsync(
+                    It.IsAny<User>(), It.IsAny<bool>(),
+                    It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>());
+            });
         }
 
         [Fact]

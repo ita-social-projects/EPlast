@@ -86,7 +86,6 @@ namespace EPlast.XUnitTest.Services.UserArea
             var result = service.GetConfirmedUsers(user);
             // Assert
             Assert.NotNull(result);
-            var viewResult = Assert.IsAssignableFrom<IEnumerable<ConfirmedUserDTO>>(result);
         }
         [Fact]
         public void GetClubAdminConfirmedUserTest()
@@ -124,9 +123,9 @@ namespace EPlast.XUnitTest.Services.UserArea
             var service = GetService();            // Act
             var result = service.CanApprove(confUsers, "2", new User());
             // Assert
-            var res = Assert.IsType<bool>(result);
             Assert.True(result);
         }
+
         [Fact]
         public void CanApproveTestFailure()
         {

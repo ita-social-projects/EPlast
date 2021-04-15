@@ -185,7 +185,7 @@ namespace EPlast.BLL.Services.Region
 
         public async Task<IEnumerable<RegionAnnualReportTableObject>> GetAllRegionsReportsAsync(string searchedData, int page, int pageSize)
         {
-            return (await _repositoryWrapper.RegionAnnualReports.GetRegionAnnualReportsAsync(searchedData, page, pageSize)) as IEnumerable<RegionAnnualReportTableObject>;
+            return await _repositoryWrapper.RegionAnnualReports.GetRegionAnnualReportsAsync(searchedData, page, pageSize);
         }
 
     }
