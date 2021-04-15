@@ -58,11 +58,11 @@ namespace EPlast.BLL.Services.Club
             return _mapper.Map<IEnumerable<ClubAnnualReport>, IEnumerable<ClubAnnualReportDTO>>(annualReports);
         }
 
-        public async Task<IEnumerable<ClubAnnualReportTableObject>> GetAllAsync(User user, string searchedData, int page, int pageSize)
+        public async Task<IEnumerable<ClubAnnualReportTableObject>> GetAllAsync(User user, bool isAdmin, string searchedData, int page, int pageSize)
         {
-            var annualReports =
-                await _repositoryWrapper.ClubAnnualReports.GetClubAnnualReportsAsync(searchedData, page, pageSize);
-            return annualReports;
+            if (await _clubAccessService.HasAccessAsync(user))
+                return await _repositoryWrapper.ClubAnnualReports.GetClubAnnualReportsAsync(user.Id, isAdmin, searchedData, page, pageSize);
+            throw new UnauthorizedAccessException();
         }
 
         public async Task CreateAsync(User user, ClubAnnualReportDTO clubAnnualReportDTO)

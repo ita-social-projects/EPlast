@@ -12,9 +12,9 @@ namespace EPlast.DataAccess.Repositories.Realizations.Club
             : base(dbContext)
         { }
 
-        public async Task<IEnumerable<ClubAnnualReportTableObject>> GetClubAnnualReportsAsync(string searchdata, int page, int pageSize)
+        public async Task<IEnumerable<ClubAnnualReportTableObject>> GetClubAnnualReportsAsync(string userId, bool isAdmin, string searchdata, int page, int pageSize)
         {
-            var items = EPlastDBContext.Set<ClubAnnualReportTableObject>().FromSqlRaw("dbo.getClubAnnualReportsInfo @searchData = {0}, @PageIndex ={1}, @PageSize={2}", searchdata, page, pageSize);
+            var items = EPlastDBContext.Set<ClubAnnualReportTableObject>().FromSqlRaw("dbo.getClubAnnualReportsInfo @UserId={0}, @AdminRole={1}, @searchData = {2}, @PageIndex ={3}, @PageSize={4}", userId, isAdmin ? 1 : 0, searchdata, page, pageSize);
             return items;
         }
     }

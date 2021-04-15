@@ -6,6 +6,6 @@ namespace EPlast.DataAccess.Repositories.Interfaces.Club
 {
     public interface IClubAnnualReportsRepository : IRepositoryBase<ClubAnnualReport>
     {
-        Task<IEnumerable<ClubAnnualReportTableObject>> GetClubAnnualReportsAsync(string searchdata, int page, int pageSize);
+        Task<IEnumerable<ClubAnnualReportTableObject>> GetClubAnnualReportsAsync(string userId, bool isAdmin, string searchdata, int page, int pageSize);
     }
 }

@@ -4,6 +4,7 @@ using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Services.Club.ClubAccess.ClubAccessGetters;
 using EPlast.BLL.Settings;
 using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -40,10 +41,34 @@ namespace EPlast.BLL.Services.Club.ClubAccess
             return Enumerable.Empty<ClubDTO>();
         }
 
+        public async Task<IEnumerable<Tuple<int, string>>> GetAllClubsIdAndName(DatabaseEntities.User user)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach (var key in _clubAccessGetters.Keys)
+            {
+                if (roles.Contains(key))
+                {
+                    return await _clubAccessGetters[key].GetClubsIdAndName(user.Id);
+                }
+            }
+            return Enumerable.Empty<Tuple<int, string>>();
+        }
+
         public async Task<bool> HasAccessAsync(DatabaseEntities.User user, int ClubId)
         {
-            var cities = await this.GetClubsAsync(user);
-            return cities.Any(c => c.ID == ClubId);
+            var clubs = await this.GetClubsAsync(user);
+            return clubs.Any(c => c.ID == ClubId);
+        }
+
+        public async Task<bool> HasAccessAsync(DatabaseEntities.User user)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach (var key in _clubAccessGetters.Keys)
+            {
+                if (roles.Contains(key))
+                    return true;
+            }
+            return false;
         }
 
     }
