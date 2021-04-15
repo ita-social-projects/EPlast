@@ -59,23 +59,6 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
-        public void GetByIdAsync_ReturnsExeption()
-        {
-            // Arrange
-            ClubAnnualReport report = new ClubAnnualReport();
-
-            _repositoryWrapper
-                .Setup(x => x.ClubAnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAnnualReport, bool>>>(),
-                It.IsAny<Func<IQueryable<ClubAnnualReport>,
-                IIncludableQueryable<ClubAnnualReport, object>>>())).ReturnsAsync(report);
-            _clubAccessService
-                .Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(false);
-            // Act           
-            // Assert
-            Assert.ThrowsAsync<UnauthorizedAccessException>(async ()=>await _service.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()));
-        }
-
-        [Test]
         public async Task GetAllAsync_ReturnsIEnumerableClubAnnualReportDTO()
         {
             // Arrange
