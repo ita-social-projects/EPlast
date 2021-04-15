@@ -144,6 +144,7 @@ namespace EPlast.BLL.Services.Precautions
 
         public async Task<IEnumerable<UserTableDTO>> UsersTableWithoutPrecautionAsync()
         {
+
             var userTable = await _adminService.GetUsersAsync();
             var filteredTable = new List<UserTableDTO>();
             foreach (var user in userTable)

@@ -384,6 +384,7 @@ namespace EPlast.Tests.Services.Precautions
         public async Task UsersTableWithoutPrecautionAsync_ReturnsIEnumerableUserTableDTO()
         {
             // Arrange
+
             adminService.Setup(a => a.GetUsersAsync())
                 .ReturnsAsync(GetTestUserTableDTO());
             mockRepoWrapper.Setup(x => x.UserPrecaution.GetAllAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
