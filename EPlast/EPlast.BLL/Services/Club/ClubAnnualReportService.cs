@@ -42,8 +42,7 @@ namespace EPlast.BLL.Services.Club
                         .Include(ca => ca.Club)
                             .ThenInclude(cm => cm.ClubMembers)
                                 .ThenInclude(mc => mc.User));
-            return await _clubAccessService.HasAccessAsync(user, clubAnnualReport.ClubId) ? _mapper.Map<ClubAnnualReport, ClubAnnualReportDTO>(clubAnnualReport)
-                : throw new UnauthorizedAccessException();
+            return _mapper.Map<ClubAnnualReport, ClubAnnualReportDTO>(clubAnnualReport);
         }
 
         ///<inheritdoc/>
