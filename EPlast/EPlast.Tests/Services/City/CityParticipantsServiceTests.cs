@@ -4,6 +4,7 @@ using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Models;
 using EPlast.BLL.Services.City;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -18,7 +19,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using EPlast.BLL.Models;
 
 namespace EPlast.Tests.Services.City
 {
@@ -135,14 +135,23 @@ namespace EPlast.Tests.Services.City
                 .Setup(x => x.SaveAsync());
             _mapper
                 .Setup(x => x.Map<CityMembers, CityMembersDTO>(It.IsAny<CityMembers>())).Returns(new CityMembersDTO());
+            _userManager
+                .Setup(x => x.IsInRoleAsync(It.IsAny<User>(), It.IsAny<string>()))
+                .ReturnsAsync(true);
+            _emailContentService
+                .Setup(x => x.GetCityAdminAboutNewFollowerEmailAsync(It.IsAny<string>(), It.IsAny<string>(),
+                    It.IsAny<string>(), It.IsAny<bool>()))
+                .ReturnsAsync(new EmailModel());
+
             // Act
             var result = await _cityParticipantsService.AddFollowerAsync(It.IsAny<int>(), It.IsAny<string>());
+
             // Assert
             Assert.IsInstanceOf<CityMembersDTO>(result);
         }
 
         [Test]
-        public async Task AddFollowerAsyncWithUser_Valit_Test()
+        public async Task AddFollowerAsyncWithUser_Valid_Test()
         {
             //Arrange
             _userManager
@@ -582,18 +591,34 @@ namespace EPlast.Tests.Services.City
             Assert.NotNull(result);
         }
 
-        [Test]
-        public async Task RemoveFollowerAsync_Valid_Test()
+        [TestCase("email", "CityName")]
+        public async Task RemoveFollowerAsync_Valid_Test(string email, string cityName)
         {
             // Arrange
             _repoWrapper
-                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.CityMembers, bool>>>(),
-                    It.IsAny<Func<IQueryable<DataAccess.Entities.CityMembers>, IIncludableQueryable<DataAccess.Entities.CityMembers, object>>>()))
-                .ReturnsAsync(new CityMembers());
+                .Setup(x => x.CityMembers
+                    .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                        It.IsAny<Func<IQueryable<CityMembers>, IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync(new CityMembers
+                {
+                    UserId = fakeId.ToString(),
+                    User = new User { Email = email },
+                    City = new DataAccess.Entities.City { Name = cityName },
+                    IsApproved = false
+                });
             _repoWrapper
                 .Setup(x => x.CityMembers.Delete(It.IsAny<CityMembers>()));
             _repoWrapper
                .Setup(x => x.SaveAsync());
+            _emailSendingService
+                .Setup(x => x.SendEmailAsync(It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .ReturnsAsync(true);
+            _emailContentService
+                .Setup(x => x.GetCityRemoveFollowerEmail(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(new EmailModel());
 
             // Act
             await _cityParticipantsService.RemoveFollowerAsync(fakeId);
@@ -631,8 +656,9 @@ namespace EPlast.Tests.Services.City
             _cityParticipantsService = new CityParticipantsService(_repoWrapper.Object, _mapper.Object, _userManager.Object, _adminTypeService.Object, _emailSendingService.Object, _emailContentService.Object);
         }
 
-        [Test]
-        public async Task ToggleApproveStatusAsync_Valid_Test()
+        [TestCase(true)]
+        [TestCase(false)]
+        public async Task ToggleApproveStatusAsync_Valid_Test(bool isInRole)
         {
             // Arrange
             _repoWrapper
@@ -655,7 +681,7 @@ namespace EPlast.Tests.Services.City
                 .ReturnsAsync(new User());
             _userManager
                 .Setup(x => x.IsInRoleAsync(It.IsAny<User>(), It.IsAny<string>()))
-                .ReturnsAsync(false);
+                .ReturnsAsync(isInRole);
             _repoWrapper
                 .Setup(m => m.UserMembershipDates
                              .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
@@ -676,8 +702,10 @@ namespace EPlast.Tests.Services.City
                                              It.IsAny<string>()))
                 .ReturnsAsync(true);
             _emailContentService
-                .Setup(x => x.GetCityApproveEmail(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
-                .Returns(new EmailModel());
+                .Setup(x => x.GetCityApproveEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(new EmailModel());
+            _emailContentService
+                .Setup(x => x.GetCityToSupporterRoleOnApproveEmail()).Returns(new EmailModel());
 
             // Act
             var result = await _cityParticipantsService.ToggleApproveStatusAsync(fakeId);
@@ -716,8 +744,26 @@ namespace EPlast.Tests.Services.City
         {
             return new List<CityAdministration>
             {
-                new CityAdministration{UserId = Roles.CityHead, ID=2},
-                new CityAdministration{UserId = Roles.CityHead, ID=3}
+                new CityAdministration
+                {
+                    UserId = "userId",
+                    ID = 2,
+                    AdminType = new AdminType
+                    {
+                        AdminTypeName = Roles.CityHead
+                    },
+                    User = new User()
+                },
+                new CityAdministration
+                {
+                    UserId = "userId",
+                    ID = 3,
+                    AdminType = new AdminType
+                    {
+                        AdminTypeName = Roles.CityHead
+                    },
+                    User = new User()
+                }
             }.AsEnumerable();
         }
 
