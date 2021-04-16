@@ -77,5 +77,12 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         Task<string> GetImageBase64Async(string fileName);
 
         Task<bool> IsApprovedCityMember(string userId);
+
+        /// <summary>
+        /// Get user gender
+        /// </summary>
+        /// <param name="userId">The id of the selected user</param>
+        /// <returns>User gender string</returns>
+        Task<string> GetUserGenderAsync(string userId);
     }
 }

@@ -14,9 +14,17 @@ namespace EPlast.AutomatedTest
 
         public void Dispose()
         {
-            _driver.Quit();
-            _driver.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _driver.Quit();
+                _driver.Dispose();
+            }
+        }
     }
 }

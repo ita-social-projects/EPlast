@@ -20,10 +20,10 @@ namespace EPlast.DataAccess.Repositories
             return EPlastDBContext.Users.CountAsync();
         }
 
-        public async Task<Tuple<IEnumerable<UserTableObject>, int>> GetUserTableObjects(int pageNum, int pageSize, string tab, string regions, string cities, string clubs, string degrees)
+        public async Task<Tuple<IEnumerable<UserTableObject>, int>> GetUserTableObjects(int pageNum, int pageSize, string tab, string regions, string cities, string clubs, string degrees, string searchData)
         {
             var items = EPlastDBContext.Set<UserTableObject>().FromSqlRaw("dbo.usp_GetUserInfo @PageIndex = {0}, @PageSize = {1}, @tab = {2}, @filterRegion = {3}, " +
-                "@filterCity = {4}, @filterClub = {5}, @filterDegree = {6}", pageNum, pageSize, tab, regions, cities, clubs, degrees);
+                "@filterCity = {4}, @filterClub = {5}, @filterDegree = {6}, @searchData = {7}", pageNum, pageSize, tab, regions, cities, clubs, degrees, searchData);
 
             var num = items.Select(u => u.Count).ToList();
             int rowCount = num[0];

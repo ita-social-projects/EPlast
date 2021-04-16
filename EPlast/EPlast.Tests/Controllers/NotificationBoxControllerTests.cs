@@ -1,24 +1,21 @@
 ﻿using EPlast.BLL.DTO.Notification;
 using EPlast.BLL.Interfaces.Notifications;
-using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Controllers;
 using EPlast.WebApi.WebSocketHandlers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
 {
     class NotificationBoxControllerTests
     {
-        private Mock<UserNotificationHandler> _userNotificationHandler;
-        private Mock<INotificationService> _notificationService;
+        private readonly Mock<UserNotificationHandler> _userNotificationHandler;
+        private readonly Mock<INotificationService> _notificationService;
 
         private NotificationBoxController _notificationBoxController =>
         new NotificationBoxController(_notificationService.Object, _userNotificationHandler.Object);

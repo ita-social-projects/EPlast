@@ -4,6 +4,7 @@ using EPlast.DataAccess.Repositories;
 using Moq;
 using System;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.Events
@@ -17,7 +18,7 @@ namespace EPlast.XUnitTest.Services.Events
             _repoWrapper = new Mock<IRepositoryWrapper>();
         }
         [Fact]
-        public async void GetStatusIdTest()
+        public async Task GetStatusIdTest()
         {
             //Arrange
             string statusName = "Status Name";

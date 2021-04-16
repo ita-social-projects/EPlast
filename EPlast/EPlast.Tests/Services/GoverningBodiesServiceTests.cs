@@ -25,7 +25,8 @@ namespace EPlast.Tests.Services
         private Mock<IUniqueIdService> _uniqueIdService;
         private Mock<IGoverningBodyBlobStorageRepository> _blobStorage;
         private Mock<ISecurityModel> _securityModel;
-        private Mock<UserManager<User>> _userManager;
+        private protected Mock<UserManager<User>> _userManager;
+
 
         [SetUp]
         public void SetUp()
@@ -116,7 +117,7 @@ namespace EPlast.Tests.Services
             _blobStorage.Setup(x => x.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync(logo64Path);
 
             //Act
-            var result = await _service.GetLogoBase64Async(logopath); ;
+            var result = await _service.GetLogoBase64Async(logopath);
 
             //Assert
             Assert.NotNull(result);

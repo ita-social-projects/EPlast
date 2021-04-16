@@ -71,6 +71,7 @@ namespace EPlast.Tests.Services.Club.ClubAccess
                     It.IsAny<IEnumerable<DatabaseEntities.Club>>()));
         }
 
+
         [Test]
         public async Task GetClubsAsync_ClubAdmin_Passed()
         {
@@ -252,6 +253,7 @@ namespace EPlast.Tests.Services.Club.ClubAccess
             Assert.NotNull(result);
             Assert.IsFalse(result);
         }
+
 
         [Test]
         public async Task HasAccessAsync_TakesOneParametr_True()
