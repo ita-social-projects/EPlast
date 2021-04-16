@@ -76,6 +76,39 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
+        public async Task GetAllAsync_TakesParameters_Valid()
+        {
+            //Arrange
+            ClubAnnualReportTableObject report = new ClubAnnualReportTableObject() {Id = 1};
+            _clubAccessService.Setup(c => c.HasAccessAsync(It.IsAny<User>())).ReturnsAsync(true);
+            _repositoryWrapper.Setup(r => r.ClubAnnualReports.GetClubAnnualReportsAsync(It.IsAny<string>(),
+                    It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new List<ClubAnnualReportTableObject>() { report});
+
+            //Act
+            var result = await _service.GetAllAsync(new User(), true, "", 1, 1);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsNotEmpty(result.ToList());
+            Assert.True(result.ToList().Contains(report));
+        }
+
+        [Test]
+        public async Task GetAllAsync_TakesParameters_UnauthorizedAccessException()
+        {
+            //Arrange
+            _clubAccessService.Setup(c => c.HasAccessAsync(It.IsAny<User>())).ReturnsAsync(false);
+           
+            //Act
+            //Assert
+            Assert.ThrowsAsync<UnauthorizedAccessException>(async() =>
+            {
+                await _service.GetAllAsync(new User(), true, "", 1, 1);
+            });
+        }
+
+        [Test]
         public void CreateAsync_ReturnsInvalidOperationException()
         {
             // Arrange
