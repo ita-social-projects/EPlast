@@ -733,7 +733,6 @@ namespace EPlast.Tests.Services.City
         private int count => 2;
         private string logoName => "logoName";
         private string cityName => "cityName";
-        private string stream => "whatever";
 
         private IEnumerable<CityDTO> GetTestCityDTO()
         {
@@ -899,8 +898,7 @@ namespace EPlast.Tests.Services.City
                     }
                 };
                 cities.Add(cityDto);
-            };
-
+            }
             return cities.AsQueryable();
         }
 
@@ -930,7 +928,7 @@ namespace EPlast.Tests.Services.City
                     }
                 };
                 cities.Add(cityDto);
-            };
+            }
             return cities.AsQueryable();
         }
 

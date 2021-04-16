@@ -189,7 +189,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
                 .ReturnsAsync(new DatabaseEntities.AnnualReport());
 
             // Act
-            var result = await Assert.ThrowsAsync<InvalidOperationException>(() => _annualReportService.CreateAsync(It.IsAny<User>(), new AnnualReportDTO()));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _annualReportService.CreateAsync(It.IsAny<User>(), new AnnualReportDTO()));
 
             // Assert
             _repositoryWrapper.Verify(r => r.AnnualReports.CreateAsync(It.IsAny<DatabaseEntities.AnnualReport>()), Times.Never);
@@ -206,7 +206,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
                 .ReturnsAsync(false);
 
             // Act
-            var result = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.CreateAsync(It.IsAny<User>(), new AnnualReportDTO()));
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.CreateAsync(It.IsAny<User>(), new AnnualReportDTO()));
 
             // Assert
             _repositoryWrapper.Verify(r => r.AnnualReports.CreateAsync(It.IsAny<DatabaseEntities.AnnualReport>()), Times.Never);
@@ -320,7 +320,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
                 .ReturnsAsync((DatabaseEntities.AnnualReport)null);
 
             // Act
-            var result = await Assert.ThrowsAsync<NullReferenceException>(() =>
+            await Assert.ThrowsAsync<NullReferenceException>(() =>
                 _annualReportService.EditAsync(It.IsAny<User>(), new AnnualReportDTO { Status = AnnualReportStatusDTO.Unconfirmed }));
 
             // Assert
@@ -440,7 +440,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
                 .ReturnsAsync(false);
 
             // Act
-            var result = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()));
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()));
 
             // Assert
             _mapper.Verify(m => m.Map<DatabaseEntities.AnnualReport, AnnualReportDTO>(It.IsAny<DatabaseEntities.AnnualReport>()), Times.Never);
