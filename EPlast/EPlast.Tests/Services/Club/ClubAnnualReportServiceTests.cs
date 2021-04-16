@@ -95,7 +95,7 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
-        public async Task GetAllAsync_TakesParameters_UnauthorizedAccessException()
+        public void GetAllAsync_TakesParameters_UnauthorizedAccessException()
         {
             //Arrange
             _clubAccessService.Setup(c => c.HasAccessAsync(It.IsAny<User>())).ReturnsAsync(false);
