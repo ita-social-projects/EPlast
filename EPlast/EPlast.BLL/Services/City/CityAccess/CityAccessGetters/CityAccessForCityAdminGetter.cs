@@ -36,7 +36,7 @@ namespace EPlast.BLL.Services.City.CityAccess.CityAccessGetters
             var cityAdministration = await _repositoryWrapper.CityAdministration.GetFirstOrDefaultAsync(
                 predicate: c => c.UserId == userId && (DateTime.Now < c.EndDate || c.EndDate == null) && c.AdminTypeId == _cityAdminType.ID);
             return cityAdministration != null ? (await _repositoryWrapper.City.GetAllAsync(
-                    predicate: c => c.ID == cityAdministration.CityId)).Select(c => new Tuple<int, string>(c.ID, c.Name)).AsEnumerable()
+                    predicate: c => c.ID == cityAdministration.CityId)).Select(c => new Tuple<int, string>(c.ID, c.Name)).ToList()
                 : Enumerable.Empty<Tuple<int, string>>();
         }
     }

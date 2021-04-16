@@ -43,7 +43,7 @@ namespace EPlast.BLL.Services.City.CityAccess.CityAccessGetters
                 ? (await _repositoryWrapper.City.GetAllAsync(
                     predicate: c => c.Region.ID == regionAdministration.Region.ID,
                     include: source => source.Include(c => c.Region))).Select(c => new Tuple<int, string>(c.ID, c.Name))
-                .AsEnumerable()
+                .ToList()
                 : Enumerable.Empty<Tuple<int, string>>();
         }
     }

@@ -36,7 +36,7 @@ namespace EPlast.BLL.Services.Club.ClubAccess.ClubAccessGetters
                 predicate: c => c.UserId == userId && (DateTime.Now < c.EndDate || c.EndDate == null) && c.AdminTypeId == _ClubAdminType.ID);
             return ClubAdministration != null ? (await _repositoryWrapper.Club.GetAllAsync(
                     predicate: c => c.ID == ClubAdministration.ClubId)).Select(c => new Tuple<int, string>(c.ID, c.Name))
-                    .AsEnumerable()
+                    .ToList()
                 : Enumerable.Empty<Tuple<int, string>>();
                 
         }

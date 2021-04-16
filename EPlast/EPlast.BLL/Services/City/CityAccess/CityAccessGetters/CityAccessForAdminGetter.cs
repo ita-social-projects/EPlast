@@ -26,7 +26,7 @@ namespace EPlast.BLL.Services.City.CityAccess.CityAccessGetters
         {
             return (await _repositoryWrapper.City.GetAllAsync())
                 .Select(c => new Tuple<int, string>(c.ID, c.Name))
-                .AsEnumerable();
+                .ToList();
         }
     }
 }

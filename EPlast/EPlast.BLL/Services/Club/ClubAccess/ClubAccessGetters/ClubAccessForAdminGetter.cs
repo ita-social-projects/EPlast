@@ -24,8 +24,7 @@ namespace EPlast.BLL.Services.Club.ClubAccess.ClubAccessGetters
         public async Task<IEnumerable<Tuple<int, string>>> GetClubsIdAndName(string userId)
         {
             return (await _repositoryWrapper.Club.GetAllAsync())
-                .Select(c => new Tuple<int, string>(c.ID, c.Name))
-                .AsEnumerable();
+                .Select(c => new Tuple<int, string>(c.ID, c.Name)).ToList();
         }
     }
 }
