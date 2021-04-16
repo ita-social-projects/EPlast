@@ -1,5 +1,8 @@
 ﻿using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories.Interfaces.Region;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EPlast.DataAccess.Repositories.Realizations.Region
 {
@@ -9,6 +12,13 @@ namespace EPlast.DataAccess.Repositories.Realizations.Region
            : base(dbContext)
         {
 
+        }
+
+        public async Task<IEnumerable<RegionAnnualReportTableObject>> GetRegionAnnualReportsAsync(string searchdata,
+            int page, int pageSize)
+        {
+            var items = EPlastDBContext.Set<RegionAnnualReportTableObject>().FromSqlRaw("dbo.getRegionAnnualReportsInfo @searchData = {0}, @PageIndex ={1}, @PageSize={2}", searchdata, page, pageSize);
+            return items;
         }
     }
 }

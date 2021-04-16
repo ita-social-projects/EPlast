@@ -59,23 +59,6 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
-        public void GetByIdAsync_ReturnsExeption()
-        {
-            // Arrange
-            ClubAnnualReport report = new ClubAnnualReport();
-
-            _repositoryWrapper
-                .Setup(x => x.ClubAnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAnnualReport, bool>>>(),
-                It.IsAny<Func<IQueryable<ClubAnnualReport>,
-                IIncludableQueryable<ClubAnnualReport, object>>>())).ReturnsAsync(report);
-            _clubAccessService
-                .Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(false);
-            // Act           
-            // Assert
-            Assert.ThrowsAsync<UnauthorizedAccessException>(async ()=>await _service.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()));
-        }
-
-        [Test]
         public async Task GetAllAsync_ReturnsIEnumerableClubAnnualReportDTO()
         {
             // Arrange
@@ -90,6 +73,39 @@ namespace EPlast.Tests.Services.Club
             var result = await _service.GetAllAsync(It.IsAny<User>());
             // Assert
             Assert.IsInstanceOf<IEnumerable<ClubAnnualReportDTO>>(result);
+        }
+
+        [Test]
+        public async Task GetAllAsync_TakesParameters_Valid()
+        {
+            //Arrange
+            ClubAnnualReportTableObject report = new ClubAnnualReportTableObject() {Id = 1};
+            _clubAccessService.Setup(c => c.HasAccessAsync(It.IsAny<User>())).ReturnsAsync(true);
+            _repositoryWrapper.Setup(r => r.ClubAnnualReports.GetClubAnnualReportsAsync(It.IsAny<string>(),
+                    It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new List<ClubAnnualReportTableObject>() { report});
+
+            //Act
+            var result = await _service.GetAllAsync(new User(), true, "", 1, 1);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsNotEmpty(result.ToList());
+            Assert.True(result.ToList().Contains(report));
+        }
+
+        [Test]
+        public void GetAllAsync_TakesParameters_UnauthorizedAccessException()
+        {
+            //Arrange
+            _clubAccessService.Setup(c => c.HasAccessAsync(It.IsAny<User>())).ReturnsAsync(false);
+           
+            //Act
+            //Assert
+            Assert.ThrowsAsync<UnauthorizedAccessException>(async() =>
+            {
+                await _service.GetAllAsync(new User(), true, "", 1, 1);
+            });
         }
 
         [Test]

@@ -75,6 +75,18 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get id and name from all clubs that the user has access to
+        /// </summary>
+        /// <returns>Tuple (int, string)</returns>
+        [HttpGet("ClubsOptions")]
+        public async Task<IActionResult> GetClubsOptions()
+        {
+            var clubs = await _clubAccessService.GetAllClubsIdAndName(await _userManager.GetUserAsync(User));
+            return Ok(clubs);
+
+        }
+
+        /// <summary>
         /// Get a specific Club
         /// </summary>
         /// <param name="ClubId">The id of the Club</param>

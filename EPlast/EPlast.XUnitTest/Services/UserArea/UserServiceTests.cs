@@ -40,8 +40,8 @@ namespace EPlast.XUnitTest.Services.UserArea
             _userManager = new Mock<UserManager<User>>(_userStoreMock.Object, null, null, null, null, null, null, null, null);
             _mapper = new Mock<IMapper>();
             _userPersonalDataService = new Mock<IUserPersonalDataService>();
-            _userBlobStorage=new Mock<IUserBlobStorageRepository>();
-            _env=new Mock<IWebHostEnvironment>();
+            _userBlobStorage = new Mock<IUserBlobStorageRepository>();
+            _env = new Mock<IWebHostEnvironment>();
             _userManagerService = new Mock<IUserManagerService>();
             _confirmedUserService = new Mock<IConfirmedUsersService>();
             _uniqueId = new Mock<IUniqueIdService>();
@@ -49,7 +49,7 @@ namespace EPlast.XUnitTest.Services.UserArea
 
         private UserService GetService()
         {
-            return new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _userPersonalDataService.Object, _userBlobStorage.Object,_env.Object, _uniqueId.Object);
+            return new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _userPersonalDataService.Object, _userBlobStorage.Object, _env.Object, _uniqueId.Object);
         }
         [Fact]
         public async Task GetUserProfileTest()
@@ -255,7 +255,7 @@ namespace EPlast.XUnitTest.Services.UserArea
             _mapper.Setup(x => x.Map<UserDTO, User>(It.IsAny<UserDTO>())).Returns(user);
             _userBlobStorage.Setup(u => u.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
             _userBlobStorage.Setup(u => u.DeleteBlobAsync(It.IsAny<string>()));
-            _uniqueId.Setup(u => u.GetUniqueId()).Returns(It.IsAny< Guid>());
+            _uniqueId.Setup(u => u.GetUniqueId()).Returns(It.IsAny<Guid>());
 
             var service = GetService();            // Act
             await service.UpdateAsyncForBase64(userDTO, "im/age.png;something,so/me.png;jkjk", 1, 1, 1, 1);

@@ -42,8 +42,7 @@ namespace EPlast.BLL.Services.Club
                         .Include(ca => ca.Club)
                             .ThenInclude(cm => cm.ClubMembers)
                                 .ThenInclude(mc => mc.User));
-            return await _clubAccessService.HasAccessAsync(user, clubAnnualReport.ClubId) ? _mapper.Map<ClubAnnualReport, ClubAnnualReportDTO>(clubAnnualReport)
-                : throw new UnauthorizedAccessException();
+            return _mapper.Map<ClubAnnualReport, ClubAnnualReportDTO>(clubAnnualReport);
         }
 
         ///<inheritdoc/>
@@ -56,6 +55,13 @@ namespace EPlast.BLL.Services.Club
                         .Include(ca => ca.Club)
                             .ThenInclude(cm => cm.ClubMembers));
             return _mapper.Map<IEnumerable<ClubAnnualReport>, IEnumerable<ClubAnnualReportDTO>>(annualReports);
+        }
+
+        public async Task<IEnumerable<ClubAnnualReportTableObject>> GetAllAsync(User user, bool isAdmin, string searchedData, int page, int pageSize)
+        {
+            if (await _clubAccessService.HasAccessAsync(user))
+                return await _repositoryWrapper.ClubAnnualReports.GetClubAnnualReportsAsync(user.Id, isAdmin, searchedData, page, pageSize);
+            throw new UnauthorizedAccessException();
         }
 
         public async Task CreateAsync(User user, ClubAnnualReportDTO clubAnnualReportDTO)

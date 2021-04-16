@@ -812,6 +812,23 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
+        [Test]
+        public async Task GetClubsOptions()
+        {
+            //Arrange
+            _userManager.Setup(r => r.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
+            _ClubAccessService.Setup(r => r.GetAllClubsIdAndName(It.IsAny<User>()))
+                .ReturnsAsync(new List<Tuple<int, string>>());
+            ClubController Clubcon = CreateClubController;
+
+            //Act
+            var result = await Clubcon.GetClubsOptions();
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull((result as ObjectResult).Value);
+        }
+
         private int GetFakeID()
         {
             return 1;

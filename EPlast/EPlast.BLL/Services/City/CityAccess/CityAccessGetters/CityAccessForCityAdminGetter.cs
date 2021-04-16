@@ -30,5 +30,14 @@ namespace EPlast.BLL.Services.City.CityAccess.CityAccessGetters
                 predicate: c => c.ID == cityAdministration.CityId, include: source => source.Include(c => c.Region))
                 : Enumerable.Empty<DatabaseEntities.City>();
         }
+
+        public async Task<IEnumerable<Tuple<int, string>>> GetCitiesIdAndName(string userId)
+        {
+            var cityAdministration = await _repositoryWrapper.CityAdministration.GetFirstOrDefaultAsync(
+                predicate: c => c.UserId == userId && (DateTime.Now < c.EndDate || c.EndDate == null) && c.AdminTypeId == _cityAdminType.ID);
+            return cityAdministration != null ? (await _repositoryWrapper.City.GetAllAsync(
+                    predicate: c => c.ID == cityAdministration.CityId)).Select(c => new Tuple<int, string>(c.ID, c.Name)).ToList()
+                : Enumerable.Empty<Tuple<int, string>>();
+        }
     }
 }

@@ -486,6 +486,17 @@ namespace EPlast.WebApi.Controllers
             return Ok(new { cities = await _cityAccessService.GetCitiesAsync(await _userManager.GetUserAsync(User)) });
         }
 
+        /// <summary>
+        /// Get id and name from all cities that the user has access to
+        /// </summary>
+        /// <returns>Tuple (int, string)</returns>
+        [HttpGet("CitiesOptions")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetCitiesNameThatUserHasAccessTo()
+        {
+            return Ok(new { cities = await _cityAccessService.GetAllCitiesIdAndName(await _userManager.GetUserAsync(User)) });
+        }
+
 
 
         [HttpGet("GetUserAdmins/{UserId}")]

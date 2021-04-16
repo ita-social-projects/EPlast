@@ -16,6 +16,8 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Repositories;
+using EPlast.DataAccess.Repositories.Realizations.Base;
 using EPlast.Resources;
 
 namespace EPlast.Tests.Controllers
@@ -217,6 +219,24 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<List<RegionDTO>>((result as ObjectResult).Value);
+        }
+
+        [Test]
+        public async Task GetAllRegionsReportsAsync_TakesParameters_OkObjectResult()
+        {
+            //Arrange
+            var report = new RegionAnnualReportTableObject() { Id = 1 };
+            _regionAnnualReportService.Setup(r => r.GetAllRegionsReportsAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new List<RegionAnnualReportTableObject>() {report});
+
+            // Act
+            var result = await _regionController.GetAllRegionsReportsAsync("",1,1);
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsInstanceOf<List<RegionAnnualReportTableObject>>((result as ObjectResult).Value);
+            Assert.IsNotEmpty((result as ObjectResult).Value as List<RegionAnnualReportTableObject>);
+            Assert.True(((result as ObjectResult).Value as List<RegionAnnualReportTableObject>).Contains(report));
         }
 
         [Test]
