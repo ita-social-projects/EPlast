@@ -18,6 +18,8 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.City;
+using CityDTO = EPlast.BLL.DTO.AnnualReport.CityDTO;
 
 namespace EPlast.Tests.Controllers
 {
@@ -394,6 +396,118 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expected, actual);
             _localizer
               .Verify(s => s["ClubHasReport"], Times.Once);
+            Assert.IsInstanceOf<ObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetMembers_Valid()
+        {
+            //Arrange
+            _annualReportService.Setup(x => x.GetCityMembersAsync(It.IsAny<int>())).ReturnsAsync(new CityDTO()
+                {CityMembers = new List<CityMembersDTO>(), Name = ""});
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            // Act
+            var result = await annualController.GetMembers(5);
+            var expected = StatusCodes.Status200OK;
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public async Task GetMembers_ReturnsNotFaund()
+        {
+            //Arrange
+            _annualReportService.Setup(x => x.GetCityMembersAsync(It.IsAny<int>())).ReturnsAsync(null as CityDTO);
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            // Act
+            var result = await annualController.GetMembers(5);
+            var expected = StatusCodes.Status404NotFound;
+            var actual = (result as NotFoundResult).StatusCode;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public async Task GetEditForm_Valid()
+        {
+            //Arrange
+            _annualReportService.Setup(x => x.GetEditFormByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
+                .ReturnsAsync(new AnnualReportDTO());
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            // Act
+            var result = await annualController.GetEditForm(5);
+            var expected = StatusCodes.Status200OK;
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public async Task GetEditForm_NullReferenceException()
+        {
+            //Arrange
+            _annualReportService.Setup(x => x.GetEditFormByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
+                .ThrowsAsync(new NullReferenceException());
+            _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
+
+            _localizer
+                .Setup(s => s["NotFound"])
+                .Returns(GetNotFound());
+
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            // Act
+
+            var result = await annualController.GetEditForm(5);
+            var expected = StatusCodes.Status404NotFound;
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(expected, actual);
+            _localizer
+                .Verify(s => s["NotFound"]);
+            _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
+            Assert.IsInstanceOf<ObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetEditForm_UnauthorizedAccessException()
+        {
+            //Arrange
+            _annualReportService.Setup(x => x.GetEditFormByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
+                .ThrowsAsync(new UnauthorizedAccessException());
+            _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
+
+            _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
+
+            _localizer
+                .Setup(s => s["NoAccess"])
+                .Returns(GetNoAccess());
+
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            // Act
+            var result = await annualController.GetEditForm(5);
+            var expected = StatusCodes.Status403Forbidden;
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+            _localizer
+                .Verify(s => s["NoAccess"]);
+            _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
             Assert.IsInstanceOf<ObjectResult>(result);
         }
 
