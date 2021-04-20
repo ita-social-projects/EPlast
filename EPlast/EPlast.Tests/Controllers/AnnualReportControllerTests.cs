@@ -300,6 +300,104 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task CheckCreatedClubAnnualReport_Invalid_NotCreated_Test()
+        {
+            _annualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
+                .ReturnsAsync(false);
+
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            // Act
+            var result = await annualController.CheckCreatedClubAnnualReport(5);
+            var expected = StatusCodes.Status200OK;
+            var actual = (result as ObjectResult).StatusCode;
+            var hasCreatedValue = (result as ObjectResult).Value.GetType()
+                .GetProperty("hasCreated").GetValue((result as ObjectResult).Value);
+
+            // Assert
+            _clubAnnualReportService.Verify();
+            Assert.AreEqual(expected, actual);
+            Assert.IsFalse((bool)hasCreatedValue);
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<ObjectResult>(result);
+        }
+
+        [Test]
+        public async Task CheckCreatedClubAnnualReport_Invalid_NullReferenceException_Test()
+        {
+            _annualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
+                .Throws(new NullReferenceException());
+
+            _localizer
+              .Setup(s => s["CityNotFound"])
+              .Returns(GetCityNotFound());
+
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            // Act
+            var result = await annualController.CheckCreatedClubAnnualReport(5);
+            var expected = StatusCodes.Status404NotFound;
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+            _localizer
+             .Verify(s => s["CityNotFound"], Times.Once);
+            Assert.IsInstanceOf<ObjectResult>(result);
+        }
+
+        [Test]
+        public async Task CheckCreatedClubAnnualReport_Invalid_UnauthorizedAccessException_Test()
+        {
+            _annualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
+                .Throws(new UnauthorizedAccessException());
+
+            _localizer
+              .Setup(s => s["CityNoAccess"])
+              .Returns(GetCityNoAccess());
+
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            // Act
+            var result = await annualController.CheckCreatedClubAnnualReport(5);
+            var expected = StatusCodes.Status403Forbidden;
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(expected, actual);
+            _localizer
+             .Verify(s => s["CityNoAccess"], Times.Once);
+            Assert.IsInstanceOf<ObjectResult>(result);
+        }
+
+        [Test]
+        public async Task CheckCreatedClubAnnualReport_Valid_Test()
+        {
+            _annualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
+                .ReturnsAsync(true);
+
+            _localizer
+               .Setup(s => s["HasReport"])
+               .Returns(GetHasReport());
+
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            // Act
+            var result = await annualController.CheckCreatedClubAnnualReport(5);
+            var expected = StatusCodes.Status200OK;
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(expected, actual);
+            _localizer
+              .Verify(s => s["HasReport"], Times.Once);
+            Assert.IsInstanceOf<ObjectResult>(result);
+        }
+
+        [Test]
         public async Task Confirm_Invalid_NullReferenceException_Test()
         {
             _annualReportService.Setup(a => a.ConfirmAsync(It.IsAny<User>(), It.IsAny<int>()))
