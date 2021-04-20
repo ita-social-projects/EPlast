@@ -340,6 +340,34 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        private async Task<IActionResult> tryBlocks(int id, bool city)
+        {
+            try
+            {
+                if (city
+                    ? await _annualReportService.CheckCreated(await _userManager.GetUserAsync(User), id)
+                    : await _clubAnnualReportService.CheckCreated(await _userManager.GetUserAsync(User), id))
+                {
+                    return StatusCode(StatusCodes.Status200OK,
+                        new {hasCreated = true, message = _localizer[city ? "HasReport" : "ClubHasReport"].Value});
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status200OK, new { hasCreated = false });
+                }
+            }
+            catch (NullReferenceException)
+            {
+                return StatusCode(StatusCodes.Status404NotFound,
+                    new {message = _localizer[city ? "CityNotFound" : "ClubNotFound"].Value});
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden,
+                    new {message = _localizer[city ? "CityNoAccess" : "ClubNoAccess"].Value});
+            }
+        }
+
         /// <summary>
         /// Method to get information whether city has created annual report
         /// </summary>
@@ -351,25 +379,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("checkCreated/{cityId:int}")]
         public async Task<IActionResult> CheckCreated(int cityId)
         {
-            try
-            {
-                if (await _annualReportService.CheckCreated(await _userManager.GetUserAsync(User), cityId))
-                {
-                    return StatusCode(StatusCodes.Status200OK, new { hasCreated = true, message = _localizer["HasReport"].Value });
-                }
-                else
-                {
-                    return StatusCode(StatusCodes.Status200OK, new { hasCreated = false });
-                }
-            }
-            catch (NullReferenceException)
-            {
-                return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["CityNotFound"].Value });
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["CityNoAccess"].Value });
-            }
+            return await tryBlocks(cityId, true);
         }
 
         /// <summary>
@@ -399,25 +409,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("checkCreatedClubReport/{clubId:int}")]
         public async Task<IActionResult> CheckCreatedClubAnnualReport(int clubId)
         {
-            try
-            {
-                if (await _clubAnnualReportService.CheckCreated(await _userManager.GetUserAsync(User), clubId))
-                {
-                    return StatusCode(StatusCodes.Status200OK, new { hasCreated = true, message = _localizer["ClubHasReport"].Value });
-                }
-                else
-                {
-                    return StatusCode(StatusCodes.Status200OK, new { hasCreated = false });
-                }
-            }
-            catch (NullReferenceException)
-            {
-                return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["ClubNotFound"].Value });
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["ClubNoAccess"].Value });
-            }
+            return await tryBlocks(clubId, false);
         }
 
         /// <summary>
