@@ -500,7 +500,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         }
 
         [Fact]
-        public async Task GetEditFormByIdAsync_UnauthorizedAccessException()
+        public void GetEditFormByIdAsync_UnauthorizedAccessException()
         {
             //Arrange
             _repositoryWrapper
@@ -511,7 +511,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
 
             //Act
             //Assert
-            Assert.ThrowsAsync<UnauthorizedAccessException>(()=> _annualReportService.GetEditFormByIdAsync(new User(), 1) );
+            Assert.ThrowsAsync<UnauthorizedAccessException>(async ()=> await _annualReportService.GetEditFormByIdAsync(new User(), 1) );
             _mapper.Verify(x => x.Map<DatabaseEntities.AnnualReport, AnnualReportDTO>(It.IsAny<DatabaseEntities.AnnualReport>()), Times.Never);
         }
     }
