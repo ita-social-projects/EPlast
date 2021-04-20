@@ -8,6 +8,8 @@ namespace EPlast.BLL.Settings
     public class ClubAccessSettings
     {
         private const string AdminRoleName = Roles.Admin;
+        private const string RegionAdminRoleName = Roles.OkrugaHead;
+        private const string CityAdminRoleName = Roles.CityHead;
         private const string ClubAdminRoleName = Roles.KurinHead;
 
         private readonly IRepositoryWrapper _repositoryWrapper;
@@ -24,7 +26,9 @@ namespace EPlast.BLL.Settings
                 return new Dictionary<string, IClubAccessGetter>
                 {
                     { AdminRoleName,  new ClubAccessForAdminGetter(_repositoryWrapper) },
-                    { ClubAdminRoleName, new ClubAccessForClubAdminGetter(_repositoryWrapper) }
+                    { ClubAdminRoleName, new ClubAccessForClubAdminGetter(_repositoryWrapper) },
+                    { RegionAdminRoleName, new ClubAccessForRegionAdminGetter(_repositoryWrapper) },
+                    { CityAdminRoleName, new ClubAccessForCityAdminGetter(_repositoryWrapper) }
                 };
             }
         }
