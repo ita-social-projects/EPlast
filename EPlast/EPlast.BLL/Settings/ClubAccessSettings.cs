@@ -27,8 +27,8 @@ namespace EPlast.BLL.Settings
                 {
                     { AdminRoleName,  new ClubAccessForAdminGetter(_repositoryWrapper) },
                     { ClubAdminRoleName, new ClubAccessForClubAdminGetter(_repositoryWrapper) },
-                    { RegionAdminRoleName, new ClubAccessForRegionAdminGetter(_repositoryWrapper) },
-                    { CityAdminRoleName, new ClubAccessForCityAdminGetter(_repositoryWrapper) }
+                    { RegionAdminRoleName, null },
+                    { CityAdminRoleName, null }
                 };
             }
         }
