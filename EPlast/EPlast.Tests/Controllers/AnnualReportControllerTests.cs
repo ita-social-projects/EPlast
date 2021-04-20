@@ -1097,11 +1097,11 @@ namespace EPlast.Tests.Controllers
             _userManager.Setup(r => r.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
             _annualReportService
                 .Setup(r => r.GetAllAsync(It.IsAny<User>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<int>(),
-                    It.IsAny<int>())).ReturnsAsync(new List<AnnualReportTableObject>());
+                    It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>())).ReturnsAsync(new List<AnnualReportTableObject>());
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
-            var result = await annualController.Get("", 0, 0);
+            var result = await annualController.Get("", 0, 0, 1, false);
 
             // Assert
             Assert.NotNull(result);
@@ -1116,7 +1116,7 @@ namespace EPlast.Tests.Controllers
             _userManager.Setup(r => r.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
             _annualReportService
                 .Setup(r => r.GetAllAsync(It.IsAny<User>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<int>(),
-                    It.IsAny<int>())).Throws(new NullReferenceException());
+                    It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>())).Throws(new NullReferenceException());
             
             AnnualReportController annualController = CreateAnnualReportController;
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
@@ -1126,7 +1126,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
             var expected = StatusCodes.Status404NotFound;
-            var result = await annualController.Get("", 0, 0);
+            var result = await annualController.Get("", 0, 0,1,false);
             var actual = (result as ObjectResult).StatusCode;
 
             // Assert
@@ -1143,7 +1143,7 @@ namespace EPlast.Tests.Controllers
             _userManager.Setup(r => r.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
             _annualReportService
                 .Setup(r => r.GetAllAsync(It.IsAny<User>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<int>(),
-                    It.IsAny<int>())).Throws(new UnauthorizedAccessException());
+                    It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>())).Throws(new UnauthorizedAccessException());
 
             AnnualReportController annualController = CreateAnnualReportController;
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
@@ -1153,7 +1153,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
             var expected = StatusCodes.Status403Forbidden;
-            var result = await annualController.Get("", 0, 0);
+            var result = await annualController.Get("", 0, 0,1,false);
             var actual = (result as ObjectResult).StatusCode;
 
             // Assert
@@ -1170,11 +1170,11 @@ namespace EPlast.Tests.Controllers
             _userManager.Setup(r => r.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
             _clubAnnualReportService
                 .Setup(r => r.GetAllAsync(It.IsAny<User>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<int>(),
-                    It.IsAny<int>())).ReturnsAsync(new List<ClubAnnualReportTableObject>());
+                    It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>())).ReturnsAsync(new List<ClubAnnualReportTableObject>());
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
-            var result = await annualController.GetAllClubAnnualReports("", 0, 0);
+            var result = await annualController.GetAllClubAnnualReports("", 0, 0, 1, false);
 
             // Assert
             Assert.NotNull(result);
@@ -1189,7 +1189,7 @@ namespace EPlast.Tests.Controllers
             _userManager.Setup(r => r.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
             _clubAnnualReportService
                 .Setup(r => r.GetAllAsync(It.IsAny<User>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<int>(),
-                    It.IsAny<int>())).Throws(new NullReferenceException());
+                    It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>())).Throws(new NullReferenceException());
 
             AnnualReportController annualController = CreateAnnualReportController;
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
@@ -1199,7 +1199,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
             var expected = StatusCodes.Status404NotFound;
-            var result = await annualController.GetAllClubAnnualReports("", 0, 0);
+            var result = await annualController.GetAllClubAnnualReports("", 0, 0, 1, false);
             var actual = (result as ObjectResult).StatusCode;
 
             // Assert
@@ -1216,7 +1216,7 @@ namespace EPlast.Tests.Controllers
             _userManager.Setup(r => r.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
             _clubAnnualReportService
                 .Setup(r => r.GetAllAsync(It.IsAny<User>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<int>(),
-                    It.IsAny<int>())).Throws(new UnauthorizedAccessException());
+                    It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>())).Throws(new UnauthorizedAccessException());
 
             AnnualReportController annualController = CreateAnnualReportController;
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
@@ -1226,7 +1226,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
             var expected = StatusCodes.Status403Forbidden;
-            var result = await annualController.GetAllClubAnnualReports("", 0, 0);
+            var result = await annualController.GetAllClubAnnualReports("", 0, 0,1,false);
             var actual = (result as ObjectResult).StatusCode;
 
             // Assert

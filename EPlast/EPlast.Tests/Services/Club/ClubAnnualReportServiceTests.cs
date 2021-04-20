@@ -82,11 +82,11 @@ namespace EPlast.Tests.Services.Club
             ClubAnnualReportTableObject report = new ClubAnnualReportTableObject() {Id = 1};
             _clubAccessService.Setup(c => c.HasAccessAsync(It.IsAny<User>())).ReturnsAsync(true);
             _repositoryWrapper.Setup(r => r.ClubAnnualReports.GetClubAnnualReportsAsync(It.IsAny<string>(),
-                    It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+                    It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()))
                 .ReturnsAsync(new List<ClubAnnualReportTableObject>() { report});
 
             //Act
-            var result = await _service.GetAllAsync(new User(), true, "", 1, 1);
+            var result = await _service.GetAllAsync(new User(), true, "", 1, 1,1,false);
 
             //Assert
             Assert.IsNotNull(result);
@@ -104,7 +104,7 @@ namespace EPlast.Tests.Services.Club
             //Assert
             Assert.ThrowsAsync<UnauthorizedAccessException>(async() =>
             {
-                await _service.GetAllAsync(new User(), true, "", 1, 1);
+                await _service.GetAllAsync(new User(), true, "", 1, 1,1,false);
             });
         }
 

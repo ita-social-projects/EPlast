@@ -226,11 +226,11 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             var report = new RegionAnnualReportTableObject() { Id = 1 };
-            _regionAnnualReportService.Setup(r => r.GetAllRegionsReportsAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+            _regionAnnualReportService.Setup(r => r.GetAllRegionsReportsAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(new List<RegionAnnualReportTableObject>() {report});
 
             // Act
-            var result = await _regionController.GetAllRegionsReportsAsync("",1,1);
+            var result = await _regionController.GetAllRegionsReportsAsync("",1,1,1);
 
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);

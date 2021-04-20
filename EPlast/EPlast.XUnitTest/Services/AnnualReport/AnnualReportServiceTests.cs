@@ -353,11 +353,11 @@ namespace EPlast.XUnitTest.Services.AnnualReport
             _cityAccessService.Setup(r => r.HasAccessAsync(It.IsAny<User>())).ReturnsAsync(true);
             _repositoryWrapper
                 .Setup(r => r.AnnualReports.GetAnnualReportsAsync(It.IsAny<string>(), It.IsAny<bool>(),
-                    It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+                    It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()))
                 .ReturnsAsync(new List<AnnualReportTableObject>());
             // Act
             var result= _annualReportService.GetAllAsync(It.IsAny<User>(), It.IsAny<bool>(),
-                It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>());
+                It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>());
 
             // Assert
             Assert.NotNull(result);
@@ -375,7 +375,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
             {
                 await _annualReportService.GetAllAsync(
                     It.IsAny<User>(), It.IsAny<bool>(),
-                    It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>());
+                    It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>());
             });
         }
 
