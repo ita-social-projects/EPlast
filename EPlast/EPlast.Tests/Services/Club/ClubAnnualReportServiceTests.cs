@@ -368,6 +368,50 @@ namespace EPlast.Tests.Services.Club
             Assert.IsNotNull(result);
         }
 
+        [Test]
+        public void CheckCreated_UnauthorizedAccessException()
+        {
+            //Arrange
+            _clubAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(false);
+            
+
+            //Act
+            //Assert
+            Assert.ThrowsAsync<UnauthorizedAccessException>(() => _service.CheckCreated(new User(), 1));
+        }
+
+        [Test]
+        public async Task CheckCreated_ReturnsTrue()
+        {
+            //Arrange
+            _clubAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(true);
+            _repositoryWrapper.Setup(x=>x.ClubAnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAnnualReport, bool>>>(),
+                It.IsAny<Func<IQueryable<ClubAnnualReport>,
+                    IIncludableQueryable<ClubAnnualReport, object>>>())).ReturnsAsync(new ClubAnnualReport());
+
+            //Act
+            var result = await _service.CheckCreated(new User(), 1);
+
+            //Assert
+            Assert.True(result);
+        }
+
+        [Test]
+        public async Task CheckCreated_ReturnsFalse()
+        {
+            //Arrange
+            _clubAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(true);
+            _repositoryWrapper.Setup(x => x.ClubAnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAnnualReport, bool>>>(),
+                It.IsAny<Func<IQueryable<ClubAnnualReport>,
+                    IIncludableQueryable<ClubAnnualReport, object>>>())).ReturnsAsync(null as ClubAnnualReport);
+
+            //Act
+            var result = await _service.CheckCreated(new User(), 1);
+
+            //Assert
+            Assert.False(result);
+        }
+
         private List<ClubAnnualReport> GetReports() {
             return new List<ClubAnnualReport>()
             {
@@ -439,6 +483,7 @@ namespace EPlast.Tests.Services.Club
                 }
             };
         }
+
 
         private List<UserPlastDegree> GetDegree()
         {
