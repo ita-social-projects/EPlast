@@ -126,6 +126,15 @@
   <data name="CityNotFound" xml:space="preserve">
     <value>Не вдалося знайти інформацію про станицю!</value>
   </data>
+  <data name="ClubHasReport" xml:space="preserve">
+    <value>Курінь вже має створений річний звіт!</value>
+  </data>
+  <data name="ClubNoAccess" xml:space="preserve">
+    <value>Ви не маєте доступу до даного куреня!</value>
+  </data>
+  <data name="ClubNotFound" xml:space="preserve">
+    <value>Не вдалося знайти інформацію про курінь!</value>
+  </data>
   <data name="Confirmed" xml:space="preserve">
     <value>Річний звіт успішно підтверджено!</value>
   </data>
