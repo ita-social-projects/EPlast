@@ -61,9 +61,10 @@ namespace EPlast.BLL.Interfaces.Region
         /// <param name="searchedData">Searched Data</param>
         /// <param name="page">current page on pagination</param>
         /// <param name="pageSize">number of records per page</param>
+        /// <param name="sortKey">Key for sorting</param>
         /// <returns>RegionAnnualReportTableObject</returns>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
         /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
-        Task<IEnumerable<RegionAnnualReportTableObject>> GetAllRegionsReportsAsync(string searchedData, int page, int pageSize);
+        Task<IEnumerable<RegionAnnualReportTableObject>> GetAllRegionsReportsAsync(string searchedData, int page, int pageSize, int sortKey);
     }
 }

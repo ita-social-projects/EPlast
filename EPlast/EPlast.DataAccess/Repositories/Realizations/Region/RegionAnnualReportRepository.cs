@@ -15,9 +15,11 @@ namespace EPlast.DataAccess.Repositories.Realizations.Region
         }
 
         public async Task<IEnumerable<RegionAnnualReportTableObject>> GetRegionAnnualReportsAsync(string searchdata,
-            int page, int pageSize)
+            int page, int pageSize, int sortKey)
         {
-            var items = EPlastDBContext.Set<RegionAnnualReportTableObject>().FromSqlRaw("dbo.getRegionAnnualReportsInfo @searchData = {0}, @PageIndex ={1}, @PageSize={2}", searchdata, page, pageSize);
+            var items = EPlastDBContext.Set<RegionAnnualReportTableObject>().FromSqlRaw(
+                "dbo.getRegionAnnualReportsInfo @searchData = {0}, @PageIndex ={1}, @PageSize={2}, @sort={3}",
+                searchdata, page, pageSize, sortKey);
             return items;
         }
     }
