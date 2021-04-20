@@ -302,7 +302,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task CheckCreatedClubAnnualReport_Invalid_NotCreated_Test()
         {
-            _annualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
+            _clubAnnualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
                 .ReturnsAsync(false);
 
             AnnualReportController annualController = CreateAnnualReportController;
@@ -325,12 +325,12 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task CheckCreatedClubAnnualReport_Invalid_NullReferenceException_Test()
         {
-            _annualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
+            _clubAnnualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
                 .Throws(new NullReferenceException());
 
             _localizer
-              .Setup(s => s["CityNotFound"])
-              .Returns(GetCityNotFound());
+              .Setup(s => s["ClubNotFound"])
+              .Returns(GetClubNotFound());
 
             AnnualReportController annualController = CreateAnnualReportController;
 
@@ -343,19 +343,19 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
             _localizer
-             .Verify(s => s["CityNotFound"], Times.Once);
+             .Verify(s => s["ClubNotFound"], Times.Once);
             Assert.IsInstanceOf<ObjectResult>(result);
         }
 
         [Test]
         public async Task CheckCreatedClubAnnualReport_Invalid_UnauthorizedAccessException_Test()
         {
-            _annualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
+            _clubAnnualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
                 .Throws(new UnauthorizedAccessException());
 
             _localizer
-              .Setup(s => s["CityNoAccess"])
-              .Returns(GetCityNoAccess());
+              .Setup(s => s["ClubNoAccess"])
+              .Returns(GetClubNoAccess());
 
             AnnualReportController annualController = CreateAnnualReportController;
 
@@ -368,19 +368,19 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
             _localizer
-             .Verify(s => s["CityNoAccess"], Times.Once);
+             .Verify(s => s["ClubNoAccess"], Times.Once);
             Assert.IsInstanceOf<ObjectResult>(result);
         }
 
         [Test]
         public async Task CheckCreatedClubAnnualReport_Valid_Test()
         {
-            _annualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
+            _clubAnnualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
                 .ReturnsAsync(true);
 
             _localizer
-               .Setup(s => s["HasReport"])
-               .Returns(GetHasReport());
+               .Setup(s => s["ClubHasReport"])
+               .Returns(GetClubHasReport());
 
             AnnualReportController annualController = CreateAnnualReportController;
 
@@ -393,7 +393,7 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
             _localizer
-              .Verify(s => s["HasReport"], Times.Once);
+              .Verify(s => s["ClubHasReport"], Times.Once);
             Assert.IsInstanceOf<ObjectResult>(result);
         }
 
@@ -1496,10 +1496,24 @@ namespace EPlast.Tests.Controllers
             return localizedString;
         }
 
+        private LocalizedString GetClubNoAccess()
+        {
+            var localizedString = new LocalizedString("ClubNoAccess",
+                "Ви не маєте доступу до даного куреня!");
+            return localizedString;
+        }
+
         private LocalizedString GetCityNotFound()
         {
             var localizedString = new LocalizedString("CityNotFound",
                 "Не вдалося знайти інформацію про станицю!");
+            return localizedString;
+        }
+
+        private LocalizedString GetClubNotFound()
+        {
+            var localizedString = new LocalizedString("ClubNotFound",
+                "Не вдалося знайти інформацію про курінь!");
             return localizedString;
         }
 
@@ -1542,6 +1556,13 @@ namespace EPlast.Tests.Controllers
         {
             var localizedString = new LocalizedString("HasReport",
                 "Станиця вже має створений річний звіт!");
+            return localizedString;
+        }
+
+        private LocalizedString GetClubHasReport()
+        {
+            var localizedString = new LocalizedString("ClubHasReport",
+                "Курінь вже має створений річний звіт!");
             return localizedString;
         }
 
