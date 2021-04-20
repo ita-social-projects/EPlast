@@ -51,6 +51,16 @@ namespace EPlast.BLL.Services
             return _mapper.Map<IEnumerable<AnnualReport>, IEnumerable<AnnualReportDTO>>(filteredAnnualReports);
         }
 
+        ///<inheritdoc/>
+        public async Task<IEnumerable<AnnualReportTableObject>> GetAllAsync(User user, bool isAdmin, string searchedData, int page, int pageSize, int sortKey, bool auth)
+        {
+            if (await _cityAccessService.HasAccessAsync(user))
+                return await _repositoryWrapper.AnnualReports.GetAnnualReportsAsync(user.Id, isAdmin, searchedData, page,
+                    pageSize, sortKey, auth);
+
+            throw new UnauthorizedAccessException();
+        }
+
         /// <inheritdoc />
         public async Task<CityDTO> GetCityMembersAsync(int cityId)
         {
@@ -69,16 +79,6 @@ namespace EPlast.BLL.Services
                 .ToList();
 
             return _mapper.Map<DataAccess.Entities.City, CityDTO>(city);
-        }
-
-        ///<inheritdoc/>
-        public async Task<IEnumerable<AnnualReportTableObject>> GetAllAsync(User user, bool isAdmin, string searchedData, int page, int pageSize, int sortKey, bool auth)
-        {
-            if (await _cityAccessService.HasAccessAsync(user))
-                return await _repositoryWrapper.AnnualReports.GetAnnualReportsAsync(user.Id, isAdmin, searchedData, page,
-                    pageSize, sortKey, auth);
-
-            throw new UnauthorizedAccessException();
         }
 
         ///<inheritdoc/>
