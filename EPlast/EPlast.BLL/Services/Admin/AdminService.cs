@@ -280,9 +280,18 @@ namespace EPlast.BLL.Services
             await _repoWrapper.SaveAsync();
         }
 
+        public async Task<IEnumerable<ShortUserInformationDTO>> GetShortUserInfoAsync(string searchString)
+        {
+            var users = await _repoWrapper.User.GetAllAsync(u =>
+                u.FirstName.Contains(searchString) || u.LastName.Contains(searchString));
+
+            return users.Select(user => _mapper.Map<User, ShortUserInformationDTO>(user)).ToList();
+        }
+
         public Task<int> GetUsersCountAsync()
         {
             return _repoWrapper.AdminType.GetUsersCountAsync();
         }
+
     }
 }
