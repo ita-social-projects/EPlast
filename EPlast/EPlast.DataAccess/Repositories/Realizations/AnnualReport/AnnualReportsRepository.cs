@@ -13,10 +13,11 @@ namespace EPlast.DataAccess.Repositories
         {
         }
 
-        public async Task<IEnumerable<AnnualReportTableObject>> GetAnnualReportsAsync(string userId, bool isAdmin, string searchdata, int page, int pageSize)
+        public async Task<IEnumerable<AnnualReportTableObject>> GetAnnualReportsAsync(string userId, bool isAdmin, string searchdata, int page, int pageSize, int sortKey, bool auth)
         {
-            var items = EPlastDBContext.Set<AnnualReportTableObject>().FromSqlRaw("dbo.getCityAnnualReportsInfo @userId={0}, @AdminRole={1}, @searchData = {2}, @PageIndex ={3}, @PageSize={4}",
-                userId, isAdmin? 1:0, searchdata, page, pageSize);
+            var items = EPlastDBContext.Set<AnnualReportTableObject>().FromSqlRaw(
+                "dbo.getCityAnnualReportsInfo @userId={0}, @AdminRole={1}, @searchData = {2}, @PageIndex ={3}, @PageSize={4}, @sort={5}, @auth={6}",
+                userId, isAdmin ? 1 : 0, searchdata, page, pageSize, sortKey, auth ? 1 : 0);
             return items;
         }
     }

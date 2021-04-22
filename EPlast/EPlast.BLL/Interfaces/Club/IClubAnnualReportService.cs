@@ -32,8 +32,20 @@ namespace EPlast.BLL.Interfaces.Club
         /// <param name="searchedData">Authorized user</param>
         /// <param name="page">Authorized user</param>
         /// <param name="pageSize">Authorized user</param>
+        /// <param name="sortKey">Key for sorting</param>
+        /// <param name="auth">Whether to select reports of that user is author</param>
         /// <returns>List of ClubAnnualReportTableObjectl</returns>
-        Task<IEnumerable<ClubAnnualReportTableObject>> GetAllAsync(User user, bool isAdmin, string searchedData, int page, int pageSize);
+        Task<IEnumerable<ClubAnnualReportTableObject>> GetAllAsync(User user, bool isAdmin, string searchedData, int page, int pageSize, int sortKey, bool auth);
+
+        /// <summary>
+        /// Method to check whether club has created annual report
+        /// </summary>
+        /// <param name="user">Authorized user</param>
+        /// <param name="clubId">Club identification number</param>
+        /// <returns>Information whether club has created annual report</returns>
+        /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to club</exception>
+        /// <exception cref="System.NullReferenceException">Thrown when club doesn't exist</exception>
+        Task<bool> CheckCreated(User user, int clubId);
 
         /// <summary>
         /// Method to create new club annual report

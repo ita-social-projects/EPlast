@@ -82,11 +82,11 @@ namespace EPlast.Tests.Services.Club
             ClubAnnualReportTableObject report = new ClubAnnualReportTableObject() {Id = 1};
             _clubAccessService.Setup(c => c.HasAccessAsync(It.IsAny<User>())).ReturnsAsync(true);
             _repositoryWrapper.Setup(r => r.ClubAnnualReports.GetClubAnnualReportsAsync(It.IsAny<string>(),
-                    It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+                    It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()))
                 .ReturnsAsync(new List<ClubAnnualReportTableObject>() { report});
 
             //Act
-            var result = await _service.GetAllAsync(new User(), true, "", 1, 1);
+            var result = await _service.GetAllAsync(new User(), true, "", 1, 1,1,false);
 
             //Assert
             Assert.IsNotNull(result);
@@ -104,7 +104,7 @@ namespace EPlast.Tests.Services.Club
             //Assert
             Assert.ThrowsAsync<UnauthorizedAccessException>(async() =>
             {
-                await _service.GetAllAsync(new User(), true, "", 1, 1);
+                await _service.GetAllAsync(new User(), true, "", 1, 1,1,false);
             });
         }
 
@@ -368,6 +368,50 @@ namespace EPlast.Tests.Services.Club
             Assert.IsNotNull(result);
         }
 
+        [Test]
+        public void CheckCreated_UnauthorizedAccessException()
+        {
+            //Arrange
+            _clubAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(false);
+            
+
+            //Act
+            //Assert
+            Assert.ThrowsAsync<UnauthorizedAccessException>(() => _service.CheckCreated(new User(), 1));
+        }
+
+        [Test]
+        public async Task CheckCreated_ReturnsTrue()
+        {
+            //Arrange
+            _clubAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(true);
+            _repositoryWrapper.Setup(x=>x.ClubAnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAnnualReport, bool>>>(),
+                It.IsAny<Func<IQueryable<ClubAnnualReport>,
+                    IIncludableQueryable<ClubAnnualReport, object>>>())).ReturnsAsync(new ClubAnnualReport());
+
+            //Act
+            var result = await _service.CheckCreated(new User(), 1);
+
+            //Assert
+            Assert.True(result);
+        }
+
+        [Test]
+        public async Task CheckCreated_ReturnsFalse()
+        {
+            //Arrange
+            _clubAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(true);
+            _repositoryWrapper.Setup(x => x.ClubAnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAnnualReport, bool>>>(),
+                It.IsAny<Func<IQueryable<ClubAnnualReport>,
+                    IIncludableQueryable<ClubAnnualReport, object>>>())).ReturnsAsync(null as ClubAnnualReport);
+
+            //Act
+            var result = await _service.CheckCreated(new User(), 1);
+
+            //Assert
+            Assert.False(result);
+        }
+
         private List<ClubAnnualReport> GetReports() {
             return new List<ClubAnnualReport>()
             {
@@ -439,6 +483,7 @@ namespace EPlast.Tests.Services.Club
                 }
             };
         }
+
 
         private List<UserPlastDegree> GetDegree()
         {

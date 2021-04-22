@@ -6,6 +6,7 @@ namespace EPlast.DataAccess.Repositories.Contracts
 {
     public interface IAnnualReportsRepository : IRepositoryBase<AnnualReport>
     {
-        Task<IEnumerable<AnnualReportTableObject>> GetAnnualReportsAsync(string userId, bool isAdmin, string searchdata, int page, int pageSize);
+        Task<IEnumerable<AnnualReportTableObject>> GetAnnualReportsAsync(string userId, bool isAdmin, string searchdata,
+            int page, int pageSize, int sortKey, bool auth);
     }
 }

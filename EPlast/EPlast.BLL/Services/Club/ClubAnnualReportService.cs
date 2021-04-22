@@ -57,10 +57,10 @@ namespace EPlast.BLL.Services.Club
             return _mapper.Map<IEnumerable<ClubAnnualReport>, IEnumerable<ClubAnnualReportDTO>>(annualReports);
         }
 
-        public async Task<IEnumerable<ClubAnnualReportTableObject>> GetAllAsync(User user, bool isAdmin, string searchedData, int page, int pageSize)
+        public async Task<IEnumerable<ClubAnnualReportTableObject>> GetAllAsync(User user, bool isAdmin, string searchedData, int page, int pageSize, int sortKey, bool auth)
         {
             if (await _clubAccessService.HasAccessAsync(user))
-                return await _repositoryWrapper.ClubAnnualReports.GetClubAnnualReportsAsync(user.Id, isAdmin, searchedData, page, pageSize);
+                return await _repositoryWrapper.ClubAnnualReports.GetClubAnnualReportsAsync(user.Id, isAdmin, searchedData, page, pageSize, sortKey, auth);
             throw new UnauthorizedAccessException();
         }
 
@@ -126,6 +126,16 @@ namespace EPlast.BLL.Services.Club
         {
             return await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(
                 predicate: a => a.Club.ID == Id && a.Date.Year == DateTime.Now.Year) != null;
+        }
+
+        ///<inheritdoc/>
+        public async Task<bool> CheckCreated(User user, int clubId)
+        {
+            if (!await _clubAccessService.HasAccessAsync(user, clubId))
+            {
+                throw new UnauthorizedAccessException();
+            }
+            return await CheckCreated(clubId);
         }
 
         ///<inheritdoc/>

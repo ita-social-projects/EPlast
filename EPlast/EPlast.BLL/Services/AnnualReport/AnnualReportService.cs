@@ -52,13 +52,33 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async Task<IEnumerable<AnnualReportTableObject>> GetAllAsync(User user, bool isAdmin, string searchedData, int page, int pageSize)
+        public async Task<IEnumerable<AnnualReportTableObject>> GetAllAsync(User user, bool isAdmin, string searchedData, int page, int pageSize, int sortKey, bool auth)
         {
             if (await _cityAccessService.HasAccessAsync(user))
                 return await _repositoryWrapper.AnnualReports.GetAnnualReportsAsync(user.Id, isAdmin, searchedData, page,
-                    pageSize);
+                    pageSize, sortKey, auth);
 
             throw new UnauthorizedAccessException();
+        }
+
+        /// <inheritdoc />
+        public async Task<CityDTO> GetCityMembersAsync(int cityId)
+        {
+            var city = await _repositoryWrapper.City.GetFirstOrDefaultAsync(
+                predicate: c => c.ID == cityId,
+                include: source => source
+                    .Include(m => m.CityMembers)
+                    .ThenInclude(u => u.User));
+            if (city == null)
+            {
+                return null;
+            }
+
+            city.CityMembers = city.CityMembers
+                .Where(m => m.IsApproved)
+                .ToList();
+
+            return _mapper.Map<DataAccess.Entities.City, CityDTO>(city);
         }
 
         ///<inheritdoc/>
@@ -169,7 +189,20 @@ namespace EPlast.BLL.Services
         private async Task<bool> CheckCreated(int cityId)
         {
             return await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
-                predicate: a => a.CityId == cityId && (a.Status == AnnualReportStatus.Unconfirmed || a.Date.Year == DateTime.Now.Year)) != null;
+                predicate: a => a.CityId == cityId && (a.Status == AnnualReportStatus.Unconfirmed && a.Date.Year == DateTime.Now.Year)) != null;
+        }
+
+        public async Task<AnnualReportDTO> GetEditFormByIdAsync(User user, int id)
+        {
+            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
+                predicate: a => a.ID == id,
+                include: source => source
+                    .Include(a => a.NewCityAdmin)
+                    .Include(a => a.MembersStatistic)
+                    .Include(a => a.City.CityMembers)
+                    .ThenInclude(m=>m.User));
+            return await _cityAccessService.HasAccessAsync(user) ? _mapper.Map<AnnualReport, AnnualReportDTO>(annualReport)
+                : throw new UnauthorizedAccessException();
         }
     }
 }
