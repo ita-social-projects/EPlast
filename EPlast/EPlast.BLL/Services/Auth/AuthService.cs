@@ -120,7 +120,7 @@ namespace EPlast.BLL.Services
                     var emailContent = _emailContentService.GetAuthFacebookRegisterEmail();
                     await _emailSendingService.SendEmailAsync(user.Email, emailContent.Subject, emailContent.Message, emailContent.Title);
                 }
-                await _userManager.AddToRoleAsync(user, Roles.Supporter);
+                await _userManager.AddToRoleAsync(user, Roles.RegisteredUser);
             }
             await _signInManager.SignInAsync(user, false, null);
             return _mapper.Map<User, UserDTO>(user);
@@ -209,7 +209,7 @@ namespace EPlast.BLL.Services
                 }
                 else
                     throw new ArgumentException("Failed creation of user");
-                await _userManager.AddToRoleAsync(user, Roles.Supporter);
+                await _userManager.AddToRoleAsync(user, Roles.RegisteredUser);
             }
             await _signInManager.SignInAsync(user, isPersistent: false);
             return _mapper.Map<User, UserDTO>(user);
