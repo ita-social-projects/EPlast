@@ -254,8 +254,8 @@ namespace EPlast.WebApi.Controllers
         /// <param name="searchString">Search string</param>
         /// <returns>Short information about searched users</returns>
         /// <response code="200">Successful operation</response>
-        [HttpGet("ShortUsersInfo/{search}")]
-        public async Task<IActionResult> ShortUsersInfo(string searchString)
+        [HttpGet("ShortUsersInfo/{searchString}")]
+        public async Task<IActionResult> GetShortUsersInfo(string searchString)
         {
             return Ok(await _adminService.GetShortUserInfoAsync(searchString));
         }
