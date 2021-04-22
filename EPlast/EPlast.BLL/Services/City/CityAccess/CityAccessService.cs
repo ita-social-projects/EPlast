@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.Resources;
 using DatabaseEntities = EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Services.City.CityAccess
@@ -43,13 +44,10 @@ namespace EPlast.BLL.Services.City.CityAccess
         public async Task<IEnumerable<Tuple<int, string>>> GetAllCitiesIdAndName(DatabaseEntities.User user)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            foreach (var key in _cityAccessGetters.Keys)
-            {
-                if (roles.Contains(key))
-                {
-                    return await _cityAccessGetters[key].GetCitiesIdAndName(user.Id);
-                }
-            }
+            if (roles.Contains(Roles.Admin))
+                return await _cityAccessGetters[Roles.Admin].GetCitiesIdAndName(user.Id);
+            if (roles.Contains(Roles.CityHead))
+                return await _cityAccessGetters[Roles.CityHead].GetCitiesIdAndName(user.Id);
             return Enumerable.Empty<Tuple<int, string>>();
         }
 
