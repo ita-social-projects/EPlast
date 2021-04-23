@@ -41,14 +41,16 @@ namespace EPlast.BLL.Services.City.CityAccess
             return Enumerable.Empty<CityDTO>();
         }
 
-        public async Task<IEnumerable<Tuple<int, string>>> GetAllCitiesIdAndName(DatabaseEntities.User user)
+        public async Task<IEnumerable<DTO.AnnualReport.CityDTO>> GetAllCitiesIdAndName(DatabaseEntities.User user)
         {
             var roles = await _userManager.GetRolesAsync(user);
             if (roles.Contains(Roles.Admin))
-                return await _cityAccessGetters[Roles.Admin].GetCitiesIdAndName(user.Id);
+                return _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<DTO.AnnualReport.CityDTO>>(
+                    await _cityAccessGetters[Roles.Admin].GetCities(user.Id));
             if (roles.Contains(Roles.CityHead))
-                return await _cityAccessGetters[Roles.CityHead].GetCitiesIdAndName(user.Id);
-            return Enumerable.Empty<Tuple<int, string>>();
+                return _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<DTO.AnnualReport.CityDTO>>(
+                    await _cityAccessGetters[Roles.CityHead].GetCities(user.Id));
+            return Enumerable.Empty<DTO.AnnualReport.CityDTO>();
         }
 
         public async Task<bool> HasAccessAsync(DatabaseEntities.User user, int cityId)
@@ -65,7 +67,6 @@ namespace EPlast.BLL.Services.City.CityAccess
                 if (roles.Contains(key))
                     return true;
             }
-
             return false;
         }
     }

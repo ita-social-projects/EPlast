@@ -8,6 +8,5 @@ namespace EPlast.BLL.Services.Club.ClubAccess.ClubAccessGetters
     public interface IClubAccessGetter
     {
         Task<IEnumerable<DatabaseEntities.Club>> GetClubs(string userId);
-        Task<IEnumerable<Tuple<int, string>>> GetClubsIdAndName(string userId);
     }
 }

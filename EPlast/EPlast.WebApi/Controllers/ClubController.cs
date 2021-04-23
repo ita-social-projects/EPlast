@@ -79,11 +79,10 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <returns>Tuple (int, string)</returns>
         [HttpGet("ClubsOptions")]
-        public async Task<IActionResult> GetClubsOptions()
+        public async Task<IActionResult> GetClubsOptionsThatUserHasAccessTo()
         {
             var clubs = await _clubAccessService.GetAllClubsIdAndName(await _userManager.GetUserAsync(User));
             return Ok(clubs);
-
         }
 
         /// <summary>
