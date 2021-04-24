@@ -225,7 +225,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetUsersTable([FromQuery] TableFilterParameters tableFilterParameters)
         {
             var tuple = await _adminService.GetUsersTableAsync(tableFilterParameters.Page, tableFilterParameters.PageSize, tableFilterParameters.Tab,
-                              tableFilterParameters.Regions, tableFilterParameters.Cities, tableFilterParameters.Clubs, tableFilterParameters.Degrees);
+                              tableFilterParameters.Regions, tableFilterParameters.Cities, tableFilterParameters.Clubs, tableFilterParameters.Degrees, tableFilterParameters.SearchData);
             var users = tuple.Item1;
             var usersCount = tuple.Item2;
             var tableViewModel = new AdminTypeViewModel()
@@ -235,6 +235,29 @@ namespace EPlast.WebApi.Controllers
             };
 
             return Ok(tableViewModel);
+        }
+
+        /// <summary>
+        /// Get all users with additional information
+        /// </summary>
+        /// <returns>Specify model with all users</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("usersTable")]
+        public async Task<IActionResult> GetUsers()
+        {
+            return Ok(await _adminService.GetUsersAsync());
+        }
+
+        /// <summary>
+        /// Get all users that match search string
+        /// </summary>
+        /// <param name="searchString">Search string</param>
+        /// <returns>Short information about searched users</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("ShortUsersInfo/{searchString}")]
+        public async Task<IActionResult> GetShortUsersInfo(string searchString)
+        {
+            return Ok(await _adminService.GetShortUserInfoAsync(searchString));
         }
 
         /// <summary>

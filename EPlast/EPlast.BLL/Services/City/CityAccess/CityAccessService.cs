@@ -4,6 +4,7 @@ using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Services.City.CityAccess.CityAccessGetters;
 using EPlast.BLL.Settings;
 using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -39,10 +40,35 @@ namespace EPlast.BLL.Services.City.CityAccess
             return Enumerable.Empty<CityDTO>();
         }
 
+        public async Task<IEnumerable<Tuple<int, string>>> GetAllCitiesIdAndName(DatabaseEntities.User user)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach (var key in _cityAccessGetters.Keys)
+            {
+                if (roles.Contains(key))
+                {
+                    return await _cityAccessGetters[key].GetCitiesIdAndName(user.Id);
+                }
+            }
+            return Enumerable.Empty<Tuple<int, string>>();
+        }
+
         public async Task<bool> HasAccessAsync(DatabaseEntities.User user, int cityId)
         {
             var cities = await this.GetCitiesAsync(user);
             return cities.Any(c => c.ID == cityId);
+        }
+
+        public async Task<bool> HasAccessAsync(DatabaseEntities.User user)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach (var key in _cityAccessGetters.Keys)
+            {
+                if (roles.Contains(key))
+                    return true;
+            }
+
+            return false;
         }
     }
 }

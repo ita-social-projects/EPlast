@@ -12,7 +12,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using EPlast.BLL.Interfaces.AzureStorage;
-using EPlast.BLL.Interfaces.Logging;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Query;
 using Xunit;
@@ -33,13 +32,11 @@ namespace EPlast.XUnitTest
         {
             _decisionBlobStorage = new Mock<IDecisionBlobStorageRepository>();
             _repository = new Mock<IRepositoryWrapper>();
-            var hostingEnvironment = new Mock<IWebHostEnvironment>();
             var directoryManager = new Mock<IDirectoryManager>();
             var fileManager = new Mock<IFileManager>();
             var fileStreamManager = new Mock<IFileStreamManager>();
             var mapper = new Mock<IMapper>();
             _decisionVmCreator = new Mock<IDecisionVmInitializer>();
-            var logger = new Mock<ILoggerService<DecisionService>>();
             _uniqueId = new Mock<IUniqueIdService>();
             directoryManager.Setup(dir => dir.Exists(It.IsAny<string>())).Returns(true);
             directoryManager.Setup(dir => dir.GetFiles(It.IsAny<string>())).Returns(new[] { "yes", "stonks", "files" });
@@ -197,11 +194,11 @@ namespace EPlast.XUnitTest
             GoverningBodyDTO organization = GetTestOrganizationDtoList()[0];
             organization.GoverningBodyName = organizationName;
             _repository.Setup(rep => rep.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
-                It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new Organization() { ID = organization.ID });
+                It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new Organization() { ID = organization.Id });
 
             var actualReturn = await _decisionService.GetDecisionOrganizationAsync(organization);
 
-            Assert.Equal(organization.ID, actualReturn.ID);
+            Assert.Equal(organization.Id, actualReturn.Id);
         }
 
         [Fact]
@@ -240,7 +237,7 @@ namespace EPlast.XUnitTest
 
             var actualReturn = await _decisionService.GetGoverningBodyListAsync();
 
-            Assert.Equal(organizations.Aggregate("", (x, y) => x += y.GoverningBodyName), actualReturn.Aggregate("", (x, y) => x += y.GoverningBodyName));
+            Assert.Equal(organizations.Aggregate("", (x, y) => y.GoverningBodyName), actualReturn.Aggregate("", (x, y) => y.GoverningBodyName));
         }
 
         [Fact]
@@ -253,7 +250,7 @@ namespace EPlast.XUnitTest
 
             var actualReturn = await _decisionService.GetDecisionTargetListAsync();
 
-            Assert.Equal(decisionTargets.Aggregate("", (x, y) => x += y.TargetName), actualReturn.Aggregate("", (x, y) => x += y.TargetName));
+            Assert.Equal(decisionTargets.Aggregate("", (x, y) => y.TargetName), actualReturn.Aggregate("", (x, y) => y.TargetName));
         }
 
         [Fact]
@@ -316,8 +313,8 @@ namespace EPlast.XUnitTest
         {
             return new List<GoverningBodyDTO>
             {
-                new GoverningBodyDTO {ID = 1, GoverningBodyName = "Organization1"},
-                new GoverningBodyDTO {ID = 2, GoverningBodyName = "Organization2"},
+                new GoverningBodyDTO {Id = 1, GoverningBodyName = "Organization1"},
+                new GoverningBodyDTO {Id = 2, GoverningBodyName = "Organization2"},
             };
         }
     }

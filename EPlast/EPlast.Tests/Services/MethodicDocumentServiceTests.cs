@@ -215,8 +215,8 @@ namespace EPlast.Tests.Services
         {
             return new List<GoverningBodyDTO>
             {
-                new GoverningBodyDTO {ID = 1, GoverningBodyName = "Organization1"},
-                new GoverningBodyDTO {ID = 2, GoverningBodyName = "Organization2"},
+                new GoverningBodyDTO {Id = 1, GoverningBodyName = "Organization1"},
+                new GoverningBodyDTO {Id = 2, GoverningBodyName = "Organization2"},
             };
         }
     }

@@ -33,7 +33,7 @@ namespace EPlast.Tests.Services.Event
             var result = await service.GetAllActions();
             // Assert
             Assert.IsInstanceOf<IEnumerable<EventCalendarInfoDTO>>(result);
-            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual(1, result.Count);
         }
 
         [Test]
@@ -42,7 +42,8 @@ namespace EPlast.Tests.Services.Event
             // Arrange
             List<EventCalendarInfoDTO> list = null;
             _eventsManager
-                .Setup(x => x.GetActionsAsync()).ReturnsAsync(list);
+                .Setup(x => x.GetActionsAsync())
+                .ReturnsAsync(list);
             // Act
             var result = await service.GetAllActions();
             // Assert
@@ -54,12 +55,13 @@ namespace EPlast.Tests.Services.Event
         {
             // Arrange
             _eventsManager
-                .Setup(x => x.GetEducationsAsync()).ReturnsAsync(new List<EventCalendarInfoDTO>() { new EventCalendarInfoDTO() { ID = 2 } });
+                .Setup(x => x.GetEducationsAsync())
+                .ReturnsAsync(new List<EventCalendarInfoDTO>() { new EventCalendarInfoDTO() { ID = 2 } });
             // Act
             var result = await service.GetAllEducations();
             // Assert
             Assert.IsInstanceOf<IEnumerable<EventCalendarInfoDTO>>(result);
-            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual(1, result.Count);
         }
 
         [Test]
@@ -68,7 +70,8 @@ namespace EPlast.Tests.Services.Event
             // Arrange
             List<EventCalendarInfoDTO> list = null;
             _eventsManager
-                .Setup(x => x.GetEducationsAsync()).ReturnsAsync(list);
+                .Setup(x => x.GetEducationsAsync())
+                .ReturnsAsync(list);
             // Act
             var result = await service.GetAllEducations();
             // Assert
@@ -85,7 +88,7 @@ namespace EPlast.Tests.Services.Event
             var result = await service.GetAllCamps();
             // Assert
             Assert.IsInstanceOf<IEnumerable<EventCalendarInfoDTO>>(result);
-            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual(1, result.Count);
         }
 
         [Test]

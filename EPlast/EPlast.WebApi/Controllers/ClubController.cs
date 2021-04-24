@@ -75,6 +75,18 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get id and name from all clubs that the user has access to
+        /// </summary>
+        /// <returns>Tuple (int, string)</returns>
+        [HttpGet("ClubsOptions")]
+        public async Task<IActionResult> GetClubsOptions()
+        {
+            var clubs = await _clubAccessService.GetAllClubsIdAndName(await _userManager.GetUserAsync(User));
+            return Ok(clubs);
+
+        }
+
+        /// <summary>
         /// Get a specific Club
         /// </summary>
         /// <param name="ClubId">The id of the Club</param>
@@ -346,6 +358,19 @@ namespace EPlast.WebApi.Controllers
         {
             var member = await _clubParticipantsService.ToggleApproveStatusAsync(memberId);
             _logger.LogInformation($"Status of member with ID {{{memberId}}} was changed.");
+
+            return Ok(member);
+        }
+        /// <summary>
+        /// Club name only for approved member
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns>club name string</returns>
+        [HttpGet("ClubNameOfApprovedMember/{memberId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> ClubNameOfApprovedMember(string memberId)
+        {
+            var member = await _clubParticipantsService.ClubOfApprovedMember(memberId);
 
             return Ok(member);
         }

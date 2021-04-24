@@ -83,6 +83,13 @@ namespace EPlast.BLL.Interfaces.City
         Task<CityMembersDTO> ToggleApproveStatusAsync(int memberId);
 
         /// <summary>
+        /// City name only for approved member
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns>city name string</returns>
+        Task<string> CityOfApprovedMember(string memberId);
+
+        /// <summary>
         /// Remove a specific follower from the city
         /// </summary>
         /// <param name="followerId">The id of the follower</param>

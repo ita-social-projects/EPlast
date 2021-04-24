@@ -5,14 +5,13 @@ using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using NLog.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.Resources;
 
 namespace EPlast.BLL.Services.City
 {
@@ -20,6 +19,7 @@ namespace EPlast.BLL.Services.City
     {
         private readonly IAdminTypeService _adminTypeService;
         private readonly IEmailSendingService _emailSendingService;
+        private readonly IEmailContentService _emailContentService;
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly UserManager<User> _userManager;
@@ -28,13 +28,15 @@ namespace EPlast.BLL.Services.City
                                        IMapper mapper,
                                        UserManager<User> userManager,
                                        IAdminTypeService adminTypeService,
-                                       IEmailSendingService emailSendingService)
+                                       IEmailSendingService emailSendingService,
+                                       IEmailContentService emailContentService)
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
             _userManager = userManager;
             _adminTypeService = adminTypeService;
             _emailSendingService = emailSendingService;
+            _emailContentService = emailContentService;
         }
 
         /// <inheritdoc />
@@ -87,10 +89,16 @@ namespace EPlast.BLL.Services.City
                 IsApproved = false,
                 UserId = userId,
                 User = await _userManager.FindByIdAsync(userId)
+                
             };
 
             await _repositoryWrapper.CityMembers.CreateAsync(cityMember);
             await _repositoryWrapper.SaveAsync();
+
+            if (await _userManager.IsInRoleAsync(cityMember.User, Roles.RegisteredUser))
+            {
+                await SendEmailCityAdminAboutNewFollowerAsync(cityMember.CityId, cityMember.User);
+            }
 
             return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
         }
@@ -230,10 +238,14 @@ namespace EPlast.BLL.Services.City
         public async Task RemoveFollowerAsync(int followerId)
         {
             var cityMember = await _repositoryWrapper.CityMembers
-                .GetFirstOrDefaultAsync(u => u.ID == followerId);
+                .GetFirstOrDefaultAsync(u => u.ID == followerId,
+                    m => m.Include(u => u.User)
+                        .Include(u => u.City));
 
             _repositoryWrapper.CityMembers.Delete(cityMember);
             await _repositoryWrapper.SaveAsync();
+
+            await SendEmailRemoveCityFollowerAsync(cityMember.User.Email, cityMember.City);
         }
 
         public async Task RemoveMemberAsync(CityMembers member)
@@ -249,12 +261,31 @@ namespace EPlast.BLL.Services.City
                 .GetFirstOrDefaultAsync(u => u.ID == memberId,
                                         m => m.Include(u => u.User)
                                               .Include(u => u.City));
-            cityMember.IsApproved = !cityMember.IsApproved;
+            cityMember.IsApproved = !cityMember.IsApproved; 
             _repositoryWrapper.CityMembers.Update(cityMember);
             await _repositoryWrapper.SaveAsync();
             await ChangeMembershipDatesByApprove(cityMember.UserId, cityMember.IsApproved);
-            await SendEmailCityApproveAsync(cityMember.User.Email, cityMember.City, cityMember.IsApproved);
-            return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
+            var cityMemberDto = _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
+            var user = await _userManager.FindByIdAsync(cityMember.UserId);
+            if (cityMember.IsApproved && await _userManager.IsInRoleAsync(user, Roles.RegisteredUser))
+            {
+                await GiveUserSupporterRole(user);
+                cityMemberDto.WasInRegisteredUserRole = true;
+            }
+            await SendEmailCityApproveStatusAsync(cityMember.User.Email, cityMember.UserId, cityMember.City, cityMember.IsApproved);
+            return cityMemberDto;
+        }
+
+        public async Task<string> CityOfApprovedMember(string memberId)
+        {
+            var cityMember = await _repositoryWrapper.CityMembers
+                .GetFirstOrDefaultAsync(u => u.UserId == memberId,
+                                        m => m.Include(u => u.City));
+            if (cityMember.IsApproved)
+            {
+                return cityMember.City.Name;
+            }
+            else return cityMember.City.Name = null;
         }
 
         private async Task ChangeMembershipDatesByApprove(string userId, bool isApproved)
@@ -284,17 +315,45 @@ namespace EPlast.BLL.Services.City
             }
         }
 
-        private async Task SendEmailCityApproveAsync(string email, DataAccess.Entities.City city, bool isApproved)
+        private async Task GiveUserSupporterRole(User user)
         {
-            string cityUrl = _repositoryWrapper.GetCitiesUrl + city.ID;
-            string approveMessage = "<h3>СКОБ!</h3>"
-                                    + $"<p>Друже / подруго, повідомляємо, що тебе прийнято до станиці <a href='{cityUrl}'>{city.Name}</a>!"
-                                    + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>";
-            string excludeMessage = "<h3>СКОБ!</h3>"
-                                    + $"<p>Друже / подруго, повідомляємо, що тебе було виключено зі станиці <a href='{cityUrl}'>{city.Name}</a>."
-                                    + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>";
-            string message = isApproved ? approveMessage : excludeMessage;
-            await _emailSendingService.SendEmailAsync(email, "Зміна статусу членства у станиці", message, "EPlast");
+            await _userManager.RemoveFromRoleAsync(user, Roles.RegisteredUser);
+            await _userManager.AddToRoleAsync(user, Roles.Supporter);
+            var emailContent = _emailContentService.GetCityToSupporterRoleOnApproveEmail();
+            await _emailSendingService.SendEmailAsync(user.Email, emailContent.Subject, emailContent.Message,
+                emailContent.Title);
+        }
+
+        private async Task SendEmailCityAdminAboutNewFollowerAsync(int cityId, User user)
+        {
+            var cityAdministration = await _repositoryWrapper.CityAdministration
+                .GetAllAsync(i => i.CityId == cityId,
+                    i => i
+                        .Include(c => c.AdminType)
+                        .Include(a => a.User));
+            var cityHead = cityAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHead
+                                                                  && (DateTime.Now < a.EndDate || a.EndDate == null));
+            var emailContent = await _emailContentService.GetCityAdminAboutNewFollowerEmailAsync(user.Id,
+                user.FirstName, user.LastName, false);
+            await _emailSendingService.SendEmailAsync(cityHead.User.Email, emailContent.Subject, emailContent.Message,
+                emailContent.Title);
+        }
+
+        private async Task SendEmailCityApproveStatusAsync(string email, string userId, DataAccess.Entities.City city, bool isApproved)
+        {
+            var cityUrl = _repositoryWrapper.GetCitiesUrl + city.ID;
+            var emailContent = isApproved
+                ? await _emailContentService.GetCityApproveEmailAsync(userId, cityUrl, city.Name)
+                : await _emailContentService.GetCityExcludeEmailAsync(userId, cityUrl, city.Name);
+            await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message, emailContent.Title);
+        }
+
+        private async Task SendEmailRemoveCityFollowerAsync(string email, DataAccess.Entities.City city)
+        {
+            var cityUrl = _repositoryWrapper.GetCitiesUrl + city.ID;
+            var emailContent = _emailContentService.GetCityRemoveFollowerEmail(cityUrl, city.Name);
+            await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message,
+                emailContent.Title);
         }
     }
 }

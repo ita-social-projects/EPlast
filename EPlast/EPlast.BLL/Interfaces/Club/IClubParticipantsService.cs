@@ -84,6 +84,13 @@ namespace EPlast.BLL.Interfaces.Club
         Task<ClubMembersDTO> ToggleApproveStatusAsync(int memberId);
 
         /// <summary>
+        /// Club name only for approved member
+        /// </summary>
+        /// <param name="memberId">The id of the member</param>
+        /// <returns>club name string</returns>
+        Task<string> ClubOfApprovedMember(string memberId);
+
+        /// <summary>
         /// Remove a specific follower from the Club
         /// </summary>
         /// <param name="followerId">The id of the follower</param>

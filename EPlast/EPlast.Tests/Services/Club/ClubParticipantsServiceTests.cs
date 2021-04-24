@@ -64,7 +64,7 @@ namespace EPlast.Tests.Services.Club
         {
             //Arrange
             _repoWrapper
-                .Setup(s => s.ClubAdministration.CreateAsync(clubAdm));
+                .Setup(s => s.ClubAdministration.CreateAsync(_clubAdministration));
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(new AdminTypeDTO());
@@ -81,7 +81,7 @@ namespace EPlast.Tests.Services.Club
         {
             //Arrange
             _repoWrapper
-                .Setup(s => s.ClubAdministration.CreateAsync(clubAdm));
+                .Setup(s => s.ClubAdministration.CreateAsync(_clubAdministration));
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(new AdminTypeDTO());
@@ -185,7 +185,7 @@ namespace EPlast.Tests.Services.Club
                 .Setup(r => r.ClubAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<ClubAdministration>,
                     IIncludableQueryable<ClubAdministration, object>>>()))
-                .ReturnsAsync(clubAdm);
+                .ReturnsAsync(_clubAdministration);
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
                 .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminType));
@@ -215,7 +215,7 @@ namespace EPlast.Tests.Services.Club
                 .Setup(r => r.ClubAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<ClubAdministration>,
                     IIncludableQueryable<ClubAdministration, object>>>()))
-                .ReturnsAsync(clubAdm);
+                .ReturnsAsync(_clubAdministration);
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
                 .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminType));
@@ -247,7 +247,7 @@ namespace EPlast.Tests.Services.Club
                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                .ReturnsAsync(new AdminTypeDTO
                {
-                   AdminTypeName = "Голова Куреня",
+                   AdminTypeName = Roles.KurinHead,
                    ID = 3
                });
             _userManager
@@ -428,7 +428,7 @@ namespace EPlast.Tests.Services.Club
             // Arrange
             _repoWrapper.Setup(r => r.ClubMembers.GetAllAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
             It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
-            .ReturnsAsync(new List<ClubMembers> { new ClubMembers() }); ;
+            .ReturnsAsync(new List<ClubMembers> { new ClubMembers() });
 
             // Act
             var result = await _clubParticipantsService.GetMembersByClubIdAsync(It.IsAny<int>());
@@ -543,6 +543,33 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
+        public async Task ClubOfApprovedMemberTest()
+        {
+            //Arrange 
+            _repoWrapper
+                .Setup(s => s.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>())).ReturnsAsync
+                    (new ClubMembers() 
+                    { 
+                        ID = 1,
+                        UserId = "123v",
+                        IsApproved = true,
+                        Club = new DataAccess.Entities.Club 
+                        { 
+                            ID = 1,
+                            Name = "club name"
+                        },
+                        ClubId = 1
+                    });
+            //Act
+            var result = await _clubParticipantsService.ClubOfApprovedMember("123v");
+
+            //Assert
+            Assert.IsNotNull(result);
+            _repoWrapper.Verify();
+        }
+
+        [Test]
         public async Task RemoveFollowerAsync()
         {
             // Arrange
@@ -599,7 +626,7 @@ namespace EPlast.Tests.Services.Club
             ID = 1
         };
 
-        private ClubAdministrationDTO clubAdmDTO = new ClubAdministrationDTO
+        private readonly ClubAdministrationDTO clubAdmDTO = new ClubAdministrationDTO
         {
             ID = 1,
             AdminType = AdminType,
@@ -611,7 +638,7 @@ namespace EPlast.Tests.Services.Club
             UserId = Roles.KurinHead
         };
 
-        private ClubAdministration clubAdm = new ClubAdministration
+        private readonly ClubAdministration _clubAdministration = new ClubAdministration
         {
             ID = 1,
             AdminType = new AdminType()
@@ -620,18 +647,6 @@ namespace EPlast.Tests.Services.Club
                 ID = 1
             },
             AdminTypeId = AdminType.ID,
-            UserId = Roles.KurinHead
-        };
-
-        private ClubAdministrationDTO clubFakeAdmDTO = new ClubAdministrationDTO
-        {
-            ID = 2,
-            AdminType = AdminType,
-            ClubId = 2,
-            AdminTypeId = 2,
-            EndDate = DateTime.Today,
-            StartDate = DateTime.Now,
-            User = new ClubUserDTO(),
             UserId = Roles.KurinHead
         };
 

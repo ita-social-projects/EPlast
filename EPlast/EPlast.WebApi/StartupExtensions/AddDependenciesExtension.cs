@@ -16,9 +16,11 @@ using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Notifications;
 using EPlast.BLL.Interfaces.Region;
+using EPlast.BLL.Interfaces.RegionBoard;
 using EPlast.BLL.Interfaces.Resources;
 using EPlast.BLL.Interfaces.Statistics;
 using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.SecurityModel;
 using EPlast.BLL.Services;
 using EPlast.BLL.Services.ActiveMembership;
 using EPlast.BLL.Services.Admin;
@@ -97,6 +99,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IDistinctionService, DistinctionService>();
             services.AddScoped<IEducatorsStaffService, EducatorsStaffService>();
             services.AddScoped<IEducatorsStaffTypesService, EducatorsStaffTypesService>();
+            services.AddScoped<IEmailContentService, EmailContentService>();
             services.AddScoped<IEmailReminderService, EmailReminderService>();
             services.AddScoped<IEmailSendingService, EmailSendingService>();
             services.AddScoped<IEventAdmininistrationManager, EventAdministrationManager>();
@@ -115,6 +118,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IFileStreamManager, FileStreamManager>();
             services.AddScoped<IGlobalLoggerService, GlobalLoggerService>();
             services.AddScoped<IGoverningBodiesService, GoverningBodiesService>();
+            services.AddScoped<IRegionsBoardService, RegionsBoardService>();
             services.AddScoped<IGoverningBodyBlobStorageRepository, GoverningBodyBlobStorageRepository>();
             services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IMethodicDocumentBlobStorageRepository, MethodicDocumentBlobStarageRepository>();
@@ -145,6 +149,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<RegionAccessSettings>();
             services.AddScoped<StatisticsServiceSettings>();
+            services.AddScoped<ISecurityModel, SecurityModel>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddSingleton<INotificationConnectionManager, NotificationConnectionManager>();
