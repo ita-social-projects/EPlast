@@ -16,9 +16,19 @@ namespace EPlast.Tests.Services.UserManager
         private UserManagerService _userManagerService;
         private Mock<UserManager<User>> _mockUserManager;
         private Mock<IMapper> _mockMapper;
+        private List<string> _roles;
+        private UserDTO _userDTO;
 
-        private readonly List<string> _roles = new List<string>();
-        private readonly UserDTO _userDTO = new UserDTO();
+        [SetUp]
+        public void SetUp()
+        {
+            _roles = new List<string>();
+            _userDTO = new UserDTO();
+            _mockMapper = new Mock<IMapper>();
+            var store = new Mock<IUserStore<User>>();
+            _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            _userManagerService = new UserManagerService(_mockUserManager.Object, _mockMapper.Object);
+        }
 
         [Test]
         public async Task IsInRoleAsync_Valid_TestAsync()
@@ -51,6 +61,7 @@ namespace EPlast.Tests.Services.UserManager
             //Assert
             Assert.IsFalse(result);
         }
+
         [Test]
         public async Task GetRolesAsync_Valid_GetListOfRolesAsync()
         {
@@ -80,15 +91,6 @@ namespace EPlast.Tests.Services.UserManager
 
             //Assert
             Assert.IsNotNull(result);
-        }
-
-        [SetUp]
-        public void SetUp()
-        {
-            _mockMapper = new Mock<IMapper>();
-            var store = new Mock<IUserStore<User>>();
-            _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
-            _userManagerService = new UserManagerService(_mockUserManager.Object, _mockMapper.Object);
         }
     }
 }
