@@ -10,7 +10,8 @@ using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.UserManager
 {
-    class UserManagerServiceTests
+    [TestFixture]
+    public class UserManagerServiceTests
     {
         private UserManagerService _userManagerService;
         private Mock<UserManager<User>> _mockUserManager;
