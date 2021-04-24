@@ -42,8 +42,7 @@ namespace EPlast.BLL.Services.Club
                         .Include(ca => ca.Club)
                             .ThenInclude(cm => cm.ClubMembers)
                                 .ThenInclude(mc => mc.User));
-            return await _clubAccessService.HasAccessAsync(user, clubAnnualReport.ClubId) ? _mapper.Map<ClubAnnualReport, ClubAnnualReportDTO>(clubAnnualReport)
-                : throw new UnauthorizedAccessException();
+            return _mapper.Map<ClubAnnualReport, ClubAnnualReportDTO>(clubAnnualReport);
         }
 
         ///<inheritdoc/>
@@ -56,6 +55,13 @@ namespace EPlast.BLL.Services.Club
                         .Include(ca => ca.Club)
                             .ThenInclude(cm => cm.ClubMembers));
             return _mapper.Map<IEnumerable<ClubAnnualReport>, IEnumerable<ClubAnnualReportDTO>>(annualReports);
+        }
+
+        public async Task<IEnumerable<ClubAnnualReportTableObject>> GetAllAsync(User user, bool isAdmin, string searchedData, int page, int pageSize, int sortKey, bool auth)
+        {
+            if (await _clubAccessService.HasAccessAsync(user))
+                return await _repositoryWrapper.ClubAnnualReports.GetClubAnnualReportsAsync(user.Id, isAdmin, searchedData, page, pageSize, sortKey, auth);
+            throw new UnauthorizedAccessException();
         }
 
         public async Task CreateAsync(User user, ClubAnnualReportDTO clubAnnualReportDTO)
@@ -87,10 +93,10 @@ namespace EPlast.BLL.Services.Club
             foreach (var item in club.ClubMembers)
             {
                 var userPlastDegrees = await _repositoryWrapper.UserPlastDegrees.GetAllAsync(upd => upd.UserId == item.UserId, include: pd => pd.Include(d => d.PlastDegree));
-                var degree = userPlastDegrees.FirstOrDefault(user => user.UserId == item.UserId);
+                var degree = userPlastDegrees.FirstOrDefault(u=> u.UserId == item.UserId);
                 var cityMember = await _repositoryWrapper.CityMembers.GetFirstOrDefaultAsync(predicate: a => a.UserId == item.UserId, include: source => source.Include(ar => ar.City));
-                clubMembers = clubMembers.Append(new StringBuilder(
-                    $"{degree.PlastDegree.Name}, {item.User.FirstName} {item.User.LastName}, {cityMember.City.Name};").Append("\n"));
+
+                clubMembers.Append(new StringBuilder($"{degree?.PlastDegree.Name.TrimEnd()}, {item.User.FirstName} {item.User.LastName}, {cityMember?.City.Name}\n"));
             }
 
             clubAnnualReportDTO.ClubMembersSummary = clubMembers.ToString();
@@ -102,8 +108,8 @@ namespace EPlast.BLL.Services.Club
                 var degree = userPlastDegrees.FirstOrDefault(user => user.UserId == item.UserId);
                 if (item.AdminTypeId == 69)
                 {
-                    clubAdmins = clubAdmins.Append(new StringBuilder(
-                        $"{degree.PlastDegree.Name}, {item.User.FirstName} {item.User.LastName}, {item.User.Email}, {item.User.PhoneNumber};").Append("\n"));
+                    clubAdmins.Append(new StringBuilder(
+                        $"{degree?.PlastDegree.Name.TrimEnd()}, {item.User.FirstName} {item.User.LastName}, {item.User.Email}, {item.User.PhoneNumber}\n"));
                 }
             }
 
@@ -120,6 +126,16 @@ namespace EPlast.BLL.Services.Club
         {
             return await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(
                 predicate: a => a.Club.ID == Id && a.Date.Year == DateTime.Now.Year) != null;
+        }
+
+        ///<inheritdoc/>
+        public async Task<bool> CheckCreated(User user, int clubId)
+        {
+            if (!await _clubAccessService.HasAccessAsync(user, clubId))
+            {
+                throw new UnauthorizedAccessException();
+            }
+            return await CheckCreated(clubId);
         }
 
         ///<inheritdoc/>

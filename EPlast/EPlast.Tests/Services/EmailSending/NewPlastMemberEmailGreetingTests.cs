@@ -1,7 +1,13 @@
-﻿using EPlast.BLL.Interfaces;
+﻿using EPlast.BLL.DTO.City;
+using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Models;
 using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
@@ -17,33 +23,71 @@ namespace EPlast.Tests.Services.EmailSending
     public class NewPlastMemberEmailGreetingTests
     {
         private Mock<IEmailSendingService> _mockEmailSendingService;
+        private Mock<IEmailContentService> _mockEmailContentService;
+        private Mock<ICityService> _mockCityService;
+        private Mock<IUserService> _mockUserService;
         private Mock<IRepositoryWrapper> _mockRepoWrapper;
         private Mock<UserManager<User>> _mockUserManager;
         private INewPlastMemberEmailGreetingService _newPlastMemberEmailGreetingService;
 
         [Test]
-        public async Task NotifyNewPlastMembersAsync_Valid_Test()
+        public async Task NotifyNewPlastMembersAndCityAdminsAsync_Valid_Test()
         {
             // Arrange
-            List<User> users = new List<User>()
+            var users = new List<User>()
             {
                 new User()
                 {
                     RegistredOn = DateTime.Now.Date.Subtract(new TimeSpan(366, 0, 0, 0))
                 }
             };
-            List<string> roles = new List<string>()
+
+            var user = new UserDTO
             {
-                "Прихильник",
-                "Колишній член пласту"
+                UserProfile = new UserProfileDTO
+                {
+                    Birthday = DateTime.Now
+                },
+
+                CityMembers = new[]
+                {
+                    new CityMembers
+                    {
+                        City = new DataAccess.Entities.City
+                        {
+                            Name = "CityName"
+                        }
+                    }
+                }
             };
 
-            var confirmedUsers = new ConfirmedUser[] 
-            { 
-                new ConfirmedUser() 
-                { 
-                    isClubAdmin = true 
-                } 
+            var cityProfile = new CityProfileDTO
+            {
+                Admins = new List<CityAdministrationDTO>
+                {
+                    new CityAdministrationDTO
+                    {
+                        User = new CityUserDTO()
+                    }
+                },
+                Head = new CityAdministrationDTO
+                {
+                    User = new CityUserDTO()
+                }
+            };
+
+            var roles = new List<string>()
+            {
+                Roles.Supporter,
+                Roles.FormerPlastMember
+            };
+
+            var confirmedUsers = new ConfirmedUser[]
+            {
+                new ConfirmedUser()
+                {
+                    isClubAdmin = true
+                }
             }.AsQueryable<ConfirmedUser>();
             _mockRepoWrapper
                     .Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
@@ -65,15 +109,24 @@ namespace EPlast.Tests.Services.EmailSending
             _mockUserManager
                 .Setup(x => x.AddToRoleAsync(It.IsAny<User>(),
                                              It.IsAny<string>()));
+            _mockUserService.Setup(x => x.GetUserAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+            _mockCityService.Setup(x => x.GetCityAdminsAsync(It.IsAny<int>()))
+                .ReturnsAsync(cityProfile);
             _mockEmailSendingService
                 .Setup(x => x.SendEmailAsync(It.IsAny<string>(),
                                              It.IsAny<string>(),
                                              It.IsAny<string>(),
                                              It.IsAny<string>()))
                 .ReturnsAsync(true);
+            _mockEmailContentService.Setup(x => x.GetGreetingForNewPlastMemberEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(new EmailModel());
+            _mockEmailContentService
+                .Setup(x => x.GetCityAdminAboutNewPlastMemberEmail(It.IsAny<string>(), It.IsAny<string>(),
+                    It.IsAny<DateTime>())).Returns(new EmailModel());
 
             // Act
-            await _newPlastMemberEmailGreetingService.NotifyNewPlastMembersAsync();
+            await _newPlastMemberEmailGreetingService.NotifyNewPlastMembersAndCityAdminsAsync();
 
             // Assert
             _mockRepoWrapper.Verify();
@@ -82,10 +135,10 @@ namespace EPlast.Tests.Services.EmailSending
         }
 
         [Test]
-        public async Task NotifyNewPlastMembersAsync_Valid_Empty_Test()
+        public async Task NotifyNewPlastMembersAndCityAdminsAsync_Valid_Empty_Test()
         {
             // Arrange
-            List<User> users = new List<User>()
+            var users = new List<User>()
             {
                 new User()
                 {
@@ -106,9 +159,11 @@ namespace EPlast.Tests.Services.EmailSending
                                              It.IsAny<string>(),
                                              It.IsAny<string>()))
                 .ReturnsAsync(true);
+            _mockEmailContentService.Setup(x => x.GetGreetingForNewPlastMemberEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(new EmailModel());
 
             // Act
-            await _newPlastMemberEmailGreetingService.NotifyNewPlastMembersAsync();
+            await _newPlastMemberEmailGreetingService.NotifyNewPlastMembersAndCityAdminsAsync();
 
             // Assert
             _mockRepoWrapper.Verify();
@@ -123,9 +178,15 @@ namespace EPlast.Tests.Services.EmailSending
             _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _mockRepoWrapper = new Mock<IRepositoryWrapper>();
             _mockEmailSendingService = new Mock<IEmailSendingService>();
+            _mockEmailContentService = new Mock<IEmailContentService>();
+            _mockCityService = new Mock<ICityService>();
+            _mockUserService = new Mock<IUserService>();
             _newPlastMemberEmailGreetingService = new NewPlastMemberEmailGreetingService(_mockRepoWrapper.Object,
                                                                                          _mockUserManager.Object,
-                                                                                         _mockEmailSendingService.Object);
+                                                                                         _mockEmailSendingService.Object,
+                                                                                         _mockEmailContentService.Object,
+                                                                                         _mockCityService.Object,
+                                                                                         _mockUserService.Object);
         }
     }
 }

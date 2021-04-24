@@ -15,8 +15,9 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Repositories;
+using EPlast.DataAccess.Repositories.Realizations.Base;
 using EPlast.Resources;
 
 namespace EPlast.Tests.Controllers
@@ -138,6 +139,24 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task CreateRegionAnnualReportById_InvalidOperationException_Test()
+        {
+            // Arrange
+            _regionAnnualReportService
+                .Setup(x => x.CreateByNameAsync(It.IsAny<User>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<RegionAnnualReportQuestions>()))
+                .Throws(new InvalidOperationException());
+
+            // Act
+            var expected = StatusCodes.Status400BadRequest;
+            var result = await _regionController.CreateRegionAnnualReportById(1, 2021, new RegionAnnualReportQuestions());
+            var actual = (result as StatusCodeResult).StatusCode;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
         public async Task CreateRegionAnnualReportById_Valid_Test()
         {
             // Arrange
@@ -203,17 +222,35 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task GetAllRegionsReportsAsync_TakesParameters_OkObjectResult()
+        {
+            //Arrange
+            var report = new RegionAnnualReportTableObject() { Id = 1 };
+            _regionAnnualReportService.Setup(r => r.GetAllRegionsReportsAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new List<RegionAnnualReportTableObject>() {report});
+
+            // Act
+            var result = await _regionController.GetAllRegionsReportsAsync("",1,1,1);
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsInstanceOf<List<RegionAnnualReportTableObject>>((result as ObjectResult).Value);
+            Assert.IsNotEmpty((result as ObjectResult).Value as List<RegionAnnualReportTableObject>);
+            Assert.True(((result as ObjectResult).Value as List<RegionAnnualReportTableObject>).Contains(report));
+        }
+
+        [Test]
         public async Task GetAdminTypeId_TypeNameString_ReturnsAdminTypeId()
         {
             // Arrange
             string TypeName = Roles.Admin;
             _regionAdministrationService.Setup(x => x.GetAdminType(TypeName)).ReturnsAsync(2);
             // Act
-            var result = await _regionController.GetAdminTypeId(TypeName);
+            var actual = await _regionController.GetAdminTypeId(TypeName);
 
             // Assert
 
-            Assert.AreEqual(result, 2);
+            Assert.AreEqual(2, actual );
         }
 
         [Test]
@@ -385,11 +422,11 @@ namespace EPlast.Tests.Controllers
             _regionAdministrationService.Setup(x => x.GetHead(id)).ReturnsAsync(head);
             // Act
             var result = await _regionController.GetRegionHead(id);
-            var actual = (result as ObjectResult).Value as RegionAdministrationDTO;
+            var actual = ((result as ObjectResult).Value as RegionAdministrationDTO).ID;
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<RegionAdministrationDTO>((result as ObjectResult).Value);
-            Assert.AreEqual(actual.ID, 2);
+            Assert.AreEqual(2, actual);
         }
 
         [Test]

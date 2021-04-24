@@ -1151,6 +1151,43 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("Genders");
                 });
 
+            modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBodyAdministration", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AdminTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("GoverningBodyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("AdminTypeId");
+
+                    b.HasIndex("GoverningBodyId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("GoverningBodyAdministrations");
+                });
+
             modelBuilder.Entity("EPlast.DataAccess.Entities.MembersStatistic", b =>
                 {
                     b.Property<int>("Id")
@@ -2517,6 +2554,27 @@ namespace EPlast.DataAccess.Migrations
                     b.HasOne("EPlast.DataAccess.Entities.Event.Gallary", "Gallary")
                         .WithMany("Events")
                         .HasForeignKey("GallaryID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBodyAdministration", b =>
+                {
+                    b.HasOne("EPlast.DataAccess.Entities.AdminType", "AdminType")
+                        .WithMany()
+                        .HasForeignKey("AdminTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EPlast.DataAccess.Entities.Organization", "GoverningBody")
+                        .WithMany()
+                        .HasForeignKey("GoverningBodyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EPlast.DataAccess.Entities.User", "User")
+                        .WithMany("GoverningBodyAdministrations")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

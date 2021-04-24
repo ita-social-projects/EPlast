@@ -24,7 +24,6 @@ namespace EPlast.Tests.Services.City
     [TestFixture]
     public class CityDocumentsServiceTest
     {
-        private CityDocumentsService _cityDocumentsService;
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IMapper> _mapper;
         private Mock<ICityFilesBlobStorageRepository> _cityFilesBlobStorage;
@@ -37,7 +36,6 @@ namespace EPlast.Tests.Services.City
             _mapper = new Mock<IMapper>();
             _cityFilesBlobStorage = new Mock<ICityFilesBlobStorageRepository>();
             _uniqueId = new Mock<IUniqueIdService>();
-            _cityDocumentsService = new CityDocumentsService(_repoWrapper.Object, _mapper.Object, _cityFilesBlobStorage.Object, _uniqueId.Object);
         }
 
         [Test] 
@@ -129,7 +127,7 @@ namespace EPlast.Tests.Services.City
                 .ReturnsAsync(fakeFile);
             _uniqueId
                 .Setup(u => u.GetUniqueId())
-                .Returns(new Guid());
+                .Returns(Guid.NewGuid());
 
             return new CityDocumentsService(_repoWrapper.Object, _mapper.Object, _cityFilesBlobStorage.Object, _uniqueId.Object);
         }

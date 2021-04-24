@@ -38,10 +38,18 @@ namespace EPlast.DataAccess
         public DbSet<EventAdministration> EventAdministration { get; set; }
         public DbSet<EventAdministrationType> EventAdministrationType { get; set; }
         public DbSet<UserTableObject> UserTableObjects { get; set; }
+        public DbSet<AnnualReportTableObject> AnnualReportTableObjects { get; set; }
+        public DbSet<ClubAnnualReportTableObject> ClubAnnualReportTableObjects { get; set; }
+        public DbSet<RegionAnnualReportTableObject> RegionAnnualReportTableObjects { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<UserTableObject>().HasNoKey();
+            modelBuilder.Entity<AnnualReportTableObject>().HasNoKey();
+            modelBuilder.Entity<ClubAnnualReportTableObject>().HasNoKey();
+            modelBuilder.Entity<RegionAnnualReportTableObject>().HasNoKey();
 
             modelBuilder.Entity<Event>()
                 .HasKey(x => x.ID);
@@ -117,6 +125,11 @@ namespace EPlast.DataAccess
                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<User>()
+                .HasMany(x => x.GoverningBodyAdministrations)
+                .WithOne(x => x.User)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>()
                .HasMany(x => x.RegionAdministrations)
                .WithOne(x => x.User)
                .OnDelete(DeleteBehavior.Cascade);
@@ -186,10 +199,8 @@ namespace EPlast.DataAccess
                 annualReport.HasOne(a => a.Club);
             });
         }
-
         public DbSet<RegionAnnualReport> RegionAnnualReports { get; set; }
         public DbSet<DocumentTemplate> DocumentTemplates { get; set; }
-        public DbSet<Organization> Organization { get; set; }
         public DbSet<DecesionTarget> DecesionTargets { get; set; }
         public DbSet<Decesion> Decesions { get; set; }
         public DbSet<MethodicDocument> MethodicDocuments { get; set; }
@@ -197,6 +208,9 @@ namespace EPlast.DataAccess
         public DbSet<ClubAnnualReport> ClubAnnualReports { get; set; }
 
         public DbSet<MembersStatistic> MembersStatistics { get; set; }
+
+        public DbSet<Organization> Organization { get; set; }
+        public DbSet<GoverningBodyAdministration> GoverningBodyAdministrations { get; set; }
 
         public DbSet<City> Cities { get; set; }
         public DbSet<CityAdministration> CityAdministrations { get; set; }

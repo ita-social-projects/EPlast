@@ -189,7 +189,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
                 .ReturnsAsync(new DatabaseEntities.AnnualReport());
 
             // Act
-            var result = await Assert.ThrowsAsync<InvalidOperationException>(() => _annualReportService.CreateAsync(It.IsAny<User>(), new AnnualReportDTO()));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _annualReportService.CreateAsync(It.IsAny<User>(), new AnnualReportDTO()));
 
             // Assert
             _repositoryWrapper.Verify(r => r.AnnualReports.CreateAsync(It.IsAny<DatabaseEntities.AnnualReport>()), Times.Never);
@@ -206,7 +206,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
                 .ReturnsAsync(false);
 
             // Act
-            var result = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.CreateAsync(It.IsAny<User>(), new AnnualReportDTO()));
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.CreateAsync(It.IsAny<User>(), new AnnualReportDTO()));
 
             // Assert
             _repositoryWrapper.Verify(r => r.AnnualReports.CreateAsync(It.IsAny<DatabaseEntities.AnnualReport>()), Times.Never);
@@ -320,7 +320,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
                 .ReturnsAsync((DatabaseEntities.AnnualReport)null);
 
             // Act
-            var result = await Assert.ThrowsAsync<NullReferenceException>(() =>
+            await Assert.ThrowsAsync<NullReferenceException>(() =>
                 _annualReportService.EditAsync(It.IsAny<User>(), new AnnualReportDTO { Status = AnnualReportStatusDTO.Unconfirmed }));
 
             // Assert
@@ -347,6 +347,75 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         }
 
         [Fact]
+        public void GetAllAsync_Succeded()
+        {
+            // Arrange
+            _cityAccessService.Setup(r => r.HasAccessAsync(It.IsAny<User>())).ReturnsAsync(true);
+            _repositoryWrapper
+                .Setup(r => r.AnnualReports.GetAnnualReportsAsync(It.IsAny<string>(), It.IsAny<bool>(),
+                    It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()))
+                .ReturnsAsync(new List<AnnualReportTableObject>());
+            // Act
+            var result= _annualReportService.GetAllAsync(It.IsAny<User>(), It.IsAny<bool>(),
+                It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>());
+
+            // Assert
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void GetAllAsync_UnauthorizedAccessException()
+        {
+            // Arrange
+            _cityAccessService.Setup(r => r.HasAccessAsync(It.IsAny<User>())).ReturnsAsync(false);
+           
+            // Act
+            // Assert
+            Assert.ThrowsAsync<UnauthorizedAccessException>(async () =>
+            {
+                await _annualReportService.GetAllAsync(
+                    It.IsAny<User>(), It.IsAny<bool>(),
+                    It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>());
+            });
+        }
+
+        [Fact]
+        public async Task GetCityMembersAsync_Valid()
+        {
+            //Arrange
+            _repositoryWrapper.Setup(x =>
+                    x.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(),
+                        It.IsAny<Func<IQueryable<DatabaseEntities.City>,
+                            IIncludableQueryable<DatabaseEntities.City, object>>>()))
+                .ReturnsAsync(new DatabaseEntities.City()
+                    {CityMembers = new List<CityMembers>() {new CityMembers() {IsApproved = true}}});
+            
+            //Act
+            await _annualReportService.GetCityMembersAsync(1);
+
+            //Assert
+            _mapper.Verify(x=>x.Map<DatabaseEntities.City, CityDTO>(It.IsAny<DatabaseEntities.City>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetCityMembersAsync_ReturnsNull()
+        {
+            //Arrange
+            _repositoryWrapper.Setup(x =>
+                    x.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(),
+                        It.IsAny<Func<IQueryable<DatabaseEntities.City>,
+                            IIncludableQueryable<DatabaseEntities.City, object>>>()))
+                .ReturnsAsync(null as DatabaseEntities.City);
+
+            //Act
+            var result = await _annualReportService.GetCityMembersAsync(1);
+
+            //Assert
+            _mapper.Verify(x => x.Map<DatabaseEntities.City, CityDTO>(It.IsAny<DatabaseEntities.City>()), Times.Never);
+            Assert.Null(result);
+        }
+
+        [Fact]
         public async Task GetAllAsync()
         {
             // Arrange
@@ -370,7 +439,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
             _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
                 It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
                     .ReturnsAsync(new DatabaseEntities.AnnualReport());
-            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>()))
+            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<User>()))
                 .ReturnsAsync(true);
 
             // Act
@@ -381,15 +450,16 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         }
 
         [Fact]
-        public async Task GetByIdAsyncNullReferenceException()
+        public async Task GetByIdAsync_UnauthorizedAccessException()
         {
             // Arrange
             _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
                 It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
                     .ReturnsAsync((DatabaseEntities.AnnualReport)null);
+            _cityAccessService.Setup(r => r.HasAccessAsync(It.IsAny<User>())).ReturnsAsync(false);
 
             // Act
-            await Assert.ThrowsAsync<NullReferenceException>(() => _annualReportService.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()));
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()));
 
             // Assert
             _mapper.Verify(m => m.Map<DatabaseEntities.AnnualReport, AnnualReportDTO>(It.IsAny<DatabaseEntities.AnnualReport>()), Times.Never);
@@ -406,10 +476,43 @@ namespace EPlast.XUnitTest.Services.AnnualReport
                 .ReturnsAsync(false);
 
             // Act
-            var result = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()));
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()));
 
             // Assert
             _mapper.Verify(m => m.Map<DatabaseEntities.AnnualReport, AnnualReportDTO>(It.IsAny<DatabaseEntities.AnnualReport>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task GetEditFormByIdAsync_Valid()
+        {
+            //Arrange
+            _repositoryWrapper
+                .Setup(r => r.AnnualReports.GetAnnualReportsAsync(It.IsAny<string>(), It.IsAny<bool>(),
+                    It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()))
+                .ReturnsAsync(new List<AnnualReportTableObject>());
+            _cityAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>())).ReturnsAsync(true);
+
+            //Act
+            await _annualReportService.GetEditFormByIdAsync(new User(), 1);
+
+            //Assert
+            _mapper.Verify(x=>x.Map<DatabaseEntities.AnnualReport, AnnualReportDTO>(It.IsAny<DatabaseEntities.AnnualReport>()), Times.Once);
+        }
+
+        [Fact]
+        public void GetEditFormByIdAsync_UnauthorizedAccessException()
+        {
+            //Arrange
+            _repositoryWrapper
+                .Setup(r => r.AnnualReports.GetAnnualReportsAsync(It.IsAny<string>(), It.IsAny<bool>(),
+                    It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()))
+                .ReturnsAsync(new List<AnnualReportTableObject>());
+            _cityAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>())).ReturnsAsync(false);
+
+            //Act
+            //Assert
+            Assert.ThrowsAsync<UnauthorizedAccessException>(async ()=> await _annualReportService.GetEditFormByIdAsync(new User(), 1) );
+            _mapper.Verify(x => x.Map<DatabaseEntities.AnnualReport, AnnualReportDTO>(It.IsAny<DatabaseEntities.AnnualReport>()), Times.Never);
         }
     }
 }

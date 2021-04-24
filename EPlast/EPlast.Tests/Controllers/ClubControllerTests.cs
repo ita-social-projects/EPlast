@@ -591,6 +591,22 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task GetClubNameOfApprovedMemberTest()
+        {
+            //Arrange
+            _ClubParticipantsService
+                .Setup(c => c.ClubOfApprovedMember(It.IsAny<string>()));
+            ClubController Clubcon = CreateClubController;
+
+            //Act
+            var result = await Clubcon.ClubNameOfApprovedMember(GetStringFakeId());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
         public async Task AddAdmin_Valid_Test()
         {
             // Arrange
@@ -794,6 +810,23 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetClubsOptions()
+        {
+            //Arrange
+            _userManager.Setup(r => r.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
+            _ClubAccessService.Setup(r => r.GetAllClubsIdAndName(It.IsAny<User>()))
+                .ReturnsAsync(new List<Tuple<int, string>>());
+            ClubController Clubcon = CreateClubController;
+
+            //Act
+            var result = await Clubcon.GetClubsOptions();
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull((result as ObjectResult).Value);
         }
 
         private int GetFakeID()

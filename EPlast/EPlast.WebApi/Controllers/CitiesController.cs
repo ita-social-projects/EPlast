@@ -343,6 +343,20 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// City name only for approved member
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns>city name string</returns>
+        [HttpGet("CityNameOfApprovedMember/{memberId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> CityNameOfApprovedMember(string memberId)
+        {
+            var member = await _cityParticipantsService.CityOfApprovedMember(memberId);
+
+            return Ok(member);
+        }
+
+        /// <summary>
         /// Add a new administrator to the city
         /// </summary>
         /// <param name="newAdmin">An information about a new administrator</param>
@@ -470,6 +484,17 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetCitiesThatUserHasAccessTo()
         {
             return Ok(new { cities = await _cityAccessService.GetCitiesAsync(await _userManager.GetUserAsync(User)) });
+        }
+
+        /// <summary>
+        /// Get id and name from all cities that the user has access to
+        /// </summary>
+        /// <returns>Tuple (int, string)</returns>
+        [HttpGet("CitiesOptions")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetCitiesNameThatUserHasAccessTo()
+        {
+            return Ok(new { cities = await _cityAccessService.GetAllCitiesIdAndName(await _userManager.GetUserAsync(User)) });
         }
 
 

@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.UserProfiles;
 
 namespace EPlast.BLL.Services
 {
@@ -197,17 +198,63 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(int pageNum, int pageSize, string tab, IEnumerable<string> regions, IEnumerable<string> cities, IEnumerable<string> clubs, IEnumerable<string> degrees)
+        public async Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(int pageNum, int pageSize, string tab, IEnumerable<string> regions, IEnumerable<string> cities, IEnumerable<string> clubs, IEnumerable<string> degrees, string searchData)
         {
             string strCities = cities == null ? null : string.Join(",", cities.ToArray());
             string strRegions = regions == null ? null : string.Join(",", regions.ToArray());
             string strClubs = clubs == null ? null : string.Join(",", clubs.ToArray());
             string strDegrees = degrees == null ? null : string.Join(",", degrees.ToArray());
-            var tuple = await _repoWrapper.AdminType.GetUserTableObjects(pageNum, pageSize, tab, strRegions, strCities, strClubs, strDegrees);
+            var tuple = await _repoWrapper.AdminType.GetUserTableObjects(pageNum, pageSize, tab, strRegions, strCities, strClubs, strDegrees, searchData);
             var users = tuple.Item1;
             var rowCount = tuple.Item2;
 
             return new Tuple<IEnumerable<UserTableDTO>, int>(_mapper.Map<IEnumerable<UserTableObject>, IEnumerable<UserTableDTO>>(users), rowCount);
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<UserTableDTO>> GetUsersAsync()
+        {
+            var users = await _repoWrapper.User.GetAllAsync(
+                predicate: null,
+                include: i => i.Include(x => x.UserProfile)
+                        .ThenInclude(x => x.Gender)
+                    .Include(x => x.UserPlastDegrees)
+                        .ThenInclude(x => x.PlastDegree)
+                    .Include(x => x.UserProfile)
+                            .ThenInclude(x => x.UpuDegree));
+            var cities = await _repoWrapper.City.
+                GetAllAsync(null, x => x.Include(i => i.Region));
+            var clubMembers = await _repoWrapper.ClubMembers.
+                GetAllAsync(null, x => x.Include(i => i.Club));
+            var cityMembers = await _repoWrapper.CityMembers.
+                GetAllAsync(null, x => x.Include(i => i.City));
+            List<UserTableDTO> userTable = new List<UserTableDTO>();
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                var cityName = cityMembers.Where(x => x.UserId.Equals(user.Id) && x.EndDate == null)
+                                          .Select(x => x.City.Name)
+                                          .LastOrDefault() ?? string.Empty;
+
+                userTable.Add(new UserTableDTO
+                {
+                    User = _mapper.Map<User, ShortUserInformationDTO>(user),
+                    ClubName = clubMembers.Where(x => x.UserId.Equals(user.Id) && x.IsApproved)
+                                          .Select(x => x.Club.Name).LastOrDefault() ?? string.Empty,
+                    CityName = cityName,
+                    RegionName = !string.IsNullOrEmpty(cityName) ? cities
+                        .FirstOrDefault(x => x.Name.Equals(cityName))
+                        ?.Region.RegionName : string.Empty,
+
+                    UserPlastDegreeName = user.UserPlastDegrees.Count != 0 ? user.UserPlastDegrees
+                        .FirstOrDefault(x => x.UserId == user.Id && x.DateFinish == null)
+                        ?.PlastDegree.Name : string.Empty,
+                    UserRoles = string.Join(", ", roles),
+                    UPUDegree = user.UserProfile.UpuDegree.Name,
+                    Email = user.UserName
+                });
+            }
+            return userTable;
         }
 
         public async Task UpdateUserDatesByChangeRoleAsyncAsync(string userId, string role)
@@ -233,9 +280,18 @@ namespace EPlast.BLL.Services
             await _repoWrapper.SaveAsync();
         }
 
+        public async Task<IEnumerable<ShortUserInformationDTO>> GetShortUserInfoAsync(string searchString)
+        {
+            var users = await _repoWrapper.User.GetAllAsync(u =>
+                u.FirstName.Contains(searchString) || u.LastName.Contains(searchString));
+
+            return users.Select(user => _mapper.Map<User, ShortUserInformationDTO>(user)).ToList();
+        }
+
         public Task<int> GetUsersCountAsync()
         {
             return _repoWrapper.AdminType.GetUsersCountAsync();
         }
+
     }
 }
