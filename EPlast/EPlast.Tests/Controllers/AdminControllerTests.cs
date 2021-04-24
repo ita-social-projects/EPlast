@@ -358,6 +358,25 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<List<UserTableDTO>>(resultValue);
         }
 
+        [TestCase("searchString")]
+        public async Task ShortUsersInfo_Valid_Test(string searchString)
+        {
+            // Arrange
+            _adminService.Setup(a => a.GetShortUserInfoAsync(It.IsAny<string>()))
+                .ReturnsAsync(new List<ShortUserInformationDTO>());
+
+            var adminController = CreateAdminController;
+
+            // Act
+            var result = await adminController.GetShortUsersInfo(searchString);
+            var resultValue = (result as OkObjectResult)?.Value;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(resultValue);
+            Assert.IsInstanceOf<List<ShortUserInformationDTO>>(resultValue);
+        }
 
         private TableFilterParameters CreateTableFilterParameters => new TableFilterParameters()
         {

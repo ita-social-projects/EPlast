@@ -9,7 +9,7 @@ namespace EPlast.WebApi.Models.Decision
         public string Name { get; set; }
         public string DecisionStatusType { get; set; }
 
-        public string Organization { get; set; }
+        public string GoverningBody { get; set; }
 
         public string DecisionTarget { get; set; }
 
