@@ -58,7 +58,7 @@ namespace EPlast.BLL.Services.Interfaces
         /// <returns>Users that match search string</returns>
         Task<IEnumerable<ShortUserInformationDTO>> GetShortUserInfoAsync(string searchString);
 
-        Task<IEnumerable<UserTableDTO>> GetUsersAsync();
+        Task<IEnumerable<ShortUserInformationDTO>> GetUsersAsync();
 
         Task<int> GetUsersCountAsync();
     }
