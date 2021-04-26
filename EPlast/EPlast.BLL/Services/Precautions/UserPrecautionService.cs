@@ -145,17 +145,12 @@ namespace EPlast.BLL.Services.Precautions
 
         public async Task<IEnumerable<ShortUserInformationDTO>> UsersTableWithoutPrecautionAsync()
         {
-
-            var userTable = await _adminService.GetUsersAsync();
-            var filteredTable = new List<ShortUserInformationDTO>();
-            foreach (var user in userTable)
+            var usersWithoutPrecautions = await _adminService.GetUsersAsync();
+            foreach (var user in usersWithoutPrecautions)
             {
-                if (!await CheckUserPrecautions(user.ID))
-                {
-                    filteredTable.Add(user);
-                }
+                user.IsInLowerRole = await CheckUserPrecautions(user.ID);
             }
-            return filteredTable;
+            return usersWithoutPrecautions;
         }
 
         private async Task<bool> CheckUserPrecautions(string userId)

@@ -386,7 +386,7 @@ namespace EPlast.Tests.Services.Precautions
             // Arrange
 
             adminService.Setup(a => a.GetUsersAsync())
-                .ReturnsAsync(GetTestUserTableDTO());
+                .ReturnsAsync(GetTestShortUserInfo());
             mockRepoWrapper.Setup(x => x.UserPrecaution.GetAllAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(GetTestUserPrecaution());
@@ -458,18 +458,13 @@ namespace EPlast.Tests.Services.Precautions
             Reporter = ""
         };
 
-        private IEnumerable<UserTableDTO> GetTestUserTableDTO()
+        private IEnumerable<ShortUserInformationDTO> GetTestShortUserInfo()
         {
-            return new List<UserTableDTO>
+            return new List<ShortUserInformationDTO>
             {
-                new  UserTableDTO
-                {
-                    User = new ShortUserInformationDTO { ID = UserId }
-                },
-                new  UserTableDTO
-                {
-                    User = new ShortUserInformationDTO { ID = UserId }
-                }
+                new ShortUserInformationDTO { ID = UserId },
+                new ShortUserInformationDTO { ID = UserId }
+                
             }.AsEnumerable();
         }
 
