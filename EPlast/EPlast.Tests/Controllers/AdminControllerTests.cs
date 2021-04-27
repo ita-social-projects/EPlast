@@ -355,7 +355,7 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(resultValue);
-            Assert.IsInstanceOf<List<UserTableDTO>>(resultValue);
+            Assert.IsInstanceOf<List<ShortUserInformationDTO>>(resultValue);
         }
 
         [TestCase("searchString")]
