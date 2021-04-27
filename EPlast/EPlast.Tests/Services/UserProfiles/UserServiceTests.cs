@@ -190,7 +190,7 @@ namespace EPlast.Tests.Services.UserProfiles
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(result, "Чоловік");
+            Assert.AreEqual("Чоловік", result);
         }
 
         [Test]
