@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.UserProfiles;
 
 namespace EPlast.BLL
 {
@@ -14,6 +15,6 @@ namespace EPlast.BLL
         Task DeleteUserPrecautionAsync(int id, User user);
         Task<IEnumerable<UserPrecautionDTO>> GetUserPrecautionsOfUserAsync(string UserId);
         Task<bool> IsNumberExistAsync(int number);
-        Task<IEnumerable<UserTableDTO>> UsersTableWithoutPrecautionAsync();
+        Task<IEnumerable<ShortUserInformationDTO>> UsersTableWithoutPrecautionAsync();
     }
 }

@@ -46,10 +46,10 @@ namespace EPlast.DataAccess
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<UserTableObject>().HasNoKey();
-            modelBuilder.Entity<AnnualReportTableObject>().HasNoKey();
-            modelBuilder.Entity<ClubAnnualReportTableObject>().HasNoKey();
-            modelBuilder.Entity<RegionAnnualReportTableObject>().HasNoKey();
+            modelBuilder.Ignore<UserTableObject>();
+            modelBuilder.Ignore<AnnualReportTableObject>();
+            modelBuilder.Ignore<ClubAnnualReportTableObject>();
+            modelBuilder.Ignore<RegionAnnualReportTableObject>();
 
             modelBuilder.Entity<Event>()
                 .HasKey(x => x.ID);
