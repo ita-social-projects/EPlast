@@ -343,7 +343,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetUsers_Valid_Test()
         {
             _adminService.Setup(a => a.GetUsersAsync())
-                .ReturnsAsync(new List<UserTableDTO>());
+                .ReturnsAsync(new List<ShortUserInformationDTO>());
 
             AdminController adminController = CreateAdminController;
 
@@ -355,7 +355,7 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(resultValue);
-            Assert.IsInstanceOf<List<UserTableDTO>>(resultValue);
+            Assert.IsInstanceOf<List<ShortUserInformationDTO>>(resultValue);
         }
 
         [TestCase("searchString")]
