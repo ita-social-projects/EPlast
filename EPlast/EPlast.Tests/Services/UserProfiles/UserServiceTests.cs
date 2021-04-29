@@ -32,6 +32,8 @@ namespace EPlast.Tests.Services.UserProfiles
         private Mock<IWebHostEnvironment> _mockEnv;
         private Mock<IUniqueIdService> _mockUniqueId;
         private UserDTO _userDTO;
+        private List<ConfirmedUserDTO> _confirmedUserDTOs;
+        private ConfirmedUserDTO _confirmedUserDTO;
 
         [SetUp]
         public void SetUp()
@@ -45,21 +47,22 @@ namespace EPlast.Tests.Services.UserProfiles
             _mockEnv = new Mock<IWebHostEnvironment>();
             _mockUniqueId = new Mock<IUniqueIdService>();
             _userService = new UserService(_mockRepoWrapper.Object, _mockUserManager.Object, _mockMapper.Object, _mockUserPersonalDataService.Object, _mockUserBlobStorage.Object, _mockEnv.Object, _mockUniqueId.Object);
-
-            _userDTO = new UserDTO();
+            _confirmedUserDTO = new ConfirmedUserDTO();
+            _confirmedUserDTOs = new List<ConfirmedUserDTO>()
+            {
+                _confirmedUserDTO
+            };
+            _userDTO = new UserDTO()
+            {
+                ConfirmedUsers = _confirmedUserDTOs
+            };
         }
 
         [Test]
         public void GetCityAdminConfirmedUser_Valid_GetConfirmedUserDTO()
         {
             //Arrange
-            _userDTO.ConfirmedUsers = new List<ConfirmedUserDTO>()
-            {
-                new ConfirmedUserDTO()
-                {
-                    isCityAdmin = true
-                }
-            };
+            _confirmedUserDTO.isCityAdmin = true;
 
             // Act
             var result = _userService.GetCityAdminConfirmedUser(_userDTO);
@@ -73,13 +76,7 @@ namespace EPlast.Tests.Services.UserProfiles
         public void GetCityAdminConfirmedUser_InValid_GetConfirmedUserDTO()
         {
             //Arrange
-            _userDTO.ConfirmedUsers = new List<ConfirmedUserDTO>()
-            {
-                new ConfirmedUserDTO()
-                {
-                    isCityAdmin = false
-                }
-            };
+            _confirmedUserDTO.isCityAdmin = false;
 
             // Act
             var result = _userService.GetCityAdminConfirmedUser(_userDTO);
@@ -92,13 +89,7 @@ namespace EPlast.Tests.Services.UserProfiles
         public void GetClubAdminConfirmedUser_Valid_GetConfirmedUserDTO()
         {
             //Arrange
-            _userDTO.ConfirmedUsers = new List<ConfirmedUserDTO>()
-            {
-                new ConfirmedUserDTO()
-                {
-                    isClubAdmin = true
-                }
-            };
+            _confirmedUserDTO.isClubAdmin = true;
 
             //Act
             var result = _userService.GetClubAdminConfirmedUser(_userDTO);
@@ -112,13 +103,7 @@ namespace EPlast.Tests.Services.UserProfiles
         public void GetClubAdminConfirmedUser_InValid_GetConfirmedUserDTO()
         {
             //Arrange
-            _userDTO.ConfirmedUsers = new List<ConfirmedUserDTO>()
-            {
-                new ConfirmedUserDTO()
-                {
-                    isClubAdmin = false
-                }
-            };
+            _confirmedUserDTO.isCityAdmin = false;
 
             //Act
             var result = _userService.GetClubAdminConfirmedUser(_userDTO);
