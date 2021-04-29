@@ -32,7 +32,6 @@ namespace EPlast.Tests.Services.UserProfiles
         private Mock<IWebHostEnvironment> _mockEnv;
         private Mock<IUniqueIdService> _mockUniqueId;
         private UserDTO _userDTO;
-        private List<ConfirmedUserDTO> _confirmedUserDTOs;
         private ConfirmedUserDTO _confirmedUserDTO;
 
         [SetUp]
@@ -48,13 +47,12 @@ namespace EPlast.Tests.Services.UserProfiles
             _mockUniqueId = new Mock<IUniqueIdService>();
             _userService = new UserService(_mockRepoWrapper.Object, _mockUserManager.Object, _mockMapper.Object, _mockUserPersonalDataService.Object, _mockUserBlobStorage.Object, _mockEnv.Object, _mockUniqueId.Object);
             _confirmedUserDTO = new ConfirmedUserDTO();
-            _confirmedUserDTOs = new List<ConfirmedUserDTO>()
-            {
-                _confirmedUserDTO
-            };
             _userDTO = new UserDTO()
             {
-                ConfirmedUsers = _confirmedUserDTOs
+                ConfirmedUsers = new List<ConfirmedUserDTO>()
+                {
+                    _confirmedUserDTO
+                }
             };
         }
 
