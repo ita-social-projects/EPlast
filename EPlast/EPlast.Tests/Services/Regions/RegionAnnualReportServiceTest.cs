@@ -53,5 +53,23 @@ namespace EPlast.Tests.Services.Regions
             Assert.IsInstanceOf<RegionAnnualReportDTO>(result);
             Assert.IsNotNull(result);
         }
+
+        [Test]
+        public async Task GetAllRegionsReportsAsync()
+        {
+            //Arrange
+            var report = new RegionAnnualReportTableObject() {Id = 1};
+            _mockRepositoryWrapper
+                .Setup(r => r.RegionAnnualReports.GetRegionAnnualReportsAsync(It.IsAny<string>(), It.IsAny<int>(),
+                    It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(new List<RegionAnnualReportTableObject>(){ report});
+
+            //Act
+            var result = await service.GetAllRegionsReportsAsync("", 1, 1,1);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsNotEmpty(result.ToList());
+            Assert.True(result.ToList().Contains(report));
+        }
     }
 }

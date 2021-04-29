@@ -182,6 +182,24 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _RegionAnnualReportService.GetAllRegionsReportsAsync());
         }
 
+        /// <summary>
+        /// Method to get all region annual reports
+        /// </summary>
+        /// <param name="searchedData">Searched Data</param>
+        /// <param name="page">current page on pagination</param>
+        /// <param name="pageSize">number of records per page</param>
+        /// <param name="sortKey">Key for sorting</param>
+        /// <returns>RegionAnnualReportTableObject</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="403">User hasn't access to annual report</response>
+        /// <response code="404">The region annual report does not exist</response>
+        [HttpGet("RegionsAnnualReports")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetAllRegionsReportsAsync(string searchedData, int page, int pageSize, int sortKey)
+        {
+            return Ok(await _RegionAnnualReportService.GetAllRegionsReportsAsync(searchedData, page, pageSize, sortKey));
+        }
+
         [HttpGet("FileBase64/{fileName}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetFileBase64(string fileName)

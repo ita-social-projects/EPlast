@@ -6,7 +6,6 @@ using EPlast.DataAccess.Entities.UserEntities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Math.EC.Rfc7748;
 
 namespace EPlast.DataAccess
 {
@@ -39,9 +38,18 @@ namespace EPlast.DataAccess
         public DbSet<EventAdministration> EventAdministration { get; set; }
         public DbSet<EventAdministrationType> EventAdministrationType { get; set; }
         public DbSet<UserTableObject> UserTableObjects { get; set; }
+        public DbSet<AnnualReportTableObject> AnnualReportTableObjects { get; set; }
+        public DbSet<ClubAnnualReportTableObject> ClubAnnualReportTableObjects { get; set; }
+        public DbSet<RegionAnnualReportTableObject> RegionAnnualReportTableObjects { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<UserTableObject>().HasNoKey();
+            modelBuilder.Entity<AnnualReportTableObject>().HasNoKey();
+            modelBuilder.Entity<ClubAnnualReportTableObject>().HasNoKey();
+            modelBuilder.Entity<RegionAnnualReportTableObject>().HasNoKey();
 
             modelBuilder.Entity<Event>()
                 .HasKey(x => x.ID);

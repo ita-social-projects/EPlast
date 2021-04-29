@@ -792,6 +792,22 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkResult>(result);
         }
 
+        [Test]
+        public async Task GetCitiesNameThatUserHasAccessTo_Succeeded()
+        {
+            // Arrange
+            _cityAccessService
+                .Setup(c => c.GetAllCitiesIdAndName(It.IsAny<User>()));
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.GetCitiesNameThatUserHasAccessTo();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
         private List<CityDTO> GetCitiesBySearch()
         {
             return new List<CityDTO>()

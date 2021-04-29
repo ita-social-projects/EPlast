@@ -208,5 +208,140 @@ namespace EPlast.XUnitTest.Services.City
             // Assert
             Assert.False(result);
         }
+
+        [Fact]
+        public async Task HasAccessAsync_TakesOneParametr_True()
+        {
+            // Arrange
+            _userManager.Setup(u => u.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string> { CityAdminRoleName });
+
+            // Act
+            var result = await _cityAccessService.HasAccessAsync(new User());
+
+            // Assert
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task HasAccessAsync_TakesOneParametr_False()
+        {
+            // Arrange
+            _userManager.Setup(u => u.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string>());
+
+            // Act
+            var result = await _cityAccessService.HasAccessAsync(new User());
+
+            // Assert
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task GetAllCitiesIdAndName_NoRoles()
+        {
+            // Arrange
+            _userManager.Setup(u => u.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string>());
+            
+            //Act
+            await _cityAccessService.GetAllCitiesIdAndName(It.IsAny<User>());
+
+            // Assert
+            _userManager.Verify(u => u.GetRolesAsync(It.IsAny<User>()));
+        }
+
+        [Fact]
+        public async Task GetAllCitiesIdAndName_CityAdminEmptyList()
+        {
+            // Arrange
+            _userManager.Setup(u => u.GetRolesAsync(It.IsAny<DatabaseEntities.User>()))
+                .ReturnsAsync(new List<string> { CityAdminRoleName });
+            _repositoryWrapper.Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityAdministration, bool>>>(), null))
+                .ReturnsAsync((CityAdministration)null);
+            _repositoryWrapper.Setup(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(), null))
+                .ReturnsAsync(new List<DatabaseEntities.City> { new DatabaseEntities.City() });
+
+            // Act
+            await _cityAccessService.GetAllCitiesIdAndName(new User());
+
+            // Assert
+            _repositoryWrapper.Verify(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(), null), Times.Never);
+        }
+
+        [Fact]
+        public async Task GetAllCitiesIdAndName_CityAdmin_Succeeded()
+        {
+            // Arrange
+            _userManager.Setup(u => u.GetRolesAsync(It.IsAny<DatabaseEntities.User>()))
+                .ReturnsAsync(new List<string> { CityAdminRoleName });
+            _repositoryWrapper.Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityAdministration, bool>>>(), null))
+                .ReturnsAsync(new DatabaseEntities.CityAdministration());
+            _repositoryWrapper.Setup(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(),
+                    It.IsAny<Func<IQueryable<DatabaseEntities.City>, IIncludableQueryable<DatabaseEntities.City, object>>>()))
+                .ReturnsAsync(new List<DatabaseEntities.City> { new DatabaseEntities.City() });
+
+            // Act
+            await _cityAccessService.GetAllCitiesIdAndName(new User());
+
+            // Assert
+            _repositoryWrapper.Verify(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(),
+                It.IsAny<Func<IQueryable<DatabaseEntities.City>, IIncludableQueryable<DatabaseEntities.City, object>>>()));
+        }
+
+        [Fact]
+        public async Task GetAllCitiesIdAndName_RegionAdmin_EmptyList()
+        {
+            // Arrange
+            _userManager.Setup(u => u.GetRolesAsync(It.IsAny<DatabaseEntities.User>()))
+                .ReturnsAsync(new List<string> { RegionAdminRoleName });
+            _repositoryWrapper.Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.RegionAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<DatabaseEntities.RegionAdministration>, IIncludableQueryable<DatabaseEntities.RegionAdministration, object>>>()))
+                .ReturnsAsync((DatabaseEntities.RegionAdministration)null);
+            _repositoryWrapper.Setup(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(), null))
+                .ReturnsAsync(new List<DatabaseEntities.City> { new DatabaseEntities.City() });
+
+            // Act
+            await _cityAccessService.GetAllCitiesIdAndName(new User());
+
+            // Assert
+            _repositoryWrapper.Verify(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(), null), Times.Never);
+        }
+
+        [Fact]
+        public async Task GetAllCitiesIdAndName_RegionAdmin_Passed()
+        {
+            // Arrange
+            _userManager.Setup(u => u.GetRolesAsync(It.IsAny<DatabaseEntities.User>()))
+                .ReturnsAsync(new List<string> { RegionAdminRoleName });
+            _repositoryWrapper.Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.RegionAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<DatabaseEntities.RegionAdministration>, IIncludableQueryable<DatabaseEntities.RegionAdministration, object>>>()))
+                .ReturnsAsync(new DatabaseEntities.RegionAdministration());
+            _repositoryWrapper.Setup(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(),
+                    It.IsAny<Func<IQueryable<DatabaseEntities.City>, IIncludableQueryable<DatabaseEntities.City, object>>>()))
+                .ReturnsAsync(new List<DatabaseEntities.City> { new DatabaseEntities.City() });
+
+            // Act
+            await _cityAccessService.GetAllCitiesIdAndName(new User());
+
+            // Assert
+            _repositoryWrapper.Verify(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(), null), Times.Never);
+        }
+
+        [Fact]
+        public async Task GetAllCitiesIdAndName_Admin_Passed()
+        {
+            // Arrange
+            _userManager.Setup(u => u.GetRolesAsync(It.IsAny<DatabaseEntities.User>()))
+                .ReturnsAsync(new List<string> { AdminRoleName });
+            _repositoryWrapper.Setup(r => r.City.GetAllAsync(null, null))
+                .ReturnsAsync(new List<DatabaseEntities.City> { new DatabaseEntities.City(){Name = "TestCityName"}, });
+
+            // Act
+            await _cityAccessService.GetAllCitiesIdAndName(new User());
+
+            // Assert
+            _repositoryWrapper.Verify(r => r.City.GetAllAsync(null, null), Times.Once);
+        }
     }
 }

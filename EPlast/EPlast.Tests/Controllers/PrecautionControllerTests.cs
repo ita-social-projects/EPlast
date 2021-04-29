@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using EPlast.Resources;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.UserProfiles;
 
 namespace EPlast.Tests.Controllers
 {
@@ -405,7 +406,7 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             _userPrecautionService.Verify();
-            Assert.IsInstanceOf<IEnumerable<UserTableDTO>>(resultValue);
+            Assert.IsInstanceOf<IEnumerable<ShortUserInformationDTO>>(resultValue);
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
