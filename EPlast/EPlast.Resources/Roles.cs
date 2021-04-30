@@ -32,5 +32,6 @@ namespace EPlast.Resources
             Supporter + "," + RegisteredUser;
         public const string StatisticsAccessRoles = Admin + "," + PlastHead + "," + OkrugaHead + "," + CityHead + "," + KurinHead;
         public const string AdminPlastMemberAndSupporter = Admin + "," + PlastMember + "," + Supporter;
+        public const string AdminCityHeadOkrugaHead = Admin + "," + CityHead + "," + OkrugaHead;
     }
 }
