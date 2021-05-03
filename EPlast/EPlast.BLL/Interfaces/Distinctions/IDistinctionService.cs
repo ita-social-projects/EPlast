@@ -24,6 +24,6 @@ namespace EPlast.BLL
         /// <param name="page">Current page</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>Searched Distinctions</returns>
-        IEnumerable<UserDistinctionsTableObject> GetUsersDistinctionsAsync(string searchedData, int page, int pageSize);
+        IEnumerable<UserDistinctionsTableObject> GetUsersDistinctions(string searchedData, int page, int pageSize);
     }
 }

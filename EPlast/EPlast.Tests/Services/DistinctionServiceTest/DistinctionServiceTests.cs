@@ -139,6 +139,24 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         }
 
         [Test]
+        public void GetUsersDistinctions_ReturnsUserDistinctionsTableObject()
+        {
+            //Arrange
+            mockRepoWrapper
+                .Setup(x => x.UserDistinction.GetUsersDistinctions(It.IsAny<string>(),
+                    It.IsAny<int>(), It.IsAny<int>()))
+                .Returns(new List<UserDistinctionsTableObject>());
+
+            //Act
+            var result =  distinctionService.GetUsersDistinctions(It.IsAny<string>(),
+                It.IsAny<int>(), It.IsAny<int>());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<List<UserDistinctionsTableObject>>(result);
+        }
+
+        [Test]
         public void DeleteDistinctionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
         {
             //Arrange

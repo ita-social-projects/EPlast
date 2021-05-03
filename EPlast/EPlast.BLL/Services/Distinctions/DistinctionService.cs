@@ -56,7 +56,7 @@ namespace EPlast.BLL
         }
 
         ///<inheritdoc/>
-        public IEnumerable<UserDistinctionsTableObject> GetUsersDistinctionsAsync(string searchedData, int page, int pageSize)
+        public IEnumerable<UserDistinctionsTableObject> GetUsersDistinctions(string searchedData, int page, int pageSize)
         {
             return _repoWrapper.UserDistinction.GetUsersDistinctions(searchedData, page, pageSize);
         }

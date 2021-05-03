@@ -98,7 +98,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("UsersDistinctions")]
         public IActionResult GetUsersDistinction(string searchedData, int page, int pageSize)
         {
-            var distinctions = _distinctionService.GetUsersDistinctionsAsync(searchedData, page, pageSize);
+            var distinctions = _distinctionService.GetUsersDistinctions(searchedData, page, pageSize);
             return Ok(distinctions);
         }
 
