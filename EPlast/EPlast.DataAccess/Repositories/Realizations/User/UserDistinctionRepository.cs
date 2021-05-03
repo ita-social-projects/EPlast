@@ -1,7 +1,6 @@
 ﻿using EPlast.DataAccess.Entities.UserEntities;
-using System;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Text;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -10,7 +9,13 @@ namespace EPlast.DataAccess.Repositories
         public UserDistinctionRepository(EPlastDBContext dBContext)
             : base(dBContext)
         {
+        }
 
+        public IEnumerable<UserDistinctionsTableObject> GetUsersDistinctions(string searchData, int page, int pageSize)
+        {
+            return EPlastDBContext.Set<UserDistinctionsTableObject>().FromSqlRaw(
+                "dbo.getDistinctionsInfo  @searchData = {0}, @PageIndex ={1}, @PageSize={2}", searchData, page,
+                pageSize);
         }
     }
 }
