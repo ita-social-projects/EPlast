@@ -42,6 +42,7 @@ namespace EPlast.DataAccess
         public DbSet<ClubAnnualReportTableObject> ClubAnnualReportTableObjects { get; set; }
         public DbSet<RegionAnnualReportTableObject> RegionAnnualReportTableObjects { get; set; }
         public DbSet<UserDistinctionsTableObject> UserDistinctionsTableObject { get; set; }
+        public DbSet<UserPrecautionsTableObject> UserPrecautionsTableObject { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -52,6 +53,7 @@ namespace EPlast.DataAccess
             modelBuilder.Entity<ClubAnnualReportTableObject>().HasNoKey();
             modelBuilder.Entity<RegionAnnualReportTableObject>().HasNoKey();
             modelBuilder.Entity<UserDistinctionsTableObject>().HasNoKey();
+            modelBuilder.Entity<UserPrecautionsTableObject>().HasNoKey();
 
             modelBuilder.Entity<Event>()
                 .HasKey(x => x.ID);
