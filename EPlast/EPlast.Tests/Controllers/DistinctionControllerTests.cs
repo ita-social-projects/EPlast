@@ -150,7 +150,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public void GetUsersDistinction_ReturnsOkObjectResult()
+        public void GetUsersDistinctionsForTable_ReturnsOkObjectResult()
         {
             //Arrange
             _distinctionService
@@ -159,7 +159,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(new List<UserDistinctionsTableObject>());
 
             //Act
-            var result = _distinctionController.GetUsersDistinction(It.IsAny<string>(),
+            var result = _distinctionController.GetUsersDistinctionsForTable(It.IsAny<string>(),
                 It.IsAny<int>(), It.IsAny<int>());
             var resultValue = (result as OkObjectResult)?.Value;
 

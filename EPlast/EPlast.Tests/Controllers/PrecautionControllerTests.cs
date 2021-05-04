@@ -93,7 +93,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public void GetUsersPrecaution_ReturnsOkObjectResult()
+        public void GetUsersPrecautionsForTable_ReturnsOkObjectResult()
         {
             //Arrange
             _precautionService
@@ -102,7 +102,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(new List<UserPrecautionsTableObject>());
 
             //Act
-            var result = _PrecautionController.GetUsersDistinction(It.IsAny<string>(),
+            var result = _PrecautionController.GetUsersPrecautionsForTable(It.IsAny<string>(),
                 It.IsAny<int>(), It.IsAny<int>());
             var resultValue = (result as OkObjectResult)?.Value;
 

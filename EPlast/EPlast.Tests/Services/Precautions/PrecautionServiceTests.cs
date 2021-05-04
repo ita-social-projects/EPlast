@@ -138,7 +138,7 @@ namespace EPlast.Tests.Services.Precautions
         }
 
         [Test]
-        public void GetUsersPrecautions_ReturnsUserDistinctionsTableObject()
+        public void GetUsersPrecautionsForTable_ReturnsUserDistinctionsTableObject()
         {
             //Arrange
             mockRepoWrapper

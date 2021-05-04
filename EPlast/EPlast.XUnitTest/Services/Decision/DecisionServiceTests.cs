@@ -17,6 +17,7 @@ using Microsoft.EntityFrameworkCore.Query;
 using Xunit;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Services;
+using EPlast.DataAccess.Entities.Decision;
 
 namespace EPlast.XUnitTest
 {
@@ -120,6 +121,25 @@ namespace EPlast.XUnitTest
             var decision = (await _decisionService.GetDecisionListAsync()).ToList();
 
             Assert.Equal(GetTestDecisionsDtoList().Count, decision.Count);
+        }
+
+        [Fact]
+        public void GetDecisionsForTable_ReturnsUserDistinctionsTableObject()
+        {
+            //Arrange
+            _decisionService = CreateDecisionService();
+            _repository
+                .Setup(x => x.Decesion.GetDecisions(It.IsAny<string>(),
+                    It.IsAny<int>(), It.IsAny<int>()))
+                .Returns(new List<DecisionTableObject>());
+
+            //Act
+            var result = _decisionService.GetDecisionsForTable(It.IsAny<string>(),
+                It.IsAny<int>(), It.IsAny<int>());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<List<DecisionTableObject>>(result);
         }
 
         [Theory]
