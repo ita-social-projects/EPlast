@@ -2,7 +2,7 @@
 
 namespace EPlast.DataAccess.Repositories.Contracts
 {
-    interface ISubsectionRepository:IRepositoryBase<Subsection>
+    public interface ISubsectionRepository:IRepositoryBase<Subsection>
     {
     }
 }
