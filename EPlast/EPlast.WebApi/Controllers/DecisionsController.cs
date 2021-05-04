@@ -100,7 +100,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("DecisionsForTable")]
         public IActionResult GetUsersDistinction(string searchedData, int page, int pageSize)
         {
-            var distinctions = _decisionService.GetDecisions(searchedData, page, pageSize);
+            var distinctions = _decisionService.GetDecisionsForTable(searchedData, page, pageSize);
             return Ok(distinctions);
         }
 

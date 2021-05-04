@@ -24,7 +24,7 @@ namespace EPlast.BLL
         /// <param name="page">Current page</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>Searched Decisions</returns>
-        IEnumerable<DecisionTableObject> GetDecisions(string searchedData, int page, int pageSize);
+        IEnumerable<DecisionTableObject> GetDecisionsForTable(string searchedData, int page, int pageSize);
 
         /// <summary>
         /// Changes the name and description of the decision

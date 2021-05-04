@@ -59,7 +59,7 @@ namespace EPlast.BLL.Services
             return await GetDecisionAsync();
         }
 
-        public IEnumerable<DecisionTableObject> GetDecisions(string searchedData, int page, int pageSize)
+        public IEnumerable<DecisionTableObject> GetDecisionsForTable(string searchedData, int page, int pageSize)
         {
             return _repoWrapper.Decesion.GetDecisions(searchedData, page, pageSize);
         }
