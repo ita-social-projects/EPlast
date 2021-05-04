@@ -96,7 +96,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>List of UserDistinctionsTableObject</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("UsersDistinctionsForTable")]
-        public IActionResult GetUsersDistinction(string searchedData, int page, int pageSize)
+        public IActionResult GetUsersDistinctionsForTable(string searchedData, int page, int pageSize)
         {
             var distinctions = _distinctionService.GetUsersDistinctionsForTable(searchedData, page, pageSize);
             return Ok(distinctions);

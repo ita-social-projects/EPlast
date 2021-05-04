@@ -69,7 +69,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>List of UserPrecautionsTableObject</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("UsersPrecautionsForTable")]
-        public IActionResult GetUsersDistinction(string searchedData, int page, int pageSize)
+        public IActionResult GetUsersPrecautionsForTable(string searchedData, int page, int pageSize)
         {
             var distinctions = _precautionService.GetUsersPrecautionsForTable(searchedData, page, pageSize);
             return Ok(distinctions);

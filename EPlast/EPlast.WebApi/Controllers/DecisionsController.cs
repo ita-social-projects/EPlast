@@ -98,7 +98,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>List of DecisionTableObject</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("DecisionsForTable")]
-        public IActionResult GetUsersDistinction(string searchedData, int page, int pageSize)
+        public IActionResult GetDecisionsForTable(string searchedData, int page, int pageSize)
         {
             var distinctions = _decisionService.GetDecisionsForTable(searchedData, page, pageSize);
             return Ok(distinctions);
