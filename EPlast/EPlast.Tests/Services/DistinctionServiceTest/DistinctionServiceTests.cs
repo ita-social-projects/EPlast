@@ -148,7 +148,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                 .Returns(new List<UserDistinctionsTableObject>());
 
             //Act
-            var result =  distinctionService.GetUsersDistinctions(It.IsAny<string>(),
+            var result =  distinctionService.GetUsersDistinctionsForTable(It.IsAny<string>(),
                 It.IsAny<int>(), It.IsAny<int>());
 
             //Assert

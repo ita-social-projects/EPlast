@@ -67,7 +67,7 @@ namespace EPlast.BLL.Services
                 throw new UnauthorizedAccessException();
         }
 
-        public IEnumerable<UserPrecautionsTableObject> GetUsersPrecautions(string searchedData, int page, int pageSize)
+        public IEnumerable<UserPrecautionsTableObject> GetUsersPrecautionsForTable(string searchedData, int page, int pageSize)
         {
             return _repoWrapper.UserPrecaution.GetUsersPrecautions(searchedData, page, pageSize);
         }

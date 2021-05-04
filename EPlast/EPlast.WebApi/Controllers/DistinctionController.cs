@@ -95,10 +95,10 @@ namespace EPlast.WebApi.Controllers
         /// <param name="pageSize">Number of records per page</param>
         /// <returns>List of UserDistinctionsTableObject</returns>
         /// <response code="200">Successful operation</response>
-        [HttpGet("UsersDistinctions")]
+        [HttpGet("UsersDistinctionsForTable")]
         public IActionResult GetUsersDistinction(string searchedData, int page, int pageSize)
         {
-            var distinctions = _distinctionService.GetUsersDistinctions(searchedData, page, pageSize);
+            var distinctions = _distinctionService.GetUsersDistinctionsForTable(searchedData, page, pageSize);
             return Ok(distinctions);
         }
 

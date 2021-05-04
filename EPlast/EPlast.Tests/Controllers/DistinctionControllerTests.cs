@@ -154,7 +154,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _distinctionService
-                .Setup(x => x.GetUsersDistinctions(It.IsAny<string>(),
+                .Setup(x => x.GetUsersDistinctionsForTable(It.IsAny<string>(),
                     It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(new List<UserDistinctionsTableObject>());
 

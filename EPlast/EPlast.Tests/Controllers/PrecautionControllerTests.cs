@@ -97,7 +97,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _precautionService
-                .Setup(x => x.GetUsersPrecautions(It.IsAny<string>(),
+                .Setup(x => x.GetUsersPrecautionsForTable(It.IsAny<string>(),
                     It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(new List<UserPrecautionsTableObject>());
 

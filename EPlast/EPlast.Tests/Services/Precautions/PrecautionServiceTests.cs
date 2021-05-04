@@ -147,7 +147,7 @@ namespace EPlast.Tests.Services.Precautions
                 .Returns(new List<UserPrecautionsTableObject>());
 
             //Act
-            var result = PrecautionService.GetUsersPrecautions(It.IsAny<string>(),
+            var result = PrecautionService.GetUsersPrecautionsForTable(It.IsAny<string>(),
                 It.IsAny<int>(), It.IsAny<int>());
 
             //Assert

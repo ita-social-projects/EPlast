@@ -24,6 +24,6 @@ namespace EPlast.BLL
         /// <param name="page">Current page</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>Searched Precautions</returns>
-        IEnumerable<UserPrecautionsTableObject> GetUsersPrecautions(string searchedData, int page, int pageSize);
+        IEnumerable<UserPrecautionsTableObject> GetUsersPrecautionsForTable(string searchedData, int page, int pageSize);
     }
 }
