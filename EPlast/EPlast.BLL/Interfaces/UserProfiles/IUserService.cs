@@ -65,8 +65,9 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         /// <param name="confUsers">List of confirmed user(dto) which contains in selected user</param>
         /// <param name="userId">The id of the selected user</param>
         /// <param name="user">Authorized user</param>
+        /// /// <param name="isAdmin">Whether user is Admin</param>
         /// <returns>Can the user approve</returns>
-        bool CanApprove(IEnumerable<ConfirmedUserDTO> confUsers, string userId, User user);
+        bool CanApprove(IEnumerable<ConfirmedUserDTO> confUsers, string userId, User user, bool isAdmin=false);
 
 
         /// <summary>

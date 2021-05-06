@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -64,15 +65,23 @@ namespace EPlast.WebApi.Controllers
                 _loggerService.LogError("User id is null");
                 return NotFound();
             }
-
+            var currentUserId = _userManager.GetUserId(User);
+            var currentUser = await _userService.GetUserAsync(currentUserId);
             var user = await _userService.GetUserAsync(userId);
             if (user != null)
             {
+                var isThisUser = currentUserId == userId;
                 var time = _userService.CheckOrAddPlastunRole(user.Id, user.RegistredOn);
                 var isUserPlastun = await _userManagerService.IsInRoleAsync(user, Roles.PlastMember)
                     || user.UserProfile.UpuDegreeID != 1
                     || !(await _userManagerService.IsInRoleAsync(user, Roles.Supporter)
                     && await _userService.IsApprovedCityMember(userId));
+
+                if (await _userManagerService.IsInRoleAsync(currentUser, Roles.RegisteredUser) && !isThisUser)
+                {
+                    _loggerService.LogError($"User (id: {currentUserId}) hasn't access to profile (id: {userId})");
+                    return StatusCode(StatusCodes.Status403Forbidden);
+                }
 
                 var model = new PersonalDataViewModel
                 {
@@ -119,30 +128,39 @@ namespace EPlast.WebApi.Controllers
                     .Equals(focusUser.ClubMembers.FirstOrDefault()?.ClubId)
                     == true;
                 var isUserSameRegion = currentUser.RegionAdministrations.FirstOrDefault()?.RegionId
-                    .Equals(focusUser.RegionAdministrations.FirstOrDefault()?.RegionId)
-                    == true;
+                    .Equals(focusUser.RegionAdministrations.FirstOrDefault()?.RegionId)==true 
+                                       || currentUser.CityMembers.FirstOrDefault()?.City.RegionId
+                                           .Equals(focusUser.CityMembers.FirstOrDefault()?.City.RegionId)==true;
+                var temp = currentUser.CityMembers.FirstOrDefault()?.City.RegionId; 
+                var temp1=focusUser.CityMembers.FirstOrDefault()?.City.RegionId;
                 var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
                 var isUserHeadOfCity = await _userManagerService.IsInRoleAsync(currentUser, Roles.CityHead);
                 var isUserHeadOfClub = await _userManagerService.IsInRoleAsync(currentUser, Roles.KurinHead);
                 var isUserHeadOfRegion = await _userManagerService.IsInRoleAsync(currentUser, Roles.OkrugaHead);
                 var isCurrentUserSupporter = await _userManagerService.IsInRoleAsync(currentUser, Roles.Supporter);
-                var isCurrentUserPlastun = await _userManagerService.IsInRoleAsync(currentUser, Roles.PlastMember)
-                    || currentUser.UserProfile.UpuDegreeID != 1
-                    || !(isCurrentUserSupporter
-                    && await _userService.IsApprovedCityMember(currentUserId));
+                var isCurrentUserPlastun = await _userManagerService.IsInRoleAsync(currentUser, Roles.PlastMember);
+                    //|| currentUser.UserProfile.UpuDegreeID != 1
+                    //|| !(isCurrentUserSupporter
+                    //&& await _userService.IsApprovedCityMember(currentUserId));
                 var isFocusUserSupporter = await _userManagerService.IsInRoleAsync(focusUser, Roles.Supporter);
                 var isFocusUserPlastun = await _userManagerService.IsInRoleAsync(focusUser, Roles.PlastMember)
-                    || focusUser.UserProfile.UpuDegreeID != 1
+                    //|| focusUser.UserProfile.UpuDegreeID != 1
                     || !(isFocusUserSupporter
                     && await _userService.IsApprovedCityMember(focusUserId));
 
-                if (isThisUser || 
+                if (await _userManagerService.IsInRoleAsync(currentUser, Roles.RegisteredUser) && !isThisUser)
+                {
+                    _loggerService.LogError($"User (id: {currentUserId}) hasn't access to profile (id: {focusUserId})");
+                    return StatusCode(StatusCodes.Status403Forbidden);
+                }
+                else if (isThisUser || 
                     isUserAdmin ||
                     (isUserHeadOfCity && isUserSameCity) ||
                     (isUserHeadOfClub && isUserSameClub) ||
                     (isUserHeadOfRegion && isUserSameRegion) ||
                     (isCurrentUserPlastun && isUserSameCity))
                 {
+                    
                     var model = new PersonalDataViewModel
                     {
                         User = _mapper.Map<UserDTO, UserViewModel>(focusUser),
@@ -275,8 +293,10 @@ namespace EPlast.WebApi.Controllers
                 _loggerService.LogError($"User not found. UserId:{userId}");
                 return NotFound();
             }
+            var currentUserId = _userManager.GetUserId(User);
+            var currentUser = await _userService.GetUserAsync(currentUserId);
             var confirmedUsers = _userService.GetConfirmedUsers(user);
-            var canApprove = _userService.CanApprove(confirmedUsers, userId, await _userManager.GetUserAsync(User));
+            var canApprove = _userService.CanApprove(confirmedUsers, userId, await _userManager.GetUserAsync(User), await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin));
             var time = _userService.CheckOrAddPlastunRole(user.Id, user.RegistredOn);
             var clubApprover = _userService.GetClubAdminConfirmedUser(user);
             var cityApprover = _userService.GetCityAdminConfirmedUser(user);
@@ -341,7 +361,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">Confirmed id is 0</response>
         [HttpDelete("deleteApprove/{confirmedId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAdminAndPlastun)]
         public async Task<IActionResult> ApproverDelete(int confirmedId)
         {
             if (confirmedId != 0)

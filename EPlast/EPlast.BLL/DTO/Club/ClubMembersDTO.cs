@@ -1,8 +1,9 @@
 ﻿using System;
+using EPlast.BLL.Interfaces.Club;
 
 namespace EPlast.BLL.DTO.Club
 {
-    public class ClubMembersDTO
+    public class ClubMembersDTO: ClubUser
     {
         public int ID { get; set; }
         public bool IsApproved { get; set; }

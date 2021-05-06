@@ -1,9 +1,10 @@
 ﻿using EPlast.BLL.DTO.Admin;
 using System;
+using EPlast.BLL.Interfaces.Club;
 
 namespace EPlast.BLL.DTO.Club
 {
-    public class ClubAdministrationDTO
+    public class ClubAdministrationDTO: ClubUser
     {
         public int ID { get; set; }
         public string UserId { get; set; }

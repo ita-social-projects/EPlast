@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using EPlast.BLL.Services.CityClub;
 using DataAccessClub = EPlast.DataAccess.Entities;
 using  EPlast.Resources;
+using NLog.LayoutRenderers.Wrappers;
 
 namespace EPlast.BLL.Services.Club
 {
@@ -96,31 +97,36 @@ namespace EPlast.BLL.Services.Club
             var ClubAdmins = Club.ClubAdministration
                 .Where(a => a.AdminType.AdminTypeName != Roles.KurinHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null))
-                .Take(6)
+                //.Take(6)
                 .ToList();
-            Club.AdministrationCount = Club.ClubAdministration
-                .Count(a => (DateTime.Now < a.EndDate || a.EndDate == null));
+            Club.AdministrationCount = ClubHead == null ? ClubAdmins.Count() : ClubAdmins.Count() + 1; 
+            //Club.ClubAdministration
+            //    .Count(a => (DateTime.Now < a.EndDate || a.EndDate == null));
             var members = Club.ClubMembers
                 .Where(m => m.IsApproved)
-                .Take(9)
+                //.Take(9)
                 .ToList();
-            Club.MemberCount = Club.ClubMembers
-                .Count(m => m.IsApproved);
+            Club.MemberCount = members.Count();
+            //Club.ClubMembers
+            //    .Count(m => m.IsApproved);
             var followers = Club.ClubMembers
                 .Where(m => !m.IsApproved)
-                .Take(6)
+                //.Take(6)
                 .ToList();
-            Club.FollowerCount = Club.ClubMembers
-                .Count(m => !m.IsApproved);
-            var ClubDoc = Club.ClubDocuments.Take(6).ToList();
+            Club.FollowerCount = followers.Count();
+            //Club.ClubMembers
+            //    .Count(m => !m.IsApproved);
+            var ClubDoc = Club.ClubDocuments
+                //.Take(6)
+                .ToList();
 
             var ClubProfileDto = new ClubProfileDTO
             {
                 Club = Club,
-                Head = ClubHead,
-                Members = members,
-                Followers = followers,
-                Admins = ClubAdmins,
+                Head = (await setMembersCityName(new List<ClubAdministrationDTO>(){ClubHead!})).FirstOrDefault() as ClubAdministrationDTO,
+                Members = await setMembersCityName(members) as List<ClubMembersDTO>,
+                Followers = await setMembersCityName(followers) as List<ClubMembersDTO>,
+                Admins = await setMembersCityName(ClubAdmins) as List<ClubAdministrationDTO>,
                 Documents = ClubDoc,
             };
 
@@ -133,6 +139,21 @@ namespace EPlast.BLL.Services.Club
             var ClubProfileDto = await GetClubProfileAsync(ClubId);
             var userId = await _userManager.GetUserIdAsync(user);
             var userRoles = await _userManager.GetRolesAsync(user);
+
+            var members = ClubProfileDto.Members
+                .Where(m => m.IsApproved)
+                .ToList();
+
+            foreach (var member in members)
+            {
+                var id = member.UserId;
+                var cityMembers = await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(a => a.UserId == id);
+                if (cityMembers != null)
+                {
+                    var city = await _repoWrapper.City.GetFirstAsync(a => a.ID == cityMembers.CityId);
+                    member.User.CityName = city.Name.ToString();
+                }
+            }
 
             ClubProfileDto.Club.CanCreate = userRoles.Contains(Roles.Admin);
             ClubProfileDto.Club.CanEdit = await _clubAccessService.HasAccessAsync(user, ClubId);
@@ -151,28 +172,30 @@ namespace EPlast.BLL.Services.Club
                 return null;
             }
 
-            var members = Club.ClubMembers
-                .Where(m => m.IsApproved)
-                .ToList();
+            var ClubProfileDto = new ClubProfileDTO
+            {
+                Club = Club,
+                Members = await setMembersCityName(Club.ClubMembers
+                    .Where(m => m.IsApproved)
+                    .ToList()) as List<ClubMembersDTO>
+            };
 
-            foreach (var member in members)
+            return ClubProfileDto;
+        }
+
+        private async Task<IEnumerable<ClubUser>> setMembersCityName(IEnumerable<ClubUser> members)
+        {
+            foreach (var member in members.Where(m=>m!=null))
             {
                 var userId = member.UserId;
                 var cityMembers = await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(a => a.UserId == userId);
                 if (cityMembers != null)
                 {
-                var city = await _repoWrapper.City.GetFirstAsync(a => a.ID == cityMembers.CityId);
-                member.User.CityName = city.Name.ToString();
+                    var city = await _repoWrapper.City.GetFirstAsync(a => a.ID == cityMembers.CityId);
+                    member.User.CityName = city.Name.ToString();
                 }
             }
-
-            var ClubProfileDto = new ClubProfileDTO
-            {
-                Club = Club,
-                Members = members
-            };
-
-            return ClubProfileDto;
+            return members;
         }
 
         /// <inheritdoc />
@@ -184,25 +207,12 @@ namespace EPlast.BLL.Services.Club
                 return null;
             }
 
-            var followers = Club.ClubMembers
-                .Where(m => !m.IsApproved)
-                .ToList();
-
-            foreach (var follower in followers)
-            {
-                var userId = follower.UserId;
-                var cityMembers = await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(a => a.UserId == userId);
-                if (cityMembers!=null)
-                {
-                    var city = await _repoWrapper.City.GetFirstAsync(a => a.ID == cityMembers.CityId);
-                    follower.User.CityName = city.Name.ToString();
-                }
-            }
-
             var ClubProfileDto = new ClubProfileDTO
             {
                 Club = Club,
-                Followers = followers
+                Followers = await setMembersCityName(Club.ClubMembers
+                    .Where(m => !m.IsApproved)
+                    .ToList()) as List<ClubMembersDTO>
             };
 
             return ClubProfileDto;
@@ -221,27 +231,14 @@ namespace EPlast.BLL.Services.Club
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
 
-            var ClubAdmins = Club.ClubAdministration
-               .Where(a => a.AdminType.AdminTypeName != Roles.KurinHead
-                   && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
-
-
-            foreach (var admin in ClubAdmins)
-            {
-                var userId = admin.UserId;
-                var cityMembers = await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(a => a.UserId == userId);
-                if (cityMembers != null)
-                {
-                    var city = await _repoWrapper.City.GetFirstAsync(a => a.ID == cityMembers.CityId);
-                    admin.User.CityName = city.Name.ToString();
-                }
-            }
-
             var ClubProfileDto = new ClubProfileDTO
             {
                 Club = Club,
-                Admins = ClubAdmins,
-                Head = ClubHead
+                Admins = await setMembersCityName(Club.ClubAdministration
+                        .Where(a => a.AdminType.AdminTypeName != Roles.KurinHead
+                                    && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList()) as
+                    List<ClubAdministrationDTO>,
+                Head = (await setMembersCityName(new List<ClubAdministrationDTO>() { ClubHead })).FirstOrDefault() as ClubAdministrationDTO
             };
 
             return ClubProfileDto;

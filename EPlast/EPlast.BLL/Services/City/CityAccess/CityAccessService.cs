@@ -62,9 +62,9 @@ namespace EPlast.BLL.Services.City.CityAccess
         public async Task<bool> HasAccessAsync(DatabaseEntities.User user)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            foreach (var key in _cityAccessGetters.Keys)
+            foreach (var role in roles)
             {
-                if (roles.Contains(key))
+                if (Roles.HeadsAndAdmin.Contains(role))
                     return true;
             }
             return false;

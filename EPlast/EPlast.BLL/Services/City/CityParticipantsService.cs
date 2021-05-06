@@ -281,11 +281,14 @@ namespace EPlast.BLL.Services.City
             var cityMember = await _repositoryWrapper.CityMembers
                 .GetFirstOrDefaultAsync(u => u.UserId == memberId,
                                         m => m.Include(u => u.City));
+
+            if (cityMember == null)
+                return null;
             if (cityMember.IsApproved)
             {
                 return cityMember.City.Name;
             }
-            else return cityMember.City.Name = null;
+            return cityMember.City.Name = null;
         }
 
         private async Task ChangeMembershipDatesByApprove(string userId, bool isApproved)
