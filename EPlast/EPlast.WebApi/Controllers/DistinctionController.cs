@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using EPlast.BLL;
+﻿using EPlast.BLL;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -14,16 +14,14 @@ namespace EPlast.WebApi.Controllers
     [ApiController]
     [Authorize(AuthenticationSchemes = "Bearer")]
     [Authorize(Roles = Roles.HeadsAdminPlastunSupporterAndRegisteredUser)]
-
     public class DistinctionController : ControllerBase
     {
         private readonly IDistinctionService _distinctionService;
         private readonly IUserDistinctionService _userDistinctionService;
         private readonly UserManager<User> _userManager;
 
-
         public DistinctionController(
-            IDistinctionService distinctionService, 
+            IDistinctionService distinctionService,
             IUserDistinctionService userDistinctionService,
             UserManager<User> userManager)
         {
@@ -48,6 +46,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             return Ok(userDistinction);
         }
+
         /// <summary>
         /// Returns all user distinctions
         /// </summary>
@@ -59,6 +58,7 @@ namespace EPlast.WebApi.Controllers
             IEnumerable<UserDistinctionDTO> userDistinctions = await _userDistinctionService.GetAllUsersDistinctionAsync();
             return Ok(userDistinctions);
         }
+
         /// <summary>
         /// Returns the distinction type by id
         /// </summary>
@@ -74,15 +74,31 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             return Ok(distinction);
         }
+
         /// <summary>
         /// Returns all distinction types
         /// </summary>
         /// <returns>All distinction types</returns>
         /// <response code="200">Array of all distinction types</response>
-        [HttpGet("Distinctions")] 
+        [HttpGet("Distinctions")]
         public async Task<IActionResult> GetDistinction()
         {
             IEnumerable<DistinctionDTO> distinctions = await _distinctionService.GetAllDistinctionAsync();
+            return Ok(distinctions);
+        }
+
+        /// <summary>
+        /// Get all Users Distinctions
+        /// </summary>
+        /// <param name="searchedData">Searched Data</param>
+        /// <param name="page">Current page on pagination</param>
+        /// <param name="pageSize">Number of records per page</param>
+        /// <returns>List of UserDistinctionsTableObject</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("UsersDistinctionsForTable")]
+        public IActionResult GetUsersDistinctionsForTable(string searchedData, int page, int pageSize)
+        {
+            var distinctions = _distinctionService.GetUsersDistinctionsForTable(searchedData, page, pageSize);
             return Ok(distinctions);
         }
 
@@ -101,6 +117,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             return Ok(userDistinctions);
         }
+
         /// <summary>
         /// Delete distinction type by id
         /// </summary>
@@ -117,11 +134,12 @@ namespace EPlast.WebApi.Controllers
                 await _distinctionService.DeleteDistinctionAsync(id, await _userManager.GetUserAsync(User));
                 return NoContent();
             }
-            catch (NullReferenceException) 
+            catch (NullReferenceException)
             {
                 return NotFound();
             }
         }
+
         /// <summary>
         /// Delete user distinction by id
         /// </summary>
@@ -143,6 +161,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
         }
+
         /// <summary>
         /// Add user distinction
         /// </summary>
@@ -169,6 +188,7 @@ namespace EPlast.WebApi.Controllers
             }
             return BadRequest(ModelState);
         }
+
         /// <summary>
         /// Add distinction type
         /// </summary>
@@ -187,6 +207,7 @@ namespace EPlast.WebApi.Controllers
             }
             return BadRequest(ModelState);
         }
+
         /// <summary>
         /// Edit user distinction
         /// </summary>
@@ -213,6 +234,7 @@ namespace EPlast.WebApi.Controllers
             }
             return BadRequest(ModelState);
         }
+
         /// <summary>
         /// Edit distinction type
         /// </summary>
@@ -239,6 +261,7 @@ namespace EPlast.WebApi.Controllers
             }
             return BadRequest(ModelState);
         }
+
         /// <summary>
         /// Checks if theres already a Distinction with such number
         /// </summary>
@@ -253,6 +276,5 @@ namespace EPlast.WebApi.Controllers
             bool distNumber = await _userDistinctionService.IsNumberExistAsync(number);
             return Ok(distNumber);
         }
-
     }
 }
