@@ -12,6 +12,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
@@ -146,6 +147,28 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(resultValue);
             Assert.IsInstanceOf<List<DistinctionDTO>>(resultValue);
+        }
+
+        [Test]
+        public void GetUsersDistinctionsForTable_ReturnsOkObjectResult()
+        {
+            //Arrange
+            _distinctionService
+                .Setup(x => x.GetUsersDistinctionsForTable(It.IsAny<string>(),
+                    It.IsAny<int>(), It.IsAny<int>()))
+                .Returns(new List<UserDistinctionsTableObject>());
+
+            //Act
+            var result = _distinctionController.GetUsersDistinctionsForTable(It.IsAny<string>(),
+                It.IsAny<int>(), It.IsAny<int>());
+            var resultValue = (result as OkObjectResult)?.Value;
+
+            //Assert
+            _distinctionService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(resultValue);
+            Assert.IsInstanceOf<List<UserDistinctionsTableObject>>(resultValue);
         }
 
         [Test]
