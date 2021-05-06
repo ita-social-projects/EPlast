@@ -158,6 +158,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddTransient<IEventUserService, EventUserService>();
             services.AddTransient<IJwtService, JwtService>();
             services.AddTransient<IUniqueIdService, UniqueIdService>();
+            services.AddSingleton<IUserMapService, UserMapService>();
             return services;
         }
     }
