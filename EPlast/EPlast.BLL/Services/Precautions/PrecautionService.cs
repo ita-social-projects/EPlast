@@ -66,5 +66,10 @@ namespace EPlast.BLL.Services
             if (!(await _userManager.GetRolesAsync(user)).Contains(Roles.Admin))
                 throw new UnauthorizedAccessException();
         }
+
+        public IEnumerable<UserPrecautionsTableObject> GetUsersPrecautionsForTable(string searchedData, int page, int pageSize)
+        {
+            return _repoWrapper.UserPrecaution.GetUsersPrecautions(searchedData, page, pageSize);
+        }
     }
 }

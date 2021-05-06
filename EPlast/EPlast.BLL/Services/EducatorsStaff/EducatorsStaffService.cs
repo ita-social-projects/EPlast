@@ -93,8 +93,6 @@ namespace EPlast.BLL
            var  editedKadra = await _repositoryWrapper.KVs.GetFirstAsync(x => x.ID == kadrasDTO.ID);
            
                 editedKadra.NumberInRegister = kadrasDTO.NumberInRegister;
-                editedKadra.Link = kadrasDTO.Link;
-                editedKadra.BasisOfGranting = kadrasDTO.BasisOfGranting;
                 editedKadra.DateOfGranting = kadrasDTO.DateOfGranting;
 
                 _repositoryWrapper.KVs.Update(editedKadra);

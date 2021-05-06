@@ -1,5 +1,6 @@
 ﻿using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Blank;
+using EPlast.DataAccess.Entities.Decision;
 using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Entities.UserEntities;
@@ -41,6 +42,9 @@ namespace EPlast.DataAccess
         public DbSet<AnnualReportTableObject> AnnualReportTableObjects { get; set; }
         public DbSet<ClubAnnualReportTableObject> ClubAnnualReportTableObjects { get; set; }
         public DbSet<RegionAnnualReportTableObject> RegionAnnualReportTableObjects { get; set; }
+        public DbSet<UserDistinctionsTableObject> UserDistinctionsTableObject { get; set; }
+        public DbSet<UserPrecautionsTableObject> UserPrecautionsTableObject { get; set; }
+        public DbSet<DecisionTableObject> DecisionTableObject { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -50,6 +54,9 @@ namespace EPlast.DataAccess
             modelBuilder.Entity<AnnualReportTableObject>().HasNoKey();
             modelBuilder.Entity<ClubAnnualReportTableObject>().HasNoKey();
             modelBuilder.Entity<RegionAnnualReportTableObject>().HasNoKey();
+            modelBuilder.Entity<UserDistinctionsTableObject>().HasNoKey();
+            modelBuilder.Entity<UserPrecautionsTableObject>().HasNoKey();
+            modelBuilder.Entity<DecisionTableObject>().HasNoKey();
 
             modelBuilder.Entity<Event>()
                 .HasKey(x => x.ID);
