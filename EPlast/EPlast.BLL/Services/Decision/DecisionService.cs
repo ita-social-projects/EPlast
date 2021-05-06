@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities.Decision;
 
 namespace EPlast.BLL.Services
 {
@@ -58,6 +59,11 @@ namespace EPlast.BLL.Services
             return await GetDecisionAsync();
         }
 
+        public IEnumerable<DecisionTableObject> GetDecisionsForTable(string searchedData, int page, int pageSize)
+        {
+            return _repoWrapper.Decesion.GetDecisions(searchedData, page, pageSize);
+        }
+
         /// <inheritdoc />
         public async Task ChangeDecisionAsync(DecisionDTO decisionDto)
         {
@@ -71,7 +77,6 @@ namespace EPlast.BLL.Services
         /// <inheritdoc />
         public async Task<int> SaveDecisionAsync(DecisionWrapperDTO decision)
         {
-
             decision.Decision.DecisionTarget = await CreateDecisionTargetAsync(decision.Decision.DecisionTarget.TargetName);
             var repoDecision = _mapper.Map<Decesion>(decision.Decision);
             _repoWrapper.Decesion.Attach(repoDecision);
@@ -104,21 +109,25 @@ namespace EPlast.BLL.Services
         {
             await _decisionBlobStorage.UploadBlobForBase64Async(base64, fileName);
         }
+
         /// <inheritdoc />
         public async Task<IEnumerable<GoverningBodyDTO>> GetGoverningBodyListAsync()
         {
             return _mapper.Map<IEnumerable<GoverningBodyDTO>>((await _repoWrapper.GoverningBody.GetAllAsync()));
         }
+
         /// <inheritdoc />
         public async Task<IEnumerable<DecisionTargetDTO>> GetDecisionTargetListAsync()
         {
             return _mapper.Map<IEnumerable<DecisionTargetDTO>>((await _repoWrapper.DecesionTarget.GetAllAsync()));
         }
+
         /// <inheritdoc />
         public IEnumerable<SelectListItem> GetDecisionStatusTypes()
         {
             return _decisionVMCreator.GetDecesionStatusTypes();
         }
+
         /// <inheritdoc />
         public async Task DeleteDecisionAsync(int id)
         {
@@ -152,9 +161,6 @@ namespace EPlast.BLL.Services
             }
 
             return decisionTargetDto;
-
         }
-
-
     }
 }

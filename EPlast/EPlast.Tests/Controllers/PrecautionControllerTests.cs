@@ -1,6 +1,8 @@
 ﻿using EPlast.BLL;
-using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.UserProfiles;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.UserEntities;
+using EPlast.Resources;
 using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -11,7 +13,6 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
-using EPlast.Resources;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
@@ -67,7 +68,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync((UserPrecautionDTO)null);
             //Act
             var result = await _PrecautionController.GetUserPrecaution(id);
-            
+
             //Assert
             _userPrecautionService.Verify();
             Assert.IsInstanceOf<NotFoundResult>(result);
@@ -89,6 +90,28 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(resultValue);
             Assert.IsInstanceOf<List<UserPrecautionDTO>>(resultValue);
+        }
+
+        [Test]
+        public void GetUsersPrecautionsForTable_ReturnsOkObjectResult()
+        {
+            //Arrange
+            _precautionService
+                .Setup(x => x.GetUsersPrecautionsForTable(It.IsAny<string>(),
+                    It.IsAny<int>(), It.IsAny<int>()))
+                .Returns(new List<UserPrecautionsTableObject>());
+
+            //Act
+            var result = _PrecautionController.GetUsersPrecautionsForTable(It.IsAny<string>(),
+                It.IsAny<int>(), It.IsAny<int>());
+            var resultValue = (result as OkObjectResult)?.Value;
+
+            //Assert
+            _precautionService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(resultValue);
+            Assert.IsInstanceOf<List<UserPrecautionsTableObject>>(resultValue);
         }
 
         [Test]
@@ -405,11 +428,11 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             _userPrecautionService.Verify();
-            Assert.IsInstanceOf<IEnumerable<UserTableDTO>>(resultValue);
+            Assert.IsInstanceOf<IEnumerable<ShortUserInformationDTO>>(resultValue);
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
-        
+
         [TestCase(1)]
         public async Task CheckNumberExisting_ReturnsOkObjectResult_Test(int number)
         {

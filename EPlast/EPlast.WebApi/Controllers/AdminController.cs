@@ -249,6 +249,18 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get all users that match search string
+        /// </summary>
+        /// <param name="searchString">Search string</param>
+        /// <returns>Short information about searched users</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("ShortUsersInfo/{searchString}")]
+        public async Task<IActionResult> GetShortUsersInfo(string searchString)
+        {
+            return Ok(await _adminService.GetShortUserInfoAsync(searchString));
+        }
+
+        /// <summary>
         /// Get all cities
         /// </summary>
         /// <returns>All cities in specify model</returns>

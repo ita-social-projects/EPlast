@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using EPlast.Resources;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.UserProfiles;
 
 namespace EPlast.BLL.Services.Precautions
 {
@@ -142,19 +143,14 @@ namespace EPlast.BLL.Services.Precautions
             return userPrecaution;
         }
 
-        public async Task<IEnumerable<UserTableDTO>> UsersTableWithoutPrecautionAsync()
+        public async Task<IEnumerable<ShortUserInformationDTO>> UsersTableWithoutPrecautionAsync()
         {
-
-            var userTable = await _adminService.GetUsersAsync();
-            var filteredTable = new List<UserTableDTO>();
-            foreach (var user in userTable)
+            var usersWithoutPrecautions = await _adminService.GetUsersAsync();
+            foreach (var user in usersWithoutPrecautions)
             {
-                if (!await CheckUserPrecautions(user.User.ID))
-                {
-                    filteredTable.Add(user);
-                }
+                user.IsInLowerRole = await CheckUserPrecautions(user.ID);
             }
-            return filteredTable;
+            return usersWithoutPrecautions;
         }
 
         private async Task<bool> CheckUserPrecautions(string userId)

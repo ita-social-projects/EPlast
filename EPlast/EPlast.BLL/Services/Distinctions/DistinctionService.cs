@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
+using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using EPlast.DataAccess.Entities;
-using Microsoft.AspNetCore.Identity;
-using EPlast.Resources;
 
 namespace EPlast.BLL
 {
@@ -16,13 +16,13 @@ namespace EPlast.BLL
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
 
-
         public DistinctionService(IMapper mapper, IRepositoryWrapper repoWrapper, UserManager<User> userManager)
         {
             _mapper = mapper;
             _repoWrapper = repoWrapper;
             _userManager = userManager;
         }
+
         public async Task AddDistinctionAsync(DistinctionDTO distinctionDTO, User user)
         {
             await CheckIfAdminAsync(user);
@@ -49,9 +49,16 @@ namespace EPlast.BLL
             _repoWrapper.Distinction.Delete(distinction);
             await _repoWrapper.SaveAsync();
         }
+
         public async Task<IEnumerable<DistinctionDTO>> GetAllDistinctionAsync()
         {
             return _mapper.Map<IEnumerable<Distinction>, IEnumerable<DistinctionDTO>>(await _repoWrapper.Distinction.GetAllAsync());
+        }
+
+        ///<inheritdoc/>
+        public IEnumerable<UserDistinctionsTableObject> GetUsersDistinctionsForTable(string searchedData, int page, int pageSize)
+        {
+            return _repoWrapper.UserDistinction.GetUsersDistinctions(searchedData, page, pageSize);
         }
 
         public async Task<DistinctionDTO> GetDistinctionAsync(int id)
@@ -62,7 +69,7 @@ namespace EPlast.BLL
 
         public async Task CheckIfAdminAsync(User user)
         {
-            if(!(await _userManager.GetRolesAsync(user)).Contains(Roles.Admin))
+            if (!(await _userManager.GetRolesAsync(user)).Contains(Roles.Admin))
                 throw new UnauthorizedAccessException();
         }
     }

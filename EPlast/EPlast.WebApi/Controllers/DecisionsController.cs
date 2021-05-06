@@ -33,6 +33,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>Data for creating new decision</returns>
         /// <response code="200">Array of organizations, targets and status types</response>
         [HttpGet("NewDecision")]
+        [Authorize(Roles = Roles.HeadsAndAdmin)]
         public async Task<ActionResult<DecisionCreateViewModel>> GetMetaData()
         {
             DecisionCreateViewModel decisionViewModel = new DecisionCreateViewModel
@@ -89,6 +90,21 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get all Decisions
+        /// </summary>
+        /// <param name="searchedData">Searched Data</param>
+        /// <param name="page">Current page on pagination</param>
+        /// <param name="pageSize">Number of records per page</param>
+        /// <returns>List of DecisionTableObject</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("DecisionsForTable")]
+        public IActionResult GetDecisionsForTable(string searchedData, int page, int pageSize)
+        {
+            var distinctions = _decisionService.GetDecisionsForTable(searchedData, page, pageSize);
+            return Ok(distinctions);
+        }
+
+        /// <summary>
         /// Updates decision
         /// </summary>
         /// <param name="id">decision id</param>
@@ -97,6 +113,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">An instance of decision was created</response>
         /// <response code="400">The id and decision id are not same</response>
         [HttpPut("{id:int}")]
+        [Authorize(Roles = Roles.HeadsAndAdmin)]
         public async Task<IActionResult> Update(int id, DecisionDTO decision)
         {
             if (id != decision.ID)
@@ -116,6 +133,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="201">Created decision object</response>
         /// <response code="400">Problem with file validation or model state is not valid</response>
         [HttpPost]
+        [Authorize(Roles = Roles.HeadsAndAdmin)]
         public async Task<IActionResult> Save(DecisionWrapperDTO decisionWrapper)
         {
 
@@ -143,7 +161,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">Decision was deleted</response>
         /// <response code="404">Decision does not exist</response>
         [HttpDelete("{id:int}")]
-
+        [Authorize(Roles = Roles.HeadsAndAdmin)]
         public async Task<IActionResult> Delete(int id)
         {
             await _decisionService.DeleteDecisionAsync(id);

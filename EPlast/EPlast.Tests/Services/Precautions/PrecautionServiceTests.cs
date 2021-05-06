@@ -138,6 +138,24 @@ namespace EPlast.Tests.Services.Precautions
         }
 
         [Test]
+        public void GetUsersPrecautionsForTable_ReturnsUserDistinctionsTableObject()
+        {
+            //Arrange
+            mockRepoWrapper
+                .Setup(x => x.UserPrecaution.GetUsersPrecautions(It.IsAny<string>(),
+                    It.IsAny<int>(), It.IsAny<int>()))
+                .Returns(new List<UserPrecautionsTableObject>());
+
+            //Act
+            var result = PrecautionService.GetUsersPrecautionsForTable(It.IsAny<string>(),
+                It.IsAny<int>(), It.IsAny<int>());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<List<UserPrecautionsTableObject>>(result);
+        }
+
+        [Test]
         public void DeletePrecautionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
         {
             //Arrange

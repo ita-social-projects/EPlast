@@ -688,7 +688,7 @@ namespace EPlast.Tests.Services
         }
 
         [Test]
-        public async Task GetUsersAsync_ReturnsIEnumerableUserTableDTO()
+        public async Task GetUsersAsync_ReturnsShortUserInformationDTO()
         {
             // Arrange
             _repoWrapper
@@ -721,7 +721,30 @@ namespace EPlast.Tests.Services
             var result = await service.GetUsersAsync();
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<IEnumerable<UserTableDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<ShortUserInformationDTO>>(result);
+        }
+
+        [TestCase("searchString")]
+        public async Task GetShortUserInfoAsync_ReturnsShortUsersInfo(string searchString)
+        {
+            // Arrange
+            var users = GetTestUsers();
+            _repoWrapper
+                .Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                    It.IsAny<Func<IQueryable<User>,
+                        IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(users);
+            _mapper
+                .Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDTO());
+
+            // Act
+            var result = await service.GetShortUserInfoAsync(searchString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<ShortUserInformationDTO>>(result);
+            Assert.AreEqual(users.Count(), result.Count());
         }
 
         private IEnumerable<User> GetTestUsers()
