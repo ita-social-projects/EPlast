@@ -5,6 +5,5 @@ namespace EPlast.DataAccess.Repositories.Contracts
 {
     public interface ISectionRepository : IRepositoryBase<Section>
     {
-        Task CreateAsync();
     }
 }

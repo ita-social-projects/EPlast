@@ -1,13 +1,16 @@
-﻿using System;
+﻿using EPlast.BLL.DTO.AboutBase;
+using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace EPlast.BLL.DTO.AboutBase
+namespace EPlast.WebApi.Models.AboutBase
 {
-    public class SubsectionDTO
+    public class AboutBaseSubsectionViewModel
     {
         public int Id { get; set; }
         public string Title { get; set; }
+        
 
         public int SectionId { get; set; }
         public SectionDTO Section { get; set; }
