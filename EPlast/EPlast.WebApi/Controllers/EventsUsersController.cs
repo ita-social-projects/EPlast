@@ -36,7 +36,7 @@ namespace EPlast.WebApi.Controllers
                     return true;
             }
 
-            return true;
+            return false;
         }
 
         /// <summary>

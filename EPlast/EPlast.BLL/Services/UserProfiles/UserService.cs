@@ -102,7 +102,7 @@ namespace EPlast.BLL.Services.UserProfiles
         }
 
         /// <inheritdoc />
-        public bool CanApprove(IEnumerable<ConfirmedUserDTO> confUsers, string userId, User user, bool isAdmin=false)
+        public bool CanApprove(IEnumerable<ConfirmedUserDTO> confUsers, string userId, User user, bool isAdmin = false)
         {
             var currentUserId = user.Id;
 

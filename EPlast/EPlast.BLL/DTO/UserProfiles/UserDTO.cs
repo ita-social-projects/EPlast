@@ -51,9 +51,6 @@ namespace EPlast.BLL.DTO.UserProfiles
         public IEnumerable<UserDistinctionDTO> UserDistinctions { get; set; }
         public UserMembershipDatesDTO UserMembershipDates { get; set; }
         public IEnumerable<UserPlastDegreeDTO> UserPlastDegrees { get; set; }
-        public int ClubId { get; set; }
-        public int CityId { get; set; }
-        public int RegionId { get; set; }
         public string CityName { get; set; }
 
         public UserDTO()
