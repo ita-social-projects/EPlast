@@ -13,7 +13,6 @@ namespace EPlast.BLL.DTO
         public DateTime? Birthday { get; set; }
         public GenderDTO Gender { get; set; }
         public string Email { get; set; }
-        public bool EmailConfirmed { get; set; }
         public string RegionName { get; set; }
         public string CityName { get; set; }
         public string ClubName { get; set; }
