@@ -18,9 +18,6 @@ namespace EPlast.WebApi.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "Bearer")]
-        //Roles = Roles.HeadsAdminPlastunAndSupporter)
-        
-
     public class ClubController : ControllerBase
     {
         private readonly ILoggerService<ClubController> _logger;

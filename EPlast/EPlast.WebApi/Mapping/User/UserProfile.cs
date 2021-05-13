@@ -2,7 +2,6 @@
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.WebApi.Models.UserModels;
 using System.Linq;
-
 namespace EPlast.WebApi.Mapping.User
 {
     public class UserProfile : Profile
