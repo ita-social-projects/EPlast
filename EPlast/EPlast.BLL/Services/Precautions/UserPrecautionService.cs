@@ -148,7 +148,7 @@ namespace EPlast.BLL.Services.Precautions
             var usersWithoutPrecautions = await _adminService.GetUsersAsync();
             foreach (var user in usersWithoutPrecautions)
             {
-                user.IsInLowerRole = await CheckUserPrecautions(user.ID);
+                user.IsInLowerRole = !user.IsInLowerRole ? await CheckUserPrecautions(user.ID) : user.IsInLowerRole;
             }
             return usersWithoutPrecautions;
         }
