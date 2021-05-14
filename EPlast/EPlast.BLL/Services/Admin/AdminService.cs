@@ -224,7 +224,7 @@ namespace EPlast.BLL.Services
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
-                var isInLowerRole = roles.Intersect(lowerRoles).Any();
+                var isInLowerRole = roles.Intersect(lowerRoles).Any() && !roles.Intersect(Roles.HeadsAndAdmin.Split(",").ToList()).Any();
                 var shortUser = _mapper.Map<User, ShortUserInformationDTO>(user);
                 shortUser.IsInLowerRole = isInLowerRole;
                 usersDtos.Add(shortUser);
