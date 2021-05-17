@@ -163,8 +163,6 @@ namespace EPlast.Tests.Controllers
                 .Setup(x => x.GetDocumentByUserId(userId))
                 .ReturnsAsync(GetExtractFromUPUDocumentsDTO());
 
-            var expected = StatusCodes.Status403Forbidden;
-
             //Act
             var document = await _blanksController.GetExtractFromUPUByUserId(userId);
             OkObjectResult result = document as OkObjectResult;
