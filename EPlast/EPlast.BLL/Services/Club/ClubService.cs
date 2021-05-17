@@ -98,15 +98,15 @@ namespace EPlast.BLL.Services.Club
                 .Where(a => a.AdminType.AdminTypeName != Roles.KurinHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .ToList();
-            Club.AdministrationCount = ClubHead == null ? ClubAdmins.Count() : ClubAdmins.Count() + 1; 
+            Club.AdministrationCount = ClubHead == null ? ClubAdmins.Count : ClubAdmins.Count + 1; 
             var members = Club.ClubMembers
                 .Where(m => m.IsApproved)
                 .ToList();
-            Club.MemberCount = members.Count();
+            Club.MemberCount = members.Count;
             var followers = Club.ClubMembers
                 .Where(m => !m.IsApproved)
                 .ToList();
-            Club.FollowerCount = followers.Count();
+            Club.FollowerCount = followers.Count;
             var ClubDoc = Club.ClubDocuments
                 .ToList();
 
