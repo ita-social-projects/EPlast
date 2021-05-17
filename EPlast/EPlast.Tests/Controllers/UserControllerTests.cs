@@ -169,7 +169,6 @@ namespace EPlast.Tests.Controllers
             var id = "1";
             var isPlastun = true;
             var time = new TimeSpan(1, 1, 1);
-            var timeInDays = 0;
             var currentUser = new UserDTO() {Id = "2"};
 
             _userManager.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns("2");
@@ -492,7 +491,6 @@ namespace EPlast.Tests.Controllers
             var idString = "1";
             var idInt = 1;
             string currentUserId = "1";
-            string focusUserId = "1";
 
             _userService
                 .Setup((x) => x.GetUserAsync(currentUserId))
