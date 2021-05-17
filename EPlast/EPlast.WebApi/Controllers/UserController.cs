@@ -115,69 +115,68 @@ namespace EPlast.WebApi.Controllers
                 _loggerService.LogError("User id is null");
                 return NotFound();
             }
-
             var currentUser = await _userService.GetUserAsync(currentUserId);
             var focusUser = await _userService.GetUserAsync(focusUserId);
-            if (focusUser != null)
+
+            if (focusUser == null)
             {
-                var time = _userService.CheckOrAddPlastunRole(focusUser.Id, focusUser.RegistredOn);
-                var isThisUser = currentUserId == focusUserId;
-                var isUserSameCity = currentUser.CityMembers.FirstOrDefault()?.CityId
-                    .Equals(focusUser.CityMembers.FirstOrDefault()?.CityId) 
-                    == true;
-                var isUserSameClub = currentUser.ClubMembers.FirstOrDefault()?.ClubId
-                    .Equals(focusUser.ClubMembers.FirstOrDefault()?.ClubId)
-                    == true;
-                var isUserSameRegion = currentUser.RegionAdministrations.FirstOrDefault()?.RegionId
-                                           .Equals(focusUser.RegionAdministrations.FirstOrDefault()?.RegionId) == true
-                                       || currentUser.CityMembers.FirstOrDefault()?.City.RegionId
-                                           .Equals(focusUser.CityMembers.FirstOrDefault()?.City.RegionId) == true;
-                var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
-                var isUserHeadOfCity = await _userManagerService.IsInRoleAsync(currentUser, Roles.CityHead);
-                var isUserHeadOfClub = await _userManagerService.IsInRoleAsync(currentUser, Roles.KurinHead);
-                var isUserHeadOfRegion = await _userManagerService.IsInRoleAsync(currentUser, Roles.OkrugaHead);
-                var isCurrentUserSupporter = await _userManagerService.IsInRoleAsync(currentUser, Roles.Supporter);
-                var isCurrentUserPlastun = await _userManagerService.IsInRoleAsync(currentUser, Roles.PlastMember);
-                var isFocusUserSupporter = await _userManagerService.IsInRoleAsync(focusUser, Roles.Supporter);
-                var isFocusUserPlastun = await _userManagerService.IsInRoleAsync(focusUser, Roles.PlastMember)
-                    || !(isFocusUserSupporter
-                    && await _userService.IsApprovedCityMember(focusUserId));
-                if (await _userManagerService.IsInRoleAsync(currentUser, Roles.RegisteredUser) && !isThisUser)
-                {
-                    _loggerService.LogError($"User (id: {currentUserId}) hasn't access to profile (id: {focusUserId})");
-                    return StatusCode(StatusCodes.Status403Forbidden);
-                }
-                if (isThisUser ||
-                         isUserAdmin ||
-                         (isUserHeadOfCity && isUserSameCity) ||
-                         (isUserHeadOfClub && isUserSameClub) ||
-                         (isUserHeadOfRegion && isUserSameRegion) ||
-                         (isCurrentUserPlastun && isUserSameCity))
-                {
-                    var model = new PersonalDataViewModel
-                    {
-                        User = _mapper.Map<UserDTO, UserViewModel>(focusUser),
-                        TimeToJoinPlast = (int)time.TotalDays,
-                        IsUserPlastun = isFocusUserPlastun,
-                    };
-
-                    return Ok(model);
-                }
-                if (isCurrentUserSupporter || isUserHeadOfCity || isUserHeadOfClub || isUserHeadOfRegion || isCurrentUserPlastun )
-                {
-                    var model = new PersonalDataViewModel
-                    {
-                        ShortUser = _mapper.Map<UserDTO, UserShortViewModel>(focusUser),
-                        TimeToJoinPlast = (int)time.TotalDays,
-                        IsUserPlastun = isFocusUserPlastun,
-                    };
-
-                    return Ok(model);
-                }
+                _loggerService.LogError($"User not found. UserId:{focusUserId}");
+                return NotFound();
+            }
+            var time = _userService.CheckOrAddPlastunRole(focusUser.Id, focusUser.RegistredOn);
+            var isThisUser = currentUserId == focusUserId;
+            var isUserSameCity = currentUser.CityMembers.FirstOrDefault()?.CityId
+                .Equals(focusUser.CityMembers.FirstOrDefault()?.CityId)
+                == true;
+            var isUserSameClub = currentUser.ClubMembers.FirstOrDefault()?.ClubId
+                .Equals(focusUser.ClubMembers.FirstOrDefault()?.ClubId)
+                == true;
+            var isUserSameRegion = currentUser.RegionAdministrations.FirstOrDefault()?.RegionId
+                                       .Equals(focusUser.RegionAdministrations.FirstOrDefault()?.RegionId) == true
+                                   || currentUser.CityMembers.FirstOrDefault()?.City.RegionId
+                                       .Equals(focusUser.CityMembers.FirstOrDefault()?.City.RegionId) == true;
+            var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
+            var isUserHeadOfCity = await _userManagerService.IsInRoleAsync(currentUser, Roles.CityHead);
+            var isUserHeadOfClub = await _userManagerService.IsInRoleAsync(currentUser, Roles.KurinHead);
+            var isUserHeadOfRegion = await _userManagerService.IsInRoleAsync(currentUser, Roles.OkrugaHead);
+            var isCurrentUserSupporter = await _userManagerService.IsInRoleAsync(currentUser, Roles.Supporter);
+            var isCurrentUserPlastun = await _userManagerService.IsInRoleAsync(currentUser, Roles.PlastMember);
+            var isFocusUserSupporter = await _userManagerService.IsInRoleAsync(focusUser, Roles.Supporter);
+            var isFocusUserPlastun = await _userManagerService.IsInRoleAsync(focusUser, Roles.PlastMember)
+                || !(isFocusUserSupporter
+                && await _userService.IsApprovedCityMember(focusUserId));
+            if (await _userManagerService.IsInRoleAsync(currentUser, Roles.RegisteredUser) && !isThisUser)
+            {
+                _loggerService.LogError($"User (id: {currentUserId}) hasn't access to profile (id: {focusUserId})");
+                return StatusCode(StatusCodes.Status403Forbidden);
             }
 
-            _loggerService.LogError($"User not found. UserId:{focusUserId}");
-            return NotFound();
+            PersonalDataViewModel model;
+            if (isThisUser ||
+                     isUserAdmin ||
+                     (isUserHeadOfCity && isUserSameCity) ||
+                     (isUserHeadOfClub && isUserSameClub) ||
+                     (isUserHeadOfRegion && isUserSameRegion) ||
+                     (isCurrentUserPlastun && isUserSameCity))
+            {
+                model = new PersonalDataViewModel
+                {
+                    User = _mapper.Map<UserDTO, UserViewModel>(focusUser),
+                    TimeToJoinPlast = (int)time.TotalDays,
+                    IsUserPlastun = isFocusUserPlastun,
+                };
+
+                return Ok(model);
+            }
+
+            model = new PersonalDataViewModel
+            {
+                ShortUser = _mapper.Map<UserDTO, UserShortViewModel>(focusUser),
+                TimeToJoinPlast = (int)time.TotalDays,
+                IsUserPlastun = isFocusUserPlastun,
+            };
+
+            return Ok(model);
         }
 
         /// <summary>

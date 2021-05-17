@@ -26,9 +26,8 @@ namespace EPlast.WebApi.Controllers
             _userManager = userManager;
         }
 
-        private async Task<bool> HasAccessAsync(string userId)
+        private async Task<bool> HasAccessAsync()
         {
-            var currentUserId = _userManager.GetUserId(User);
             var roles = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User));
             foreach (var role in roles)
             {
@@ -50,8 +49,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetEventUserByUserId(string userId)
         {
             var currentUserId = _userManager.GetUserId(User);
-            var roles = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User));
-            if (currentUserId != userId && !(await HasAccessAsync(userId)))
+            if (currentUserId != userId && !(await HasAccessAsync()))
             {
                 return StatusCode(StatusCodes.Status403Forbidden);
             }

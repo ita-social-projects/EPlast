@@ -63,13 +63,13 @@ namespace EPlast.WebApi.Controllers
             if (isUserAdmin || (isUserHeadOfClub && isUserSameClub) || (isUserHeadOfCity && isUserSameCity) ||
                 (isUserHeadOfRegion && isUserSameRegion))
                 return true;
+            _loggerService.LogError($"No access.");
             return false;
         }
 
         [HttpGet("degree")]
         public async Task<IActionResult> GetAllDergees()
         {
-            var temp = await _plastDegreeService.GetDergeesAsync();
             return Ok(await _plastDegreeService.GetDergeesAsync());
         }
 
@@ -89,10 +89,8 @@ namespace EPlast.WebApi.Controllers
         [HttpPost("degree")]
         public async Task<IActionResult> AddPlastDegreeForUser(UserPlastDegreePostDTO userPlastDegreePostDTO)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
             if (!await HasAccessAsync(userPlastDegreePostDTO.UserId))
             {
-                _loggerService.LogError($"User (id: {currentUser.Id}) hasn't access to add degree (id: {userPlastDegreePostDTO.UserId})");
                 return StatusCode(StatusCodes.Status403Forbidden);
             }
             if (await _plastDegreeService.AddPlastDegreeForUserAsync(userPlastDegreePostDTO) &&
@@ -110,10 +108,8 @@ namespace EPlast.WebApi.Controllers
         [HttpDelete("degree/{userId}/{plastDegreeId}")]
         public async Task<IActionResult> DeletePlastDegreeForUser(string userId, int plastDegreeId)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
             if (!await HasAccessAsync(userId))
             {
-                _loggerService.LogError($"User (id: {currentUser.Id}) hasn't access to delete degree (id: {userId})");
                 return StatusCode(StatusCodes.Status403Forbidden);
             }
             if (await _plastDegreeService.DeletePlastDegreeForUserAsync(userId, plastDegreeId))
@@ -128,10 +124,8 @@ namespace EPlast.WebApi.Controllers
         [HttpPut("degree/setAsCurrent/{userId}/{plastDegreeId}")]
         public async Task<IActionResult> SetPlastDegreeAsCurrent(string userId, int plastDegreeId)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
             if (!await HasAccessAsync(userId))
             {
-                _loggerService.LogError($"User (id: {currentUser.Id}) hasn't access to set degree as current (id: {userId})");
                 return StatusCode(StatusCodes.Status403Forbidden);
             }
             if (await _plastDegreeService.SetPlastDegreeForUserAsCurrentAsync(userId, plastDegreeId))
@@ -146,10 +140,8 @@ namespace EPlast.WebApi.Controllers
         [HttpPut("degree/endDate")]
         public async Task<IActionResult> AddEndDatePlastDegreeForUser(UserPlastDegreePutDTO userPlastDegreePutDTO)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
             if (!await HasAccessAsync(userPlastDegreePutDTO.UserId))
             {
-                _loggerService.LogError($"User (id: {currentUser.Id}) hasn't access to add end date degree (id: {userPlastDegreePutDTO.UserId})");
                 return StatusCode(StatusCodes.Status403Forbidden);
             }
             if (await _plastDegreeService.AddEndDateForUserPlastDegreeAsync(userPlastDegreePutDTO))
@@ -177,10 +169,8 @@ namespace EPlast.WebApi.Controllers
         [HttpPost("dates")]
         public async Task<IActionResult> ChangeUserDates(UserMembershipDatesDTO userMembershipDatesDTO)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
             if (!await HasAccessAsync(userMembershipDatesDTO.UserId))
             {
-                _loggerService.LogError($"User (id: {currentUser.Id}) hasn't access to change dates (id: {userMembershipDatesDTO.UserId})");
                 return StatusCode(StatusCodes.Status403Forbidden);
             }
             if (await _userDatesService.ChangeUserMembershipDatesAsync(userMembershipDatesDTO))
