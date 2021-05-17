@@ -32,9 +32,9 @@ namespace EPlast.BLL
             SetText(gfx, "Пластунів / Уладу Пластунів Сеньйорів. Даю слово честі, що буду дотримуватися Трьох Головних Обов’язків пластуна",
                 XFontStyle.Regular, 50, 120);
             SetText(gfx, "та положень Статуту Пласту НСОУ.", XFontStyle.Regular, 50, 130);
-            SetText(gfx, "Відповідно до Закону України „ Про захист персональних даних “ надаю згоду проводу Пласту на обробку та ",
+            SetText(gfx, "Відповідно до Закону України „Про захист персональних даних“ надаю згоду проводу Пласту на обробку та ",
                 XFontStyle.Regular, 60, 140);
-            SetText(gfx, "використання моїх персональних даних(прізвище, ім'я, по-батькові, паспортні дані, ідентифікаційний номер, дані",
+            SetText(gfx, "використання моїх персональних даних (прізвище, ім'я, по-батькові, паспортні дані, ідентифікаційний номер, дані",
                 XFontStyle.Regular, 50, 150);
             SetText(gfx, "про освіту, дата народження, місце проживання, громадянство, стать, склад сім'ї, номери телефонів, електронні",
                 XFontStyle.Regular, 50, 160);
@@ -58,8 +58,8 @@ namespace EPlast.BLL
                 }
                 else if (blank.User.ConfirmedUsers.ElementAt(i).isClubAdmin)
                 {
-                    SetText(gfx, $", {blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.FirstName} {blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.LastName} ",
-                    XFontStyle.Regular, 195, 543);
+                    SetText(gfx, $"{blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.ClubMembers?.FirstOrDefault().Club?.Name}, {blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.FirstName} {blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.LastName} ",
+                    XFontStyle.Regular, 180, 543);
                     SetText(gfx, $" {blank.User.ConfirmedUsers?.ElementAt(i)?.ConfirmDate:dd.MM.yyyy}", XFontStyle.Italic, 435, 568);
                 }
                 else

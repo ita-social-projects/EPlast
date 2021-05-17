@@ -73,6 +73,8 @@ namespace EPlast.BLL
                     .Include(c => c.ConfirmedUsers)
                         .ThenInclude(c => c.Approver)
                             .ThenInclude(c => c.User)
+                                .ThenInclude(c => c.ClubMembers)
+                                    .ThenInclude(c => c.Club)
                     .Include(c => c.UserMembershipDates)
                     .Include(c=>c.UserPlastDegrees)
                     .Include(c=>c.Participants)
