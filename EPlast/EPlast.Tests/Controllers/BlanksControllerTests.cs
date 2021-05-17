@@ -10,6 +10,9 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.Logging;
+using EPlast.DataAccess.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.Tests.Controllers
 {
@@ -20,7 +23,10 @@ namespace EPlast.Tests.Controllers
         Mock<IBlankAchievementDocumentService> _mockBlankAchievementDocumentService;
         Mock<IBlankExtractFromUPUDocumentService> _mockBlankExtractFromUPUDocumentService;
         Mock<IPdfService> _pdfService;
+        Mock<ILoggerService<BlanksController>> _mockLoggerService;
+        private Mock<UserManager<User>> _mockUserManager;
         BlanksController _blanksController;
+        
 
         [SetUp]
         public void SetUp()
@@ -29,10 +35,12 @@ namespace EPlast.Tests.Controllers
             _mockBlankAchievementDocumentService = new Mock<IBlankAchievementDocumentService>();
             _mockBlankExtractFromUPUDocumentService = new Mock<IBlankExtractFromUPUDocumentService>();
             _pdfService = new Mock<IPdfService>();
+            _mockLoggerService = new Mock<ILoggerService<BlanksController>>();
+            _mockUserManager = new Mock<UserManager<User>>();
             _blanksController = new BlanksController(_mockBiographyService.Object,
                 _mockBlankAchievementDocumentService.Object,
-                _mockBlankExtractFromUPUDocumentService.Object,
-                _pdfService.Object);
+                _mockBlankExtractFromUPUDocumentService.Object, _mockLoggerService.Object,
+                _pdfService.Object, _mockUserManager.Object);
         }
 
         [Test]

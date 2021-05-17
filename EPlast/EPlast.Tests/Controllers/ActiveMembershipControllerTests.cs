@@ -7,6 +7,10 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Interfaces.UserProfiles;
+using Microsoft.AspNetCore.Identity;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.Tests.Controllers
 {
@@ -15,15 +19,22 @@ namespace EPlast.Tests.Controllers
         private readonly Mock<IPlastDegreeService> _plastDegreeService;
         private readonly Mock<IAccessLevelService> _accessLevelService;
         private readonly Mock<IUserDatesService> _userDatesService;
+        private readonly Mock<ILoggerService<ActiveMembershipController>> _loggerService;
+        private readonly Mock<UserManager<User>> _userManager;
+        private readonly Mock<IUserService> _userService;
 
         private ActiveMembershipController _activeMembershipController =>
-            new ActiveMembershipController(_plastDegreeService.Object, _accessLevelService.Object, _userDatesService.Object);
+            new ActiveMembershipController(_plastDegreeService.Object, _accessLevelService.Object,
+                _userDatesService.Object, _loggerService.Object, _userManager.Object, _userService.Object);
 
         public ActiveMembershipControllerTests()
         {
             _plastDegreeService = new Mock<IPlastDegreeService>();
             _accessLevelService = new Mock<IAccessLevelService>();
             _userDatesService = new Mock<IUserDatesService>();
+            _loggerService = new Mock<ILoggerService<ActiveMembershipController>>();
+            _userManager = new Mock<UserManager<User>>();
+            _userService = new Mock<IUserService>();
         }
 
         [Test]

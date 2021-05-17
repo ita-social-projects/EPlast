@@ -568,7 +568,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(new List<ConfirmedUserDTO>());
 
             _userService
-                .Setup((x) => x.CanApprove(It.IsAny<List<ConfirmedUserDTO>>(), It.IsAny<string>(), It.IsAny<User>()))
+                .Setup((x) => x.CanApprove(It.IsAny<List<ConfirmedUserDTO>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
                 .Returns(canApprove);
 
             _userService
