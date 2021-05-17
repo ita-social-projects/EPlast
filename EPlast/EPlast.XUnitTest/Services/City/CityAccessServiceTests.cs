@@ -210,6 +210,28 @@ namespace EPlast.XUnitTest.Services.City
         }
 
         [Fact]
+        public async Task HasAccessAsync_NoRoles_ReturnsFalse()
+        {
+            // Arrange
+            _userManager.Setup(u => u.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new DatabaseEntities.User());
+            _userManager.Setup(u => u.GetRolesAsync(It.IsAny<DatabaseEntities.User>()))
+                .ReturnsAsync(new List<string>() { "...", });
+            _repositoryWrapper.Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityAdministration, bool>>>(), null))
+                .ReturnsAsync(new DatabaseEntities.CityAdministration());
+            _repositoryWrapper.Setup(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(), null))
+                .ReturnsAsync(new List<DatabaseEntities.City> { new DatabaseEntities.City() { ID = 1 } });
+            _mapper.Setup(m => m.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityDTO>>(It.IsAny<IEnumerable<DatabaseEntities.City>>()))
+                .Returns(new List<CityDTO> { new CityDTO() { ID = 1 } });
+
+            // Act
+            var result = await _cityAccessService.HasAccessAsync(new User());
+
+            // Assert
+            Assert.False(result);
+        }
+
+        [Fact]
         public async Task HasAccessAsync_TakesOneParametr_True()
         {
             // Arrange

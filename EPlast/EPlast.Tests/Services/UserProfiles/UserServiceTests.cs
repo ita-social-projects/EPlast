@@ -191,5 +191,116 @@ namespace EPlast.Tests.Services.UserProfiles
             //Assert
             Assert.IsNotNull(result);
         }
+
+        [Test]
+        public void IsUserSameCity_ReturnsTrue()
+        {
+            //Arrange
+            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
+            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
+
+            _currentUser.Object.CityMembers = new List<CityMembers>() {new CityMembers() {CityId = 1},};
+            _focusUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { CityId = 1 }, };
+
+            //Act
+            var result = _userService.IsUserSameCity(_currentUser.Object, _focusUser.Object);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void IsUserSameCity_ReturnsFalse()
+        {
+            //Arrange
+            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
+            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
+
+            _currentUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { CityId = 1 }, };
+            _focusUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { CityId = 2 }, };
+
+            //Act
+            var result = _userService.IsUserSameCity(_currentUser.Object, _focusUser.Object);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void IsUserSameClub_ReturnsTrue()
+        {
+            //Arrange
+            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
+            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
+
+            _currentUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { ClubId = 1 }, };
+            _focusUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { ClubId = 1 }, };
+
+            //Act
+            var result = _userService.IsUserSameClub(_currentUser.Object, _focusUser.Object);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void IsUserSameClub_ReturnsFalse()
+        {
+            //Arrange
+            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
+            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
+
+            _currentUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { ClubId = 1 }, };
+            _focusUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { ClubId = 2 }, };
+
+            //Act
+            var result = _userService.IsUserSameClub(_currentUser.Object, _focusUser.Object);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void IsUserSameRegion_ReturnsTrue()
+        {
+            //Arrange
+            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
+            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
+
+            _currentUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 1 }, };
+            _focusUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 1 }, };
+
+            //Act
+            var result = _userService.IsUserSameRegion(_currentUser.Object, _focusUser.Object);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void IsUserSameRegion_ReturnsFalse()
+        {
+            //Arrange
+            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
+            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
+
+            _currentUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 1 }, };
+            _focusUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 2 }, };
+
+            _currentUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { City = new DataAccess.Entities.City() { RegionId = 1 } }, };
+            _focusUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { City = new DataAccess.Entities.City() { RegionId = 2 } }, };
+
+            //Act
+            var result = _userService.IsUserSameRegion(_currentUser.Object, _focusUser.Object);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result);
+        }
     }
 }

@@ -740,6 +740,47 @@ namespace EPlast.Tests.Services.City
             _repoWrapper.Verify();
         }
 
+        [Test]
+        public async Task CityOfApprovedMemberTest_ReturnsNull()
+        {
+            //Arrange 
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityMembers>, IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync((null as CityMembers));
+            //Act
+            var result = await _cityParticipantsService.CityOfApprovedMember("123v");
+            //Assert
+            Assert.IsNull(result);
+            _repoWrapper.Verify();
+        }
+
+        [Test]
+        public async Task CityOfApprovedMemberTest_ReturnsNullName()
+        {
+            //Arrange 
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityMembers>, IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync(new CityMembers()
+                {
+                    ID = 1,
+                    UserId = "123v",
+                    IsApproved = false,
+                    City = new DataAccess.Entities.City
+                    {
+                        ID = 1,
+                        Name = "city name"
+                    },
+                    CityId = 1
+                });
+            //Act
+            var result = await _cityParticipantsService.CityOfApprovedMember("123v");
+            //Assert
+            Assert.IsNull(result);
+            _repoWrapper.Verify();
+        }
+
         private IEnumerable<CityAdministration> GetCityAdministration()
         {
             return new List<CityAdministration>
