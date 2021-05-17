@@ -125,7 +125,6 @@ namespace EPlast.Tests.Controllers
             //Assert
             _mockBiographyService.Verify();
             Assert.NotNull(document);
-            Assert.NotNull(result.Value);
             Assert.IsInstanceOf<ObjectResult>(document);
             Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
         }
