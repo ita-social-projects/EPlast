@@ -102,13 +102,11 @@ namespace EPlast.BLL.Services.UserProfiles
         }
 
         /// <inheritdoc />
-        public bool CanApprove(IEnumerable<ConfirmedUserDTO> confUsers, string userId, User user, bool isAdmin = false)
+        public bool CanApprove(IEnumerable<ConfirmedUserDTO> confUsers, string userId, string currentUserId, bool isRegisteredUser=false, bool isAdmin = false)
         {
-            var currentUserId = user.Id;
-
-            var canApprove = confUsers.Count() < 3
-                    && !confUsers.Any(x => x.Approver.UserID == currentUserId)
-                    && (currentUserId != userId || isAdmin);
+            var canApprove = !isRegisteredUser && confUsers.Count() < 3
+                             && !confUsers.Any(x => x.Approver.UserID == currentUserId)
+                             && (currentUserId != userId || isAdmin);
 
             return canApprove;
         }

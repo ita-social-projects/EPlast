@@ -211,6 +211,14 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
             var user = await _userService.GetUserAsync(userId);
+            var currentUserId = _userManager.GetUserId(User);
+            var currentUser = await _userService.GetUserAsync(currentUserId);
+            if (!(userId == currentUserId || await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin)))
+            {
+                _loggerService.LogError($"User (id: {currentUserId}) hasn't access to edit profile (id: {userId})");
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
+            
             if (user != null)
             {
                 var genders = _mapper.Map<IEnumerable<GenderDTO>, IEnumerable<GenderViewModel>>(await _userPersonalDataService.GetAllGendersAsync());
@@ -289,7 +297,9 @@ namespace EPlast.WebApi.Controllers
             var currentUserId = _userManager.GetUserId(User);
             var currentUser = await _userService.GetUserAsync(currentUserId);
             var confirmedUsers = _userService.GetConfirmedUsers(user);
-            var canApprove = _userService.CanApprove(confirmedUsers, userId, await _userManager.GetUserAsync(User), await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin));
+            var canApprove = _userService.CanApprove(confirmedUsers, userId, currentUserId,
+                await _userManagerService.IsInRoleAsync(user, Roles.RegisteredUser),
+                await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin));
             var time = _userService.CheckOrAddPlastunRole(user.Id, user.RegistredOn);
             var clubApprover = _userService.GetClubAdminConfirmedUser(user);
             var cityApprover = _userService.GetCityAdminConfirmedUser(user);
