@@ -173,7 +173,7 @@ namespace EPlast.BLL.Services.Club
             return ClubProfileDto;
         }
 
-        private async Task<IEnumerable<ClubUser>> setMembersCityName(IEnumerable<ClubUser> members)
+        private async Task<IEnumerable<IClubMember>> setMembersCityName(IEnumerable<IClubMember> members)
         {
             foreach (var member in members.Where(m=>m!=null))
             {

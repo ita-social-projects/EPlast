@@ -4,7 +4,7 @@ using EPlast.BLL.Interfaces.Club;
 
 namespace EPlast.BLL.DTO.Club
 {
-    public class ClubAdministrationDTO: ClubUser
+    public class ClubAdministrationDTO: IClubMember
     {
         public int ID { get; set; }
         public string UserId { get; set; }

@@ -2,7 +2,7 @@
 
 namespace EPlast.BLL.Interfaces.Club
 {
-    public interface ClubUser
+    public interface IClubMember
     {
         public string UserId { get; set; }
         public ClubUserDTO User { get; set; }

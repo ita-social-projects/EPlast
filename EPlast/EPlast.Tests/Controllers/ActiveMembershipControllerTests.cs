@@ -191,16 +191,8 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             bool successfulDeleted = true;
-            string userId = "1";
-            var user = new UserDTO()
-            {
-                Id = userId,
-                CityMembers = new List<CityMembers>(),
-                ClubMembers = new List<ClubMembers>(),
-                RegionAdministrations = new List<RegionAdministration>(),
-            };
-            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = userId });
-            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(user);
+            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = _userId });
+            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(_user);
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Admin });
             _plastDegreeService.Setup(cs => cs.DeletePlastDegreeForUserAsync(It.IsAny<string>(), It.IsAny<int>())).ReturnsAsync(successfulDeleted);
 
@@ -233,27 +225,19 @@ namespace EPlast.Tests.Controllers
         public async Task DeletePlastDegreeForUser_Returns403Forbidden()
         {
             //Arrange
-            string userId = "1";
-            var user = new UserDTO()
-            {
-                Id = userId,
-                CityMembers = new List<CityMembers>(),
-                ClubMembers = new List<ClubMembers>(),
-                RegionAdministrations = new List<RegionAdministration>(),
-            };
-            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = userId });
-            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(user);
+            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = _userId });
+            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(_user);
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
 
             ActiveMembershipController activeMembershipController = _activeMembershipController;
             var expected = StatusCodes.Status403Forbidden;
 
             // Act
-            var result = await activeMembershipController.DeletePlastDegreeForUser(userId, 4);
+            var result = await activeMembershipController.DeletePlastDegreeForUser(_userId, 4);
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
-            _loggerService.Verify((x) => x.LogError(It.IsAny<string>()), Times.Once);
+            _loggerService.Verify((x) => x.LogError(It.IsAny<string>()));
             _userManager.Verify();
             Assert.AreEqual(expected, actual);
         }
@@ -263,16 +247,8 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             bool successfulSetPD = true;
-            string userId = "1";
-            var user = new UserDTO()
-            {
-                Id = userId,
-                CityMembers = new List<CityMembers>(),
-                ClubMembers = new List<ClubMembers>(),
-                RegionAdministrations = new List<RegionAdministration>(),
-            };
-            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = userId });
-            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(user);
+            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = _userId });
+            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(_user);
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Admin });
             _plastDegreeService.Setup(cs => cs.SetPlastDegreeForUserAsCurrentAsync(It.IsAny<string>(), It.IsAny<int>())).ReturnsAsync(successfulSetPD);
 
@@ -306,16 +282,8 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             bool successfulSetPD = true;
-            string userId = "1";
-            var user = new UserDTO()
-            {
-                Id = userId,
-                CityMembers = new List<CityMembers>(),
-                ClubMembers = new List<ClubMembers>(),
-                RegionAdministrations = new List<RegionAdministration>(),
-            };
-            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = userId });
-            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(user);
+            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = _userId });
+            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(_user);
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
             _plastDegreeService.Setup(cs => cs.SetPlastDegreeForUserAsCurrentAsync(It.IsAny<string>(), It.IsAny<int>())).ReturnsAsync(successfulSetPD);
 
@@ -327,7 +295,7 @@ namespace EPlast.Tests.Controllers
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
-            _loggerService.Verify((x) => x.LogError(It.IsAny<string>()), Times.Once);
+            _loggerService.Verify((x) => x.LogError(It.IsAny<string>()));
             _userManager.Verify();
             Assert.AreEqual(expected, actual);
         }
@@ -337,16 +305,8 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             bool successfulAddedEndDate = true;
-            string userId = "1";
-            var user = new UserDTO()
-            {
-                Id = userId,
-                CityMembers = new List<CityMembers>(),
-                ClubMembers = new List<ClubMembers>(),
-                RegionAdministrations = new List<RegionAdministration>(),
-            };
-            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = userId });
-            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(user);
+            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = _userId });
+            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(_user);
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Admin });
             _plastDegreeService.Setup(cs => cs.AddEndDateForUserPlastDegreeAsync(It.IsAny<UserPlastDegreePutDTO>()))
                                .ReturnsAsync(successfulAddedEndDate);
@@ -365,16 +325,8 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             bool successfulAddedEndDate = false;
-            string userId = "1";
-            var user = new UserDTO()
-            {
-                Id = userId,
-                CityMembers = new List<CityMembers>(),
-                ClubMembers = new List<ClubMembers>(),
-                RegionAdministrations = new List<RegionAdministration>(),
-            };
-            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = userId });
-            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(user);
+            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = _userId });
+            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(_user);
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Admin });
             _plastDegreeService.Setup(cs => cs.AddEndDateForUserPlastDegreeAsync(It.IsAny<UserPlastDegreePutDTO>()))
                                .ReturnsAsync(successfulAddedEndDate);
@@ -392,16 +344,8 @@ namespace EPlast.Tests.Controllers
         public async Task AddEndDatePlastDegreeForUser_403Forbidden()
         {
             //Arrange
-            string userId = "1";
-            var user = new UserDTO()
-            {
-                Id = userId,
-                CityMembers = new List<CityMembers>(),
-                ClubMembers = new List<ClubMembers>(),
-                RegionAdministrations = new List<RegionAdministration>(),
-            };
-            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = userId });
-            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(user);
+            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = _userId });
+            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(_user);
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
 
             ActiveMembershipController activeMembershipController = _activeMembershipController;
@@ -454,16 +398,8 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             bool successfulChangedDates = true;
-            string userId = "1";
-            var user = new UserDTO()
-            {
-                Id = userId,
-                CityMembers = new List<CityMembers>(),
-                ClubMembers = new List<ClubMembers>(),
-                RegionAdministrations = new List<RegionAdministration>(),
-            };
-            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = userId });
-            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(user);
+            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = _userId });
+            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(_user);
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Admin });
             _userDatesService.Setup(cs => cs.ChangeUserMembershipDatesAsync(It.IsAny<UserMembershipDatesDTO>()))
                              .ReturnsAsync(successfulChangedDates);
@@ -484,6 +420,9 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             bool successfulChangedDates = false;
+            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = _userId });
+            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(_user);
+            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Admin });
             _userDatesService.Setup(cs => cs.ChangeUserMembershipDatesAsync(It.IsAny<UserMembershipDatesDTO>()))
                              .ReturnsAsync(successfulChangedDates);
 
@@ -500,16 +439,8 @@ namespace EPlast.Tests.Controllers
         public async Task ChangeUserDates_403Forbidden()
         {
             //Arrange
-            string userId = "1";
-            var user = new UserDTO()
-            {
-                Id = userId,
-                CityMembers = new List<CityMembers>(),
-                ClubMembers = new List<ClubMembers>(),
-                RegionAdministrations = new List<RegionAdministration>(),
-            };
-            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = userId });
-            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(user);
+            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = _userId });
+            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(_user);
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
 
             ActiveMembershipController activeMembershipController = _activeMembershipController;
@@ -520,7 +451,7 @@ namespace EPlast.Tests.Controllers
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
-            _loggerService.Verify((x) => x.LogError(It.IsAny<string>()), Times.Once);
+            _loggerService.Verify((x) => x.LogError(It.IsAny<string>()));
             _userManager.Verify();
             Assert.AreEqual(expected, actual);
         }
@@ -560,5 +491,14 @@ namespace EPlast.Tests.Controllers
             //Assert
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
+
+        private string _userId = "1";
+        private UserDTO _user = new UserDTO()
+        {
+            Id = "1",
+            CityMembers = new List<CityMembers>(),
+            ClubMembers = new List<ClubMembers>(),
+            RegionAdministrations = new List<RegionAdministration>(),
+        };
     }
 }
