@@ -13,6 +13,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.Tests.Controllers
@@ -112,12 +113,13 @@ namespace EPlast.Tests.Controllers
             string userId = "gh34tg";
             _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(new User() { Id = userId });
+            _mockUserManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Admin});
             _mockBiographyService
                 .Setup(x => x.GetDocumentByUserId(userId))
                 .ReturnsAsync(GetBlankBiographyDocumentDTO());
 
             //Act
-            var document = await _blanksController.GetDocumentByUserId(userId);
+            var document = await _blanksController.GetDocumentByUserId("1");
             OkObjectResult result = document as OkObjectResult;
 
             //Assert

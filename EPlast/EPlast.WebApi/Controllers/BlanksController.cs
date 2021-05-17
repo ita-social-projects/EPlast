@@ -39,7 +39,7 @@ namespace EPlast.WebApi.Controllers
             _userManager = userManager;
         }
 
-        private async Task<bool> HasAccessSupporterAndRegisteredAsync(string userId, bool get)
+        private async Task<bool> HasAccessSupporterAndRegisteredAsync(string userId)
         {
             var currentUser = await _userManager.GetUserAsync(User);
             var roles = await _userManager.GetRolesAsync(currentUser);
@@ -47,9 +47,7 @@ namespace EPlast.WebApi.Controllers
                 return true;
             foreach (var role in roles)
             {
-                if (get && Roles.HeadsAdminAndPlastun.Contains(role))
-                    return true;
-                if (!get && Roles.HeadsAndAdmin.Contains(role))
+                if (Roles.HeadsAdminAndPlastun.Contains(role))
                     return true;
             }
             return false;
@@ -107,7 +105,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetDocumentByUserId(string userId)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            if(await HasAccessSupporterAndRegisteredAsync(userId, true))
+            if(await HasAccessSupporterAndRegisteredAsync(userId))
                 return Ok(await _blankBiographyDocumentService.GetDocumentByUserId(userId));
             _loggerService.LogError($"User (id: {currentUser.Id}) hasn't access to document (id: {userId})");
             return StatusCode(StatusCodes.Status403Forbidden);
@@ -123,7 +121,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetExtractFromUPUByUserId(string userId)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            if (await HasAccessSupporterAndRegisteredAsync(userId, true))
+            if (await HasAccessSupporterAndRegisteredAsync(userId))
                 return Ok(await _blankExtractFromUPUDocumentService.GetDocumentByUserId(userId));
             _loggerService.LogError($"User (id: {currentUser.Id}) hasn't access to ExtractFromUPUDocument (id: {userId})");
             return StatusCode(StatusCodes.Status403Forbidden);
@@ -146,7 +144,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetAchievementDocumentsByUserId(string userId)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            if (await HasAccessSupporterAndRegisteredAsync(userId, true))
+            if (await HasAccessSupporterAndRegisteredAsync(userId))
                 return Ok(await _blankAchievementDocumentService.GetDocumentsByUserIdAsync(userId));
             _loggerService.LogError($"User (id: {currentUser.Id}) hasn't access to achievement documents (id: {userId})");
             return StatusCode(StatusCodes.Status403Forbidden);
