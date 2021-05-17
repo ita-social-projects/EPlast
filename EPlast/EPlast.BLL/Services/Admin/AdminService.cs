@@ -95,6 +95,7 @@ namespace EPlast.BLL.Services
                 case supporter:
                 case plastun:
                 case interested:
+                case registeredUser:
                     if (roles.Contains(supporter))
                     {
                         await _userManager.RemoveFromRoleAsync(user, supporter);
