@@ -50,18 +50,8 @@ namespace EPlast.WebApi.Controllers
             var isUserHeadOfCity = roles.Contains(Roles.CityHead);
             var isUserHeadOfClub = roles.Contains(Roles.KurinHead);
             var isUserHeadOfRegion = roles.Contains(Roles.OkrugaHead);
-            var isUserSameCity = currentUser.CityMembers.FirstOrDefault()?.CityId
-                                     .Equals(focusUser.CityMembers.FirstOrDefault()?.CityId)
-                                 == true;
-            var isUserSameClub = currentUser.ClubMembers.FirstOrDefault()?.ClubId
-                                     .Equals(focusUser.ClubMembers.FirstOrDefault()?.ClubId)
-                                 == true;
-            var isUserSameRegion = currentUser.RegionAdministrations.FirstOrDefault()?.RegionId
-                                       .Equals(focusUser.RegionAdministrations.FirstOrDefault()?.RegionId) == true
-                                   || currentUser.CityMembers.FirstOrDefault()?.City.RegionId
-                                       .Equals(focusUser.CityMembers.FirstOrDefault()?.City.RegionId) == true;
-            if (isUserAdmin || (isUserHeadOfClub && isUserSameClub) || (isUserHeadOfCity && isUserSameCity) ||
-                (isUserHeadOfRegion && isUserSameRegion))
+            if (isUserAdmin || (isUserHeadOfClub && _userService.IsUserSameClub(currentUser, focusUser)) || (isUserHeadOfCity && _userService.IsUserSameCity(currentUser, focusUser)) ||
+                (isUserHeadOfRegion && _userService.IsUserSameRegion(currentUser, focusUser)))
                 return true;
             _loggerService.LogError($"No access.");
             return false;

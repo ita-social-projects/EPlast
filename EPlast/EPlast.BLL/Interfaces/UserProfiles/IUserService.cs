@@ -86,5 +86,9 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         /// <param name="userId">The id of the selected user</param>
         /// <returns>User gender string</returns>
         Task<string> GetUserGenderAsync(string userId);
+
+        bool IsUserSameCity(UserDTO currentUser, UserDTO focusUser);
+        bool IsUserSameClub(UserDTO currentUser, UserDTO focusUser);
+        bool IsUserSameRegion(UserDTO currentUser, UserDTO focusUser);
     }
 }

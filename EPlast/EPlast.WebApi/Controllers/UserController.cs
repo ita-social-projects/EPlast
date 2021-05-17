@@ -49,6 +49,7 @@ namespace EPlast.WebApi.Controllers
             _userManager = userManager;
         }
 
+
         /// <summary>
         /// Get a specify user
         /// </summary>
@@ -125,21 +126,10 @@ namespace EPlast.WebApi.Controllers
             }
             var time = _userService.CheckOrAddPlastunRole(focusUser.Id, focusUser.RegistredOn);
             var isThisUser = currentUserId == focusUserId;
-            var isUserSameCity = currentUser.CityMembers.FirstOrDefault()?.CityId
-                .Equals(focusUser.CityMembers.FirstOrDefault()?.CityId)
-                == true;
-            var isUserSameClub = currentUser.ClubMembers.FirstOrDefault()?.ClubId
-                .Equals(focusUser.ClubMembers.FirstOrDefault()?.ClubId)
-                == true;
-            var isUserSameRegion = currentUser.RegionAdministrations.FirstOrDefault()?.RegionId
-                                       .Equals(focusUser.RegionAdministrations.FirstOrDefault()?.RegionId) == true
-                                   || currentUser.CityMembers.FirstOrDefault()?.City.RegionId
-                                       .Equals(focusUser.CityMembers.FirstOrDefault()?.City.RegionId) == true;
             var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
             var isUserHeadOfCity = await _userManagerService.IsInRoleAsync(currentUser, Roles.CityHead);
             var isUserHeadOfClub = await _userManagerService.IsInRoleAsync(currentUser, Roles.KurinHead);
             var isUserHeadOfRegion = await _userManagerService.IsInRoleAsync(currentUser, Roles.OkrugaHead);
-            var isCurrentUserSupporter = await _userManagerService.IsInRoleAsync(currentUser, Roles.Supporter);
             var isCurrentUserPlastun = await _userManagerService.IsInRoleAsync(currentUser, Roles.PlastMember);
             var isFocusUserSupporter = await _userManagerService.IsInRoleAsync(focusUser, Roles.Supporter);
             var isFocusUserPlastun = await _userManagerService.IsInRoleAsync(focusUser, Roles.PlastMember)
@@ -154,10 +144,10 @@ namespace EPlast.WebApi.Controllers
             PersonalDataViewModel model;
             if (isThisUser ||
                      isUserAdmin ||
-                     (isUserHeadOfCity && isUserSameCity) ||
-                     (isUserHeadOfClub && isUserSameClub) ||
-                     (isUserHeadOfRegion && isUserSameRegion) ||
-                     (isCurrentUserPlastun && isUserSameCity))
+                     (isUserHeadOfCity && _userService.IsUserSameCity(currentUser, focusUser)) ||
+                     (isUserHeadOfClub && _userService.IsUserSameClub(currentUser, focusUser)) ||
+                     (isUserHeadOfRegion && _userService.IsUserSameRegion(currentUser, focusUser)) ||
+                     (isCurrentUserPlastun && _userService.IsUserSameCity(currentUser, focusUser)))
             {
                 model = new PersonalDataViewModel
                 {

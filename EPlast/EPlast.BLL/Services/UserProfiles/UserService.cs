@@ -338,5 +338,27 @@ namespace EPlast.BLL.Services.UserProfiles
                     i.Include(g => g.UserProfile).ThenInclude(x => x.Gender));
             return user.UserProfile.Gender.Name;
         }
+
+        public bool IsUserSameCity(UserDTO currentUser, UserDTO focusUser)
+        {
+            return currentUser.CityMembers.FirstOrDefault()?.CityId
+                       .Equals(focusUser.CityMembers.FirstOrDefault()?.CityId)
+                   == true;
+        }
+
+        public bool IsUserSameClub(UserDTO currentUser, UserDTO focusUser)
+        {
+            return currentUser.ClubMembers.FirstOrDefault()?.ClubId
+                       .Equals(focusUser.ClubMembers.FirstOrDefault()?.ClubId)
+                   == true;
+        }
+
+        public bool IsUserSameRegion(UserDTO currentUser, UserDTO focusUser)
+        {
+            return currentUser.RegionAdministrations.FirstOrDefault()?.RegionId
+                       .Equals(focusUser.RegionAdministrations.FirstOrDefault()?.RegionId) == true
+                   || currentUser.CityMembers.FirstOrDefault()?.City.RegionId
+                       .Equals(focusUser.CityMembers.FirstOrDefault()?.City.RegionId) == true;
+        }
     }
 }
