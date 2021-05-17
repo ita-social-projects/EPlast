@@ -747,6 +747,20 @@ namespace EPlast.Tests.Services
             Assert.AreEqual(users.Count(), result.Count());
         }
 
+        [Test]
+        public async Task GetUsersCountAsync_ReturnsInt()
+        {
+            // Arrange
+            _repoWrapper.Setup(x => x.AdminType.GetUsersCountAsync()).ReturnsAsync(It.IsAny<int>());
+
+            // Act
+            var result = await service.GetUsersCountAsync();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<int>(result);
+        }
+
         private IEnumerable<User> GetTestUsers()
         {
             return new List<User>
