@@ -147,7 +147,7 @@ namespace EPlast.WebApi.Controllers
                     _loggerService.LogError($"User (id: {currentUserId}) hasn't access to profile (id: {focusUserId})");
                     return StatusCode(StatusCodes.Status403Forbidden);
                 }
-                else if (isThisUser ||
+                if (isThisUser ||
                          isUserAdmin ||
                          (isUserHeadOfCity && isUserSameCity) ||
                          (isUserHeadOfClub && isUserSameClub) ||
@@ -163,7 +163,7 @@ namespace EPlast.WebApi.Controllers
 
                     return Ok(model);
                 }
-                else if (isCurrentUserSupporter || isUserHeadOfCity || isUserHeadOfClub || isUserHeadOfRegion || isCurrentUserPlastun )
+                if (isCurrentUserSupporter || isUserHeadOfCity || isUserHeadOfClub || isUserHeadOfRegion || isCurrentUserPlastun )
                 {
                     var model = new PersonalDataViewModel
                     {

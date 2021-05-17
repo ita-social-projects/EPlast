@@ -46,8 +46,8 @@ namespace EPlast.XUnitTest.Services.City
         {
             // Arrange
             _userManager.Setup(u => u.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-                .ReturnsAsync(new DatabaseEntities.User());
-            _userManager.Setup(u => u.GetRolesAsync(It.IsAny<DatabaseEntities.User>()))
+                .ReturnsAsync(new User());
+            _userManager.Setup(u => u.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(new List<string> { AdminRoleName });
             _repositoryWrapper.Setup(r => r.City.GetAllAsync(null, null))
                 .ReturnsAsync(new List<DatabaseEntities.City> { new DatabaseEntities.City() });
@@ -331,17 +331,23 @@ namespace EPlast.XUnitTest.Services.City
         [Fact]
         public async Task GetAllCitiesIdAndName_Admin_Passed()
         {
+            var expected = new DatabaseEntities.City() {Name = "TestCityName"};
             // Arrange
-            _userManager.Setup(u => u.GetRolesAsync(It.IsAny<DatabaseEntities.User>()))
+            _userManager.Setup(u => u.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(new List<string> { AdminRoleName });
-            _repositoryWrapper.Setup(r => r.City.GetAllAsync(null, null))
-                .ReturnsAsync(new List<DatabaseEntities.City> { new DatabaseEntities.City(){Name = "TestCityName"}, });
+            _repositoryWrapper.Setup(r => r.City.GetAllAsync(null,
+                    It.IsAny<Func<IQueryable<DatabaseEntities.City>, IIncludableQueryable<DatabaseEntities.City, object>
+                    >>()))
+                .ReturnsAsync(new List<DatabaseEntities.City> {expected,});
+
 
             // Act
             await _cityAccessService.GetAllCitiesIdAndName(new User());
 
             // Assert
-            _repositoryWrapper.Verify(r => r.City.GetAllAsync(null, null), Times.Once);
+            _repositoryWrapper.Verify(r => r.City.GetAllAsync(null,
+                It.IsAny<Func<IQueryable<DatabaseEntities.City>, IIncludableQueryable<DatabaseEntities.City, object>
+                >>()), Times.Once);
         }
     }
 }

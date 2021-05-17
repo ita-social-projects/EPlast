@@ -5,6 +5,7 @@ using EPlast.BLL.DTO.Events;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using EPlast.WebApi.Controllers;
 using EPlast.WebApi.Models.Events;
 using Microsoft.AspNetCore.Http;
@@ -268,6 +269,7 @@ namespace EPlast.Tests.Controllers
         public async Task SubscribeOnEvent_Status200OK_ReturnsStatus200OK()
         {
             // Arrange
+            _userManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
             _actionManager
                 .Setup((x) => x.SubscribeOnEventAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(StatusCodes.Status200OK);
@@ -284,14 +286,50 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task SubscribeOnEvent_Status403Forbidden_Returns403Forbidden()
+        {
+            // Arrange
+            _userManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>(){Roles.RegisteredUser});
+           
+
+            var expected = StatusCodes.Status403Forbidden;
+
+            // Act
+            var result = await _eventsController.SubscribeOnEvent(It.IsAny<int>());
+
+            var actual = (result as StatusCodeResult).StatusCode;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
         public async Task SubscribeOnEvent_Status400BadRequest_ReturnsStatus400BadRequest()
         {
             // Arrange
+            _userManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
             _actionManager
                 .Setup((x) => x.SubscribeOnEventAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(StatusCodes.Status400BadRequest);
 
             var expected = StatusCodes.Status400BadRequest;
+
+            // Act
+            var result = await _eventsController.SubscribeOnEvent(It.IsAny<int>());
+
+            var actual = (result as StatusCodeResult).StatusCode;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public async Task SubscribeOnEvent_Status403Forbidden_ReturnsStatus403Forbidden()
+        {
+            // Arrange
+            _userManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.RegisteredUser });
+
+            var expected = StatusCodes.Status403Forbidden;
 
             // Act
             var result = await _eventsController.SubscribeOnEvent(It.IsAny<int>());
