@@ -603,7 +603,6 @@ namespace EPlast.Tests.Controllers
         public async Task Edit_Forbidden_Returns403Forbidden()
         {
             // Arrange
-            string currentUserId = "1";
             string focusUserId = "2";
 
             _userService
