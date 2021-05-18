@@ -41,17 +41,18 @@ namespace EPlast.BLL.Services.Club.ClubAccess
             return Enumerable.Empty<ClubDTO>();
         }
 
-        public async Task<IEnumerable<Tuple<int, string>>> GetAllClubsIdAndName(DatabaseEntities.User user)
+        public async Task<IEnumerable<ClubForAdministrationDTO>> GetAllClubsIdAndName(DatabaseEntities.User user)
         {
             var roles = await _userManager.GetRolesAsync(user);
             foreach (var key in _clubAccessGetters.Keys)
             {
                 if (roles.Contains(key))
                 {
-                    return await _clubAccessGetters[key].GetClubsIdAndName(user.Id);
+                    var clubs= await _clubAccessGetters[key].GetClubs(user.Id);
+                    return _mapper.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubForAdministrationDTO>>(clubs);
                 }
             }
-            return Enumerable.Empty<Tuple<int, string>>();
+            return Enumerable.Empty<ClubForAdministrationDTO>();
         }
 
         public async Task<bool> HasAccessAsync(DatabaseEntities.User user, int ClubId)

@@ -17,8 +17,7 @@ namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAdminPlastunAndSupporter)]
-
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class ClubController : ControllerBase
     {
         private readonly ILoggerService<ClubController> _logger;
@@ -80,11 +79,10 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <returns>Tuple (int, string)</returns>
         [HttpGet("ClubsOptions")]
-        public async Task<IActionResult> GetClubsOptions()
+        public async Task<IActionResult> GetClubsOptionsThatUserHasAccessTo()
         {
             var clubs = await _clubAccessService.GetAllClubsIdAndName(await _userManager.GetUserAsync(User));
             return Ok(clubs);
-
         }
 
         /// <summary>
@@ -309,7 +307,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="ClubId">An id of the Club</param>
         /// <returns>An information about a new follower</returns>
         [HttpPost("AddFollower/{ClubId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAdminPlastunAndSupporter)]
         public async Task<IActionResult> AddFollower(int ClubId)
         {
             var follower = await _clubParticipantsService.AddFollowerAsync(ClubId, await _userManager.GetUserAsync(User));

@@ -102,13 +102,11 @@ namespace EPlast.BLL.Services.UserProfiles
         }
 
         /// <inheritdoc />
-        public bool CanApprove(IEnumerable<ConfirmedUserDTO> confUsers, string userId, User user)
+        public bool CanApprove(IEnumerable<ConfirmedUserDTO> confUsers, string userId, string currentUserId, bool isRegisteredUser=false, bool isAdmin = false)
         {
-            var currentUserId = user.Id;
-
-            var canApprove = confUsers.Count() < 3
-                    && !confUsers.Any(x => x.Approver.UserID == currentUserId)
-                    && currentUserId != userId;
+            var canApprove = !isRegisteredUser && confUsers.Count() < 3
+                             && !confUsers.Any(x => x.Approver.UserID == currentUserId)
+                             && (currentUserId != userId || isAdmin);
 
             return canApprove;
         }
@@ -339,6 +337,28 @@ namespace EPlast.BLL.Services.UserProfiles
                 i =>
                     i.Include(g => g.UserProfile).ThenInclude(x => x.Gender));
             return user.UserProfile.Gender.Name;
+        }
+
+        public bool IsUserSameCity(UserDTO currentUser, UserDTO focusUser)
+        {
+            return currentUser.CityMembers.FirstOrDefault()?.CityId
+                       .Equals(focusUser.CityMembers.FirstOrDefault()?.CityId)
+                   == true;
+        }
+
+        public bool IsUserSameClub(UserDTO currentUser, UserDTO focusUser)
+        {
+            return currentUser.ClubMembers.FirstOrDefault()?.ClubId
+                       .Equals(focusUser.ClubMembers.FirstOrDefault()?.ClubId)
+                   == true;
+        }
+
+        public bool IsUserSameRegion(UserDTO currentUser, UserDTO focusUser)
+        {
+            return currentUser.RegionAdministrations.FirstOrDefault()?.RegionId
+                       .Equals(focusUser.RegionAdministrations.FirstOrDefault()?.RegionId) == true
+                   || currentUser.CityMembers.FirstOrDefault()?.City.RegionId
+                       .Equals(focusUser.CityMembers.FirstOrDefault()?.City.RegionId) == true;
         }
     }
 }

@@ -9,7 +9,7 @@ namespace EPlast.BLL.Interfaces.Club
     public interface IClubAccessService
     {
         Task<IEnumerable<ClubDTO>> GetClubsAsync(User user);
-        Task<IEnumerable<Tuple<int, string>>> GetAllClubsIdAndName(User user);
+        Task<IEnumerable<ClubForAdministrationDTO>> GetAllClubsIdAndName(User user);
         Task<bool> HasAccessAsync(User user, int ClubId);
         Task<bool> HasAccessAsync(User user);
     }

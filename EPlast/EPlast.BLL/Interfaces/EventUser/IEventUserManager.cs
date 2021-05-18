@@ -35,12 +35,12 @@ namespace EPlast.BLL.Interfaces.EventUser
         /// <param name="createDTO"></param>
         Task EditEventAsync(EventCreateDTO model);
 
+
         /// <summary>
         /// Put approved event
         /// </summary>
         /// <returns>A newly approved event</returns>
         /// <param name="eventId"></param>
         Task<int> ApproveEventAsync(int id);
-
     }
 }

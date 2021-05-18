@@ -149,27 +149,27 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<List<DistinctionDTO>>(resultValue);
         }
 
-        [Test]
-        public void GetUsersDistinctionsForTable_ReturnsOkObjectResult()
-        {
-            //Arrange
-            _distinctionService
-                .Setup(x => x.GetUsersDistinctionsForTable(It.IsAny<string>(),
-                    It.IsAny<int>(), It.IsAny<int>()))
-                .Returns(new List<UserDistinctionsTableObject>());
+        //[Test]
+        //public void GetUsersDistinctionsForTable_ReturnsOkObjectResult()
+        //{
+        //    //Arrange
+        //    _distinctionService
+        //        .Setup(x => x.GetUsersDistinctionsForTable(It.IsAny<string>(),
+        //            It.IsAny<int>(), It.IsAny<int>()))
+        //        .Returns(new List<UserDistinctionsTableObject>());
 
-            //Act
-            var result = _distinctionController.GetUsersDistinctionsForTable(It.IsAny<string>(),
-                It.IsAny<int>(), It.IsAny<int>());
-            var resultValue = (result as OkObjectResult)?.Value;
+        //    //Act
+        //    var result = _distinctionController.GetUsersDistinctionsForTable(It.IsAny<string>(),
+        //        It.IsAny<int>(), It.IsAny<int>());
+        //    var resultValue = (result as OkObjectResult)?.Value;
 
-            //Assert
-            _distinctionService.Verify();
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<List<UserDistinctionsTableObject>>(resultValue);
-        }
+        //    //Assert
+        //    _distinctionService.Verify();
+        //    Assert.IsNotNull(result);
+        //    Assert.IsInstanceOf<OkObjectResult>(result);
+        //    Assert.IsNotNull(resultValue);
+        //    Assert.IsInstanceOf<List<UserDistinctionsTableObject>>(resultValue);
+        //}
 
         [Test]
         public async Task GetDistinctionsOfGivenUser_ReturnsOkObjectResult()
