@@ -49,7 +49,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Properties\JSONAccessSettingFiles\RegionsBoardAccessSettings.json">
+    <Content Update="AccessSecurityModel\RegionsBoardAccessSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

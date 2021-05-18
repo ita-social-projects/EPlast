@@ -13,7 +13,7 @@
     "ManipulatePoster": true,
     "ManipulateDocument": true
   },
-  "Ãîëîâà Êðàþ": {
+  "Голова Краю": {
     "ViewInfo": true,
     "AddDecision": true,
     "EditGB": false,
@@ -27,7 +27,7 @@
     "ManipulatePoster": true,
     "ManipulateDocument": true
   },
-  "Ãîëîâà Îêðóãè": {
+  "Голова Округи": {
     "ViewInfo": true,
     "AddDecision": false,
     "EditGB": false,
@@ -41,7 +41,7 @@
     "ManipulatePoster": false,
     "ManipulateDocument": true
   },
-  "Ãîëîâà Ñòàíèö³": {
+  "Голова Станиці": {
     "ViewInfo": true,
     "AddDecision": false,
     "EditGB": false,
@@ -55,7 +55,7 @@
     "ManipulatePoster": false,
     "ManipulateDocument": false
   },
-  "Ãîëîâà Êóðåíÿ": {
+  "Голова Куреня": {
     "ViewInfo": true,
     "AddDecision": false,
     "EditGB": false,
@@ -69,7 +69,7 @@
     "ManipulatePoster": false,
     "ManipulateDocument": false
   },
-  "Ïðèõèëüíèê": {
+  "Прихильник": {
     "ViewInfo": true,
     "AddDecision": false,
     "EditGB": false,
@@ -83,7 +83,7 @@
     "ManipulatePoster": false,
     "ManipulateDocument": false
   },
-  "Ä³éñíèé ÷ëåí îðãàí³çàö³¿": {
+  "Дійсний член організації": {
     "ViewInfo": true,
     "AddDecision": false,
     "EditGB": false,
