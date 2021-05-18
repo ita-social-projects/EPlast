@@ -818,11 +818,11 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _userManager.Setup(r => r.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
             _ClubAccessService.Setup(r => r.GetAllClubsIdAndName(It.IsAny<User>()))
-                .ReturnsAsync(new List<Tuple<int, string>>());
+                .ReturnsAsync(new List<ClubForAdministrationDTO>());
             ClubController Clubcon = CreateClubController;
 
             //Act
-            var result = await Clubcon.GetClubsOptions();
+            var result = await Clubcon.GetClubsOptionsThatUserHasAccessTo();
 
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);

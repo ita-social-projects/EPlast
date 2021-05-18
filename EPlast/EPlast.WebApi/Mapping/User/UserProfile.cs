@@ -2,7 +2,6 @@
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.WebApi.Models.UserModels;
 using System.Linq;
-
 namespace EPlast.WebApi.Mapping.User
 {
     public class UserProfile : Profile
@@ -37,7 +36,36 @@ namespace EPlast.WebApi.Mapping.User
                 .ForMember(x => x.FacebookLink, q => q.MapFrom(w => w.UserProfile.FacebookLink))
                 .ForMember(x => x.TwitterLink, q => q.MapFrom(w => w.UserProfile.TwitterLink))
                 .ForMember(x => x.InstagramLink, q => q.MapFrom(w => w.UserProfile.InstagramLink))
-                .ReverseMap();
+                .ForMember(x => x.CityId, q => q.MapFrom(w => w.CityMembers.FirstOrDefault().City.ID))
+                .ForMember(x => x.ClubId, q => q.MapFrom(w => w.ClubMembers.FirstOrDefault().Club.ID))
+                .ForMember(x => x.RegionId, q => q.MapFrom(w => w.CityMembers.FirstOrDefault().City.RegionId));
+
+            CreateMap<UserViewModel, UserDTO>()
+                    .ForPath(x => x.UserProfile.ID, q => q.MapFrom(w => w.UserProfileID))
+                    .ForPath(x => x.UserProfile.UserID, q => q.MapFrom(w => w.ID))
+                    .ForPath(x => x.UserProfile.Nationality.Name, q => q.MapFrom(w => w.Nationality.Name))
+                    .ForPath(x => x.UserProfile.Nationality.ID, q => q.MapFrom(w => w.Nationality.ID))
+                    .ForPath(x => x.UserProfile.Religion.Name, q => q.MapFrom(w => w.Religion.Name))
+                    .ForPath(x => x.UserProfile.Religion.ID, q => q.MapFrom(w => w.Religion.ID))
+                    .ForPath(x => x.UserProfile.Degree.Name, q => q.MapFrom(w => w.Degree.Name))
+                    .ForPath(x => x.UserProfile.Degree.ID, q => q.MapFrom(w => w.Degree.ID))
+                    .ForPath(x => x.UserProfile.Education.ID, q => q.MapFrom(w => w.Education.ID))
+                    .ForPath(x => x.UserProfile.Education.PlaceOfStudy, q => q.MapFrom(w => w.Education.PlaceOfStudy))
+                    .ForPath(x => x.UserProfile.Education.Speciality, q => q.MapFrom(w => w.Education.Speciality))
+                    .ForPath(x => x.UserProfile.Work.ID, q => q.MapFrom(w => w.Work.ID))
+                    .ForPath(x => x.UserProfile.Work.PlaceOfwork, q => q.MapFrom(w => w.Work.PlaceOfwork))
+                    .ForPath(x => x.UserProfile.Work.Position, q => q.MapFrom(w => w.Work.Position))
+                    .ForPath(x => x.UserProfile.Address, q => q.MapFrom(w => w.Address))
+                    .ForPath(x => x.UserProfile.Gender.Name, q => q.MapFrom(w => w.Gender.Name))
+                    .ForPath(x => x.UserProfile.Gender.ID, q => q.MapFrom(w => w.Gender.ID))
+                    .ForPath(x => x.UserProfile.Birthday, q => q.MapFrom(w => w.Birthday))
+                    .ForPath(x => x.UserProfile.Pseudo, q => q.MapFrom(w => w.Pseudo))
+                    .ForPath(x => x.UserProfile.PublicPoliticalActivity, q => q.MapFrom(w => w.PublicPoliticalActivity))
+                    .ForPath(x => x.UserProfile.UpuDegree.Name, q => q.MapFrom(w => w.UpuDegree.Name))
+                    .ForPath(x => x.UserProfile.UpuDegree.ID, q => q.MapFrom(w => w.UpuDegree.ID))
+                    .ForPath(x => x.UserProfile.FacebookLink, q => q.MapFrom(w => w.FacebookLink))
+                    .ForPath(x => x.UserProfile.TwitterLink, q => q.MapFrom(w => w.TwitterLink))
+                    .ForPath(x => x.UserProfile.InstagramLink, q => q.MapFrom(w => w.InstagramLink));
         }
     }
 }

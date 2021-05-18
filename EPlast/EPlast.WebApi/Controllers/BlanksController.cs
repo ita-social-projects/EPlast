@@ -5,6 +5,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.Logging;
+using EPlast.DataAccess.Entities;
+using EPlast.Resources;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -15,17 +20,37 @@ namespace EPlast.WebApi.Controllers
         private readonly IBlankBiographyDocumentService _blankBiographyDocumentService;
         private readonly IBlankAchievementDocumentService _blankAchievementDocumentService;
         private readonly IBlankExtractFromUPUDocumentService _blankExtractFromUPUDocumentService;
-        private readonly IPdfService _pdfService;
+        private readonly IPdfService _pdfService; 
+        private readonly ILoggerService<BlanksController> _loggerService;
+        private readonly UserManager<User> _userManager;
+
 
         public BlanksController(IBlankBiographyDocumentService blankBiographyDocumentService,
            IBlankAchievementDocumentService blankAchievementDocumentService,
            IBlankExtractFromUPUDocumentService blankExtractFromUPUDocumentService,
-           IPdfService pdfService)
+           ILoggerService<BlanksController> loggerService,
+           IPdfService pdfService, UserManager<User> userManager)
         {
             _blankBiographyDocumentService = blankBiographyDocumentService;
             _blankAchievementDocumentService = blankAchievementDocumentService;
             _blankExtractFromUPUDocumentService = blankExtractFromUPUDocumentService;
             _pdfService = pdfService;
+            _loggerService = loggerService;
+            _userManager = userManager;
+        }
+
+        private async Task<bool> HasAccessSupporterAndRegisteredAsync(string userId)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var roles = await _userManager.GetRolesAsync(currentUser);
+            if (currentUser.Id == userId)
+                return true;
+            foreach (var role in roles)
+            {
+                if (Roles.HeadsAdminAndPlastun.Contains(role))
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -79,7 +104,11 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetDocumentByUserId(string userId)
         {
-            return Ok(await _blankBiographyDocumentService.GetDocumentByUserId(userId));
+            var currentUser = await _userManager.GetUserAsync(User);
+            if(await HasAccessSupporterAndRegisteredAsync(userId))
+                return Ok(await _blankBiographyDocumentService.GetDocumentByUserId(userId));
+            _loggerService.LogError($"User (id: {currentUser.Id}) hasn't access to document (id: {userId})");
+            return StatusCode(StatusCodes.Status403Forbidden);
         }
 
         /// <summary>
@@ -91,7 +120,11 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetExtractFromUPUByUserId(string userId)
         {
-            return Ok(await _blankExtractFromUPUDocumentService.GetDocumentByUserId(userId));
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (await HasAccessSupporterAndRegisteredAsync(userId))
+                return Ok(await _blankExtractFromUPUDocumentService.GetDocumentByUserId(userId));
+            _loggerService.LogError($"User (id: {currentUser.Id}) hasn't access to ExtractFromUPUDocument (id: {userId})");
+            return StatusCode(StatusCodes.Status403Forbidden);
         }
 
         [HttpGet("InfinityScroll")]
@@ -110,7 +143,11 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetAchievementDocumentsByUserId(string userId)
         {
-            return Ok(await _blankAchievementDocumentService.GetDocumentsByUserIdAsync(userId));
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (await HasAccessSupporterAndRegisteredAsync(userId))
+                return Ok(await _blankAchievementDocumentService.GetDocumentsByUserIdAsync(userId));
+            _loggerService.LogError($"User (id: {currentUser.Id}) hasn't access to achievement documents (id: {userId})");
+            return StatusCode(StatusCodes.Status403Forbidden);
         }
 
         /// <summary>
