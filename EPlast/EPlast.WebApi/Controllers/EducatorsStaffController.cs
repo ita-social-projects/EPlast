@@ -199,7 +199,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("findUserForRedirect/{EduStaffId}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.HeadsAdminPlastunAndSupporter)]
         public async Task<string> GetUserByEduStaff(int EduStaffId)
         {
             string UserId = await _kvService.GetUserByEduStaff(EduStaffId);
