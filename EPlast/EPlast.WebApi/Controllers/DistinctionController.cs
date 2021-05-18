@@ -102,6 +102,22 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             return Ok(userDistinctions);
         }
+
+        /// <summary>
+        /// Get all Users Distinctions
+        /// </summary>
+        /// <param name="searchedData">Searched Data</param>
+        /// <param name="page">Current page on pagination</param>
+        /// <param name="pageSize">Number of records per page</param>
+        /// <returns>List of UserDistinctionsTableObject</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("UsersDistinctionsForTable")]
+        public IActionResult GetUsersDistinctionsForTable(string searchedData, int page, int pageSize)
+        {
+            var distinctions = _distinctionService.GetUsersDistinctionsForTable(searchedData, page, pageSize);
+            return Ok(distinctions);
+        }
+
         /// <summary>
         /// Delete distinction type by id
         /// </summary>
