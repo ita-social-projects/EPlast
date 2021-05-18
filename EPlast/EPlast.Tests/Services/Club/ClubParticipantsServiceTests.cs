@@ -570,6 +570,47 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
+        public async Task ClubOfApprovedMemberTest_ReturnsNull()
+        {
+            //Arrange 
+            _repoWrapper
+                .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
+                .ReturnsAsync((null as ClubMembers));
+            //Act
+            var result = await _clubParticipantsService.ClubOfApprovedMember("123v");
+            //Assert
+            Assert.IsNull(result);
+            _repoWrapper.Verify();
+        }
+
+        [Test]
+        public async Task ClubOfApprovedMemberTest_ReturnsNullName()
+        {
+            //Arrange 
+            _repoWrapper
+                .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
+                .ReturnsAsync(new ClubMembers()
+                {
+                    ID = 1,
+                    UserId = "123v",
+                    IsApproved = false,
+                    Club = new DataAccess.Entities.Club
+                    {
+                        ID = 1,
+                        Name = "city name"
+                    },
+                    ClubId = 1
+                });
+            //Act
+            var result = await _clubParticipantsService.ClubOfApprovedMember("123v");
+            //Assert
+            Assert.IsNull(result);
+            _repoWrapper.Verify();
+        }
+
+        [Test]
         public async Task RemoveFollowerAsync()
         {
             // Arrange

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.WebApi.Controllers
@@ -158,7 +159,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">OK</response>
         /// <response code="400">Bad Request</response> 
         [HttpDelete("{id:int}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAdminAndPlastun)]
         public async Task<IActionResult> Delete(int id)
         {
             return StatusCode(await _actionManager.DeleteEventAsync(id));
@@ -190,6 +191,8 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> SubscribeOnEvent(int eventId)
         {
+            if ((await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User))).Contains(Roles.RegisteredUser))
+                return StatusCode(StatusCodes.Status403Forbidden);
             return StatusCode(await _actionManager.SubscribeOnEventAsync(eventId, await _userManager.GetUserAsync(User)));
         }
 

@@ -1,4 +1,6 @@
-﻿using EPlast.BLL.DTO.EventUser;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
+using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.DataAccess.Entities;
@@ -8,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using EPlast.Resources;
+using Microsoft.AspNetCore.Http;
 
 namespace EPlast.Tests.Controllers
 {
@@ -34,18 +38,40 @@ namespace EPlast.Tests.Controllers
         public async Task GetEventUserByUserId_ReturnsOkObjectResult()
         {
             // Arrange
+            userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns("1");
+            userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>(){Roles.Admin});
             eventUserService
                 .Setup((x) => x.EventUserAsync(It.IsAny<string>(), It.IsAny<User>()))
                 .ReturnsAsync(CreateFakeEventUser());
 
             // Act
-            var result = await eventsUsersController.GetEventUserByUserId(It.IsAny<string>());
+            var result = await eventsUsersController.GetEventUserByUserId("2");
             var resultValue = (result as ObjectResult).Value;
 
             // Assert
             Assert.NotNull(resultValue);
             Assert.IsInstanceOf<EventUserDTO>(resultValue);
             Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetEventUserByUserId_Returns403Forbidden()
+        {
+            // Arrange
+            userManager.Setup(x=>x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns("1");
+            userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
+            eventUserService
+                .Setup((x) => x.EventUserAsync(It.IsAny<string>(), It.IsAny<User>()))
+                .ReturnsAsync(CreateFakeEventUser());
+
+            var expected = StatusCodes.Status403Forbidden;
+
+            // Act
+            var result = await eventsUsersController.GetEventUserByUserId("2");
+            var actual = (result as StatusCodeResult).StatusCode;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [Test]

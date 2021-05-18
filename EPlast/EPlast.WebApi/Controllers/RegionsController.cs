@@ -131,7 +131,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPut("EditRegion/{regId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Голова Округу")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin+", "+Roles.OkrugaHead)]
         public async Task<IActionResult> EditRegion(int regId, RegionDTO region)
         {
             await _regionService.EditRegionAsync(regId, region);

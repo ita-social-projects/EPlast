@@ -1,10 +1,17 @@
 ﻿using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.Interfaces.ActiveMembership;
+using EPlast.BLL.Interfaces.Logging;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities;
+using Microsoft.AspNetCore.Identity;
+using System.Linq;
+using Microsoft.AspNetCore.Http;
+using EPlast.BLL.Interfaces.UserProfiles;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -17,12 +24,37 @@ namespace EPlast.WebApi.Controllers
         private readonly IPlastDegreeService _plastDegreeService;
         private readonly IAccessLevelService _accessLevelService;
         private readonly IUserDatesService _userDatesService;
+        private readonly ILoggerService<ActiveMembershipController> _loggerService;
+        private readonly UserManager<User> _userManager;
+        private readonly IUserService _userService;
 
-        public ActiveMembershipController(IPlastDegreeService plastDegreeService, IAccessLevelService accessLevelService, IUserDatesService userDatesService)
+        public ActiveMembershipController(IPlastDegreeService plastDegreeService,
+            IAccessLevelService accessLevelService, IUserDatesService userDatesService,
+            ILoggerService<ActiveMembershipController> loggerService,
+            UserManager<User> userManager, IUserService userService)
         {
             _plastDegreeService = plastDegreeService;
             _accessLevelService = accessLevelService;
             _userDatesService = userDatesService;
+            _loggerService = loggerService;
+            _userManager = userManager;
+            _userService = userService;
+        }
+
+        private async Task<bool> HasAccessAsync(string userId)
+        {
+            var currentUser = await _userService.GetUserAsync((await _userManager.GetUserAsync(User)).Id);
+            var focusUser = await _userService.GetUserAsync(userId);
+            var roles = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User));
+            var isUserAdmin = roles.Contains(Roles.Admin);
+            var isUserHeadOfCity = roles.Contains(Roles.CityHead);
+            var isUserHeadOfClub = roles.Contains(Roles.KurinHead);
+            var isUserHeadOfRegion = roles.Contains(Roles.OkrugaHead);
+            if (isUserAdmin || (isUserHeadOfClub && _userService.IsUserSameClub(currentUser, focusUser)) || (isUserHeadOfCity && _userService.IsUserSameCity(currentUser, focusUser)) ||
+                (isUserHeadOfRegion && _userService.IsUserSameRegion(currentUser, focusUser)))
+                return true;
+            _loggerService.LogError($"No access.");
+            return false;
         }
 
         [HttpGet("degree")]
@@ -43,11 +75,18 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _plastDegreeService.GetUserPlastDegreesAsync(userId));
         }
 
-        [Authorize(Roles = Roles.DegreeAssignRoles)]
+        [Authorize(Roles = Roles.Admin+","+Roles.RegionBoardHead+","+Roles.OkrugaHead+","+Roles.CityHead)]
         [HttpPost("degree")]
         public async Task<IActionResult> AddPlastDegreeForUser(UserPlastDegreePostDTO userPlastDegreePostDTO)
         {
-            if (await _plastDegreeService.AddPlastDegreeForUserAsync(userPlastDegreePostDTO))
+            if (!await HasAccessAsync(userPlastDegreePostDTO.UserId))
+            {
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
+            if (await _plastDegreeService.AddPlastDegreeForUserAsync(userPlastDegreePostDTO) &&
+                (((await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User))).Contains(Roles.CityHead) 
+                 && new List<int>() { 1, 7 }.Contains(userPlastDegreePostDTO.PlastDegreeId)) || 
+                 !(await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User))).Contains(Roles.CityHead)))
             {
                 return Created("GetAllDergees", userPlastDegreePostDTO.PlastDegreeId);
             }
@@ -55,10 +94,14 @@ namespace EPlast.WebApi.Controllers
             return BadRequest();
         }
 
-        [Authorize(Roles = Roles.DegreeAssignRoles)]
+        [Authorize(Roles = Roles.Admin + "," + Roles.RegionBoardHead + "," + Roles.OkrugaHead)]
         [HttpDelete("degree/{userId}/{plastDegreeId}")]
         public async Task<IActionResult> DeletePlastDegreeForUser(string userId, int plastDegreeId)
         {
+            if (!await HasAccessAsync(userId))
+            {
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
             if (await _plastDegreeService.DeletePlastDegreeForUserAsync(userId, plastDegreeId))
             {
                 return NoContent();
@@ -67,11 +110,15 @@ namespace EPlast.WebApi.Controllers
             return BadRequest();
         }
 
-        [Authorize(Roles = Roles.DegreeAssignRoles)]
+        [Authorize(Roles = Roles.Admin + "," + Roles.RegionBoardHead + "," + Roles.OkrugaHead)]
         [HttpPut("degree/setAsCurrent/{userId}/{plastDegreeId}")]
         public async Task<IActionResult> SetPlastDegreeAsCurrent(string userId, int plastDegreeId)
         {
-            if(await _plastDegreeService.SetPlastDegreeForUserAsCurrentAsync(userId, plastDegreeId))
+            if (!await HasAccessAsync(userId))
+            {
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
+            if (await _plastDegreeService.SetPlastDegreeForUserAsCurrentAsync(userId, plastDegreeId))
             {
                 return NoContent();
             }
@@ -79,10 +126,14 @@ namespace EPlast.WebApi.Controllers
             return BadRequest();
         }
 
-        [Authorize(Roles = Roles.DegreeAssignRoles)]
+        [Authorize(Roles = Roles.Admin + "," + Roles.RegionBoardHead + "," + Roles.OkrugaHead)]
         [HttpPut("degree/endDate")]
         public async Task<IActionResult> AddEndDatePlastDegreeForUser(UserPlastDegreePutDTO userPlastDegreePutDTO)
         {
+            if (!await HasAccessAsync(userPlastDegreePutDTO.UserId))
+            {
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
             if (await _plastDegreeService.AddEndDateForUserPlastDegreeAsync(userPlastDegreePutDTO))
             {
                 return NoContent();
@@ -90,7 +141,7 @@ namespace EPlast.WebApi.Controllers
 
             return BadRequest();
         }
-
+        
         [HttpGet("dates/{userId}")]
         public async Task<IActionResult> GetUserDates(string userId)
         {
@@ -104,10 +155,14 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [Authorize(Roles = Roles.DegreeAssignRoles)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
         [HttpPost("dates")]
         public async Task<IActionResult> ChangeUserDates(UserMembershipDatesDTO userMembershipDatesDTO)
         {
+            if (!await HasAccessAsync(userMembershipDatesDTO.UserId))
+            {
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
             if (await _userDatesService.ChangeUserMembershipDatesAsync(userMembershipDatesDTO))
             {
                 return Ok(userMembershipDatesDTO);
@@ -116,6 +171,7 @@ namespace EPlast.WebApi.Controllers
             return BadRequest();
         }
 
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPut("dates/AddNew/{userId}")]
         public async Task<IActionResult> InitializeUserDates(string userId)
         {

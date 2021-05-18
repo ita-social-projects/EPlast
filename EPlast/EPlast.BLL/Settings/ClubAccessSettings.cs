@@ -26,9 +26,7 @@ namespace EPlast.BLL.Settings
                 return new Dictionary<string, IClubAccessGetter>
                 {
                     { AdminRoleName,  new ClubAccessForAdminGetter(_repositoryWrapper) },
-                    { ClubAdminRoleName, new ClubAccessForClubAdminGetter(_repositoryWrapper) },
-                    { RegionAdminRoleName, null },
-                    { CityAdminRoleName, null }
+                    { ClubAdminRoleName, new ClubAccessForClubAdminGetter(_repositoryWrapper) }
                 };
             }
         }

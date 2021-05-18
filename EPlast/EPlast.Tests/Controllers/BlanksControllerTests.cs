@@ -9,7 +9,12 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.Logging;
+using EPlast.DataAccess.Entities;
+using EPlast.Resources;
+using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.Tests.Controllers
 {
@@ -20,7 +25,10 @@ namespace EPlast.Tests.Controllers
         Mock<IBlankAchievementDocumentService> _mockBlankAchievementDocumentService;
         Mock<IBlankExtractFromUPUDocumentService> _mockBlankExtractFromUPUDocumentService;
         Mock<IPdfService> _pdfService;
+        Mock<ILoggerService<BlanksController>> _mockLoggerService;
+        private Mock<UserManager<User>> _mockUserManager;
         BlanksController _blanksController;
+        
 
         [SetUp]
         public void SetUp()
@@ -29,10 +37,13 @@ namespace EPlast.Tests.Controllers
             _mockBlankAchievementDocumentService = new Mock<IBlankAchievementDocumentService>();
             _mockBlankExtractFromUPUDocumentService = new Mock<IBlankExtractFromUPUDocumentService>();
             _pdfService = new Mock<IPdfService>();
+            _mockLoggerService = new Mock<ILoggerService<BlanksController>>();
+            var store = new Mock<IUserStore<User>>();
+            _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _blanksController = new BlanksController(_mockBiographyService.Object,
                 _mockBlankAchievementDocumentService.Object,
-                _mockBlankExtractFromUPUDocumentService.Object,
-                _pdfService.Object);
+                _mockBlankExtractFromUPUDocumentService.Object, _mockLoggerService.Object,
+                _pdfService.Object, _mockUserManager.Object);
         }
 
         [Test]
@@ -99,33 +110,62 @@ namespace EPlast.Tests.Controllers
         public async Task GetDocumentByUserId_ReturnsOkObjectResult()
         {
             //Arrange
+            string userId = "gh34tg";
+            _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User() { Id = userId });
+            _mockUserManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Admin});
             _mockBiographyService
-                .Setup(x => x.GetDocumentByUserId("gh34tg"))
+                .Setup(x => x.GetDocumentByUserId(userId))
                 .ReturnsAsync(GetBlankBiographyDocumentDTO());
 
             //Act
-            var document = await _blanksController.GetDocumentByUserId("gh34tg");
+            var document = await _blanksController.GetDocumentByUserId("1");
             OkObjectResult result = document as OkObjectResult;
 
             //Assert
             _mockBiographyService.Verify();
             Assert.NotNull(document);
-            Assert.NotNull(result.Value);
             Assert.IsInstanceOf<ObjectResult>(document);
             Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
+        }
+
+        [Test]
+        public async Task GetDocumentByUserId_Returns403Forbidden()
+        {
+            //Arrange
+            string userId = "gh34tg";
+            _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User() { Id = "" });
+            _mockUserManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
+            _mockBiographyService
+                .Setup(x => x.GetDocumentByUserId(userId))
+                .ReturnsAsync(GetBlankBiographyDocumentDTO());
+
+            var expected = StatusCodes.Status403Forbidden;
+
+            // Act
+            var result = await _blanksController.GetDocumentByUserId(userId);
+            var actual = (result as StatusCodeResult).StatusCode;
+
+            // Assert
+            _mockLoggerService.Verify((x) => x.LogError(It.IsAny<string>()), Times.Once);
+            _mockUserManager.Verify();
+            Assert.AreEqual(expected, actual);
         }
 
         [Test]
         public async Task GetExtractFromUPUByUserId_ReturnsOkObjectResult()
         {
             //Arrange
+            string userId = "gh34tg";
+            _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User() { Id = userId });
             _mockBlankExtractFromUPUDocumentService
-                .Setup(x => x.GetDocumentByUserId("gh34tg"))
+                .Setup(x => x.GetDocumentByUserId(userId))
                 .ReturnsAsync(GetExtractFromUPUDocumentsDTO());
 
-
             //Act
-            var document = await _blanksController.GetExtractFromUPUByUserId("gh34tg");
+            var document = await _blanksController.GetExtractFromUPUByUserId(userId);
             OkObjectResult result = document as OkObjectResult;
 
             //Assert
@@ -133,6 +173,30 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result.Value);
             Assert.IsInstanceOf<ObjectResult>(document);
             Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
+        }
+
+        [Test]
+        public async Task GetExtractFromUPUByUserId_Returns403Forbidden()
+        {
+            //Arrange
+            string userId = "gh34tg";
+            _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User() { Id = "" });
+            _mockUserManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
+            _mockBlankExtractFromUPUDocumentService
+                .Setup(x => x.GetDocumentByUserId(userId))
+                .ReturnsAsync(GetExtractFromUPUDocumentsDTO());
+
+            var expected = StatusCodes.Status403Forbidden;
+
+            //Act
+            var result = await _blanksController.GetExtractFromUPUByUserId(userId);
+            var actual = (result as StatusCodeResult).StatusCode;
+
+            // Assert
+            _mockLoggerService.Verify((x) => x.LogError(It.IsAny<string>()), Times.Once);
+            _mockUserManager.Verify();
+            Assert.AreEqual(expected, actual);
         }
 
         [Test]
@@ -233,6 +297,8 @@ namespace EPlast.Tests.Controllers
         public async Task GetAchievementDocumentsByUserId_ReturnsOkObjectResult(string userId)
         {
             //Arrange
+            _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User() {Id = userId});
             _mockBlankAchievementDocumentService.Setup(x => x.GetDocumentsByUserIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(new List<AchievementDocumentsDTO>());
 
@@ -246,6 +312,28 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(okObjectResult.Value);
             Assert.AreEqual("List`1", okObjectResult.Value.GetType().Name);
             Assert.IsInstanceOf<ObjectResult>(result);
+        }
+
+        [TestCase("userId")]
+        public async Task GetAchievementDocumentsByUserId_Returns403Forbidden(string userId)
+        {
+            //Arrange
+            _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User() { Id = "" });
+            _mockUserManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
+            _mockBlankAchievementDocumentService.Setup(x => x.GetDocumentsByUserIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(new List<AchievementDocumentsDTO>());
+
+            var expected = StatusCodes.Status403Forbidden;
+
+            // Act
+            var result = await _blanksController.GetAchievementDocumentsByUserId(userId);
+            var actual = (result as StatusCodeResult).StatusCode;
+
+            // Assert
+            _mockLoggerService.Verify((x) => x.LogError(It.IsAny<string>()), Times.Once);
+            _mockUserManager.Verify();
+            Assert.AreEqual(expected, actual);
         }
 
         [Test]

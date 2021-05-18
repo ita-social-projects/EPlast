@@ -68,7 +68,7 @@ namespace EPlast.BLL
 
         public async Task<IEnumerable<EducatorsStaffDTO>> GetKVsOfGivenUser(string UserId)
         {
-            var Kadras = _mapper.Map<IEnumerable<EducatorsStaff>,IEnumerable<EducatorsStaffDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.UserId == UserId));
+            var Kadras = _mapper.Map<IEnumerable<EducatorsStaff>, IEnumerable<EducatorsStaffDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.UserId == UserId));
             return Kadras;
         }
 

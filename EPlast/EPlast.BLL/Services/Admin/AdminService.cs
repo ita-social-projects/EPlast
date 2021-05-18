@@ -2,6 +2,7 @@
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
+using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Region;
@@ -15,7 +16,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BLL.DTO.UserProfiles;
 
 namespace EPlast.BLL.Services
 {
@@ -95,6 +95,7 @@ namespace EPlast.BLL.Services
                 case supporter:
                 case plastun:
                 case interested:
+                case registeredUser:
                     if (roles.Contains(supporter))
                     {
                         await _userManager.RemoveFromRoleAsync(user, supporter);
@@ -267,6 +268,5 @@ namespace EPlast.BLL.Services
         {
             return _repoWrapper.AdminType.GetUsersCountAsync();
         }
-
     }
 }
