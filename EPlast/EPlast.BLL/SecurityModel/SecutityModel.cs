@@ -12,7 +12,7 @@ namespace EPlast.BLL.SecurityModel
     {
         private Dictionary<string, Dictionary<string, bool>> _accessDictionary;
         private readonly IUserManagerService _userManagerService;
-        private const string SourceUrl = @"Properties\JSONAccessSettingFiles\";
+        private const string SourceUrl = @"AccessSecurityModel\";
 
         public SecurityModel(IUserManagerService userManagerService)
         {
