@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.AboutBase;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Interfaces.AboutBase
 {
@@ -10,10 +11,10 @@ namespace EPlast.BLL.Interfaces.AboutBase
 
         Task<SubsectionDTO> GetSubsection(int id);
 
-        Task AddSubsection(SubsectionDTO subsectionDTO);
+        Task AddSubsection(SubsectionDTO subsectionDTO, User user);
 
-        Task ChangeSubsection(SubsectionDTO subsectionDTO);
+        Task ChangeSubsection(SubsectionDTO subsectionDTO, User user);
 
-        Task DeleteSubsection(int id);
+        Task DeleteSubsection(int id, User user);
     }
 }

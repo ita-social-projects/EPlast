@@ -15,22 +15,27 @@ namespace EPlast.BLL.Services.AboutBase
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
+        private readonly UserManager<User> _userManager;
 
-        public AboutBaseSubsectionService(IRepositoryWrapper repositoryWrapper, IMapper mapper)
+        public AboutBaseSubsectionService(IRepositoryWrapper repositoryWrapper, IMapper mapper, UserManager<User> userManager)
         {
             _repoWrapper = repositoryWrapper;
             _mapper = mapper;
+            _userManager = userManager;
         }
+    
 
-        public async Task AddSubsection(SubsectionDTO subsectionDTO)
+        public async Task AddSubsection(SubsectionDTO subsectionDTO, User user)
         {
+            await CheckIfAdminAsync(user);
             var subsection = _mapper.Map<SubsectionDTO, Subsection>(subsectionDTO);
             await _repoWrapper.AboutBaseSubsection.CreateAsync(subsection);
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task ChangeSubsection(SubsectionDTO subsectionDTO)
+        public async Task ChangeSubsection(SubsectionDTO subsectionDTO, User user)
         {
+            await CheckIfAdminAsync(user);
             var subsection = await _repoWrapper.AboutBaseSubsection.GetFirstAsync(x => x.Id == subsectionDTO.Id);
             subsection.Title = subsectionDTO.Title;
             subsection.Description = subsectionDTO.Description;
@@ -38,8 +43,9 @@ namespace EPlast.BLL.Services.AboutBase
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task DeleteSubsection(int id)
+        public async Task DeleteSubsection(int id, User user)
         {
+            await CheckIfAdminAsync(user);
             var subsection = (await _repoWrapper.AboutBaseSubsection.GetFirstAsync(subsection => subsection.Id == id));
             if (subsection == null)
                 throw new ArgumentNullException($"Subsection with {id} not found");
@@ -56,6 +62,12 @@ namespace EPlast.BLL.Services.AboutBase
         {
             var subsection = _mapper.Map<SubsectionDTO>(await _repoWrapper.AboutBaseSubsection.GetFirstAsync(s => s.Id == id));
             return subsection;
+        }
+
+        public async Task CheckIfAdminAsync(User user)
+        {
+            if (!(await _userManager.GetRolesAsync(user)).Contains(Roles.Admin))
+                throw new UnauthorizedAccessException();
         }
     }
 }

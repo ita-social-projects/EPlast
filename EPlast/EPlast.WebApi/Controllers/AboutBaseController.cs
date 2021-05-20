@@ -24,15 +24,18 @@ namespace EPlast.WebApi.Controllers
         private readonly IAboutBaseSectionService _aboutBaseSectionService;
         private readonly IAboutBaseSubsectionService _aboutBaseSubsectionService;
         private readonly IMapper _mapper;
+        private readonly UserManager<User> _userManager;
 
         public AboutBaseController(
             IAboutBaseSectionService aboutBaseSectionService, 
             IAboutBaseSubsectionService aboutBaseSubsectionService, 
-            IMapper mapper)
+            IMapper mapper,
+            UserManager<User> userManager)
         {
             _aboutBaseSectionService = aboutBaseSectionService;
             _aboutBaseSubsectionService = aboutBaseSubsectionService;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         [HttpGet("AboutBaseSection/{id}")]
@@ -72,7 +75,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                await _aboutBaseSectionService.DeleteSection(id);
+                await _aboutBaseSectionService.DeleteSection(id, await _userManager.GetUserAsync(User));
                 return NoContent();
             }
             catch (NullReferenceException)
@@ -86,7 +89,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                await _aboutBaseSubsectionService.DeleteSubsection(id);
+                await _aboutBaseSubsectionService.DeleteSubsection(id, await _userManager.GetUserAsync(User));
                 return NoContent();
             }
             catch (NullReferenceException)
@@ -102,7 +105,7 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    await _aboutBaseSectionService.AddSection(sectionDTO);
+                    await _aboutBaseSectionService.AddSection(sectionDTO, await _userManager.GetUserAsync(User));
                     return NoContent();
                 }
                 catch
@@ -120,7 +123,7 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    await _aboutBaseSubsectionService.AddSubsection(subsectionDTO);
+                    await _aboutBaseSubsectionService.AddSubsection(subsectionDTO, await _userManager.GetUserAsync(User));
                     return NoContent();
                 }
                 catch
@@ -138,7 +141,7 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    await _aboutBaseSectionService.ChangeSection(sectionDTO);
+                    await _aboutBaseSectionService.ChangeSection(sectionDTO, await _userManager.GetUserAsync(User));
                     return NoContent();
                 }
                 catch (NullReferenceException)
@@ -156,7 +159,7 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    await _aboutBaseSubsectionService.ChangeSubsection(subsectionDTO);
+                    await _aboutBaseSubsectionService.ChangeSubsection(subsectionDTO, await _userManager.GetUserAsync(User));
                     return NoContent();
                 }
                 catch (NullReferenceException)
