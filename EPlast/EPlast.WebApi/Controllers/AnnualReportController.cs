@@ -340,7 +340,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        private async Task<IActionResult> tryBlocks(int id, bool city)
+        private async Task<IActionResult> CheckBlocks(int id, bool city)
         {
             try
             {
@@ -351,10 +351,7 @@ namespace EPlast.WebApi.Controllers
                     return StatusCode(StatusCodes.Status200OK,
                         new {hasCreated = true, message = _localizer[city ? "HasReport" : "ClubHasReport"].Value});
                 }
-                else
-                {
-                    return StatusCode(StatusCodes.Status200OK, new { hasCreated = false });
-                }
+                return StatusCode(StatusCodes.Status200OK, new { hasCreated = false });
             }
             catch (NullReferenceException)
             {
@@ -379,7 +376,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("checkCreated/{cityId:int}")]
         public async Task<IActionResult> CheckCreated(int cityId)
         {
-            return await tryBlocks(cityId, true);
+            return await CheckBlocks(cityId, true);
         }
 
         /// <summary>
@@ -409,7 +406,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("checkCreatedClubReport/{clubId:int}")]
         public async Task<IActionResult> CheckCreatedClubAnnualReport(int clubId)
         {
-            return await tryBlocks(clubId, false);
+            return await CheckBlocks(clubId, false);
         }
 
         /// <summary>
@@ -628,10 +625,7 @@ namespace EPlast.WebApi.Controllers
                     return StatusCode(StatusCodes.Status403Forbidden);
                 }
             }
-            else
-            {
-                return BadRequest(ModelState);
-            }
+            return BadRequest(ModelState);
         }
 
     }

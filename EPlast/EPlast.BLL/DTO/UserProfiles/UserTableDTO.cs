@@ -20,5 +20,6 @@ namespace EPlast.BLL.DTO
         public string UserRoles { get; set; }
         public string Comment { get; set; }
         public string UPUDegree { get; set; }
+        public int UserSystemId { get; set; }
     }
 }

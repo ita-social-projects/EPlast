@@ -34,5 +34,8 @@ namespace EPlast.WebApi.Models.User
         public string ImagePath { get; set; }
         public string City { get; set; }
         public string Club { get; set; }
+        public int CityId { get; set; }
+        public int ClubId { get; set; }
+        public int RegionId { get; set; }
     }
 }
