@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20210519151605_RegionAnualReportStatus")]
+    partial class RegionAnualReportStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -125,6 +127,38 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("NewCityAdminId");
 
                     b.ToTable("AnnualReports");
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.AnnualReportTableObject", b =>
+                {
+                    b.Property<bool>("CanManage")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("CityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CityName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RegionName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Total")
+                        .HasColumnType("int");
+
+                    b.ToTable("AnnualReportTableObjects");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Approver", b =>
@@ -579,6 +613,35 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("ClubAnnualReports");
                 });
 
+            modelBuilder.Entity("EPlast.DataAccess.Entities.ClubAnnualReportTableObject", b =>
+                {
+                    b.Property<bool>("CanManage")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ClubId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ClubName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Total")
+                        .HasColumnType("int");
+
+                    b.ToTable("ClubAnnualReportTableObjects");
+                });
+
             modelBuilder.Entity("EPlast.DataAccess.Entities.ClubDocumentType", b =>
                 {
                     b.Property<int>("ID")
@@ -787,6 +850,44 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("DecesionTargets");
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.Decision.DecisionTableObject", b =>
+                {
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DecisionStatusType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DecisionTarget")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GoverningBody")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Total")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable("DecisionTableObject");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Degree", b =>
@@ -1621,6 +1722,26 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("RegionAnnualReports");
                 });
 
+            modelBuilder.Entity("EPlast.DataAccess.Entities.RegionAnnualReportTableObject", b =>
+                {
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RegionName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Total")
+                        .HasColumnType("int");
+
+                    b.ToTable("RegionAnnualReportTableObjects");
+                });
+
             modelBuilder.Entity("EPlast.DataAccess.Entities.RegionDocuments", b =>
                 {
                     b.Property<int>("ID")
@@ -1745,6 +1866,41 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("UserDistinctions");
                 });
 
+            modelBuilder.Entity("EPlast.DataAccess.Entities.UserEntities.UserDistinctionsTableObject", b =>
+                {
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DistinctionName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reporter")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Total")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable("UserDistinctionsTableObject");
+                });
+
             modelBuilder.Entity("EPlast.DataAccess.Entities.UserEntities.UserPrecaution", b =>
                 {
                     b.Property<int>("Id")
@@ -1787,6 +1943,50 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserPrecautions");
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.UserEntities.UserPrecautionsTableObject", b =>
+                {
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PrecautionName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reporter")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Total")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable("UserPrecautionsTableObject");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.UserMembershipDates", b =>
@@ -1963,6 +2163,53 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("WorkId");
 
                     b.ToTable("UserProfiles");
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.UserTableObject", b =>
+                {
+                    b.Property<DateTime?>("Birthday")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CityName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClubName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Gender")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("Index")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PlastDegree")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RegionName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Roles")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UPUDegree")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable("UserTableObjects");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Work", b =>

@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.Resources;
 
 namespace EPlast.BLL.Services.Region
 {
@@ -186,6 +187,59 @@ namespace EPlast.BLL.Services.Region
         public async Task<IEnumerable<RegionAnnualReportTableObject>> GetAllRegionsReportsAsync(string searchedData, int page, int pageSize, int sortKey)
         {
             return await _repositoryWrapper.RegionAnnualReports.GetRegionAnnualReportsAsync(searchedData, page, pageSize, sortKey);
+        }
+
+        private async Task SaveLastConfirmedAsync(int regionId)
+        {
+            var regionAnnualReport = await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(
+                predicate: a => a.RegionId == regionId && a.Status == AnnualReportStatus.Confirmed);
+            if (regionAnnualReport != null)
+            {
+                regionAnnualReport.Status = AnnualReportStatus.Saved;
+                _repositoryWrapper.RegionAnnualReports.Update(regionAnnualReport);
+            }
+        }
+
+        ///<inheritdoc/>
+        public async Task ConfirmAsync(IEnumerable<string> roles, int id)
+        {
+            var regionAnnualReport = await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(
+                predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed);
+            if (!roles.Contains(Roles.Admin))
+            {
+                throw new UnauthorizedAccessException();
+            }
+            regionAnnualReport.Status = AnnualReportStatus.Confirmed;
+            _repositoryWrapper.RegionAnnualReports.Update(regionAnnualReport);
+            await SaveLastConfirmedAsync(regionAnnualReport.RegionId);
+            await _repositoryWrapper.SaveAsync();
+        }
+
+        ///<inheritdoc/>
+        public async Task CancelAsync(IEnumerable<string> roles, int id)
+        {
+            var regionAnnualReport = await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(
+                predicate: a => a.ID == id && a.Status == AnnualReportStatus.Confirmed);
+            if (!roles.Contains(Roles.Admin))
+            {
+                throw new UnauthorizedAccessException();
+            }
+            regionAnnualReport.Status = AnnualReportStatus.Unconfirmed;
+            _repositoryWrapper.RegionAnnualReports.Update(regionAnnualReport);
+            await _repositoryWrapper.SaveAsync();
+        }
+
+        ///<inheritdoc/>
+        public async Task DeleteAsync(IEnumerable<string> roles, int id)
+        {
+            var regionAnnualReport = await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(
+                predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed);
+            if (!roles.Contains(Roles.Admin))
+            {
+                throw new UnauthorizedAccessException();
+            }
+            _repositoryWrapper.RegionAnnualReports.Delete(regionAnnualReport);
+            await _repositoryWrapper.SaveAsync();
         }
 
     }
