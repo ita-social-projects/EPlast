@@ -24,7 +24,7 @@ namespace EPlast.WebApi.Mapping.User
                 .ForMember(x => x.ClubId, q => q.MapFrom(w => w.ClubMembers.FirstOrDefault().Club.ID))
                 .ForMember(x => x.RegionId, q => q.MapFrom(w => w.CityMembers.FirstOrDefault().City.RegionId));
 
-            CreateMap<UserViewModel, UserDTO>()
+            CreateMap<UserShortViewModel, UserDTO>()
                     .ForPath(x => x.UserProfile.ID, q => q.MapFrom(w => w.UserProfileID))
                     .ForPath(x => x.UserProfile.UserID, q => q.MapFrom(w => w.ID))
                     .ForPath(x => x.UserProfile.Pseudo, q => q.MapFrom(w => w.Pseudo))
