@@ -235,10 +235,11 @@ namespace EPlast.XUnitTest.Services.Events
             //Arrange
             int participantId = 1;
             int participantStatus = 3;
-            _repoWrapper.Setup(x => x.Participant.GetFirstAsync(It.IsAny<Expression<Func<Participant, bool>>>(), null))
-                .ReturnsAsync(
-                    new Participant { ID = 1, ParticipantStatusId = 3, EventId = 1, UserId = "abc-1" }
-                );
+            var participant = new Participant { ID = 1, ParticipantStatusId = 2, EventId = 1, UserId = "abc-1" };
+            var testEvent = new Event { ID = 1 ,EventStatusID=1};
+        _repoWrapper.Setup(x => x.Participant.GetFirstAsync(It.IsAny<Expression<Func<Participant, bool>>>(), null))
+                .ReturnsAsync(participant);
+            _repoWrapper.Setup(x => x.Event.GetFirstAsync(It.IsAny<Expression<Func<Event, bool>>>(), null)).ReturnsAsync(testEvent);
             _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(participantStatus);
             //Act
