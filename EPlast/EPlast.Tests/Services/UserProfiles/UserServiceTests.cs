@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using EPlast.Resources;
 
 namespace EPlast.Tests.Services.UserProfiles
 {
@@ -153,13 +154,13 @@ namespace EPlast.Tests.Services.UserProfiles
         {
             //Arrange
             string userId = "Id";
-            User user = new User()
+            var user = new User
             {
-                UserProfile = new UserProfile()
+                UserProfile = new UserProfile
                 {
-                    Gender = new Gender()
+                    Gender = new Gender
                     {
-                        Name = "Чоловік"
+                        Name = UserGenders.Male
                     }
                 }
             };
@@ -173,7 +174,28 @@ namespace EPlast.Tests.Services.UserProfiles
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual("Чоловік", result);
+            Assert.AreEqual(UserGenders.Male, result);
+        }
+
+        [Test]
+        public async Task GetUserGenderAsync_Null_GetGenderAsync()
+        {
+            //Arrange
+            var user = new User
+            {
+                UserProfile = new UserProfile()
+            };
+            _mockRepoWrapper
+                .Setup(x => x.User.GetFirstAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(user);
+
+            //Act
+            var result = await _userService.GetUserGenderAsync(It.IsAny<string>());
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(UserGenders.Undefined, result);
         }
 
         [Test]
