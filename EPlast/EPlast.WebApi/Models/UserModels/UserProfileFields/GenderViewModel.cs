@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EPlast.Resources;
+using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.WebApi.Models.UserModels.UserProfileFields
 {
@@ -8,15 +9,12 @@ namespace EPlast.WebApi.Models.UserModels.UserProfileFields
         public int ID { get; set; }
 
         [Required(ErrorMessage = "Поле стать є обов'язковим")]
-        public string Name 
+        public string Name
         {
-            get
-            {
-                return gender;
-            }
+            get => gender;
             set
             {
-                if (value == "Чоловік" || value == "Жінка" || value == "Інша") 
+                if (value == UserGenders.Male || value == UserGenders.Female || value == UserGenders.Undefined)
                 {
                     gender = value;
                 }
