@@ -6,9 +6,12 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xunit;
+using Participant = EPlast.DataAccess.Entities.Participant;
 
 namespace EPlast.XUnitTest.Services.Events
 {
@@ -266,6 +269,65 @@ namespace EPlast.XUnitTest.Services.Events
             var methodResult = await participantManager.ChangeStatusToRejectedAsync(participantId);
             //Assert
             Assert.Equal(StatusCodes.Status400BadRequest, methodResult);
+        }
+
+        [Fact]
+        public async Task ChangeStatusToRejectedFailStatusidTest()
+        {
+            //Arrange
+            int participantId = 1;
+            int participantStatus = 3;
+            var participant = new Participant { ID = 1, ParticipantStatusId = 3, EventId = 1, UserId = "abc-1" };
+            var testEvent = new Event { ID = 1, EventStatusID = 1 };
+            _repoWrapper.Setup(x => x.Participant.GetFirstAsync(It.IsAny<Expression<Func<Participant, bool>>>(), null))
+                .ReturnsAsync(participant);
+            _repoWrapper.Setup(x => x.Event.GetFirstAsync(It.IsAny<Expression<Func<Event, bool>>>(), null)).ReturnsAsync(testEvent);
+            _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(participantStatus);
+            //Act
+            var participantManager = new ParticipantManager(_repoWrapper.Object, _eventStatusManager.Object, _participantStatusManager.Object);
+            var methodResult = await participantManager.ChangeStatusToRejectedAsync(participantId);
+            //Assert
+            Assert.Equal(StatusCodes.Status409Conflict, methodResult);
+        }
+
+        [Fact]
+        public async Task GetParticipantsByUserIdAsyncSuccessTest()
+        {
+            //Arrange
+            var collection = new List<Participant>();
+            var participant = new Participant {UserId = "1",Event = new Event()};
+            _repoWrapper.Setup(x => x.Participant.GetAllAsync(a=>a.UserId==participant.UserId, null))
+                .ReturnsAsync(collection);
+
+            //Act
+            var participantManager = new ParticipantManager(_repoWrapper.Object, _eventStatusManager.Object, _participantStatusManager.Object);
+            var methodResult = await participantManager.GetParticipantsByUserIdAsync(participant.UserId);
+            //Assert
+            Assert.Equal(collection, methodResult);
+        }
+
+        [Fact]
+        public async Task EstimateEventByParticipantAsyncSuccessTest()
+        {
+            //Arrange
+            var estimate = 1.0;
+            var collection = new List<Participant>();
+            var participant = new Participant { UserId = "1", EventId = 1};
+            _repoWrapper.Setup(x => x.Participant.GetFirstAsync(It.IsAny<Expression<Func<Participant, bool>>>(),null))
+                .ReturnsAsync(participant);
+            participant.Estimate = estimate;
+            _repoWrapper.Setup(x => x.Participant.Update(participant));
+            _repoWrapper.Setup(x => x.SaveAsync());
+            _repoWrapper.Setup(x => x.Participant.GetAllAsync(a => a.UserId == participant.UserId, null))
+                .ReturnsAsync(collection);
+            var eventRating = Math.Round(collection.Sum(p => p.Estimate) / collection.Count(), 2, MidpointRounding.AwayFromZero);
+
+            //Act
+            var participantManager = new ParticipantManager(_repoWrapper.Object, _eventStatusManager.Object, _participantStatusManager.Object);
+            var methodResult = await participantManager.EstimateEventByParticipantAsync(participant.EventId,participant.UserId,estimate);
+            //Assert
+            Assert.Equal(eventRating, methodResult);
         }
     }
 }
