@@ -18,5 +18,6 @@ namespace EPlast.DataAccess.Entities
         public string Email { get; set; }
         public string UPUDegree { get; set; }
         public int Count { get; set; }
+        public int UserSystemId { get; set; }
     }
 }
