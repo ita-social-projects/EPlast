@@ -23,18 +23,15 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly IAboutBaseSectionService _aboutBaseSectionService;
         private readonly IAboutBaseSubsectionService _aboutBaseSubsectionService;
-        private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
 
         public AboutBaseController(
             IAboutBaseSectionService aboutBaseSectionService, 
-            IAboutBaseSubsectionService aboutBaseSubsectionService, 
-            IMapper mapper,
+            IAboutBaseSubsectionService aboutBaseSubsectionService,
             UserManager<User> userManager)
         {
             _aboutBaseSectionService = aboutBaseSectionService;
             _aboutBaseSubsectionService = aboutBaseSubsectionService;
-            _mapper = mapper;
             _userManager = userManager;
         }
 
