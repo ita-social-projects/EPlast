@@ -55,6 +55,34 @@ namespace EPlast.BLL.Interfaces.Region
         /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
         Task<IEnumerable<RegionAnnualReportDTO>> GetAllRegionsReportsAsync();
 
+
+        /// <summary>
+        /// Method to confirm region annual report
+        /// </summary>
+        /// <param name="roles">Authorized user roles</param>
+        /// <param name="id">Region annual report identification number</param>
+        /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to region annual report</exception>
+        /// <exception cref="System.NullReferenceException">Thrown when region annual report doesn't exist</exception>
+        Task ConfirmAsync(IEnumerable<string> roles, int id);
+
+        /// <summary>
+        /// Method to cancel region annual report
+        /// </summary>
+        /// <param name="roles">Authorized user roles</param>
+        /// <param name="id">Region annual report identification number</param>
+        /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to region annual report</exception>
+        /// <exception cref="System.NullReferenceException">Thrown when region annual report doesn't exist</exception>
+        Task CancelAsync(IEnumerable<string> roles, int id);
+
+        /// <summary>
+        /// Method to delete region annual report
+        /// </summary>
+        /// <param name="roles">Authorized user roles</param>
+        /// <param name="id">Region annual report identification number</param>
+        /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to region annual report</exception>
+        /// <exception cref="System.NullReferenceException">Thrown when region annual report doesn't exist</exception>
+        Task DeleteAsync(IEnumerable<string> roles, int id);
+
         /// <summary>
         /// Method to get all regions reports
         /// </summary>

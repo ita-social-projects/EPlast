@@ -146,6 +146,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpGet("EditCityAnnualReportForm/{id:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin+","+Roles.CityHead)]
         public async Task<IActionResult> GetEditForm(int id)
         {
             try
@@ -175,6 +176,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">The city does not exist</response>
         /// <response code="404">Annual report model is not valid</response>
         [HttpPost]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin + "," + Roles.CityHead)]
         public async Task<IActionResult> Create(AnnualReportDTO annualReport)
         {
             if (ModelState.IsValid)
@@ -218,6 +220,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">The annual report does not exist</response>
         /// <response code="404">Annual report model is not valid</response>
         [HttpPut]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin + "," + Roles.CityHead)]
         public async Task<IActionResult> Edit(AnnualReportDTO annualReport)
         {
             if (ModelState.IsValid)
@@ -259,7 +262,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpPut("confirm/{id:int}")]
-        [Authorize(Roles = Roles.AdminAndOkrugaHead)]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Confirm(int id)
         {
             try
@@ -289,7 +292,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpPut("cancel/{id:int}")]
-        [Authorize(Roles = Roles.AdminAndOkrugaHead)]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Cancel(int id)
         {
             try
@@ -319,7 +322,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpDelete("{id:int}")]
-        [Authorize(Roles = Roles.AdminAndOkrugaHead)]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -486,7 +489,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("~/api/Club/CreateClubAnnualReport")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHead)]
         public async Task<IActionResult> CreateClubAnnualReport([FromBody] ClubAnnualReportViewModel annualReport)
         {
             if (ModelState.IsValid)
@@ -524,7 +527,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpPut("~/api/Club/confirmClubAnnualReport/{id:int}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> ConfirmClubAnnualReport(int id)
         {
             try
@@ -551,7 +554,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpPut("~/api/Club/cancelClubAnnualReport/{id:int}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> CancelClubAnnualReport(int id)
         {
             try
@@ -578,7 +581,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpDelete("~/api/Club/deleteClubAnnualReport/{id:int}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> DeleteClubAnnualReport(int id)
         {
             try
@@ -606,7 +609,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">The club annual report does not exist</response>
         /// <response code="404">Annual report model is not valid</response>
         [HttpPut("~/api/Club/editClubAnnualReport")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHead)]
         public async Task<IActionResult> EditClubAnnualReport(ClubAnnualReportDTO clubAnnualReport)
         {
             if (ModelState.IsValid)

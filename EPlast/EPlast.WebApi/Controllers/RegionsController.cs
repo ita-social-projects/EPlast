@@ -17,8 +17,8 @@ using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
+    [ApiController, Route("api/[controller]")]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
     public class RegionsController : ControllerBase
     {
         private readonly IDistributedCache _cache;
@@ -131,7 +131,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPut("EditRegion/{regId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin+", "+Roles.OkrugaHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHead)]
         public async Task<IActionResult> EditRegion(int regId, RegionDTO region)
         {
             await _regionService.EditRegionAsync(regId, region);
@@ -161,7 +161,6 @@ namespace EPlast.WebApi.Controllers
         /// <returns>List of annual reports</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("GetAllRegionAnnualReports")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHead)]
         public async Task<IActionResult> GetAllRegionAnnualReports()
         {
             return StatusCode(StatusCodes.Status200OK,
@@ -176,7 +175,6 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The region annual report does not exist</response>
         [HttpGet("GetAllRegionsReports")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetAllRegionsReportsAsync()
         {
             return Ok(await _RegionAnnualReportService.GetAllRegionsReportsAsync());
@@ -194,10 +192,97 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The region annual report does not exist</response>
         [HttpGet("RegionsAnnualReports")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetAllRegionsReportsAsync(string searchedData, int page, int pageSize, int sortKey)
         {
             return Ok(await _RegionAnnualReportService.GetAllRegionsReportsAsync(searchedData, page, pageSize, sortKey));
+        }
+
+        /// <summary>
+        /// Method to confirm region annual report
+        /// </summary>
+        /// <param name="id">Region annual report identification number</param>
+        /// <returns>Answer from backend</returns>
+        /// <response code="200">Region annual report was successfully confirmed</response>
+        /// <response code="403">User hasn't access to region annual report</response>
+        /// <response code="404">Region annual report does not exist</response>
+        [HttpPut("confirmReport/{id:int}")]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<IActionResult> Confirm(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            try
+            {
+                await _RegionAnnualReportService.ConfirmAsync(await _userManager.GetRolesAsync(user), id);
+                _logger.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) confirmed annual report (id: {id})");
+                return StatusCode(StatusCodes.Status200OK, new { message = "Річний звіт округи підтверджено" });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                _logger.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to confirm annual report (id: {id})");
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Немає доступу до річного звіту округи" });
+            }
+        }
+
+        /// <summary>
+        /// Method to cancel region annual report
+        /// </summary>
+        /// <param name="id">Region annual report identification number</param>
+        /// <returns>Answer from backend</returns>
+        /// <response code="200">Region annual report was successfully confirmed</response>
+        /// <response code="403">User hasn't access to region annual report</response>
+        /// <response code="404">Region annual report does not exist</response>
+        [HttpPut("cancel/{id:int}")]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<IActionResult> Cancel(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            try
+            {
+                await _RegionAnnualReportService.CancelAsync(await _userManager.GetRolesAsync(user), id);
+                _logger.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) canceled annual report (id: {id})");
+                return StatusCode(StatusCodes.Status200OK, new { message = "Річний звіт округи скасовано" });
+            }
+            catch (NullReferenceException)
+            {
+                _logger.LogError($"Annual report (id: {id}) not found");
+                return StatusCode(StatusCodes.Status404NotFound, new { message = "Річний звіт округи не знайдено" });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                _logger.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to cancel annual report (id: {id})");
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Немає доступу до річного звіту округи" });
+            }
+        }
+
+        /// <summary>
+        /// Method to delete region annual report
+        /// </summary>
+        /// <param name="id">Region annual report identification number</param>
+        /// <returns>Answer from backend</returns>
+        /// <response code="200">Region annual report was successfully confirmed</response>
+        /// <response code="403">User hasn't access to region annual report</response>
+        /// <response code="404">Region annual report does not exist</response>
+        [HttpDelete("{id:int}")]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            try
+            {
+                await _RegionAnnualReportService.DeleteAsync(await _userManager.GetRolesAsync(user), id);
+                _logger.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) deleted annual report (id: {id})");
+                return StatusCode(StatusCodes.Status200OK, new { message = "Річний звіт округи видалено" });
+            }
+            catch (NullReferenceException)
+            {
+                _logger.LogError($"Annual report (id: {id}) not found");
+                return StatusCode(StatusCodes.Status404NotFound, new { message = "Річний звіт округи не знайдено" });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                _logger.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to cancel annual report (id: {id})");
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Немає доступу до річного звіту округи" });
+            }
         }
 
         [HttpGet("FileBase64/{fileName}")]
@@ -332,7 +417,6 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The region annual report does not exist</response>
         [HttpGet("GetReportById/{id}/{year}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetReportByIdAsync(int id, int year)
         {
             return Ok(await _RegionAnnualReportService.GetReportByIdAsync(id, year));
