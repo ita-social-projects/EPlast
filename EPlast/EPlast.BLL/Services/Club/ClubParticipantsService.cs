@@ -130,7 +130,7 @@ namespace EPlast.BLL.Services.Club
 
         public async Task ContinueAdminsDueToDate()
         {
-            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(x => x.Status == true);
+            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(x => x.Status);
 
             foreach (var admin in admins)
             {

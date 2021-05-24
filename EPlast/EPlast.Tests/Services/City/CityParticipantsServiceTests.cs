@@ -31,8 +31,6 @@ namespace EPlast.Tests.Services.City
             ID = 1
         };
 
-        private readonly int anotherFakeId = 2;
-
         private readonly CityAdministration cityAdm = new CityAdministration
         {
             ID = 1,

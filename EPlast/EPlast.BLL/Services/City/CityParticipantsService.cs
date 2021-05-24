@@ -120,7 +120,7 @@ namespace EPlast.BLL.Services.City
 
         public async Task ContinueAdminsDueToDate()
         {
-            var admins = await _repositoryWrapper.CityAdministration.GetAllAsync(x => x.Status == true);
+            var admins = await _repositoryWrapper.CityAdministration.GetAllAsync(x => x.Status);
 
             foreach (var admin in admins)
             {

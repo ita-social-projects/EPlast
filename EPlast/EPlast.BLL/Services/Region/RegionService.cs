@@ -28,8 +28,6 @@ namespace EPlast.BLL.Services.Region
         private readonly IUniqueIdService _uniqueId;
         private readonly UserManager<User> _userManager;
 
-        private int count = 0;
-
         public RegionService(IRepositoryWrapper repoWrapper,
             IMapper mapper,
             IRegionFilesBlobStorageRepository regionFilesBlobStorageRepository,
@@ -214,7 +212,7 @@ namespace EPlast.BLL.Services.Region
 
         public async Task ContinueAdminsDueToDate()
         {
-            var admins = await _repoWrapper.RegionAdministration.GetAllAsync(x => x.Status == true);
+            var admins = await _repoWrapper.RegionAdministration.GetAllAsync(x => x.Status);
 
             foreach (var admin in admins)
             {
