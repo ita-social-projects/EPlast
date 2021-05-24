@@ -25,7 +25,7 @@ namespace EPlast.BLL.Interfaces.Region
         Task<IEnumerable<RegionDocumentDTO>> GetRegionDocsAsync(int regionId);
         Task<string> DownloadFileAsync(string fileName);
         Task DeleteFileAsync(int documentId);
-        Task EndAdminsDueToDate();
+        Task ContinueAdminsDueToDate();
         Task<string> GetLogoBase64(string logoName);
         Task RedirectMembers(int prevRegId, int nextRegId);
 

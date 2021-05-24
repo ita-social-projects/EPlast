@@ -43,13 +43,22 @@ namespace EPlast.BLL.Services.City
         public async Task<CityAdministrationDTO> AddAdministratorAsync(CityAdministrationDTO adminDTO)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
+            if (DateTime.Now < adminDTO.EndDate || adminDTO.EndDate == null)
+            {
+                adminDTO.Status = true;
+            }
+            else
+            {
+                adminDTO.Status = false;
+            }
             var admin = new CityAdministration()
             {
                 StartDate = adminDTO.StartDate ?? DateTime.Now,
                 EndDate = adminDTO.EndDate,
                 AdminTypeId = adminType.ID,
                 CityId = adminDTO.CityId,
-                UserId = adminDTO.UserId
+                UserId = adminDTO.UserId,
+                Status = adminDTO.Status
             };
 
             var user = await _userManager.FindByIdAsync(adminDTO.UserId);
@@ -109,27 +118,19 @@ namespace EPlast.BLL.Services.City
             return await AddFollowerAsync(cityId, await _userManager.GetUserIdAsync(user));
         }
 
-        /// <inheritdoc />
-        public async Task CheckPreviousAdministratorsToDelete()
+        public async Task ContinueAdminsDueToDate()
         {
-            var admins = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.EndDate <= DateTime.Now);
-            var cityHeadType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.CityHead);
+            var admins = await _repositoryWrapper.CityAdministration.GetAllAsync(x => x.Status == true);
 
             foreach (var admin in admins)
             {
-                var role = admin.AdminTypeId == cityHeadType.ID ? Roles.CityHead : Roles.CitySecretary;
-
-                var currentAdministration = await _repositoryWrapper.CityAdministration
-                    .GetAllAsync(a => (a.EndDate > DateTime.Now || a.EndDate == null) && a.UserId == admin.UserId);
-
-                if (currentAdministration.All(a => (a.AdminTypeId == cityHeadType.ID ? Roles.CityHead : Roles.CitySecretary) != role)
-                    || !currentAdministration.Any())
+                if (admin.EndDate != null && DateTime.Compare((DateTime)admin.EndDate, DateTime.Now) < 0)
                 {
-                    var user = await _userManager.FindByIdAsync(admin.UserId);
-
-                    await _userManager.RemoveFromRoleAsync(user, role);
+                    admin.EndDate = admin.EndDate.Value.AddYears(1);
+                    _repositoryWrapper.CityAdministration.Update(admin);
                 }
             }
+            await _repositoryWrapper.SaveAsync();
         }
 
         /// <inheritdoc />
@@ -224,6 +225,7 @@ namespace EPlast.BLL.Services.City
         {
             var admin = await _repositoryWrapper.CityAdministration.GetFirstOrDefaultAsync(u => u.ID == adminId);
             admin.EndDate = DateTime.Now;
+            admin.Status = false;
 
             var adminType = await _adminTypeService.GetAdminTypeByIdAsync(admin.AdminTypeId);
             var user = await _userManager.FindByIdAsync(admin.UserId);

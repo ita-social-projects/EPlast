@@ -49,14 +49,22 @@ namespace EPlast.BLL.Services.Club
         public async Task<ClubAdministrationDTO> AddAdministratorAsync(ClubAdministrationDTO adminDTO)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
-
+            if (DateTime.Now < adminDTO.EndDate || adminDTO.EndDate == null)
+            {
+                adminDTO.Status = true;
+            }
+            else
+            {
+                adminDTO.Status = false;
+            }
             var admin = new ClubAdministration()
             {
                 StartDate = adminDTO.StartDate ?? DateTime.Now,
                 EndDate = adminDTO.EndDate,
                 AdminTypeId = adminType.ID,
                 ClubId = adminDTO.ClubId,
-                UserId = adminDTO.UserId
+                UserId = adminDTO.UserId,
+                Status = adminDTO.Status
             };
 
             var user = await _userManager.FindByIdAsync(adminDTO.UserId);
@@ -109,6 +117,7 @@ namespace EPlast.BLL.Services.Club
         {
             var admin = await _repositoryWrapper.ClubAdministration.GetFirstOrDefaultAsync(u => u.ID == adminId);
             admin.EndDate = DateTime.Now;
+            admin.Status = false;
 
             var adminType = await _adminTypeService.GetAdminTypeByIdAsync(admin.AdminTypeId);
             var user = await _userManager.FindByIdAsync(admin.UserId);
@@ -119,27 +128,19 @@ namespace EPlast.BLL.Services.Club
             await _repositoryWrapper.SaveAsync();
         }
 
-        /// <inheritdoc />
-        public async Task CheckPreviousAdministratorsToDelete()
+        public async Task ContinueAdminsDueToDate()
         {
-            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.EndDate <= DateTime.Now);
-            var ClubHeadType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.KurinHead);
+            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(x => x.Status == true);
 
             foreach (var admin in admins)
             {
-                var role = admin.AdminTypeId == ClubHeadType.ID ? Roles.KurinHead : Roles.KurinSecretary;
-
-                var currentAdministration = await _repositoryWrapper.ClubAdministration
-                    .GetAllAsync(a => (a.EndDate > DateTime.Now || a.EndDate == null) && a.UserId == admin.UserId);
-
-                if (currentAdministration.All(a => (a.AdminTypeId == ClubHeadType.ID ? Roles.KurinHead : Roles.KurinSecretary) != role)
-                    || !currentAdministration.Any())
+                if (admin.EndDate != null && DateTime.Compare((DateTime)admin.EndDate, DateTime.Now) < 0)
                 {
-                    var user = await _userManager.FindByIdAsync(admin.UserId);
-
-                    await _userManager.RemoveFromRoleAsync(user, role);
+                    admin.EndDate = admin.EndDate.Value.AddYears(1);
+                    _repositoryWrapper.ClubAdministration.Update(admin);
                 }
             }
+            await _repositoryWrapper.SaveAsync();
         }
 
         public async Task<IEnumerable<ClubAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId)

@@ -237,100 +237,27 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
-        public void CheckPreviousAdministratorsToDelete_ReturnsCorrect()
-        {
-            //Arrange
-            _repoWrapper.Setup(r => r.ClubAdministration.GetAllAsync(It.IsAny<Expression<Func<ClubAdministration, bool>>>(),
-                 It.IsAny<Func<IQueryable<ClubAdministration>, IIncludableQueryable<ClubAdministration, object>>>()))
-                     .ReturnsAsync(new List<ClubAdministration> { new ClubAdministration() { ID = fakeId } });
-            _adminTypeService
-               .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-               .ReturnsAsync(new AdminTypeDTO
-               {
-                   AdminTypeName = Roles.KurinHead,
-                   ID = 3
-               });
-            _userManager
-                .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
-            _userManager
-                .Setup(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
-
-            //Act
-            var result = _clubParticipantsService.CheckPreviousAdministratorsToDelete();
-
-            //Assert
-            _repoWrapper.Verify();
-            Assert.NotNull(result);
-        }
-
-        [Test]
-        public void CheckPreviousAdministratorsToDelete_WithDifferrentAdminTypeId_ReturnsCorrect()
+        public void ContinueAdminsDueToDate_ReturnsCorrect()
         {
             //Arrange
             _repoWrapper
-                .Setup(r => r.ClubAdministration.GetAllAsync(It.IsAny<Expression<Func<ClubAdministration, bool>>>(),
-                    It.IsAny<Func<IQueryable<ClubAdministration>, IIncludableQueryable<ClubAdministration, object>>>()))
-                .ReturnsAsync(new List<ClubAdministration> { new ClubAdministration() { ID = fakeId, AdminTypeId = fakeId } })
-                .Callback(() => _repoWrapper
-                    .Setup(r => r.ClubAdministration.GetAllAsync(It.IsAny<Expression<Func<ClubAdministration, bool>>>(),
-                        It.IsAny<Func<IQueryable<ClubAdministration>, IIncludableQueryable<ClubAdministration, object>>>()))
-                    .ReturnsAsync(new List<ClubAdministration> { new ClubAdministration() { ID = fakeId, AdminTypeId = anotherFakeId } }));
-            _adminTypeService
-               .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-               .ReturnsAsync(new AdminTypeDTO
-               {
-                   AdminTypeName = Roles.KurinHead,
-                   ID = 3
-               });
-            _userManager
-                .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
-            _userManager
-                .Setup(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
-
-            //Act
-            var result = _clubParticipantsService.CheckPreviousAdministratorsToDelete();
-
-            //Assert
-            _repoWrapper.Verify();
-            _userManager.Verify(u => u.FindByIdAsync(It.IsAny<string>()), Times.Once);
-            _userManager.Verify(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
-            Assert.NotNull(result);
-        }
-
-        [Test]
-        public void CheckPreviousAdministratorsToDelete_WithDifferrentIDAndAdminTypeId_ReturnsCorrect()
-        {
-            //Arrange
+               .Setup(x => x.ClubAdministration.GetAllAsync(It.IsAny<Expression<Func<ClubAdministration, bool>>>(),
+                   It.IsAny<Func<IQueryable<ClubAdministration>, IIncludableQueryable<ClubAdministration, object>>>()))
+               .ReturnsAsync(new List<ClubAdministration> { new ClubAdministration() { ID = fakeId } });
             _repoWrapper
-                .Setup(r => r.ClubAdministration.GetAllAsync(It.IsAny<Expression<Func<ClubAdministration, bool>>>(),
-                    It.IsAny<Func<IQueryable<ClubAdministration>, IIncludableQueryable<ClubAdministration, object>>>()))
-                .ReturnsAsync(new List<ClubAdministration> { new ClubAdministration() { ID = fakeId, AdminTypeId = fakeId } })
-                .Callback(() => _repoWrapper
-                    .Setup(r => r.ClubAdministration.GetAllAsync(It.IsAny<Expression<Func<ClubAdministration, bool>>>(),
-                        It.IsAny<Func<IQueryable<ClubAdministration>, IIncludableQueryable<ClubAdministration, object>>>()))
-                    .ReturnsAsync(new List<ClubAdministration> { new ClubAdministration() { ID = fakeId, AdminTypeId = anotherFakeId } }));
-            _adminTypeService
-               .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-               .ReturnsAsync(new AdminTypeDTO
-               {
-                   AdminTypeName = Roles.KurinHead,
-                   ID = 2
-               });
-            _userManager
-                .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
-            _userManager
-                .Setup(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
+                .Setup(x => x.ClubAdministration.Update(It.IsAny<ClubAdministration>()));
+            _repoWrapper
+                .Setup(x => x.SaveAsync());
 
             //Act
-            var result = _clubParticipantsService.CheckPreviousAdministratorsToDelete();
+            var result = _clubParticipantsService.ContinueAdminsDueToDate();
 
             //Assert
             _repoWrapper.Verify();
-            _userManager.Verify(u => u.FindByIdAsync(It.IsAny<string>()), Times.Once);
-            _userManager.Verify(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
             Assert.NotNull(result);
+            CollectionAssert.AllItemsAreInstancesOfType();
         }
-
+   
         [Test]
         public async Task GetAdministrationsOfUserAsync_ReturnsCorrectAdministrations()
         {

@@ -194,98 +194,23 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
-        public void CheckPreviousAdministratorsToDelete_ReturnsCorrect()
+        public void ContinueAdminsDueToDate_ReturnsCorrect()
         {
             //Arrange
             _repoWrapper
-                .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
-                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
-                .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId } });
-            _adminTypeService
-               .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-               .ReturnsAsync(new AdminTypeDTO
-               {
-                   AdminTypeName = Roles.CityHead,
-                   ID = fakeId
-               });
-            _userManager
-                .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
-            _userManager
-                .Setup(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
-
-            //Act
-            var result = _cityParticipantsService.CheckPreviousAdministratorsToDelete();
-
-            //Assert
-            _repoWrapper.Verify();
-            Assert.NotNull(result);
-        }
-
-        [Test]
-        public void CheckPreviousAdministratorsToDelete_WithDifferrentAdminTypeId_ReturnsCorrect()
-        {
-            //Arrange
+               .Setup(x => x.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                   It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+               .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId } });
             _repoWrapper
-                .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
-                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
-                .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId, AdminTypeId = fakeId } })
-                .Callback(() => _repoWrapper
-                    .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
-                        It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
-                    .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId, AdminTypeId = anotherFakeId } }));
-            _adminTypeService
-               .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-               .ReturnsAsync(new AdminTypeDTO
-               {
-                   AdminTypeName = Roles.CityHead,
-                   ID = fakeId
-               });
-            _userManager
-                .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
-            _userManager
-                .Setup(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
-
-            //Act
-            var result = _cityParticipantsService.CheckPreviousAdministratorsToDelete();
-
-            //Assert
-            _repoWrapper.Verify();
-            _userManager.Verify(u => u.FindByIdAsync(It.IsAny<string>()), Times.Once);
-            _userManager.Verify(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
-            Assert.NotNull(result);
-        }
-
-        [Test]
-        public void CheckPreviousAdministratorsToDelete_WithDifferrentIDAndAdminTypeId_ReturnsCorrect()
-        {
-            //Arrange
+                .Setup(x => x.CityAdministration.Update(It.IsAny<CityAdministration>()));
             _repoWrapper
-                .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
-                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
-                .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId, AdminTypeId = fakeId } })
-                .Callback(() => _repoWrapper
-                    .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
-                        It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
-                    .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId, AdminTypeId = anotherFakeId } }));
-            _adminTypeService
-               .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-               .ReturnsAsync(new AdminTypeDTO
-               {
-                   AdminTypeName = Roles.CityHead,
-                   ID = anotherFakeId
-               });
-            _userManager
-                .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
-            _userManager
-                .Setup(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
+                .Setup(x => x.SaveAsync());
 
             //Act
-            var result = _cityParticipantsService.CheckPreviousAdministratorsToDelete();
+            var result = _cityParticipantsService.ContinueAdminsDueToDate();
 
             //Assert
             _repoWrapper.Verify();
-            _userManager.Verify(u => u.FindByIdAsync(It.IsAny<string>()), Times.Once);
-            _userManager.Verify(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
             Assert.NotNull(result);
         }
 

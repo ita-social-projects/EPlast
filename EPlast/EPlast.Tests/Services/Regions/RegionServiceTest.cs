@@ -350,13 +350,13 @@ namespace EPlast.Tests.Services.Regions
             _repoWrapper
                    .Setup(x => x.RegionAdministration.GetAllAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
                 It.IsAny<Func<IQueryable<RegionAdministration>, IIncludableQueryable<RegionAdministration, object>>>()))
-                .ReturnsAsync(Admins);
+                  .ReturnsAsync(Admins);
             _repoWrapper
-               .Setup(x => x.RegionAdministration.Update(It.IsAny<RegionAdministration>()));
+                  .Setup(x => x.RegionAdministration.Update(It.IsAny<RegionAdministration>()));
             _repoWrapper
                   .Setup(x => x.SaveAsync());
             // Act
-            var result = _regionService.EndAdminsDueToDate();
+            var result = _regionService.ContinueAdminsDueToDate();
 
             // Assert
             _repoWrapper.Verify();
