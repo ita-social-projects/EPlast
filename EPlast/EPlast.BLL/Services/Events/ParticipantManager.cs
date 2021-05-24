@@ -132,11 +132,21 @@ namespace EPlast.BLL.Services.Events
                 var participant = await _repoWrapper.Participant
                     .GetFirstAsync(predicate: p => p.ID == id);
                 int rejectedStatus = await _participantStatusManager.GetStatusIdAsync("Відмовлено");
+                var targetEvent = await _repoWrapper.Event.GetFirstAsync(e => e.ID == participant.EventId);
+                int finishedEvent = await _eventStatusManager.GetStatusIdAsync("Завершений(-на)");
+                
+                if (participant.ParticipantStatusId == rejectedStatus || targetEvent.EventStatusID == finishedEvent)
+                {
+                    return StatusCodes.Status409Conflict;
+                }
+
                 participant.ParticipantStatusId = rejectedStatus;
                 _repoWrapper.Participant.Update(participant);
+                _repoWrapper.Participant.Delete(participant);
                 await _repoWrapper.SaveAsync();
 
                 return StatusCodes.Status200OK;
+               
             }
             catch
             {
