@@ -4,6 +4,6 @@
     {
         public const string Male = "Чоловік";
         public const string Female = "Жінка";
-        public const string Other = "Інша";
+        public const string Undefined = "Не маю бажання вказувати";
     }
 }
