@@ -389,7 +389,7 @@ namespace EPlast.Tests.Services.Regions
 
             // Assert
             _repoWrapper.Verify(x => x.SaveAsync());
-            _repoWrapper.Verify(x => x.ClubAdministration.Update(It.IsAny<ClubAdministration>()));
+            _repoWrapper.Verify(x => x.RegionAdministration.Update(It.IsAny<RegionAdministration>()));
             Assert.NotNull(result);
         }
 
