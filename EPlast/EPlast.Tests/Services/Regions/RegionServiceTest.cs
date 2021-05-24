@@ -365,7 +365,7 @@ namespace EPlast.Tests.Services.Regions
                 .ReturnsAsync(new List<string>() { Roles.Admin });
 
             // Act
-            var result = await _regionService.GetRegionProfileByIdAsync(regionId, user);
+            var result = await _regionService.GetRegionProfileByIdAsync(fakeId, user);
 
             // Assert
             Assert.IsNotNull(result);
@@ -373,15 +373,13 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
-        public void EndAdminsDueToDate_ReturnsCorrect()
+        public void ContinueAdminsDueToDate_ReturnsCorrect()
         {
             // Arrange
-            var nowTime = DateTime.Now;
-            var earlierTime = DateTime.Now.AddHours(-5);
             _repoWrapper
                    .Setup(x => x.RegionAdministration.GetAllAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
                 It.IsAny<Func<IQueryable<RegionAdministration>, IIncludableQueryable<RegionAdministration, object>>>()))
-                  .ReturnsAsync(Admins);
+                  .ReturnsAsync(new List<RegionAdministration> { new RegionAdministration() { ID = fakeId, EndDate = new DateTime(2001, 7, 20) } });
             _repoWrapper
                   .Setup(x => x.RegionAdministration.Update(It.IsAny<RegionAdministration>()));
             _repoWrapper
@@ -390,7 +388,8 @@ namespace EPlast.Tests.Services.Regions
             var result = _regionService.ContinueAdminsDueToDate();
 
             // Assert
-            _repoWrapper.Verify();
+            _repoWrapper.Verify(x => x.SaveAsync());
+            _repoWrapper.Verify(x => x.ClubAdministration.Update(It.IsAny<ClubAdministration>()));
             Assert.NotNull(result);
         }
 
@@ -411,7 +410,7 @@ namespace EPlast.Tests.Services.Regions
             Assert.NotNull(result);
         }
 
-        private readonly int regionId = 6;
+        private readonly int fakeId = 6;
         
         private readonly User user = new User();
 

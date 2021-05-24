@@ -198,7 +198,7 @@ namespace EPlast.Tests.Services.City
             _repoWrapper
                .Setup(x => x.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
-               .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId } });
+               .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId, EndDate = new DateTime(2001, 7, 20) } });
             _repoWrapper
                 .Setup(x => x.CityAdministration.Update(It.IsAny<CityAdministration>()));
             _repoWrapper
@@ -208,7 +208,8 @@ namespace EPlast.Tests.Services.City
             var result = _cityParticipantsService.ContinueAdminsDueToDate();
 
             //Assert
-            _repoWrapper.Verify();
+            _repoWrapper.Verify(x => x.SaveAsync());
+            _repoWrapper.Verify(x => x.CityAdministration.Update(It.IsAny<CityAdministration>()));
             Assert.NotNull(result);
         }
 

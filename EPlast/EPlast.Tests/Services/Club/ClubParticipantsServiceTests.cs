@@ -243,7 +243,7 @@ namespace EPlast.Tests.Services.Club
             _repoWrapper
                .Setup(x => x.ClubAdministration.GetAllAsync(It.IsAny<Expression<Func<ClubAdministration, bool>>>(),
                    It.IsAny<Func<IQueryable<ClubAdministration>, IIncludableQueryable<ClubAdministration, object>>>()))
-               .ReturnsAsync(new List<ClubAdministration> { new ClubAdministration() { ID = fakeId } });
+               .ReturnsAsync(new List<ClubAdministration> { new ClubAdministration() { ID = fakeId, EndDate = new DateTime(2001, 7, 20) } });
             _repoWrapper
                 .Setup(x => x.ClubAdministration.Update(It.IsAny<ClubAdministration>()));
             _repoWrapper
@@ -253,7 +253,8 @@ namespace EPlast.Tests.Services.Club
             var result = _clubParticipantsService.ContinueAdminsDueToDate();
 
             //Assert
-            _repoWrapper.Verify();
+            _repoWrapper.Verify(x => x.SaveAsync());
+            _repoWrapper.Verify(x => x.ClubAdministration.Update(It.IsAny<ClubAdministration>()));
             Assert.NotNull(result);
         }
    
