@@ -255,7 +255,6 @@ namespace EPlast.Tests.Services.Club
             //Assert
             _repoWrapper.Verify();
             Assert.NotNull(result);
-            CollectionAssert.AllItemsAreInstancesOfType();
         }
    
         [Test]
