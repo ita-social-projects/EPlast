@@ -344,9 +344,40 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
+        public async Task GetRegionProfileByIdAsync_ReturnsCorrectAsync()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.Region.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Region, bool>>>(),
+                It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
+                .ReturnsAsync(new Region());
+            _cityService
+                .Setup(x => x.GetCitiesByRegionAsync(It.IsAny<int>()))
+                .ReturnsAsync(cities);
+            _mapper
+                .Setup(x => x.Map<RegionDTO, RegionProfileDTO>(It.IsAny<RegionDTO>()))
+                .Returns(regionProfileDTO);
+            _mapper
+                .Setup(x => x.Map<Region, RegionDTO>(It.IsAny<Region>()))
+                .Returns(regionDTO);
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string>() { Roles.Admin });
+
+            // Act
+            var result = await _regionService.GetRegionProfileByIdAsync(regionId, user);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<RegionProfileDTO>(result);
+        }
+
+        [Test]
         public void EndAdminsDueToDate_ReturnsCorrect()
         {
             // Arrange
+            var nowTime = DateTime.Now;
+            var earlierTime = DateTime.Now.AddHours(-5);
             _repoWrapper
                    .Setup(x => x.RegionAdministration.GetAllAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
                 It.IsAny<Func<IQueryable<RegionAdministration>, IIncludableQueryable<RegionAdministration, object>>>()))
@@ -380,6 +411,10 @@ namespace EPlast.Tests.Services.Regions
             Assert.NotNull(result);
         }
 
+        private readonly int regionId = 6;
+        
+        private readonly User user = new User();
+
         private readonly Region fakeRegion = new Region()
         {
             RegionName = ""
@@ -388,6 +423,16 @@ namespace EPlast.Tests.Services.Regions
         private readonly RegionDTO fakeRegionDTO = new RegionDTO
         {
             RegionName = ""
+        };
+
+        private readonly RegionProfileDTO regionProfileDTO = new RegionProfileDTO
+        {
+            Cities = new List<CityDTO>()
+        };
+
+        private readonly RegionDTO regionDTO = new RegionDTO
+        {
+            City = "city"
         };
 
         private readonly IEnumerable<RegionForAdministrationDTO> regionsForAdmin = new List<RegionForAdministrationDTO>

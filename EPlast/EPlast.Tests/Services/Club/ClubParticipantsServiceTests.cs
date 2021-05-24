@@ -453,6 +453,40 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
+        public async Task AddFollowerAsync_ReturnsCorrectAsync()
+        {
+            // Arrange
+            _userManager
+                .Setup(x => x.GetUserIdAsync(It.IsAny<User>()))
+                .ReturnsAsync(fakeIdString);
+            _repoWrapper
+                .Setup(s => s.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
+                .ReturnsAsync((ClubMembers)null);
+            _repoWrapper
+                .Setup(r => r.ClubAdministration.GetAllAsync(It.IsAny<Expression<Func<ClubAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubAdministration>, IIncludableQueryable<ClubAdministration, object>>>()))
+                .ReturnsAsync(new List<ClubAdministration> { new ClubAdministration() { ID = fakeId } });
+            _repoWrapper
+                .Setup(r => r.ClubAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubAdministration>,
+                    IIncludableQueryable<ClubAdministration, object>>>()))
+                .ReturnsAsync(_clubAdministration);
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
+                .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminType));
+            _mapper
+                .Setup(m => m.Map<ClubMembers, ClubMembersDTO>(It.IsAny<ClubMembers>()))
+                .Returns(new ClubMembersDTO());
+
+            // Act
+            var result = await _clubParticipantsService.AddFollowerAsync(fakeId, user);
+
+            // Assert
+            Assert.NotNull(result);
+        }
+
+        [Test]
         public async Task ToggleApproveStatusAsyncTest()
         {
             //Arrange
@@ -617,9 +651,11 @@ namespace EPlast.Tests.Services.Club
             UserId = Roles.KurinHead
         };
 
-        private int fakeId => 3;
-        private int anotherFakeId => 2;
-        private string fakeIdString => "1";
+        private readonly int fakeId = 3;
+
+        private readonly string fakeIdString = "1";
+
+        private readonly User user = new User();
     }
 
 }
