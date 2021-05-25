@@ -373,7 +373,7 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
-        public void ContinueAdminsDueToDate_ReturnsCorrect()
+        public void ContinueAdminsDueToDate_EndDateEarlier_ReturnsCorrect()
         {
             // Arrange
             _repoWrapper
@@ -390,6 +390,26 @@ namespace EPlast.Tests.Services.Regions
             // Assert
             _repoWrapper.Verify(x => x.SaveAsync());
             _repoWrapper.Verify(x => x.RegionAdministration.Update(It.IsAny<RegionAdministration>()));
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public void ContinueAdminsDueToDate_EndDateNull_ReturnsCorrect()
+        {
+            // Arrange
+            _repoWrapper
+                   .Setup(x => x.RegionAdministration.GetAllAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
+                It.IsAny<Func<IQueryable<RegionAdministration>, IIncludableQueryable<RegionAdministration, object>>>()))
+                  .ReturnsAsync(new List<RegionAdministration> { new RegionAdministration() { ID = fakeId } });
+            _repoWrapper
+                  .Setup(x => x.RegionAdministration.Update(It.IsAny<RegionAdministration>()));
+            _repoWrapper
+                  .Setup(x => x.SaveAsync());
+            // Act
+            var result = _regionService.ContinueAdminsDueToDate();
+
+            // Assert
+            _repoWrapper.Verify(x => x.SaveAsync());
             Assert.NotNull(result);
         }
 

@@ -192,7 +192,7 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
-        public void ContinueAdminsDueToDate_ReturnsCorrect()
+        public void ContinueAdminsDueToDate_EndDateEarlier_ReturnsCorrect()
         {
             //Arrange
             _repoWrapper
@@ -210,6 +210,27 @@ namespace EPlast.Tests.Services.City
             //Assert
             _repoWrapper.Verify(x => x.SaveAsync());
             _repoWrapper.Verify(x => x.CityAdministration.Update(It.IsAny<CityAdministration>()));
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public void ContinueAdminsDueToDate_EndDateNull_ReturnsCorrect()
+        {
+            //Arrange
+            _repoWrapper
+               .Setup(x => x.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                   It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+               .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId } });
+            _repoWrapper
+                .Setup(x => x.CityAdministration.Update(It.IsAny<CityAdministration>()));
+            _repoWrapper
+                .Setup(x => x.SaveAsync());
+
+            //Act
+            var result = _cityParticipantsService.ContinueAdminsDueToDate();
+
+            //Assert
+            _repoWrapper.Verify(x => x.SaveAsync());
             Assert.NotNull(result);
         }
 
