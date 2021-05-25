@@ -210,20 +210,20 @@ namespace EPlast.BLL.Services.Region
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task EndAdminsDueToDate()
+        public async Task ContinueAdminsDueToDate()
         {
-            var admins = await _repoWrapper.RegionAdministration.GetAllAsync();
+            var admins = await _repoWrapper.RegionAdministration.GetAllAsync(x => x.Status);
 
             foreach (var admin in admins)
             {
-                if (DateTime.Compare((DateTime)admin.EndDate, DateTime.Now) < 0)
+                if (admin.EndDate != null && DateTime.Compare((DateTime)admin.EndDate, DateTime.Now) < 0)
                 {
-                    admin.Status = false;
+                    admin.EndDate = admin.EndDate.Value.AddYears(1);
                     _repoWrapper.RegionAdministration.Update(admin);
-
                 }
             }
             await _repoWrapper.SaveAsync();
+        
         }
 
         /// <inheritdoc />
