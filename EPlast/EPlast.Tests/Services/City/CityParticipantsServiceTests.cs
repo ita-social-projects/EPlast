@@ -112,7 +112,7 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
-        public async Task AddAdministratorAsync_WhereStartDateIsNull_ReturnsAdministrator()
+        public async Task AddAdministratorAsync_WhereStartDateIsNullWithEndDateToday_ReturnsAdministrator()
         {
             //Arrange
             _repoWrapper
@@ -124,6 +124,25 @@ namespace EPlast.Tests.Services.City
 
             //Act
             var result = await _cityParticipantsService.AddAdministratorAsync(cityAdmDTOEndDateToday);
+
+            //Assert
+            Assert.IsInstanceOf<CityAdministrationDTO>(result);
+            Assert.Null(result.StartDate);
+        }
+
+        [Test]
+        public async Task AddAdministratorAsync_WhereStartDateIsNullWithEndDateNull_ReturnsAdministrator()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(s => s.CityAdministration.CreateAsync(cityAdm));
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AdminTypeDTO());
+            cityAdmDTOEndDateNull.StartDate = null;
+
+            //Act
+            var result = await _cityParticipantsService.AddAdministratorAsync(cityAdmDTOEndDateNull);
 
             //Assert
             Assert.IsInstanceOf<CityAdministrationDTO>(result);

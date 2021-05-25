@@ -94,7 +94,7 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
-        public async Task AddAdministratorAsync_WhereStartDateIsNull_ReturnsAdministrator()
+        public async Task AddAdministratorAsync_WhereStartDateIsNullWithEndDateToday_ReturnsAdministrator()
         {
             //Arrange
             _repoWrapper
@@ -106,6 +106,24 @@ namespace EPlast.Tests.Services.Club
 
             //Act
             var result = await _clubParticipantsService.AddAdministratorAsync(clubAdmDTOTodayDate);
+
+            //Assert
+            Assert.IsInstanceOf<ClubAdministrationDTO>(result);
+        }
+
+        [Test]
+        public async Task AddAdministratorAsync_WhereStartDateIsNullWithEndDateNull_ReturnsAdministrator()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(s => s.ClubAdministration.CreateAsync(_clubAdministration));
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AdminTypeDTO());
+            clubAdmDTONullDate.StartDate = null;
+
+            //Act
+            var result = await _clubParticipantsService.AddAdministratorAsync(clubAdmDTONullDate);
 
             //Assert
             Assert.IsInstanceOf<ClubAdministrationDTO>(result);
