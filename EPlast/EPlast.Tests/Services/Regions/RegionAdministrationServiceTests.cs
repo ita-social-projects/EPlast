@@ -267,7 +267,7 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
-        public void AddRegionAdministrator_NullOldAdmin_ReturnsCorrect()
+        public void AddRegionAdministrator_NullOldAdminWithEndDateToday_ReturnsCorrect()
         {
             //Arrange
             RegionAdministration adm = null;
@@ -286,7 +286,7 @@ namespace EPlast.Tests.Services.Regions
             _repoWrapper
                 .Setup(x=>x.RegionAdministration.CreateAsync(regionAdmHead));
             //Act
-            var result = _servise.AddRegionAdministrator(regionAdmDTO);
+            var result = _servise.AddRegionAdministrator(regionAdmDTOEndDateToday);
             //Assert
             _adminTypeService.Verify();
             _userManager.Verify();          
@@ -294,7 +294,34 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
-        public void AddRegionAdministrator_ReturnsCorrect()
+        public void AddRegionAdministrator_NullOldAdminWithEndDateNull_ReturnsCorrect()
+        {
+            //Arrange
+            RegionAdministration adm = null;
+            _adminTypeService
+              .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
+              .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminTypeHead));
+            _repoWrapper
+               .Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
+               It.IsAny<Func<IQueryable<RegionAdministration>,
+               IIncludableQueryable<RegionAdministration, object>>>()))
+               .ReturnsAsync(adm);
+            _userManager
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User() { Id = "Some" });
+            _userManager
+                .Setup(x => x.AddToRoleAsync(new User() { Id = "Some" }, Roles.OkrugaHead));
+            _repoWrapper
+                .Setup(x => x.RegionAdministration.CreateAsync(regionAdmHead));
+            //Act
+            var result = _servise.AddRegionAdministrator(regionAdmDTOEndDateNull);
+            //Assert
+            _adminTypeService.Verify();
+            _userManager.Verify();
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public void AddRegionAdministrator_EndDateToday_ReturnsCorrect()
         {
             //Arrange
             _adminTypeService
@@ -314,7 +341,35 @@ namespace EPlast.Tests.Services.Regions
             _repoWrapper
                 .Setup(x => x.RegionAdministration.CreateAsync(regionAdmHead));
             //Act
-            var result = _servise.AddRegionAdministrator(regionAdmDTO);
+            var result = _servise.AddRegionAdministrator(regionAdmDTOEndDateToday);
+            //Assert
+            _adminTypeService.Verify();
+            _userManager.Verify();
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public void AddRegionAdministrator_EndDateNull_ReturnsCorrect()
+        {
+            //Arrange
+            _adminTypeService
+              .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
+              .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminTypeHead));
+            _repoWrapper
+               .Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
+               It.IsAny<Func<IQueryable<RegionAdministration>,
+               IIncludableQueryable<RegionAdministration, object>>>()))
+               .ReturnsAsync(regionAdmHead);
+            _userManager
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User() { Id = "Some" })
+                .Callback(() => _userManager
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User() { Id = "SomeNew" }));
+            _userManager
+                .Setup(x => x.AddToRoleAsync(new User() { Id = "Some" }, Roles.OkrugaHead));
+            _repoWrapper
+                .Setup(x => x.RegionAdministration.CreateAsync(regionAdmHead));
+            //Act
+            var result = _servise.AddRegionAdministrator(regionAdmDTOEndDateNull);
             //Assert
             _adminTypeService.Verify();
             _userManager.Verify();
@@ -359,7 +414,22 @@ namespace EPlast.Tests.Services.Regions
             UserId = Roles.CityHead
         };
 
-        private readonly RegionAdministrationDTO regionAdmDTO = new RegionAdministrationDTO
+        private readonly RegionAdministrationDTO regionAdmDTOEndDateToday = new RegionAdministrationDTO
+        {
+            ID = 1,
+            AdminType = new AdminTypeDTO()
+            {
+                AdminTypeName = Roles.CityHead,
+                ID = 1
+            },
+            EndDate = DateTime.Today,
+            Status = true,
+            AdminTypeId = AdminTypeHead.ID,
+            UserId = Roles.CityHead,
+            RegionId=2
+        };
+
+        private readonly RegionAdministrationDTO regionAdmDTOEndDateNull = new RegionAdministrationDTO
         {
             ID = 1,
             AdminType = new AdminTypeDTO()
@@ -370,7 +440,7 @@ namespace EPlast.Tests.Services.Regions
             Status = true,
             AdminTypeId = AdminTypeHead.ID,
             UserId = Roles.CityHead,
-            RegionId=2
+            RegionId = 2
         };
 
         private IEnumerable<RegionAdministrationDTO> GetFakeAdminDTO() {

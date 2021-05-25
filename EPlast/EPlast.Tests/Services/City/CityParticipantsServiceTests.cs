@@ -43,7 +43,7 @@ namespace EPlast.Tests.Services.City
             UserId = Roles.CityHead
         };
 
-        private readonly CityAdministrationDTO cityAdmDTO = new CityAdministrationDTO
+        private readonly CityAdministrationDTO cityAdmDTOEndDateToday = new CityAdministrationDTO
         {
             ID = 1,
             AdminType = AdminType,
@@ -51,6 +51,18 @@ namespace EPlast.Tests.Services.City
             AdminTypeId = 1,
             StartDate = DateTime.Now,
             EndDate = DateTime.Today,
+            User = new CityUserDTO(),
+            UserId = Roles.CityHead
+        };
+
+        private readonly CityAdministrationDTO cityAdmDTOEndDateNull = new CityAdministrationDTO
+        {
+            ID = 1,
+            AdminType = AdminType,
+            CityId = 1,
+            AdminTypeId = 1,
+            StartDate = DateTime.Now,
+            EndDate = null,
             User = new CityUserDTO(),
             UserId = Roles.CityHead
         };
@@ -66,7 +78,7 @@ namespace EPlast.Tests.Services.City
         private Mock<UserManager<User>> _userManager;
 
         [Test]
-        public async Task AddAdministratorAsync_ReturnsAdministrator()
+        public async Task AddAdministratorAsync_EndDateToday_ReturnsAdministrator()
         {
             //Arrange
             _repoWrapper
@@ -76,7 +88,24 @@ namespace EPlast.Tests.Services.City
                 .ReturnsAsync(new AdminTypeDTO());
 
             //Act
-            var result = await _cityParticipantsService.AddAdministratorAsync(cityAdmDTO);
+            var result = await _cityParticipantsService.AddAdministratorAsync(cityAdmDTOEndDateToday);
+
+            //Assert
+            Assert.IsInstanceOf<CityAdministrationDTO>(result);
+        }
+
+        [Test]
+        public async Task AddAdministratorAsync_EndDateNull_ReturnsAdministrator()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(s => s.CityAdministration.CreateAsync(cityAdm));
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AdminTypeDTO());
+
+            //Act
+            var result = await _cityParticipantsService.AddAdministratorAsync(cityAdmDTOEndDateNull);
 
             //Assert
             Assert.IsInstanceOf<CityAdministrationDTO>(result);
@@ -91,10 +120,10 @@ namespace EPlast.Tests.Services.City
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(new AdminTypeDTO());
-            cityAdmDTO.StartDate = null;
+            cityAdmDTOEndDateToday.StartDate = null;
 
             //Act
-            var result = await _cityParticipantsService.AddAdministratorAsync(cityAdmDTO);
+            var result = await _cityParticipantsService.AddAdministratorAsync(cityAdmDTOEndDateToday);
 
             //Assert
             Assert.IsInstanceOf<CityAdministrationDTO>(result);
@@ -252,7 +281,7 @@ namespace EPlast.Tests.Services.City
                 .Setup(r => r.SaveAsync());
 
             //Act
-            var result = await _cityParticipantsService.EditAdministratorAsync(cityAdmDTO);
+            var result = await _cityParticipantsService.EditAdministratorAsync(cityAdmDTOEndDateToday);
 
             //Assert
             _repoWrapper.Verify();
@@ -275,10 +304,10 @@ namespace EPlast.Tests.Services.City
                 .Setup(r => r.CityAdministration.Update(It.IsAny<CityAdministration>()));
             _repoWrapper
                 .Setup(r => r.SaveAsync());
-            cityAdmDTO.StartDate = null;
+            cityAdmDTOEndDateToday.StartDate = null;
 
             //Act
-            var result = await _cityParticipantsService.EditAdministratorAsync(cityAdmDTO);
+            var result = await _cityParticipantsService.EditAdministratorAsync(cityAdmDTOEndDateToday);
 
             //Assert
             _repoWrapper.Verify();
@@ -311,7 +340,7 @@ namespace EPlast.Tests.Services.City
                });
 
             //Act
-            var result = await _cityParticipantsService.EditAdministratorAsync(cityAdmDTO);
+            var result = await _cityParticipantsService.EditAdministratorAsync(cityAdmDTOEndDateToday);
 
             //Assert
             _repoWrapper.Verify();
