@@ -43,14 +43,7 @@ namespace EPlast.BLL.Services.City
         public async Task<CityAdministrationDTO> AddAdministratorAsync(CityAdministrationDTO adminDTO)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
-            if (DateTime.Now < adminDTO.EndDate || adminDTO.EndDate == null)
-            {
-                adminDTO.Status = true;
-            }
-            else
-            {
-                adminDTO.Status = false;
-            }
+            adminDTO.Status = DateTime.Now < adminDTO.EndDate || adminDTO.EndDate == null;
             var admin = new CityAdministration()
             {
                 StartDate = adminDTO.StartDate ?? DateTime.Now,

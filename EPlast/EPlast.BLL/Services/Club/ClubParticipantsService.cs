@@ -49,14 +49,7 @@ namespace EPlast.BLL.Services.Club
         public async Task<ClubAdministrationDTO> AddAdministratorAsync(ClubAdministrationDTO adminDTO)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
-            if (DateTime.Now < adminDTO.EndDate || adminDTO.EndDate == null)
-            {
-                adminDTO.Status = true;
-            }
-            else
-            {
-                adminDTO.Status = false;
-            }
+            adminDTO.Status = DateTime.Now < adminDTO.EndDate || adminDTO.EndDate == null;
             var admin = new ClubAdministration()
             {
                 StartDate = adminDTO.StartDate ?? DateTime.Now,
