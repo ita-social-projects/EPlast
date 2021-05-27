@@ -12,7 +12,6 @@ namespace EPlast.BLL.Services.PDF.Documents
         private readonly MethodicDocument _methodicDocument;
         private const int TextWidth = 510;
         private const int LeftIndent = 60;
-        private const int BottomRectHeightWithStock = 70;
         private const int BottomRectHeight = 50;
         private const string FontName = "Times New Roman";
         private const int BaseFontSize = 14;
@@ -74,16 +73,7 @@ namespace EPlast.BLL.Services.PDF.Documents
             }
 
             tfx.DrawString(_methodicDocument.Description, font, XBrushes.Black, middleRect, XStringFormats.TopLeft);
-            if (lastCharIndex == -1)
-            {
-                if (page.Height < neededHeight + middleRectY + BottomRectHeightWithStock)
-                {
-                    var newPage = document.AddPage();
-                    gfx = XGraphics.FromPdfPage(newPage);
-                    middleRect = new XRect(LeftIndent, 0, TextWidth, 0);
-                }
-            }
-            else
+            if (lastCharIndex != -1)
             {
                 DrawNextPage(_methodicDocument.Description[(lastCharIndex + 1)..], font);
             }
@@ -110,21 +100,11 @@ namespace EPlast.BLL.Services.PDF.Documents
 
                 tfx.DrawString(text, font, XBrushes.Black, middleRect, format);
 
-                if (newIndexOfLastCharOnPage == -1)
-                {
-                    if (page.Height < newNeededHeight + middleRectY + BottomRectHeightWithStock)
-                    {
-                        var newPage = document.AddPage();
-                        gfx = XGraphics.FromPdfPage(newPage);
-                        middleRect = new XRect(LeftIndent, 0, TextWidth, 0);
-                    }
-                }
-                else
+                if (newIndexOfLastCharOnPage != -1)
                 {
                     text = text[(newIndexOfLastCharOnPage + 1)..];
                     continue;
                 }
-
                 break;
             }
         }
