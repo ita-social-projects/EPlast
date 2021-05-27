@@ -92,6 +92,47 @@ namespace EPlast.Tests.Services.PDF
             _logger.Verify();
             Assert.Null(actualReturn.Result);
         }
+
+        [TestCase(1)]
+        [TestCase(55)]
+        [TestCase(101)]
+        [TestCase(155)]
+        public void MethodicDocumentCreatePdfAsync_ReturnsByteArray_Test(int methodicDocumentId)
+        {
+            // Arrange
+            _repository.Setup(rep => rep.MethodicDocument.GetFirstAsync(It.IsAny<Expression<Func<MethodicDocument, bool>>>(),
+                    It.IsAny<Func<IQueryable<MethodicDocument>, IIncludableQueryable<MethodicDocument, object>>>()))
+                .ReturnsAsync(MethodicDocuments.FirstOrDefault(m => m.ID == methodicDocumentId));
+            _decisionBlobStorage.Setup(blob => blob.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync("Blank");
+
+            // Act
+            var actualReturn = _pdfService.MethodicDocumentCreatePdfAsync(methodicDocumentId);
+
+            // Assert
+            _repository.Verify(rep => rep.MethodicDocument.GetFirstAsync(It.IsAny<Expression<Func<MethodicDocument, bool>>>(),
+                It.IsAny<Func<IQueryable<MethodicDocument>, IIncludableQueryable<MethodicDocument, object>>>()), Times.Once);
+            Assert.IsInstanceOf<byte[]>(actualReturn.Result);
+        }
+
+        [TestCase(1)]
+        [TestCase(55)]
+        [TestCase(101)]
+        [TestCase(155)]
+        public void MethodicDocumentCreatePdfAsync_ReturnsNull_Test(int methodicDocumentId)
+        {
+            // Arrange
+            var methodicDocumentRepository = new Mock<IMethodicDocumentRepository>();
+            _repository.Setup(rep => rep.MethodicDocument).Returns(methodicDocumentRepository.Object);
+
+            // Act
+            var actualReturn = _pdfService.MethodicDocumentCreatePdfAsync(methodicDocumentId);
+
+            // Assert
+            _repository.Verify(rep => rep.MethodicDocument, Times.Once);
+            _logger.Verify();
+            Assert.Null(actualReturn.Result);
+        }
+
         private static IQueryable<User> GetTestUsersQueryable()
         {
             return new List<User>
@@ -137,6 +178,29 @@ namespace EPlast.Tests.Services.PDF
                 ID = 546546, DecesionStatusType = DecesionStatusType.Confirmed, Date = new DateTime(),
                 Description = "FDS", Name = "FS", FileName = "dsf", DecesionTarget = new DecesionTarget(),
                 Organization = new Organization()
+            }
+        }.AsQueryable();
+
+        private IQueryable<MethodicDocument> MethodicDocuments => new List<MethodicDocument>()
+        {
+            new MethodicDocument
+            {
+                ID = 1, Type = "legislation", Date = new DateTime(), Description = "Description1",
+                Name = "Name", FileName = "dsf", Organization = new Organization()
+            },
+            new MethodicDocument
+            {
+                ID = 55, Type = "Methodics", Date = new DateTime(), Description = "Description55",
+                Name = "Name55", FileName = "dsf", Organization = new Organization()
+            },
+            new MethodicDocument
+            {
+                ID = 101, Type = "Other", Date = new DateTime(), Description = "Description55",
+                Name = "Name55", FileName = "dsf", Organization = new Organization()
+            },            new MethodicDocument
+            {
+                ID = 155, Type = "None", Date = new DateTime(), Description = "Description55",
+                Name = "Name55", FileName = "dsf", Organization = new Organization()
             }
         }.AsQueryable();
     }
