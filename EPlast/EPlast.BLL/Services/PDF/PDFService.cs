@@ -79,7 +79,7 @@ namespace EPlast.BLL
                     var base64 = await _decisionBlobStorage.GetBlobBase64Async("dafaultPhotoForPdf.jpg");
                     IPdfSettings pdfSettings = new PdfSettings
                     {
-                        Title = $"{methodicDocument.Type} від {methodicDocument.Organization.OrganizationName}",
+                        Title = $"{methodicDocument.Type} {methodicDocument.ID}",
                         ImagePath = base64,
                     };
                     IPdfCreator creator = new PdfCreator(new MethodicDocumentPdf(methodicDocument, pdfSettings));

@@ -18,9 +18,6 @@ namespace EPlast.BLL.Services.PDF.Documents
         private const int BaseFontSize = 14;
         private const int TextFontSize = 12;
 
-        public MethodicDocumentPdf(MethodicDocument methodicDocument) : this(methodicDocument, new PdfSettings())
-        {
-        }
 
         public MethodicDocumentPdf(MethodicDocument methodicDocument, IPdfSettings settings) : base(settings)
         {
@@ -55,6 +52,12 @@ namespace EPlast.BLL.Services.PDF.Documents
             var tfx = new TextFormatter(gfx);
 
             var middleRect = new XRect(LeftIndent, middleRectY, TextWidth, rectHeight);
+
+            var documentTypeFont = new XFont(FontName, BaseFontSize + 4, XFontStyle.Bold, options);
+
+            gfx.DrawString($"{MethodicDocumentTypeParser(_methodicDocument.Type)}", documentTypeFont, XBrushes.Black,
+                295, 200, XStringFormats.BaseLineCenter);
+
             tfx.PrepareDrawString(_methodicDocument.Description, font, new XRect(LeftIndent, middleRectY, TextWidth, double.MaxValue),
                 out var lastCharIndex, out var neededHeight);
             if (neededHeight > rectHeight)
@@ -79,7 +82,6 @@ namespace EPlast.BLL.Services.PDF.Documents
                     gfx = XGraphics.FromPdfPage(newPage);
                     middleRect = new XRect(LeftIndent, 0, TextWidth, 0);
                 }
-                DrawBottom(gfx, format, middleRect, font);
             }
             else
             {
@@ -116,8 +118,6 @@ namespace EPlast.BLL.Services.PDF.Documents
                         gfx = XGraphics.FromPdfPage(newPage);
                         middleRect = new XRect(LeftIndent, 0, TextWidth, 0);
                     }
-
-                    DrawBottom(gfx, format, middleRect, font);
                 }
                 else
                 {
@@ -127,16 +127,6 @@ namespace EPlast.BLL.Services.PDF.Documents
 
                 break;
             }
-        }
-
-        private void DrawBottom(XGraphics gfx, XStringFormat format, XRect middleRect, XFont font)
-        {
-            var bottomRect = new XRect(LeftIndent, 10 + middleRect.Y + middleRect.Height, TextWidth, BottomRectHeight);
-            format.Alignment = XStringAlignment.Far;
-            format.LineAlignment = XLineAlignment.Far;
-            font = new XFont(font.Name, BaseFontSize, XFontStyle.Regular, new XPdfFontOptions(PdfFontEncoding.Unicode));
-            gfx.DrawString($"Тип документу: {MethodicDocumentTypeParser(_methodicDocument.Type)}", font, XBrushes.Black,
-                bottomRect, format);
         }
 
         private string MethodicDocumentTypeParser(string type)

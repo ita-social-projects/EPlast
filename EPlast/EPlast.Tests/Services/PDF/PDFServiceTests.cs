@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using EPlast.BLL;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.Logging;
@@ -114,9 +115,7 @@ namespace EPlast.Tests.Services.PDF
             Assert.IsInstanceOf<byte[]>(actualReturn.Result);
         }
 
-        [TestCase(1)]
-        [TestCase(55)]
-        [TestCase(101)]
+
         [TestCase(155)]
         public void MethodicDocumentCreatePdfAsync_ReturnsNull_Test(int methodicDocumentId)
         {
@@ -185,7 +184,7 @@ namespace EPlast.Tests.Services.PDF
         {
             new MethodicDocument
             {
-                ID = 1, Type = "legislation", Date = new DateTime(), Description = "Description1",
+                ID = 1, Type = "legislation", Date = new DateTime(), Description = LongDescriptionGenerator(),
                 Name = "Name", FileName = "dsf", Organization = new Organization()
             },
             new MethodicDocument
@@ -203,5 +202,16 @@ namespace EPlast.Tests.Services.PDF
                 Name = "Name55", FileName = "dsf", Organization = new Organization()
             }
         }.AsQueryable();
+
+        private static string LongDescriptionGenerator()
+        {
+            var description = "Very long description ,";
+            for (var i = 0; i < 8; i++)
+            {
+                description += description;
+            }
+
+            return description;
+        }
     }
 }
