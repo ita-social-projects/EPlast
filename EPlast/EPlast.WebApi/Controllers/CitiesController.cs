@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
 using AnnualReportDTOs = EPlast.BLL.DTO.AnnualReport;
+using Microsoft.Extensions.Caching.Distributed;
+using EPlast.WebApi.Extensions;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -21,6 +23,7 @@ namespace EPlast.WebApi.Controllers
     [ApiController]
     public class CitiesController : ControllerBase
     {
+        private readonly IDistributedCache _cache;
         private readonly ILoggerService<CitiesController> _logger;
         private readonly IMapper _mapper;
         private readonly ICityService _cityService;
@@ -34,7 +37,8 @@ namespace EPlast.WebApi.Controllers
             ICityService cityService,
             ICityDocumentsService cityDocumentsService,
             ICityAccessService cityAccessService, UserManager<User> userManager, 
-            ICityParticipantsService cityParticipantsService)
+            ICityParticipantsService cityParticipantsService,
+            IDistributedCache cache)
         {
             _logger = logger;
             _mapper = mapper;
@@ -43,6 +47,7 @@ namespace EPlast.WebApi.Controllers
             _cityAccessService = cityAccessService;
             _userManager = userManager;
             _cityParticipantsService = cityParticipantsService;
+            _cache = cache;
         }
 
         /// <summary>
@@ -56,7 +61,14 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetCities(int page, int pageSize, string cityName = null)
         {
-            var cities = await _cityService.GetAllDTOAsync(cityName);
+            string recordKey = "Cities_" + DateTime.Now.ToString("yyyyMMdd_hhmm");
+            IEnumerable<CityDTO> cities = await _cache.GetRecordAsync<IEnumerable<CityDTO>>(recordKey);
+
+            if (cities is null)
+            {
+                 cities = await _cityService.GetAllDTOAsync();
+                await _cache.SetRecordAsync(recordKey, cities);
+            }
             var citiesViewModel = new CitiesViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
 
             return Ok(citiesViewModel);
