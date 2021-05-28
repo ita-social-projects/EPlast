@@ -402,10 +402,45 @@ namespace EPlast.Tests.Services.Club
             _repoWrapper.Setup(x => x.UserPlastDegrees.GetAllAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
                 .ReturnsAsync(new List<UserPlastDegree>()
-                    {new UserPlastDegree() {PlastDegree = new PlastDegree() {Id = 1, Name = ""}}});
+                    {new UserPlastDegree() { UserId = "12345", PlastDegree = new PlastDegree() {Id = 1, Name = ""}}});
 
             // Act
-            var result = await clubService.GetClubProfileAsync(Id, It.IsAny<DataAccessClub.User>());
+            var result = await clubService.GetClubProfileAsync(Id, new User(){Id = "1"});
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<ClubProfileDTO>(result);
+        }
+
+        [Test]
+        public async Task GetCityProfileAsync_WithUserNullDegree_ReturnsCityProfile()
+        {
+            // Arrange
+            ClubService clubService = CreateClubService();
+            _userManager
+                .Setup(u => u.GetUserIdAsync(It.IsAny<DataAccessClub.User>()))
+                .ReturnsAsync(StringId);
+            _userManager
+                .Setup(u => u.GetRolesAsync(It.IsAny<DataAccessClub.User>()))
+                .ReturnsAsync(new List<string>());
+            var mockList = new Mock<IList<string>>();
+            mockList
+                .Setup(m => m.Contains(It.IsAny<string>()))
+                .Returns(true);
+            _clubAccessService
+                .Setup(c => c.HasAccessAsync(It.IsAny<DataAccessClub.User>(), It.IsAny<int>()))
+                .ReturnsAsync(true);
+            _repoWrapper
+                .Setup(r => r.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
+                .ReturnsAsync(new ClubMembers());
+            _repoWrapper.Setup(x => x.UserPlastDegrees.GetAllAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
+                .ReturnsAsync(new List<UserPlastDegree>()
+                    {new UserPlastDegree()});
+
+            // Act
+            var result = await clubService.GetClubProfileAsync(Id, new User() { Id = "1" });
 
             // Assert
             Assert.NotNull(result);
@@ -772,7 +807,14 @@ namespace EPlast.Tests.Services.Club
                         {
                             StartDate = new Random().Next(0,1) ==1 ? DateTime.Today : (DateTime?) null,
                             IsApproved = true,
-                            UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
+                            UserId = "12345",
+                            User=new ClubUserDTO()
+                        },
+                        new ClubMembersDTO
+                        {
+                            StartDate = new Random().Next(0,1) ==1 ? DateTime.Today : (DateTime?) null,
+                            IsApproved = false,
+                            UserId = "12345",
                             User=new ClubUserDTO()
                         }
                     },

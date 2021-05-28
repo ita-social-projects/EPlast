@@ -179,7 +179,7 @@ namespace EPlast.BLL.Services.Region
 
             IEnumerable<RegionMembersInfo> filteredRegionMembersInfos = regionMembers.Where(r =>
                 r.ReportStatus == AnnualReportStatus.Confirmed || r.ReportStatus == AnnualReportStatus.Saved);
-            if (regionMembers.Any())
+            if (filteredRegionMembersInfos.Any())
             {
                 regionMembers.Add(new RegionMembersInfo
                 {
@@ -275,14 +275,10 @@ namespace EPlast.BLL.Services.Region
         }
 
         ///<inheritdoc/>
-        public async Task ConfirmAsync(IEnumerable<string> roles, int id)
+        public async Task ConfirmAsync(int id)
         {
             var regionAnnualReport = await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(
                 predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed);
-            if (!roles.Contains(Roles.Admin))
-            {
-                throw new UnauthorizedAccessException();
-            }
             regionAnnualReport.Status = AnnualReportStatus.Confirmed;
             _repositoryWrapper.RegionAnnualReports.Update(regionAnnualReport);
             await SaveLastConfirmedAsync(regionAnnualReport.RegionId);
@@ -290,7 +286,7 @@ namespace EPlast.BLL.Services.Region
         }
 
         ///<inheritdoc/>
-        public async Task CancelAsync(IEnumerable<string> roles, int id)
+        public async Task CancelAsync(int id)
         {
             var regionAnnualReport = await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(
                 predicate: a => a.ID == id && a.Status == AnnualReportStatus.Confirmed);
@@ -300,7 +296,7 @@ namespace EPlast.BLL.Services.Region
         }
 
         ///<inheritdoc/>
-        public async Task DeleteAsync(IEnumerable<string> roles, int id)
+        public async Task DeleteAsync(int id)
         {
             var regionAnnualReport = await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(
                 predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed);
@@ -309,7 +305,7 @@ namespace EPlast.BLL.Services.Region
         }
 
         ///<inheritdoc/>
-        public async Task EditAsync(User user, int reportId, RegionAnnualReportQuestions regionAnnualReportQuestions)
+        public async Task EditAsync(int reportId, RegionAnnualReportQuestions regionAnnualReportQuestions)
         {
             var regionAnnualReport = await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(
                 predicate: a => a.ID == reportId && a.Status == AnnualReportStatus.Unconfirmed);

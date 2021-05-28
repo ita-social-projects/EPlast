@@ -63,7 +63,7 @@ namespace EPlast.BLL.Interfaces.Region
         /// <param name="id">Region annual report identification number</param>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to region annual report</exception>
         /// <exception cref="System.NullReferenceException">Thrown when region annual report doesn't exist</exception>
-        Task ConfirmAsync(IEnumerable<string> roles, int id);
+        Task ConfirmAsync(int id);
 
         /// <summary>
         /// Method to cancel region annual report
@@ -72,7 +72,7 @@ namespace EPlast.BLL.Interfaces.Region
         /// <param name="id">Region annual report identification number</param>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to region annual report</exception>
         /// <exception cref="System.NullReferenceException">Thrown when region annual report doesn't exist</exception>
-        Task CancelAsync(IEnumerable<string> roles, int id);
+        Task CancelAsync(int id);
 
         /// <summary>
         /// Method to delete region annual report
@@ -81,7 +81,7 @@ namespace EPlast.BLL.Interfaces.Region
         /// <param name="id">Region annual report identification number</param>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to region annual report</exception>
         /// <exception cref="System.NullReferenceException">Thrown when region annual report doesn't exist</exception>
-        Task DeleteAsync(IEnumerable<string> roles, int id);
+        Task DeleteAsync(int id);
 
         /// <summary>
         /// Method to get all regions reports
@@ -114,6 +114,6 @@ namespace EPlast.BLL.Interfaces.Region
         /// <response code="403">User hasn't access to region annual report</response>
         /// <response code="404">Region annual report does not exist</response>
         /// <response code="404">Region annual report model is not valid</response>
-        Task EditAsync(User user, int reportId, RegionAnnualReportQuestions regionAnnualReportQuestions);
+        Task EditAsync(int reportId, RegionAnnualReportQuestions regionAnnualReportQuestions);
     }
 }

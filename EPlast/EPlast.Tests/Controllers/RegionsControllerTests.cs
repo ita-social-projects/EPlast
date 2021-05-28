@@ -548,6 +548,30 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task GetRegionMembersInfo_ReturnsOk()
+        {
+            // Arrange
+            _regionAnnualReportService.Setup(x => x.GetRegionMembersInfo(It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new List<RegionMembersInfo>());
+            // Act
+            var result = await _regionController.GetRegionMembersInfo(1,1);
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task Delete_NullReferenceException()
+        {
+            // Arrange
+            _regionAnnualReportService.Setup(x => x.DeleteAsync(It.IsAny<int>()));
+            // Act
+            var result = await _regionController.Delete(1);
+            // Assert
+            Assert.IsInstanceOf<ObjectResult>(result);
+            Assert.IsTrue((result as ObjectResult).StatusCode==404);
+        }
+
+        [Test]
         public async Task RemoveAdmin_ReturnsOkResult()
         {
             // Arrange
