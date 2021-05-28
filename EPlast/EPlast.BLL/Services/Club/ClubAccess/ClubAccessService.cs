@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.Resources;
 using DatabaseEntities = EPlast.DataAccess.Entities;
 
 
@@ -64,9 +65,9 @@ namespace EPlast.BLL.Services.Club.ClubAccess
         public async Task<bool> HasAccessAsync(DatabaseEntities.User user)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            foreach (var key in _clubAccessGetters.Keys)
+            foreach (var key in roles)
             {
-                if (roles.Contains(key))
+                if (Roles.HeadsAndAdmin.Contains(key))
                     return true;
             }
             return false;

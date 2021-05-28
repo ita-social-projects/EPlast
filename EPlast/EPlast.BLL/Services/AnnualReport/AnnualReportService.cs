@@ -54,11 +54,8 @@ namespace EPlast.BLL.Services
         ///<inheritdoc/>
         public async Task<IEnumerable<AnnualReportTableObject>> GetAllAsync(User user, bool isAdmin, string searchedData, int page, int pageSize, int sortKey, bool auth)
         {
-            if (await _cityAccessService.HasAccessAsync(user))
-                return await _repositoryWrapper.AnnualReports.GetAnnualReportsAsync(user.Id, isAdmin, searchedData, page,
-                    pageSize, sortKey, auth);
-
-            throw new UnauthorizedAccessException();
+            return await _repositoryWrapper.AnnualReports.GetAnnualReportsAsync(user.Id, isAdmin, searchedData, page,
+                pageSize, sortKey, auth);
         }
 
         /// <inheritdoc />
