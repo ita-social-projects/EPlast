@@ -76,7 +76,7 @@ namespace EPlast.BLL.Services.Region
             }
             else
             {
-                newRegionAdmin.Status = true;
+                newRegionAdmin.Status = DateTime.Now < newRegionAdmin.EndDate || newRegionAdmin.EndDate == null;
                 await _repoWrapper.SaveAsync();
                 await _repoWrapper.RegionAdministration.CreateAsync(newRegionAdmin);
                 await _repoWrapper.SaveAsync();

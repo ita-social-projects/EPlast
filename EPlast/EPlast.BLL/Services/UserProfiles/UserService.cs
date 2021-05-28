@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.Resources;
 
 namespace EPlast.BLL.Services.UserProfiles
 {
@@ -336,7 +337,7 @@ namespace EPlast.BLL.Services.UserProfiles
                 i => i.Id == userId,
                 i =>
                     i.Include(g => g.UserProfile).ThenInclude(x => x.Gender));
-            return user.UserProfile.Gender.Name;
+            return user.UserProfile.Gender == null ? UserGenders.Undefined : user.UserProfile.Gender.Name;
         }
 
         public bool IsUserSameCity(UserDTO currentUser, UserDTO focusUser)
