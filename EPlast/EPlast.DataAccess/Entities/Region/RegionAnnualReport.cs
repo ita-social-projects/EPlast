@@ -6,6 +6,7 @@ namespace EPlast.DataAccess.Entities
     public class RegionAnnualReport
     {
         public int ID { get; set; }
+        public AnnualReportStatus Status { get; set; }
         public int NumberOfSeatsPtashat { get; set; }
         public int NumberOfPtashata { get; set; }
         public int NumberOfNovatstva { get; set; }

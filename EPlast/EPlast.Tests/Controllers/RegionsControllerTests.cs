@@ -165,7 +165,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(new RegionAnnualReportDTO());
 
             // Act
-            var expected = StatusCodes.Status200OK;
+            var expected = StatusCodes.Status201Created;
             var result = await _regionController.CreateRegionAnnualReportById(1, 2021, new RegionAnnualReportQuestions());
             var actual = (result as ObjectResult).StatusCode;
 
@@ -545,6 +545,30 @@ namespace EPlast.Tests.Controllers
             var result = await _regionController.Remove(id);
             // Assert
             Assert.IsInstanceOf<OkResult>(result);
+        }
+
+        [Test]
+        public async Task GetRegionMembersInfo_ReturnsOk()
+        {
+            // Arrange
+            _regionAnnualReportService.Setup(x => x.GetRegionMembersInfo(It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new List<RegionMembersInfo>());
+            // Act
+            var result = await _regionController.GetRegionMembersInfo(1,1);
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task Delete_NullReferenceException()
+        {
+            // Arrange
+            _regionAnnualReportService.Setup(x => x.DeleteAsync(It.IsAny<int>()));
+            // Act
+            var result = await _regionController.Delete(1);
+            // Assert
+            Assert.IsInstanceOf<ObjectResult>(result);
+            Assert.IsTrue((result as ObjectResult).StatusCode==404);
         }
 
         [Test]

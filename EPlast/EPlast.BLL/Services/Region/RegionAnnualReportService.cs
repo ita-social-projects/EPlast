@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.Resources;
 
 namespace EPlast.BLL.Services.Region
 {
@@ -139,6 +140,80 @@ namespace EPlast.BLL.Services.Region
             return _mapper.Map<RegionAnnualReportDTO>(regionAnnualReport);
         }
 
+        public async Task<IEnumerable<RegionMembersInfo>> GetRegionMembersInfo(int regionId, int year)
+        {
+            List<Tuple<int, string>> cities =
+                (await _repositoryWrapper.City.GetAllAsync(predicate: a => a.RegionId == regionId))
+                .Select(a => new Tuple<int, string>(a.ID, a.Name)).ToList();
+            List<RegionMembersInfo> regionMembers = new List<RegionMembersInfo>();
+            foreach (var city in cities)
+            {
+                var cityReport =
+                    await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(predicate: a =>
+                        a.CityId == city.Item1 && a.Date.Year == year);
+
+                RegionMembersInfo cityMembers = new RegionMembersInfo();
+                cityMembers.CityId = city.Item1;
+                cityMembers.CityName = city.Item2;
+
+                if (cityReport != null)
+                {
+                    cityMembers.CityAnnualReportId = cityReport.ID;
+                    cityMembers.ReportStatus = cityReport.Status;
+                    cityMembers.NumberOfSeatsPtashat = cityReport.NumberOfSeatsPtashat;
+                    cityMembers.NumberOfAdministrators = cityReport.NumberOfAdministrators;
+                    cityMembers.NumberOfBeneficiaries = cityReport.NumberOfBeneficiaries;
+                    cityMembers.NumberOfClubs = cityReport.NumberOfClubs;
+                    cityMembers.NumberOfHonoraryMembers = cityReport.NumberOfHonoraryMembers;
+                    cityMembers.NumberOfIndependentGroups = cityReport.NumberOfIndependentGroups;
+                    cityMembers.NumberOfIndependentRiy = cityReport.NumberOfIndependentRiy;
+                    cityMembers.NumberOfPlastpryiatMembers = cityReport.NumberOfPlastpryiatMembers;
+                    cityMembers.NumberOfTeacherAdministrators = cityReport.NumberOfTeacherAdministrators;
+                    cityMembers.NumberOfTeachers = cityReport.NumberOfTeachers;
+                    cityMembers.MembersStatistic =
+                        (await _repositoryWrapper.MembersStatistics.GetFirstOrDefaultAsync(predicate: m =>
+                            m.AnnualReport.ID == cityReport.ID));
+                }
+                regionMembers.Add(cityMembers);
+            }
+
+            IEnumerable<RegionMembersInfo> filteredRegionMembersInfos = regionMembers.Where(r =>
+                r.ReportStatus == AnnualReportStatus.Confirmed || r.ReportStatus == AnnualReportStatus.Saved);
+            if (filteredRegionMembersInfos.Any())
+            {
+                regionMembers.Add(new RegionMembersInfo
+                {
+                    CityId = -1,
+                    CityName = "Загалом",
+                    NumberOfSeatsPtashat = filteredRegionMembersInfos.Sum(a => a.NumberOfSeatsPtashat),
+                    NumberOfAdministrators = filteredRegionMembersInfos.Sum(a => a.NumberOfAdministrators),
+                    NumberOfBeneficiaries = filteredRegionMembersInfos.Sum(a => a.NumberOfBeneficiaries),
+                    NumberOfClubs = filteredRegionMembersInfos.Sum(a => a.NumberOfClubs),
+                    NumberOfHonoraryMembers = filteredRegionMembersInfos.Sum(a => a.NumberOfHonoraryMembers),
+                    NumberOfIndependentGroups = filteredRegionMembersInfos.Sum(a => a.NumberOfIndependentGroups),
+                    NumberOfIndependentRiy = filteredRegionMembersInfos.Sum(a => a.NumberOfIndependentRiy),
+                    NumberOfPlastpryiatMembers = filteredRegionMembersInfos.Sum(a => a.NumberOfPlastpryiatMembers),
+                    NumberOfTeacherAdministrators = filteredRegionMembersInfos.Sum(a => a.NumberOfTeacherAdministrators),
+                    NumberOfTeachers = filteredRegionMembersInfos.Sum(a => a.NumberOfTeachers),
+                    MembersStatistic = new MembersStatistic
+                    {
+                        NumberOfNovatstva = filteredRegionMembersInfos.Sum(a => a.MembersStatistic.NumberOfNovatstva),
+                        NumberOfSeigneurMembers = filteredRegionMembersInfos.Sum(a => a.MembersStatistic.NumberOfSeigneurMembers),
+                        NumberOfPtashata = filteredRegionMembersInfos.Sum(a => a.MembersStatistic.NumberOfPtashata),
+                        NumberOfSeigneurSupporters = filteredRegionMembersInfos.Sum(a => a.MembersStatistic.NumberOfSeigneurSupporters),
+                        NumberOfSeniorPlastynMembers = filteredRegionMembersInfos.Sum(a => a.MembersStatistic.NumberOfSeniorPlastynMembers),
+                        NumberOfSeniorPlastynSupporters = filteredRegionMembersInfos.Sum(a => a.MembersStatistic.NumberOfSeniorPlastynSupporters),
+                        NumberOfUnatstvaMembers = filteredRegionMembersInfos.Sum(a => a.MembersStatistic.NumberOfUnatstvaMembers),
+                        NumberOfUnatstvaNoname = filteredRegionMembersInfos.Sum(a => a.MembersStatistic.NumberOfUnatstvaNoname),
+                        NumberOfUnatstvaProspectors = filteredRegionMembersInfos.Sum(a => a.MembersStatistic.NumberOfUnatstvaProspectors),
+                        NumberOfUnatstvaSkobVirlyts = filteredRegionMembersInfos.Sum(a => a.MembersStatistic.NumberOfUnatstvaSkobVirlyts),
+                        NumberOfUnatstvaSupporters = filteredRegionMembersInfos.Sum(a => a.MembersStatistic.NumberOfUnatstvaSupporters),
+                    }
+                });
+            }
+            return regionMembers;
+        }
+
         ///<inheritdoc/>
         public async Task<IEnumerable<RegionAnnualReportDTO>> GetAllAsync(User claimsPrincipal)
         {
@@ -188,5 +263,83 @@ namespace EPlast.BLL.Services.Region
             return await _repositoryWrapper.RegionAnnualReports.GetRegionAnnualReportsAsync(searchedData, page, pageSize, sortKey);
         }
 
+        private async Task SaveLastConfirmedAsync(int regionId)
+        {
+            var regionAnnualReport = await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(
+                predicate: a => a.RegionId == regionId && a.Status == AnnualReportStatus.Confirmed);
+            if (regionAnnualReport != null)
+            {
+                regionAnnualReport.Status = AnnualReportStatus.Saved;
+                _repositoryWrapper.RegionAnnualReports.Update(regionAnnualReport);
+            }
+        }
+
+        ///<inheritdoc/>
+        public async Task ConfirmAsync(int id)
+        {
+            var regionAnnualReport = await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(
+                predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed);
+            regionAnnualReport.Status = AnnualReportStatus.Confirmed;
+            _repositoryWrapper.RegionAnnualReports.Update(regionAnnualReport);
+            await SaveLastConfirmedAsync(regionAnnualReport.RegionId);
+            await _repositoryWrapper.SaveAsync();
+        }
+
+        ///<inheritdoc/>
+        public async Task CancelAsync(int id)
+        {
+            var regionAnnualReport = await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(
+                predicate: a => a.ID == id && a.Status == AnnualReportStatus.Confirmed);
+            regionAnnualReport.Status = AnnualReportStatus.Unconfirmed;
+            _repositoryWrapper.RegionAnnualReports.Update(regionAnnualReport);
+            await _repositoryWrapper.SaveAsync();
+        }
+
+        ///<inheritdoc/>
+        public async Task DeleteAsync(int id)
+        {
+            var regionAnnualReport = await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(
+                predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed);
+            _repositoryWrapper.RegionAnnualReports.Delete(regionAnnualReport);
+            await _repositoryWrapper.SaveAsync();
+        }
+
+        ///<inheritdoc/>
+        public async Task EditAsync(int reportId, RegionAnnualReportQuestions regionAnnualReportQuestions)
+        {
+            var regionAnnualReport = await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(
+                predicate: a => a.ID == reportId && a.Status == AnnualReportStatus.Unconfirmed);
+            if (regionAnnualReport.Status != AnnualReportStatus.Unconfirmed)
+            {
+                throw new InvalidOperationException();
+            }
+
+            regionAnnualReport.StateOfPreparation = regionAnnualReportQuestions.StateOfPreparation;
+
+            regionAnnualReport.Characteristic = regionAnnualReportQuestions.Characteristic;
+
+            regionAnnualReport.ChurchCooperation = regionAnnualReportQuestions.ChurchCooperation;
+
+            regionAnnualReport.InvolvementOfVolunteers = regionAnnualReportQuestions.InvolvementOfVolunteers;
+
+            regionAnnualReport.ImportantNeeds = regionAnnualReportQuestions.ImportantNeeds;
+
+            regionAnnualReport.SocialProjects = regionAnnualReportQuestions.SocialProjects;
+
+            regionAnnualReport.StatusOfStrategy = regionAnnualReportQuestions.StatusOfStrategy;
+
+            regionAnnualReport.SuccessStories = regionAnnualReportQuestions.SuccessStories;
+
+            regionAnnualReport.ProblemSituations = regionAnnualReportQuestions.ProblemSituations;
+
+            regionAnnualReport.TrainedNeeds = regionAnnualReportQuestions.TrainedNeeds;
+
+            regionAnnualReport.PublicFunding = regionAnnualReportQuestions.PublicFunding;
+
+            regionAnnualReport.Fundraising = regionAnnualReportQuestions.Fundraising;
+            _repositoryWrapper.RegionAnnualReports.Update(regionAnnualReport);
+            await _repositoryWrapper.SaveAsync();
+        }
+        
     }
 }
