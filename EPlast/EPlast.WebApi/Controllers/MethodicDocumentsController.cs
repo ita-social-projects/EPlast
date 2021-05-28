@@ -16,13 +16,15 @@ namespace EPlast.WebApi.Controllers
     [Authorize(AuthenticationSchemes = "Bearer")]
     public class MethodicDocumentsController : ControllerBase
     {
-
         private readonly IMethodicDocumentService _methodicDocService;
         private readonly IMapper _mapper;
-        public MethodicDocumentsController(IMethodicDocumentService docService, IMapper mapper)
+        private readonly IPdfService _pdfService;
+
+        public MethodicDocumentsController(IMethodicDocumentService docService, IMapper mapper, IPdfService pdfService)
         {
             _methodicDocService = docService;
             _mapper = mapper;
+            _pdfService = pdfService;
         }
 
         /// <summary>
@@ -114,7 +116,6 @@ namespace EPlast.WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Save(MethodicDocumentWraperDTO documentWrapper)
         {
-
             if (documentWrapper.FileAsBase64 == null && documentWrapper.MethodicDocument.FileName != null)
             {
                 return BadRequest("Проблеми з завантаженням файлу");
@@ -139,7 +140,6 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">MethodicDocument was deleted</response>
         /// <response code="404">MethodicDocument does not exist</response>
         [HttpDelete("{id:int}")]
-
         public async Task<IActionResult> Delete(int id)
         {
             await _methodicDocService.DeleteMethodicDocumentAsync(id);
@@ -160,5 +160,19 @@ namespace EPlast.WebApi.Controllers
             return Ok(base64);
         }
 
+        /// <summary>
+        ///  Returns pdf file as base64
+        /// </summary>
+        /// <param name="objId">MethodicDocument id</param>
+        /// <returns>Pdf file as base64 what was created with MethodicDocument data</returns>
+        /// <response code="200">Pdf file as base64</response>
+        [HttpGet("createpdf/{objId:int}")]
+        public async Task<IActionResult> CreatePdf(int objId)
+        {
+            var fileBytes = await _pdfService.MethodicDocumentCreatePdfAsync(objId);
+            var base64EncodedPdf = Convert.ToBase64String(fileBytes);
+
+            return Ok(base64EncodedPdf);
+        }
     }
 }
