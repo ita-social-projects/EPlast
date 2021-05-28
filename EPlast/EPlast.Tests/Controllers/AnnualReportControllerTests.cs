@@ -82,36 +82,6 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task Cancel_Invalid_UnAuthorisedException_Test()
-        {
-            _annualReportService.Setup(a => a.CancelAsync(It.IsAny<User>(), It.IsAny<int>()))
-                .Throws(new UnauthorizedAccessException());
-
-            _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
-
-            _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
-
-            _localizer
-               .Setup(s => s["NoAccess"])
-               .Returns(GetNoAccess());
-
-            AnnualReportController annualController = CreateAnnualReportController;
-
-            // Act
-            var result = await annualController.Cancel(5);
-            var expected = StatusCodes.Status403Forbidden;
-            var actual = (result as ObjectResult).StatusCode;
-
-            // Assert
-            Assert.AreEqual(expected, actual);
-            Assert.NotNull(result);
-            _localizer
-              .Verify(s => s["NoAccess"]);
-            _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
-            Assert.IsInstanceOf<ObjectResult>(result);
-        }
-
-        [Test]
         public async Task Cancel_Valid_Test()
         {
             _annualReportService.Setup(a => a.CancelAsync(It.IsAny<User>(), It.IsAny<int>()));
@@ -536,37 +506,6 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expected, actual);
             _localizer
               .Verify(s => s["NotFound"]);
-            _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
-            Assert.IsInstanceOf<ObjectResult>(result);
-        }
-
-        [Test]
-        public async Task Confirm_Invalid_UnAuthorisedException_Test()
-        {
-            _annualReportService.Setup(a => a.ConfirmAsync(It.IsAny<User>(), It.IsAny<int>()))
-                .Throws(new UnauthorizedAccessException());
-
-            _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
-
-            _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
-
-            _localizer
-               .Setup(s => s["NoAccess"])
-               .Returns(GetNoAccess());
-
-            AnnualReportController annualController = CreateAnnualReportController;
-
-            // Act
-            var result = await annualController.Confirm(5);
-            var expected = StatusCodes.Status403Forbidden;
-            var actual = (result as ObjectResult).StatusCode;
-
-            // Assert
-
-            Assert.NotNull(result);
-            Assert.AreEqual(expected, actual);
-            _localizer
-              .Verify(s => s["NoAccess"]);
             _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
             Assert.IsInstanceOf<ObjectResult>(result);
         }

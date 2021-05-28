@@ -123,10 +123,6 @@ namespace EPlast.BLL.Services
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed);
-            if (!await _cityAccessService.HasAccessAsync(user, annualReport.CityId))
-            {
-                throw new UnauthorizedAccessException();
-            }
             annualReport.Status = AnnualReportStatus.Confirmed;
             _repositoryWrapper.AnnualReports.Update(annualReport);
             await SaveLastConfirmedAsync(annualReport.CityId);
@@ -138,10 +134,6 @@ namespace EPlast.BLL.Services
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == id && a.Status == AnnualReportStatus.Confirmed);
-            if (!await _cityAccessService.HasAccessAsync(user, annualReport.CityId))
-            {
-                throw new UnauthorizedAccessException();
-            }
             annualReport.Status = AnnualReportStatus.Unconfirmed;
             _repositoryWrapper.AnnualReports.Update(annualReport);
             await _repositoryWrapper.SaveAsync();
