@@ -17,6 +17,7 @@ namespace EPlast.Tests.Controllers
     {
         private Mock<IMethodicDocumentService> _service;
         private Mock<IMapper> _mapper;
+        private Mock<IPdfService> _pdfService;
 
         private MethodicDocumentsController _controller;
 
@@ -25,10 +26,12 @@ namespace EPlast.Tests.Controllers
         {
             _service = new Mock<IMethodicDocumentService>();
             _mapper = new Mock<IMapper>();
+            _pdfService = new Mock<IPdfService>();
 
             _controller = new MethodicDocumentsController(
                 _service.Object,
-                _mapper.Object);
+                _mapper.Object,
+                _pdfService.Object);
         }
 
         [Test]
@@ -240,6 +243,28 @@ namespace EPlast.Tests.Controllers
             _service.Verify();
             Assert.IsNotNull(resultValue);
             Assert.IsInstanceOf<string>(resultValue);
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task CreatePdf_ReturnsOkObjectResult()
+        {
+            //Arrange
+            var bytesReturn = new byte[3] { 0, 2, 3 };
+            _pdfService
+                .Setup(x => x.MethodicDocumentCreatePdfAsync(It.IsAny<int>()))
+                .ReturnsAsync(bytesReturn);
+
+            //Act
+            var result = await _controller.CreatePdf(It.IsAny<int>());
+            var resultValue = (result as ObjectResult)?.Value;
+
+            //Assert
+            _pdfService.Verify();
+            Assert.IsNotNull(resultValue);
+            Assert.IsInstanceOf<string>(resultValue);
+            Assert.AreNotEqual(string.Empty, resultValue);
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
