@@ -165,7 +165,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(new RegionAnnualReportDTO());
 
             // Act
-            var expected = StatusCodes.Status200OK;
+            var expected = StatusCodes.Status201Created;
             var result = await _regionController.CreateRegionAnnualReportById(1, 2021, new RegionAnnualReportQuestions());
             var actual = (result as ObjectResult).StatusCode;
 

@@ -399,6 +399,10 @@ namespace EPlast.Tests.Services.Club
                 .Setup(r => r.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
                     It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
                 .ReturnsAsync(new ClubMembers());
+            _repoWrapper.Setup(x => x.UserPlastDegrees.GetAllAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
+                .ReturnsAsync(new List<UserPlastDegree>()
+                    {new UserPlastDegree() {PlastDegree = new PlastDegree() {Id = 1, Name = ""}}});
 
             // Act
             var result = await clubService.GetClubProfileAsync(Id, It.IsAny<DataAccessClub.User>());

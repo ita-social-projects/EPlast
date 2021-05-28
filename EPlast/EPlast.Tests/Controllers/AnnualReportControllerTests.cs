@@ -1347,32 +1347,6 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<ObjectResult>(result);
         }
 
-        [Test]
-        public async Task Get_UnauthorizedAccessException()
-        {
-            // Arrange
-            _userManager.Setup(r => r.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
-            _userManager.Setup(r => r.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
-            _annualReportService
-                .Setup(r => r.GetAllAsync(It.IsAny<User>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<int>(),
-                    It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>())).Throws(new UnauthorizedAccessException());
-
-            AnnualReportController annualController = CreateAnnualReportController;
-            _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
-            _localizer
-                .Setup(s => s["NoAccess"])
-                .Returns(GetNoAccess());
-
-            // Act
-            var expected = StatusCodes.Status403Forbidden;
-            var result = await annualController.Get("", 0, 0,1,false);
-            var actual = (result as ObjectResult).StatusCode;
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.AreEqual(expected, actual);
-            Assert.IsInstanceOf<ObjectResult>(result);
-        }
 
         [Test]
         public async Task GetAllClubAnnualReportst_Succeded()
@@ -1412,33 +1386,6 @@ namespace EPlast.Tests.Controllers
             // Act
             var expected = StatusCodes.Status404NotFound;
             var result = await annualController.GetAllClubAnnualReports("", 0, 0, 1, false);
-            var actual = (result as ObjectResult).StatusCode;
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.AreEqual(expected, actual);
-            Assert.IsInstanceOf<ObjectResult>(result);
-        }
-
-        [Test]
-        public async Task GetAllClubAnnualReportst_UnauthorizedAccessException()
-        {
-            // Arrange
-            _userManager.Setup(r => r.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
-            _userManager.Setup(r => r.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
-            _clubAnnualReportService
-                .Setup(r => r.GetAllAsync(It.IsAny<User>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<int>(),
-                    It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>())).Throws(new UnauthorizedAccessException());
-
-            AnnualReportController annualController = CreateAnnualReportController;
-            _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
-            _localizer
-                .Setup(s => s["NoAccess"])
-                .Returns(GetNotFound());
-
-            // Act
-            var expected = StatusCodes.Status403Forbidden;
-            var result = await annualController.GetAllClubAnnualReports("", 0, 0,1,false);
             var actual = (result as ObjectResult).StatusCode;
 
             // Assert
