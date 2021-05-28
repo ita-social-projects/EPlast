@@ -179,7 +179,7 @@ namespace EPlast.BLL.Services.Region
 
             IEnumerable<RegionMembersInfo> filteredRegionMembersInfos = regionMembers.Where(r =>
                 r.ReportStatus == AnnualReportStatus.Confirmed || r.ReportStatus == AnnualReportStatus.Saved);
-            if (regionMembers.Count() != 0)
+            if (regionMembers.Any())
             {
                 regionMembers.Add(new RegionMembersInfo
                 {
@@ -294,10 +294,6 @@ namespace EPlast.BLL.Services.Region
         {
             var regionAnnualReport = await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(
                 predicate: a => a.ID == id && a.Status == AnnualReportStatus.Confirmed);
-            if (!roles.Contains(Roles.Admin))
-            {
-                throw new UnauthorizedAccessException();
-            }
             regionAnnualReport.Status = AnnualReportStatus.Unconfirmed;
             _repositoryWrapper.RegionAnnualReports.Update(regionAnnualReport);
             await _repositoryWrapper.SaveAsync();
@@ -308,10 +304,6 @@ namespace EPlast.BLL.Services.Region
         {
             var regionAnnualReport = await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(
                 predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed);
-            if (!roles.Contains(Roles.Admin))
-            {
-                throw new UnauthorizedAccessException();
-            }
             _repositoryWrapper.RegionAnnualReports.Delete(regionAnnualReport);
             await _repositoryWrapper.SaveAsync();
         }

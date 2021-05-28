@@ -308,11 +308,6 @@ namespace EPlast.WebApi.Controllers
                 _logger.LogError($"Annual report (id: {id}) not found");
                 return StatusCode(StatusCodes.Status404NotFound, new { message = "Річний звіт округи не знайдено" });
             }
-            catch (UnauthorizedAccessException)
-            {
-                _logger.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to cancel annual report (id: {id})");
-                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Немає доступу до річного звіту округи" });
-            }
         }
 
         /// <summary>
@@ -338,11 +333,6 @@ namespace EPlast.WebApi.Controllers
             {
                 _logger.LogError($"Annual report (id: {id}) not found");
                 return StatusCode(StatusCodes.Status404NotFound, new { message = "Річний звіт округи не знайдено" });
-            }
-            catch (UnauthorizedAccessException)
-            {
-                _logger.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to cancel annual report (id: {id})");
-                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Немає доступу до річного звіту округи" });
             }
         }
 
