@@ -282,7 +282,21 @@ namespace EPlast.Tests.Services.Club.ClubAccess
             // Assert
             Assert.False(result);
         }
-        
+
+        [Test]
+        public async Task HasAccessAsync_TakesOneParametr_NotNullRoles_False()
+        {
+            // Arrange
+            _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string>(){"Прихильник"});
+
+            // Act
+            var result = await _clubAccessService.HasAccessAsync(new User());
+
+            // Assert
+            Assert.False(result);
+        }
+
 
         private AdminType _adminType => new AdminType() { };
     }

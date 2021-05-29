@@ -54,11 +54,8 @@ namespace EPlast.BLL.Services
         ///<inheritdoc/>
         public async Task<IEnumerable<AnnualReportTableObject>> GetAllAsync(User user, bool isAdmin, string searchedData, int page, int pageSize, int sortKey, bool auth)
         {
-            if (await _cityAccessService.HasAccessAsync(user))
-                return await _repositoryWrapper.AnnualReports.GetAnnualReportsAsync(user.Id, isAdmin, searchedData, page,
-                    pageSize, sortKey, auth);
-
-            throw new UnauthorizedAccessException();
+            return await _repositoryWrapper.AnnualReports.GetAnnualReportsAsync(user.Id, isAdmin, searchedData, page,
+                pageSize, sortKey, auth);
         }
 
         /// <inheritdoc />
@@ -126,10 +123,6 @@ namespace EPlast.BLL.Services
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed);
-            if (!await _cityAccessService.HasAccessAsync(user, annualReport.CityId))
-            {
-                throw new UnauthorizedAccessException();
-            }
             annualReport.Status = AnnualReportStatus.Confirmed;
             _repositoryWrapper.AnnualReports.Update(annualReport);
             await SaveLastConfirmedAsync(annualReport.CityId);
@@ -141,10 +134,6 @@ namespace EPlast.BLL.Services
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == id && a.Status == AnnualReportStatus.Confirmed);
-            if (!await _cityAccessService.HasAccessAsync(user, annualReport.CityId))
-            {
-                throw new UnauthorizedAccessException();
-            }
             annualReport.Status = AnnualReportStatus.Unconfirmed;
             _repositoryWrapper.AnnualReports.Update(annualReport);
             await _repositoryWrapper.SaveAsync();
