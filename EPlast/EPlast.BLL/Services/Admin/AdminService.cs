@@ -218,7 +218,9 @@ namespace EPlast.BLL.Services
             var lowerRoles = new List<string>
             {
                 Roles.RegisteredUser,
-                Roles.Supporter
+                Roles.Supporter,
+                Roles.FormerPlastMember,
+                Roles.Interested
             };
             var users = await _repoWrapper.User.GetAllAsync();
             var usersDtos = new List<ShortUserInformationDTO>();

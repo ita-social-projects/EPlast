@@ -38,7 +38,7 @@ namespace EPlast.BLL.Interfaces.Club
         /// <summary>
         /// Removes roles from previous administrators
         /// </summary>
-        Task CheckPreviousAdministratorsToDelete();
+        Task ContinueAdminsDueToDate();
 
         /// <summary>
         ///returns administrations of given user

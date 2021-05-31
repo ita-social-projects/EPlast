@@ -344,22 +344,72 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
-        public void EndAdminsDueToDate_ReturnsCorrect()
+        public async Task GetRegionProfileByIdAsync_ReturnsCorrectAsync()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.Region.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Region, bool>>>(),
+                It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
+                .ReturnsAsync(new Region());
+            _cityService
+                .Setup(x => x.GetCitiesByRegionAsync(It.IsAny<int>()))
+                .ReturnsAsync(cities);
+            _mapper
+                .Setup(x => x.Map<RegionDTO, RegionProfileDTO>(It.IsAny<RegionDTO>()))
+                .Returns(regionProfileDTO);
+            _mapper
+                .Setup(x => x.Map<Region, RegionDTO>(It.IsAny<Region>()))
+                .Returns(regionDTO);
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string>() { Roles.Admin });
+
+            // Act
+            var result = await _regionService.GetRegionProfileByIdAsync(fakeId, user);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<RegionProfileDTO>(result);
+        }
+
+        [Test]
+        public void ContinueAdminsDueToDate_EndDateEarlier_ReturnsCorrect()
         {
             // Arrange
             _repoWrapper
                    .Setup(x => x.RegionAdministration.GetAllAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
                 It.IsAny<Func<IQueryable<RegionAdministration>, IIncludableQueryable<RegionAdministration, object>>>()))
-                .ReturnsAsync(Admins);
+                  .ReturnsAsync(new List<RegionAdministration> { new RegionAdministration() { ID = fakeId, EndDate = new DateTime(2001, 7, 20) } });
             _repoWrapper
-               .Setup(x => x.RegionAdministration.Update(It.IsAny<RegionAdministration>()));
+                  .Setup(x => x.RegionAdministration.Update(It.IsAny<RegionAdministration>()));
             _repoWrapper
                   .Setup(x => x.SaveAsync());
             // Act
-            var result = _regionService.EndAdminsDueToDate();
+            var result = _regionService.ContinueAdminsDueToDate();
 
             // Assert
-            _repoWrapper.Verify();
+            _repoWrapper.Verify(x => x.SaveAsync());
+            _repoWrapper.Verify(x => x.RegionAdministration.Update(It.IsAny<RegionAdministration>()));
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public void ContinueAdminsDueToDate_EndDateNull_ReturnsCorrect()
+        {
+            // Arrange
+            _repoWrapper
+                   .Setup(x => x.RegionAdministration.GetAllAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
+                It.IsAny<Func<IQueryable<RegionAdministration>, IIncludableQueryable<RegionAdministration, object>>>()))
+                  .ReturnsAsync(new List<RegionAdministration> { new RegionAdministration() { ID = fakeId } });
+            _repoWrapper
+                  .Setup(x => x.RegionAdministration.Update(It.IsAny<RegionAdministration>()));
+            _repoWrapper
+                  .Setup(x => x.SaveAsync());
+            // Act
+            var result = _regionService.ContinueAdminsDueToDate();
+
+            // Assert
+            _repoWrapper.Verify(x => x.SaveAsync());
             Assert.NotNull(result);
         }
 
@@ -380,6 +430,10 @@ namespace EPlast.Tests.Services.Regions
             Assert.NotNull(result);
         }
 
+        private readonly int fakeId = 6;
+        
+        private readonly User user = new User();
+
         private readonly Region fakeRegion = new Region()
         {
             RegionName = ""
@@ -388,6 +442,16 @@ namespace EPlast.Tests.Services.Regions
         private readonly RegionDTO fakeRegionDTO = new RegionDTO
         {
             RegionName = ""
+        };
+
+        private readonly RegionProfileDTO regionProfileDTO = new RegionProfileDTO
+        {
+            Cities = new List<CityDTO>()
+        };
+
+        private readonly RegionDTO regionDTO = new RegionDTO
+        {
+            City = "city"
         };
 
         private readonly IEnumerable<RegionForAdministrationDTO> regionsForAdmin = new List<RegionForAdministrationDTO>

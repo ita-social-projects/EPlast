@@ -1,9 +1,10 @@
-﻿using System;
-using EPlast.DataAccess.Repositories;
-using System.Threading.Tasks;
+﻿using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.Logging;
-using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Services.PDF.Documents;
+using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Threading.Tasks;
 
 namespace EPlast.BLL
 {
@@ -12,6 +13,7 @@ namespace EPlast.BLL
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly ILoggerService<PdfService> _logger;
         private readonly IDecisionBlobStorageRepository _decisionBlobStorage;
+
         public PdfService(IRepositoryWrapper repoWrapper, ILoggerService<PdfService> logger, IDecisionBlobStorageRepository decisionBlobStorage)
         {
             _repoWrapper = repoWrapper;
@@ -66,6 +68,32 @@ namespace EPlast.BLL
             return null;
         }
 
+        public async Task<byte[]> MethodicDocumentCreatePdfAsync(int methodicDocumentId)
+        {
+            try
+            {
+                var methodicDocument = await _repoWrapper.MethodicDocument.GetFirstAsync(x => x.ID == methodicDocumentId, include: doc =>
+                    doc.Include(d => d.Organization));
+                if (methodicDocument != null)
+                {
+                    var base64 = await _decisionBlobStorage.GetBlobBase64Async("dafaultPhotoForPdf.jpg");
+                    IPdfSettings pdfSettings = new PdfSettings
+                    {
+                        Title = $"{methodicDocument.Type} {methodicDocument.ID}",
+                        ImagePath = base64,
+                    };
+                    IPdfCreator creator = new PdfCreator(new MethodicDocumentPdf(methodicDocument, pdfSettings));
+                    return await Task.Run(() => creator.GetPDFBytes());
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception: {e.Message}");
+            }
+
+            return null;
+        }
+
         private async Task<BlankModel> GetBlankDataAsync(string userId)
         {
             var user = await _repoWrapper.User.GetFirstOrDefaultAsync(predicate: c => c.Id == userId,
@@ -76,11 +104,11 @@ namespace EPlast.BLL
                                 .ThenInclude(c => c.ClubMembers)
                                     .ThenInclude(c => c.Club)
                     .Include(c => c.UserMembershipDates)
-                    .Include(c=>c.UserPlastDegrees)
-                    .Include(c=>c.Participants)
-                    .ThenInclude(c=>c.Event)
-                    .ThenInclude(c=>c.EventCategory)
-                    .ThenInclude(c=>c.EventSection));
+                    .Include(c => c.UserPlastDegrees)
+                    .Include(c => c.Participants)
+                    .ThenInclude(c => c.Event)
+                    .ThenInclude(c => c.EventCategory)
+                    .ThenInclude(c => c.EventSection));
             var userProfile = await _repoWrapper.UserProfile
                 .GetFirstOrDefaultAsync(predicate: c => c.UserID == userId,
                     include: source => source
