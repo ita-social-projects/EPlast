@@ -187,6 +187,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="page">current page on pagination</param>
         /// <param name="pageSize">number of records per page</param>
         /// <param name="sortKey">Key for sorting</param>
+        /// <param name="auth">Whether to select reports of that user is author</param>
         /// <returns>RegionAnnualReportTableObject</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="403">User hasn't access to annual report</response>
