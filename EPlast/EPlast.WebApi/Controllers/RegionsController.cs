@@ -192,9 +192,11 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The region annual report does not exist</response>
         [HttpGet("RegionsAnnualReports")]
-        public async Task<IActionResult> GetAllRegionsReportsAsync(string searchedData, int page, int pageSize, int sortKey)
+        public async Task<IActionResult> GetAllRegionsReportsAsync(string searchedData, int page, int pageSize, int sortKey, bool auth)
         {
-            return Ok(await _RegionAnnualReportService.GetAllRegionsReportsAsync(searchedData, page, pageSize, sortKey));
+            var user = await _userManager.GetUserAsync(User);
+            return Ok(await _RegionAnnualReportService.GetAllRegionsReportsAsync(user,
+                (await _userManager.GetRolesAsync(user)).Contains(Roles.Admin), searchedData, page, pageSize, sortKey, auth));
         }
 
         /// <summary>
@@ -256,8 +258,6 @@ namespace EPlast.WebApi.Controllers
         /// <param name="id">Region annual report identification number</param>
         /// <returns>Answer from backend</returns>
         /// <response code="200">Region annual report was successfully confirmed</response>
-        /// <response code="403">User hasn't access to region annual report</response>
-        /// <response code="404">Region annual report does not exist</response>
         [HttpPut("confirmReport/{id:int}")]
         [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Confirm(int id)

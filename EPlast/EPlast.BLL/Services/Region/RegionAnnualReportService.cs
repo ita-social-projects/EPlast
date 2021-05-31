@@ -258,9 +258,9 @@ namespace EPlast.BLL.Services.Region
             return _mapper.Map<IEnumerable<RegionAnnualReport>, IEnumerable<RegionAnnualReportDTO>>(await _repositoryWrapper.RegionAnnualReports.FindAll().ToListAsync());
         }
 
-        public async Task<IEnumerable<RegionAnnualReportTableObject>> GetAllRegionsReportsAsync(string searchedData, int page, int pageSize, int sortKey)
+        public async Task<IEnumerable<RegionAnnualReportTableObject>> GetAllRegionsReportsAsync(User user, bool isAdmin, string searchedData, int page, int pageSize, int sortKey, bool auth)
         {
-            return await _repositoryWrapper.RegionAnnualReports.GetRegionAnnualReportsAsync(searchedData, page, pageSize, sortKey);
+            return await _repositoryWrapper.RegionAnnualReports.GetRegionAnnualReportsAsync(user.Id, isAdmin, searchedData, page, pageSize, sortKey, auth);
         }
 
         private async Task SaveLastConfirmedAsync(int regionId)

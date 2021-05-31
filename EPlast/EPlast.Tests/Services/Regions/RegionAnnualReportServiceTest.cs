@@ -60,11 +60,11 @@ namespace EPlast.Tests.Services.Regions
             //Arrange
             var report = new RegionAnnualReportTableObject() {Id = 1};
             _mockRepositoryWrapper
-                .Setup(r => r.RegionAnnualReports.GetRegionAnnualReportsAsync(It.IsAny<string>(), It.IsAny<int>(),
-                    It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(new List<RegionAnnualReportTableObject>(){ report});
+                .Setup(r => r.RegionAnnualReports.GetRegionAnnualReportsAsync(It.IsAny<string>(), It.IsAny<bool>(),It.IsAny<string>(), It.IsAny<int>(),
+                    It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>())).ReturnsAsync(new List<RegionAnnualReportTableObject>(){ report});
 
             //Act
-            var result = await service.GetAllRegionsReportsAsync("", 1, 1,1);
+            var result = await service.GetAllRegionsReportsAsync(new User(), true, "", 1, 1,1, true);
 
             //Assert
             Assert.IsNotNull(result);

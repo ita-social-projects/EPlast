@@ -15,6 +15,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Repositories;
 using EPlast.DataAccess.Repositories.Realizations.Base;
@@ -226,11 +227,14 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             var report = new RegionAnnualReportTableObject() { Id = 1 };
-            _regionAnnualReportService.Setup(r => r.GetAllRegionsReportsAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
+            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
+            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() {"Admin"});
+            _regionAnnualReportService.Setup(r => r.GetAllRegionsReportsAsync(It.IsAny<User>(), It.IsAny<bool>(),
+                    It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()))
                 .ReturnsAsync(new List<RegionAnnualReportTableObject>() {report});
 
             // Act
-            var result = await _regionController.GetAllRegionsReportsAsync("",1,1,1);
+            var result = await _regionController.GetAllRegionsReportsAsync("",1,1,1, true);
 
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);

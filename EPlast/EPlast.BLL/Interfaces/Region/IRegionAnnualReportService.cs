@@ -86,14 +86,18 @@ namespace EPlast.BLL.Interfaces.Region
         /// <summary>
         /// Method to get all regions reports
         /// </summary>
+        /// <param name="user">Authorized user</param>
+        /// <param name="isAdmin">Whether authorized user is admin</param>
         /// <param name="searchedData">Searched Data</param>
         /// <param name="page">current page on pagination</param>
         /// <param name="pageSize">number of records per page</param>
         /// <param name="sortKey">Key for sorting</param>
+        /// <param name="auth">Whether to select reports of that user is author</param>
         /// <returns>RegionAnnualReportTableObject</returns>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
         /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
-        Task<IEnumerable<RegionAnnualReportTableObject>> GetAllRegionsReportsAsync(string searchedData, int page, int pageSize, int sortKey);
+        Task<IEnumerable<RegionAnnualReportTableObject>> GetAllRegionsReportsAsync(User user, bool isAdmin,
+            string searchedData, int page, int pageSize, int sortKey, bool auth);
 
         /// <summary>
         /// Method to get region members info
