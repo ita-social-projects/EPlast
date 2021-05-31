@@ -244,6 +244,21 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task GetRegionsNameThatUserHasAccessTo_Succeeded()
+        {
+            // Arrange
+            _regionAnnualReportService.Setup(x => x.GetAllRegionsIdAndName(It.IsAny<User>()))
+                .ReturnsAsync(new List<RegionForAdministrationDTO>());
+
+            // Act
+            var result = await _regionController.GetRegionsNameThatUserHasAccessTo();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
         public async Task GetAdminTypeId_TypeNameString_ReturnsAdminTypeId()
         {
             // Arrange

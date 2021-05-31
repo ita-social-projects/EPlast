@@ -73,6 +73,21 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
+        public async Task GetRegionsNameThatUserHasAccessTo_Succeeded()
+        {
+            // Arrange
+            _mockRegionAccessService.Setup(x => x.GetRegionsAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<RegionDTO>(){new RegionDTO(){ID = 1, RegionName = "RegionName"}});
+
+            // Act
+            var result = await service.GetAllRegionsIdAndName(new User());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsNotEmpty(result);
+        }
+
+        [Test]
         public async Task GetRegionMembersInfo_MemBersListCount2()
         {
             //Arrange

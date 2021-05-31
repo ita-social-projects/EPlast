@@ -422,6 +422,17 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get id and name from all regions that the user has access to
+        /// </summary>
+        /// <returns>Tuple (int, string)</returns>
+        [HttpGet("RegionOptions")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetRegionsNameThatUserHasAccessTo()
+        {
+            return Ok(new { regions = await _RegionAnnualReportService.GetAllRegionsIdAndName(await _userManager.GetUserAsync(User)) });
+        }
+
+        /// <summary>
         /// Method to get regions board
         /// </summary>
         /// <returns>region "Крайовий Провід Пласту"</returns>

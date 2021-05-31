@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.Resources;
 
 namespace EPlast.BLL.Services.Region
 {
@@ -340,6 +339,11 @@ namespace EPlast.BLL.Services.Region
             _repositoryWrapper.RegionAnnualReports.Update(regionAnnualReport);
             await _repositoryWrapper.SaveAsync();
         }
-        
+
+        public async Task<IEnumerable<RegionForAdministrationDTO>> GetAllRegionsIdAndName(User user)
+        {
+            return (await _regionAccessService.GetRegionsAsync(user)).Select(x=>new RegionForAdministrationDTO(){ID = x.ID, RegionName = x.RegionName});
+        }
+
     }
 }

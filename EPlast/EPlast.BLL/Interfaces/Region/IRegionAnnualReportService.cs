@@ -119,5 +119,7 @@ namespace EPlast.BLL.Interfaces.Region
         /// <response code="404">Region annual report does not exist</response>
         /// <response code="404">Region annual report model is not valid</response>
         Task EditAsync(int reportId, RegionAnnualReportQuestions regionAnnualReportQuestions);
+
+        Task<IEnumerable<RegionForAdministrationDTO>> GetAllRegionsIdAndName(User user);
     }
 }
