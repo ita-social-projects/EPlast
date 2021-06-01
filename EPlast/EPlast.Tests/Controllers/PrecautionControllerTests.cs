@@ -1,4 +1,5 @@
-﻿using EPlast.BLL;
+﻿using System;
+using EPlast.BLL;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
@@ -184,6 +185,23 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task GetPrecautionsOfGivenUser_ReturnsNotFoundResult()
+        {
+            //Arrange
+            _userPrecautionService
+                .Setup(x => x.GetUserPrecautionsOfUserAsync(It.IsAny<string>()))
+                .ReturnsAsync((List<UserPrecautionDTO>)null);
+            //Act
+            var result = await _PrecautionController.GetPrecautionOfGivenUser(It.IsAny<string>());
+            var resultValue = (result as OkObjectResult)?.Value;
+            //Assert
+            _userPrecautionService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsNull(resultValue);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
         public async Task DeletePrecaution_ReturnsNoContentResult()
         {
             //Arrange
@@ -208,6 +226,31 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task DeletePrecaution_ReturnsNullReferenceException()
+        {
+            //Arrange
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            _PrecautionController.ControllerContext = context;
+            _precautionService
+                .Setup(x => x.DeletePrecautionAsync(It.IsAny<int>(), It.IsAny<User>()))
+                .Throws(new NullReferenceException());
+            PrecautionController precautionController = _PrecautionController;
+            //Act
+            var result = await precautionController.DeletePrecaution(It.IsAny<int>());
+            //Assert
+            _precautionService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
         public async Task DeleteUserPrecaution_ReturnsNoContentResult()
         {
             //Arrange
@@ -227,6 +270,29 @@ namespace EPlast.Tests.Controllers
             //Assert
             _userPrecautionService.Verify();
             Assert.IsInstanceOf<NoContentResult>(result);
+        }
+
+        [Test]
+        public async Task DeleteUserPrecaution_ReturnsNullReferenceException()
+        {
+            //Arrange
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            _PrecautionController.ControllerContext = context;
+            _userPrecautionService
+                .Setup(x => x.DeleteUserPrecautionAsync(It.IsAny<int>(), It.IsAny<User>()))
+                .Throws(new NullReferenceException());
+            //Act
+            var result = await _PrecautionController.DeleteUserPrecaution(It.IsAny<int>());
+            //Assert
+            _userPrecautionService.Verify();
+            Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
         [Test]
@@ -274,6 +340,30 @@ namespace EPlast.Tests.Controllers
             _userPrecautionService.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        }
+
+        [Test]
+        public async Task AddUserPrecaution_ReturnsNullReferenceException()
+        {
+            //Arrange
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            _PrecautionController.ControllerContext = context;
+            _userPrecautionService
+                .Setup(x => x.AddUserPrecautionAsync(It.IsAny<UserPrecautionDTO>(), It.IsAny<User>()))
+                .Throws(new NullReferenceException());
+            //Act
+            var result = await _PrecautionController.AddUserPrecaution(It.IsAny<UserPrecautionDTO>());
+            //Assert
+            _userPrecautionService.Verify();
+            _userManager.Verify();
+            Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
         [Test]
@@ -371,6 +461,30 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task ChangeUserPrecaution_ReturnsNullReferenceException()
+        {
+            //Arrange
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            _PrecautionController.ControllerContext = context;
+            _userPrecautionService
+                .Setup(x => x.ChangeUserPrecautionAsync(It.IsAny<UserPrecautionDTO>(), It.IsAny<User>()))
+                .Throws(new NullReferenceException());
+            //Act
+            var result = await _PrecautionController.EditUserPrecaution(It.IsAny<UserPrecautionDTO>());
+            //Assert
+            _userPrecautionService.Verify();
+            _userManager.Verify();
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
         public async Task ChangePrecaution_ReturnsNoContentResult()
         {
             //Arrange
@@ -415,6 +529,30 @@ namespace EPlast.Tests.Controllers
             _precautionService.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        }
+
+        [Test]
+        public async Task ChangePrecaution_ReturnsNullReferenceException()
+        {
+            //Arrange
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            _PrecautionController.ControllerContext = context;
+            _precautionService
+                .Setup(x => x.ChangePrecautionAsync(It.IsAny<PrecautionDTO>(), It.IsAny<User>()))
+                .Throws(new NullReferenceException());
+            //Act
+            var result = await _PrecautionController.EditPrecaution(It.IsAny<PrecautionDTO>());
+            //Assert
+            _precautionService.Verify();
+            _userManager.Verify();
+            Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
         [TestCase("tab")]
