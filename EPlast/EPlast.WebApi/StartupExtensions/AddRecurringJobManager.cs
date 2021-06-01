@@ -82,7 +82,10 @@ namespace EPlast.WebApi.StartupExtensions
                 Roles.CitySecretary,
                 Roles.FormerPlastMember,
                 Roles.RegisteredUser,
-                Roles.Interested
+                Roles.Interested,
+                Roles.CityHeadDeputy,
+                Roles.OkrugaHeadDeputy,
+                Roles.KurinHeadDeputy
             };
             foreach (var role in roles)
             {

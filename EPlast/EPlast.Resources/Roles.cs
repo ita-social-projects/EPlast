@@ -12,10 +12,13 @@ namespace EPlast.Resources
         public const string PlastHead = "Голова Пласту";
         public const string EventAdministrator = "Адміністратор подій";
         public const string KurinHead = "Голова Куреня";
+        public const string KurinHeadDeputy = "Заступник Голови Куреня";
         public const string KurinSecretary = "Діловод Куреня";
         public const string OkrugaHead = "Голова Округи";
+        public const string OkrugaHeadDeputy = "Заступник Голови Округи";
         public const string OkrugaSecretary = "Діловод Округи";
         public const string CityHead = "Голова Станиці";
+        public const string CityHeadDeputy = "Заступник Голови Станиці";
         public const string CitySecretary = "Діловод Станиці";
         public const string FormerPlastMember = "Колишній член пласту";
         public const string RegisteredUser = "Зареєстрований користувач";
