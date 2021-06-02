@@ -59,7 +59,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>A specific number of cities</returns>
         [HttpGet("Profiles/{page}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetCities(int page, int pageSize, string cityName = null)
+        public async Task<IActionResult> GetCities(int page, int pageSize, string cityName)
         {
             string recordKey = "Cities_" + DateTime.Now.ToString("yyyyMMdd_hhmm");
             IEnumerable<CityDTO> cities = await _cache.GetRecordAsync<IEnumerable<CityDTO>>(recordKey);
@@ -69,7 +69,7 @@ namespace EPlast.WebApi.Controllers
                  cities = await _cityService.GetAllDTOAsync();
                 await _cache.SetRecordAsync(recordKey, cities);
             }
-            var citiesViewModel = new CitiesViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
+            var citiesViewModel = new CitiesViewModel(page, pageSize, cities, cityName, User.IsInRole(Roles.Admin));
 
             return Ok(citiesViewModel);
         }

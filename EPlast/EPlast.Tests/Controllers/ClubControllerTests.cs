@@ -18,12 +18,14 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.Resources;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace EPlast.Tests.Controllers
 {
     [TestFixture]
     class ClubControllerTests
     {
+        private Mock<IDistributedCache> _cache;
         private readonly Mock<IClubService> _ClubService;
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<ILoggerService<ClubController>> _logger;
@@ -40,6 +42,7 @@ namespace EPlast.Tests.Controllers
             _mapper = new Mock<IMapper>();
             _logger = new Mock<ILoggerService<ClubController>>();
             _ClubParticipantsService = new Mock<IClubParticipantsService>();
+            _cache = new Mock<IDistributedCache>();
             _ClubDocumentsService = new Mock<IClubDocumentsService>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
@@ -52,7 +55,8 @@ namespace EPlast.Tests.Controllers
            _ClubParticipantsService.Object,
            _ClubDocumentsService.Object,
            _ClubAccessService.Object,
-           _userManager.Object
+           _userManager.Object,
+           _cache.Object
           );
 
         [TestCase(1, 1, "Курінь")]

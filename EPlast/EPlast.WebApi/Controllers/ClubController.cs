@@ -12,6 +12,9 @@ using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
 using AnnualReportDTOs = EPlast.BLL.DTO.AnnualReport;
+using System.Collections.Generic;
+using Microsoft.Extensions.Caching.Distributed;
+using EPlast.WebApi.Extensions;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -20,6 +23,7 @@ namespace EPlast.WebApi.Controllers
     [Authorize(AuthenticationSchemes = "Bearer")]
     public class ClubController : ControllerBase
     {
+        private readonly IDistributedCache _cache;
         private readonly ILoggerService<ClubController> _logger;
         private readonly IMapper _mapper;
         private readonly IClubService _clubService;
@@ -34,7 +38,8 @@ namespace EPlast.WebApi.Controllers
             IClubParticipantsService clubParticipantsService,
             IClubDocumentsService clubDocumentsService,
             IClubAccessService clubAccessService,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IDistributedCache cache)
         {
             _logger = logger;
             _mapper = mapper;
@@ -43,6 +48,7 @@ namespace EPlast.WebApi.Controllers
             _clubDocumentsService = clubDocumentsService;
             _clubAccessService = clubAccessService;
             _userManager = userManager;
+            _cache = cache;
         }
 
         /// <summary>
@@ -54,11 +60,18 @@ namespace EPlast.WebApi.Controllers
         /// <returns>A specific number of Clubs</returns>
         [HttpGet("Profiles/{page}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetClubs(int page, int pageSize, string ClubName = null)
+        public async Task<IActionResult> GetClubs(int page, int pageSize, string clubName)
         {
-            var clubs = await _clubService.GetAllDTOAsync(ClubName);
-            var ClubsViewModel = new ClubsViewModel(page, pageSize, clubs, User.IsInRole(Roles.Admin));
+            string recordKey = "Clubs_" + DateTime.Now.ToString("yyyyMM_hhmm");
+            IEnumerable<ClubDTO> clubs = await _cache.GetRecordAsync<IEnumerable<ClubDTO>>(recordKey);
 
+            if (clubs is null)
+            {
+                clubs = await _clubService.GetAllDTOAsync();
+                await _cache.SetRecordAsync(recordKey, clubs);
+            } 
+               
+            var ClubsViewModel = new ClubsViewModel(page, pageSize, clubs, clubName, User.IsInRole(Roles.Admin));
             return Ok(ClubsViewModel);
         }
 

@@ -15,11 +15,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EPlast.Resources;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace EPlast.Tests.Controllers
 {
     internal class CityControllerTests
     {
+        private Mock<IDistributedCache> _cache;
         private readonly Mock<ICityAccessService> _cityAccessService;
         private readonly Mock<ICityDocumentsService> _cityDocumentsService;
         private readonly Mock<ICityParticipantsService> _cityParticipantsService;
@@ -35,6 +37,7 @@ namespace EPlast.Tests.Controllers
             _cityParticipantsService = new Mock<ICityParticipantsService>();
             _mapper = new Mock<IMapper>();
             _logger = new Mock<ILoggerService<CitiesController>>();
+            _cache = new Mock<IDistributedCache>();
             _cityDocumentsService = new Mock<ICityDocumentsService>();
             var store = new Mock<Microsoft.AspNetCore.Identity.IUserStore<User>>();
             _userManager = new Mock<Microsoft.AspNetCore.Identity.UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
@@ -46,7 +49,8 @@ namespace EPlast.Tests.Controllers
              _cityDocumentsService.Object,
            _cityAccessService.Object,
            _userManager.Object,
-        _cityParticipantsService.Object
+        _cityParticipantsService.Object,
+        _cache.Object
           );
 
         [Test]
