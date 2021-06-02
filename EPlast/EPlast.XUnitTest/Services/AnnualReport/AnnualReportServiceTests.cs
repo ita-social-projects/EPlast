@@ -50,20 +50,6 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         }
 
         [Fact]
-        public async Task Cancel_NoAccess_NullReferenceException()
-        {
-            // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
-                .ReturnsAsync(new DatabaseEntities.AnnualReport());
-            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>()))
-                .ReturnsAsync(false);
-
-            // Act & Assert
-            await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.CancelAsync(It.IsAny<User>(), It.IsAny<int>()));
-            _repositoryWrapper.Verify(r => r.SaveAsync(), Times.Never);
-        }
-
-        [Fact]
         public async Task Cancel_NotExist_NullReferenceException()
         {
             // Arrange
@@ -149,20 +135,6 @@ namespace EPlast.XUnitTest.Services.AnnualReport
 
             // Assert
             _repositoryWrapper.Verify(r => r.SaveAsync(), Times.Once);
-        }
-
-        [Fact]
-        public async Task Confirm_NoAccess_NullReferenceException()
-        {
-            // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
-                .ReturnsAsync(new DatabaseEntities.AnnualReport());
-            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>()))
-                .ReturnsAsync(false);
-
-            // Act & Assert
-            await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.ConfirmAsync(It.IsAny<User>(), It.IsAny<int>()));
-            _repositoryWrapper.Verify(r => r.SaveAsync(), Times.Never);
         }
 
         [Fact]

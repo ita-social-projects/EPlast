@@ -8,8 +8,6 @@ namespace EPlast.BLL.Settings
     public class ClubAccessSettings
     {
         private const string AdminRoleName = Roles.Admin;
-        private const string RegionAdminRoleName = Roles.OkrugaHead;
-        private const string CityAdminRoleName = Roles.CityHead;
         private const string ClubAdminRoleName = Roles.KurinHead;
 
         private readonly IRepositoryWrapper _repositoryWrapper;
