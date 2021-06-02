@@ -9,7 +9,7 @@ namespace EPlast.BLL.Interfaces.City
     public interface ICityAccessService
     {
         Task<IEnumerable<CityDTO>> GetCitiesAsync(User user);
-        Task<IEnumerable<DTO.AnnualReport.CityDTO>> GetAllCitiesIdAndName(User user);
+        Task<IEnumerable<CityForAdministrationDTO>> GetAllCitiesIdAndName(User user);
         Task<bool> HasAccessAsync(User user, int cityId);
         Task<bool> HasAccessAsync(User user);
     }
