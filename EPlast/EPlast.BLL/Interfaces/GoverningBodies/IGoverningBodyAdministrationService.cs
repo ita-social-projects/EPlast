@@ -5,7 +5,7 @@ namespace EPlast.BLL.Interfaces.GoverningBodies
 {
     public interface IGoverningBodyAdministrationService
     {
-        Task<GoverningBodyAdministrationDTO> AddGoverningBodyAdministrator(GoverningBodyAdministrationDTO governingBodyAdministrationDto);
+        Task<GoverningBodyAdministrationDTO> AddGoverningBodyAdministratorAsync(GoverningBodyAdministrationDTO governingBodyAdministrationDto);
 
         Task<GoverningBodyAdministrationDTO> EditGoverningBodyAdministratorAsync(GoverningBodyAdministrationDTO adminDto);
 

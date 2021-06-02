@@ -134,7 +134,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> AddAdmin(GoverningBodyAdministrationDTO newAdmin)
         {
-            await _governingBodyAdministrationService.AddGoverningBodyAdministrator(newAdmin);
+            await _governingBodyAdministrationService.AddGoverningBodyAdministratorAsync(newAdmin);
 
             _logger.LogInformation($"User {{{newAdmin.UserId}}} became Admin for Governing Body {{{newAdmin.GoverningBodyId}}}" +
                                    $" with role {{{newAdmin.AdminType.AdminTypeName}}}.");

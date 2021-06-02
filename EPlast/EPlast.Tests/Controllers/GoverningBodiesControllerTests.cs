@@ -10,6 +10,9 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.Admin;
+using EPlast.BLL.DTO.City;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace EPlast.Tests.Controllers
 {
@@ -207,6 +210,113 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.AreEqual(dict.Count, resultValue.Count);
         }
+
+        [TestCase(2)]
+        public async Task GetAdmins_Invalid_Test(int id)
+        {
+            // Arrange
+            _governingBodiesService
+                .Setup(c => c.GetGoverningBodyProfileAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            _mapper.Setup(m => m.Map<GoverningBodyProfileDTO, GoverningBodyViewModel>(It.IsAny<GoverningBodyProfileDTO>()))
+                .Returns(new GoverningBodyViewModel());
+
+            // Act
+            var result = await _controller.GetAdmins(id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [TestCase(2)]
+        public async Task GetAdmins_Valid_Test(int id)
+        {
+            // Arrange
+            _governingBodiesService
+                .Setup(c => c.GetGoverningBodyProfileAsync(It.IsAny<int>()))
+                .ReturnsAsync(new GoverningBodyProfileDTO());
+            _mapper
+                .Setup(m => m.Map<GoverningBodyProfileDTO, GoverningBodyViewModel> (It.IsAny<GoverningBodyProfileDTO>()))
+                .Returns(new GoverningBodyViewModel());
+
+            // Act
+            var result = await _controller.GetAdmins(id);
+            var resultValue = (result as OkObjectResult)?.Value;
+
+            // Assert
+            _mapper.Verify(m => m.Map<GoverningBodyProfileDTO, GoverningBodyViewModel>(It.IsAny<GoverningBodyProfileDTO>()));
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(resultValue);
+        }
+
+        [Test]
+        public async Task AddAdmin_Valid_Test()
+        {
+            // Arrange
+            _governingBodyAdministrationService
+                .Setup(c => c.AddGoverningBodyAdministratorAsync(It.IsAny<GoverningBodyAdministrationDTO>()))
+                .ReturnsAsync(new GoverningBodyAdministrationDTO());
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+
+            // Act
+            var result = await _controller.AddAdmin(new GoverningBodyAdministrationDTO { AdminType = new AdminTypeDTO() });
+            var resultValue = (result as OkObjectResult)?.Value;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(resultValue);
+            Assert.IsInstanceOf<GoverningBodyAdministrationDTO>(resultValue);
+        }
+
+        [Test]
+        public async Task EditAdmin_Valid_Test()
+        {
+            // Arrange
+
+            _governingBodyAdministrationService
+                .Setup(c => c.EditGoverningBodyAdministratorAsync(It.IsAny<GoverningBodyAdministrationDTO>()))
+                    .ReturnsAsync(new GoverningBodyAdministrationDTO());
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+
+            // Act
+            var result = await _controller.EditAdmin(new GoverningBodyAdministrationDTO { AdminType = new AdminTypeDTO() });
+            var resultValue = (result as OkObjectResult)?.Value;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(resultValue);
+            Assert.IsInstanceOf<GoverningBodyAdministrationDTO>(resultValue);
+        }
+
+        [Test]
+        public async Task RemoveAdmin_Valid_Test()
+        {
+            // Arrange
+            _governingBodyAdministrationService
+                .Setup(c => c.RemoveAdministratorAsync(It.IsAny<int>()));
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+            _governingBodyAdministrationService
+                .Setup(c => c.EditGoverningBodyAdministratorAsync(It.IsAny<GoverningBodyAdministrationDTO>()))
+                .ReturnsAsync(new GoverningBodyAdministrationDTO());
+
+            // Act
+            var result = await _controller.RemoveAdmin(FakeId);
+
+            // Assert
+            _logger.Verify();
+            _governingBodyAdministrationService.Verify();
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
+        }
+
+        private const int FakeId = 3;
 
         private GoverningBodyDTO CreateGoverningBodyDTO => new GoverningBodyDTO()
         {

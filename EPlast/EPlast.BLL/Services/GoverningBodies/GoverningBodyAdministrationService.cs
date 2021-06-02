@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using EPlast.BLL.DTO.GoverningBody;
+﻿using EPlast.BLL.DTO.GoverningBody;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.DataAccess.Entities;
@@ -14,22 +13,19 @@ namespace EPlast.BLL.Services.GoverningBodies
     public class GoverningBodyAdministrationService : IGoverningBodyAdministrationService
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
-        private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
         private readonly IAdminTypeService _adminTypeService;
 
         public GoverningBodyAdministrationService(IRepositoryWrapper repositoryWrapper,
-            IMapper mapper,
             UserManager<User> userManager,
             IAdminTypeService adminTypeService)
         {
             _repositoryWrapper = repositoryWrapper;
-            _mapper = mapper;
             _userManager = userManager;
             _adminTypeService = adminTypeService;
         }
 
-        public async Task<GoverningBodyAdministrationDTO> AddGoverningBodyAdministrator(GoverningBodyAdministrationDTO governingBodyAdministrationDto)
+        public async Task<GoverningBodyAdministrationDTO> AddGoverningBodyAdministratorAsync(GoverningBodyAdministrationDTO governingBodyAdministrationDto)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(governingBodyAdministrationDto.AdminType.AdminTypeName);
             governingBodyAdministrationDto.Status = DateTime.Now < governingBodyAdministrationDto.EndDate || governingBodyAdministrationDto.EndDate == null;
@@ -73,7 +69,7 @@ namespace EPlast.BLL.Services.GoverningBodies
             else
             {
                 await RemoveAdministratorAsync(adminDto.ID);
-                adminDto = await AddGoverningBodyAdministrator(adminDto);
+                adminDto = await AddGoverningBodyAdministratorAsync(adminDto);
             }
 
             return adminDto;
@@ -99,7 +95,7 @@ namespace EPlast.BLL.Services.GoverningBodies
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminTypeName);
             var admin = await _repositoryWrapper.GoverningBodyAdministration.
-                GetFirstOrDefaultAsync(a => a.AdminTypeId == adminType.ID 
+                GetFirstOrDefaultAsync(a => a.AdminTypeId == adminType.ID
                                             && a.Status && a.GoverningBodyId == governingBodyId);
 
             if (admin != null)
