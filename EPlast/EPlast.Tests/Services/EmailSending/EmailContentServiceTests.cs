@@ -50,7 +50,7 @@ namespace EPlast.Tests.Services.EmailSending
 
         [TestCase("citiesUrl", "userId", UserGenders.Male)]
         [TestCase("citiesUrl", "userId", UserGenders.Female)]
-        [TestCase("citiesUrl", "userId", UserGenders.Other)]
+        [TestCase("citiesUrl", "userId", UserGenders.Undefined)]
         public async Task GetAuthJoinToCityReminderEmailAsync_ReturnsEmailModel(string citiesUrl, string userId, string userGender)
         {
             // Arrange
@@ -89,7 +89,7 @@ namespace EPlast.Tests.Services.EmailSending
 
         [TestCase(UserGenders.Male)]
         [TestCase(UserGenders.Female)]
-        [TestCase(UserGenders.Other)]
+        [TestCase(UserGenders.Undefined)]
         public async Task GetCanceledUserEmailAsync_ReturnsEmailModel(string userGender)
         {
             // Arrange
@@ -106,7 +106,7 @@ namespace EPlast.Tests.Services.EmailSending
 
         [TestCase("cityUrl", "cityName", "userId", UserGenders.Male)]
         [TestCase("cityUrl", "cityName", "userId", UserGenders.Female)]
-        [TestCase("cityUrl", "cityName", "userId", UserGenders.Other)]
+        [TestCase("cityUrl", "cityName", "userId", UserGenders.Undefined)]
         public async Task GetCityApproveEmailAsync_ReturnsEmailModel(string cityUrl, string cityName, string userId, string userGender)
         {
             // Arrange
@@ -123,7 +123,7 @@ namespace EPlast.Tests.Services.EmailSending
 
         [TestCase("cityUrl", "cityName", "userId", UserGenders.Male)]
         [TestCase("cityUrl", "cityName", "userId", UserGenders.Female)]
-        [TestCase("cityUrl", "cityName", "userId", UserGenders.Other)]
+        [TestCase("cityUrl", "cityName", "userId", UserGenders.Undefined)]
         public async Task GetCityExcludeEmailAsync_ReturnsEmailModel(string cityUrl, string cityName, string userId, string userGender)
         {
             // Arrange
@@ -173,7 +173,7 @@ namespace EPlast.Tests.Services.EmailSending
 
         [TestCase(UserGenders.Male)]
         [TestCase(UserGenders.Female)]
-        [TestCase(UserGenders.Other)]
+        [TestCase(UserGenders.Undefined)]
         public async Task GetConfirmedUserEmailAsync_ReturnsEmailModel(string userGender)
         {
             // Arrange
@@ -190,7 +190,7 @@ namespace EPlast.Tests.Services.EmailSending
 
         [TestCase("userId", UserGenders.Male)]
         [TestCase("userId", UserGenders.Female)]
-        [TestCase("userId", UserGenders.Other)]
+        [TestCase("userId", UserGenders.Undefined)]
         public async Task GetGreetingForNewPlastMemberEmailAsync_ReturnsEmailModel(string userId, string userGender)
         {
             // Arrange
@@ -207,7 +207,7 @@ namespace EPlast.Tests.Services.EmailSending
 
         [TestCase("userId", "userFirstName", "userLastName", UserGenders.Male, true)]
         [TestCase("userId", "userFirstName", "userLastName", UserGenders.Female ,false)]
-        [TestCase("userId", "userFirstName", "userLastName", UserGenders.Other, true)]
+        [TestCase("userId", "userFirstName", "userLastName", UserGenders.Undefined, true)]
         public async Task GetCityAdminAboutNewFollowerEmailAsync_ReturnsEmailModel(string userId, string userFirstName,
             string userLastName, string userGender, bool isReminder)
         {
