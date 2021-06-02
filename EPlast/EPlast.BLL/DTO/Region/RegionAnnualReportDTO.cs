@@ -1,4 +1,5 @@
 ﻿using System;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.DTO.Region
 {
@@ -41,5 +42,7 @@ namespace EPlast.BLL.DTO.Region
         public string ProblemSituations { get; set; }
         public string ImportantNeeds { get; set; }
         public string SuccessStories { get; set; }
+        public AnnualReportStatus Status { get; set; }
+
     }
 }
