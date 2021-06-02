@@ -32,36 +32,35 @@ namespace EPlast.WebApi.StartupExtensions
                                                                  .CheckEventsStatusesAsync(),
                                             "59 23 * * *",
                                             TimeZoneInfo.Local);
-            recurringJobManager.AddOrUpdate("Remove roles from previous admins",
-                                            () => serviceProvider.GetService<ICityParticipantsService>()
-                                                                 .CheckPreviousAdministratorsToDelete(),
-                                            "59 23 * * *",
-                                            TimeZoneInfo.Local);
+
             recurringJobManager.AddOrUpdate("Changes status of region admins when the date expires",
                                             () => serviceProvider.GetService<IRegionService>()
-                                                                 .EndAdminsDueToDate(),
-                                            Cron.Daily(), TimeZoneInfo.Local);
-            CreateRolesAsync(serviceProvider, Configuration).Wait();
-            recurringJobManager.AddOrUpdate("Remove roles from previous admins",
-                                            () => serviceProvider.GetService<IClubParticipantsService>()
-                                                                 .CheckPreviousAdministratorsToDelete(),
+                                                                 .ContinueAdminsDueToDate(),
                                             "59 23 * * *", TimeZoneInfo.Local);
             CreateRolesAsync(serviceProvider, Configuration).Wait();
+
+            recurringJobManager.AddOrUpdate("Changes status of club admins when the date expires",
+                                            () => serviceProvider.GetService<IClubParticipantsService>()
+                                                                 .ContinueAdminsDueToDate(),
+                                            "59 23 * * *", TimeZoneInfo.Local);
+
+            recurringJobManager.AddOrUpdate("Changes status of city admins when the date expires",
+                                            () => serviceProvider.GetService<ICityParticipantsService>()
+                                                                 .ContinueAdminsDueToDate(),
+                                            "59 23 * * *", TimeZoneInfo.Local);
+            
             recurringJobManager.AddOrUpdate("Reminder to join city",
                                             () => serviceProvider.GetService<IEmailReminderService>()
                                                                  .JoinCityReminderAsync(),
-                                            "0 12 * * Mon",
-                                            TimeZoneInfo.Local);
+                                            "0 12 * * Mon", TimeZoneInfo.Local);
             recurringJobManager.AddOrUpdate("Reminder to approve new city followers",
-                () => serviceProvider.GetService<IEmailReminderService>()
-                    .RemindCityAdminsToApproveFollowers(),
-                "0 12 * * Mon",
-                TimeZoneInfo.Local);
+                                            () => serviceProvider.GetService<IEmailReminderService>()
+                                                                 .RemindCityAdminsToApproveFollowers(),
+                                            "0 12 * * Mon", TimeZoneInfo.Local);
             recurringJobManager.AddOrUpdate("New Plast members greeting",
                                             () => serviceProvider.GetService<INewPlastMemberEmailGreetingService>()
                                                                  .NotifyNewPlastMembersAndCityAdminsAsync(),
-                                            Cron.Daily(),
-                                            TimeZoneInfo.Local);
+                                            Cron.Daily(), TimeZoneInfo.Local);
         }
 
         private static async Task CreateRolesAsync(IServiceProvider serviceProvider, IConfiguration Configuration)
