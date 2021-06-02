@@ -378,57 +378,16 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
-        [TestCase(1, 1, "Львів")]
-        public async Task GetCities_Valid_Test(int page, int pageSize, string cityName)
-        {
-            // Arrange
-            CitiesController citycon = CreateCityController;
-            var httpContext = new Mock<HttpContext>();
-            httpContext
-                .Setup(m => m.User.IsInRole(Roles.Admin))
-                .Returns(true);
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            citycon.ControllerContext = context;
-            _cityService
-                .Setup(c => c.GetAllDTOAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetCitiesBySearch());
-
-            // Act
-            var result = await citycon.GetCities(page, pageSize, cityName);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(((result as ObjectResult).Value as CitiesViewModel)
-                .Cities.Where(c => c.Name.Equals("Львів")));
-        }
-
         [Test]
-        public async Task GetCities_Valid_Test()
+        public async Task GetCities_ReturnsOKResult()
         {
             // Arrange
             CitiesController citycon = CreateCityController;
-            var httpContext = new Mock<HttpContext>();
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            citycon.ControllerContext = context;
-            _cityService
-                .Setup(c => c.GetCities())
-                .ReturnsAsync(GetFakeCitiesForAdministration());
-
-            // Act
+            _cityService.Setup(x => x.GetAllDTOAsync(It.IsAny<string>())).ReturnsAsync(GetCities());
+            //Act
             var result = await citycon.GetCities();
-
-            // Assert
-            Assert.NotNull(result);
+            //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(((result as ObjectResult).Value as List<CityForAdministrationDTO>)
-                .Where(n => n.Name.Equals("Львів")));
         }
 
         [Test]
@@ -847,6 +806,17 @@ namespace EPlast.Tests.Controllers
         private string GetStringFakeId()
         {
             return "1";
+        }
+
+        private IEnumerable<CityDTO> GetCities()
+        {
+            return new List<CityDTO>()
+            {
+                new CityDTO(){ ID =2, Name ="Lviv"},
+                new CityDTO(){ ID =3},
+                new CityDTO(){ ID =4},
+                new CityDTO(){ ID =5}
+            };
         }
     }
 }
