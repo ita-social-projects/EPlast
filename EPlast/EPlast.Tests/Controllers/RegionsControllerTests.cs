@@ -15,6 +15,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Repositories;
 using EPlast.DataAccess.Repositories.Realizations.Base;
@@ -165,7 +166,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(new RegionAnnualReportDTO());
 
             // Act
-            var expected = StatusCodes.Status200OK;
+            var expected = StatusCodes.Status201Created;
             var result = await _regionController.CreateRegionAnnualReportById(1, 2021, new RegionAnnualReportQuestions());
             var actual = (result as ObjectResult).StatusCode;
 
@@ -226,17 +227,35 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             var report = new RegionAnnualReportTableObject() { Id = 1 };
-            _regionAnnualReportService.Setup(r => r.GetAllRegionsReportsAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
+            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
+            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() {"Admin"});
+            _regionAnnualReportService.Setup(r => r.GetAllRegionsReportsAsync(It.IsAny<User>(), It.IsAny<bool>(),
+                    It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()))
                 .ReturnsAsync(new List<RegionAnnualReportTableObject>() {report});
 
             // Act
-            var result = await _regionController.GetAllRegionsReportsAsync("",1,1,1);
+            var result = await _regionController.GetAllRegionsReportsAsync("",1,1,1, true);
 
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<List<RegionAnnualReportTableObject>>((result as ObjectResult).Value);
             Assert.IsNotEmpty((result as ObjectResult).Value as List<RegionAnnualReportTableObject>);
             Assert.True(((result as ObjectResult).Value as List<RegionAnnualReportTableObject>).Contains(report));
+        }
+
+        [Test]
+        public async Task GetRegionsNameThatUserHasAccessTo_Succeeded()
+        {
+            // Arrange
+            _regionAnnualReportService.Setup(x => x.GetAllRegionsIdAndName(It.IsAny<User>()))
+                .ReturnsAsync(new List<RegionForAdministrationDTO>());
+
+            // Act
+            var result = await _regionController.GetRegionsNameThatUserHasAccessTo();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
         [Test]
@@ -545,6 +564,30 @@ namespace EPlast.Tests.Controllers
             var result = await _regionController.Remove(id);
             // Assert
             Assert.IsInstanceOf<OkResult>(result);
+        }
+
+        [Test]
+        public async Task GetRegionMembersInfo_ReturnsOk()
+        {
+            // Arrange
+            _regionAnnualReportService.Setup(x => x.GetRegionMembersInfo(It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new List<RegionMembersInfo>());
+            // Act
+            var result = await _regionController.GetRegionMembersInfo(1,1);
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task Delete_NullReferenceException()
+        {
+            // Arrange
+            _regionAnnualReportService.Setup(x => x.DeleteAsync(It.IsAny<int>()));
+            // Act
+            var result = await _regionController.Delete(1);
+            // Assert
+            Assert.IsInstanceOf<ObjectResult>(result);
+            Assert.IsTrue((result as ObjectResult).StatusCode==404);
         }
 
         [Test]

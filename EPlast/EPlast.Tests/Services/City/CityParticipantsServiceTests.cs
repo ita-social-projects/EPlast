@@ -31,8 +31,6 @@ namespace EPlast.Tests.Services.City
             ID = 1
         };
 
-        private readonly int anotherFakeId = 2;
-
         private readonly CityAdministration cityAdm = new CityAdministration
         {
             ID = 1,
@@ -45,7 +43,7 @@ namespace EPlast.Tests.Services.City
             UserId = Roles.CityHead
         };
 
-        private readonly CityAdministrationDTO cityAdmDTO = new CityAdministrationDTO
+        private readonly CityAdministrationDTO cityAdmDTOEndDateToday = new CityAdministrationDTO
         {
             ID = 1,
             AdminType = AdminType,
@@ -53,6 +51,18 @@ namespace EPlast.Tests.Services.City
             AdminTypeId = 1,
             StartDate = DateTime.Now,
             EndDate = DateTime.Today,
+            User = new CityUserDTO(),
+            UserId = Roles.CityHead
+        };
+
+        private readonly CityAdministrationDTO cityAdmDTOEndDateNull = new CityAdministrationDTO
+        {
+            ID = 1,
+            AdminType = AdminType,
+            CityId = 1,
+            AdminTypeId = 1,
+            StartDate = DateTime.Now,
+            EndDate = null,
             User = new CityUserDTO(),
             UserId = Roles.CityHead
         };
@@ -68,7 +78,7 @@ namespace EPlast.Tests.Services.City
         private Mock<UserManager<User>> _userManager;
 
         [Test]
-        public async Task AddAdministratorAsync_ReturnsAdministrator()
+        public async Task AddAdministratorAsync_EndDateToday_ReturnsAdministrator()
         {
             //Arrange
             _repoWrapper
@@ -78,14 +88,14 @@ namespace EPlast.Tests.Services.City
                 .ReturnsAsync(new AdminTypeDTO());
 
             //Act
-            var result = await _cityParticipantsService.AddAdministratorAsync(cityAdmDTO);
+            var result = await _cityParticipantsService.AddAdministratorAsync(cityAdmDTOEndDateToday);
 
             //Assert
             Assert.IsInstanceOf<CityAdministrationDTO>(result);
         }
 
         [Test]
-        public async Task AddAdministratorAsync_WhereStartDateIsNull_ReturnsAdministrator()
+        public async Task AddAdministratorAsync_EndDateNull_ReturnsAdministrator()
         {
             //Arrange
             _repoWrapper
@@ -93,10 +103,46 @@ namespace EPlast.Tests.Services.City
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(new AdminTypeDTO());
-            cityAdmDTO.StartDate = null;
 
             //Act
-            var result = await _cityParticipantsService.AddAdministratorAsync(cityAdmDTO);
+            var result = await _cityParticipantsService.AddAdministratorAsync(cityAdmDTOEndDateNull);
+
+            //Assert
+            Assert.IsInstanceOf<CityAdministrationDTO>(result);
+        }
+
+        [Test]
+        public async Task AddAdministratorAsync_WhereStartDateIsNullWithEndDateToday_ReturnsAdministrator()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(s => s.CityAdministration.CreateAsync(cityAdm));
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AdminTypeDTO());
+            cityAdmDTOEndDateToday.StartDate = null;
+
+            //Act
+            var result = await _cityParticipantsService.AddAdministratorAsync(cityAdmDTOEndDateToday);
+
+            //Assert
+            Assert.IsInstanceOf<CityAdministrationDTO>(result);
+            Assert.Null(result.StartDate);
+        }
+
+        [Test]
+        public async Task AddAdministratorAsync_WhereStartDateIsNullWithEndDateNull_ReturnsAdministrator()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(s => s.CityAdministration.CreateAsync(cityAdm));
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AdminTypeDTO());
+            cityAdmDTOEndDateNull.StartDate = null;
+
+            //Act
+            var result = await _cityParticipantsService.AddAdministratorAsync(cityAdmDTOEndDateNull);
 
             //Assert
             Assert.IsInstanceOf<CityAdministrationDTO>(result);
@@ -194,98 +240,45 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
-        public void CheckPreviousAdministratorsToDelete_ReturnsCorrect()
+        public void ContinueAdminsDueToDate_EndDateEarlier_ReturnsCorrect()
         {
             //Arrange
             _repoWrapper
-                .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
-                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
-                .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId } });
-            _adminTypeService
-               .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-               .ReturnsAsync(new AdminTypeDTO
-               {
-                   AdminTypeName = Roles.CityHead,
-                   ID = fakeId
-               });
-            _userManager
-                .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
-            _userManager
-                .Setup(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
+               .Setup(x => x.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                   It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+               .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId, EndDate = new DateTime(2001, 7, 20) } });
+            _repoWrapper
+                .Setup(x => x.CityAdministration.Update(It.IsAny<CityAdministration>()));
+            _repoWrapper
+                .Setup(x => x.SaveAsync());
 
             //Act
-            var result = _cityParticipantsService.CheckPreviousAdministratorsToDelete();
+            var result = _cityParticipantsService.ContinueAdminsDueToDate();
 
             //Assert
-            _repoWrapper.Verify();
+            _repoWrapper.Verify(x => x.SaveAsync());
+            _repoWrapper.Verify(x => x.CityAdministration.Update(It.IsAny<CityAdministration>()));
             Assert.NotNull(result);
         }
 
         [Test]
-        public void CheckPreviousAdministratorsToDelete_WithDifferrentAdminTypeId_ReturnsCorrect()
+        public void ContinueAdminsDueToDate_EndDateNull_ReturnsCorrect()
         {
             //Arrange
             _repoWrapper
-                .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
-                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
-                .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId, AdminTypeId = fakeId } })
-                .Callback(() => _repoWrapper
-                    .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
-                        It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
-                    .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId, AdminTypeId = anotherFakeId } }));
-            _adminTypeService
-               .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-               .ReturnsAsync(new AdminTypeDTO
-               {
-                   AdminTypeName = Roles.CityHead,
-                   ID = fakeId
-               });
-            _userManager
-                .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
-            _userManager
-                .Setup(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
-
-            //Act
-            var result = _cityParticipantsService.CheckPreviousAdministratorsToDelete();
-
-            //Assert
-            _repoWrapper.Verify();
-            _userManager.Verify(u => u.FindByIdAsync(It.IsAny<string>()), Times.Once);
-            _userManager.Verify(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
-            Assert.NotNull(result);
-        }
-
-        [Test]
-        public void CheckPreviousAdministratorsToDelete_WithDifferrentIDAndAdminTypeId_ReturnsCorrect()
-        {
-            //Arrange
+               .Setup(x => x.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                   It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+               .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId } });
             _repoWrapper
-                .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
-                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
-                .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId, AdminTypeId = fakeId } })
-                .Callback(() => _repoWrapper
-                    .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
-                        It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
-                    .ReturnsAsync(new List<CityAdministration> { new CityAdministration() { ID = fakeId, AdminTypeId = anotherFakeId } }));
-            _adminTypeService
-               .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-               .ReturnsAsync(new AdminTypeDTO
-               {
-                   AdminTypeName = Roles.CityHead,
-                   ID = anotherFakeId
-               });
-            _userManager
-                .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
-            _userManager
-                .Setup(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
+                .Setup(x => x.CityAdministration.Update(It.IsAny<CityAdministration>()));
+            _repoWrapper
+                .Setup(x => x.SaveAsync());
 
             //Act
-            var result = _cityParticipantsService.CheckPreviousAdministratorsToDelete();
+            var result = _cityParticipantsService.ContinueAdminsDueToDate();
 
             //Assert
-            _repoWrapper.Verify();
-            _userManager.Verify(u => u.FindByIdAsync(It.IsAny<string>()), Times.Once);
-            _userManager.Verify(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
+            _repoWrapper.Verify(x => x.SaveAsync());
             Assert.NotNull(result);
         }
 
@@ -307,7 +300,7 @@ namespace EPlast.Tests.Services.City
                 .Setup(r => r.SaveAsync());
 
             //Act
-            var result = await _cityParticipantsService.EditAdministratorAsync(cityAdmDTO);
+            var result = await _cityParticipantsService.EditAdministratorAsync(cityAdmDTOEndDateToday);
 
             //Assert
             _repoWrapper.Verify();
@@ -330,10 +323,10 @@ namespace EPlast.Tests.Services.City
                 .Setup(r => r.CityAdministration.Update(It.IsAny<CityAdministration>()));
             _repoWrapper
                 .Setup(r => r.SaveAsync());
-            cityAdmDTO.StartDate = null;
+            cityAdmDTOEndDateToday.StartDate = null;
 
             //Act
-            var result = await _cityParticipantsService.EditAdministratorAsync(cityAdmDTO);
+            var result = await _cityParticipantsService.EditAdministratorAsync(cityAdmDTOEndDateToday);
 
             //Assert
             _repoWrapper.Verify();
@@ -366,7 +359,7 @@ namespace EPlast.Tests.Services.City
                });
 
             //Act
-            var result = await _cityParticipantsService.EditAdministratorAsync(cityAdmDTO);
+            var result = await _cityParticipantsService.EditAdministratorAsync(cityAdmDTOEndDateToday);
 
             //Assert
             _repoWrapper.Verify();

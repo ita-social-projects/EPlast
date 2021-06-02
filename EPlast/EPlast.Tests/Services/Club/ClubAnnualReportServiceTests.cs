@@ -95,20 +95,6 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
-        public void GetAllAsync_TakesParameters_UnauthorizedAccessException()
-        {
-            //Arrange
-            _clubAccessService.Setup(c => c.HasAccessAsync(It.IsAny<User>())).ReturnsAsync(false);
-           
-            //Act
-            //Assert
-            Assert.ThrowsAsync<UnauthorizedAccessException>(async() =>
-            {
-                await _service.GetAllAsync(new User(), true, "", 1, 1,1,false);
-            });
-        }
-
-        [Test]
         public void CreateAsync_ReturnsInvalidOperationException()
         {
             // Arrange
