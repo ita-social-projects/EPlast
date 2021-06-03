@@ -6,6 +6,7 @@ namespace EPlast.DataAccess.Repositories.Interfaces.Region
 {
     public interface IRegionAnnualReportsRepository : IRepositoryBase<RegionAnnualReport>
     {
-        Task<IEnumerable<RegionAnnualReportTableObject>> GetRegionAnnualReportsAsync(string searchdata, int page, int pageSize, int sortKey);
+        Task<IEnumerable<RegionAnnualReportTableObject>> GetRegionAnnualReportsAsync(string userId,
+            bool isAdmin, string searchdata, int page, int pageSize, int sortKey, bool auth);
     }
 }
