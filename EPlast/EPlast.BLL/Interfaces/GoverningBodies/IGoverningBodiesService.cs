@@ -13,7 +13,7 @@ namespace EPlast.BLL.Interfaces.GoverningBodies
 
         Task<string> GetLogoBase64Async(string logoName);
 
-        Task<GoverningBodyProfileDTO> GetGoverningBodyProfileAsync(int id);
+        Task<GoverningBodyProfileDTO> GetGoverningBodyProfileAsync(int governingBodyId);
 
         Task<int> RemoveAsync(int governingBodyId);
 

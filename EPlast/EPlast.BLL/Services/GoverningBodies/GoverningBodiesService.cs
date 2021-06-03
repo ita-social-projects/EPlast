@@ -104,9 +104,9 @@ namespace EPlast.BLL.Services.GoverningBodies
             return await _governingBodyBlobStorage.GetBlobBase64Async(logoName);
         }
 
-        public async Task<GoverningBodyProfileDTO> GetGoverningBodyProfileAsync(int cityId)
+        public async Task<GoverningBodyProfileDTO> GetGoverningBodyProfileAsync(int governingBodyId)
         {
-            var governingBody = await GetGoverningBodyByIdAsync(cityId);
+            var governingBody = await GetGoverningBodyByIdAsync(governingBodyId);
             if (governingBody == null)
             {
                 return null;
