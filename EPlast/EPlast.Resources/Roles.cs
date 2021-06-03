@@ -20,6 +20,9 @@
         public const string GoverningBodyHead = "Голова Керівного Органу";
         public const string GoverningBodySecretary = "Діловод Керівного Органу";
 
+        public const string AdminAndGoverningBodyHead = Admin + "," + GoverningBodyHead;
+
+
         public const string DegreeAssignRoles = Admin + "," + PlastHead + "," + EventAdministrator + "," + KurinHead + "," + KurinSecretary + "," +
             OkrugaHead + "," + OkrugaSecretary + "," + CityHead + "," + CitySecretary;
 

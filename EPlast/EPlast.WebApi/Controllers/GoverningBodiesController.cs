@@ -7,6 +7,7 @@ using EPlast.WebApi.Models.GoverningBody;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using EPlast.Resources;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -36,7 +37,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("CreateGoverningBody")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodyHead)]
         public async Task<IActionResult> Create(GoverningBodyDTO governingBodyDTO)
         {
             if (!ModelState.IsValid)
@@ -52,7 +53,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPut("EditGoverningBody/{governingBodyId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodyHead)]
         public async Task<IActionResult> Edit(GoverningBodyDTO governingBody)
         {
             if (!ModelState.IsValid)
@@ -94,7 +95,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpDelete("RemoveGoverningBody/{governingBodyId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodyHead)]
         public async Task<IActionResult> Remove(int governingBodyId)
         {
             await _governingBodiesService.RemoveAsync(governingBodyId);
@@ -131,7 +132,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="newAdmin">An information about a new administrator</param>
         /// <returns>An information about a new administrator</returns>
         [HttpPost("AddAdmin/{cityId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodyHead)]
         public async Task<IActionResult> AddAdmin(GoverningBodyAdministrationDTO newAdmin)
         {
             await _governingBodyAdministrationService.AddGoverningBodyAdministratorAsync(newAdmin);
@@ -148,7 +149,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="adminDto">An information about a new administrator</param>
         /// <returns>An information about a specific administrator</returns>
         [HttpPut("EditAdmin/{adminId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodyHead)]
         public async Task<IActionResult> EditAdmin(GoverningBodyAdministrationDTO adminDto)
         {
             await _governingBodyAdministrationService.EditGoverningBodyAdministratorAsync(adminDto);
@@ -162,7 +163,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="adminId">The id of the administrator</param>
         [HttpPut("RemoveAdmin/{adminId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodyHead)]
         public async Task<IActionResult> RemoveAdmin(int adminId)
         {
             await _governingBodyAdministrationService.RemoveAdministratorAsync(adminId);
