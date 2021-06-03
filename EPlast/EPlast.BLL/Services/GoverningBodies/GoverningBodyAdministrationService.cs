@@ -25,6 +25,7 @@ namespace EPlast.BLL.Services.GoverningBodies
             _adminTypeService = adminTypeService;
         }
 
+        /// <inheritdoc />
         public async Task<GoverningBodyAdministrationDTO> AddGoverningBodyAdministratorAsync(GoverningBodyAdministrationDTO governingBodyAdministrationDto)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(governingBodyAdministrationDto.AdminType.AdminTypeName);
@@ -53,26 +54,26 @@ namespace EPlast.BLL.Services.GoverningBodies
         }
 
         /// <inheritdoc />
-        public async Task<GoverningBodyAdministrationDTO> EditGoverningBodyAdministratorAsync(GoverningBodyAdministrationDTO adminDto)
+        public async Task<GoverningBodyAdministrationDTO> EditGoverningBodyAdministratorAsync(GoverningBodyAdministrationDTO governingBodyAdministrationDto)
         {
-            var admin = await _repositoryWrapper.GoverningBodyAdministration.GetFirstOrDefaultAsync(a => a.Id == adminDto.ID);
-            var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDto.AdminType.AdminTypeName);
+            var admin = await _repositoryWrapper.GoverningBodyAdministration.GetFirstOrDefaultAsync(a => a.Id == governingBodyAdministrationDto.ID);
+            var adminType = await _adminTypeService.GetAdminTypeByNameAsync(governingBodyAdministrationDto.AdminType.AdminTypeName);
 
             if (adminType.ID == admin.AdminTypeId)
             {
-                admin.StartDate = adminDto.StartDate ?? DateTime.Now;
-                admin.EndDate = adminDto.EndDate;
+                admin.StartDate = governingBodyAdministrationDto.StartDate ?? DateTime.Now;
+                admin.EndDate = governingBodyAdministrationDto.EndDate;
 
                 _repositoryWrapper.GoverningBodyAdministration.Update(admin);
                 await _repositoryWrapper.SaveAsync();
             }
             else
             {
-                await RemoveAdministratorAsync(adminDto.ID);
-                adminDto = await AddGoverningBodyAdministratorAsync(adminDto);
+                await RemoveAdministratorAsync(governingBodyAdministrationDto.ID);
+                governingBodyAdministrationDto = await AddGoverningBodyAdministratorAsync(governingBodyAdministrationDto);
             }
 
-            return adminDto;
+            return governingBodyAdministrationDto;
         }
 
         /// <inheritdoc />
