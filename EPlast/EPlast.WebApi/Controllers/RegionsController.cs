@@ -18,7 +18,11 @@ using System.Threading.Tasks;
 namespace EPlast.WebApi.Controllers
 {
     [ApiController, Route("api/[controller]")]
+<<<<<<< HEAD
     [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
+=======
+    [Authorize(AuthenticationSchemes = "Bearer")]
+>>>>>>> 74a8b02931785ffab442960a199022f2f35cb9fd
     public class RegionsController : ControllerBase
     {
         private readonly IDistributedCache _cache;
@@ -161,6 +165,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>List of annual reports</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("GetAllRegionAnnualReports")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
         public async Task<IActionResult> GetAllRegionAnnualReports()
         {
             return StatusCode(StatusCodes.Status200OK,
@@ -175,6 +180,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The region annual report does not exist</response>
         [HttpGet("GetAllRegionsReports")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
         public async Task<IActionResult> GetAllRegionsReportsAsync()
         {
             return Ok(await _RegionAnnualReportService.GetAllRegionsReportsAsync());
@@ -187,14 +193,18 @@ namespace EPlast.WebApi.Controllers
         /// <param name="page">current page on pagination</param>
         /// <param name="pageSize">number of records per page</param>
         /// <param name="sortKey">Key for sorting</param>
+        /// <param name="auth">Whether to select reports of that user is author</param>
         /// <returns>RegionAnnualReportTableObject</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The region annual report does not exist</response>
         [HttpGet("RegionsAnnualReports")]
-        public async Task<IActionResult> GetAllRegionsReportsAsync(string searchedData, int page, int pageSize, int sortKey)
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
+        public async Task<IActionResult> GetAllRegionsReportsAsync(string searchedData, int page, int pageSize, int sortKey, bool auth)
         {
-            return Ok(await _RegionAnnualReportService.GetAllRegionsReportsAsync(searchedData, page, pageSize, sortKey));
+            var user = await _userManager.GetUserAsync(User);
+            return Ok(await _RegionAnnualReportService.GetAllRegionsReportsAsync(user,
+                (await _userManager.GetRolesAsync(user)).Contains(Roles.Admin), searchedData, page, pageSize, sortKey, auth));
         }
 
         /// <summary>
@@ -243,6 +253,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>RegionMembersInfo</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("MembersInfo/{regionId:int}/{year:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
         public async Task<IActionResult> GetRegionMembersInfo(int regionId, int year)
         {
             return Ok(await _RegionAnnualReportService.GetRegionMembersInfo(regionId, year));
@@ -256,8 +267,6 @@ namespace EPlast.WebApi.Controllers
         /// <param name="id">Region annual report identification number</param>
         /// <returns>Answer from backend</returns>
         /// <response code="200">Region annual report was successfully confirmed</response>
-        /// <response code="403">User hasn't access to region annual report</response>
-        /// <response code="404">Region annual report does not exist</response>
         [HttpPut("confirmReport/{id:int}")]
         [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Confirm(int id)
@@ -419,6 +428,17 @@ namespace EPlast.WebApi.Controllers
         {
             var regions = await _regionService.GetRegions();
             return Ok(regions);
+        }
+
+        /// <summary>
+        /// Get id and name from all regions that the user has access to
+        /// </summary>
+        /// <returns>Tuple (int, string)</returns>
+        [HttpGet("RegionOptions")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetRegionsNameThatUserHasAccessTo()
+        {
+            return Ok(new { regions = await _RegionAnnualReportService.GetAllRegionsIdAndName(await _userManager.GetUserAsync(User)) });
         }
 
         /// <summary>

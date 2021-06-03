@@ -60,16 +60,31 @@ namespace EPlast.Tests.Services.Regions
             //Arrange
             var report = new RegionAnnualReportTableObject() {Id = 1};
             _mockRepositoryWrapper
-                .Setup(r => r.RegionAnnualReports.GetRegionAnnualReportsAsync(It.IsAny<string>(), It.IsAny<int>(),
-                    It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(new List<RegionAnnualReportTableObject>(){ report});
+                .Setup(r => r.RegionAnnualReports.GetRegionAnnualReportsAsync(It.IsAny<string>(), It.IsAny<bool>(),It.IsAny<string>(), It.IsAny<int>(),
+                    It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>())).ReturnsAsync(new List<RegionAnnualReportTableObject>(){ report});
 
             //Act
-            var result = await service.GetAllRegionsReportsAsync("", 1, 1,1);
+            var result = await service.GetAllRegionsReportsAsync(new User(), true, "", 1, 1,1, true);
 
             //Assert
             Assert.IsNotNull(result);
             Assert.IsNotEmpty(result.ToList());
             Assert.True(result.ToList().Contains(report));
+        }
+
+        [Test]
+        public async Task GetRegionsNameThatUserHasAccessTo_Succeeded()
+        {
+            // Arrange
+            _mockRegionAccessService.Setup(x => x.GetRegionsAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<RegionDTO>(){new RegionDTO(){ID = 1, RegionName = "RegionName"}});
+
+            // Act
+            var result = await service.GetAllRegionsIdAndName(new User());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsNotEmpty(result);
         }
 
         [Test]
