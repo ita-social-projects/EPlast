@@ -47,7 +47,7 @@ namespace EPlast.WebApi.Controllers
                 return true;
             foreach (var role in roles)
             {
-                if (Roles.HeadsAdminAndPlastun.Contains(role))
+                if (Roles.HeadsAndHeadDeputiesAndAdminAndPlastun.Contains(role))
                     return true;
             }
             return false;

@@ -55,7 +55,20 @@ namespace EPlast.BLL.Services.City
             };
 
             var user = await _userManager.FindByIdAsync(adminDTO.UserId);
-            var role = adminType.AdminTypeName == Roles.CityHead ? Roles.CityHead : Roles.CitySecretary;
+            //var role = adminType.AdminTypeName == Roles.CityHead ? Roles.CityHead : Roles.CitySecretary;
+            string role;
+            switch (adminType.AdminTypeName)
+            {
+                case Roles.CityHead:
+                    role = Roles.CityHead;
+                    break;
+                case Roles.CityHeadDeputy:
+                    role = Roles.CityHeadDeputy;
+                    break;
+                default:
+                    role = Roles.CitySecretary;
+                    break;
+            }
             await _userManager.AddToRoleAsync(user, role);
 
             await CheckCityHasAdmin(adminDTO.CityId, adminType.AdminTypeName);
@@ -222,7 +235,20 @@ namespace EPlast.BLL.Services.City
 
             var adminType = await _adminTypeService.GetAdminTypeByIdAsync(admin.AdminTypeId);
             var user = await _userManager.FindByIdAsync(admin.UserId);
-            var role = adminType.AdminTypeName == Roles.CityHead ? Roles.CityHead : Roles.CitySecretary;
+            //var role = adminType.AdminTypeName == Roles.CityHead ? Roles.CityHead : Roles.CitySecretary;
+            string role;
+            switch (adminType.AdminTypeName)
+            {
+                case Roles.CityHead:
+                    role = Roles.CityHead;
+                    break;
+                case Roles.CityHeadDeputy:
+                    role = Roles.CityHeadDeputy;
+                    break;
+                default:
+                    role = Roles.CitySecretary;
+                    break;
+            }
             await _userManager.RemoveFromRoleAsync(user, role);
 
             _repositoryWrapper.CityAdministration.Update(admin);
@@ -331,9 +357,13 @@ namespace EPlast.BLL.Services.City
                         .Include(a => a.User));
             var cityHead = cityAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHead
                                                                   && (DateTime.Now < a.EndDate || a.EndDate == null));
+            var cityHeadDeputy = cityAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHeadDeputy
+                                                                  && (DateTime.Now < a.EndDate || a.EndDate == null));
             var emailContent = await _emailContentService.GetCityAdminAboutNewFollowerEmailAsync(user.Id,
                 user.FirstName, user.LastName, false);
             await _emailSendingService.SendEmailAsync(cityHead.User.Email, emailContent.Subject, emailContent.Message,
+                emailContent.Title);
+            await _emailSendingService.SendEmailAsync(cityHeadDeputy.User.Email, emailContent.Subject, emailContent.Message,
                 emailContent.Title);
         }
 

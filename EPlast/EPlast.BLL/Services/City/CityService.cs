@@ -100,8 +100,12 @@ namespace EPlast.BLL.Services
             var cityHead = city.CityAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
+            var cityHeadDeputy = city.CityAdministration?
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHeadDeputy
+                    && (DateTime.Now < a.EndDate || a.EndDate == null));
             var cityAdmins = city.CityAdministration
                 .Where(a => a.AdminType.AdminTypeName != Roles.CityHead
+                    && a.AdminType.AdminTypeName != Roles.CityHeadDeputy
                     && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .Take(6)
                 .ToList();
@@ -126,6 +130,7 @@ namespace EPlast.BLL.Services
             {
                 City = city,
                 Head = cityHead,
+                HeadDeputy = cityHeadDeputy,
                 Members = members,
                 Followers = followers,
                 Admins = cityAdmins,
@@ -205,8 +210,12 @@ namespace EPlast.BLL.Services
             var cityHead = city.CityAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
+            var cityHeadDeputy = city.CityAdministration?
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHeadDeputy
+                    && (DateTime.Now < a.EndDate || a.EndDate == null));
             var cityAdmins = city.CityAdministration
                 .Where(a => a.AdminType.AdminTypeName != Roles.CityHead
+                    && a.AdminType.AdminTypeName != Roles.CityHeadDeputy
                     && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .ToList();
 
@@ -214,7 +223,8 @@ namespace EPlast.BLL.Services
             {
                 City = city,
                 Admins = cityAdmins,
-                Head = cityHead
+                Head = cityHead,
+                HeadDeputy = cityHeadDeputy
             };
 
             return cityProfileDto;

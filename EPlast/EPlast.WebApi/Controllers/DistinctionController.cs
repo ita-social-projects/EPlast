@@ -13,7 +13,7 @@ namespace EPlast.WebApi.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [Authorize(Roles = Roles.HeadsAdminPlastunSupporterAndRegisteredUser)]
+    [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminPlastunSupporterAndRegisteredUser)]
 
     public class DistinctionController : ControllerBase
     {
@@ -54,7 +54,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>All user distinctions</returns>
         /// <response code="200">Array of all user distinction</response>
         [HttpGet("UserDistinctions")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAdminPlastunAndSupporter)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminPlastunAndSupporter)]
         public async Task<IActionResult> GetUserDistinction()
         {
             IEnumerable<UserDistinctionDTO> userDistinctions = await _userDistinctionService.GetAllUsersDistinctionAsync();

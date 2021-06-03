@@ -31,6 +31,7 @@ namespace EPlast.BLL.Services.ActiveMembership
                 Roles.CitySecretary,
                 Roles.OkrugaHead,
                 Roles.OkrugaSecretary,
+                Roles.CityHeadDeputy,
                 "Голова Керівного органу",
                 "Діловод Керівного органу"
             };

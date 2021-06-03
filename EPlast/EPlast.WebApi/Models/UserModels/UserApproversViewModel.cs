@@ -15,6 +15,7 @@ namespace EPlast.WebApi.Models.UserModels
         public bool IsUserPlastun { get; set; }
         public bool IsUserHeadOfClub { get; set; }
         public bool IsUserHeadOfCity { get; set; }
+        public bool IsUserHeadDeputyOfCity { get; set; }
         public bool IsUserHeadOfRegion { get; set; }
         public string CurrentUserId { get; set; }
     }

@@ -307,7 +307,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="ClubId">An id of the Club</param>
         /// <returns>An information about a new follower</returns>
         [HttpPost("AddFollower/{ClubId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAdminPlastunAndSupporter)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminPlastunAndSupporter)]
         public async Task<IActionResult> AddFollower(int ClubId)
         {
             var follower = await _clubParticipantsService.AddFollowerAsync(ClubId, await _userManager.GetUserAsync(User));
@@ -352,7 +352,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="memberId">The id of the member</param>
         /// <returns>An information about a specific member</returns>
         [HttpPut("ChangeApproveStatus/{memberId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> ChangeApproveStatus(int memberId)
         {
             var member = await _clubParticipantsService.ToggleApproveStatusAsync(memberId);
@@ -380,7 +380,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="newAdmin">An information about a new administrator</param>
         /// <returns>An information about a new administrator</returns>
         [HttpPost("AddAdmin/{ClubId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> AddAdmin(ClubAdministrationViewModel newAdmin)
         {
             var admin = _mapper.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(newAdmin);
@@ -397,7 +397,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="adminId">The id of the administrator</param>
         [HttpPut("RemoveAdmin/{adminId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> RemoveAdmin(int adminId)
         {
             await _clubParticipantsService.RemoveAdministratorAsync(adminId);
@@ -412,7 +412,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="admin">An information about a new administrator</param>
         /// <returns>An information about a specific admininstrator</returns>
         [HttpPut("EditAdmin/{adminId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> EditAdmin(ClubAdministrationViewModel admin)
         {
             var adminDTO = _mapper.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(admin);
@@ -429,7 +429,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="document">An information about a specific document</param>
         /// <returns>A newly created document</returns>
         [HttpPost("AddDocument/{ClubId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> AddDocument(ClubDocumentsViewModel document)
         {
             var documentDTO = _mapper.Map<ClubDocumentsViewModel, ClubDocumentsDTO>(document);
@@ -459,7 +459,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="documentId">The id of a specific document</param>
         [HttpDelete("RemoveDocument/{documentId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> RemoveDocument(int documentId)
         {
             await _clubDocumentsService.DeleteFileAsync(documentId);
