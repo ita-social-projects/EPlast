@@ -50,14 +50,10 @@ namespace EPlast.BLL.Services.City.CityAccess
             if (roles.Contains(Roles.CityHead))
                 return _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityForAdministrationDTO>>(
                     await _cityAccessGetters[Roles.CityHead].GetCities(user.Id));
-<<<<<<< HEAD
             if (roles.Contains(Roles.CityHeadDeputy))
-                return _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<DTO.AnnualReport.CityDTO>>(
+                return _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityForAdministrationDTO>>(
                     await _cityAccessGetters[Roles.CityHeadDeputy].GetCities(user.Id));
-            return Enumerable.Empty<DTO.AnnualReport.CityDTO>();
-=======
             return Enumerable.Empty<CityForAdministrationDTO>();
->>>>>>> 74a8b02931785ffab442960a199022f2f35cb9fd
         }
 
         public async Task<bool> HasAccessAsync(DatabaseEntities.User user, int cityId)

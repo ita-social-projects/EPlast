@@ -18,11 +18,7 @@ using System.Threading.Tasks;
 namespace EPlast.WebApi.Controllers
 {
     [ApiController, Route("api/[controller]")]
-<<<<<<< HEAD
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
-=======
     [Authorize(AuthenticationSchemes = "Bearer")]
->>>>>>> 74a8b02931785ffab442960a199022f2f35cb9fd
     public class RegionsController : ControllerBase
     {
         private readonly IDistributedCache _cache;
