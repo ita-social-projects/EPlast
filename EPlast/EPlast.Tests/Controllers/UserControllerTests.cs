@@ -205,6 +205,22 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task GetUserProfile_FocusUserIdIsNull_ReturnsNotFoundResult()
+        {
+            // Arrange
+            string focusUserId = "";
+
+            // Act
+            var result = await _userController.GetUserProfile(It.IsAny<string>(), focusUserId);
+            var resultObject = (result as ObjectResult)?.Value;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsNull(resultObject);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
         public async Task GetUserProfile_NullCurrentUserIdString_ReturnsNotFoundResult()
         {
             // Arrange
@@ -771,6 +787,25 @@ namespace EPlast.Tests.Controllers
             Assert.IsFalse(actual.IsUserHeadOfRegion);
             Assert.IsTrue(actual.IsUserPlastun);
             Assert.AreEqual(expectedApproverId, actual.CurrentUserId);
+        }
+
+        [Test]
+        public async Task Approvers_User_ThrowsException()
+        {
+            // Arrange
+            string userId = "1";
+            string approverId = "2";
+            _userService
+                .Setup((x) => x.GetUserAsync(It.IsAny<string>()))
+                .Throws(new Exception());
+
+            // Act
+            var result = await _userController.Approvers(userId, approverId);
+
+            // Assert
+            _userService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
         [Test]
