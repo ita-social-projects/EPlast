@@ -26,12 +26,13 @@ namespace EPlast.BLL.Services.ActiveMembership
             var leadershipLevelRoles = new List<string>
             {
                 Roles.KurinHead,
+                Roles.KurinHeadDeputy,
                 Roles.KurinSecretary,
                 Roles.CityHead,
+                Roles.CityHeadDeputy,
                 Roles.CitySecretary,
                 Roles.OkrugaHead,
                 Roles.OkrugaSecretary,
-                Roles.CityHeadDeputy,
                 "Голова Керівного органу",
                 "Діловод Керівного органу"
             };

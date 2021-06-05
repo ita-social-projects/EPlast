@@ -74,8 +74,8 @@ namespace EPlast.WebApi.StartupExtensions
                 Roles.PlastMember,
                 Roles.PlastHead,
                 Roles.EventAdministrator,
-                Roles.KurinHead,"" +
-                                Roles.KurinSecretary,
+                Roles.KurinHead,
+                Roles.KurinSecretary,
                 Roles.OkrugaHead,
                 Roles.OkrugaSecretary,
                 Roles.CityHead,

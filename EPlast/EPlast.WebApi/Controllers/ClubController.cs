@@ -173,7 +173,7 @@ namespace EPlast.WebApi.Controllers
             var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
             ClubProfile.CanEdit = await _clubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), ClubId);
 
-            return Ok(new { ClubProfile.Administration, ClubProfile.Head, ClubProfile.CanEdit, ClubProfile.Name });
+            return Ok(new { ClubProfile.Administration, ClubProfile.Head, ClubProfile.HeadDeputy, ClubProfile.CanEdit, ClubProfile.Name });
         }
 
         /// <summary>
