@@ -132,6 +132,7 @@ namespace EPlast.WebApi.Controllers
             var isUserHeadOfClub = await _userManagerService.IsInRoleAsync(currentUser, Roles.KurinHead);
             var isUserHeadDeputyOfClub = await _userManagerService.IsInRoleAsync(currentUser, Roles.KurinHeadDeputy);
             var isUserHeadOfRegion = await _userManagerService.IsInRoleAsync(currentUser, Roles.OkrugaHead);
+            var isUserHeadDeputyOfRegion = await _userManagerService.IsInRoleAsync(currentUser, Roles.OkrugaHeadDeputy);
             var isCurrentUserPlastun = await _userManagerService.IsInRoleAsync(currentUser, Roles.PlastMember);
             var isFocusUserSupporter = await _userManagerService.IsInRoleAsync(focusUser, Roles.Supporter);
             var isFocusUserPlastun = await _userManagerService.IsInRoleAsync(focusUser, Roles.PlastMember)
@@ -151,6 +152,7 @@ namespace EPlast.WebApi.Controllers
                      (isUserHeadOfClub && _userService.IsUserSameClub(currentUser, focusUser)) ||
                      (isUserHeadDeputyOfClub && _userService.IsUserSameClub(currentUser, focusUser)) ||
                      (isUserHeadOfRegion && _userService.IsUserSameRegion(currentUser, focusUser)) ||
+                     (isUserHeadDeputyOfRegion && _userService.IsUserSameRegion(currentUser, focusUser)) ||
                      (isCurrentUserPlastun && _userService.IsUserSameCity(currentUser, focusUser)))
             {
                 model = new PersonalDataViewModel
@@ -310,6 +312,7 @@ namespace EPlast.WebApi.Controllers
                 IsUserHeadOfClub = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.KurinHead),
                 IsUserHeadDeputyOfClub = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.KurinHeadDeputy),
                 IsUserHeadOfRegion = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.OkrugaHead),
+                IsUserHeadDeputyOfRegion = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.OkrugaHeadDeputy),
                 IsUserPlastun = await _userManagerService.IsInRoleAsync(user, Roles.PlastMember)
                     || user.UserProfile.UpuDegreeID != 1
                     || !(await _userManagerService.IsInRoleAsync(user, Roles.Supporter)

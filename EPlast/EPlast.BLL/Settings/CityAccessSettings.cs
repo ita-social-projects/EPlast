@@ -9,6 +9,7 @@ namespace EPlast.BLL.Settings
     {
         private const string AdminRoleName = Roles.Admin;
         private const string RegionAdminRoleName = Roles.OkrugaHead;
+        private const string RegionAdminDeputyRoleName = Roles.OkrugaHeadDeputy;
         private const string CityAdminRoleName = Roles.CityHead;
         private const string CityAdminDeputyRoleName = Roles.CityHeadDeputy;
 
@@ -27,6 +28,7 @@ namespace EPlast.BLL.Settings
                 {
                     { AdminRoleName,  new CityAccessForAdminGetter(_repositoryWrapper) },
                     { RegionAdminRoleName, new CItyAccessForRegionAdminGetter(_repositoryWrapper) },
+                    { RegionAdminDeputyRoleName, new CityAccessForRegionAdminDeputyGetter(_repositoryWrapper) },
                     { CityAdminRoleName, new CityAccessForCityAdminGetter(_repositoryWrapper) },
                     { CityAdminDeputyRoleName, new CityAccessForCityAdminDeputyGetter(_repositoryWrapper) }
                 };

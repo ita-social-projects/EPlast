@@ -51,12 +51,14 @@ namespace EPlast.WebApi.Controllers
             var isUserHeadOfClub = roles.Contains(Roles.KurinHead);
             var isUserHeadDeputyOfClub = roles.Contains(Roles.KurinHeadDeputy);
             var isUserHeadOfRegion = roles.Contains(Roles.OkrugaHead);
+            var isUserHeadDeputyOfRegion = roles.Contains(Roles.OkrugaHeadDeputy);
             if (isUserAdmin 
                 || (isUserHeadOfClub && _userService.IsUserSameClub(currentUser, focusUser)) 
                 || (isUserHeadDeputyOfClub && _userService.IsUserSameClub(currentUser, focusUser)) 
                 || (isUserHeadOfCity && _userService.IsUserSameCity(currentUser, focusUser)) 
                 || (isUserHeadDeputyOfCity && _userService.IsUserSameCity(currentUser, focusUser)) 
-                || (isUserHeadOfRegion && _userService.IsUserSameRegion(currentUser, focusUser)))
+                || (isUserHeadOfRegion && _userService.IsUserSameRegion(currentUser, focusUser))
+                || (isUserHeadDeputyOfRegion && _userService.IsUserSameRegion(currentUser, focusUser)))
                 return true;
             _loggerService.LogError($"No access.");
             return false;

@@ -52,7 +52,19 @@ namespace EPlast.BLL.Services.Region
 
             var newUser = await _userManager.FindByIdAsync(newRegionAdmin.UserId);
 
-            var role = adminType.AdminTypeName == Roles.OkrugaHead ? Roles.OkrugaHead : Roles.OkrugaSecretary;
+            string role;
+            switch (adminType.AdminTypeName)
+            {
+                case Roles.OkrugaHead:
+                    role = Roles.OkrugaHead;
+                    break;
+                case Roles.OkrugaHeadDeputy:
+                    role = Roles.OkrugaHeadDeputy;
+                    break;
+                default:
+                    role = Roles.OkrugaSecretary;
+                    break;
+            }
             await _userManager.AddToRoleAsync(newUser, role);
 
             if (oldAdmin != null)
@@ -113,7 +125,19 @@ namespace EPlast.BLL.Services.Region
             var adminType = await _adminTypeService.GetAdminTypeByIdAsync(Admin.AdminTypeId);
 
             var user = await _userManager.FindByIdAsync(Admin.UserId);
-            var role = adminType.AdminTypeName == Roles.OkrugaHead ? Roles.OkrugaHead : Roles.OkrugaSecretary;
+            string role;
+            switch (adminType.AdminTypeName)
+            {
+                case Roles.OkrugaHead:
+                    role = Roles.OkrugaHead;
+                    break;
+                case Roles.OkrugaHeadDeputy:
+                    role = Roles.OkrugaHeadDeputy;
+                    break;
+                default:
+                    role = Roles.OkrugaSecretary;
+                    break;
+            }
             await _userManager.RemoveFromRoleAsync(user, role);
 
             _repoWrapper.RegionAdministration.Delete(Admin);

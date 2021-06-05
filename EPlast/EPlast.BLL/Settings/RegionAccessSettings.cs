@@ -9,6 +9,7 @@ namespace EPlast.BLL.Settings
     {
         private const string AdminRoleName = Roles.Admin;
         private const string RegionAdminRoleName = Roles.OkrugaHead;
+        private const string RegionAdminDeputyRoleName = Roles.OkrugaHeadDeputy;
 
         private readonly IRepositoryWrapper _repositoryWrapper;
 
@@ -24,7 +25,8 @@ namespace EPlast.BLL.Settings
                 return new Dictionary<string, IRegionAccessGetter>
                 {
                     { AdminRoleName,  new RegionAccessForAdminGetter(_repositoryWrapper) },
-                    { RegionAdminRoleName, new RegionAccessForRegionAdminGetter(_repositoryWrapper) }
+                    { RegionAdminRoleName, new RegionAccessForRegionAdminGetter(_repositoryWrapper) },
+                    { RegionAdminDeputyRoleName, new RegionAccessForRegionAdminDeputyGetter(_repositoryWrapper) }
                 };
             }
         }
