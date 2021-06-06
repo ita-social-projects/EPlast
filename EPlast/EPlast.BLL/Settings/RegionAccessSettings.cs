@@ -26,7 +26,7 @@ namespace EPlast.BLL.Settings
                 {
                     { AdminRoleName,  new RegionAccessForAdminGetter(_repositoryWrapper) },
                     { RegionAdminRoleName, new RegionAccessForRegionAdminGetter(_repositoryWrapper) },
-                    { RegionAdminDeputyRoleName, new RegionAccessForRegionAdminDeputyGetter(_repositoryWrapper) }
+                    { RegionAdminDeputyRoleName, new RegionAccessForRegionAdminGetter(_repositoryWrapper) }
                 };
             }
         }

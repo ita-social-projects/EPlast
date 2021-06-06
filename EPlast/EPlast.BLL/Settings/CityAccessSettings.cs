@@ -28,9 +28,9 @@ namespace EPlast.BLL.Settings
                 {
                     { AdminRoleName,  new CityAccessForAdminGetter(_repositoryWrapper) },
                     { RegionAdminRoleName, new CItyAccessForRegionAdminGetter(_repositoryWrapper) },
-                    { RegionAdminDeputyRoleName, new CityAccessForRegionAdminDeputyGetter(_repositoryWrapper) },
+                    { RegionAdminDeputyRoleName, new CItyAccessForRegionAdminGetter(_repositoryWrapper) },
                     { CityAdminRoleName, new CityAccessForCityAdminGetter(_repositoryWrapper) },
-                    { CityAdminDeputyRoleName, new CityAccessForCityAdminDeputyGetter(_repositoryWrapper) }
+                    { CityAdminDeputyRoleName, new CityAccessForCityAdminGetter(_repositoryWrapper) }
                 };
             }
         }
