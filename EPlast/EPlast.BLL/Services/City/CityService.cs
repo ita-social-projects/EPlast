@@ -88,6 +88,33 @@ namespace EPlast.BLL.Services
             return _mapper.Map<DataAccessCity.City, CityDTO>(city);
         }
 
+        public CityAdministrationDTO GetCityHead(CityDTO city)
+        {
+            var cityHead = city.CityAdministration?
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHead
+                    && (DateTime.Now < a.EndDate || a.EndDate == null));
+            return cityHead;
+        }
+
+        public CityAdministrationDTO GetCityHeadDeputy(CityDTO city)
+        {
+            var cityHeadDeputy = city.CityAdministration?
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHeadDeputy
+                    && (DateTime.Now < a.EndDate || a.EndDate == null));
+            return cityHeadDeputy;
+        }
+
+        public List<CityAdministrationDTO> GetCityAdmins(CityDTO city)
+        {
+            var cityAdmins = city.CityAdministration
+                .Where(a => a.AdminType.AdminTypeName != Roles.CityHead
+                    && a.AdminType.AdminTypeName != Roles.CityHeadDeputy
+                    && (DateTime.Now < a.EndDate || a.EndDate == null))
+                .Take(6)
+                .ToList();
+            return cityAdmins;
+        }
+
         /// <inheritdoc />
         public async Task<CityProfileDTO> GetCityProfileAsync(int cityId)
         {
@@ -97,18 +124,9 @@ namespace EPlast.BLL.Services
                 return null;
             }
 
-            var cityHead = city.CityAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHead
-                    && (DateTime.Now < a.EndDate || a.EndDate == null));
-            var cityHeadDeputy = city.CityAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHeadDeputy
-                    && (DateTime.Now < a.EndDate || a.EndDate == null));
-            var cityAdmins = city.CityAdministration
-                .Where(a => a.AdminType.AdminTypeName != Roles.CityHead
-                    && a.AdminType.AdminTypeName != Roles.CityHeadDeputy
-                    && (DateTime.Now < a.EndDate || a.EndDate == null))
-                .Take(6)
-                .ToList();
+            var cityHead = GetCityHead(city);
+            var cityHeadDeputy = GetCityHeadDeputy(city);
+            var cityAdmins = GetCityAdmins(city);
             city.AdministrationCount = city.CityAdministration
                 .Count(a => (DateTime.Now < a.EndDate || a.EndDate == null));
             var members = city.CityMembers
@@ -207,17 +225,9 @@ namespace EPlast.BLL.Services
                 return null;
             }
 
-            var cityHead = city.CityAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHead
-                    && (DateTime.Now < a.EndDate || a.EndDate == null));
-            var cityHeadDeputy = city.CityAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHeadDeputy
-                    && (DateTime.Now < a.EndDate || a.EndDate == null));
-            var cityAdmins = city.CityAdministration
-                .Where(a => a.AdminType.AdminTypeName != Roles.CityHead
-                    && a.AdminType.AdminTypeName != Roles.CityHeadDeputy
-                    && (DateTime.Now < a.EndDate || a.EndDate == null))
-                .ToList();
+            var cityHead = GetCityHead(city);
+            var cityHeadDeputy = GetCityHeadDeputy(city);
+            var cityAdmins = GetCityAdmins(city);
 
             var cityProfileDto = new CityProfileDTO
             {
