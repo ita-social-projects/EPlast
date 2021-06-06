@@ -169,6 +169,10 @@ namespace EPlast.Tests.Services.City
                 .Setup(x => x.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
                 .ReturnsAsync(new CityAdministration() { AdminTypeId = 2 });
+            _repoWrapper
+                .Setup(x => x.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new CityAdministration() { AdminTypeId = 76 });
             _adminTypeService
                 .Setup(x => x.GetAdminTypeByIdAsync(It.IsAny<int>())).ReturnsAsync(new AdminTypeDTO() { AdminTypeName = Roles.CityHead });
             _repoWrapper
@@ -795,6 +799,16 @@ namespace EPlast.Tests.Services.City
                     AdminType = new AdminType
                     {
                         AdminTypeName = Roles.CityHead
+                    },
+                    User = new User()
+                },
+                new CityAdministration
+                {
+                    UserId = "userId",
+                    ID = 4,
+                    AdminType = new AdminType
+                    {
+                        AdminTypeName = Roles.CityHeadDeputy
                     },
                     User = new User()
                 }
