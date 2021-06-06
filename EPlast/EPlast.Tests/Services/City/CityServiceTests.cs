@@ -115,7 +115,7 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
-        public void GetCityHead_ReturnsCityHeadDeputy_Valid()
+        public void GetCityHeadDeputy_ReturnsCityHeadDeputy_Valid()
         {
             // Arrange
             CityDTO cityDTO = new CityDTO();
@@ -139,7 +139,7 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
-        public void GetCityHead_ReturnsCityHeadDeputy_InValid()
+        public void GetCityHeadDeputy_ReturnsCityHeadDeputy_InValid()
         {
             // Arrange
             CityDTO cityDTO = new CityDTO();
@@ -154,6 +154,19 @@ namespace EPlast.Tests.Services.City
                     EndDate = new DateTime(2000, 10, 5)
                 }
             };
+
+            // Act
+            var result = _cityService.GetCityHeadDeputy(cityDTO);
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+        [Test]
+        public void GetCityHeadDeputy_WithoutCityHeadDeputy()
+        {
+            // Arrange
+            CityDTO cityDTO = new CityDTO();
 
             // Act
             var result = _cityService.GetCityHeadDeputy(cityDTO);

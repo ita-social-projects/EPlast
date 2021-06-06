@@ -393,6 +393,15 @@ namespace EPlast.WebApi.Controllers
             return Ok(Head);
         }
 
+        [HttpGet("GetHeadDeputy/{regionId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetRegionHeadDeputy(int regionId)
+        {
+            var HeadDeputy = await _regionAdministrationService.GetHeadDeputy(regionId);
+
+            return Ok(HeadDeputy);
+        }
+
         /// <summary>
         /// Get all regions using redis cache
         /// </summary>

@@ -175,6 +175,16 @@ namespace EPlast.BLL.Services.Region
             return _mapper.Map<RegionAdministration, RegionAdministrationDTO>(head);
         }
 
+        public async Task<RegionAdministrationDTO> GetHeadDeputy(int regionId)
+        {
+            var headDeputy = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(d => d.RegionId == regionId && d.AdminType.AdminTypeName == Roles.OkrugaHeadDeputy && (d.EndDate > DateTime.Now || d.EndDate == null),
+                include: source => source
+                .Include(
+                d => d.User));
+
+            return _mapper.Map<RegionAdministration, RegionAdministrationDTO>(headDeputy);
+        }
+
         public async Task<int> GetAdminType(string name)
         {
             var type = await _repoWrapper.AdminType.GetFirstAsync(a => a.AdminTypeName == name);

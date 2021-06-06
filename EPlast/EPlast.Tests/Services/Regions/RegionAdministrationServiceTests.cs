@@ -102,6 +102,24 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
+        public async Task GetHeadDeputy_ReturnsRegionAdministrationDTO()
+        {
+            // Arrange
+            _repoWrapper.Setup(x => x.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
+                It.IsAny<Func<IQueryable<RegionAdministration>, IIncludableQueryable<RegionAdministration, object>>>()))
+            .ReturnsAsync(new RegionAdministration());
+
+            _mapper.Setup(x => x.Map<RegionAdministration, RegionAdministrationDTO>(It.IsAny<RegionAdministration>()))
+                .Returns(new RegionAdministrationDTO() { ID = 2 });
+
+            //Act
+            var result = await _servise.GetHeadDeputy(It.IsAny<int>());
+            // Assert
+            Assert.IsInstanceOf<RegionAdministrationDTO>(result);
+            Assert.IsNotNull(result);
+        }
+
+        [Test]
         public async Task GetAdminType_ReturnsAdminTypeId()
         {
             // Arrange
