@@ -55,7 +55,6 @@ namespace EPlast.BLL.Services.City
             };
 
             var user = await _userManager.FindByIdAsync(adminDTO.UserId);
-            //var role = adminType.AdminTypeName == Roles.CityHead ? Roles.CityHead : Roles.CitySecretary;
             string role;
             switch (adminType.AdminTypeName)
             {
@@ -235,7 +234,6 @@ namespace EPlast.BLL.Services.City
 
             var adminType = await _adminTypeService.GetAdminTypeByIdAsync(admin.AdminTypeId);
             var user = await _userManager.FindByIdAsync(admin.UserId);
-            //var role = adminType.AdminTypeName == Roles.CityHead ? Roles.CityHead : Roles.CitySecretary;
             string role;
             switch (adminType.AdminTypeName)
             {

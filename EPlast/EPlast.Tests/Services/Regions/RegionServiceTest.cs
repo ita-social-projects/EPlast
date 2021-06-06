@@ -132,7 +132,7 @@ namespace EPlast.Tests.Services.Regions
                 .Returns(new RegionProfileDTO());
 
             _userManager.
-                Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Admin });
+                Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Admin, Roles.OkrugaHead, Roles.OkrugaHeadDeputy });
             // Act
             var result = await _regionService.GetRegionByNameAsync(It.IsAny<string>(), It.IsAny<User>());
 

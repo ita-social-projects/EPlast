@@ -31,6 +31,18 @@ namespace EPlast.Tests.Services.City
             ID = 1
         };
 
+        private static readonly AdminTypeDTO AdminDeputyType = new AdminTypeDTO
+        {
+            AdminTypeName = Roles.CityHeadDeputy,
+            ID = 1
+        };
+
+        private static readonly AdminTypeDTO AdminSecretaryType = new AdminTypeDTO
+        {
+            AdminTypeName = Roles.CitySecretary,
+            ID = 1
+        };
+
         private readonly CityAdministration cityAdm = new CityAdministration
         {
             ID = 1,
@@ -85,7 +97,41 @@ namespace EPlast.Tests.Services.City
                 .Setup(s => s.CityAdministration.CreateAsync(cityAdm));
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(new AdminTypeDTO());
+                .ReturnsAsync(AdminType);
+
+            //Act
+            var result = await _cityParticipantsService.AddAdministratorAsync(cityAdmDTOEndDateToday);
+
+            //Assert
+            Assert.IsInstanceOf<CityAdministrationDTO>(result);
+        }
+
+        [Test]
+        public async Task AddAdministratorAsync_EndDateToday_AdminDeputyType_ReturnsAdministrator()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(s => s.CityAdministration.CreateAsync(cityAdm));
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(AdminDeputyType);
+
+            //Act
+            var result = await _cityParticipantsService.AddAdministratorAsync(cityAdmDTOEndDateToday);
+
+            //Assert
+            Assert.IsInstanceOf<CityAdministrationDTO>(result);
+        }
+
+        [Test]
+        public async Task AddAdministratorAsync_EndDateToday_AdminSecretaryType_ReturnsAdministrator()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(s => s.CityAdministration.CreateAsync(cityAdm));
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(AdminSecretaryType);
 
             //Act
             var result = await _cityParticipantsService.AddAdministratorAsync(cityAdmDTOEndDateToday);
@@ -102,7 +148,7 @@ namespace EPlast.Tests.Services.City
                 .Setup(s => s.CityAdministration.CreateAsync(cityAdm));
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(new AdminTypeDTO());
+                .ReturnsAsync(AdminType);
 
             //Act
             var result = await _cityParticipantsService.AddAdministratorAsync(cityAdmDTOEndDateNull);
@@ -119,7 +165,7 @@ namespace EPlast.Tests.Services.City
                 .Setup(s => s.CityAdministration.CreateAsync(cityAdm));
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(new AdminTypeDTO());
+                .ReturnsAsync(AdminType);
             cityAdmDTOEndDateToday.StartDate = null;
 
             //Act
@@ -138,7 +184,7 @@ namespace EPlast.Tests.Services.City
                 .Setup(s => s.CityAdministration.CreateAsync(cityAdm));
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(new AdminTypeDTO());
+                .ReturnsAsync(AdminType);
             cityAdmDTOEndDateNull.StartDate = null;
 
             //Act
@@ -530,7 +576,7 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
-        public void RemoveAdministratorAsync_ReturnsCorrect()
+        public void RemoveAdministratorAsync_AdminType_ReturnsCorrect()
         {
             //Arrange
             _repoWrapper
@@ -541,6 +587,35 @@ namespace EPlast.Tests.Services.City
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
                 .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminType));
+            _userManager
+                .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
+            _userManager
+                .Setup(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
+            _repoWrapper
+                .Setup(r => r.CityAdministration.Update(It.IsAny<CityAdministration>()));
+            _repoWrapper
+                .Setup(r => r.SaveAsync());
+
+            //Act
+            var result = _cityParticipantsService.RemoveAdministratorAsync(It.IsAny<int>());
+
+            //Assert
+            _repoWrapper.Verify();
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public void RemoveAdministratorAsync_AdminDeputyType_ReturnsCorrect()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>,
+                    IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(cityAdm);
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
+                .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminDeputyType));
             _userManager
                 .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
             _userManager
