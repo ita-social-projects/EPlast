@@ -102,6 +102,67 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
+        public void GetCityHead_WithoutCityAdministration()
+        {
+            // Arrange
+            CityDTO cityDTO = new CityDTO();
+
+            // Act
+            var result = _cityService.GetCityHead(cityDTO);
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+        [Test]
+        public void GetCityHead_ReturnsCityHeadDeputy_Valid()
+        {
+            // Arrange
+            CityDTO cityDTO = new CityDTO();
+            cityDTO.CityAdministration = new List<CityAdministrationDTO>()
+            {
+                new CityAdministrationDTO()
+                {
+                    AdminType = new AdminTypeDTO()
+                    {
+                        AdminTypeName = Roles.CityHeadDeputy
+                    }
+                }
+            };
+
+            // Act
+            var result = _cityService.GetCityHeadDeputy(cityDTO);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<CityAdministrationDTO>(result);
+        }
+
+        [Test]
+        public void GetCityHead_ReturnsCityHeadDeputy_InValid()
+        {
+            // Arrange
+            CityDTO cityDTO = new CityDTO();
+            cityDTO.CityAdministration = new List<CityAdministrationDTO>()
+            {
+                new CityAdministrationDTO()
+                {
+                    AdminType = new AdminTypeDTO()
+                    {
+                        AdminTypeName = Roles.CityHeadDeputy
+                    },
+                    EndDate = new DateTime(2000, 10, 5)
+                }
+            };
+
+            // Act
+            var result = _cityService.GetCityHeadDeputy(cityDTO);
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+        [Test]
         public async Task GetAllAsync_ReturnsAllCities()
         {
             // Arrange
