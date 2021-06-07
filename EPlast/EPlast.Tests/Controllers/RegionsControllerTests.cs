@@ -691,6 +691,7 @@ namespace EPlast.Tests.Controllers
             _regionAnnualReportService.Setup(x => x.GetRegionMembersInfo(It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync(new List<RegionMembersInfo>());
             int reportID = 1;
+            
             // Act
             var result = await _regionController.EditRegionReport(reportID, fakeRegionAnnualReportQuestions());
 
@@ -749,6 +750,7 @@ namespace EPlast.Tests.Controllers
             _regionAnnualReportService.Setup(x => x.GetRegionMembersInfo(It.IsAny<int>(), It.IsAny<int>()))
                   .ReturnsAsync(new List<RegionMembersInfo>());
             int id = 0;
+            
             // Act
             var result = await _regionController.Confirm(id);
             // Assert
@@ -769,6 +771,7 @@ namespace EPlast.Tests.Controllers
             _logger.Setup(x => x.LogInformation(It.IsAny<string>()));
       
             int id = 0;
+            
             // Act
             var result = await _regionController.Cancel(id);
             
@@ -841,6 +844,7 @@ namespace EPlast.Tests.Controllers
        
             // Act
             var result = await _regionController.GetRegions(page, pageSize, regionName);
+            
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
