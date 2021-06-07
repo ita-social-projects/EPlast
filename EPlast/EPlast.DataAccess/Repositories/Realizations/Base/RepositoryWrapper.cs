@@ -173,7 +173,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         {
             get
             {
-                if (_cityAdministration == null)
+                if (_governingBodyAdministration == null)
                 {
                     _governingBodyAdministration = new GoverningBodyAdministrationRepository(_dbContext);
                 }

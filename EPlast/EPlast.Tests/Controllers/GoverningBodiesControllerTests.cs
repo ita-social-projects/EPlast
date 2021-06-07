@@ -1,36 +1,41 @@
-﻿using EPlast.BLL.DTO;
+﻿using AutoMapper;
+using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.GoverningBody;
 using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.BLL.Interfaces.Logging;
-using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Controllers;
-using Microsoft.AspNetCore.Identity;
+using EPlast.WebApi.Models.GoverningBody;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.Admin;
+using EPlast.BLL.DTO.City;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace EPlast.Tests.Controllers
 {
     internal class GoverningBodiesControllerTests
     {
         private Mock<IGoverningBodiesService> _governingBodiesService;
+        private Mock<IGoverningBodyAdministrationService> _governingBodyAdministrationService;
+        private Mock<IMapper> _mapper;
         private Mock<ILoggerService<GoverningBodiesController>> _logger;
-        private Mock<UserManager<User>> _userManager;
         private GoverningBodiesController _controller;
 
         [SetUp]
         public void SetUp()
         {
             _governingBodiesService = new Mock<IGoverningBodiesService>();
+            _governingBodyAdministrationService = new Mock<IGoverningBodyAdministrationService>();
             _logger = new Mock<ILoggerService<GoverningBodiesController>>();
-            var store = new Mock<Microsoft.AspNetCore.Identity.IUserStore<User>>();
-            _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            _mapper = new Mock<IMapper>();
             _controller = new GoverningBodiesController(
                 _governingBodiesService.Object,
                 _logger.Object,
-                _userManager.Object);
+                _governingBodyAdministrationService.Object,
+                _mapper.Object);
         }
 
         [Test]
@@ -144,16 +149,19 @@ namespace EPlast.Tests.Controllers
         public async Task Profile_GBExists_Test(int governingBodyid)
         {
             //Arrange
-            _governingBodiesService.Setup(x => x.GetProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
+            _governingBodiesService.Setup(x => x.GetGoverningBodyProfileAsync(It.IsAny<int>()))
                 .ReturnsAsync(CreateGoverningBodyProfileDto);
+            _mapper.Setup(m =>
+                    m.Map<GoverningBodyProfileDTO, GoverningBodyViewModel>(It.IsAny<GoverningBodyProfileDTO>()))
+                .Returns(new GoverningBodyViewModel { Id = CreateGoverningBodyProfileDto.GoverningBody.Id });
 
             //Act
             var result = await _controller.GetProfile(governingBodyid);
-            var resultValue = (result as OkObjectResult).Value as GoverningBodyProfileDTO;
+            var resultValue = (result as OkObjectResult)?.Value as GoverningBodyViewModel;
 
             //Assert
             Assert.NotNull(result);
-            Assert.AreEqual(CreateGoverningBodyProfileDto.GoverningBody.Id, resultValue.GoverningBody.Id);
+            Assert.AreEqual(CreateGoverningBodyProfileDto.GoverningBody.Id, resultValue?.Id);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
@@ -161,7 +169,7 @@ namespace EPlast.Tests.Controllers
         public async Task Profile_GBNotExists_Test(int governingBodyid)
         {
             //Arrange
-            _governingBodiesService.Setup(x => x.GetProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
+            _governingBodiesService.Setup(x => x.GetGoverningBodyProfileAsync(It.IsAny<int>()))
                 .ReturnsAsync(null as GoverningBodyProfileDTO);
 
             //Act
@@ -202,6 +210,113 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.AreEqual(dict.Count, resultValue.Count);
         }
+
+        [TestCase(2)]
+        public async Task GetAdmins_Invalid_Test(int id)
+        {
+            // Arrange
+            _governingBodiesService
+                .Setup(c => c.GetGoverningBodyProfileAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            _mapper.Setup(m => m.Map<GoverningBodyProfileDTO, GoverningBodyViewModel>(It.IsAny<GoverningBodyProfileDTO>()))
+                .Returns(new GoverningBodyViewModel());
+
+            // Act
+            var result = await _controller.GetAdmins(id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [TestCase(2)]
+        public async Task GetAdmins_Valid_Test(int id)
+        {
+            // Arrange
+            _governingBodiesService
+                .Setup(c => c.GetGoverningBodyProfileAsync(It.IsAny<int>()))
+                .ReturnsAsync(new GoverningBodyProfileDTO());
+            _mapper
+                .Setup(m => m.Map<GoverningBodyProfileDTO, GoverningBodyViewModel> (It.IsAny<GoverningBodyProfileDTO>()))
+                .Returns(new GoverningBodyViewModel());
+
+            // Act
+            var result = await _controller.GetAdmins(id);
+            var resultValue = (result as OkObjectResult)?.Value;
+
+            // Assert
+            _mapper.Verify(m => m.Map<GoverningBodyProfileDTO, GoverningBodyViewModel>(It.IsAny<GoverningBodyProfileDTO>()));
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(resultValue);
+        }
+
+        [Test]
+        public async Task AddAdmin_Valid_Test()
+        {
+            // Arrange
+            _governingBodyAdministrationService
+                .Setup(c => c.AddGoverningBodyAdministratorAsync(It.IsAny<GoverningBodyAdministrationDTO>()))
+                .ReturnsAsync(new GoverningBodyAdministrationDTO());
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+
+            // Act
+            var result = await _controller.AddAdmin(new GoverningBodyAdministrationDTO { AdminType = new AdminTypeDTO() });
+            var resultValue = (result as OkObjectResult)?.Value;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(resultValue);
+            Assert.IsInstanceOf<GoverningBodyAdministrationDTO>(resultValue);
+        }
+
+        [Test]
+        public async Task EditAdmin_Valid_Test()
+        {
+            // Arrange
+
+            _governingBodyAdministrationService
+                .Setup(c => c.EditGoverningBodyAdministratorAsync(It.IsAny<GoverningBodyAdministrationDTO>()))
+                    .ReturnsAsync(new GoverningBodyAdministrationDTO());
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+
+            // Act
+            var result = await _controller.EditAdmin(new GoverningBodyAdministrationDTO { AdminType = new AdminTypeDTO() });
+            var resultValue = (result as OkObjectResult)?.Value;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(resultValue);
+            Assert.IsInstanceOf<GoverningBodyAdministrationDTO>(resultValue);
+        }
+
+        [Test]
+        public async Task RemoveAdmin_Valid_Test()
+        {
+            // Arrange
+            _governingBodyAdministrationService
+                .Setup(c => c.RemoveAdministratorAsync(It.IsAny<int>()));
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+            _governingBodyAdministrationService
+                .Setup(c => c.EditGoverningBodyAdministratorAsync(It.IsAny<GoverningBodyAdministrationDTO>()))
+                .ReturnsAsync(new GoverningBodyAdministrationDTO());
+
+            // Act
+            var result = await _controller.RemoveAdmin(FakeId);
+
+            // Assert
+            _logger.Verify();
+            _governingBodyAdministrationService.Verify();
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
+        }
+
+        private const int FakeId = 3;
 
         private GoverningBodyDTO CreateGoverningBodyDTO => new GoverningBodyDTO()
         {
