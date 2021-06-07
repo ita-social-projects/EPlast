@@ -244,15 +244,17 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Method to get region members info
         /// </summary>
+        /// <param name="page">current page on pagination</param>
+        /// <param name="pageSize">number of records per page</param>
         /// <param name="regionId">Region identification number</param>
         /// <param name="year">Year of region members info</param>
-        /// <returns>RegionMembersInfo</returns>
+        /// <returns>RegionMembersInfoTableObject</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("MembersInfo/{regionId:int}/{year:int}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
-        public async Task<IActionResult> GetRegionMembersInfo(int regionId, int year)
+        public async Task<IActionResult> GetRegionMembersInfo(int regionId, int year, int page, int pageSize)
         {
-            return Ok(await _RegionAnnualReportService.GetRegionMembersInfo(regionId, year));
+            return Ok(await _RegionAnnualReportService.GetRegionMembersInfoAsync(regionId, year, page, pageSize));
         }
 
 
