@@ -656,8 +656,10 @@ namespace EPlast.Tests.Controllers
             _logger.Setup(x => x.LogInformation(It.IsAny<string>()));
 
             _regionAnnualReportService.Setup(x => x.DeleteAsync(It.IsAny<int>()));
+            
             // Act
             var result = await _regionController.Delete(1);
+            
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(200, ((ObjectResult)result).StatusCode);
@@ -712,8 +714,8 @@ namespace EPlast.Tests.Controllers
             _regionAnnualReportService.Setup(x => x.EditAsync(It.IsAny<int>(), It.IsAny<RegionAnnualReportQuestions>()))
                 .ThrowsAsync(new InvalidOperationException());
             
-
             int reportID = 1;
+            
             // Act
             var result = await _regionController.EditRegionReport(reportID, fakeRegionAnnualReportQuestions());
 
@@ -753,6 +755,7 @@ namespace EPlast.Tests.Controllers
             
             // Act
             var result = await _regionController.Confirm(id);
+            
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(200, ((ObjectResult)result).StatusCode);
