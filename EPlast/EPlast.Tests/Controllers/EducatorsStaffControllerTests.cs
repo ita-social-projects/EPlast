@@ -46,7 +46,6 @@ namespace EPlast.Tests.Controllers
             _educatorsStaffService.Setup(x => x.CreateKadra(dto)).ReturnsAsync(dto);
 
             // Act
-
             await _educatorsStaffController.CreateKadra(dto);
 
             // Assert
@@ -163,6 +162,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
             await _educatorsStaffController.Update(dto);
+            
             // Assert
             _educatorsStaffService.Verify(x => x.UpdateKadra(It.IsAny<EducatorsStaffDTO>()));
         }
