@@ -216,6 +216,26 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task GetUsersKVs_Status404NotFound()
+        {
+            // Arange
+            string nullString = "1";
+
+            // Act
+            _educatorsStaffService.
+             Setup(x => x.GetKVsOfGivenUser(nullString)).
+             ReturnsAsync((List<EducatorsStaffDTO>)null);
+
+            var expected = StatusCodes.Status404NotFound;
+            var result = await _educatorsStaffController.GetUsersKVs(nullString);
+            var actual = result as StatusCodeResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(expected, actual.StatusCode);
+        }
+
+        [Test]
         public async Task GetKVsWithType_User_CallsGetKVsWithKVType()
         {
             // Arange
