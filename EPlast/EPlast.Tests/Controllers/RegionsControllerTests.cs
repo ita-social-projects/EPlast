@@ -491,11 +491,12 @@ namespace EPlast.Tests.Controllers
             _regionService
                 .Setup(x => x.GetRegionByNameAsync(EnumExtensions.GetDescription(RegionsStatusType.RegionBoard), It.IsAny<User>()))
                 .ReturnsAsync(new RegionProfileDTO());
+            
             // Act
             var result = await _regionController.GetRegionsBoardAsync();
             var actual = (result as ObjectResult).Value;
+            
             // Assert
-
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<RegionProfileDTO>(actual);
         }
@@ -506,11 +507,12 @@ namespace EPlast.Tests.Controllers
             // Arrange
             _regionAnnualReportService.Setup(x => x.GetReportByIdAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(new RegionAnnualReportDTO());
+            
             // Act
             var result = await _regionController.GetReportByIdAsync(1, 2);
             var actual = (result as ObjectResult).Value;
+            
             // Assert
-
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<RegionAnnualReportDTO>(actual); 
         }
@@ -520,8 +522,10 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             string id = null;
+            
             // Act
             var result = await _regionController.GetUserAdministrations(id);
+            
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
@@ -532,9 +536,11 @@ namespace EPlast.Tests.Controllers
             // Arrange
             string id = "Admin";
             _regionAdministrationService.Setup(x => x.GetUsersAdministrations(It.IsAny<string>())).ReturnsAsync(GetAdmins());
+            
             // Act
             var result = await _regionController.GetUserAdministrations(id);
             var actual = (result as ObjectResult).Value;
+            
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<IEnumerable<RegionAdministrationDTO>>(actual);
@@ -545,8 +551,10 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             string id = null;
+            
             // Act
             var result = await _regionController.GetUserPrevAdministrations(id);
+            
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
@@ -557,9 +565,11 @@ namespace EPlast.Tests.Controllers
             // Arrange
             string id = "Admin";
             _regionAdministrationService.Setup(x => x.GetUsersPreviousAdministrations(It.IsAny<string>())).ReturnsAsync(GetAdmins());
+            
             // Act
             var result = await _regionController.GetUserAdministrations(id);
             var actual = (result as ObjectResult).Value;
+            
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<IEnumerable<RegionAdministrationDTO>>(actual);
@@ -570,6 +580,7 @@ namespace EPlast.Tests.Controllers
         {
             // Act
             var result = await _regionController.RedirectCities(1, 2);
+            
             // Assert
             Assert.IsInstanceOf<OkResult>(result);
         }
@@ -579,8 +590,10 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             int id = 2;
+            
             // Act
             var result = await _regionController.Remove(id);
+            
             // Assert
             Assert.IsInstanceOf<OkResult>(result);
         }
@@ -758,6 +771,7 @@ namespace EPlast.Tests.Controllers
             int id = 0;
             // Act
             var result = await _regionController.Cancel(id);
+            
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(200, ((ObjectResult)result).StatusCode);
@@ -772,8 +786,10 @@ namespace EPlast.Tests.Controllers
             _logger.Setup(x => x.LogError(It.IsAny<string>()));
 
             int id = -1;
+            
             // Act
             var result = await _regionController.Cancel(id);
+            
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(404, ((ObjectResult)result).StatusCode);
@@ -799,6 +815,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
             var result = await _regionController.GetRegions(page, pageSize, regionName);
+            
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
