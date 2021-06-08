@@ -1,8 +1,7 @@
 ﻿using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.GoverningBody;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using EPlast.BLL.DTO.GoverningBody;
-using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Interfaces.GoverningBodies
 {
@@ -14,7 +13,7 @@ namespace EPlast.BLL.Interfaces.GoverningBodies
 
         Task<string> GetLogoBase64Async(string logoName);
 
-        Task<GoverningBodyProfileDTO> GetProfileAsync(int id, User user);
+        Task<GoverningBodyProfileDTO> GetGoverningBodyProfileAsync(int governingBodyId);
 
         Task<int> RemoveAsync(int governingBodyId);
 
