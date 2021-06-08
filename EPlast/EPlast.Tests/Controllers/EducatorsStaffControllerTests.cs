@@ -46,7 +46,6 @@ namespace EPlast.Tests.Controllers
             _educatorsStaffService.Setup(x => x.CreateKadra(dto)).ReturnsAsync(dto);
 
             // Act
-
             await _educatorsStaffController.CreateKadra(dto);
 
             // Assert
@@ -163,6 +162,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
             await _educatorsStaffController.Update(dto);
+            
             // Assert
             _educatorsStaffService.Verify(x => x.UpdateKadra(It.IsAny<EducatorsStaffDTO>()));
         }
@@ -213,6 +213,26 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expected, actual.StatusCode);
             Assert.NotNull(result);
             Assert.IsInstanceOf<IActionResult>(result);
+        }
+
+        [Test]
+        public async Task GetUsersKVs_Status404NotFound()
+        {
+            // Arange
+            string nullString = "1";
+
+            // Act
+            _educatorsStaffService.
+             Setup(x => x.GetKVsOfGivenUser(nullString)).
+             ReturnsAsync((List<EducatorsStaffDTO>)null);
+
+            var expected = StatusCodes.Status404NotFound;
+            var result = await _educatorsStaffController.GetUsersKVs(nullString);
+            var actual = result as StatusCodeResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(expected, actual.StatusCode);
         }
 
         [Test]
