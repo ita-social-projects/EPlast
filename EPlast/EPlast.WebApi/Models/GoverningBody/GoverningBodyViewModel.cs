@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using EPlast.BLL.DTO.GoverningBody;
 
-namespace EPlast.BLL.DTO
+namespace EPlast.WebApi.Models.GoverningBody
 {
-    public class GoverningBodyDTO
+    public class GoverningBodyViewModel
     {
         public int Id { get; set; }
         public string Description { get; set; }
@@ -12,7 +11,8 @@ namespace EPlast.BLL.DTO
         public string Logo { get; set; }
         public string PhoneNumber { get; set; }
         public int AdministrationCount { get; set; }
-        public IEnumerable<GoverningBodyDocumentsDTO> GoverningBodyDocuments { get; set; }
-        public IEnumerable<GoverningBodyAdministrationDTO> GoverningBodyAdministration { get; set; }
+        public GoverningBodyAdministrationViewModel Head { get; set; }
+        public IEnumerable<GoverningBodyAdministrationViewModel> Administration { get; set; }
+        public IEnumerable<GoverningBodyDocumentsViewModel> Documents { get; set; }
     }
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EPlast.Resources
+﻿namespace EPlast.Resources
 {
     public static class Roles
     {
@@ -24,7 +20,10 @@ namespace EPlast.Resources
         public const string RegisteredUser = "Зареєстрований користувач";
         public const string Interested = "Зацікавлений";
         public const string RegionBoardHead = "Голова Краю";
+        public const string GoverningBodyHead = "Голова Керівного Органу";
+        public const string GoverningBodySecretary = "Діловод Керівного Органу";
 
+        public const string AdminAndGoverningBodyHead = Admin + "," + GoverningBodyHead;
         public const string DegreeAssignRoles = Admin + "," + PlastHead + "," + EventAdministrator + "," + KurinHead + "," + KurinHeadDeputy + "," + KurinSecretary + "," +
             OkrugaHead + "," + OkrugaHeadDeputy + "," + OkrugaSecretary + "," + CityHead + "," + CityHeadDeputy + "," + CitySecretary;
         public const string HeadsAndHeadDeputiesAndAdminAndPlastun = Admin + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + "," 

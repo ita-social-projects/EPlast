@@ -118,6 +118,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IFileStreamManager, FileStreamManager>();
             services.AddScoped<IGlobalLoggerService, GlobalLoggerService>();
             services.AddScoped<IGoverningBodiesService, GoverningBodiesService>();
+            services.AddScoped<IGoverningBodyAdministrationService, GoverningBodyAdministrationService>();
             services.AddScoped<IRegionsBoardService, RegionsBoardService>();
             services.AddScoped<IGoverningBodyBlobStorageRepository, GoverningBodyBlobStorageRepository>();
             services.AddScoped<IHomeService, HomeService>();
