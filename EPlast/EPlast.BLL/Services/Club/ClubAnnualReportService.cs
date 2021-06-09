@@ -9,18 +9,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EPlast.Resources;
+using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.BLL.Services.Club
 {
     public class ClubAnnualReportService : IClubAnnualReportService
     {
+        private readonly UserManager<User> _userManager;
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IClubAccessService _clubAccessService;
         private readonly IMapper _mapper;
 
-        public ClubAnnualReportService(IRepositoryWrapper repositoryWrapper,
+        public ClubAnnualReportService(UserManager<User> userManager, IRepositoryWrapper repositoryWrapper,
                                     IClubAccessService clubAccessService, IMapper mapper)
         {
+            _userManager = userManager;
             _repositoryWrapper = repositoryWrapper;
             _clubAccessService = clubAccessService;
             _mapper = mapper;
@@ -42,7 +46,10 @@ namespace EPlast.BLL.Services.Club
                         .Include(ca => ca.Club)
                             .ThenInclude(cm => cm.ClubMembers)
                                 .ThenInclude(mc => mc.User));
-            return _mapper.Map<ClubAnnualReport, ClubAnnualReportDTO>(clubAnnualReport);
+            if (await _clubAccessService.HasAccessAsync(user, clubAnnualReport.ClubId) ||
+                (await _userManager.GetRolesAsync(user)).Any(x => Roles.AdminCityHeadOkrugaHead.Contains(x)))
+                return _mapper.Map<ClubAnnualReport, ClubAnnualReportDTO>(clubAnnualReport);
+            throw new UnauthorizedAccessException();
         }
 
         ///<inheritdoc/>

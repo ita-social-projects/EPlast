@@ -251,7 +251,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>RegionMembersInfoTableObject</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("MembersInfo/{regionId:int}/{year:int}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminCityHeadOkrugaHead)]
         public async Task<IActionResult> GetRegionMembersInfo(int regionId, int year, int page, int pageSize)
         {
             return Ok(await _RegionAnnualReportService.GetRegionMembersInfoAsync(regionId, year, page, pageSize));

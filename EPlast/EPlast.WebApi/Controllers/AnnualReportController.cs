@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Club;
-using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Models.Club;
 using Microsoft.AspNetCore.Identity;
@@ -25,7 +24,6 @@ namespace EPlast.WebApi.Controllers
     [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
     public class AnnualReportController : ControllerBase
     {
-        private readonly IUserService _userService;
         private readonly IAnnualReportService _annualReportService;
         private readonly ILoggerService<AnnualReportController> _loggerService;
         private readonly IStringLocalizer<AnnualReportControllerMessage> _localizer;
@@ -33,7 +31,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IClubAnnualReportService _clubAnnualReportService;
         private readonly IMapper _mapper;
 
-        public AnnualReportController(IUserService userService,
+        public AnnualReportController(
             IAnnualReportService annualReportService, 
             ILoggerService<AnnualReportController> loggerService,
             IStringLocalizer<AnnualReportControllerMessage> localizer, 
@@ -41,7 +39,6 @@ namespace EPlast.WebApi.Controllers
             IClubAnnualReportService clubAnnualReportService, 
             IMapper mapper)
         {
-            _userService = userService;
             _annualReportService = annualReportService;
             _loggerService = loggerService;
             _localizer = localizer;
@@ -70,6 +67,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpGet("{id:int}")]
+        [Authorize(Roles = Roles.AdminCityHeadOkrugaHead)]
         public async Task<IActionResult> Get(int id)
         {
             try
@@ -149,9 +147,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                var currentUserId = _userManager.GetUserId(User);
-                var currentUser = await _userService.GetUserAsync(currentUserId);
-                return StatusCode(StatusCodes.Status200OK, new { annualReport = await _annualReportService.GetEditFormByIdAsync(_mapper.Map<BLL.DTO.UserProfiles.UserDTO, User>(currentUser), id) });
+                return StatusCode(StatusCodes.Status200OK, new { annualReport = await _annualReportService.GetEditFormByIdAsync(await _userManager.GetUserAsync(User), id) });
             }
             catch (NullReferenceException)
             {
