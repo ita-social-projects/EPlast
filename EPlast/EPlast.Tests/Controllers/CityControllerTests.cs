@@ -16,6 +16,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EPlast.Resources;
 using Microsoft.Extensions.Caching.Distributed;
+using System.Text;
 
 namespace EPlast.Tests.Controllers
 {
@@ -376,6 +377,65 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [TestCase(1, 1, "City")]
+        public async Task GetCities_ReturnsOk(int page, int pageSize, string cityName)
+        {
+            // Arrange
+            CitiesController citycon = CreateCityController;
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            citycon.ControllerContext = context;
+            _cityService
+                .Setup(c => c.GetAllDTOAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetCitiesBySearch());
+            byte[] bytes = Encoding.ASCII.GetBytes("[]");
+            _cache.Setup(x => x.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(bytes);
+
+            // Act
+            var result = await citycon.GetCities(page, pageSize, cityName);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(((result as ObjectResult).Value as CitiesViewModel)
+                .Cities.Where(c => c.Name.Equals("City")));
+        }
+
+        [TestCase(1, 1, "City")]
+        public async Task GetCities_ReturnsNull(int page, int pageSize, string cityName)
+        {
+            // Arrange
+            CitiesController citycon = CreateCityController;
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            citycon.ControllerContext = context;
+            _cityService
+                .Setup(c => c.GetAllDTOAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetCitiesBySearch());
+            _cache.Setup(x => x.GetAsync(It.IsAny<string>(), default)).ReturnsAsync((byte[])null);
+
+            // Act
+            var result = await citycon.GetCities(page, pageSize, cityName);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(((result as ObjectResult).Value as CitiesViewModel)
+                .Cities.Where(c => c.Name.Equals("City")));
         }
 
         [Test]
@@ -777,7 +837,7 @@ namespace EPlast.Tests.Controllers
             {
                 new CityDTO()
                 {
-                    Name = "Львів",
+                    Name = "City",
                 }
             };
         }

@@ -19,6 +19,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.Resources;
 using Microsoft.Extensions.Caching.Distributed;
+using System.Text;
 
 namespace EPlast.Tests.Controllers
 {
@@ -62,7 +63,7 @@ namespace EPlast.Tests.Controllers
         
 
         [Test]
-        public async Task GetCities_Valid_Test()
+        public async Task GetClubs_Valid_Test()
         {
             // Arrange
             ClubController clubcon = CreateClubController;
@@ -72,6 +73,60 @@ namespace EPlast.Tests.Controllers
             var result = await clubcon.GetClubs();
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [TestCase(0,1,"Club")]
+        public async Task GetClubs_ReturnsOk(int page, int pageSize, string clubName)
+        {
+            //Arrange
+            ClubController clubcon = CreateClubController;
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            clubcon.ControllerContext = context;
+            _ClubService
+                .Setup(c => c.GetAllDTOAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetClubsBySearch());
+            byte[] bytes = Encoding.ASCII.GetBytes("[]");
+            _cache.Setup(x => x.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(bytes);
+            //Act
+            var result = await clubcon.GetClubs(page, pageSize, clubName);
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(((result as ObjectResult).Value as ClubsViewModel)
+                .Clubs.Where(c => c.Name.Equals("Club")));
+        }
+        [TestCase(0, 1, "Club")]
+        public async Task GetClubs_ReturnsNull(int page, int pageSize, string clubName)
+        {
+            //Arrange
+            ClubController clubcon = CreateClubController;
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            clubcon.ControllerContext = context;
+            _ClubService
+                .Setup(c => c.GetAllDTOAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetClubsBySearch());
+            _cache.Setup(x => x.GetAsync(It.IsAny<string>(), default)).ReturnsAsync((byte[])null);
+            //Act
+            var result = await clubcon.GetClubs(page, pageSize, clubName);
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(((result as ObjectResult).Value as ClubsViewModel)
+                .Clubs.Where(c => c.Name.Equals("Club")));
         }
 
         [TestCase(2)]
@@ -814,7 +869,7 @@ namespace EPlast.Tests.Controllers
             {
                 new ClubDTO()
                 {
-                    Name = "Курінь",
+                    Name = "Club",
                 }
             };
         }
