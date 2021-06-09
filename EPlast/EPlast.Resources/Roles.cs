@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EPlast.Resources
+﻿namespace EPlast.Resources
 {
     public static class Roles
     {
@@ -17,7 +13,7 @@ namespace EPlast.Resources
         public const string OkrugaSecretary = "Діловод Округи";
         public const string CityHead = "Голова Станиці";
         public const string CitySecretary = "Діловод Станиці";
-        public const string FormerPlastMember = "Колишній член пласту";
+        public const string FormerPlastMember = "Колишній член Пласту";
         public const string RegisteredUser = "Зареєстрований користувач";
         public const string Interested = "Зацікавлений";
         public const string RegionBoardHead = "Голова Краю";
@@ -30,7 +26,7 @@ namespace EPlast.Resources
         public const string HeadsAdminPlastunAndSupporter = Admin + "," + OkrugaHead + "," + CityHead + "," + KurinHead + "," + PlastMember + "," + Supporter;
         public const string HeadsAdminPlastunSupporterAndRegisteredUser = Admin + "," + OkrugaHead + "," + CityHead + "," + KurinHead + "," + PlastMember + "," +
             Supporter + "," + RegisteredUser;
-        public const string StatisticsAccessRoles = Admin + "," + PlastHead + "," + OkrugaHead + "," + CityHead + "," + KurinHead;
+        public const string StatisticsAccessRoles = Admin + "," + PlastHead + "," + OkrugaHead + "," + CityHead;
         public const string AdminPlastMemberAndSupporter = Admin + "," + PlastMember + "," + Supporter;
         public const string AdminAndKurinHead = Admin + "," + KurinHead;
         public const string AdminCityHeadOkrugaHead = Admin + "," + CityHead + "," + OkrugaHead;
