@@ -85,7 +85,7 @@ namespace EPlast.WebApi.StartupExtensions
                 Roles.Interested,
                 Roles.CityHeadDeputy,
                 Roles.OkrugaHeadDeputy,
-                Roles.KurinHeadDeputy
+                Roles.KurinHeadDeputy,
                 Roles.GoverningBodyHead,
                 Roles.GoverningBodySecretary
             };
