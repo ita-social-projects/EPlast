@@ -39,7 +39,8 @@ Before sending any pull request, please discuss requirements/changes to be imple
 
 4.5 Create local database from EPlast.DataAccess migrations.
 
-(Open Package Manager Console, change default project to "EPlast.DataAccess" and write "Update-Database")
+(Open Package Manager Console, change default project to "EPlast.DataAccess"(make sure that Solution Explorer default project EPlast.WebApi) and write "Update-Database"),
+then make sure that the required data is written to the table [AspNetRoles],if no data are repeated again write "Update-Database" 
 
 # 5. How to run the project with docker-compose locally.
 

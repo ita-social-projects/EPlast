@@ -14,6 +14,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.Admin;
+using EPlast.BLL.DTO.GoverningBody;
+using EPlast.Resources;
 
 namespace EPlast.Tests.Services
 {
@@ -130,16 +133,16 @@ namespace EPlast.Tests.Services
             //Arrange
             var testDTO = CreateGoverningBodyDTO;
             _mapper
-                .Setup(x => x.Map<GoverningBodyDTO>(It.IsAny<Organization>())).Returns(testDTO);
+                .Setup(x => x.Map<Organization, GoverningBodyDTO>(It.IsAny<Organization>())).Returns(testDTO);
             _mapper
-                .Setup(x => x.Map<Organization>(It.IsAny<GoverningBodyDTO>())).Returns(new Organization() { ID = testDTO.Id, Logo = testDTO.Logo });
+                .Setup(x => x.Map<GoverningBodyDTO, Organization>(It.IsAny<GoverningBodyDTO>())).Returns(new Organization() { ID = testDTO.Id, Logo = testDTO.Logo });
             _repoWrapper
                 .Setup(x => x.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
                     It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>()))
                 .ReturnsAsync(_mapper.Object.Map<Organization>(testDTO));
 
             //Act
-            var result = await _service.GetProfileAsync(id, It.IsAny<User>());
+            var result = await _service.GetGoverningBodyProfileAsync(id);
 
             //Assert
             Assert.NotNull(result);
@@ -214,7 +217,24 @@ namespace EPlast.Tests.Services
             Description = "gbDesc",
             Email = "gbEmail",
             Logo = "daa1-4d27-b94d-/9ab2d890d9d0.jpeg,63cc77aa,",
-            PhoneNumber = "12345"
+            PhoneNumber = "12345",
+            GoverningBodyAdministration = new List<GoverningBodyAdministrationDTO>
+            {
+                new GoverningBodyAdministrationDTO
+                {
+                    AdminType = new AdminTypeDTO
+                    {
+                        AdminTypeName = Roles.GoverningBodyHead
+                    }
+                },
+                new GoverningBodyAdministrationDTO
+                {
+                    AdminType = new AdminTypeDTO
+                    {
+                        AdminTypeName = Roles.GoverningBodySecretary
+                    }
+                }
+            }
         };
 
         private Organization CreateOrganizationWithoutLogo => new Organization()

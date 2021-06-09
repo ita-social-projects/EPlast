@@ -6,7 +6,11 @@ using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.GoverningBodies
@@ -100,19 +104,47 @@ namespace EPlast.BLL.Services.GoverningBodies
             return await _governingBodyBlobStorage.GetBlobBase64Async(logoName);
         }
 
-        public async Task<GoverningBodyProfileDTO> GetProfileAsync(int id, User user)
+        public async Task<GoverningBodyProfileDTO> GetGoverningBodyProfileAsync(int governingBodyId)
         {
-            GoverningBodyProfileDTO gbProfile = new GoverningBodyProfileDTO
+            var governingBody = await GetGoverningBodyByIdAsync(governingBodyId);
+            if (governingBody == null)
             {
-                GoverningBody = await GetProfileByIdAsync(id),
+                return null;
+            }
+
+            var governingBodyHead = governingBody.GoverningBodyAdministration?
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.GoverningBodyHead
+                                     && (DateTime.Now < a.EndDate || a.EndDate == null));
+            var governingBodyAdmins = governingBody.GoverningBodyAdministration?
+                .Where(a => a.AdminType.AdminTypeName != Roles.GoverningBodyHead
+                            && (DateTime.Now < a.EndDate || a.EndDate == null))
+                .Take(6)
+                .ToList();
+            governingBody.AdministrationCount = governingBody.GoverningBodyAdministration
+                .Count(a => (DateTime.Now < a.EndDate || a.EndDate == null));
+            var governingBodyDoc = governingBody.GoverningBodyDocuments?.Take(6).ToList();
+
+            var governingBodyProfileDto = new GoverningBodyProfileDTO
+            {
+                GoverningBody = governingBody,
+                Head = governingBodyHead,
+                GoverningBodyAdministration = governingBodyAdmins,
+                Documents = governingBodyDoc,
             };
 
-            return gbProfile;
+            return governingBodyProfileDto;
         }
 
-        public async Task<GoverningBodyDTO> GetProfileByIdAsync(int id)
+        public async Task<GoverningBodyDTO> GetGoverningBodyByIdAsync(int id)
         {
-            return _mapper.Map<GoverningBodyDTO>(await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(gb => gb.ID == id));
+            var governingBody = await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(
+                gb => gb.ID == id,
+                source => source
+                    .Include(g => g.GoverningBodyAdministration)
+                        .ThenInclude(a => a.AdminType)
+                    .Include(g => g.GoverningBodyAdministration)
+                        .ThenInclude(a => a.User));
+            return _mapper.Map<Organization, GoverningBodyDTO>(governingBody);
         }
 
         public async Task<int> RemoveAsync(int governingBodyId)

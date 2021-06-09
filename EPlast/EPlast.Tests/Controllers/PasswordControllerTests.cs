@@ -129,6 +129,41 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
         }
 
+
+        [Test]
+        public async Task ChangePassword_BadRequest_refreshResult()
+        {
+            //Arrange
+            var (_,
+                mockAuthService,
+                mockResources,
+                _,
+                passwordController) = CreatePasswordController();
+            ChangePasswordDto changePasswordDto = new ChangePasswordDto();
+            mockAuthService
+                .Setup(s => s.GetUser(It.IsAny<User>()))
+                .Returns(new UserDTO());
+            mockAuthService
+                .Setup(s => s.ChangePasswordAsync(It.IsAny<string>(), It.IsAny<ChangePasswordDto>()))
+                .ReturnsAsync(IdentityResult.Success);
+            mockAuthService
+                .Setup(s => s.RefreshSignInAsync(It.IsAny<UserDTO>()));
+            mockResources
+                .Setup(s => s.ResourceForErrors[It.IsAny<string>()]);
+            mockAuthService
+                .Setup(x => x.RefreshSignInAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(false);
+
+            //Act
+            var result = await passwordController.ChangePassword(changePasswordDto);
+          
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<BadRequestResult>(result);
+            Assert.AreEqual(400,((BadRequestResult)result).StatusCode);
+        }
+
         public (
             Mock<IAuthEmailService>,
             Mock<IAuthService>,
