@@ -10,11 +10,8 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.Regions
@@ -76,8 +73,8 @@ namespace EPlast.Tests.Services.Regions
         public async Task GetRegionsNameThatUserHasAccessTo_Succeeded()
         {
             // Arrange
-            _mockRegionAccessService.Setup(x => x.GetRegionsAsync(It.IsAny<User>()))
-                .ReturnsAsync(new List<RegionDTO>(){new RegionDTO(){ID = 1, RegionName = "RegionName"}});
+            _mockRegionAccessService.Setup(x => x.GetAllRegionsIdAndName(It.IsAny<User>()))
+                .ReturnsAsync(new List<RegionForAdministrationDTO>(){new RegionForAdministrationDTO(){ID = 1, RegionName = "RegionName"}});
 
             // Act
             var result = await service.GetAllRegionsIdAndName(new User());
@@ -88,29 +85,13 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
-        public async Task GetRegionMembersInfo_MemBersListCount2()
+        public async Task GetRegionMembersInfo_ReturnsExpexted()
         {
             //Arrange
-            _mockRepositoryWrapper.Setup(x => x.City.GetAllAsync(
-                It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
-                It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
-                    IIncludableQueryable<DataAccess.Entities.City, object>>>())).ReturnsAsync(
-                new List<DataAccess.Entities.City>()
-                {
-                    new DataAccess.Entities.City()
-                    {
-                        ID = 1,
-                        Name = "CityName"
-                    }
-                });
-            _mockRepositoryWrapper.Setup(x => x.AnnualReports.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<DataAccess.Entities.AnnualReport, bool>>>(),
-                    It.IsAny<Func<IQueryable<DataAccess.Entities.AnnualReport>,
-                        IIncludableQueryable<DataAccess.Entities.AnnualReport, object>>>()))
-                .ReturnsAsync(_fakeAnnualReportConfirmed());
+            var expected = new List<RegionMembersInfoTableObject>() {_fakeMembersInfoTableObject(),};
             _mockRepositoryWrapper
-                .Setup(x => x.MembersStatistics.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<MembersStatistic, bool>>>(), null)).ReturnsAsync(_fakeMembersStatistic());
+                .Setup(x => x.RegionAnnualReports.GetRegionMembersInfoAsync(It.IsAny<int>(), It.IsAny<int>(), false,
+                    It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(expected);
 
             //Act
             var result = await service.GetRegionMembersInfoAsync(1, 1, 1, 1);
@@ -118,102 +99,9 @@ namespace EPlast.Tests.Services.Regions
             //Assert
             Assert.IsNotNull(result);
             Assert.IsNotEmpty(result.ToList());
-            Assert.True(result.ToList().Count==2);
+            Assert.AreEqual(expected, result);
         }
 
-        [Test]
-        public async Task GetRegionMembersInfo_MemBersListCount1()
-        {
-            //Arrange
-            _mockRepositoryWrapper.Setup(x => x.City.GetAllAsync(
-                It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
-                It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
-                    IIncludableQueryable<DataAccess.Entities.City, object>>>())).ReturnsAsync(
-                new List<DataAccess.Entities.City>()
-                {
-                    new DataAccess.Entities.City()
-                    {
-                        ID = 1,
-                        Name = "CityName"
-                    }
-                });
-            _mockRepositoryWrapper.Setup(x => x.AnnualReports.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<DataAccess.Entities.AnnualReport, bool>>>(),
-                    It.IsAny<Func<IQueryable<DataAccess.Entities.AnnualReport>,
-                        IIncludableQueryable<DataAccess.Entities.AnnualReport, object>>>()))
-                .ReturnsAsync(_fakeAnnualReportUnconfirmed());
-            _mockRepositoryWrapper
-                .Setup(x => x.MembersStatistics.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<MembersStatistic, bool>>>(), null)).ReturnsAsync(_fakeMembersStatistic());
-
-            //Act
-            var result = await service.GetRegionMembersInfoAsync(1, 1, 1, 1);
-
-            //Assert
-            Assert.IsNotNull(result);
-            Assert.IsNotEmpty(result.ToList());
-            Assert.True(result.ToList().Count == 1);
-        }
-
-        [Test]
-        public async Task GetRegionMembersInfo_CityReportNull()
-        {
-            //Arrange
-            _mockRepositoryWrapper.Setup(x => x.City.GetAllAsync(
-                It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
-                It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
-                    IIncludableQueryable<DataAccess.Entities.City, object>>>())).ReturnsAsync(
-                new List<DataAccess.Entities.City>()
-                {
-                    new DataAccess.Entities.City()
-                    {
-                        ID = 1,
-                        Name = "CityName"
-                    }
-                });
-            _mockRepositoryWrapper.Setup(x => x.AnnualReports.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<DataAccess.Entities.AnnualReport, bool>>>(),
-                    It.IsAny<Func<IQueryable<DataAccess.Entities.AnnualReport>,
-                        IIncludableQueryable<DataAccess.Entities.AnnualReport, object>>>()))
-                .ReturnsAsync(null as AnnualReport);
-            _mockRepositoryWrapper
-                .Setup(x => x.MembersStatistics.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<MembersStatistic, bool>>>(), null)).ReturnsAsync(_fakeMembersStatistic());
-
-            //Act
-            var result = await service.GetRegionMembersInfoAsync(1, 1, 1, 1);
-
-            //Assert
-            Assert.IsNotNull(result);
-            Assert.IsNotEmpty(result.ToList());
-            Assert.True(result.ToList().Count == 1);
-            _mockRepositoryWrapper.Verify(x => x.AnnualReports.GetFirstOrDefaultAsync(
-                It.IsAny<Expression<Func<DataAccess.Entities.AnnualReport, bool>>>(),
-                It.IsAny<Func<IQueryable<DataAccess.Entities.AnnualReport>,
-                    IIncludableQueryable<DataAccess.Entities.AnnualReport, object>>>()));
-        }
-
-        [Test]
-        public async Task GetRegionMembersInfo_CityEmpty()
-        {
-            //Arrange
-            _mockRepositoryWrapper.Setup(x => x.City.GetAllAsync(
-                It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
-                It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
-                    IIncludableQueryable<DataAccess.Entities.City, object>>>())).ReturnsAsync(new List<DataAccess.Entities.City>());
-
-            //Act
-            var result = await service.GetRegionMembersInfoAsync(1, 1, 1, 1);
-
-            //Assert
-            Assert.IsNotNull(result);
-            Assert.IsEmpty(result.ToList());
-            _mockRepositoryWrapper.Verify(x => x.City.GetAllAsync(
-                It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
-                It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
-                    IIncludableQueryable<DataAccess.Entities.City, object>>>()));
-        }
-        
 
         [Test]
         public async Task CancelAsync()
