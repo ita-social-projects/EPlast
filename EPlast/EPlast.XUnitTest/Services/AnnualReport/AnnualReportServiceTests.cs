@@ -244,7 +244,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
                 .ReturnsAsync((DatabaseEntities.AnnualReport)null);
 
             // Act
-            await Assert.ThrowsAsync<NullReferenceException>(() => _annualReportService.DeleteAsync(It.IsAny<User>(), It.IsAny<int>()));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _annualReportService.DeleteAsync(It.IsAny<User>(), It.IsAny<int>()));
 
             // Assert
             _repositoryWrapper.Verify(r => r.AnnualReports.Delete(It.IsAny<DatabaseEntities.AnnualReport>()), Times.Never);
@@ -463,6 +463,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
                     It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
                 .ReturnsAsync(new DatabaseEntities.AnnualReport());
             _cityAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(true);
+            _mapper.Setup(x => x.Map<DatabaseEntities.AnnualReport, AnnualReportDTO>(It.IsAny<DatabaseEntities.AnnualReport>())).Returns(new AnnualReportDTO());
 
             //Act
             await _annualReportService.GetEditFormByIdAsync(new User(), 1);

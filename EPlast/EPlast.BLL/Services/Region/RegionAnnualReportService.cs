@@ -176,9 +176,9 @@ namespace EPlast.BLL.Services.Region
 
         public async Task CreateAsync(User claimsPrincipal, RegionAnnualReportDTO regionAnnualReportDTO)
         {
-            var region = await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(
-                predicate: a => a.RegionId == regionAnnualReportDTO.RegionId && a.Date.Year == regionAnnualReportDTO.Date.Year);
-            if (await CheckCreatedAsync(region.ID, region.Date.Year))
+            var region = await _repositoryWrapper.Region.GetFirstOrDefaultAsync(
+                predicate: a => a.ID == regionAnnualReportDTO.RegionId);
+            if (await CheckCreatedAsync(region.ID, regionAnnualReportDTO.Date.Year))
             {
                 throw new InvalidOperationException("Report is already crated!");
             }
@@ -205,7 +205,7 @@ namespace EPlast.BLL.Services.Region
 
         public async Task<IEnumerable<RegionAnnualReportDTO>> GetAllRegionsReportsAsync()
         {
-            return _mapper.Map<IEnumerable<RegionAnnualReport>, IEnumerable<RegionAnnualReportDTO>>(await _repositoryWrapper.RegionAnnualReports.FindAll().ToListAsync());
+            return _mapper.Map<IEnumerable<RegionAnnualReport>, IEnumerable<RegionAnnualReportDTO>>(await Task.FromResult(_repositoryWrapper.RegionAnnualReports.FindAll().ToList()));
         }
 
         public async Task<IEnumerable<RegionAnnualReportTableObject>> GetAllRegionsReportsAsync(User user, bool isAdmin, string searchedData, int page, int pageSize, int sortKey, bool auth)
