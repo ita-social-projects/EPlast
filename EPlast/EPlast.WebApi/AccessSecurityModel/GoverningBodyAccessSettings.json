@@ -13,7 +13,7 @@
     "ManipulatePoster": true,
     "ManipulateDocument": true
   },
-  "Голова Краю": {
+  "Голова Керівного Органу": {
     "ViewInfo": true,
     "AddDecision": true,
     "EditGB": false,
@@ -33,7 +33,7 @@
     "EditGB": false,
     "DeleteGB": false,
     "CreateDirection": false,
-    "AddGBSecretary": false,
+    "AddGBSecretary": true,
     "GoToSecretaryProfile": true,
     "EditRBMembers": false,
     "DeleteGBMembers": false,

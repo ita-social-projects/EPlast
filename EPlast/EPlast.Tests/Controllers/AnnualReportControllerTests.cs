@@ -721,6 +721,24 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task Create_BadRequest()
+        {
+            AnnualReportController annualController = CreateAnnualReportController;
+            annualController.ModelState.AddModelError("EroreaNnualReport", "Required");
+            // Act
+            AnnualReportDTO rdto = new AnnualReportDTO();
+            var result = await annualController.Create(rdto);
+            var expected = StatusCodes.Status400BadRequest;
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.AreEqual(expected, actual);
+        }
+
+
+        [Test]
         public async Task CreateClubAnnualReport_Invalid_InvalidModelState_Test()
         {
             // Arrange
@@ -1004,7 +1022,6 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             Assert.NotNull(result);
-
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
 
