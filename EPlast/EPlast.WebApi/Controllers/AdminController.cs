@@ -15,7 +15,7 @@ namespace EPlast.WebApi.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [Authorize(Roles = Roles.HeadsAdminAndPlastun)]
+    [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
     public class AdminController : ControllerBase
     {
         private readonly IAdminService _adminService;

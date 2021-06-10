@@ -450,6 +450,22 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task GetRegionHeadDeputy_Int_ReturnsOkObjResult()
+        {
+            // Arrange
+            int id = 2;
+            var headDeputy = new RegionAdministrationDTO() { ID = 2 };
+            _regionAdministrationService.Setup(x => x.GetHeadDeputy(id)).ReturnsAsync(headDeputy);
+            // Act
+            var result = await _regionController.GetRegionHeadDeputy(id);
+            var actual = ((result as ObjectResult).Value as RegionAdministrationDTO).ID;
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsInstanceOf<RegionAdministrationDTO>((result as ObjectResult).Value);
+            Assert.AreEqual(2, actual);
+        }
+
+        [Test]
         public async Task GetRegions_ReturnsRegions()
         {
             // Arrange

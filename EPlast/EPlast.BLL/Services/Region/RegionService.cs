@@ -99,7 +99,7 @@ namespace EPlast.BLL.Services.Region
             var cities = await _cityService.GetCitiesByRegionAsync(regionId);
             regionProfile.Cities = cities;
             regionProfile.City = region.City;
-            regionProfile.CanEdit = userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.OkrugaHead);
+            regionProfile.CanEdit = userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.OkrugaHead) || userRoles.Contains(Roles.OkrugaHeadDeputy);
 
             return regionProfile;
         }
@@ -129,7 +129,7 @@ namespace EPlast.BLL.Services.Region
         {
             var regionProfile = _mapper.Map<DataAccessRegion.Region, RegionProfileDTO>(await _repoWrapper.Region.GetFirstAsync(d => d.RegionName == Name));
             var userRoles = await _userManager.GetRolesAsync(user);
-            regionProfile.CanEdit = userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.OkrugaHead);
+            regionProfile.CanEdit = userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.OkrugaHead) || userRoles.Contains(Roles.OkrugaHeadDeputy);
             return regionProfile;
         }
 

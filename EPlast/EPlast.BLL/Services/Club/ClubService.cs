@@ -94,11 +94,16 @@ namespace EPlast.BLL.Services.Club
             var ClubHead = Club.ClubAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
+            var ClubHeadDeputy = Club.ClubAdministration?
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHeadDeputy
+                    && (DateTime.Now < a.EndDate || a.EndDate == null));
             var ClubAdmins = Club.ClubAdministration
                 .Where(a => a.AdminType.AdminTypeName != Roles.KurinHead
+                    && a.AdminType.AdminTypeName != Roles.KurinHeadDeputy
                     && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .ToList();
-            Club.AdministrationCount = ClubHead == null ? ClubAdmins.Count : ClubAdmins.Count + 1; 
+            Club.AdministrationCount = ClubHead == null ? ClubAdmins.Count : ClubAdmins.Count + 1;
+            Club.AdministrationCount = ClubHeadDeputy == null ? Club.AdministrationCount : Club.AdministrationCount + 1;
             var members = Club.ClubMembers
                 .Where(m => m.IsApproved)
                 .ToList();
@@ -113,7 +118,8 @@ namespace EPlast.BLL.Services.Club
             var ClubProfileDto = new ClubProfileDTO
             {
                 Club = Club,
-                Head = (await setMembersCityName(new List<ClubAdministrationDTO>(){ClubHead!})).FirstOrDefault() as ClubAdministrationDTO,
+                Head = (await setMembersCityName(new List<ClubAdministrationDTO>() { ClubHead! })).FirstOrDefault() as ClubAdministrationDTO,
+                HeadDeputy = (await setMembersCityName(new List<ClubAdministrationDTO>() { ClubHeadDeputy! })).FirstOrDefault() as ClubAdministrationDTO,
                 Members = await setMembersCityName(members) as List<ClubMembersDTO>,
                 Followers = await setMembersCityName(followers) as List<ClubMembersDTO>,
                 Admins = await setMembersCityName(ClubAdmins) as List<ClubAdministrationDTO>,
@@ -248,15 +254,20 @@ namespace EPlast.BLL.Services.Club
             var ClubHead = Club.ClubAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHead
                     && (DateTime.Now < a.EndDate || a.EndDate == null));
+            var ClubHeadDeputy = Club.ClubAdministration?
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHeadDeputy
+                    && (DateTime.Now < a.EndDate || a.EndDate == null));
 
             var ClubProfileDto = new ClubProfileDTO
             {
                 Club = Club,
                 Admins = await setMembersCityName(Club.ClubAdministration
                         .Where(a => a.AdminType.AdminTypeName != Roles.KurinHead
-                                    && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList()) as
+                            && a.AdminType.AdminTypeName != Roles.KurinHeadDeputy
+                            && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList()) as
                     List<ClubAdministrationDTO>,
-                Head = (await setMembersCityName(new List<ClubAdministrationDTO>() { ClubHead })).FirstOrDefault() as ClubAdministrationDTO
+                Head = (await setMembersCityName(new List<ClubAdministrationDTO>() { ClubHead })).FirstOrDefault() as ClubAdministrationDTO,
+                HeadDeputy = (await setMembersCityName(new List<ClubAdministrationDTO>() { ClubHeadDeputy })).FirstOrDefault() as ClubAdministrationDTO
             };
 
             return ClubProfileDto;

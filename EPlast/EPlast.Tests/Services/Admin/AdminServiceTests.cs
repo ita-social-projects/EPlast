@@ -502,10 +502,48 @@ namespace EPlast.Tests.Services
         }
 
         [Test]
-        public async Task GetCityRegionAdminsOfUserAsync_ReturnsCorrect()
+        public async Task GetCityRegionAdminsOfUserAsync_RoleOkrugaHead_ReturnsCorrect()
         {
             // Arrange
             AdminType adminType = new AdminType() { AdminTypeName = Roles.OkrugaHead };
+            RegionAdministration regionAdministration = new RegionAdministration() { AdminType = adminType };
+            ICollection<RegionAdministration> regionAdministrations = new List<RegionAdministration>() { regionAdministration };
+            Region region = new Region { RegionAdministration = regionAdministrations };
+            DataAccess.Entities.City city = new DataAccess.Entities.City() { ID = 1, Region = region };
+            List<DataAccess.Entities.City> cities = new List<DataAccess.Entities.City> { city };
+
+            List<RegionAdministrationDTO> regionAdministrationDTOs = new List<RegionAdministrationDTO>();
+            RegionDTO regionDTO = new RegionDTO() { Administration = regionAdministrationDTOs };
+            CityDTO cityDTO = new CityDTO() { ID = 1, Region = regionDTO };
+            List<CityDTO> cityDTOs = new List<CityDTO>() { cityDTO };
+
+            _repoWrapper
+                .Setup(x => x.City.GetAllAsync
+                (
+                    It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
+                    IIncludableQueryable<DataAccess.Entities.City, object>>>())
+                )
+                .ReturnsAsync(cities);
+            _mapper
+                .Setup(x => x.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDTO>>(It.IsAny<List<DataAccess.Entities.City>>()))
+                .Returns(cityDTOs);
+            _mapper
+                .Setup(x => x.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(It.IsAny<IEnumerable<RegionAdministration>>()))
+                .Returns(new List<RegionAdministrationDTO>());
+
+            // Act
+            var result = await service.GetCityRegionAdminsOfUserAsync("string");
+
+            // Assert
+            Assert.IsInstanceOf<IEnumerable<CityDTO>>(result);
+        }
+
+        [Test]
+        public async Task GetCityRegionAdminsOfUserAsync_RoleOkrugaHeadDeputy_ReturnsCorrect()
+        {
+            // Arrange
+            AdminType adminType = new AdminType() { AdminTypeName = Roles.OkrugaHeadDeputy };
             RegionAdministration regionAdministration = new RegionAdministration() { AdminType = adminType };
             ICollection<RegionAdministration> regionAdministrations = new List<RegionAdministration>() { regionAdministration };
             Region region = new Region { RegionAdministration = regionAdministrations };
