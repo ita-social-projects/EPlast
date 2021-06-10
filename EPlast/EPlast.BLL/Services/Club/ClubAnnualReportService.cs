@@ -47,7 +47,7 @@ namespace EPlast.BLL.Services.Club
                             .ThenInclude(cm => cm.ClubMembers)
                                 .ThenInclude(mc => mc.User));
             if (await _clubAccessService.HasAccessAsync(user, clubAnnualReport.ClubId) ||
-                (await _userManager.GetRolesAsync(user)).Any(x => Roles.AdminCityHeadOkrugaHead.Contains(x)))
+                (await _userManager.GetRolesAsync(user)).Any(x => Roles.AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy.Contains(x)))
                 return _mapper.Map<ClubAnnualReport, ClubAnnualReportDTO>(clubAnnualReport);
             throw new UnauthorizedAccessException();
         }
