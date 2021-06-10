@@ -50,6 +50,9 @@ namespace EPlast.BLL.Services.City.CityAccess
             if (roles.Contains(Roles.CityHead))
                 return _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityForAdministrationDTO>>(
                     await _cityAccessGetters[Roles.CityHead].GetCities(user.Id));
+            if (roles.Contains(Roles.CityHeadDeputy))
+                return _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityForAdministrationDTO>>(
+                    await _cityAccessGetters[Roles.CityHeadDeputy].GetCities(user.Id));
             return Enumerable.Empty<CityForAdministrationDTO>();
         }
 
@@ -64,7 +67,7 @@ namespace EPlast.BLL.Services.City.CityAccess
             var roles = await _userManager.GetRolesAsync(user);
             foreach (var role in roles)
             {
-                if (Roles.HeadsAndAdmin.Contains(role))
+                if (Roles.HeadsAndHeadDeputiesAndAdmin.Contains(role))
                     return true;
             }
             return false;

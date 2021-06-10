@@ -128,8 +128,11 @@ namespace EPlast.WebApi.Controllers
             var isThisUser = currentUserId == focusUserId;
             var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
             var isUserHeadOfCity = await _userManagerService.IsInRoleAsync(currentUser, Roles.CityHead);
+            var isUserHeadDeputyOfCity = await _userManagerService.IsInRoleAsync(currentUser, Roles.CityHeadDeputy);
             var isUserHeadOfClub = await _userManagerService.IsInRoleAsync(currentUser, Roles.KurinHead);
+            var isUserHeadDeputyOfClub = await _userManagerService.IsInRoleAsync(currentUser, Roles.KurinHeadDeputy);
             var isUserHeadOfRegion = await _userManagerService.IsInRoleAsync(currentUser, Roles.OkrugaHead);
+            var isUserHeadDeputyOfRegion = await _userManagerService.IsInRoleAsync(currentUser, Roles.OkrugaHeadDeputy);
             var isCurrentUserPlastun = await _userManagerService.IsInRoleAsync(currentUser, Roles.PlastMember);
             var isFocusUserSupporter = await _userManagerService.IsInRoleAsync(focusUser, Roles.Supporter);
             var isFocusUserPlastun = await _userManagerService.IsInRoleAsync(focusUser, Roles.PlastMember)
@@ -145,8 +148,11 @@ namespace EPlast.WebApi.Controllers
             if (isThisUser ||
                      isUserAdmin ||
                      (isUserHeadOfCity && _userService.IsUserSameCity(currentUser, focusUser)) ||
+                     (isUserHeadDeputyOfCity && _userService.IsUserSameCity(currentUser, focusUser)) ||
                      (isUserHeadOfClub && _userService.IsUserSameClub(currentUser, focusUser)) ||
+                     (isUserHeadDeputyOfClub && _userService.IsUserSameClub(currentUser, focusUser)) ||
                      (isUserHeadOfRegion && _userService.IsUserSameRegion(currentUser, focusUser)) ||
+                     (isUserHeadDeputyOfRegion && _userService.IsUserSameRegion(currentUser, focusUser)) ||
                      (isCurrentUserPlastun && _userService.IsUserSameCity(currentUser, focusUser)))
             {
                 model = new PersonalDataViewModel
@@ -302,8 +308,11 @@ namespace EPlast.WebApi.Controllers
                 ClubApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(clubApprover),
                 CityApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(cityApprover),
                 IsUserHeadOfCity = await _userManagerService.IsInRoleAsync(_mapper.Map<User,UserDTO>(await _userManager.GetUserAsync(User)), Roles.CityHead),
+                IsUserHeadDeputyOfCity = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.CityHeadDeputy),
                 IsUserHeadOfClub = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.KurinHead),
+                IsUserHeadDeputyOfClub = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.KurinHeadDeputy),
                 IsUserHeadOfRegion = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.OkrugaHead),
+                IsUserHeadDeputyOfRegion = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.OkrugaHeadDeputy),
                 IsUserPlastun = await _userManagerService.IsInRoleAsync(user, Roles.PlastMember)
                     || user.UserProfile.UpuDegreeID != 1
                     || !(await _userManagerService.IsInRoleAsync(user, Roles.Supporter)
@@ -334,7 +343,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">User not found</response>
         [HttpPost("approveUser/{userId}/{isClubAdmin}/{isCityAdmin}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAdminAndPlastun)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
         public async Task<IActionResult> ApproveUser(string userId, bool isClubAdmin = false, bool isCityAdmin = false)
         {
             if (userId != null)
@@ -353,7 +362,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">Confirmed id is 0</response>
         [HttpDelete("deleteApprove/{confirmedId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAdminAndPlastun)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
         public async Task<IActionResult> ApproverDelete(int confirmedId)
         {
             if (confirmedId != 0)

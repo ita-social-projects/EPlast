@@ -61,11 +61,22 @@ namespace EPlast.BLL.Services.Club
             };
 
             var user = await _userManager.FindByIdAsync(adminDTO.UserId);
-            var role = adminType.AdminTypeName == Roles.KurinHead ? Roles.KurinHead : Roles.KurinSecretary;
+            string role;
+            switch (adminType.AdminTypeName)
+            {
+                case Roles.KurinHead:
+                    role = Roles.KurinHead;
+                    break;
+                case Roles.KurinHeadDeputy:
+                    role = Roles.KurinHeadDeputy;
+                    break;
+                default:
+                    role = Roles.KurinSecretary;
+                    break;
+            }
             try
             {
-
-            await _userManager.AddToRoleAsync(user, role);
+                await _userManager.AddToRoleAsync(user, role);
             }
             catch (Exception e)
             {
@@ -114,7 +125,19 @@ namespace EPlast.BLL.Services.Club
 
             var adminType = await _adminTypeService.GetAdminTypeByIdAsync(admin.AdminTypeId);
             var user = await _userManager.FindByIdAsync(admin.UserId);
-            var role = adminType.AdminTypeName == Roles.KurinHead ? Roles.KurinHead : Roles.KurinSecretary;
+            string role;
+            switch (adminType.AdminTypeName)
+            {
+                case Roles.KurinHead:
+                    role = Roles.KurinHead;
+                    break;
+                case Roles.KurinHeadDeputy:
+                    role = Roles.KurinHeadDeputy;
+                    break;
+                default:
+                    role = Roles.KurinSecretary;
+                    break;
+            }
             await _userManager.RemoveFromRoleAsync(user, role);
 
             _repositoryWrapper.ClubAdministration.Update(admin);

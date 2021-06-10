@@ -8,10 +8,13 @@
         public const string PlastHead = "Голова Пласту";
         public const string EventAdministrator = "Адміністратор подій";
         public const string KurinHead = "Голова Куреня";
+        public const string KurinHeadDeputy = "Заступник Голови Куреня";
         public const string KurinSecretary = "Діловод Куреня";
         public const string OkrugaHead = "Голова Округи";
+        public const string OkrugaHeadDeputy = "Заступник Голови Округи";
         public const string OkrugaSecretary = "Діловод Округи";
         public const string CityHead = "Голова Станиці";
+        public const string CityHeadDeputy = "Заступник Голови Станиці";
         public const string CitySecretary = "Діловод Станиці";
         public const string FormerPlastMember = "Колишній член пласту";
         public const string RegisteredUser = "Зареєстрований користувач";
@@ -21,22 +24,25 @@
         public const string GoverningBodySecretary = "Діловод Керівного Органу";
 
         public const string AdminAndGoverningBodyHead = Admin + "," + GoverningBodyHead;
-
-
-        public const string DegreeAssignRoles = Admin + "," + PlastHead + "," + EventAdministrator + "," + KurinHead + "," + KurinSecretary + "," +
-            OkrugaHead + "," + OkrugaSecretary + "," + CityHead + "," + CitySecretary;
-
-        public const string HeadsAdminAndPlastun = Admin + "," + OkrugaHead + "," + CityHead + "," + KurinHead + "," + PlastMember;
-        public const string HeadsAndAdmin = Admin + "," + OkrugaHead + "," + CityHead + "," + KurinHead;
-        public const string AdminAndOkrugaHead = Admin + "," + OkrugaHead;
-        public const string HeadsAdminPlastunAndSupporter = Admin + "," + OkrugaHead + "," + CityHead + "," + KurinHead + "," + PlastMember + "," + Supporter;
-
-        public const string HeadsAdminPlastunSupporterAndRegisteredUser = Admin + "," + OkrugaHead + "," + CityHead + "," + KurinHead + "," + PlastMember + "," +
-            Supporter + "," + RegisteredUser;
-
-        public const string StatisticsAccessRoles = Admin + "," + PlastHead + "," + OkrugaHead + "," + CityHead + "," + KurinHead;
+        public const string DegreeAssignRoles = Admin + "," + PlastHead + "," + EventAdministrator + "," + KurinHead + "," + KurinHeadDeputy + "," + KurinSecretary + "," +
+            OkrugaHead + "," + OkrugaHeadDeputy + "," + OkrugaSecretary + "," + CityHead + "," + CityHeadDeputy + "," + CitySecretary;
+        public const string HeadsAndHeadDeputiesAndAdminAndPlastun = Admin + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + "," 
+            + KurinHead + "," + KurinHeadDeputy + "," + PlastMember;
+        public const string HeadsAndHeadDeputiesAndAdmin = Admin + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + "," + 
+            KurinHead + "," + KurinHeadDeputy;
+        public const string AdminAndOkrugaHeadAndOkrugaHeadDeputy = Admin + "," + OkrugaHead + "," + OkrugaHeadDeputy;
+        public const string HeadsAndHeadDeputiesAndAdminPlastunAndSupporter = Admin + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," 
+            + CityHeadDeputy + "," + KurinHead + "," + KurinHeadDeputy + "," + PlastMember + "," + Supporter;
+        public const string HeadsAndHeadDeputiesAndAdminPlastunSupporterAndRegisteredUser = Admin + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," 
+            + CityHeadDeputy + "," + KurinHead + "," + KurinHeadDeputy + "," + PlastMember + "," + Supporter + "," + RegisteredUser;
+        public const string StatisticsAccessRoles = Admin + "," + PlastHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," 
+            + CityHeadDeputy + "," + KurinHead + "," + KurinHeadDeputy;
         public const string AdminPlastMemberAndSupporter = Admin + "," + PlastMember + "," + Supporter;
-        public const string AdminAndKurinHead = Admin + "," + KurinHead;
-        public const string AdminCityHeadOkrugaHead = Admin + "," + CityHead + "," + OkrugaHead;
+        public const string AdminAndKurinHeadAndKurinHeadDeputy = Admin + "," + KurinHead + "," + KurinHeadDeputy;
+        public const string AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy = Admin + "," + CityHead + "," + OkrugaHead + "," + CityHeadDeputy + "," + OkrugaHeadDeputy;
+        public const string AdminRegionBoardHeadOkrugaCityHeadAndDeputy = Admin + "," + RegionBoardHead + "," + OkrugaHead + ","  + OkrugaHeadDeputy + "," 
+            + CityHead + "," + CityHeadDeputy;
+        public const string AdminRegionBoardHeadOkrugaHeadAndDeputy = Admin + "," + RegionBoardHead + "," + OkrugaHead + "," + OkrugaHeadDeputy;
+        public const string AdminAndCityHeadAndCityHeadDeputy = Admin + "," + CityHead + "," + CityHeadDeputy;
     }
 }
