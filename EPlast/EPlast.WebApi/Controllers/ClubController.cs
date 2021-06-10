@@ -15,6 +15,7 @@ using AnnualReportDTOs = EPlast.BLL.DTO.AnnualReport;
 using System.Collections.Generic;
 using Microsoft.Extensions.Caching.Distributed;
 using EPlast.WebApi.Extensions;
+using EPlast.WebApi.Controllers.Params;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -32,23 +33,16 @@ namespace EPlast.WebApi.Controllers
         private readonly IClubAccessService _clubAccessService;
         private readonly UserManager<User> _userManager;
 
-        public ClubController(ILoggerService<ClubController> logger,
-            IMapper mapper,
-            IClubService clubService,
-            IClubParticipantsService clubParticipantsService,
-            IClubDocumentsService clubDocumentsService,
-            IClubAccessService clubAccessService,
-            UserManager<User> userManager,
-            IDistributedCache cache)
+        public ClubController( ClubControllerParams clubControllerParams)
         {
-            _logger = logger;
-            _mapper = mapper;
-            _clubService = clubService;
-            _clubParticipantsService = clubParticipantsService;
-            _clubDocumentsService = clubDocumentsService;
-            _clubAccessService = clubAccessService;
-            _userManager = userManager;
-            _cache = cache;
+            _logger = clubControllerParams.logger;
+            _mapper = clubControllerParams.mapper;
+            _clubService = clubControllerParams.clubService;
+            _clubParticipantsService = clubControllerParams.clubParticipantsService;
+            _clubDocumentsService = clubControllerParams.clubDocumentsService;
+            _clubAccessService = clubControllerParams.clubAccessService;
+            _userManager = clubControllerParams.userManager;
+            _cache = clubControllerParams.cache;
         }
 
         /// <summary>

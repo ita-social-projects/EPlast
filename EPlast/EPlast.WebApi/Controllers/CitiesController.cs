@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Identity;
 using AnnualReportDTOs = EPlast.BLL.DTO.AnnualReport;
 using Microsoft.Extensions.Caching.Distributed;
 using EPlast.WebApi.Extensions;
+using EPlast.WebApi.Controllers.Params;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -32,22 +33,16 @@ namespace EPlast.WebApi.Controllers
         private readonly ICityAccessService _cityAccessService;
         private readonly UserManager<User> _userManager;
 
-        public CitiesController(ILoggerService<CitiesController> logger,
-            IMapper mapper,
-            ICityService cityService,
-            ICityDocumentsService cityDocumentsService,
-            ICityAccessService cityAccessService, UserManager<User> userManager, 
-            ICityParticipantsService cityParticipantsService,
-            IDistributedCache cache)
+        public CitiesController( CitiesControllerParams citiesControllerParams)
         {
-            _logger = logger;
-            _mapper = mapper;
-            _cityService = cityService;
-            _cityDocumentsService = cityDocumentsService;
-            _cityAccessService = cityAccessService;
-            _userManager = userManager;
-            _cityParticipantsService = cityParticipantsService;
-            _cache = cache;
+            _logger = citiesControllerParams.logger;
+            _mapper = citiesControllerParams.mapper;
+            _cityService = citiesControllerParams.cityService;
+            _cityDocumentsService = citiesControllerParams.cityDocumentsService;
+            _cityAccessService = citiesControllerParams.cityAccessService;
+            _userManager = citiesControllerParams.userManager;
+            _cityParticipantsService = citiesControllerParams.cityParticipantsService;
+            _cache = citiesControllerParams.cache;
         }
 
         /// <summary>
