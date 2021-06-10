@@ -157,7 +157,7 @@ namespace EPlast.BLL.Services
                     include: source => source
                         .Include(a => a.City));
             if (annualReport == null)
-                throw new NullReferenceException();
+                throw new ArgumentNullException();
             _repositoryWrapper.AnnualReports.Delete(annualReport);
             await _repositoryWrapper.SaveAsync();
             await _regionAnnualReportService.UpdateMembersInfo(annualReport.City.RegionId, annualReport.Date.Year);
