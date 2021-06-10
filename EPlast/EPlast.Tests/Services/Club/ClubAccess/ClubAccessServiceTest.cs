@@ -143,15 +143,24 @@ namespace EPlast.Tests.Services.Club.ClubAccess
                 It.IsAny<Expression<Func<DatabaseEntities.Club, bool>>>(),
                 It.IsAny<Func<IQueryable<DatabaseEntities.Club>, IIncludableQueryable<DatabaseEntities.Club, object>
                 >>())).ReturnsAsync(new List<DatabaseEntities.Club> { new DatabaseEntities.Club(){Name = "TestClub"} });
+            _mockRepositoryWrapper
+                .Setup(x => x.ClubAnnualReports.GetAllAsync(It.IsAny<Expression<Func<ClubAnnualReport, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubAnnualReport>, IIncludableQueryable<ClubAnnualReport, object>>>()))
+                .ReturnsAsync(new List<ClubAnnualReport>() {new ClubAnnualReport() {ClubId = 1}});
+
+            _mockMapper.Setup(x =>
+                x.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubForAdministrationDTO>>(
+                    It.IsAny<IEnumerable<DatabaseEntities.Club>>())).Returns(_expected);
 
             // Act
-            await _clubAccessService.GetAllClubsIdAndName(new User());
+            var result = await _clubAccessService.GetAllClubsIdAndName(new User());
 
             // Assert
             _mockRepositoryWrapper.Verify(x => x.Club.GetAllAsync(
                 It.IsAny<Expression<Func<DatabaseEntities.Club, bool>>>(),
                 It.IsAny<Func<IQueryable<DatabaseEntities.Club>, IIncludableQueryable<DatabaseEntities.Club, object>
                 >>()), Times.Once);
+            Assert.AreEqual(result, _expected);
         }
 
         [Test]
@@ -162,17 +171,29 @@ namespace EPlast.Tests.Services.Club.ClubAccess
                 .ReturnsAsync(new List<string> { ClubAdminRoleName });
             _mockRepositoryWrapper.Setup(r => r.ClubAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.ClubAdministration, bool>>>(), null))
                 .ReturnsAsync(new DatabaseEntities.ClubAdministration());
-            _mockRepositoryWrapper.Setup(r => r.Club.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.Club, bool>>>(),
-                    It.IsAny<Func<IQueryable<DatabaseEntities.Club>, IIncludableQueryable<DatabaseEntities.Club, object>>>()))
-                .ReturnsAsync(new List<DatabaseEntities.Club> { new DatabaseEntities.Club() });
+            _mockRepositoryWrapper.Setup(x => x.Club.GetAllAsync(
+                It.IsAny<Expression<Func<DatabaseEntities.Club, bool>>>(),
+                It.IsAny<Func<IQueryable<DatabaseEntities.Club>, IIncludableQueryable<DatabaseEntities.Club, object>
+                >>())).ReturnsAsync(new List<DatabaseEntities.Club> { new DatabaseEntities.Club() { Name = "TestClub" } });
+            _mockRepositoryWrapper
+                .Setup(x => x.ClubAnnualReports.GetAllAsync(It.IsAny<Expression<Func<ClubAnnualReport, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubAnnualReport>, IIncludableQueryable<ClubAnnualReport, object>>>()))
+                .ReturnsAsync(new List<ClubAnnualReport>() { new ClubAnnualReport() { ClubId = 1 } });
+
+            _mockMapper.Setup(x =>
+                x.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubForAdministrationDTO>>(
+                    It.IsAny<IEnumerable<DatabaseEntities.Club>>())).Returns(_expected);
 
 
             // Act
-            await _clubAccessService.GetAllClubsIdAndName(new User());
+            var result = await _clubAccessService.GetAllClubsIdAndName(new User());
 
             // Assert
-            _mockRepositoryWrapper.Verify(r => r.Club.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.Club, bool>>>(),
-                    It.IsAny<Func<IQueryable<DatabaseEntities.Club>, IIncludableQueryable<DatabaseEntities.Club, object>>>()), Times.Once);
+            _mockRepositoryWrapper.Verify(x => x.Club.GetAllAsync(
+                It.IsAny<Expression<Func<DatabaseEntities.Club, bool>>>(),
+                It.IsAny<Func<IQueryable<DatabaseEntities.Club>, IIncludableQueryable<DatabaseEntities.Club, object>
+                >>()), Times.Once);
+            Assert.AreEqual(result, _expected);
         }
 
         [Test]
@@ -182,34 +203,52 @@ namespace EPlast.Tests.Services.Club.ClubAccess
             _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<DatabaseEntities.User>()))
                 .ReturnsAsync(new List<string> { ClubAdminRoleName });
             _mockRepositoryWrapper.Setup(r => r.ClubAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.ClubAdministration, bool>>>(), null))
-                .ReturnsAsync((DatabaseEntities.ClubAdministration)null);
+                .ReturnsAsync((ClubAdministration)null);
             _mockRepositoryWrapper.Setup(r => r.Club.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.Club, bool>>>(),
                     It.IsAny<Func<IQueryable<DatabaseEntities.Club>, IIncludableQueryable<DatabaseEntities.Club, object>>>()))
-                .ReturnsAsync(new List<DatabaseEntities.Club> { new DatabaseEntities.Club() });
+                .ReturnsAsync(new List<DatabaseEntities.Club> { new DatabaseEntities.Club()});
+
+            _mockRepositoryWrapper.Setup(x => x.ClubAnnualReports.GetAllAsync(
+                It.IsAny<Expression<Func<DatabaseEntities.ClubAnnualReport, bool>>>(), It
+                    .IsAny<Func<IQueryable<DatabaseEntities.ClubAnnualReport>,
+                        IIncludableQueryable<DatabaseEntities.ClubAnnualReport, object>
+                    >>())).ReturnsAsync(new List<DatabaseEntities.ClubAnnualReport>()
+                {new DatabaseEntities.ClubAnnualReport() {ClubId = 1}});
+            _mockMapper.Setup(x =>
+                    x.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubForAdministrationDTO>>(
+                        It.IsAny<IEnumerable<DatabaseEntities.Club>>()))
+                .Returns(_expected);
 
 
             // Act
-            await _clubAccessService.GetAllClubsIdAndName(new User());
+            var result = await _clubAccessService.GetAllClubsIdAndName(new User());
 
             // Assert
             _mockRepositoryWrapper.Verify(r => r.Club.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.Club, bool>>>(),
                 It.IsAny<Func<IQueryable<DatabaseEntities.Club>, IIncludableQueryable<DatabaseEntities.Club, object>>>()), Times.Never);
+            Assert.AreEqual(result, _expected);
         }
 
         [Test]
         public async Task GetAllClubsIdAndName_NoRoles()
         {
             //Arrange
-            _mockUserManager.Setup(x =>
-                x.GetRolesAsync(It.IsAny<DatabaseEntities.User>())).ReturnsAsync(Enumerable.Empty<string>().ToList());
+            var expectedEmpty = Enumerable.Empty<ClubForAdministrationDTO>();
+            _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string>());
+            _mockRepositoryWrapper.Setup(x => x.ClubAnnualReports.GetAllAsync(
+                It.IsAny<Expression<Func<ClubAnnualReport, bool>>>(), It
+                    .IsAny<Func<IQueryable<ClubAnnualReport>,
+                        IIncludableQueryable<ClubAnnualReport, object>
+                    >>())).ReturnsAsync(new List<ClubAnnualReport>()
+                {new ClubAnnualReport() {ClubId = 1}});
 
             //Act
-            var result = await _clubAccessService.GetAllClubsIdAndName(new User());
+            var result = await _clubAccessService.GetAllClubsIdAndName(It.IsAny<User>());
 
-            //Assert
+            // Assert
             _mockUserManager.Verify(u => u.GetRolesAsync(It.IsAny<User>()));
-            Assert.NotNull(result);
-            Assert.IsEmpty(result);
+            Assert.AreEqual(result, expectedEmpty);
         }
 
         [Test]
@@ -299,5 +338,8 @@ namespace EPlast.Tests.Services.Club.ClubAccess
 
 
         private AdminType _adminType => new AdminType() { };
+
+        private List<ClubForAdministrationDTO> _expected = new List<ClubForAdministrationDTO>
+            {new ClubForAdministrationDTO {ID = 1, Name = "TestClubName", HasReport = true}};
     }
 }

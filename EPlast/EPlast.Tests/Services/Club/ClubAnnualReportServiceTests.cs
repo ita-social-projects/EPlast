@@ -28,7 +28,8 @@ namespace EPlast.Tests.Services.Club
         [SetUp]
         public void SetUp()
         {
-            _userManager = new Mock<UserManager<User>>();
+            var store = new Mock<IUserStore<User>>();
+            _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _repositoryWrapper = new Mock<IRepositoryWrapper>();
             _clubAccessService = new Mock<IClubAccessService>();
             _mapper = new Mock<IMapper>();
