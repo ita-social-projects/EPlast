@@ -32,8 +32,8 @@ namespace EPlast.XUnitTest.Services.AnnualReport
 
         public AnnualReportServiceTests()
         {
-            _repositoryWrapper.Setup(r => r.AdminType.FindByCondition(It.IsAny<Expression<Func<DatabaseEntities.AdminType, bool>>>()))
-                .Returns(new List<DatabaseEntities.AdminType> { new DatabaseEntities.AdminType() }.AsQueryable());
+            _repositoryWrapper.Setup(r => r.AdminType.FindByCondition(It.IsAny<Expression<Func<AdminType, bool>>>()))
+                .Returns(new List<AdminType> { new AdminType() }.AsQueryable());
             _annualReportService = new AnnualReportService(_repositoryWrapper.Object, _cityAccessService.Object, _regionAnnualReportService.Object, _mapper.Object);
         }
 
@@ -429,6 +429,9 @@ namespace EPlast.XUnitTest.Services.AnnualReport
                 It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
                     .ReturnsAsync((DatabaseEntities.AnnualReport)null);
             _cityAccessService.Setup(r => r.HasAccessAsync(It.IsAny<User>())).ReturnsAsync(false);
+            _mapper.Setup(m =>
+                    m.Map<DatabaseEntities.AnnualReport, AnnualReportDTO>(It.IsAny<DatabaseEntities.AnnualReport>()))
+                .Returns(new AnnualReportDTO());
 
             // Act
             await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()));

@@ -4,6 +4,7 @@ using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Services.Club;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
@@ -42,7 +43,7 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
-        public async Task GetByIdAsync_ReturnsClubAnnualReportDTO()
+        public async Task GetByIdAsync_ReturnsClubAnnualReportDTO_ClubAdmin()
         {
             // Arrange
             ClubAnnualReport report = new ClubAnnualReport();
@@ -61,6 +62,50 @@ namespace EPlast.Tests.Services.Club
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<ClubAnnualReportDTO>(result);
+        }
+
+        [Test]
+        public async Task GetByIdAsync_ReturnsClubAnnualReportDTO_Admin()
+        {
+            // Arrange
+            ClubAnnualReport report = new ClubAnnualReport();
+
+            _repositoryWrapper
+                .Setup(x => x.ClubAnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAnnualReport, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubAnnualReport>,
+                        IIncludableQueryable<ClubAnnualReport, object>>>())).ReturnsAsync(report);
+            _clubAccessService
+                .Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(false);
+            _mapper
+                .Setup(x => x.Map<ClubAnnualReport, ClubAnnualReportDTO>(report)).Returns(new ClubAnnualReportDTO());
+            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Admin });
+
+            // Act
+            var result = await _service.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>());
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<ClubAnnualReportDTO>(result);
+        }
+
+        [Test]
+        public async Task GetByIdAsync_UnauthorizedAccessException()
+        {
+            // Arrange
+            ClubAnnualReport report = new ClubAnnualReport();
+
+            _repositoryWrapper
+                .Setup(x => x.ClubAnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAnnualReport, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubAnnualReport>,
+                        IIncludableQueryable<ClubAnnualReport, object>>>())).ReturnsAsync(report);
+            _clubAccessService
+                .Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(false);
+            _mapper
+                .Setup(x => x.Map<ClubAnnualReport, ClubAnnualReportDTO>(report)).Returns(new ClubAnnualReportDTO());
+            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
+            
+            // Act & Assert
+            Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+                _service.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()));
         }
 
         [Test]

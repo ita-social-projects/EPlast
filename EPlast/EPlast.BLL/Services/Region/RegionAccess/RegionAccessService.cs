@@ -60,11 +60,12 @@ namespace EPlast.BLL.Services.Region.RegionAccess
                 {
                     options = _mapper.Map<IEnumerable<DatabaseEntities.Region>, IEnumerable<RegionForAdministrationDTO>>(
                         await _regionAccessGetters[key].GetRegionAsync(user.Id));
+                    break;
                 }
             }
             foreach (var item in options)
             {
-                item.YearsHasReport = regionsId.Where(x => x.regionId == item.ID).Select(x => x.year);
+                item.YearsHasReport = regionsId.Where(x => x.regionId == item.ID).Select(x => x.year).ToList();
             }
 
             return options;

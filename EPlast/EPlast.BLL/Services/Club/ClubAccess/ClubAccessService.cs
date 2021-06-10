@@ -58,6 +58,7 @@ namespace EPlast.BLL.Services.Club.ClubAccess
                 {
                     options = _mapper.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubForAdministrationDTO>>(
                         await _clubAccessGetters[key].GetClubs(user.Id));
+                    break;
                 }
             }
             foreach (var item in options)
