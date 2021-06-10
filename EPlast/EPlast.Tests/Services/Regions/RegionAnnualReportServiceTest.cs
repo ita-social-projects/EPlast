@@ -107,13 +107,13 @@ namespace EPlast.Tests.Services.Regions
                     It.IsAny<Expression<Func<DataAccess.Entities.AnnualReport, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.AnnualReport>,
                         IIncludableQueryable<DataAccess.Entities.AnnualReport, object>>>()))
-                .ReturnsAsync(FakeAnnualReportConfirmed());
+                .ReturnsAsync(_fakeAnnualReportConfirmed());
             _mockRepositoryWrapper
                 .Setup(x => x.MembersStatistics.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<MembersStatistic, bool>>>(), null)).ReturnsAsync(FakeMembersStatistic());
+                    It.IsAny<Expression<Func<MembersStatistic, bool>>>(), null)).ReturnsAsync(_fakeMembersStatistic());
 
             //Act
-            var result = await service.GetRegionMembersInfo(1, 1);
+            var result = await service.GetRegionMembersInfoAsync(1, 1, 1, 1);
 
             //Assert
             Assert.IsNotNull(result);
@@ -141,13 +141,13 @@ namespace EPlast.Tests.Services.Regions
                     It.IsAny<Expression<Func<DataAccess.Entities.AnnualReport, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.AnnualReport>,
                         IIncludableQueryable<DataAccess.Entities.AnnualReport, object>>>()))
-                .ReturnsAsync(FakeAnnualReportUnconfirmed());
+                .ReturnsAsync(_fakeAnnualReportUnconfirmed());
             _mockRepositoryWrapper
                 .Setup(x => x.MembersStatistics.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<MembersStatistic, bool>>>(), null)).ReturnsAsync(FakeMembersStatistic());
+                    It.IsAny<Expression<Func<MembersStatistic, bool>>>(), null)).ReturnsAsync(_fakeMembersStatistic());
 
             //Act
-            var result = await service.GetRegionMembersInfo(1, 1);
+            var result = await service.GetRegionMembersInfoAsync(1, 1, 1, 1);
 
             //Assert
             Assert.IsNotNull(result);
@@ -178,10 +178,10 @@ namespace EPlast.Tests.Services.Regions
                 .ReturnsAsync(null as AnnualReport);
             _mockRepositoryWrapper
                 .Setup(x => x.MembersStatistics.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<MembersStatistic, bool>>>(), null)).ReturnsAsync(FakeMembersStatistic());
+                    It.IsAny<Expression<Func<MembersStatistic, bool>>>(), null)).ReturnsAsync(_fakeMembersStatistic());
 
             //Act
-            var result = await service.GetRegionMembersInfo(1, 1);
+            var result = await service.GetRegionMembersInfoAsync(1, 1, 1, 1);
 
             //Assert
             Assert.IsNotNull(result);
@@ -203,7 +203,7 @@ namespace EPlast.Tests.Services.Regions
                     IIncludableQueryable<DataAccess.Entities.City, object>>>())).ReturnsAsync(new List<DataAccess.Entities.City>());
 
             //Act
-            var result = await service.GetRegionMembersInfo(1, 1);
+            var result = await service.GetRegionMembersInfoAsync(1, 1, 1, 1);
 
             //Assert
             Assert.IsNotNull(result);
@@ -241,10 +241,13 @@ namespace EPlast.Tests.Services.Regions
             _mockRepositoryWrapper.Setup(x => x.RegionAnnualReports.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<DataAccess.Entities.RegionAnnualReport, bool>>>(), null))
                 .ReturnsAsync(new RegionAnnualReport() { RegionId = 1, Status = AnnualReportStatus.Unconfirmed });
+            _mockRepositoryWrapper.Setup(x => x.RegionAnnualReports.GetRegionMembersInfoAsync(It.IsAny<int>(),
+                    It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new List<RegionMembersInfoTableObject>() { _fakeMembersInfoTableObject(), });
 
 
             //Act
-            await service.EditAsync(1, fakeRegionAnnualReportQuestions());
+            await service.EditAsync(1, _fakeRegionAnnualReportQuestions());
 
             //Assert
             _mockRepositoryWrapper.Verify(x => x.RegionAnnualReports.GetFirstOrDefaultAsync(
@@ -252,7 +255,7 @@ namespace EPlast.Tests.Services.Regions
         }
 
 
-        private AnnualReport FakeAnnualReportConfirmed()
+        private AnnualReport _fakeAnnualReportConfirmed()
         {
             return new AnnualReport()
             {
@@ -268,11 +271,11 @@ namespace EPlast.Tests.Services.Regions
                 NumberOfPlastpryiatMembers = 1,
                 NumberOfTeacherAdministrators = 1,
                 NumberOfTeachers = 1,
-                MembersStatistic = FakeMembersStatistic()
+                MembersStatistic = _fakeMembersStatistic()
             };
         }
 
-        private AnnualReport FakeAnnualReportUnconfirmed()
+        private AnnualReport _fakeAnnualReportUnconfirmed()
         {
             return new AnnualReport()
             {
@@ -288,11 +291,42 @@ namespace EPlast.Tests.Services.Regions
                 NumberOfPlastpryiatMembers = 1,
                 NumberOfTeacherAdministrators = 1,
                 NumberOfTeachers = 1,
-                MembersStatistic = FakeMembersStatistic()
+                MembersStatistic = _fakeMembersStatistic()
             };
         }
 
-        private MembersStatistic FakeMembersStatistic()
+        private RegionMembersInfoTableObject _fakeMembersInfoTableObject()
+        {
+            return new RegionMembersInfoTableObject()
+            {
+                CityAnnualReportId = 1,
+                CityId = 1,
+                CityName = "",
+                NumberOfAdministrators = 1,
+                NumberOfBeneficiaries = 1,
+                NumberOfClubs = 1,
+                NumberOfHonoraryMembers = 1,
+                NumberOfIndependentGroups = 1,
+                NumberOfIndependentRiy = 1,
+                NumberOfNovatstva = 1,
+                NumberOfPlastpryiatMembers = 1,
+                NumberOfPtashata = 1,
+                NumberOfSeatsPtashat = 1,
+                NumberOfUnatstvaNoname = 1,
+                NumberOfUnatstvaSupporters = 1,
+                NumberOfUnatstvaMembers = 1,
+                NumberOfUnatstvaProspectors = 1,
+                NumberOfUnatstvaSkobVirlyts = 1,
+                NumberOfSeniorPlastynSupporters = 1,
+                NumberOfSeniorPlastynMembers = 1,
+                NumberOfSeigneurSupporters = null,
+                NumberOfSeigneurMembers = null,
+                NumberOfTeacherAdministrators = 1,
+                NumberOfTeachers = 1
+            };
+        }
+
+        private MembersStatistic _fakeMembersStatistic()
         {
             return new MembersStatistic()
             {
@@ -312,7 +346,7 @@ namespace EPlast.Tests.Services.Regions
             };
         }
 
-        private RegionAnnualReportQuestions fakeRegionAnnualReportQuestions()
+        private RegionAnnualReportQuestions _fakeRegionAnnualReportQuestions()
         {
             return new RegionAnnualReportQuestions()
             {

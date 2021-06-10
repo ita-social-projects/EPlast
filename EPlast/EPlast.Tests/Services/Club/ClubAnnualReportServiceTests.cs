@@ -4,6 +4,7 @@ using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Services.Club;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
@@ -18,6 +19,7 @@ namespace EPlast.Tests.Services.Club
 {
     public class ClubAnnualReportServiceTests
     {
+        private Mock<UserManager<User>> _userManager;
         private Mock<IRepositoryWrapper> _repositoryWrapper;
         private Mock<IClubAccessService> _clubAccessService;
         private Mock<IMapper> _mapper;
@@ -26,10 +28,12 @@ namespace EPlast.Tests.Services.Club
         [SetUp]
         public void SetUp()
         {
+            _userManager = new Mock<UserManager<User>>();
             _repositoryWrapper = new Mock<IRepositoryWrapper>();
             _clubAccessService = new Mock<IClubAccessService>();
             _mapper = new Mock<IMapper>();
             _service = new ClubAnnualReportService(
+                _userManager.Object,
                 _repositoryWrapper.Object,
                 _clubAccessService.Object,
                 _mapper.Object

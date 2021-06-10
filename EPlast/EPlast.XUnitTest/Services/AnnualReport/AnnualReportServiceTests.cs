@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.Region;
 using Xunit;
 using CityDTOs = EPlast.BLL.DTO.City;
 
@@ -23,6 +24,9 @@ namespace EPlast.XUnitTest.Services.AnnualReport
     {
         private readonly IAnnualReportService _annualReportService;
         private readonly Mock<ICityAccessService> _cityAccessService = new Mock<ICityAccessService>();
+
+        private readonly Mock<IRegionAnnualReportService> _regionAnnualReportService =
+            new Mock<IRegionAnnualReportService>();
         private readonly Mock<IMapper> _mapper = new Mock<IMapper>();
         private readonly Mock<IRepositoryWrapper> _repositoryWrapper = new Mock<IRepositoryWrapper>();
 
@@ -30,23 +34,27 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         {
             _repositoryWrapper.Setup(r => r.AdminType.FindByCondition(It.IsAny<Expression<Func<DatabaseEntities.AdminType, bool>>>()))
                 .Returns(new List<DatabaseEntities.AdminType> { new DatabaseEntities.AdminType() }.AsQueryable());
-            _annualReportService = new AnnualReportService(_repositoryWrapper.Object, _cityAccessService.Object, _mapper.Object);
+            _annualReportService = new AnnualReportService(_repositoryWrapper.Object, _cityAccessService.Object, _regionAnnualReportService.Object, _mapper.Object);
         }
 
         [Fact]
         public async Task Cancel_Correct_SaveChanges()
         {
             // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
-                .ReturnsAsync(new DatabaseEntities.AnnualReport());
-            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>()))
-                .ReturnsAsync(true);
+            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), It
+                        .IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>,
+                            IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
+                .ReturnsAsync(new DatabaseEntities.AnnualReport(){City = new DatabaseEntities.City(){RegionId = 1}, Date = new DateTime()});
+            _regionAnnualReportService.Setup(x => x.UpdateMembersInfo(It.IsAny<int>(), It.IsAny<int>()));
 
             // Act
             await _annualReportService.CancelAsync(It.IsAny<User>(), It.IsAny<int>());
 
             // Assert
             _repositoryWrapper.Verify(r => r.SaveAsync(), Times.Once);
+            _regionAnnualReportService.Verify(x => x.UpdateMembersInfo(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
+
         }
 
         [Fact]
@@ -125,16 +133,20 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         public async Task Confirm_Correct_SaveChanges()
         {
             // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
-                .ReturnsAsync(new DatabaseEntities.AnnualReport());
-            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>()))
-                .ReturnsAsync(true);
+            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), It
+                        .IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>,
+                            IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
+                .ReturnsAsync(new DatabaseEntities.AnnualReport() { City = new DatabaseEntities.City() { RegionId = 1 }, Date = new DateTime() });
+            _regionAnnualReportService.Setup(x => x.UpdateMembersInfo(It.IsAny<int>(), It.IsAny<int>()));
 
             // Act
             await _annualReportService.ConfirmAsync(It.IsAny<User>(), It.IsAny<int>());
 
             // Assert
             _repositoryWrapper.Verify(r => r.SaveAsync(), Times.Once);
+            _regionAnnualReportService.Verify(x => x.UpdateMembersInfo(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
+
         }
 
         [Fact]
@@ -206,17 +218,22 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         public async Task DeleteAsyncCorrect()
         {
             // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
-                .ReturnsAsync(new DatabaseEntities.AnnualReport());
+            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), It
+                        .IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>,
+                            IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
+                .ReturnsAsync(new DatabaseEntities.AnnualReport() { City = new DatabaseEntities.City() { RegionId = 1 }, Date = new DateTime() });
             _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>()))
                 .ReturnsAsync(true);
+            _regionAnnualReportService.Setup(x => x.UpdateMembersInfo(It.IsAny<int>(), It.IsAny<int>()));
 
             // Act
             await _annualReportService.DeleteAsync(It.IsAny<User>(), It.IsAny<int>());
 
             // Assert
             _repositoryWrapper.Verify(r => r.AnnualReports.Delete(It.IsAny<DatabaseEntities.AnnualReport>()));
-            _repositoryWrapper.Verify(r => r.SaveAsync());
+            _repositoryWrapper.Verify(r => r.SaveAsync(), Times.Once);
+            _regionAnnualReportService.Verify(x => x.UpdateMembersInfo(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
         }
 
         [Fact]
@@ -228,23 +245,6 @@ namespace EPlast.XUnitTest.Services.AnnualReport
 
             // Act
             await Assert.ThrowsAsync<NullReferenceException>(() => _annualReportService.DeleteAsync(It.IsAny<User>(), It.IsAny<int>()));
-
-            // Assert
-            _repositoryWrapper.Verify(r => r.AnnualReports.Delete(It.IsAny<DatabaseEntities.AnnualReport>()), Times.Never);
-            _repositoryWrapper.Verify(r => r.SaveAsync(), Times.Never);
-        }
-
-        [Fact]
-        public async Task DeleteAsyncUnauthorizedAccessException()
-        {
-            // Arrange
-            _repositoryWrapper.Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), null))
-                .ReturnsAsync(new DatabaseEntities.AnnualReport());
-            _cityAccessService.Setup(c => c.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>()))
-                .ReturnsAsync(false);
-
-            // Act
-            await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.DeleteAsync(It.IsAny<User>(), It.IsAny<int>()));
 
             // Assert
             _repositoryWrapper.Verify(r => r.AnnualReports.Delete(It.IsAny<DatabaseEntities.AnnualReport>()), Times.Never);
@@ -459,10 +459,10 @@ namespace EPlast.XUnitTest.Services.AnnualReport
         {
             //Arrange
             _repositoryWrapper
-                .Setup(r => r.AnnualReports.GetAnnualReportsAsync(It.IsAny<string>(), It.IsAny<bool>(),
-                    It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()))
-                .ReturnsAsync(new List<AnnualReportTableObject>());
-            _cityAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>())).ReturnsAsync(true);
+                .Setup(r => r.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(),
+                    It.IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>, IIncludableQueryable<DatabaseEntities.AnnualReport, object>>>()))
+                .ReturnsAsync(new DatabaseEntities.AnnualReport());
+            _cityAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(true);
 
             //Act
             await _annualReportService.GetEditFormByIdAsync(new User(), 1);
@@ -479,7 +479,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
                 .Setup(r => r.AnnualReports.GetAnnualReportsAsync(It.IsAny<string>(), It.IsAny<bool>(),
                     It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()))
                 .ReturnsAsync(new List<AnnualReportTableObject>());
-            _cityAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>())).ReturnsAsync(false);
+            _cityAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(false);
 
             //Act
             //Assert

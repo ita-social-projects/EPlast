@@ -22,7 +22,7 @@ namespace EPlast.Tests.Services.Club.ClubAccess
     class ClubAccessServiceTest
     {
         private ClubAccessService _clubAccessService;
-        private Mock<UserManager<DatabaseEntities.User>> _mockUserManager;
+        private Mock<UserManager<User>> _mockUserManager;
         private Mock<IMapper> _mockMapper;
         private ClubAccessSettings _clubAccessSettings;
         private Mock<IRepositoryWrapper> _mockRepositoryWrapper;
@@ -33,8 +33,8 @@ namespace EPlast.Tests.Services.Club.ClubAccess
         [SetUp]
         public void SetUp()
         {
-            Mock<IUserStore<DatabaseEntities.User>> _mockStore = new Mock<IUserStore<DatabaseEntities.User>>();
-            _mockUserManager = new Mock<UserManager<DatabaseEntities.User>>(_mockStore.Object, null, null, null, null, null, null, null, null);
+            Mock<IUserStore<User>> _mockStore = new Mock<IUserStore<User>>();
+            _mockUserManager = new Mock<UserManager<User>>(_mockStore.Object, null, null, null, null, null, null, null, null);
             
             _mockMapper = new Mock<IMapper>();
             
@@ -48,7 +48,7 @@ namespace EPlast.Tests.Services.Club.ClubAccess
             _clubAccessSettings = new ClubAccessSettings(_mockRepositoryWrapper.Object);
             
 
-            _clubAccessService = new ClubAccessService(_clubAccessSettings, _mockUserManager.Object, _mockMapper.Object);
+            _clubAccessService = new ClubAccessService(_mockRepositoryWrapper.Object, _clubAccessSettings, _mockUserManager.Object, _mockMapper.Object);
         }
 
         [Test]

@@ -570,10 +570,11 @@ namespace EPlast.Tests.Controllers
         public async Task GetRegionMembersInfo_ReturnsOk()
         {
             // Arrange
-            _regionAnnualReportService.Setup(x => x.GetRegionMembersInfo(It.IsAny<int>(), It.IsAny<int>()))
-                .ReturnsAsync(new List<RegionMembersInfo>());
+            _regionAnnualReportService.Setup(x =>
+                    x.GetRegionMembersInfoAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new List<RegionMembersInfoTableObject>());
             // Act
-            var result = await _regionController.GetRegionMembersInfo(1,1);
+            var result = await _regionController.GetRegionMembersInfo(1, 1, 1, 1);
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
         }

@@ -607,7 +607,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(x => x.GetActionCategoriesAsync())
                 .ReturnsAsync(CreateListOfFakeEventCategories());
             //Act
-            var result = await _eventsController.GetCategoriesByPage(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>());
+            var result = await _eventsController.GetCategoriesByPage(It.IsAny<int>(), It.IsAny<int>());
             var categories = (result as ObjectResult).Value as EventsCategoryViewModel;
             
             //Assert
