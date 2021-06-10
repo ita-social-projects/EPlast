@@ -1,4 +1,7 @@
-﻿namespace EPlast.BLL.DTO
+﻿using System.Collections.Generic;
+using EPlast.BLL.DTO.GoverningBody;
+
+namespace EPlast.BLL.DTO
 {
     public class GoverningBodyDTO
     {
@@ -8,5 +11,8 @@
         public string GoverningBodyName { get; set; }
         public string Logo { get; set; }
         public string PhoneNumber { get; set; }
+        public int AdministrationCount { get; set; }
+        public IEnumerable<GoverningBodyDocumentsDTO> GoverningBodyDocuments { get; set; }
+        public IEnumerable<GoverningBodyAdministrationDTO> GoverningBodyAdministration { get; set; }
     }
 }

@@ -31,7 +31,7 @@ namespace EPlast.WebApi.Controllers
             var roles = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User));
             foreach (var role in roles)
             {
-                if (Roles.HeadsAdminAndPlastun.Contains(role))
+                if (Roles.HeadsAndHeadDeputiesAndAdminAndPlastun.Contains(role))
                     return true;
             }
 
@@ -80,7 +80,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="201">Instance of EventCreateDTO</response>
         /// <response code="400">When the EventCreateDTO is null or empty</response> 
         [HttpPost("newEvent")]
-        [Authorize(Roles = Roles.HeadsAdminAndPlastun)]
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
         public async Task<IActionResult> EventCreate([FromBody] EventCreateDTO createDTO)
         {
             createDTO.Event.ID = await eventUserManager.CreateEventAsync(createDTO);
@@ -111,7 +111,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">Resource updated successfully</response>
         /// <response code="400">When the EventCreateDTO is null or empty</response>
         [HttpPut("editedEvent")]
-        [Authorize(Roles = Roles.HeadsAdminAndPlastun)]
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
         public async Task<IActionResult> EventEdit([FromBody] EventCreateDTO createDTO)
         {
             await eventUserManager.EditEventAsync((createDTO));

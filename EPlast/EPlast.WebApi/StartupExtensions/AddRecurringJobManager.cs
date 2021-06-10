@@ -74,15 +74,20 @@ namespace EPlast.WebApi.StartupExtensions
                 Roles.PlastMember,
                 Roles.PlastHead,
                 Roles.EventAdministrator,
-                Roles.KurinHead,"" +
-                                Roles.KurinSecretary,
+                Roles.KurinHead,
+                Roles.KurinSecretary,
                 Roles.OkrugaHead,
                 Roles.OkrugaSecretary,
                 Roles.CityHead,
                 Roles.CitySecretary,
                 Roles.FormerPlastMember,
                 Roles.RegisteredUser,
-                Roles.Interested
+                Roles.Interested,
+                Roles.CityHeadDeputy,
+                Roles.OkrugaHeadDeputy,
+                Roles.KurinHeadDeputy,
+                Roles.GoverningBodyHead,
+                Roles.GoverningBodySecretary
             };
             foreach (var role in roles)
             {

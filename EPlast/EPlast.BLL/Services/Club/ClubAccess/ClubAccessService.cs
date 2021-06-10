@@ -79,7 +79,7 @@ namespace EPlast.BLL.Services.Club.ClubAccess
             var roles = await _userManager.GetRolesAsync(user);
             foreach (var key in roles)
             {
-                if (Roles.HeadsAndAdmin.Contains(key))
+                if (Roles.HeadsAndHeadDeputiesAndAdmin.Contains(key))
                     return true;
             }
             return false;

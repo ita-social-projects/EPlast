@@ -22,6 +22,7 @@ namespace EPlast.WebApi.Models.City
         public bool CanEdit { get; set; }
         public bool CanJoin { get; set; }
         public CityAdministrationViewModel Head { get; set; }
+        public CityAdministrationViewModel HeadDeputy { get; set; }
         public IEnumerable<CityAdministrationViewModel> Administration { get; set; }
         public IEnumerable<CityMembersViewModel> Members { get; set; }
         public IEnumerable<CityMembersViewModel> Followers { get; set; }

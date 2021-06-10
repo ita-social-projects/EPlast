@@ -11,7 +11,7 @@ namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAdminPlastunSupporterAndRegisteredUser)]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminPlastunSupporterAndRegisteredUser)]
     public class EducatorsStaffController : ControllerBase
     {
         private readonly ILoggerService<EducatorsStaffController> _logger;
@@ -199,7 +199,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("findUserForRedirect/{EduStaffId}")]
-        [Authorize(Roles = Roles.HeadsAdminPlastunAndSupporter)]
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminPlastunAndSupporter)]
         public async Task<string> GetUserByEduStaff(int EduStaffId)
         {
             string UserId = await _kvService.GetUserByEduStaff(EduStaffId);
