@@ -54,7 +54,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>A specific number of cities</returns>
         [HttpGet("Profiles/{page}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetCities(int page, int pageSize, string cityName = null)
+        public async Task<IActionResult> GetCities(int page, int pageSize, string cityName="")
         {
             var cities = await _cityService.GetAllDTOAsync(cityName);
             var citiesViewModel = new CitiesViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));

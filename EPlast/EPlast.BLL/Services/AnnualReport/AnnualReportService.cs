@@ -156,10 +156,8 @@ namespace EPlast.BLL.Services
                     predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed,
                     include: source => source
                         .Include(a => a.City));
-            if (!await _cityAccessService.HasAccessAsync(user, annualReport.CityId))
-            {
-                throw new UnauthorizedAccessException();
-            }
+            if (annualReport == null)
+                throw new NullReferenceException();
             _repositoryWrapper.AnnualReports.Delete(annualReport);
             await _repositoryWrapper.SaveAsync();
             await _regionAnnualReportService.UpdateMembersInfo(annualReport.City.RegionId, annualReport.Date.Year);

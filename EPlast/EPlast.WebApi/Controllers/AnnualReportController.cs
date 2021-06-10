@@ -319,11 +319,6 @@ namespace EPlast.WebApi.Controllers
                 _loggerService.LogError($"Annual report (id: {id}) not found");
                 return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["NotFound"].Value });
             }
-            catch (UnauthorizedAccessException)
-            {
-                _loggerService.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to delete annual report (id: {id})");
-                return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["NoAccess"].Value });
-            }
         }
 
         private async Task<IActionResult> CheckBlocks(int id, bool city)
