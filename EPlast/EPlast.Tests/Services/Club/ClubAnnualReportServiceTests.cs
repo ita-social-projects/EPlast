@@ -88,7 +88,7 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
-        public async Task GetByIdAsync_UnauthorizedAccessException()
+        public void GetByIdAsync_UnauthorizedAccessException()
         {
             // Arrange
             ClubAnnualReport report = new ClubAnnualReport();
