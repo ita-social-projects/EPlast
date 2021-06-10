@@ -244,7 +244,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
                 .ReturnsAsync((DatabaseEntities.AnnualReport)null);
 
             // Act
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _annualReportService.DeleteAsync(It.IsAny<User>(), It.IsAny<int>()));
+            await Assert.ThrowsAsync<NullReferenceException>(() => _annualReportService.DeleteAsync(It.IsAny<User>(), It.IsAny<int>()));
 
             // Assert
             _repositoryWrapper.Verify(r => r.AnnualReports.Delete(It.IsAny<DatabaseEntities.AnnualReport>()), Times.Never);

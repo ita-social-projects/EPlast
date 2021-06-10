@@ -156,11 +156,9 @@ namespace EPlast.BLL.Services
                     predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed,
                     include: source => source
                         .Include(a => a.City));
-            if (annualReport == null)
-                throw new ArgumentNullException();
+            await _regionAnnualReportService.UpdateMembersInfo(annualReport.City.RegionId, annualReport.Date.Year);
             _repositoryWrapper.AnnualReports.Delete(annualReport);
             await _repositoryWrapper.SaveAsync();
-            await _regionAnnualReportService.UpdateMembersInfo(annualReport.City.RegionId, annualReport.Date.Year);
         }
 
         ///<inheritdoc/>
