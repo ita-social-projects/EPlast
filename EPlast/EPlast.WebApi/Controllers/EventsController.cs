@@ -157,7 +157,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">OK</response>
         /// <response code="400">Bad Request</response> 
         [HttpDelete("{id:int}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAdminAndPlastun)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
         public async Task<IActionResult> Delete(int id)
         {
             return StatusCode(await _actionManager.DeleteEventAsync(id));

@@ -497,6 +497,23 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
+        public async Task GetClubAdminsAsync_WhereHeadDeputyIsNull_ReturnClubProfile()
+        {
+            // Arrange
+            ClubService clubService = CreateClubService();
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+                .Returns(CreateFakeClubDtoWithExAdmin(Count).FirstOrDefault());
+
+            // Act
+            var result = await clubService.GetClubAdminsAsync(Id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Null(result.HeadDeputy);
+            Assert.AreEqual(result.Admins, new List<ClubAdministrationDTO>());
+        }
+
+        [Test]
         public async Task GetClubAdminsAsync_WithClubIsNull_ReturnsNull()
         {
             // Arrange
@@ -659,6 +676,23 @@ namespace EPlast.Tests.Services.Club
             // Assert
             Assert.NotNull(result);
             Assert.Null(result.Head);
+            Assert.AreEqual(result.Admins, new List<ClubAdministrationDTO>());
+        }
+
+        [Test]
+        public async Task GetClubProfileAsync_WhereHeadDeputyIsNull_ReturnClubProfile()
+        {
+            // Arrange
+            ClubService clubService = CreateClubService();
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+                .Returns(CreateFakeClubDtoWithExAdmin(Count).FirstOrDefault());
+
+            // Act
+            var result = await clubService.GetClubProfileAsync(Id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Null(result.HeadDeputy);
             Assert.AreEqual(result.Admins, new List<ClubAdministrationDTO>());
         }
 

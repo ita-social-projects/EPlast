@@ -161,7 +161,7 @@ namespace EPlast.WebApi.Controllers
             var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
             cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), cityId);
 
-            return Ok(new { cityProfile.Administration, cityProfile.Head, cityProfile.CanEdit, cityProfile.Name });
+            return Ok(new { cityProfile.Administration, cityProfile.Head, cityProfile.HeadDeputy, cityProfile.CanEdit, cityProfile.Name });
         }
 
         /// <summary>
@@ -333,7 +333,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="memberId">The id of the member</param>
         /// <returns>An information about a specific member</returns>
         [HttpPut("ChangeApproveStatus/{memberId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminCityHeadOkrugaHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy)]
         public async Task<IActionResult> ChangeApproveStatus(int memberId)
         {
             var member = await _cityParticipantsService.ToggleApproveStatusAsync(memberId);
@@ -362,7 +362,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="newAdmin">An information about a new administrator</param>
         /// <returns>An information about a new administrator</returns>
         [HttpPost("AddAdmin/{cityId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminCityHeadOkrugaHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy)]
         public async Task<IActionResult> AddAdmin(CityAdministrationViewModel newAdmin)
         { 
             var admin = _mapper.Map<CityAdministrationViewModel, CityAdministrationDTO>(newAdmin);
@@ -379,7 +379,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="adminId">The id of the administrator</param>
         [HttpPut("RemoveAdmin/{adminId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminCityHeadOkrugaHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy)]
         public async Task<IActionResult> RemoveAdmin(int adminId)
         {
             await _cityParticipantsService.RemoveAdministratorAsync(adminId);
@@ -394,7 +394,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="admin">An information about a new administrator</param>
         /// <returns>An information about a specific admininstrator</returns>
         [HttpPut("EditAdmin/{adminId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminCityHeadOkrugaHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy)]
         public async Task<IActionResult> EditAdmin(CityAdministrationViewModel admin)
         {
             var adminDTO = _mapper.Map<CityAdministrationViewModel, CityAdministrationDTO>(admin);
@@ -411,7 +411,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="document">An information about a specific document</param>
         /// <returns>A newly created document</returns>
         [HttpPost("AddDocument/{cityId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminCityHeadOkrugaHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy)]
         public async Task<IActionResult> AddDocument(CityDocumentsViewModel document)
         {
             var documentDTO = _mapper.Map<CityDocumentsViewModel, CityDocumentsDTO>(document);
@@ -441,7 +441,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="documentId">The id of a specific document</param>
         [HttpDelete("RemoveDocument/{documentId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminCityHeadOkrugaHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy)]
         public async Task<IActionResult> RemoveDocument(int documentId)
         {
             await _cityDocumentsService.DeleteFileAsync(documentId);

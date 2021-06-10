@@ -18,6 +18,7 @@ namespace EPlast.BLL.Interfaces.Region
         Task<IEnumerable<RegionAdministrationDTO>> GetUsersPreviousAdministrations(string userId);
 
         Task<RegionAdministrationDTO> GetHead(int regionId);
+        Task<RegionAdministrationDTO> GetHeadDeputy(int regionId);
 
         Task<int> GetAdminType(string name);
 
