@@ -13,6 +13,7 @@ namespace EPlast.BLL.Settings
         private const string CityAdminRoleName = Roles.CityHead;
         private const string CityAdminDeputyRoleName = Roles.CityHeadDeputy;
 
+
         private readonly IRepositoryWrapper _repositoryWrapper;
 
         public CityAccessSettings(IRepositoryWrapper repositoryWrapper)

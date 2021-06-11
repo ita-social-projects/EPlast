@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace EPlast.BLL.DTO.Region
 {
@@ -8,5 +6,6 @@ namespace EPlast.BLL.DTO.Region
     {
         public int ID { get; set; }
         public string RegionName { get; set; }
+        public IEnumerable<int> YearsHasReport { get; set; }
     }
 }

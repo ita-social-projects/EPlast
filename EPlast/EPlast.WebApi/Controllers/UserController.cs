@@ -16,7 +16,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 
 namespace EPlast.WebApi.Controllers
@@ -323,6 +322,7 @@ namespace EPlast.WebApi.Controllers
             {
                 item.Approver.User.ImagePath = await _userService.GetImageBase64Async(item.Approver.User.ImagePath);
             }
+
             if (model.ClubApprover != null)
             {
                 model.ClubApprover.Approver.User.ImagePath = await _userService.GetImageBase64Async(model?.ClubApprover?.Approver?.User.ImagePath);

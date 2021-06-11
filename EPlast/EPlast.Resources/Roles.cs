@@ -16,7 +16,7 @@
         public const string CityHead = "Голова Станиці";
         public const string CityHeadDeputy = "Заступник Голови Станиці";
         public const string CitySecretary = "Діловод Станиці";
-        public const string FormerPlastMember = "Колишній член пласту";
+        public const string FormerPlastMember = "Колишній член Пласту";
         public const string RegisteredUser = "Зареєстрований користувач";
         public const string Interested = "Зацікавлений";
         public const string RegionBoardHead = "Голова Краю";
@@ -36,7 +36,7 @@
         public const string HeadsAndHeadDeputiesAndAdminPlastunSupporterAndRegisteredUser = Admin + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," 
             + CityHeadDeputy + "," + KurinHead + "," + KurinHeadDeputy + "," + PlastMember + "," + Supporter + "," + RegisteredUser;
         public const string StatisticsAccessRoles = Admin + "," + PlastHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," 
-            + CityHeadDeputy + "," + KurinHead + "," + KurinHeadDeputy;
+            + CityHeadDeputy;
         public const string AdminPlastMemberAndSupporter = Admin + "," + PlastMember + "," + Supporter;
         public const string AdminAndKurinHeadAndKurinHeadDeputy = Admin + "," + KurinHead + "," + KurinHeadDeputy;
         public const string AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy = Admin + "," + CityHead + "," + OkrugaHead + "," + CityHeadDeputy + "," + OkrugaHeadDeputy;
