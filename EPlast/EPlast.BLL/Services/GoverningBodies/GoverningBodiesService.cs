@@ -143,7 +143,9 @@ namespace EPlast.BLL.Services.GoverningBodies
                     .Include(g => g.GoverningBodyAdministration)
                         .ThenInclude(a => a.AdminType)
                     .Include(g => g.GoverningBodyAdministration)
-                        .ThenInclude(a => a.User));
+                        .ThenInclude(a => a.User)
+                    .Include(g => g.GoverningBodyDocuments)
+                    .ThenInclude(d => d.GoverningBodyDocumentType));
             return _mapper.Map<Organization, GoverningBodyDTO>(governingBody);
         }
 
@@ -159,6 +161,25 @@ namespace EPlast.BLL.Services.GoverningBodies
             _repoWrapper.GoverningBody.Delete(governingBody);
             await _repoWrapper.SaveAsync();
             return governingBodyId;
+        }
+
+        public async Task<GoverningBodyProfileDTO> GetGoverningBodyDocumentsAsync(int governingBodyId)
+        {
+            var governingBody = await GetGoverningBodyByIdAsync(governingBodyId);
+            if (governingBody == null)
+            {
+                return null;
+            }
+
+            var governingBodyDoc = governingBody.GoverningBodyDocuments.Take(6).ToList();
+
+            var governingBodyProfileDto = new GoverningBodyProfileDTO
+            {
+                GoverningBody = governingBody,
+                Documents = governingBodyDoc
+            };
+
+            return governingBodyProfileDto;
         }
 
         public async Task<Dictionary<string, bool>> GetUserAccessAsync(string userId)

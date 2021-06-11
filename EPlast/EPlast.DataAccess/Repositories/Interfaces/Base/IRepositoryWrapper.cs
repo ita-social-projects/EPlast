@@ -57,6 +57,8 @@ namespace EPlast.DataAccess.Repositories
         INotificationTypeRepository NotificationTypes { get; }
         IOrganizationRepository GoverningBody { get; }
         IGoverningBodyAdministrationRepository GoverningBodyAdministration { get; }
+        IGoverningBodyDocumentsRepository GoverningBodyDocuments { get; }
+        IGoverningBodyDocumentTypeRepository GoverningBodyDocumentType { get; }
         IParticipantRepository Participant { get; }
         IParticipantStatusRepository ParticipantStatus { get; }
         IPlastDegreeRepository PlastDegrees { get; }

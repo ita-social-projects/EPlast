@@ -20,6 +20,7 @@ namespace EPlast.Tests.Controllers
     {
         private Mock<IGoverningBodiesService> _governingBodiesService;
         private Mock<IGoverningBodyAdministrationService> _governingBodyAdministrationService;
+        private Mock<IGoverningBodyDocumentsService> _governingBodyDocumentsService;
         private Mock<IMapper> _mapper;
         private Mock<ILoggerService<GoverningBodiesController>> _logger;
         private GoverningBodiesController _controller;
@@ -29,13 +30,15 @@ namespace EPlast.Tests.Controllers
         {
             _governingBodiesService = new Mock<IGoverningBodiesService>();
             _governingBodyAdministrationService = new Mock<IGoverningBodyAdministrationService>();
+            _governingBodyDocumentsService = new Mock<IGoverningBodyDocumentsService>();
             _logger = new Mock<ILoggerService<GoverningBodiesController>>();
             _mapper = new Mock<IMapper>();
             _controller = new GoverningBodiesController(
                 _governingBodiesService.Object,
                 _logger.Object,
                 _governingBodyAdministrationService.Object,
-                _mapper.Object);
+                _mapper.Object,
+                _governingBodyDocumentsService.Object);
         }
 
         [Test]

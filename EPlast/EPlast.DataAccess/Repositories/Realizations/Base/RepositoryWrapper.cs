@@ -11,6 +11,7 @@ using EPlast.DataAccess.Repositories.Realizations.Events;
 using EPlast.DataAccess.Repositories.Realizations.Region;
 using NLog.Extensions.Logging;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Repositories.Realizations.GoverningBody;
 
 namespace EPlast.DataAccess.Repositories.Realizations.Base
 {
@@ -48,6 +49,8 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
 
         private IOrganizationRepository _governingBody;
         private IGoverningBodyAdministrationRepository _governingBodyAdministration;
+        private IGoverningBodyDocumentsRepository _governingBodyDocuments;
+        private IGoverningBodyDocumentTypeRepository _governingBodyDocumentType;
 
         private ICityAdministrationRepository _cityAdministration;
         private ICityDocumentsRepository _cityDocuments;
@@ -179,6 +182,32 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 }
 
                 return _governingBodyAdministration;
+            }
+        }
+
+        public IGoverningBodyDocumentTypeRepository GoverningBodyDocumentType
+        {
+            get
+            {
+                if (_governingBodyDocumentType == null)
+                {
+                    _governingBodyDocumentType = new GoverningBodyDocumentTypeRepository(_dbContext);
+                }
+
+                return _governingBodyDocumentType;
+            }
+        }
+
+        public IGoverningBodyDocumentsRepository GoverningBodyDocuments
+        {
+            get
+            {
+                if (_governingBodyDocuments == null)
+                {
+                    _governingBodyDocuments = new GoverningBodyDocumentsRepository(_dbContext);
+                }
+
+                return _governingBodyDocuments;
             }
         }
 
