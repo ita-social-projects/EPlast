@@ -48,7 +48,8 @@ namespace EPlast.BLL
 
             SetText(gfx, "Поручення дійсних членів Пласту:", XFontStyle.Bold, 50, 230);
             int count = blank.User?.ConfirmedUsers != null ? blank.User.ConfirmedUsers.Count : 0;
-            for (int i = 0, coordinates = 250; i < count; i++, coordinates += 20)
+            int countMember = 0;
+            for (int i = 0, coordinates = 230; i < count; i++)
             {
                 if (blank.User.ConfirmedUsers.ElementAt(i).isCityAdmin)
                 {
@@ -64,9 +65,10 @@ namespace EPlast.BLL
                 }
                 else
                 {
-                    SetText(gfx, $"{i + 1}. {blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.FirstName} {blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.LastName} " +
+                    SetText(gfx, $"{countMember + 1}. {blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.FirstName} {blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.LastName} " +
                     $" {blank.User.ConfirmedUsers?.ElementAt(i)?.ConfirmDate:dd.MM.yyyy}",
-                    XFontStyle.Regular, 50, coordinates);
+                    XFontStyle.Regular, 50, coordinates += 20);
+                    countMember += 1;
                 }
             }
 
