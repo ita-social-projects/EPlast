@@ -171,7 +171,7 @@ namespace EPlast.BLL.Services.GoverningBodies
                 return null;
             }
 
-            var governingBodyDoc = governingBody.GoverningBodyDocuments.Take(6).ToList();
+            var governingBodyDoc = governingBody.GoverningBodyDocuments.ToList();
 
             var governingBodyProfileDto = new GoverningBodyProfileDTO
             {

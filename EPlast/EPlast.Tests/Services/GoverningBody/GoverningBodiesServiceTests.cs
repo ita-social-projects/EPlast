@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.Admin;
+using EPlast.BLL.DTO.GoverningBody;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Services.GoverningBodies;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
@@ -14,9 +17,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using EPlast.BLL.DTO.Admin;
-using EPlast.BLL.DTO.GoverningBody;
-using EPlast.Resources;
 
 namespace EPlast.Tests.Services
 {
@@ -29,7 +29,6 @@ namespace EPlast.Tests.Services
         private Mock<IGoverningBodyBlobStorageRepository> _blobStorage;
         private Mock<ISecurityModel> _securityModel;
         private protected Mock<UserManager<User>> _userManager;
-
 
         [SetUp]
         public void SetUp()
@@ -210,6 +209,43 @@ namespace EPlast.Tests.Services
             Assert.AreEqual(dict.Count, result.Count);
         }
 
+        [TestCase(1)]
+        public async Task GetGoverningBodyDocumentsAsync_ReturnsDocuments(int governingBodyId)
+        {
+            //Arrange
+            _mapper
+                .Setup(x => x.Map<Organization, GoverningBodyDTO>(It.IsAny<Organization>())).Returns(CreateGoverningBodyDTO);
+            _repoWrapper
+                .Setup(x => x.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+                    It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>()))
+                .ReturnsAsync(_mapper.Object.Map<Organization>(CreateGoverningBodyDTO));
+
+            // Act
+            var result = await _service.GetGoverningBodyDocumentsAsync(governingBodyId);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<GoverningBodyProfileDTO>(result);
+        }
+
+        [TestCase(1)]
+        public async Task GetGoverningBodyDocumentsAsync_WithGoverningBodyIsNull_ReturnNull(int governingBodyId)
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+                    It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>()))
+                .ReturnsAsync(_mapper.Object.Map<Organization>(CreateGoverningBodyDTO));
+            _mapper.Setup(m => m.Map<Organization, GoverningBodyDTO>(It.IsAny<Organization>()))
+                .Returns((GoverningBodyDTO)null);
+
+            // Act
+            var result = await _service.GetGoverningBodyDocumentsAsync(governingBodyId);
+
+            // Assert
+            Assert.Null(result);
+        }
+
         private GoverningBodyDTO CreateGoverningBodyDTO => new GoverningBodyDTO()
         {
             Id = 1,
@@ -234,6 +270,10 @@ namespace EPlast.Tests.Services
                         AdminTypeName = Roles.GoverningBodySecretary
                     }
                 }
+            },
+            GoverningBodyDocuments = new List<GoverningBodyDocumentsDTO>
+            {
+                new GoverningBodyDocumentsDTO()
             }
         };
 
