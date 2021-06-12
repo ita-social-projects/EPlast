@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.Region;
 
 namespace EPlast.BLL.Services
 {
@@ -16,12 +17,15 @@ namespace EPlast.BLL.Services
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly ICityAccessService _cityAccessService;
+        private readonly IRegionAnnualReportService _regionAnnualReportService;
         private readonly IMapper _mapper;
 
-        public AnnualReportService(IRepositoryWrapper repositoryWrapper, ICityAccessService cityAccessService, IMapper mapper)
+        public AnnualReportService(IRepositoryWrapper repositoryWrapper, ICityAccessService cityAccessService, IRegionAnnualReportService regionAnnualReportService,
+        IMapper mapper)
         {
             _repositoryWrapper = repositoryWrapper;
             _cityAccessService = cityAccessService;
+            _regionAnnualReportService = regionAnnualReportService;
             _mapper = mapper;
         }
 
@@ -122,32 +126,37 @@ namespace EPlast.BLL.Services
         public async Task ConfirmAsync(User user, int id)
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
-                    predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed);
+                    predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed,
+                    include: source => source
+                        .Include(a => a.City));
             annualReport.Status = AnnualReportStatus.Confirmed;
             _repositoryWrapper.AnnualReports.Update(annualReport);
             await SaveLastConfirmedAsync(annualReport.CityId);
             await _repositoryWrapper.SaveAsync();
+            await _regionAnnualReportService.UpdateMembersInfo(annualReport.City.RegionId, annualReport.Date.Year);
         }
 
         ///<inheritdoc/>
         public async Task CancelAsync(User user, int id)
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
-                    predicate: a => a.ID == id && a.Status == AnnualReportStatus.Confirmed);
+                    predicate: a => a.ID == id && a.Status == AnnualReportStatus.Confirmed,
+                    include: source => source
+                        .Include(a => a.City));
             annualReport.Status = AnnualReportStatus.Unconfirmed;
             _repositoryWrapper.AnnualReports.Update(annualReport);
             await _repositoryWrapper.SaveAsync();
+            await _regionAnnualReportService.UpdateMembersInfo(annualReport.City.RegionId, annualReport.Date.Year);
         }
 
         ///<inheritdoc/>
         public async Task DeleteAsync(User user, int id)
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
-                    predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed);
-            if (!await _cityAccessService.HasAccessAsync(user, annualReport.CityId))
-            {
-                throw new UnauthorizedAccessException();
-            }
+                    predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed,
+                    include: source => source
+                        .Include(a => a.City));
+            await _regionAnnualReportService.UpdateMembersInfo(annualReport.City.RegionId, annualReport.Date.Year);
             _repositoryWrapper.AnnualReports.Delete(annualReport);
             await _repositoryWrapper.SaveAsync();
         }
@@ -178,19 +187,19 @@ namespace EPlast.BLL.Services
         private async Task<bool> CheckCreated(int cityId)
         {
             return await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
-                predicate: a => a.CityId == cityId && (a.Status == AnnualReportStatus.Unconfirmed && a.Date.Year == DateTime.Now.Year)) != null;
+                predicate: a => a.CityId == cityId && (a.Date.Year == DateTime.Now.Year)) != null;
         }
 
         public async Task<AnnualReportDTO> GetEditFormByIdAsync(User user, int id)
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
-                predicate: a => a.ID == id,
+                predicate: a => a.ID == id && a.Status==AnnualReportStatus.Unconfirmed,
                 include: source => source
                     .Include(a => a.NewCityAdmin)
                     .Include(a => a.MembersStatistic)
                     .Include(a => a.City.CityMembers)
                     .ThenInclude(m=>m.User));
-            return await _cityAccessService.HasAccessAsync(user) ? _mapper.Map<AnnualReport, AnnualReportDTO>(annualReport)
+            return (await _cityAccessService.HasAccessAsync(user, annualReport.CityId)) ? _mapper.Map<AnnualReport, AnnualReportDTO>(annualReport)
                 : throw new UnauthorizedAccessException();
         }
     }
