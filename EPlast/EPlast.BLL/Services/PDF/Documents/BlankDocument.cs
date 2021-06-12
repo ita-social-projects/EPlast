@@ -24,8 +24,8 @@ namespace EPlast.BLL
             SetText(gfx, "Для осіб, які хочуть стати дійсними членами Пласту", XFontStyle.Regular, 180, 20);
             SetDashLine(gfx, 40, 40, 560, 40);
             SetText(gfx, "форма №1", XFontStyle.Regular, 50, 50);
-            SetText(gfx, "Крайовому коменданту УСП / УПС", XFontStyle.Regular, 400, 55);
-            SetText(gfx, $"від {blank?.User?.FirstName} {blank?.User?.LastName}", XFontStyle.Underline, 400, 65);
+            SetText(gfx, "Крайовому коменданту УСП / УПС", XFontStyle.Regular, 380, 55);
+            SetText(gfx, $"від {blank?.User?.FirstName} {blank?.User?.LastName}", XFontStyle.Underline, 380, 65);
             SetText(gfx, "Заява", XFontStyle.Bold, 280, 90);
             SetText(gfx, "Прошу прийняти мене в дійсні члени Пласту – Національної Скаутської Організації України, до Уладу Старших",
                 XFontStyle.Regular, 70, 110);
@@ -75,7 +75,7 @@ namespace EPlast.BLL
 
             SetText(gfx, $"{DateTime.Now:dd.MM.yyyy}, {blank?.CityMembers?.City?.Name}", XFontStyle.Underline, 80, 310);
             SetLine(gfx, 370, 310, 460, 310);
-            SetText(gfx, $"({blank.User.LastName} {blank.User.FirstName})", XFontStyle.Italic, 463, 300);
+            SetText(gfx, $"({blank.User.LastName} {blank.User.FirstName[0]}. {(blank.User.FatherName != null ? blank.User.FatherName[0] + "." : "")})", XFontStyle.Italic, 463, 300);
             SetText(gfx, "Підпис Заявника", XFontStyle.Italic, 410, 310);
 
             SetDashLine(gfx, 40, 330, 560, 330);
