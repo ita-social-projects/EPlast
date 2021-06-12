@@ -169,7 +169,7 @@ namespace EPlast.BLL.Services
             {
                 city.Region.RegionAdministration = city.Region.RegionAdministration.Where(r =>
                 {
-                    if (r.AdminType.AdminTypeName == Roles.OkrugaHead && (r.EndDate > DateTime.Now || r.EndDate == null))
+                    if ((r.AdminType.AdminTypeName == Roles.OkrugaHead || r.AdminType.AdminTypeName == Roles.OkrugaHeadDeputy) && (r.EndDate > DateTime.Now || r.EndDate == null))
                     {
                         r.Region = null;
                         return true;

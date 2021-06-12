@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Repositories;
+using EPlast.DataAccess.Repositories.Realizations.Base;
 using EPlast.Resources;
 using DatabaseEntities = EPlast.DataAccess.Entities;
 
@@ -15,13 +17,15 @@ namespace EPlast.BLL.Services.City.CityAccess
 {
     public class CityAccessService : ICityAccessService
     {
+        private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly UserManager<DatabaseEntities.User> _userManager;
         private readonly IMapper _mapper;
 
         private readonly Dictionary<string, ICItyAccessGetter> _cityAccessGetters;
 
-        public CityAccessService(CityAccessSettings settings, UserManager<DatabaseEntities.User> userManager, IMapper mapper)
+        public CityAccessService(IRepositoryWrapper repositoryWrapper, CityAccessSettings settings, UserManager<DatabaseEntities.User> userManager, IMapper mapper)
         {
+            _repositoryWrapper = repositoryWrapper;
             _cityAccessGetters = settings.CitiAccessGetters;
             _userManager = userManager;
             _mapper = mapper;
@@ -43,14 +47,23 @@ namespace EPlast.BLL.Services.City.CityAccess
 
         public async Task<IEnumerable<CityForAdministrationDTO>> GetAllCitiesIdAndName(DatabaseEntities.User user)
         {
+            IEnumerable<CityForAdministrationDTO> options= Enumerable.Empty<CityForAdministrationDTO>();
             var roles = await _userManager.GetRolesAsync(user);
-            if (roles.Contains(Roles.Admin))
-                return _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityForAdministrationDTO>>(
+            var citiesId =
+                (await _repositoryWrapper.AnnualReports.GetAllAsync(predicate: x => x.Date.Year == DateTime.Now.Year))
+                .Select(x => x.CityId).ToList();
+            if (roles.Contains(Roles.Admin)) 
+                options = _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityForAdministrationDTO>>(
                     await _cityAccessGetters[Roles.Admin].GetCities(user.Id));
-            if (roles.Contains(Roles.CityHead))
-                return _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityForAdministrationDTO>>(
+            if (roles.Contains(Roles.CityHead) || roles.Contains(Roles.CityHeadDeputy))
+                options = _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityForAdministrationDTO>>(
                     await _cityAccessGetters[Roles.CityHead].GetCities(user.Id));
-            return Enumerable.Empty<CityForAdministrationDTO>();
+            foreach (var item in options)
+            {
+                item.HasReport = citiesId.Any(x => x == item.ID);
+            }
+
+            return options;
         }
 
         public async Task<bool> HasAccessAsync(DatabaseEntities.User user, int cityId)
@@ -64,7 +77,7 @@ namespace EPlast.BLL.Services.City.CityAccess
             var roles = await _userManager.GetRolesAsync(user);
             foreach (var role in roles)
             {
-                if (Roles.HeadsAndAdmin.Contains(role))
+                if (Roles.HeadsAndHeadDeputiesAndAdmin.Contains(role))
                     return true;
             }
             return false;

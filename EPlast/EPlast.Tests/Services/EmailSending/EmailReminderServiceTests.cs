@@ -163,6 +163,16 @@ namespace EPlast.Tests.Services.EmailSending
                         AdminTypeName = Roles.CityHead
                     },
                     User = new User()
+                },
+                new CityAdministration
+                {
+                    UserId = "userId",
+                    ID = 4,
+                    AdminType = new AdminType
+                    {
+                        AdminTypeName = Roles.CityHeadDeputy
+                    },
+                    User = new User()
                 }
             }.AsEnumerable();
         }

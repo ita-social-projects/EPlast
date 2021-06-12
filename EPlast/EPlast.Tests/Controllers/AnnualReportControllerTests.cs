@@ -721,6 +721,24 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task Create_BadRequest()
+        {
+            AnnualReportController annualController = CreateAnnualReportController;
+            annualController.ModelState.AddModelError("EroreaNnualReport", "Required");
+            // Act
+            AnnualReportDTO rdto = new AnnualReportDTO();
+            var result = await annualController.Create(rdto);
+            var expected = StatusCodes.Status400BadRequest;
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.AreEqual(expected, actual);
+        }
+
+
+        [Test]
         public async Task CreateClubAnnualReport_Invalid_InvalidModelState_Test()
         {
             // Arrange
@@ -837,36 +855,6 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             _localizer
               .Verify(s => s["NotFound"]);
-            _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
-            Assert.IsInstanceOf<ObjectResult>(result);
-        }
-
-        [Test]
-        public async Task Delete_Invalid_UnAuthorisedException_Test()
-        {
-            _annualReportService.Setup(a => a.DeleteAsync(It.IsAny<User>(), It.IsAny<int>()))
-                .Throws(new UnauthorizedAccessException());
-
-            _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
-
-            _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
-
-            _localizer
-               .Setup(s => s["NoAccess"])
-               .Returns(GetNoAccess());
-
-            AnnualReportController annualController = CreateAnnualReportController;
-
-            // Act
-            var result = await annualController.Delete(5);
-            var expected = StatusCodes.Status403Forbidden;
-            var actual = (result as ObjectResult).StatusCode;
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.AreEqual(expected, actual);
-            _localizer
-              .Verify(s => s["NoAccess"]);
             _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
             Assert.IsInstanceOf<ObjectResult>(result);
         }
@@ -1004,7 +992,6 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             Assert.NotNull(result);
-
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
 

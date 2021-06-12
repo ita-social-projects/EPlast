@@ -4,17 +4,13 @@ using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Services.Region;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.Regions
@@ -72,12 +68,13 @@ namespace EPlast.Tests.Services.Regions
             Assert.True(result.ToList().Contains(report));
         }
 
+
         [Test]
         public async Task GetRegionsNameThatUserHasAccessTo_Succeeded()
         {
             // Arrange
-            _mockRegionAccessService.Setup(x => x.GetRegionsAsync(It.IsAny<User>()))
-                .ReturnsAsync(new List<RegionDTO>(){new RegionDTO(){ID = 1, RegionName = "RegionName"}});
+            _mockRegionAccessService.Setup(x => x.GetAllRegionsIdAndName(It.IsAny<User>()))
+                .ReturnsAsync(new List<RegionForAdministrationDTO>(){new RegionForAdministrationDTO(){ID = 1, RegionName = "RegionName"}});
 
             // Act
             var result = await service.GetAllRegionsIdAndName(new User());
@@ -88,132 +85,23 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
-        public async Task GetRegionMembersInfo_MemBersListCount2()
+        public async Task GetRegionMembersInfo_ReturnsExpexted()
         {
             //Arrange
-            _mockRepositoryWrapper.Setup(x => x.City.GetAllAsync(
-                It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
-                It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
-                    IIncludableQueryable<DataAccess.Entities.City, object>>>())).ReturnsAsync(
-                new List<DataAccess.Entities.City>()
-                {
-                    new DataAccess.Entities.City()
-                    {
-                        ID = 1,
-                        Name = "CityName"
-                    }
-                });
-            _mockRepositoryWrapper.Setup(x => x.AnnualReports.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<DataAccess.Entities.AnnualReport, bool>>>(),
-                    It.IsAny<Func<IQueryable<DataAccess.Entities.AnnualReport>,
-                        IIncludableQueryable<DataAccess.Entities.AnnualReport, object>>>()))
-                .ReturnsAsync(FakeAnnualReportConfirmed());
+            var expected = new List<RegionMembersInfoTableObject>() {_fakeMembersInfoTableObject(),};
             _mockRepositoryWrapper
-                .Setup(x => x.MembersStatistics.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<MembersStatistic, bool>>>(), null)).ReturnsAsync(FakeMembersStatistic());
+                .Setup(x => x.RegionAnnualReports.GetRegionMembersInfoAsync(It.IsAny<int>(), It.IsAny<int>(), false,
+                    It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(expected);
 
             //Act
-            var result = await service.GetRegionMembersInfo(1, 1);
+            var result = await service.GetRegionMembersInfoAsync(1, 1, 1, 1);
 
             //Assert
             Assert.IsNotNull(result);
             Assert.IsNotEmpty(result.ToList());
-            Assert.True(result.ToList().Count==2);
+            Assert.AreEqual(expected, result);
         }
 
-        [Test]
-        public async Task GetRegionMembersInfo_MemBersListCount1()
-        {
-            //Arrange
-            _mockRepositoryWrapper.Setup(x => x.City.GetAllAsync(
-                It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
-                It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
-                    IIncludableQueryable<DataAccess.Entities.City, object>>>())).ReturnsAsync(
-                new List<DataAccess.Entities.City>()
-                {
-                    new DataAccess.Entities.City()
-                    {
-                        ID = 1,
-                        Name = "CityName"
-                    }
-                });
-            _mockRepositoryWrapper.Setup(x => x.AnnualReports.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<DataAccess.Entities.AnnualReport, bool>>>(),
-                    It.IsAny<Func<IQueryable<DataAccess.Entities.AnnualReport>,
-                        IIncludableQueryable<DataAccess.Entities.AnnualReport, object>>>()))
-                .ReturnsAsync(FakeAnnualReportUnconfirmed());
-            _mockRepositoryWrapper
-                .Setup(x => x.MembersStatistics.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<MembersStatistic, bool>>>(), null)).ReturnsAsync(FakeMembersStatistic());
-
-            //Act
-            var result = await service.GetRegionMembersInfo(1, 1);
-
-            //Assert
-            Assert.IsNotNull(result);
-            Assert.IsNotEmpty(result.ToList());
-            Assert.True(result.ToList().Count == 1);
-        }
-
-        [Test]
-        public async Task GetRegionMembersInfo_CityReportNull()
-        {
-            //Arrange
-            _mockRepositoryWrapper.Setup(x => x.City.GetAllAsync(
-                It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
-                It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
-                    IIncludableQueryable<DataAccess.Entities.City, object>>>())).ReturnsAsync(
-                new List<DataAccess.Entities.City>()
-                {
-                    new DataAccess.Entities.City()
-                    {
-                        ID = 1,
-                        Name = "CityName"
-                    }
-                });
-            _mockRepositoryWrapper.Setup(x => x.AnnualReports.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<DataAccess.Entities.AnnualReport, bool>>>(),
-                    It.IsAny<Func<IQueryable<DataAccess.Entities.AnnualReport>,
-                        IIncludableQueryable<DataAccess.Entities.AnnualReport, object>>>()))
-                .ReturnsAsync(null as AnnualReport);
-            _mockRepositoryWrapper
-                .Setup(x => x.MembersStatistics.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<MembersStatistic, bool>>>(), null)).ReturnsAsync(FakeMembersStatistic());
-
-            //Act
-            var result = await service.GetRegionMembersInfo(1, 1);
-
-            //Assert
-            Assert.IsNotNull(result);
-            Assert.IsNotEmpty(result.ToList());
-            Assert.True(result.ToList().Count == 1);
-            _mockRepositoryWrapper.Verify(x => x.AnnualReports.GetFirstOrDefaultAsync(
-                It.IsAny<Expression<Func<DataAccess.Entities.AnnualReport, bool>>>(),
-                It.IsAny<Func<IQueryable<DataAccess.Entities.AnnualReport>,
-                    IIncludableQueryable<DataAccess.Entities.AnnualReport, object>>>()));
-        }
-
-        [Test]
-        public async Task GetRegionMembersInfo_CityEmpty()
-        {
-            //Arrange
-            _mockRepositoryWrapper.Setup(x => x.City.GetAllAsync(
-                It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
-                It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
-                    IIncludableQueryable<DataAccess.Entities.City, object>>>())).ReturnsAsync(new List<DataAccess.Entities.City>());
-
-            //Act
-            var result = await service.GetRegionMembersInfo(1, 1);
-
-            //Assert
-            Assert.IsNotNull(result);
-            Assert.IsEmpty(result.ToList());
-            _mockRepositoryWrapper.Verify(x => x.City.GetAllAsync(
-                It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
-                It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
-                    IIncludableQueryable<DataAccess.Entities.City, object>>>()));
-        }
-        
 
         [Test]
         public async Task CancelAsync()
@@ -241,18 +129,280 @@ namespace EPlast.Tests.Services.Regions
             _mockRepositoryWrapper.Setup(x => x.RegionAnnualReports.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<DataAccess.Entities.RegionAnnualReport, bool>>>(), null))
                 .ReturnsAsync(new RegionAnnualReport() { RegionId = 1, Status = AnnualReportStatus.Unconfirmed });
+            _mockRepositoryWrapper.Setup(x => x.RegionAnnualReports.GetRegionMembersInfoAsync(It.IsAny<int>(),
+                    It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new List<RegionMembersInfoTableObject>() { _fakeMembersInfoTableObject(), });
 
 
             //Act
-            await service.EditAsync(1, fakeRegionAnnualReportQuestions());
+            await service.EditAsync(1, _fakeRegionAnnualReportQuestions());
 
             //Assert
             _mockRepositoryWrapper.Verify(x => x.RegionAnnualReports.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<DataAccess.Entities.RegionAnnualReport, bool>>>(), null));
         }
 
+        [Test]
+        public void EditAsync_InvalidOperationException()
+        {
+            //Arrange
+            _mockRepositoryWrapper.Setup(x => x.RegionAnnualReports.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<DataAccess.Entities.RegionAnnualReport, bool>>>(), null))
+                .ReturnsAsync(new RegionAnnualReport() { Status = AnnualReportStatus.Saved });
+            _mockRepositoryWrapper.Setup(x => x.RegionAnnualReports.GetRegionMembersInfoAsync(It.IsAny<int>(),
+                    It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new List<RegionMembersInfoTableObject>() { _fakeMembersInfoTableObject(), });
 
-        private AnnualReport FakeAnnualReportConfirmed()
+            // Act & Assert
+            Assert.ThrowsAsync<InvalidOperationException>(() =>
+                service.EditAsync(1, _fakeRegionAnnualReportQuestions()));
+        }
+
+        [Test]
+        public async Task GetAllRegionsReportsAsync_NoParams()
+        {
+            //Arrange
+            var expected = new List<RegionAnnualReportDTO> {new RegionAnnualReportDTO() {RegionId = 1}};
+            _mockRepositoryWrapper
+                .Setup(r => r.RegionAnnualReports.FindAll()).Returns(new List<RegionAnnualReport>{ new RegionAnnualReport()}.AsQueryable());
+            _mockMapper.Setup(x =>
+                x.Map<IEnumerable<RegionAnnualReport>, IEnumerable<RegionAnnualReportDTO>>(
+                    It.IsAny<List<RegionAnnualReport>>())).Returns(expected);
+
+            //Act
+            var result = await service.GetAllRegionsReportsAsync();
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsNotEmpty(result.ToList());
+            Assert.AreEqual(expected, result);
+        }
+
+        [Test]
+        public async Task GetAllAsync_ReturnsExpected()
+        {
+            //Arrange
+            var expected = new List<RegionAnnualReportDTO> {_fakeRegionAnnualReport()};
+            _mockRepositoryWrapper
+                .Setup(x => x.RegionAnnualReports.GetAllAsync(It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(),
+                    It.IsAny<Func<IQueryable<RegionAnnualReport>, IIncludableQueryable<RegionAnnualReport, object>>>()))
+                .ReturnsAsync(new List<RegionAnnualReport>());
+            _mockMapper.Setup(x =>
+                x.Map<IEnumerable<RegionAnnualReport>, IEnumerable<RegionAnnualReportDTO>>(
+                    It.IsAny<IEnumerable<RegionAnnualReport>>())).Returns(expected);
+
+            //Act
+            var result= await service.GetAllAsync(new User());
+
+            //Assert
+            _mockMapper.Verify(x =>
+                x.Map<IEnumerable<RegionAnnualReport>, IEnumerable<RegionAnnualReportDTO>>(
+                    It.IsAny<IEnumerable<RegionAnnualReport>>()), Times.Once);
+            Assert.AreEqual(expected, result);
+        }
+
+        [Test]
+        public void CreateAsync_InvalidOperationException()
+        {
+            //Arrange
+            _mockRepositoryWrapper.Setup(x =>
+                    x.Region.GetFirstOrDefaultAsync(
+                        It.IsAny<Expression<Func<Region, bool>>>(), null))
+                .ReturnsAsync(new Region() { ID=1});
+            _mockRegionAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(true);
+            _mockRepositoryWrapper.Setup(x =>
+                    x.RegionAnnualReports.GetFirstOrDefaultAsync(
+                        It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(), null))
+                .ReturnsAsync(new RegionAnnualReport());
+
+            // Act & Assert
+            Assert.ThrowsAsync<InvalidOperationException>(() =>
+                service.CreateAsync(new User(), new RegionAnnualReportDTO()));
+        }
+
+        [Test]
+        public void CreateAsync_UnauthorizedAccessException()
+        {
+            //Arrange
+            _mockRepositoryWrapper.Setup(x =>
+                    x.Region.GetFirstOrDefaultAsync(
+                        It.IsAny<Expression<Func<Region, bool>>>(), null))
+                .ReturnsAsync(new Region() { ID = 1 });
+            _mockRegionAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(false);
+            _mockRepositoryWrapper.Setup(x =>
+                    x.RegionAnnualReports.GetFirstOrDefaultAsync(
+                        It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(), null))
+                .ReturnsAsync((RegionAnnualReport) null);
+
+            // Act & Assert
+            Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+                service.CreateAsync(new User(), new RegionAnnualReportDTO()));
+        }
+
+        [Test]
+        public async Task CreateAsync_Succeeded()
+        {
+            //Arrange
+            _mockRepositoryWrapper.Setup(x =>
+                    x.Region.GetFirstOrDefaultAsync(
+                        It.IsAny<Expression<Func<Region, bool>>>(), null))
+                .ReturnsAsync(new Region() { RegionName = "TestRegionName" });
+            _mockRegionAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(true);
+            _mockRepositoryWrapper.Setup(x =>
+                    x.RegionAnnualReports.GetFirstOrDefaultAsync(
+                        It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(), null))
+                .ReturnsAsync((RegionAnnualReport)null);
+            _mockMapper.Setup(x => x.Map<RegionAnnualReportDTO, RegionAnnualReport>(It.IsAny<RegionAnnualReportDTO>()))
+                .Returns(new RegionAnnualReport());
+
+            //Act
+            await service.CreateAsync(new User(), new RegionAnnualReportDTO());
+
+            //Assert
+            _mockRepositoryWrapper.Verify(x => x.RegionAnnualReports.CreateAsync(It.IsAny<RegionAnnualReport>()),
+                Times.Once);
+            _mockRepositoryWrapper.Verify(x => x.SaveAsync(), Times.Once);
+            _mockMapper.Verify(x => x.Map<RegionAnnualReportDTO, RegionAnnualReport>(It.IsAny<RegionAnnualReportDTO>()), Times.Once);
+        }
+
+        [Test]
+        public async Task UpdateMembersInfo_Succeeded()
+        {
+            //Arrange
+            _mockRepositoryWrapper.Setup(x =>
+                    x.RegionAnnualReports.GetFirstOrDefaultAsync(
+                        It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(), null))
+                .ReturnsAsync(new RegionAnnualReport());
+            _mockRepositoryWrapper.Setup(x => x.RegionAnnualReports.GetRegionMembersInfoAsync(It.IsAny<int>(),
+                    It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new List<RegionMembersInfoTableObject>() {_fakeMembersInfoTableObject(),});
+
+            //Act
+            await service.UpdateMembersInfo(1, 1);
+
+            //Assert
+            _mockRepositoryWrapper.Verify(x => x.RegionAnnualReports.GetFirstOrDefaultAsync(
+                It.IsAny<Expression<Func<DataAccess.Entities.RegionAnnualReport, bool>>>(), null), Times.Once);
+            _mockRepositoryWrapper.Verify(x => x.RegionAnnualReports.Update(It.IsAny<RegionAnnualReport>()));
+            _mockRepositoryWrapper.Verify(x=>x.SaveAsync());
+        }
+
+        [Test]
+        public async Task UpdateMembersInfo_ReportNotFound()
+        {
+            //Arrange
+            _mockRepositoryWrapper.Setup(x =>
+                    x.RegionAnnualReports.GetFirstOrDefaultAsync(
+                        It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(), null))
+                .ReturnsAsync((RegionAnnualReport)null);
+
+            //Act
+            await service.UpdateMembersInfo(1, 1);
+
+            //Assert
+            _mockRepositoryWrapper.Verify(x => x.RegionAnnualReports.GetFirstOrDefaultAsync(
+                It.IsAny<Expression<Func<DataAccess.Entities.RegionAnnualReport, bool>>>(), null), Times.Once);
+            _mockRepositoryWrapper.Verify(x => x.RegionAnnualReports.GetRegionMembersInfoAsync(It.IsAny<int>(),
+                It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>()), Times.Never);
+            _mockRepositoryWrapper.Verify(x => x.RegionAnnualReports.Update(It.IsAny<RegionAnnualReport>()), Times.Never);
+            _mockRepositoryWrapper.Verify(x => x.SaveAsync(), Times.Never);
+
+        }
+
+        [Test]
+        public void CreateByNameAsync_UnauthorizedAccessException()
+        {
+            //Arrange
+            _mockRepositoryWrapper.Setup(x =>
+                    x.Region.GetFirstOrDefaultAsync(
+                        It.IsAny<Expression<Func<Region, bool>>>(), null))
+                .ReturnsAsync(new Region());
+            _mockRegionAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(false);
+
+            // Act & Assert
+            Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+                service.CreateByNameAsync(new User(), 1, 1, new RegionAnnualReportQuestions()));
+        }
+
+        [Test]
+        public void CreateByNameAsync_InvalidOperationException()
+        {
+            //Arrange
+            _mockRepositoryWrapper.Setup(x =>
+                    x.Region.GetFirstOrDefaultAsync(
+                        It.IsAny<Expression<Func<Region, bool>>>(), null))
+                .ReturnsAsync(new Region());
+            _mockRegionAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(true);
+            _mockRepositoryWrapper.Setup(x =>
+                    x.RegionAnnualReports.GetFirstOrDefaultAsync(
+                        It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(), null))
+                .ReturnsAsync(new RegionAnnualReport());
+
+            // Act & Assert
+            Assert.ThrowsAsync<InvalidOperationException>(() =>
+                service.CreateByNameAsync(new User(), 1, 1, new RegionAnnualReportQuestions()));
+        }
+
+        [Test]
+        public async Task CreateByNameAsync_Succeeded()
+        {
+            //Arrange
+            _mockRepositoryWrapper.Setup(x =>
+                    x.Region.GetFirstOrDefaultAsync(
+                        It.IsAny<Expression<Func<Region, bool>>>(), null))
+                .ReturnsAsync(new Region() { RegionName = "TestRegionName"});
+            _mockRegionAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(true);
+            _mockRepositoryWrapper.Setup(x =>
+                    x.RegionAnnualReports.GetFirstOrDefaultAsync(
+                        It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(), null))
+                .ReturnsAsync((RegionAnnualReport)null);
+            _mockRepositoryWrapper.Setup(x => x.RegionAnnualReports.GetRegionMembersInfoAsync(It.IsAny<int>(),
+                    It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new List<RegionMembersInfoTableObject>() { _fakeMembersInfoTableObject(), });
+
+            //Act
+            var result = await service.CreateByNameAsync(new User(), 1, 1, _fakeRegionAnnualReportQuestions());
+
+            //Assert
+            _mockRepositoryWrapper.Verify(x => x.RegionAnnualReports.Create(It.IsAny<RegionAnnualReport>()),
+                Times.Once);
+            _mockRepositoryWrapper.Verify(x=>x.SaveAsync(), Times.Once);
+            _mockMapper.Verify(x => x.Map<RegionAnnualReportDTO>(It.IsAny<RegionAnnualReport>()), Times.Once);
+        }
+
+        [Test]
+        public async Task CreateByNameAsync_Succeeded_ReturnsExpected()
+        {
+            //Arrange
+            RegionAnnualReportDTO expected = _fakeRegionAnnualReport();
+            _mockRepositoryWrapper.Setup(x =>
+                    x.Region.GetFirstOrDefaultAsync(
+                        It.IsAny<Expression<Func<Region, bool>>>(), null))
+                .ReturnsAsync(new Region() { RegionName = "TestRegionName" });
+            _mockRegionAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(true);
+            _mockRepositoryWrapper.Setup(x =>
+                    x.RegionAnnualReports.GetFirstOrDefaultAsync(
+                        It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(), null))
+                .ReturnsAsync((RegionAnnualReport)null);
+            _mockRepositoryWrapper.Setup(x => x.RegionAnnualReports.GetRegionMembersInfoAsync(It.IsAny<int>(),
+                    It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new List<RegionMembersInfoTableObject>() { _fakeMembersInfoTableObject(), });
+            _mockMapper.Setup(x => x.Map<RegionAnnualReportDTO>(It.IsAny<RegionAnnualReport>()))
+                .Returns(expected);
+
+            //Act
+            var result = await service.CreateByNameAsync(new User(), 1, DateTime.Now.Year, _fakeRegionAnnualReportQuestions());
+
+            //Assert
+            _mockRepositoryWrapper.Verify(x => x.RegionAnnualReports.Create(It.IsAny<RegionAnnualReport>()),
+                Times.Once);
+            _mockRepositoryWrapper.Verify(x => x.SaveAsync(), Times.Once);
+            _mockMapper.Verify(x => x.Map<RegionAnnualReportDTO>(It.IsAny<RegionAnnualReport>()), Times.Once);
+            Assert.AreEqual(expected, result);
+        }
+
+
+        private AnnualReport _fakeAnnualReportConfirmed()
         {
             return new AnnualReport()
             {
@@ -268,11 +418,11 @@ namespace EPlast.Tests.Services.Regions
                 NumberOfPlastpryiatMembers = 1,
                 NumberOfTeacherAdministrators = 1,
                 NumberOfTeachers = 1,
-                MembersStatistic = FakeMembersStatistic()
+                MembersStatistic = _fakeMembersStatistic()
             };
         }
 
-        private AnnualReport FakeAnnualReportUnconfirmed()
+        private AnnualReport _fakeAnnualReportUnconfirmed()
         {
             return new AnnualReport()
             {
@@ -288,11 +438,42 @@ namespace EPlast.Tests.Services.Regions
                 NumberOfPlastpryiatMembers = 1,
                 NumberOfTeacherAdministrators = 1,
                 NumberOfTeachers = 1,
-                MembersStatistic = FakeMembersStatistic()
+                MembersStatistic = _fakeMembersStatistic()
             };
         }
 
-        private MembersStatistic FakeMembersStatistic()
+        private RegionMembersInfoTableObject _fakeMembersInfoTableObject()
+        {
+            return new RegionMembersInfoTableObject()
+            {
+                CityAnnualReportId = 1,
+                CityId = 1,
+                CityName = "",
+                NumberOfAdministrators = 1,
+                NumberOfBeneficiaries = 1,
+                NumberOfClubs = 1,
+                NumberOfHonoraryMembers = 1,
+                NumberOfIndependentGroups = 1,
+                NumberOfIndependentRiy = 1,
+                NumberOfNovatstva = 1,
+                NumberOfPlastpryiatMembers = 1,
+                NumberOfPtashata = 1,
+                NumberOfSeatsPtashat = 1,
+                NumberOfUnatstvaNoname = 1,
+                NumberOfUnatstvaSupporters = 1,
+                NumberOfUnatstvaMembers = 1,
+                NumberOfUnatstvaProspectors = 1,
+                NumberOfUnatstvaSkobVirlyts = 1,
+                NumberOfSeniorPlastynSupporters = 1,
+                NumberOfSeniorPlastynMembers = 1,
+                NumberOfSeigneurSupporters = null,
+                NumberOfSeigneurMembers = null,
+                NumberOfTeacherAdministrators = 1,
+                NumberOfTeachers = 1
+            };
+        }
+
+        private MembersStatistic _fakeMembersStatistic()
         {
             return new MembersStatistic()
             {
@@ -312,7 +493,7 @@ namespace EPlast.Tests.Services.Regions
             };
         }
 
-        private RegionAnnualReportQuestions fakeRegionAnnualReportQuestions()
+        private RegionAnnualReportQuestions _fakeRegionAnnualReportQuestions()
         {
             return new RegionAnnualReportQuestions()
             {
@@ -339,6 +520,15 @@ namespace EPlast.Tests.Services.Regions
                 PublicFunding = " ",
 
                 Fundraising = " ",
+            };
+        }
+
+        private RegionAnnualReportDTO _fakeRegionAnnualReport()
+        {
+            return new RegionAnnualReportDTO()
+            {
+                ID = 1,
+                RegionName = "TestRegionName",
             };
         }
     }
