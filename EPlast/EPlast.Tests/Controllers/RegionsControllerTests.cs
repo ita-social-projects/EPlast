@@ -884,7 +884,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _regionService.Setup(x => x.GetRegionUsersAsync(It.IsAny<int>())).ReturnsAsync(new List<RegionUserDTO>());
-            int regionID= 1;
+            int regionID = 1;
             // Act
             var result = await _regionController.GetRegionUsers(regionID);
 
