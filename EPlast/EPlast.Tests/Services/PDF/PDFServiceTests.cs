@@ -63,10 +63,27 @@ namespace EPlast.Tests.Services.PDF
         [TestCase("546546")]
         public void BlankCreatePdfAsync_WithFatherName_ReturnsByteArray(string userId)
         {
-            _repository.Setup(repo => repo.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
+            // Arrange
+            _repository.Setup(x => x.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
                     It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
                 .ReturnsAsync(new User() { Id = userId, FirstName = "FirstName", LastName = "LastName", FatherName = "FatherName" });
+            _repository.Setup(x => x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
+                .ReturnsAsync(new UserProfile());
+            _repository
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                It.IsAny<Func<IQueryable<CityMembers>,
+                IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync(new CityMembers());
+            _repository
+               .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+               It.IsAny<Func<IQueryable<ClubMembers>,
+               IIncludableQueryable<ClubMembers, object>>>()))
+               .ReturnsAsync(new ClubMembers());
+
+            // Act
             var actualReturn = _pdfService.BlankCreatePDFAsync(userId);
+
+            // Assert
             _repository.Verify();
             Assert.IsInstanceOf<byte[]>(actualReturn.Result);
         }
@@ -75,10 +92,27 @@ namespace EPlast.Tests.Services.PDF
         [TestCase("546546")]
         public void BlankCreatePdfAsync_WithoutFatherName_ReturnsByteArray(string userId)
         {
-            _repository.Setup(repo => repo.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
+            // Arrange
+            _repository.Setup(x => x.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
                     It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
                 .ReturnsAsync(new User() { Id = userId, FirstName = "FirstName", LastName = "LastName" });
+            _repository.Setup(x => x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
+                .ReturnsAsync(new UserProfile());
+            _repository
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                It.IsAny<Func<IQueryable<CityMembers>,
+                IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync(new CityMembers());
+            _repository
+               .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+               It.IsAny<Func<IQueryable<ClubMembers>,
+               IIncludableQueryable<ClubMembers, object>>>()))
+               .ReturnsAsync(new ClubMembers());
+
+            // Act
             var actualReturn = _pdfService.BlankCreatePDFAsync(userId);
+
+            // Assert
             _repository.Verify();
             Assert.IsInstanceOf<byte[]>(actualReturn.Result);
         }
@@ -87,10 +121,21 @@ namespace EPlast.Tests.Services.PDF
         [TestCase("546546")]
         public void BlankCreatePdfAsync_ReturnsNull_Test(string userId)
         {
-            _repository.Setup(rep => rep.CityMembers.FindByCondition(It.IsAny<Expression<Func<CityMembers, bool>>>()))
+            // Arrange
+            _repository
+                .Setup(x => x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
+                .ReturnsAsync(new UserProfile());
+            _repository
+                .Setup(x => x.CityMembers.FindByCondition(It.IsAny<Expression<Func<CityMembers, bool>>>()))
                 .Returns(new List<CityMembers>().AsQueryable());
+            _repository
+                .Setup(x => x.ClubMembers.FindByCondition(It.IsAny<Expression<Func<ClubMembers, bool>>>()))
+                .Returns(new List<ClubMembers>().AsQueryable());
 
+            // Act
             var actualReturn = _pdfService.BlankCreatePDFAsync(userId);
+
+            // Assert
             _logger.Verify();
             Assert.Null(actualReturn.Result);
         }
