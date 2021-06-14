@@ -81,7 +81,7 @@ namespace EPlast.BLL.Services
             if (city != null)
             {
                 var cityAdmins = await _repoWrapper.CityAdministration.GetAllAsync(
-                                 predicate: c => c.CityId == cityId && c.Status==true,
+                                 predicate: c => c.CityId == cityId && c.Status,
                                  include: source => source
                       .Include(t => t.AdminType)
                       .Include(a => a.User));
