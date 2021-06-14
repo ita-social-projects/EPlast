@@ -541,9 +541,9 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetRegionUsers(int regionId)
         {
-            var Admins = await _regionService.GetRegionUsersAsync(regionId);
+            var regionUsers = await _regionService.GetRegionUsersAsync(regionId);
 
-            return Ok(Admins);
+            return Ok(regionUsers);
         }
     }
 }
