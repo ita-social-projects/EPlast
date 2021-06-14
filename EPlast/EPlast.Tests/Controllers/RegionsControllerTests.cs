@@ -798,7 +798,6 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _logger.Setup(x => x.LogError(It.IsAny<string>()));
-
             int id = -1;
             
             // Act
