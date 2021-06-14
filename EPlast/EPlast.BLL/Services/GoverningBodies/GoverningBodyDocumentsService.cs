@@ -68,9 +68,9 @@ namespace EPlast.BLL.Services.GoverningBodies
             return documentDto;
         }
 
-        public async Task<string> DownloadGoverningBodyDocumentAsync(string fileName)
+        public async Task<string> DownloadGoverningBodyDocumentAsync(string documentName)
         {
-            var fileBase64 = await _governingBodyFilesBlobStorage.GetBlobBase64Async(fileName);
+            var fileBase64 = await _governingBodyFilesBlobStorage.GetBlobBase64Async(documentName);
 
             return fileBase64;
         }
