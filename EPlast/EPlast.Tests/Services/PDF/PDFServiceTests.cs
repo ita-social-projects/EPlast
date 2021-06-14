@@ -58,13 +58,26 @@ namespace EPlast.Tests.Services.PDF
                 It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()), Times.Once);
             Assert.IsInstanceOf<byte[]>(actualReturn.Result);
         }
+
         [TestCase("1")] 
         [TestCase("546546")]
-        public void BlankCreatePdfAsync_ReturnsByteArray_Test(string userId)
+        public void BlankCreatePdfAsync_WithFatherName_ReturnsByteArray(string userId)
         {
             _repository.Setup(repo => repo.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
                     It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
-                .ReturnsAsync(new User() { Id=userId });
+                .ReturnsAsync(new User() { Id = userId, FirstName = "FirstName", LastName = "LastName", FatherName = "FatherName" });
+            var actualReturn = _pdfService.BlankCreatePDFAsync(userId);
+            _repository.Verify();
+            Assert.IsInstanceOf<byte[]>(actualReturn.Result);
+        }
+
+        [TestCase("1")]
+        [TestCase("546546")]
+        public void BlankCreatePdfAsync_WithoutFatherName_ReturnsByteArray(string userId)
+        {
+            _repository.Setup(repo => repo.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(new User() { Id = userId, FirstName = "FirstName", LastName = "LastName" });
             var actualReturn = _pdfService.BlankCreatePDFAsync(userId);
             _repository.Verify();
             Assert.IsInstanceOf<byte[]>(actualReturn.Result);
