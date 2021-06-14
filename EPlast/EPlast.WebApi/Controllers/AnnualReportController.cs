@@ -31,7 +31,8 @@ namespace EPlast.WebApi.Controllers
         private readonly IClubAnnualReportService _clubAnnualReportService;
         private readonly IMapper _mapper;
 
-        public AnnualReportController(IAnnualReportService annualReportService, 
+        public AnnualReportController(
+            IAnnualReportService annualReportService, 
             ILoggerService<AnnualReportController> loggerService,
             IStringLocalizer<AnnualReportControllerMessage> localizer, 
             UserManager<User> userManager, 
@@ -66,6 +67,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpGet("{id:int}")]
+        [Authorize(Roles = Roles.AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy)]
         public async Task<IActionResult> Get(int id)
         {
             try
@@ -316,11 +318,6 @@ namespace EPlast.WebApi.Controllers
             {
                 _loggerService.LogError($"Annual report (id: {id}) not found");
                 return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["NotFound"].Value });
-            }
-            catch (UnauthorizedAccessException)
-            {
-                _loggerService.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to delete annual report (id: {id})");
-                return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["NoAccess"].Value });
             }
         }
 

@@ -102,10 +102,12 @@ namespace EPlast.BLL.Interfaces.Region
         /// <summary>
         /// Method to get region members info
         /// </summary>
+        /// <param name="page">current page on pagination</param>
+        /// <param name="pageSize">number of records per page</param>
         /// <param name="regionId">Region identification number</param>
         /// <param name="year">Year of region members info</param>
-        /// <returns>RegionMembersInfo</returns>
-        Task<IEnumerable<RegionMembersInfo>> GetRegionMembersInfo(int regionId, int year);
+        /// <returns>RegionMembersInfoTableObject</returns>
+        Task<IEnumerable<RegionMembersInfoTableObject>> GetRegionMembersInfoAsync(int regionId, int year, int page, int pageSize);
 
         /// <summary>
         /// Method to edit region annual report
@@ -119,6 +121,8 @@ namespace EPlast.BLL.Interfaces.Region
         /// <response code="404">Region annual report does not exist</response>
         /// <response code="404">Region annual report model is not valid</response>
         Task EditAsync(int reportId, RegionAnnualReportQuestions regionAnnualReportQuestions);
+
+        Task UpdateMembersInfo(int regionId, int year);
 
         Task<IEnumerable<RegionForAdministrationDTO>> GetAllRegionsIdAndName(User user);
     }

@@ -45,6 +45,7 @@ namespace EPlast.DataAccess
         public DbSet<UserDistinctionsTableObject> UserDistinctionsTableObject { get; set; }
         public DbSet<UserPrecautionsTableObject> UserPrecautionsTableObject { get; set; }
         public DbSet<DecisionTableObject> DecisionTableObject { get; set; }
+        public DbSet<RegionMembersInfoTableObject> RegionMembersInfoTableObjects { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -57,6 +58,7 @@ namespace EPlast.DataAccess
             modelBuilder.Entity<UserDistinctionsTableObject>().HasNoKey();
             modelBuilder.Entity<UserPrecautionsTableObject>().HasNoKey();
             modelBuilder.Entity<DecisionTableObject>().HasNoKey();
+            modelBuilder.Entity<RegionMembersInfoTableObject>().HasNoKey();
 
             modelBuilder.Entity<Event>()
                 .HasKey(x => x.ID);

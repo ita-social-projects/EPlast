@@ -22,5 +22,14 @@ namespace EPlast.DataAccess.Repositories.Realizations.Region
                 userId, isAdmin ? 1 : 0, searchdata, page, pageSize, sortKey, auth ? 1 : 0);
             return items;
         }
+
+        public async Task<IEnumerable<RegionMembersInfoTableObject>> GetRegionMembersInfoAsync(int regionId, int year, bool? getGeneral,
+            int? page, int? pageSize)
+        {
+            var items = EPlastDBContext.Set<RegionMembersInfoTableObject>().FromSqlRaw(
+                "dbo.GetRegionMembersInfo @regionId={0}, @year={1}, @GetGeneral={2}, @PageIndex ={3}, @PageSize={4}",
+                regionId, year, getGeneral, page, pageSize);
+            return items;
+        }
     }
 }
