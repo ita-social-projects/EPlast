@@ -64,9 +64,10 @@ namespace EPlast.Tests.Services.PDF
         public void BlankCreatePdfAsync_WithFatherName_ReturnsByteArray(string userId)
         {
             // Arrange
-            _repository.Setup(x => x.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
+            _repository
+                .Setup(x => x.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
                     It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
-                .ReturnsAsync(new User() { Id = userId, FirstName = "FirstName", LastName = "LastName", FatherName = "FatherName" });
+                .ReturnsAsync(GetUserWithFatherName(userId));
             _repository.Setup(x => x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
                 .ReturnsAsync(new UserProfile());
             _repository
@@ -95,7 +96,7 @@ namespace EPlast.Tests.Services.PDF
             // Arrange
             _repository.Setup(x => x.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
                     It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
-                .ReturnsAsync(new User() { Id = userId, FirstName = "FirstName", LastName = "LastName" });
+                .ReturnsAsync(GetUserWithoutFatherName(userId));
             _repository.Setup(x => x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
                 .ReturnsAsync(new UserProfile());
             _repository
@@ -189,6 +190,48 @@ namespace EPlast.Tests.Services.PDF
             _logger.Verify();
             Assert.Null(actualReturn.Result);
         }
+
+        private static User GetUserWithFatherName(string userId)
+        {
+            return new User()
+            {
+                Id = userId,
+                FirstName = "FirstName",
+                LastName = "LastName",
+                FatherName = "FatherName",
+                ConfirmedUsers = listConfirmedUsers
+            };
+        }
+
+        private static User GetUserWithoutFatherName(string userId)
+        {
+            return new User()
+            {
+                Id = userId,
+                FirstName = "FirstName",
+                LastName = "LastName",
+                ConfirmedUsers = listConfirmedUsers
+            };
+        }
+
+        private static List<ConfirmedUser> listConfirmedUsers = new List<ConfirmedUser>()
+        {
+            new ConfirmedUser()
+            {
+                isCityAdmin = true,
+                isClubAdmin = false
+            },
+            new ConfirmedUser()
+            {
+                isCityAdmin = false,
+                isClubAdmin = true
+            },
+            new ConfirmedUser()
+            {
+                isCityAdmin = false,
+                isClubAdmin = false
+            }
+        };
 
         private static IQueryable<User> GetTestUsersQueryable()
         {
