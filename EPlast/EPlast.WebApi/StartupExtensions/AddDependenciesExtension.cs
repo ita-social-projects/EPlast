@@ -121,6 +121,8 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IGoverningBodyAdministrationService, GoverningBodyAdministrationService>();
             services.AddScoped<IRegionsBoardService, RegionsBoardService>();
             services.AddScoped<IGoverningBodyBlobStorageRepository, GoverningBodyBlobStorageRepository>();
+            services.AddScoped<IGoverningBodyDocumentsService, GoverningBodyDocumentsService>();
+            services.AddScoped<IGoverningBodyFilesBlobStorageRepository, GoverningBodyFilesBlobStorageRepository>();
             services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IMethodicDocumentBlobStorageRepository, MethodicDocumentBlobStarageRepository>();
             services.AddScoped<IMethodicDocumentService, MethodicDocumentService>();
