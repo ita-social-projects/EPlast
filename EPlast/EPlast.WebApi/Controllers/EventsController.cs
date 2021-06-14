@@ -59,16 +59,14 @@ namespace EPlast.WebApi.Controllers
         /// Get event categories of the appropriate event type.
         /// </summary>
         /// <returns>List of event categories of the appropriate event type.</returns>
-        /// <param name="typeId">The Id of event type</param>
         /// <param name="page">A number of the page</param>
         /// <param name="pageSize">A count of categories to display</param>
-        /// <param name="CategoryName">Optional param to find categories by name</param>
         /// <response code="200">List of event categories</response>
         /// <response code="400">Server could not understand the request due to invalid syntax</response> 
         /// <response code="404">Events does not exist</response> 
         [HttpGet("types/{typeId:int}/categories/{page:int}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetCategoriesByPage(int typeId, int page, int pageSize, string CategoryName = null)
+        public async Task<IActionResult> GetCategoriesByPage(int page, int pageSize)
         {
             var categories = await _actionManager.GetActionCategoriesAsync();
             var categoriesViewModel = new EventsCategoryViewModel(page, pageSize, categories);
@@ -159,7 +157,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">OK</response>
         /// <response code="400">Bad Request</response> 
         [HttpDelete("{id:int}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAdminAndPlastun)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
         public async Task<IActionResult> Delete(int id)
         {
             return StatusCode(await _actionManager.DeleteEventAsync(id));

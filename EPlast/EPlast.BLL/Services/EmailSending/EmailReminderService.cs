@@ -111,9 +111,12 @@ namespace EPlast.BLL.Services.EmailSending
             foreach (var newFollower in newFollowers)
             {
                 var cityAdmin = await GetCityAdminAsync(newFollower);
+                var cityAdminDeputy = await GetCityAdminDeputyAsync(newFollower);
                 var emailContent = await _emailContentService.GetCityAdminAboutNewFollowerEmailAsync(newFollower.Id,
                     newFollower.FirstName, newFollower.LastName, true);
                 await _emailSendingService.SendEmailAsync(cityAdmin.User.Email, emailContent.Subject,
+                    emailContent.Message, emailContent.Title);
+                await _emailSendingService.SendEmailAsync(cityAdminDeputy.User.Email, emailContent.Subject,
                     emailContent.Message, emailContent.Title);
             }
         }
@@ -129,6 +132,19 @@ namespace EPlast.BLL.Services.EmailSending
                                                                   && (DateTime.Now < a.EndDate || a.EndDate == null));
 
             return cityHead;
+        }
+
+        private async Task<CityAdministration> GetCityAdminDeputyAsync(User user)
+        {
+            var cityAdministration = await _repoWrapper.CityAdministration
+                .GetAllAsync(i => i.CityId == user.CityMembers.First().CityId,
+                    i => i
+                        .Include(c => c.AdminType)
+                        .Include(a => a.User));
+            var cityHeadDeputy = cityAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHeadDeputy
+                                                                  && (DateTime.Now < a.EndDate || a.EndDate == null));
+
+            return cityHeadDeputy;
         }
     }
 }

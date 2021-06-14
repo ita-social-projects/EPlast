@@ -17,8 +17,6 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using EPlast.DataAccess.Repositories;
-using EPlast.DataAccess.Repositories.Realizations.Base;
 using EPlast.Resources;
 using System.Text;
 
@@ -450,6 +448,22 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task GetRegionHeadDeputy_Int_ReturnsOkObjResult()
+        {
+            // Arrange
+            int id = 2;
+            var headDeputy = new RegionAdministrationDTO() { ID = 2 };
+            _regionAdministrationService.Setup(x => x.GetHeadDeputy(id)).ReturnsAsync(headDeputy);
+            // Act
+            var result = await _regionController.GetRegionHeadDeputy(id);
+            var actual = ((result as ObjectResult).Value as RegionAdministrationDTO).ID;
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsInstanceOf<RegionAdministrationDTO>((result as ObjectResult).Value);
+            Assert.AreEqual(2, actual);
+        }
+
+        [Test]
         public async Task GetRegions_ReturnsRegions()
         {
             // Arrange
@@ -602,10 +616,11 @@ namespace EPlast.Tests.Controllers
         public async Task GetRegionMembersInfo_ReturnsOk()
         {
             // Arrange
-            _regionAnnualReportService.Setup(x => x.GetRegionMembersInfo(It.IsAny<int>(), It.IsAny<int>()))
-                .ReturnsAsync(new List<RegionMembersInfo>());
+            _regionAnnualReportService.Setup(x =>
+                    x.GetRegionMembersInfoAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new List<RegionMembersInfoTableObject>());
             // Act
-            var result = await _regionController.GetRegionMembersInfo(1,1);
+            var result = await _regionController.GetRegionMembersInfo(1, 1, 1, 1);
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
@@ -688,10 +703,8 @@ namespace EPlast.Tests.Controllers
 
             // Arrange
             _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
-            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { "Admin" });
 
-            _regionAnnualReportService.Setup(x => x.GetRegionMembersInfo(It.IsAny<int>(), It.IsAny<int>()))
-            .ReturnsAsync(new List<RegionMembersInfo>());
+            _regionAnnualReportService.Setup(x => x.EditAsync(It.IsAny<int>(), It.IsAny<RegionAnnualReportQuestions>()));
             int reportID = 1;
             
             // Act
@@ -745,16 +758,11 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
-            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { "Admin" });
-            RegionAdministrationDTO admin = new RegionAdministrationDTO() { ID = 2 };
- 
             _logger.Setup(x => x.LogInformation(It.IsAny<string>()));
-            _regionAnnualReportService.Setup(x => x.GetRegionMembersInfo(It.IsAny<int>(), It.IsAny<int>()))
-                  .ReturnsAsync(new List<RegionMembersInfo>());
-            int id = 0;
-            
+            _regionAnnualReportService.Setup(x => x.ConfirmAsync(It.IsAny<int>()));
+
             // Act
-            var result = await _regionController.Confirm(id);
+            var result = await _regionController.Confirm(0);
             
             // Assert
             Assert.IsNotNull(result);

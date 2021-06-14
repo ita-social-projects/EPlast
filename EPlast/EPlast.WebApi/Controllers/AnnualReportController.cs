@@ -21,7 +21,7 @@ using Microsoft.AspNetCore.Identity;
 namespace EPlast.WebApi.Controllers
 {
     [ApiController, Route("api/[controller]")]
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
     public class AnnualReportController : ControllerBase
     {
         private readonly IAnnualReportService _annualReportService;
@@ -31,7 +31,8 @@ namespace EPlast.WebApi.Controllers
         private readonly IClubAnnualReportService _clubAnnualReportService;
         private readonly IMapper _mapper;
 
-        public AnnualReportController(IAnnualReportService annualReportService, 
+        public AnnualReportController(
+            IAnnualReportService annualReportService, 
             ILoggerService<AnnualReportController> loggerService,
             IStringLocalizer<AnnualReportControllerMessage> localizer, 
             UserManager<User> userManager, 
@@ -66,6 +67,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpGet("{id:int}")]
+        [Authorize(Roles = Roles.AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy)]
         public async Task<IActionResult> Get(int id)
         {
             try
@@ -140,7 +142,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpGet("EditCityAnnualReportForm/{id:int}")]
-        [Authorize(Roles = Roles.Admin+","+Roles.CityHead)]
+        [Authorize(Roles = Roles.AdminAndCityHeadAndCityHeadDeputy)]
         public async Task<IActionResult> GetEditForm(int id)
         {
             try
@@ -170,7 +172,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">The city does not exist</response>
         /// <response code="404">Annual report model is not valid</response>
         [HttpPost]
-        [Authorize(Roles = Roles.Admin + "," + Roles.CityHead)]
+        [Authorize(Roles = Roles.AdminAndCityHeadAndCityHeadDeputy)]
         public async Task<IActionResult> Create(AnnualReportDTO annualReport)
         {
             if (ModelState.IsValid)
@@ -214,7 +216,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">The annual report does not exist</response>
         /// <response code="404">Annual report model is not valid</response>
         [HttpPut]
-        [Authorize(Roles = Roles.Admin + "," + Roles.CityHead)]
+        [Authorize(Roles = Roles.AdminAndCityHeadAndCityHeadDeputy)]
         public async Task<IActionResult> Edit(AnnualReportDTO annualReport)
         {
             if (ModelState.IsValid)
@@ -316,11 +318,6 @@ namespace EPlast.WebApi.Controllers
             {
                 _loggerService.LogError($"Annual report (id: {id}) not found");
                 return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["NotFound"].Value });
-            }
-            catch (UnauthorizedAccessException)
-            {
-                _loggerService.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to delete annual report (id: {id})");
-                return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["NoAccess"].Value });
             }
         }
 
@@ -462,7 +459,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("~/api/Club/CreateClubAnnualReport")]
-        [Authorize(Roles = Roles.AdminAndKurinHead)]
+        [Authorize(Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> CreateClubAnnualReport([FromBody] ClubAnnualReportViewModel annualReport)
         {
             if (ModelState.IsValid)
@@ -582,7 +579,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">The club annual report does not exist</response>
         /// <response code="404">Annual report model is not valid</response>
         [HttpPut("~/api/Club/editClubAnnualReport")]
-        [Authorize(Roles = Roles.AdminAndKurinHead)]
+        [Authorize(Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> EditClubAnnualReport(ClubAnnualReportDTO clubAnnualReport)
         {
             if (ModelState.IsValid)
