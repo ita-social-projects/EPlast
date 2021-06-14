@@ -130,6 +130,23 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
+        public async Task AddAdministratorAsync_CathcesException()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(s => s.ClubAdministration.CreateAsync(_clubAdministration));
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AdminTypeDTO());
+            _userManager
+                .Setup(um => um.AddToRoleAsync(It.IsAny<User>(), It.IsAny<string>()))
+                .Throws<Exception>();
+
+            //Assert
+            Assert.ThrowsAsync<Exception>(() => _clubParticipantsService.AddAdministratorAsync(clubAdmDTONullDate));
+        }
+
+        [Test]
         public async Task EditAdministratorAsync_ReturnsEditedAdministratorWithSameId()
         {
             //Arrange

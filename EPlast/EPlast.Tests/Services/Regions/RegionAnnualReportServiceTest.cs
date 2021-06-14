@@ -16,6 +16,8 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Repositories.Interfaces.Region;
+using EPlast.DataAccess.Repositories.Realizations.Region;
 
 namespace EPlast.Tests.Services.Regions
 {
@@ -213,7 +215,24 @@ namespace EPlast.Tests.Services.Regions
                 It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
                     IIncludableQueryable<DataAccess.Entities.City, object>>>()));
         }
-        
+
+        [Test]
+        public async Task GetAllAsync_ReturnsRegionAnnualReportDTOIEnumerable()
+        {
+            //Arrange
+            _mockRepositoryWrapper
+                .Setup(x => x.RegionAnnualReports.GetAllAsync(
+                    It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(),
+                    It.IsAny<Func<IQueryable<RegionAnnualReport>, IIncludableQueryable<RegionAnnualReport, object>>>()))
+                .ReturnsAsync(new List<RegionAnnualReport>() { new RegionAnnualReport() });
+
+            //Act
+            var res = await service.GetAllAsync(new User());
+
+            //Assert
+            Assert.IsInstanceOf<IEnumerable<RegionAnnualReportDTO>>(res);
+            Assert.IsNotNull(res);
+        }
 
         [Test]
         public async Task CancelAsync()
@@ -251,6 +270,18 @@ namespace EPlast.Tests.Services.Regions
                 It.IsAny<Expression<Func<DataAccess.Entities.RegionAnnualReport, bool>>>(), null));
         }
 
+        [Test]
+        public async Task EditAsync_ThrowsException()
+        {
+            //Arrange
+            _mockRepositoryWrapper.Setup(x => x.RegionAnnualReports.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<DataAccess.Entities.RegionAnnualReport, bool>>>(), null))
+                .ReturnsAsync(new RegionAnnualReport() { RegionId = 1, Status = AnnualReportStatus.Confirmed });
+
+            //Assert
+            Assert.ThrowsAsync<InvalidOperationException>(() =>
+                service.EditAsync(1, fakeRegionAnnualReportQuestions()));
+        }
 
         private AnnualReport FakeAnnualReportConfirmed()
         {
