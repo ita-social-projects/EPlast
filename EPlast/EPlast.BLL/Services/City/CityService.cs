@@ -75,16 +75,24 @@ namespace EPlast.BLL.Services
             var city = await _repoWrapper.City.GetFirstOrDefaultAsync(
                     predicate: c => c.ID == cityId,
                     include: source => source
-                       .Include(c => c.CityAdministration)
-                           .ThenInclude(t => t.AdminType)
-                       .Include(k => k.CityAdministration)
-                           .ThenInclude(a => a.User)
-                       .Include(m => m.CityMembers)
-                           .ThenInclude(u => u.User)
                        .Include(l => l.CityDocuments)
                            .ThenInclude(d => d.CityDocumentType)
                        .Include(r => r.Region));
+            if (city != null)
+            {
+                var cityAdmins = await _repoWrapper.CityAdministration.GetAllAsync(
+                                 predicate: c => c.CityId == cityId && c.Status==true,
+                                 include: source => source
+                      .Include(t => t.AdminType)
+                      .Include(a => a.User));
 
+                var cityMembers = await _repoWrapper.CityMembers.GetAllAsync(
+                                  predicate: c => c.CityId == cityId,
+                                  include: source => source
+                        .Include(a => a.User));
+                city.CityAdministration = cityAdmins.ToList();
+                city.CityMembers = cityMembers.ToList();
+            }
             return _mapper.Map<DataAccessCity.City, CityDTO>(city);
         }
 
