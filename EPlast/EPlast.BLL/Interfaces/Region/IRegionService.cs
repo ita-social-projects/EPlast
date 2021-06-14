@@ -34,5 +34,11 @@ namespace EPlast.BLL.Interfaces.Region
         /// </summary>
         /// <returns>All Regions</returns>
         Task<IEnumerable<RegionForAdministrationDTO>> GetRegions();
+
+        /// <summary>
+        /// >Get Region Users 
+        /// </summary>
+        /// <returns> All users of cities included in this region</returns>
+        Task<IEnumerable<RegionUserDTO>> GetRegionUsersAsync(int regionId);
     }
 }

@@ -430,6 +430,25 @@ namespace EPlast.Tests.Services.Regions
             Assert.NotNull(result);
         }
 
+
+        [Test]
+        public void GetRegionUsersAsync_ReturnDTO()
+        {
+            // Arrange
+            int regionID = 1;
+            _repoWrapper
+                   .Setup(x => x.CityMembers.GetAllAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                It.IsAny<Func<IQueryable<CityMembers>, IIncludableQueryable<CityMembers, object>>>()))
+                  .ReturnsAsync(new List<CityMembers> { new CityMembers()});
+        
+            // Act
+            var result = _regionService.GetRegionUsersAsync(regionID);
+
+            // Assert
+            Assert.NotNull(result);
+            _repoWrapper.Verify();
+            Assert.IsInstanceOf<Task<IEnumerable<RegionUserDTO>>>(result);
+        }
         private readonly int fakeId = 6;
         
         private readonly User user = new User();
