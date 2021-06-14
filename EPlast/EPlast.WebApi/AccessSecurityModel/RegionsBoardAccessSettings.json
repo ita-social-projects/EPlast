@@ -54,5 +54,13 @@
     "AddDecision": false,
     "EditRB": false,
     "ManipulateDocument": false
+  },
+  "Зареєстрований користувач": {
+    "CreateGB": false,
+    "ViewInfo": true,
+    "ViewDecisions": false,
+    "AddDecision": false,
+    "EditRB": false,
+    "ManipulateDocument": false
   }
 }
