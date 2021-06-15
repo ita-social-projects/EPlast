@@ -390,6 +390,7 @@ namespace EPlast.Tests.Services.PDF
                         LastName = "LastName"
                     }
                 },
+                ConfirmDate = DateTime.Now,
                 isCityAdmin = true,
                 isClubAdmin = false
             },
@@ -402,6 +403,7 @@ namespace EPlast.Tests.Services.PDF
                         FirstName = "FirstName"
                     }
                 },
+                ConfirmDate = DateTime.Now,
                 isCityAdmin = false,
                 isClubAdmin = true
             },
@@ -414,6 +416,7 @@ namespace EPlast.Tests.Services.PDF
                         LastName = "LastName"
                     }
                 },
+                ConfirmDate = DateTime.Now,
                 isCityAdmin = false,
                 isClubAdmin = false
             }
