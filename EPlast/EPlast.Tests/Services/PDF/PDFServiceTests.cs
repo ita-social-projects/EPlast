@@ -197,7 +197,14 @@ namespace EPlast.Tests.Services.PDF
                 FirstName = "FirstName",
                 LastName = "LastName",
                 FatherName = "FatherName",
-                ConfirmedUsers = listConfirmedUsers
+                ConfirmedUsers = listConfirmedUsers,
+                UserPlastDegrees = new List<UserPlastDegree>()
+                {
+                    new UserPlastDegree()
+                    {
+                        IsCurrent = true
+                    }
+                }
             };
         }
 
@@ -216,16 +223,40 @@ namespace EPlast.Tests.Services.PDF
         {
             new ConfirmedUser()
             {
+                Approver = new Approver()
+                {
+                    User = new User()
+                    {
+                        FirstName = "FirstName",
+                        LastName = "LastName"
+                    }
+                },
                 isCityAdmin = true,
                 isClubAdmin = false
             },
             new ConfirmedUser()
             {
+                Approver = new Approver()
+                {
+                    User = new User()
+                    {
+                        FirstName = "FirstName",
+                        LastName = "LastName"
+                    }
+                },
                 isCityAdmin = false,
                 isClubAdmin = true
             },
             new ConfirmedUser()
             {
+                Approver = new Approver()
+                {
+                    User = new User()
+                    {
+                        FirstName = "FirstName",
+                        LastName = "LastName"
+                    }
+                },
                 isCityAdmin = false,
                 isClubAdmin = false
             }
