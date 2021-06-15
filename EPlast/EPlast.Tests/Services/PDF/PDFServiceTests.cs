@@ -419,6 +419,19 @@ namespace EPlast.Tests.Services.PDF
                 ConfirmDate = DateTime.Now,
                 isCityAdmin = false,
                 isClubAdmin = false
+            },
+            new ConfirmedUser()
+            {
+                Approver = new Approver(),
+                ConfirmDate = DateTime.Now,
+                isCityAdmin = false,
+                isClubAdmin = false
+            },
+            new ConfirmedUser()
+            {
+                ConfirmDate = DateTime.Now,
+                isCityAdmin = false,
+                isClubAdmin = false
             }
         };
 

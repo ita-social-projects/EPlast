@@ -75,7 +75,7 @@ namespace EPlast.BLL.Services.PDF.Documents
 
             SetText(gfx, $"{DateTime.Now:dd.MM.yyyy}, {blank?.CityMembers?.City?.Name}", XFontStyle.Underline, 80, 310);
             SetLine(gfx, 370, 310, 460, 310);
-            SetText(gfx, $"({blank.User.LastName} {blank.User.FirstName?[0]}. {(blank.User.FatherName != null ? blank.User.FatherName?[0] + "." : "")})", XFontStyle.Italic, 463, 300);
+            SetText(gfx, $"({blank.User.LastName} {blank.User.FirstName?[0]}. {(blank.User.FatherName != null ? blank.User.FatherName[0] + "." : "")})", XFontStyle.Italic, 463, 300);
             SetText(gfx, "Підпис Заявника", XFontStyle.Italic, 410, 310);
 
             SetDashLine(gfx, 40, 330, 560, 330);
