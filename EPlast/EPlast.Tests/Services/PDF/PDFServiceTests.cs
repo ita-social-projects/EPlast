@@ -116,95 +116,7 @@ namespace EPlast.Tests.Services.PDF
             Assert.IsInstanceOf<byte[]>(actualReturn.Result);
         }
 
-        [TestCase("1")]
-        [TestCase("546546")]
-        public void BlankCreatePdfAsync_WithOnlyFirstName_ReturnsByteArray(string userId)
-        {
-            // Arrange
-            _repository
-                .Setup(x => x.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
-                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
-                .ReturnsAsync(GetUserWithOnlyFirstName(userId));
-            _repository.Setup(x => x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
-                .ReturnsAsync(new UserProfile());
-            _repository
-                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
-                    It.IsAny<Func<IQueryable<CityMembers>,
-                        IIncludableQueryable<CityMembers, object>>>()))
-                .ReturnsAsync(new CityMembers());
-            _repository
-                .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
-                    It.IsAny<Func<IQueryable<ClubMembers>,
-                        IIncludableQueryable<ClubMembers, object>>>()))
-                .ReturnsAsync(new ClubMembers());
-
-            // Act
-            var actualReturn = _pdfService.BlankCreatePDFAsync(userId);
-
-            // Assert
-            _repository.Verify();
-            Assert.IsInstanceOf<byte[]>(actualReturn.Result);
-        }
-
-        [TestCase("1")]
-        [TestCase("546546")]
-        public void BlankCreatePdfAsync_WithOnlyLastName_ReturnsByteArray(string userId)
-        {
-            // Arrange
-            _repository
-                .Setup(x => x.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
-                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
-                .ReturnsAsync(GetUserWithOnlyLastName(userId));
-            _repository.Setup(x => x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
-                .ReturnsAsync(new UserProfile());
-            _repository
-                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
-                    It.IsAny<Func<IQueryable<CityMembers>,
-                        IIncludableQueryable<CityMembers, object>>>()))
-                .ReturnsAsync(new CityMembers());
-            _repository
-                .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
-                    It.IsAny<Func<IQueryable<ClubMembers>,
-                        IIncludableQueryable<ClubMembers, object>>>()))
-                .ReturnsAsync(new ClubMembers());
-
-            // Act
-            var actualReturn = _pdfService.BlankCreatePDFAsync(userId);
-
-            // Assert
-            _repository.Verify();
-            Assert.IsInstanceOf<byte[]>(actualReturn.Result);
-        }
-
-        [TestCase("1")]
-        [TestCase("546546")]
-        public void BlankCreatePdfAsync_WithOnlyFatherName_ReturnsByteArray(string userId)
-        {
-            // Arrange
-            _repository
-                .Setup(x => x.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
-                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
-                .ReturnsAsync(GetUserWithOnlyFatherName(userId));
-            _repository.Setup(x => x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
-                .ReturnsAsync(new UserProfile());
-            _repository
-                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
-                    It.IsAny<Func<IQueryable<CityMembers>,
-                        IIncludableQueryable<CityMembers, object>>>()))
-                .ReturnsAsync(new CityMembers());
-            _repository
-                .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
-                    It.IsAny<Func<IQueryable<ClubMembers>,
-                        IIncludableQueryable<ClubMembers, object>>>()))
-                .ReturnsAsync(new ClubMembers());
-
-            // Act
-            var actualReturn = _pdfService.BlankCreatePDFAsync(userId);
-
-            // Assert
-            _repository.Verify();
-            Assert.IsInstanceOf<byte[]>(actualReturn.Result);
-        }
+        
 
         [TestCase("1")]
         [TestCase("546546")]
@@ -214,7 +126,7 @@ namespace EPlast.Tests.Services.PDF
             _repository
                 .Setup(x => x.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
                     It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
-                .ReturnsAsync(GetUserWithoutAnyName(userId));
+                .ReturnsAsync(GetUserWithEmptyListConfirmedUser(userId));
             _repository.Setup(x => x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
                 .ReturnsAsync(new UserProfile());
             _repository
@@ -339,42 +251,14 @@ namespace EPlast.Tests.Services.PDF
             };
         }
 
-        private static User GetUserWithOnlyFirstName(string userId)
+        private static User GetUserWithEmptyListConfirmedUser(string userId)
         {
             return new User()
             {
                 Id = userId,
                 FirstName = "FirstName",
-                ConfirmedUsers = listConfirmedUsers
-            };
-        }
-
-        private static User GetUserWithOnlyLastName(string userId)
-        {
-            return new User()
-            {
-                Id = userId,
                 LastName = "LastName",
-                ConfirmedUsers = listConfirmedUsers
-            };
-        }
-
-        private static User GetUserWithOnlyFatherName(string userId)
-        {
-            return new User()
-            {
-                Id = userId,
-                FatherName = "FatherName",
-                ConfirmedUsers = listConfirmedUsers
-            };
-        }
-
-        private static User GetUserWithoutAnyName(string userId)
-        {
-            return new User()
-            {
-                Id = userId,
-                ConfirmedUsers = listConfirmedUsers
+                ConfirmedUsers = emptyListConfirmedUsers
             };
         }
 
@@ -390,7 +274,6 @@ namespace EPlast.Tests.Services.PDF
                         LastName = "LastName"
                     }
                 },
-                ConfirmDate = DateTime.Now,
                 isCityAdmin = true,
                 isClubAdmin = false
             },
@@ -403,7 +286,7 @@ namespace EPlast.Tests.Services.PDF
                         FirstName = "FirstName"
                     }
                 },
-                ConfirmDate = DateTime.Now,
+
                 isCityAdmin = false,
                 isClubAdmin = true
             },
@@ -416,24 +299,32 @@ namespace EPlast.Tests.Services.PDF
                         LastName = "LastName"
                     }
                 },
-                ConfirmDate = DateTime.Now,
+                isCityAdmin = false,
+                isClubAdmin = false
+            },
+            new ConfirmedUser()
+            {
+                Approver = new Approver()
+                {
+                    User = new User()
+                },
                 isCityAdmin = false,
                 isClubAdmin = false
             },
             new ConfirmedUser()
             {
                 Approver = new Approver(),
-                ConfirmDate = DateTime.Now,
                 isCityAdmin = false,
                 isClubAdmin = false
             },
             new ConfirmedUser()
             {
-                ConfirmDate = DateTime.Now,
                 isCityAdmin = false,
                 isClubAdmin = false
             }
         };
+
+        private static List<ConfirmedUser> emptyListConfirmedUsers = new List<ConfirmedUser>();
 
         private static IQueryable<User> GetTestUsersQueryable()
         {
