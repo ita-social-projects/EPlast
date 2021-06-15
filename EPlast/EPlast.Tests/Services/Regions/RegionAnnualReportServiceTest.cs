@@ -389,7 +389,7 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
-        public async Task EditAsync_ThrowsException()
+        public void EditAsync_ThrowsException()
         {
             //Arrange
             _mockRepositoryWrapper.Setup(x => x.RegionAnnualReports.GetFirstOrDefaultAsync(

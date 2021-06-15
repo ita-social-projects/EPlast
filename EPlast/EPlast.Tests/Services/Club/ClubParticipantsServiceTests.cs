@@ -164,7 +164,7 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
-        public async Task AddAdministratorAsync_CathcesException()
+        public void AddAdministratorAsync_CatchesException()
         {
             //Arrange
             _repoWrapper

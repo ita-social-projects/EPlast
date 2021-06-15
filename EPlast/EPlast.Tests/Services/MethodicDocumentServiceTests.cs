@@ -124,7 +124,7 @@ namespace EPlast.Tests.Services
         }
 
         [TestCase(1)]
-        public async Task DeleteMethodicDocumentAsyncTest_ThrowsArgumentNullException(int docId)
+        public void DeleteMethodicDocumentAsyncTest_ThrowsArgumentNullException(int docId)
         {
             //Arrange
             _repository
