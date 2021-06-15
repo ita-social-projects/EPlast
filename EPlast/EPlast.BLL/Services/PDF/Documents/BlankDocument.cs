@@ -6,7 +6,7 @@ using System.IO;
 using QRCoder;
 using System.Drawing;
 
-namespace EPlast.BLL
+namespace EPlast.BLL.Services.PDF.Documents
 {
     public class BlankDocument : PdfDocument
     {
