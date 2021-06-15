@@ -118,7 +118,7 @@ namespace EPlast.Tests.Services.PDF
 
         [TestCase("1")]
         [TestCase("546546")]
-        public void BlankCreatePdfAsync_WithFirstName_ReturnsByteArray(string userId)
+        public void BlankCreatePdfAsync_WithOnlyFirstName_ReturnsByteArray(string userId)
         {
             // Arrange
             _repository
@@ -148,13 +148,43 @@ namespace EPlast.Tests.Services.PDF
 
         [TestCase("1")]
         [TestCase("546546")]
-        public void BlankCreatePdfAsync_WithLastName_ReturnsByteArray(string userId)
+        public void BlankCreatePdfAsync_WithOnlyLastName_ReturnsByteArray(string userId)
         {
             // Arrange
             _repository
                 .Setup(x => x.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
                     It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
                 .ReturnsAsync(GetUserWithOnlyLastName(userId));
+            _repository.Setup(x => x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
+                .ReturnsAsync(new UserProfile());
+            _repository
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityMembers>,
+                        IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync(new CityMembers());
+            _repository
+                .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubMembers>,
+                        IIncludableQueryable<ClubMembers, object>>>()))
+                .ReturnsAsync(new ClubMembers());
+
+            // Act
+            var actualReturn = _pdfService.BlankCreatePDFAsync(userId);
+
+            // Assert
+            _repository.Verify();
+            Assert.IsInstanceOf<byte[]>(actualReturn.Result);
+        }
+
+        [TestCase("1")]
+        [TestCase("546546")]
+        public void BlankCreatePdfAsync_WithOnlyFatherName_ReturnsByteArray(string userId)
+        {
+            // Arrange
+            _repository
+                .Setup(x => x.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(GetUserWithOnlyFatherName(userId));
             _repository.Setup(x => x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
                 .ReturnsAsync(new UserProfile());
             _repository
@@ -299,6 +329,16 @@ namespace EPlast.Tests.Services.PDF
             };
         }
 
+        private static User GetUserWithOnlyFatherName(string userId)
+        {
+            return new User()
+            {
+                Id = userId,
+                FatherName = "FatherName",
+                ConfirmedUsers = listConfirmedUsers
+            };
+        }
+
         private static List<ConfirmedUser> listConfirmedUsers = new List<ConfirmedUser>()
         {
             new ConfirmedUser()
@@ -320,8 +360,7 @@ namespace EPlast.Tests.Services.PDF
                 {
                     User = new User()
                     {
-                        FirstName = "FirstName",
-                        LastName = "LastName"
+                        FirstName = "FirstName"
                     }
                 },
                 isCityAdmin = false,
@@ -333,7 +372,6 @@ namespace EPlast.Tests.Services.PDF
                 {
                     User = new User()
                     {
-                        FirstName = "FirstName",
                         LastName = "LastName"
                     }
                 },
