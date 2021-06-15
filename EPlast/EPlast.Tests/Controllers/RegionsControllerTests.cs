@@ -798,7 +798,6 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _logger.Setup(x => x.LogError(It.IsAny<string>()));
-
             int id = -1;
             
             // Act
@@ -880,6 +879,19 @@ namespace EPlast.Tests.Controllers
                 _cache.Object);
         }
 
+        [Test]
+        public async Task GetRegionUsers_returnOk()
+        {
+            // Arrange
+            _regionService.Setup(x => x.GetRegionUsersAsync(It.IsAny<int>())).ReturnsAsync(new List<RegionUserDTO>());
+            int regionID = 1;
+            // Act
+            var result = await _regionController.GetRegionUsers(regionID);
+
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsInstanceOf<List<RegionUserDTO>>((result as ObjectResult).Value);
+        }
         private RegionAnnualReportQuestions fakeRegionAnnualReportQuestions()
         {
             return new RegionAnnualReportQuestions()

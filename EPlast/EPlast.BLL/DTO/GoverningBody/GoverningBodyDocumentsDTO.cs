@@ -8,8 +8,8 @@ namespace EPlast.BLL.DTO.GoverningBody
         public DateTime? SubmitDate { get; set; }
         public string BlobName { get; set; }
         public string FileName { get; set; }
-        public int CityDocumentTypeId { get; set; }
-        public GoverningBodyDocumentTypeDTO CityDocumentType { get; set; }
-        public int CityId { get; set; }
+        public int GoverningBodyDocumentTypeId { get; set; }
+        public GoverningBodyDocumentTypeDTO GoverningBodyDocumentType { get; set; }
+        public int GoverningBodyId { get; set; }
     }
 }
