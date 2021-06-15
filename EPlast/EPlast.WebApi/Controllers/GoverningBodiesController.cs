@@ -17,16 +17,18 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly IGoverningBodiesService _governingBodiesService;
         private readonly IGoverningBodyAdministrationService _governingBodyAdministrationService;
+        private readonly IGoverningBodyDocumentsService _governingBodyDocumentsService;
         private readonly ILoggerService<GoverningBodiesController> _logger;
         private readonly IMapper _mapper;
 
         public GoverningBodiesController(IGoverningBodiesService service,
-            ILoggerService<GoverningBodiesController> logger, IGoverningBodyAdministrationService governingBodyAdministrationService, IMapper mapper)
+            ILoggerService<GoverningBodiesController> logger, IGoverningBodyAdministrationService governingBodyAdministrationService, IMapper mapper, IGoverningBodyDocumentsService governingBodyDocumentsService)
         {
             _governingBodiesService = service;
             _logger = logger;
             _governingBodyAdministrationService = governingBodyAdministrationService;
             _mapper = mapper;
+            _governingBodyDocumentsService = governingBodyDocumentsService;
         }
 
         [HttpGet]
@@ -170,6 +172,83 @@ namespace EPlast.WebApi.Controllers
             _logger.LogInformation($"Admin with ID {{{adminId}}} was removed.");
 
             return Ok();
+        }
+
+        /// <summary>
+        /// Get all documents of a specific Governing Body
+        /// </summary>
+        /// <param name="governingBodyId">The id of the Governing Body</param>
+        /// <returns>All documents of a specific Governing Body</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Governing Body not found</response>
+        [HttpGet("Documents/{governingBodyId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetDocuments(int governingBodyId)
+        {
+            var governingBodyProfileDto = await _governingBodiesService.GetGoverningBodyDocumentsAsync(governingBodyId);
+            if (governingBodyProfileDto == null)
+            {
+                return NotFound();
+            }
+
+            var governingBodyProfile = _mapper.Map<GoverningBodyProfileDTO, GoverningBodyViewModel>(governingBodyProfileDto);
+
+            return Ok(new { governingBodyProfile.Documents });
+        }
+
+        /// <summary>
+        /// Add a document to the Governing Body
+        /// </summary>
+        /// <param name="document">An information about a specific document</param>
+        /// <returns>A newly created document</returns>
+        [HttpPost("AddDocument/{governingBodyId}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodyHead)]
+        public async Task<IActionResult> AddDocument(GoverningBodyDocumentsDTO document)
+        {
+            await _governingBodyDocumentsService.AddGoverningBodyDocumentAsync(document);
+            _logger.LogInformation($"Document with id {{{document.Id}}} was added.");
+
+            return Ok(document);
+        }
+
+        /// <summary>
+        /// Get a file in base64 format
+        /// </summary>
+        /// <param name="fileName">The name of a Governing Body document</param>
+        /// <returns>A base64 string of the file</returns>
+        [HttpGet("FileBase64/{fileName}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetFileBase64(string fileName)
+        {
+            var fileBase64 = await _governingBodyDocumentsService.DownloadGoverningBodyDocumentAsync(fileName);
+
+            return Ok(fileBase64);
+        }
+
+        /// <summary>
+        /// Remove a specific document
+        /// </summary>
+        /// <param name="documentId">The id of a specific document</param>
+        [HttpDelete("RemoveDocument/{documentId}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodyHead)]
+        public async Task<IActionResult> RemoveDocument(int documentId)
+        {
+            await _governingBodyDocumentsService.DeleteGoverningBodyDocumentAsync(documentId);
+            _logger.LogInformation($"Document with id {{{documentId}}} was deleted.");
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Get document types
+        /// </summary>
+        [HttpGet("GetDocumentTypes")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetDocumentTypesAsync()
+        {
+            var documentTypes = await _governingBodyDocumentsService.GetAllGoverningBodyDocumentTypesAsync();
+
+            return Ok(documentTypes);
         }
 
         [HttpGet("GetUserAccesses/{userId}")]

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.GoverningBody;
 using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.BLL.Interfaces.Logging;
@@ -10,9 +11,6 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using EPlast.BLL.DTO.Admin;
-using EPlast.BLL.DTO.City;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace EPlast.Tests.Controllers
 {
@@ -20,6 +18,7 @@ namespace EPlast.Tests.Controllers
     {
         private Mock<IGoverningBodiesService> _governingBodiesService;
         private Mock<IGoverningBodyAdministrationService> _governingBodyAdministrationService;
+        private Mock<IGoverningBodyDocumentsService> _governingBodyDocumentsService;
         private Mock<IMapper> _mapper;
         private Mock<ILoggerService<GoverningBodiesController>> _logger;
         private GoverningBodiesController _controller;
@@ -29,13 +28,15 @@ namespace EPlast.Tests.Controllers
         {
             _governingBodiesService = new Mock<IGoverningBodiesService>();
             _governingBodyAdministrationService = new Mock<IGoverningBodyAdministrationService>();
+            _governingBodyDocumentsService = new Mock<IGoverningBodyDocumentsService>();
             _logger = new Mock<ILoggerService<GoverningBodiesController>>();
             _mapper = new Mock<IMapper>();
             _controller = new GoverningBodiesController(
                 _governingBodiesService.Object,
                 _logger.Object,
                 _governingBodyAdministrationService.Object,
-                _mapper.Object);
+                _mapper.Object,
+                _governingBodyDocumentsService.Object);
         }
 
         [Test]
@@ -237,7 +238,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(c => c.GetGoverningBodyProfileAsync(It.IsAny<int>()))
                 .ReturnsAsync(new GoverningBodyProfileDTO());
             _mapper
-                .Setup(m => m.Map<GoverningBodyProfileDTO, GoverningBodyViewModel> (It.IsAny<GoverningBodyProfileDTO>()))
+                .Setup(m => m.Map<GoverningBodyProfileDTO, GoverningBodyViewModel>(It.IsAny<GoverningBodyProfileDTO>()))
                 .Returns(new GoverningBodyViewModel());
 
             // Act
@@ -312,6 +313,125 @@ namespace EPlast.Tests.Controllers
             // Assert
             _logger.Verify();
             _governingBodyAdministrationService.Verify();
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
+        }
+
+        [TestCase(2)]
+        public async Task GetDocuments_Valid_Test(int id)
+        {
+            // Arrange
+            _governingBodiesService
+                .Setup(c => c.GetGoverningBodyDocumentsAsync(It.IsAny<int>()))
+                .ReturnsAsync(new GoverningBodyProfileDTO());
+            _mapper
+                .Setup(m => m.Map<GoverningBodyProfileDTO, GoverningBodyViewModel>(It.IsAny<GoverningBodyProfileDTO>()))
+                .Returns(new GoverningBodyViewModel());
+
+            // Act
+            var result = await _controller.GetDocuments(id);
+            var resultValue = (result as OkObjectResult)?.Value;
+
+            // Assert
+            _mapper.Verify(m => m.Map<GoverningBodyProfileDTO, GoverningBodyViewModel>(It.IsAny<GoverningBodyProfileDTO>()));
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(resultValue);
+        }
+
+        [Test]
+        public async Task GetDocuments_Invalid_Test()
+        {
+            // Arrange
+            _governingBodiesService
+                .Setup(c => c.GetGoverningBodyDocumentsAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            _mapper
+                .Setup(m => m.Map<GoverningBodyProfileDTO, GoverningBodyViewModel>(It.IsAny<GoverningBodyProfileDTO>()))
+                .Returns(new GoverningBodyViewModel());
+
+            // Act
+            var result = await _controller.GetDocuments(FakeId);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task GetDocumentTypesAsync_Valid_Test()
+        {
+            // Arrange
+            _governingBodyDocumentsService
+                .Setup(c => c.GetAllGoverningBodyDocumentTypesAsync())
+                .ReturnsAsync(new List<GoverningBodyDocumentTypeDTO> { new GoverningBodyDocumentTypeDTO() });
+
+            // Act
+            var result = await _controller.GetDocumentTypesAsync();
+            var resultValue = (result as OkObjectResult)?.Value;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(resultValue);
+            Assert.IsInstanceOf<IEnumerable<GoverningBodyDocumentTypeDTO>>(resultValue);
+        }
+
+        [TestCase("fileName")]
+        public async Task GetFileBase64_Valid_Test(string fileName)
+        {
+            // Arrange
+            _governingBodyDocumentsService
+                .Setup(c => c.DownloadGoverningBodyDocumentAsync(It.IsAny<string>()))
+                .ReturnsAsync(fileName);
+
+            // Act
+            var result = await _controller.GetFileBase64(fileName);
+            var resultValue = (result as OkObjectResult)?.Value;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(resultValue);
+            Assert.IsInstanceOf<string>(resultValue);
+        }
+
+        [Test]
+        public async Task AddDocument_Valid_Test()
+        {
+            // Arrange
+            _mapper
+                .Setup(m => m.Map<GoverningBodyDocumentsViewModel, GoverningBodyDocumentsDTO>(It.IsAny<GoverningBodyDocumentsViewModel>()))
+                .Returns(new GoverningBodyDocumentsDTO());
+            _governingBodyDocumentsService
+                .Setup(c => c.AddGoverningBodyDocumentAsync(It.IsAny<GoverningBodyDocumentsDTO>()));
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+
+            // Act
+            var result = await _controller.AddDocument(new GoverningBodyDocumentsDTO());
+            var resultValue = (result as OkObjectResult)?.Value;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(resultValue);
+            Assert.IsInstanceOf<GoverningBodyDocumentsDTO>(resultValue);
+        }
+
+        [Test]
+        public async Task RemoveDocument_Valid_Test()
+        {
+            // Arrange
+            _governingBodyDocumentsService
+                .Setup(c => c.DeleteGoverningBodyDocumentAsync(It.IsAny<int>()));
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+
+            // Act
+            var result = await _controller.RemoveDocument(FakeId);
+
+            // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkResult>(result);
         }
