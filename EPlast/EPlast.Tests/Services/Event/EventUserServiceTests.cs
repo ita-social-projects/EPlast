@@ -83,10 +83,10 @@ namespace EPlast.Tests.Services.Event
                 .ReturnsAsync(new DBUser());
 
             //Act
-            var res = await _service.EventUserAsync("", new User());
+            var result = await _service.EventUserAsync("", new User());
 
             //Assert
-            Assert.IsInstanceOf<EventUserDTO>(res);
+            Assert.IsInstanceOf<EventUserDTO>(result);
         }
 
         [Test]
@@ -127,10 +127,10 @@ namespace EPlast.Tests.Services.Event
                 .ReturnsAsync(new DBUser());
 
             //Act
-            var res = await _service.EventUserAsync("", new User());
+            var result = await _service.EventUserAsync("", new User());
 
             //Assert
-            Assert.IsInstanceOf<EventUserDTO>(res);
+            Assert.IsInstanceOf<EventUserDTO>(result);
         }
     }
 }

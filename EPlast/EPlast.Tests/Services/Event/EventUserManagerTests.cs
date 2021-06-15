@@ -56,15 +56,15 @@ namespace EPlast.Tests.Services.Event
                 .ReturnsAsync(new EventAdministration() { ID = 1 });
             _repoWrapper
                 .Setup(x => x.Event.Update(It.IsAny<DAEvent>()));
+            var inputModel = new EventCreateDTO();
+            inputModel.Event = new EventCreationDTO();
+            inputModel.Сommandant = new EventAdministrationDTO();
+            inputModel.Alternate = new EventAdministrationDTO();
+            inputModel.Bunchuzhnyi = new EventAdministrationDTO();
+            inputModel.Pysar = new EventAdministrationDTO();
 
             //Act
-            var model = new EventCreateDTO();
-            model.Event = new EventCreationDTO();
-            model.Сommandant = new EventAdministrationDTO();
-            model.Alternate = new EventAdministrationDTO();
-            model.Bunchuzhnyi = new EventAdministrationDTO();
-            model.Pysar = new EventAdministrationDTO();
-            await _service.EditEventAsync(model);
+            await _service.EditEventAsync(inputModel);
 
             //Assert
             _repoWrapper.Verify(x => x.Event.Update(It.IsAny<DAEvent>()));
@@ -87,10 +87,10 @@ namespace EPlast.Tests.Services.Event
                 .ReturnsAsync(1);
 
             //Act
-            var res = await _service.ApproveEventAsync(1);
+            var result = await _service.ApproveEventAsync(1);
 
             //Assert
-            Assert.AreEqual(200, res);
+            Assert.AreEqual(200, result);
         }
 
         [Test]
@@ -107,10 +107,10 @@ namespace EPlast.Tests.Services.Event
                 .Throws<Exception>();
 
             //Act
-            var res = await _service.ApproveEventAsync(1);
+            var result = await _service.ApproveEventAsync(1);
 
             //Assert
-            Assert.AreEqual(400, res);
+            Assert.AreEqual(400, result);
         }
     }
 }

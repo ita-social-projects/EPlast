@@ -227,11 +227,11 @@ namespace EPlast.Tests.Services.Regions
                 .ReturnsAsync(new List<RegionAnnualReport>() { new RegionAnnualReport() });
 
             //Act
-            var res = await service.GetAllAsync(new User());
+            var result = await service.GetAllAsync(new User());
 
             //Assert
-            Assert.IsInstanceOf<IEnumerable<RegionAnnualReportDTO>>(res);
-            Assert.IsNotNull(res);
+            Assert.IsInstanceOf<IEnumerable<RegionAnnualReportDTO>>(result);
+            Assert.IsNotNull(result);
         }
 
         [Test]

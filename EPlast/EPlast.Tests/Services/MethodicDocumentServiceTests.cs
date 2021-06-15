@@ -174,12 +174,12 @@ namespace EPlast.Tests.Services
         }
 
         [TestCase(1)]
-        public async Task SaveMethodicDocumentAsyncTest_UploadsFileToBlob(int Id)
+        public async Task SaveMethodicDocumentAsyncTest_UploadsFileToBlob(int id)
         {
             //Arrange
             _mapper
                 .Setup(x => x.Map<MethodicDocument>(It.IsAny<MethodicDocumentDTO>()))
-                .Returns(new MethodicDocument() { ID = Id, FileName = "name"});
+                .Returns(new MethodicDocument() { ID = id, FileName = "name"});
             _repository
                 .Setup(rep => rep.MethodicDocument.Attach(new MethodicDocument()));
             _repository
@@ -190,12 +190,12 @@ namespace EPlast.Tests.Services
 
             //Act
             int res = await _service.SaveMethodicDocumentAsync(
-                new MethodicDocumentWraperDTO() { MethodicDocument = new MethodicDocumentDTO() { ID = Id }, FileAsBase64 = "someName" });
+                new MethodicDocumentWraperDTO() { MethodicDocument = new MethodicDocumentDTO() { ID = id }, FileAsBase64 = "someName" });
 
             //Assert
             _blobStorage.Verify(bs => bs.UploadBlobForBase64Async(
                 It.IsAny<string>(), It.IsAny<string>()), Times.Once);
-            Assert.AreEqual(Id, res);
+            Assert.AreEqual(id, res);
         }
 
         [Test]
