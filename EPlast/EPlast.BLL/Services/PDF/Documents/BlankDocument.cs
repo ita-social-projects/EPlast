@@ -25,7 +25,7 @@ namespace EPlast.BLL.Services.PDF.Documents
             SetDashLine(gfx, 40, 40, 560, 40);
             SetText(gfx, "форма №1", XFontStyle.Regular, 50, 50);
             SetText(gfx, "Крайовому коменданту УСП / УПС", XFontStyle.Regular, 380, 55);
-            SetText(gfx, $"від {blank?.User?.FirstName} {blank?.User?.LastName}", XFontStyle.Underline, 380, 65);
+            SetText(gfx, $"від {blank.User.FirstName} {blank.User.LastName}", XFontStyle.Underline, 380, 65);
             SetText(gfx, "Заява", XFontStyle.Bold, 280, 90);
             SetText(gfx, "Прошу прийняти мене в дійсні члени Пласту – Національної Скаутської Організації України, до Уладу Старших",
                 XFontStyle.Regular, 70, 110);
