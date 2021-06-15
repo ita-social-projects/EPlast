@@ -47,10 +47,18 @@ namespace EPlast.WebApi.Controllers
             var roles = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User));
             var isUserAdmin = roles.Contains(Roles.Admin);
             var isUserHeadOfCity = roles.Contains(Roles.CityHead);
+            var isUserHeadDeputyOfCity = roles.Contains(Roles.CityHeadDeputy);
             var isUserHeadOfClub = roles.Contains(Roles.KurinHead);
+            var isUserHeadDeputyOfClub = roles.Contains(Roles.KurinHeadDeputy);
             var isUserHeadOfRegion = roles.Contains(Roles.OkrugaHead);
-            if (isUserAdmin || (isUserHeadOfClub && _userService.IsUserSameClub(currentUser, focusUser)) || (isUserHeadOfCity && _userService.IsUserSameCity(currentUser, focusUser)) ||
-                (isUserHeadOfRegion && _userService.IsUserSameRegion(currentUser, focusUser)))
+            var isUserHeadDeputyOfRegion = roles.Contains(Roles.OkrugaHeadDeputy);
+            if (isUserAdmin 
+                || (isUserHeadOfClub && _userService.IsUserSameClub(currentUser, focusUser)) 
+                || (isUserHeadDeputyOfClub && _userService.IsUserSameClub(currentUser, focusUser)) 
+                || (isUserHeadOfCity && _userService.IsUserSameCity(currentUser, focusUser)) 
+                || (isUserHeadDeputyOfCity && _userService.IsUserSameCity(currentUser, focusUser)) 
+                || (isUserHeadOfRegion && _userService.IsUserSameRegion(currentUser, focusUser))
+                || (isUserHeadDeputyOfRegion && _userService.IsUserSameRegion(currentUser, focusUser)))
                 return true;
             _loggerService.LogError($"No access.");
             return false;
@@ -74,7 +82,7 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _plastDegreeService.GetUserPlastDegreesAsync(userId));
         }
 
-        [Authorize(Roles = Roles.Admin+","+Roles.RegionBoardHead+","+Roles.OkrugaHead+","+Roles.CityHead)]
+        [Authorize(Roles = Roles.AdminRegionBoardHeadOkrugaCityHeadAndDeputy)]
         [HttpPost("degree")]
         public async Task<IActionResult> AddPlastDegreeForUser(UserPlastDegreePostDTO userPlastDegreePostDTO)
         {
@@ -87,13 +95,20 @@ namespace EPlast.WebApi.Controllers
                  && new List<int>() { 1, 7 }.Contains(userPlastDegreePostDTO.PlastDegreeId)) || 
                  !(await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User))).Contains(Roles.CityHead)))
             {
-                return Created("GetAllDergees", userPlastDegreePostDTO.PlastDegreeId);
+                return Created("GetAllDegrees", userPlastDegreePostDTO.PlastDegreeId);
+            }
+            if (await _plastDegreeService.AddPlastDegreeForUserAsync(userPlastDegreePostDTO) &&
+                (((await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User))).Contains(Roles.CityHeadDeputy)
+                 && new List<int>() { 1, 7 }.Contains(userPlastDegreePostDTO.PlastDegreeId)) ||
+                 !(await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User))).Contains(Roles.CityHeadDeputy)))
+            {
+                return Created("GetAllDegrees", userPlastDegreePostDTO.PlastDegreeId);
             }
 
             return BadRequest();
         }
 
-        [Authorize(Roles = Roles.Admin + "," + Roles.RegionBoardHead + "," + Roles.OkrugaHead)]
+        [Authorize(Roles = Roles.AdminRegionBoardHeadOkrugaHeadAndDeputy)]
         [HttpDelete("degree/{userId}/{plastDegreeId}")]
         public async Task<IActionResult> DeletePlastDegreeForUser(string userId, int plastDegreeId)
         {
@@ -109,7 +124,7 @@ namespace EPlast.WebApi.Controllers
             return BadRequest();
         }
 
-        [Authorize(Roles = Roles.Admin + "," + Roles.RegionBoardHead + "," + Roles.OkrugaHead)]
+        [Authorize(Roles = Roles.AdminRegionBoardHeadOkrugaHeadAndDeputy)]
         [HttpPut("degree/setAsCurrent/{userId}/{plastDegreeId}")]
         public async Task<IActionResult> SetPlastDegreeAsCurrent(string userId, int plastDegreeId)
         {
@@ -125,7 +140,7 @@ namespace EPlast.WebApi.Controllers
             return BadRequest();
         }
 
-        [Authorize(Roles = Roles.Admin + "," + Roles.RegionBoardHead + "," + Roles.OkrugaHead)]
+        [Authorize(Roles = Roles.AdminRegionBoardHeadOkrugaHeadAndDeputy)]
         [HttpPut("degree/endDate")]
         public async Task<IActionResult> AddEndDatePlastDegreeForUser(UserPlastDegreePutDTO userPlastDegreePutDTO)
         {
@@ -154,7 +169,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
         [HttpPost("dates")]
         public async Task<IActionResult> ChangeUserDates(UserMembershipDatesDTO userMembershipDatesDTO)
         {

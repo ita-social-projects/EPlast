@@ -53,6 +53,127 @@ namespace EPlast.Tests.Services.City
                    _cityAccessService.Object, _userManager.Object, _uniqueId.Object);
         }
 
+        [Test]
+        public void GetCityHead_ReturnsCityHead_Valid()
+        {
+            // Arrange
+            CityDTO cityDTO = new CityDTO();
+            cityDTO.CityAdministration = new List<CityAdministrationDTO>() 
+            { 
+                new CityAdministrationDTO()
+                {
+                    AdminType = new AdminTypeDTO()
+                    {
+                        AdminTypeName = Roles.CityHead
+                    }
+                }
+            };
+
+            // Act
+            var result = _cityService.GetCityHead(cityDTO);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<CityAdministrationDTO>(result);
+        }
+
+        [Test]
+        public void GetCityHead_ReturnsCityHead_InValid()
+        {
+            // Arrange
+            CityDTO cityDTO = new CityDTO();
+            cityDTO.CityAdministration = new List<CityAdministrationDTO>()
+            {
+                new CityAdministrationDTO()
+                {
+                    AdminType = new AdminTypeDTO()
+                    {
+                        AdminTypeName = Roles.CityHead
+                    },
+                    EndDate = new DateTime(2000, 10, 5)
+                }
+            };
+
+            // Act
+            var result = _cityService.GetCityHead(cityDTO);
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+        [Test]
+        public void GetCityHead_WithoutCityAdministration()
+        {
+            // Arrange
+            CityDTO cityDTO = new CityDTO();
+
+            // Act
+            var result = _cityService.GetCityHead(cityDTO);
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+        [Test]
+        public void GetCityHeadDeputy_ReturnsCityHeadDeputy_Valid()
+        {
+            // Arrange
+            CityDTO cityDTO = new CityDTO();
+            cityDTO.CityAdministration = new List<CityAdministrationDTO>()
+            {
+                new CityAdministrationDTO()
+                {
+                    AdminType = new AdminTypeDTO()
+                    {
+                        AdminTypeName = Roles.CityHeadDeputy
+                    }
+                }
+            };
+
+            // Act
+            var result = _cityService.GetCityHeadDeputy(cityDTO);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<CityAdministrationDTO>(result);
+        }
+
+        [Test]
+        public void GetCityHeadDeputy_ReturnsCityHeadDeputy_InValid()
+        {
+            // Arrange
+            CityDTO cityDTO = new CityDTO();
+            cityDTO.CityAdministration = new List<CityAdministrationDTO>()
+            {
+                new CityAdministrationDTO()
+                {
+                    AdminType = new AdminTypeDTO()
+                    {
+                        AdminTypeName = Roles.CityHeadDeputy
+                    },
+                    EndDate = new DateTime(2000, 10, 5)
+                }
+            };
+
+            // Act
+            var result = _cityService.GetCityHeadDeputy(cityDTO);
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+        [Test]
+        public void GetCityHeadDeputy_WithoutCityHeadDeputy()
+        {
+            // Arrange
+            CityDTO cityDTO = new CityDTO();
+
+            // Act
+            var result = _cityService.GetCityHeadDeputy(cityDTO);
+
+            // Assert
+            Assert.IsNull(result);
+        }
 
         [Test]
         public async Task GetAllAsync_ReturnsAllCities()
