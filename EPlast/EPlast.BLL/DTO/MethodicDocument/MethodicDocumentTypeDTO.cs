@@ -10,7 +10,7 @@ namespace EPlast.BLL.DTO
         [Description("Методичний документ")]
         Methodics,
 
-        [Description("Інше")]
+        [Description("Різне")]
         Other
 
 
