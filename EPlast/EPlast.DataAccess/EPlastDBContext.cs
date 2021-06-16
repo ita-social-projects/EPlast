@@ -3,6 +3,7 @@ using EPlast.DataAccess.Entities.Blank;
 using EPlast.DataAccess.Entities.Decision;
 using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Entities.Event;
+using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Entities.UserEntities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -45,6 +46,7 @@ namespace EPlast.DataAccess
         public DbSet<UserDistinctionsTableObject> UserDistinctionsTableObject { get; set; }
         public DbSet<UserPrecautionsTableObject> UserPrecautionsTableObject { get; set; }
         public DbSet<DecisionTableObject> DecisionTableObject { get; set; }
+        public DbSet<RegionMembersInfoTableObject> RegionMembersInfoTableObjects { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -57,6 +59,7 @@ namespace EPlast.DataAccess
             modelBuilder.Entity<UserDistinctionsTableObject>().HasNoKey();
             modelBuilder.Entity<UserPrecautionsTableObject>().HasNoKey();
             modelBuilder.Entity<DecisionTableObject>().HasNoKey();
+            modelBuilder.Entity<RegionMembersInfoTableObject>().HasNoKey();
 
             modelBuilder.Entity<Event>()
                 .HasKey(x => x.ID);
@@ -218,6 +221,8 @@ namespace EPlast.DataAccess
 
         public DbSet<Organization> Organization { get; set; }
         public DbSet<GoverningBodyAdministration> GoverningBodyAdministrations { get; set; }
+        public DbSet<GoverningBodyDocuments> GoverningBodyDocuments { get; set; }
+        public DbSet<GoverningBodyDocumentType> GoverningBodyDocumentTypes { get; set; }
 
         public DbSet<City> Cities { get; set; }
         public DbSet<CityAdministration> CityAdministrations { get; set; }
