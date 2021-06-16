@@ -13,6 +13,7 @@ namespace EPlast.WebApi.Mapping.User
                 .ForMember(x => x.UserProfileID, q => q.MapFrom(w => w.UserProfile.ID))
                 .ForMember(x => x.ID, q => q.MapFrom(w => w.UserProfile.UserID))
                 .ForMember(x => x.Pseudo, q => q.MapFrom(w => w.UserProfile.Pseudo))
+                .ForMember(x => x.Region, q => q.MapFrom(w => w.CityMembers.FirstOrDefault().City.Region.RegionName))
                 .ForMember(x => x.City, q => q.MapFrom(w => w.CityMembers.FirstOrDefault().City.Name))
                 .ForMember(x => x.Club, q => q.MapFrom(w => w.ClubMembers.FirstOrDefault().Club.Name))
                 .ForPath(x => x.UpuDegree.Name, q => q.MapFrom(w => w.UserProfile.UpuDegree.Name))

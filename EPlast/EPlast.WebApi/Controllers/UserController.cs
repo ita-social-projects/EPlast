@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -290,10 +291,11 @@ namespace EPlast.WebApi.Controllers
             }
             var currentUserId = _userManager.GetUserId(User);
             var currentUser = await _userService.GetUserAsync(currentUserId);
+            var userRoles = (await _userManagerService.GetRolesAsync(user)).ToList();
             var confirmedUsers = _userService.GetConfirmedUsers(user);
-            var canApprove = _userService.CanApprove(confirmedUsers, userId, currentUserId,
-                await _userManagerService.IsInRoleAsync(user, Roles.RegisteredUser),
-                await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin));
+            var canApprove = !userRoles.Any(r => r == Roles.RegisteredUser || r == Roles.FormerPlastMember);
+            var canApprovePlastMember = canApprove ? _userService.CanApprove(confirmedUsers, userId, currentUserId,
+                    await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin)) : false;
             var time = _userService.CheckOrAddPlastunRole(user.Id, user.RegistredOn);
             var clubApprover = _userService.GetClubAdminConfirmedUser(user);
             var cityApprover = _userService.GetCityAdminConfirmedUser(user);
@@ -301,7 +303,8 @@ namespace EPlast.WebApi.Controllers
             var model = new UserApproversViewModel
             {
                 User = _mapper.Map<UserDTO, UserInfoViewModel>(user),
-                canApprove = canApprove,
+                CanApprove = canApprove,
+                CanApprovePlastMember = canApprovePlastMember,
                 TimeToJoinPlast = ((int)time.TotalDays),
                 ConfirmedUsers = _mapper.Map<IEnumerable<ConfirmedUserDTO>, IEnumerable<ConfirmedUserViewModel>>(confirmedUsers),
                 ClubApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(clubApprover),
@@ -348,8 +351,18 @@ namespace EPlast.WebApi.Controllers
         {
             if (userId != null)
             {
-                await _confirmedUserService.CreateAsync(await _userManager.GetUserAsync(User), userId, isClubAdmin, isCityAdmin);
-                return Ok();
+                var userRoles = await _userManagerService.GetRolesAsync(await _userService.GetUserAsync(userId));
+                if (!userRoles.Contains(Roles.FormerPlastMember))
+                {
+                    foreach (string role in userRoles)
+                        if (Roles.HeadsAndHeadDeputiesAndAdminPlastunAndSupporter.Contains(role))
+                        {
+                            await _confirmedUserService.CreateAsync(await _userManager.GetUserAsync(User), userId, isClubAdmin, isCityAdmin);
+                            return Ok();
+                        }
+                }
+                _loggerService.LogError("Forbidden");
+                return StatusCode(StatusCodes.Status403Forbidden);
             }
             _loggerService.LogError("User id is null");
             return NotFound();

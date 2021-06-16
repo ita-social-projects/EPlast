@@ -12,6 +12,7 @@ namespace EPlast.WebApi.Mapping.User
             CreateMap<EPlast.DataAccess.Entities.User, UserDTO>().ReverseMap();
             CreateMap<UserDTO, UserInfoViewModel>()
                 .ForMember(x => x.Pseudo, q => q.MapFrom(w => w.UserProfile.Pseudo))
+                .ForMember(x => x.Region, q => q.MapFrom(w => w.CityMembers.FirstOrDefault().City.Region.RegionName))
                 .ForMember(x => x.City, q => q.MapFrom(w => w.CityMembers.FirstOrDefault().City.Name))
                 .ForMember(x => x.Club, q => q.MapFrom(w => w.ClubMembers.FirstOrDefault().Club.Name))
                 .ForMember(x => x.CityId, q => q.MapFrom(w => w.CityMembers.FirstOrDefault().City.ID))
