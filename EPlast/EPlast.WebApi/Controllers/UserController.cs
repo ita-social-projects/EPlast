@@ -352,14 +352,10 @@ namespace EPlast.WebApi.Controllers
             if (userId != null)
             {
                 var userRoles = await _userManagerService.GetRolesAsync(await _userService.GetUserAsync(userId));
-                if (!userRoles.Contains(Roles.FormerPlastMember))
+                if (!userRoles.Any(r => r == Roles.RegisteredUser || r == Roles.FormerPlastMember))
                 {
-                    foreach (string role in userRoles)
-                        if (Roles.HeadsAndHeadDeputiesAndAdminPlastunAndSupporter.Contains(role))
-                        {
-                            await _confirmedUserService.CreateAsync(await _userManager.GetUserAsync(User), userId, isClubAdmin, isCityAdmin);
-                            return Ok();
-                        }
+                    await _confirmedUserService.CreateAsync(await _userManager.GetUserAsync(User), userId, isClubAdmin, isCityAdmin);
+                    return Ok();
                 }
                 _loggerService.LogError("Forbidden");
                 return StatusCode(StatusCodes.Status403Forbidden);

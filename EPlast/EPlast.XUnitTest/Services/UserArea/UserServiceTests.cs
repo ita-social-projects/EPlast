@@ -15,8 +15,8 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Security.Claims;
 using System.Threading.Tasks;
+using EPlast.Resources;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.UserArea
@@ -24,8 +24,6 @@ namespace EPlast.XUnitTest.Services.UserArea
     public class UserServiceTests
     {
         private readonly Mock<IRepositoryWrapper> _repoWrapper;
-        private readonly Mock<IUserStore<User>> _userStoreMock;
-        private readonly Mock<UserManager<User>> _userManager;
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<IUserPersonalDataService> _userPersonalDataService;
         private readonly Mock<IUserBlobStorageRepository> _userBlobStorage;
@@ -36,8 +34,6 @@ namespace EPlast.XUnitTest.Services.UserArea
         public UserServiceTests()
         {
             _repoWrapper = new Mock<IRepositoryWrapper>();
-            _userStoreMock = new Mock<IUserStore<User>>();
-            _userManager = new Mock<UserManager<User>>(_userStoreMock.Object, null, null, null, null, null, null, null, null);
             _mapper = new Mock<IMapper>();
             _userPersonalDataService = new Mock<IUserPersonalDataService>();
             _userBlobStorage = new Mock<IUserBlobStorageRepository>();
@@ -49,7 +45,7 @@ namespace EPlast.XUnitTest.Services.UserArea
 
         private UserService GetService()
         {
-            return new UserService(_repoWrapper.Object, _userManager.Object, _mapper.Object, _userPersonalDataService.Object, _userBlobStorage.Object, _env.Object, _uniqueId.Object);
+            return new UserService(_repoWrapper.Object, _mapper.Object, _userPersonalDataService.Object, _userBlobStorage.Object, _env.Object, _uniqueId.Object);
         }
         [Fact]
         public async Task GetUserProfileTest()
@@ -107,9 +103,9 @@ namespace EPlast.XUnitTest.Services.UserArea
             conUser.Approver = appUser;
 
             var confUsers = new List<ConfirmedUserDTO> { conUser, conUser };
-            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User { Id = "1" });
 
-            var service = GetService();            // Act
+            var service = GetService();            
+            // Act
             var result = service.CanApprove(confUsers, "2", new User().Id);
             // Assert
             Assert.IsType<bool>(result);
@@ -121,7 +117,8 @@ namespace EPlast.XUnitTest.Services.UserArea
             var conUser = new ConfirmedUserDTO();
             var confUsers = new List<ConfirmedUserDTO> { conUser, conUser, conUser, conUser };
 
-            var service = GetService();            // Act
+            var service = GetService();            
+            // Act
             var result = service.CanApprove(confUsers, "1", "");
             // Assert
             Assert.False(result);
@@ -129,9 +126,8 @@ namespace EPlast.XUnitTest.Services.UserArea
         [Fact]
         public void CheckOrAddPlastunRoleTest()
         {
-            _userManager.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
-
-            var service = GetService();            // Act
+            var service = GetService();            
+            // Act
             var result = service.CheckOrAddPlastunRole("1", DateTime.MinValue);
             // Assert
             Assert.IsType<TimeSpan>(result);
