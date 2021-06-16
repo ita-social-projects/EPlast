@@ -294,8 +294,8 @@ namespace EPlast.WebApi.Controllers
             var userRoles = (await _userManagerService.GetRolesAsync(user)).ToList();
             var confirmedUsers = _userService.GetConfirmedUsers(user);
             var canApprove = !userRoles.Any(r => r == Roles.RegisteredUser || r == Roles.FormerPlastMember);
-            var canApprovePlastMember = canApprove ? _userService.CanApprove(confirmedUsers, userId, currentUserId,
-                    await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin)) : false;
+            var canApprovePlastMember = canApprove && _userService.CanApprove(confirmedUsers, userId, currentUserId,
+                    await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin));
             var time = _userService.CheckOrAddPlastunRole(user.Id, user.RegistredOn);
             var clubApprover = _userService.GetClubAdminConfirmedUser(user);
             var cityApprover = _userService.GetCityAdminConfirmedUser(user);

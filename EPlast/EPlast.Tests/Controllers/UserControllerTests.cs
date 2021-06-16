@@ -711,6 +711,9 @@ namespace EPlast.Tests.Controllers
             var listCount = 2;
             var imageString = "SomeImgInBase64";
 
+            _userManagerService.Setup(x => x.GetRolesAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(new List<string> {Roles.KurinHead});
+
             _userService
                 .Setup((x) => x.GetUserAsync(idString))
                 .ReturnsAsync(CreateFakeUser());
@@ -809,7 +812,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task ApproveUser_ForbiddenString_ReturnsStatus403Forbidden()
+        public async Task ApproveUser_ForbiddenString_FormerPlastMember_ReturnsStatus403Forbidden()
         {
             // Assert
             var idString = "1";
@@ -828,6 +831,28 @@ namespace EPlast.Tests.Controllers
             _userManagerService.Verify(x => x.GetRolesAsync(It.IsAny<UserDTO>()));
             Assert.AreEqual(expected, actual);
             
+        }
+
+        [Test]
+        public async Task ApproveUser_ForbiddenString_RegisteredUser_ReturnsStatus403Forbidden()
+        {
+            // Assert
+            var idString = "1";
+
+            _userManagerService.Setup(x => x.GetRolesAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(new List<string> { Roles.RegisteredUser });
+
+            var expected = StatusCodes.Status403Forbidden;
+
+            // Act
+            var result = await _userController.ApproveUser(idString);
+            var actual = (result as StatusCodeResult).StatusCode;
+
+            // Assert
+            _loggerService.Verify((x) => x.LogError(It.IsAny<string>()), Times.Once);
+            _userManagerService.Verify(x => x.GetRolesAsync(It.IsAny<UserDTO>()));
+            Assert.AreEqual(expected, actual);
+
         }
 
         [Test]
