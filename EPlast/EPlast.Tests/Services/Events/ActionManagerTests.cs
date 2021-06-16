@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.Interfaces.Events;
@@ -53,8 +52,7 @@ namespace EPlast.Tests.Services.Events
         public void CheckEventsStatusesAsync_Valid()
         {
             //Arrange
-            //int testFinishedEventStatus = 1;
-           var eventToCheck =  _mockRepositoryWrapper.Setup(x => x.Event.GetAllAsync(
+            var eventToCheck =  _mockRepositoryWrapper.Setup(x => x.Event.GetAllAsync(
                     It.IsAny<Expression<Func<DataAccess.Entities.Event.Event, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.Event.Event>,
                         IIncludableQueryable<DataAccess.Entities.Event.Event, object>>>()))
