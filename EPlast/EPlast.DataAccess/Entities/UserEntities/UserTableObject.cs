@@ -19,5 +19,9 @@ namespace EPlast.DataAccess.Entities
         public string UPUDegree { get; set; }
         public int Count { get; set; }
         public int UserSystemId { get; set; }
+        public int? RegionId { get; set; }
+        public int? CityId { get; set; }
+        public int? ClubId { get; set; }
+
     }
 }
