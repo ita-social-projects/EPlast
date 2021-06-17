@@ -4,7 +4,7 @@ using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
 using PdfSharpCore.Pdf;
 
-namespace EPlast.BLL
+namespace EPlast.BLL.Services.PDF.Documents
 {
     public class DecisionDocument : PdfDocument
     {

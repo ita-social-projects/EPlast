@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using EPlast.BLL;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.Logging;
-using EPlast.DataAccess;
+using EPlast.BLL.Services.PDF;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
@@ -58,14 +56,123 @@ namespace EPlast.Tests.Services.PDF
                 It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()), Times.Once);
             Assert.IsInstanceOf<byte[]>(actualReturn.Result);
         }
+
         [TestCase("1")] 
         [TestCase("546546")]
-        public void BlankCreatePdfAsync_ReturnsByteArray_Test(string userId)
+        public void BlankCreatePdfAsync_WithFatherName_ReturnsByteArray(string userId)
         {
-            _repository.Setup(repo => repo.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
+            // Arrange
+            _repository
+                .Setup(x => x.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
                     It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
-                .ReturnsAsync(new User() { Id=userId });
+                .ReturnsAsync(GetUserWithFatherName(userId));
+            _repository.Setup(x => x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
+                .ReturnsAsync(new UserProfile());
+            _repository
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                It.IsAny<Func<IQueryable<CityMembers>,
+                IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync(new CityMembers());
+            _repository
+               .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+               It.IsAny<Func<IQueryable<ClubMembers>,
+               IIncludableQueryable<ClubMembers, object>>>()))
+               .ReturnsAsync(new ClubMembers());
+
+            // Act
             var actualReturn = _pdfService.BlankCreatePDFAsync(userId);
+
+            // Assert
+            _repository.Verify();
+            Assert.IsInstanceOf<byte[]>(actualReturn.Result);
+        }
+
+        [TestCase("1")]
+        [TestCase("546546")]
+        public void BlankCreatePdfAsync_WithoutFatherName_ReturnsByteArray(string userId)
+        {
+            // Arrange
+            _repository.Setup(x => x.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(GetUserWithoutFatherName(userId));
+            _repository.Setup(x => x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
+                .ReturnsAsync(new UserProfile());
+            _repository
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                It.IsAny<Func<IQueryable<CityMembers>,
+                IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync(new CityMembers());
+            _repository
+               .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+               It.IsAny<Func<IQueryable<ClubMembers>,
+               IIncludableQueryable<ClubMembers, object>>>()))
+               .ReturnsAsync(new ClubMembers());
+
+            // Act
+            var actualReturn = _pdfService.BlankCreatePDFAsync(userId);
+
+            // Assert
+            _repository.Verify();
+            Assert.IsInstanceOf<byte[]>(actualReturn.Result);
+        }
+
+        [TestCase("1")]
+        [TestCase("546546")]
+        public void BlankCreatePdfAsync_WithoutFirstName_ReturnsByteArray(string userId)
+        {
+            // Arrange
+            _repository.Setup(x => x.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(GetUserWithoutFirstName(userId));
+            _repository.Setup(x => x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
+                .ReturnsAsync(new UserProfile());
+            _repository
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityMembers>,
+                        IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync(new CityMembers());
+            _repository
+                .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubMembers>,
+                        IIncludableQueryable<ClubMembers, object>>>()))
+                .ReturnsAsync(new ClubMembers());
+
+            // Act
+            var actualReturn = _pdfService.BlankCreatePDFAsync(userId);
+
+            // Assert
+            _repository.Verify();
+            Assert.IsInstanceOf<byte[]>(actualReturn.Result);
+        }
+
+
+
+        [TestCase("1")]
+        [TestCase("546546")]
+        public void BlankCreatePdfAsync_WithoutListConfirmedUser_ReturnsByteArray(string userId)
+        {
+            // Arrange
+            _repository
+                .Setup(x => x.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(GetUserWithoutListConfirmedUser(userId));
+            _repository.Setup(x => x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
+                .ReturnsAsync(new UserProfile());
+            _repository
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityMembers>,
+                        IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync(new CityMembers());
+            _repository
+                .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubMembers>,
+                        IIncludableQueryable<ClubMembers, object>>>()))
+                .ReturnsAsync(new ClubMembers());
+
+            // Act
+            var actualReturn = _pdfService.BlankCreatePDFAsync(userId);
+
+            // Assert
             _repository.Verify();
             Assert.IsInstanceOf<byte[]>(actualReturn.Result);
         }
@@ -74,10 +181,21 @@ namespace EPlast.Tests.Services.PDF
         [TestCase("546546")]
         public void BlankCreatePdfAsync_ReturnsNull_Test(string userId)
         {
-            _repository.Setup(rep => rep.CityMembers.FindByCondition(It.IsAny<Expression<Func<CityMembers, bool>>>()))
+            // Arrange
+            _repository
+                .Setup(x => x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
+                .ReturnsAsync(new UserProfile());
+            _repository
+                .Setup(x => x.CityMembers.FindByCondition(It.IsAny<Expression<Func<CityMembers, bool>>>()))
                 .Returns(new List<CityMembers>().AsQueryable());
+            _repository
+                .Setup(x => x.ClubMembers.FindByCondition(It.IsAny<Expression<Func<ClubMembers, bool>>>()))
+                .Returns(new List<ClubMembers>().AsQueryable());
 
+            // Act
             var actualReturn = _pdfService.BlankCreatePDFAsync(userId);
+
+            // Assert
             _logger.Verify();
             Assert.Null(actualReturn.Result);
         }
@@ -131,6 +249,118 @@ namespace EPlast.Tests.Services.PDF
             _logger.Verify();
             Assert.Null(actualReturn.Result);
         }
+
+        private static User GetUserWithFatherName(string userId)
+        {
+            return new User()
+            {
+                Id = userId,
+                FirstName = "FirstName",
+                LastName = "LastName",
+                FatherName = "FatherName",
+                ConfirmedUsers = listConfirmedUsers,
+                UserPlastDegrees = new List<UserPlastDegree>()
+                {
+                    new UserPlastDegree()
+                    {
+                        IsCurrent = true
+                    }
+                }
+            };
+        }
+
+        private static User GetUserWithoutFatherName(string userId)
+        {
+            return new User()
+            {
+                Id = userId,
+                FirstName = "FirstName",
+                LastName = "LastName",
+                ConfirmedUsers = listConfirmedUsers
+            };
+        }
+
+        private static User GetUserWithoutFirstName(string userId)
+        {
+            return new User()
+            {
+                Id = userId,
+                LastName = "LastName",
+                ConfirmedUsers = listConfirmedUsers
+            };
+        }
+
+        private static User GetUserWithoutListConfirmedUser(string userId)
+        {
+            return new User()
+            {
+                Id = userId,
+                FirstName = "FirstName",
+                LastName = "LastName"
+            };
+        }
+
+        private static List<ConfirmedUser> listConfirmedUsers = new List<ConfirmedUser>()
+        {
+            new ConfirmedUser()
+            {
+                Approver = new Approver()
+                {
+                    User = new User()
+                    {
+                        FirstName = "FirstName",
+                        LastName = "LastName"
+                    }
+                },
+                isCityAdmin = true,
+                isClubAdmin = false
+            },
+            new ConfirmedUser()
+            {
+                Approver = new Approver()
+                {
+                    User = new User()
+                    {
+                        FirstName = "FirstName"
+                    }
+                },
+
+                isCityAdmin = false,
+                isClubAdmin = true
+            },
+            new ConfirmedUser()
+            {
+                Approver = new Approver()
+                {
+                    User = new User()
+                    {
+                        LastName = "LastName"
+                    }
+                },
+                isCityAdmin = false,
+                isClubAdmin = false
+            },
+            new ConfirmedUser()
+            {
+                Approver = new Approver()
+                {
+                    User = new User()
+                },
+                isCityAdmin = false,
+                isClubAdmin = false
+            },
+            new ConfirmedUser()
+            {
+                Approver = new Approver(),
+                isCityAdmin = false,
+                isClubAdmin = false
+            },
+            new ConfirmedUser()
+            {
+                isCityAdmin = false,
+                isClubAdmin = false
+            }
+        };
 
         private static IQueryable<User> GetTestUsersQueryable()
         {
