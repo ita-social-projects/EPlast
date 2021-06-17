@@ -15,14 +15,14 @@ namespace EPlast.WebApi.Mapping.User
                 .ForMember(x => x.Pseudo, q => q.MapFrom(w => w.UserProfile.Pseudo))
                 .ForMember(x => x.Region, q => q.MapFrom(w => w.CityMembers.FirstOrDefault().City.Region.RegionName))
                 .ForMember(x => x.City, q => q.MapFrom(w => w.CityMembers.FirstOrDefault().City.Name))
-                .ForMember(x => x.Club, q => q.MapFrom(w => w.ClubMembers.FirstOrDefault().Club.Name))
+                .ForMember(x => x.Club, q => q.MapFrom(w => w.ClubMembers.FirstOrDefault(x=>x.IsApproved).Club.Name))
                 .ForPath(x => x.UpuDegree.Name, q => q.MapFrom(w => w.UserProfile.UpuDegree.Name))
                 .ForPath(x => x.UpuDegree.ID, q => q.MapFrom(w => w.UserProfile.UpuDegree.ID))
                 .ForMember(x => x.FacebookLink, q => q.MapFrom(w => w.UserProfile.FacebookLink))
                 .ForMember(x => x.TwitterLink, q => q.MapFrom(w => w.UserProfile.TwitterLink))
                 .ForMember(x => x.InstagramLink, q => q.MapFrom(w => w.UserProfile.InstagramLink))
                 .ForMember(x => x.CityId, q => q.MapFrom(w => w.CityMembers.FirstOrDefault().City.ID))
-                .ForMember(x => x.ClubId, q => q.MapFrom(w => w.ClubMembers.FirstOrDefault().Club.ID))
+                .ForMember(x => x.ClubId, q => q.MapFrom(w => w.ClubMembers.FirstOrDefault(x=>x.IsApproved).Club.ID))
                 .ForMember(x => x.RegionId, q => q.MapFrom(w => w.CityMembers.FirstOrDefault().City.RegionId));
 
             CreateMap<UserShortViewModel, UserDTO>()
