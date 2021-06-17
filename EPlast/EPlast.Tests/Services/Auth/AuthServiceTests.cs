@@ -12,6 +12,7 @@ using NUnit.Framework;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BLL.Models;
 
 namespace EPlast.Tests.Services
 {
@@ -43,6 +44,20 @@ namespace EPlast.Tests.Services
             //Assert
             _userManager.Verify();
             Assert.IsNotNull(result);
+        }
+
+        [Test]
+        public async Task FacebookLoginAsyncTest()
+        {
+            //Arrange
+            var facebookUser = new FacebookUserInfo()
+            {
+
+            };
+
+            //Act
+            var result = _authService.FacebookLoginAsync(facebookUser);
+            //Arrange
         }
 
         [Test]
