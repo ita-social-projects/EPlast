@@ -41,6 +41,7 @@ using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.Jwt;
 using EPlast.BLL.Services.Logging;
 using EPlast.BLL.Services.Notifications;
+using EPlast.BLL.Services.PDF;
 using EPlast.BLL.Services.Precautions;
 using EPlast.BLL.Services.Region;
 using EPlast.BLL.Services.Region.RegionAccess;
@@ -121,6 +122,8 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IGoverningBodyAdministrationService, GoverningBodyAdministrationService>();
             services.AddScoped<IRegionsBoardService, RegionsBoardService>();
             services.AddScoped<IGoverningBodyBlobStorageRepository, GoverningBodyBlobStorageRepository>();
+            services.AddScoped<IGoverningBodyDocumentsService, GoverningBodyDocumentsService>();
+            services.AddScoped<IGoverningBodyFilesBlobStorageRepository, GoverningBodyFilesBlobStorageRepository>();
             services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IMethodicDocumentBlobStorageRepository, MethodicDocumentBlobStarageRepository>();
             services.AddScoped<IMethodicDocumentService, MethodicDocumentService>();
