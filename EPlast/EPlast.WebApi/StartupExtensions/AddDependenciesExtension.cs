@@ -41,6 +41,7 @@ using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.Jwt;
 using EPlast.BLL.Services.Logging;
 using EPlast.BLL.Services.Notifications;
+using EPlast.BLL.Services.PDF;
 using EPlast.BLL.Services.Precautions;
 using EPlast.BLL.Services.Region;
 using EPlast.BLL.Services.Region.RegionAccess;
