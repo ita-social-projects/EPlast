@@ -158,17 +158,23 @@ namespace EPlast.BLL.Services.UserProfiles
             {
                 return secondId;
             }
-            var spec = await _userPersonalDataService?.GetEducationsByIdAsync(secondId);
-            var placeStudy = await _userPersonalDataService?.GetEducationsByIdAsync(firstId);
-            if (spec != null && spec.PlaceOfStudy == firstName)
+            else
             {
-                return spec.ID;
+                var spec = await _userPersonalDataService?.GetEducationsByIdAsync(secondId);
+                var placeStudy = await _userPersonalDataService?.GetEducationsByIdAsync(firstId);
+                if (spec != null && spec.PlaceOfStudy == firstName)
+                {
+                    return spec.ID;
+                }
+                else if (placeStudy != null && placeStudy.Speciality == secondName)
+                {
+                    return placeStudy.ID;
+                }
+                else
+                {
+                    return null;
+                }
             }
-            if (placeStudy != null && placeStudy.Speciality == secondName)
-            {
-                return placeStudy.ID;
-            }
-            return null;
         }
 
         private async Task<int?> CheckWorkFieldsAsync(string firstName, string secondName, int? firstId, int? secondId)
@@ -177,17 +183,23 @@ namespace EPlast.BLL.Services.UserProfiles
             {
                 return secondId;
             }
-            var placeOfWork = await _userPersonalDataService?.GetWorkByIdAsync(firstId);
-            var position = await _userPersonalDataService?.GetWorkByIdAsync(secondId);
-            if (position != null && position.PlaceOfwork == firstName)
+            else
             {
-                return position.ID;
+                var placeOfWork = await _userPersonalDataService?.GetWorkByIdAsync(firstId);
+                var position = await _userPersonalDataService?.GetWorkByIdAsync(secondId);
+                if (position != null && position.PlaceOfwork == firstName)
+                {
+                    return position.ID;
+                }
+                else if (placeOfWork != null && placeOfWork.Position == secondName)
+                {
+                    return placeOfWork.ID;
+                }
+                else
+                {
+                    return null;
+                }
             }
-            if (placeOfWork != null && placeOfWork.Position == secondName)
-            {
-                return placeOfWork.ID;
-            }
-            return null;
         }
 
         private T CheckFieldForNull<T>(int? id, string name, T model)
