@@ -8,7 +8,6 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -29,7 +28,6 @@ namespace EPlast.BLL.Services.UserProfiles
         private readonly IUniqueIdService _uniqueId;
 
         public UserService(IRepositoryWrapper repoWrapper,
-            UserManager<User> userManager,
             IMapper mapper,
             IUserPersonalDataService userPersonalDataService,
             IUserBlobStorageRepository userBlobStorage,
@@ -64,6 +62,7 @@ namespace EPlast.BLL.Services.UserProfiles
                         ThenInclude(g => g.Work).
                     Include(g => g.CityMembers).
                         ThenInclude(g => g.City).
+                        ThenInclude(g=>g.Region).
                     Include(g => g.ClubMembers).
                         ThenInclude(g => g.Club).
                     Include(g => g.UserProfile).
@@ -103,13 +102,10 @@ namespace EPlast.BLL.Services.UserProfiles
         }
 
         /// <inheritdoc />
-        public bool CanApprove(IEnumerable<ConfirmedUserDTO> confUsers, string userId, string currentUserId, bool isRegisteredUser=false, bool isAdmin = false)
+        public bool CanApprove(IEnumerable<ConfirmedUserDTO> confUsers, string userId, string currentUserId, bool isAdmin = false)
         {
-            var canApprove = !isRegisteredUser && confUsers.Count() < 3
-                             && !confUsers.Any(x => x.Approver.UserID == currentUserId)
-                             && (currentUserId != userId || isAdmin);
-
-            return canApprove;
+            return confUsers.Count() < 3 && !confUsers.Any(x => x.Approver.UserID == currentUserId)
+                                         && (currentUserId != userId || isAdmin);
         }
 
         /// <inheritdoc />

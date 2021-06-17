@@ -4,7 +4,7 @@ using System;
 using System.IO;
 
 
-namespace EPlast.BLL
+namespace EPlast.BLL.Services.PDF.Documents
 {
     public abstract class PdfDocument : IPdfDocument
     {
