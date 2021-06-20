@@ -21,5 +21,6 @@ namespace EPlast.DataAccess.Entities
         public string Logo { get; set; }
 
         public ICollection<GoverningBodyAdministration> GoverningBodyAdministration { get; set; }
+        public ICollection<GoverningBodyDocuments> GoverningBodyDocuments { get; set; }
     }
 }

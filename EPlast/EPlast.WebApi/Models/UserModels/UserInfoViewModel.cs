@@ -32,6 +32,7 @@ namespace EPlast.WebApi.Models.User
         [MaxLength(30, ErrorMessage = "Псевдо не може перевищувати 30 символів")]
         public string Pseudo { get; set; }
         public string ImagePath { get; set; }
+        public string Region { get; set; }
         public string City { get; set; }
         public string Club { get; set; }
         public int CityId { get; set; }

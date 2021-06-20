@@ -537,5 +537,13 @@ namespace EPlast.WebApi.Controllers
 
             return Ok();
         }
+        [HttpGet("RegionUsers/{regionId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetRegionUsers(int regionId)
+        {
+            var regionUsers = await _regionService.GetRegionUsersAsync(regionId);
+
+            return Ok(regionUsers);
+        }
     }
 }
