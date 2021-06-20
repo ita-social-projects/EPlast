@@ -19,8 +19,7 @@ namespace EPlast.BLL.Services.Events
 
         public async Task<IEnumerable<EventAdministration>> GetEventAdmininistrationByUserIdAsync(string userId)
         {
-            var eventAdmins = (await _repoWrapper.EventAdministration.
-                GetAllAsync(predicate: i => i.UserID == userId, include: source => source.
+            var eventAdmins = (await _repoWrapper.EventAdministration.GetAllAsync(predicate: i => i.UserID == userId, include: source => source.
                 Include(i => i.Event).Include(i => i.User))).ToList();
 
             return eventAdmins;

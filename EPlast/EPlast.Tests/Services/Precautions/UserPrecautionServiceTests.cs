@@ -31,8 +31,6 @@ namespace EPlast.Tests.Services.Precautions
         private Mock<UserManager<User>> userManager;
         private Mock<IAdminService> adminService;
         private IUniqueIdService _uniqueId;
-        private UserManagerService userManagerService;
-        private UserDTO userDTO;
 
         [SetUp]
         public void SetUp()
@@ -45,7 +43,6 @@ namespace EPlast.Tests.Services.Precautions
             userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             userManager.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRoles());
             PrecautionService = new UserPrecautionService(mockMapper.Object, mockRepoWrapper.Object, userManager.Object, adminService.Object);
-            userManagerService = new UserManagerService(userManager.Object, mockMapper.Object);
         }
 
         [Test]
@@ -211,21 +208,6 @@ namespace EPlast.Tests.Services.Precautions
 
             //Assert
             Assert.IsInstanceOf<bool>(result);
-        }
-
-        [Test]
-        public async Task CheckIfAdminAsync_IsAdmin()
-        {
-            //Arrange
-            userManager
-                .Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRolesWithoutAdmin());
-            var user = new User();
-
-            //Act
-            var service = new UserPrecautionService(null, null, userManager.Object, null);
-
-            //Assert
-            Assert.ThrowsAsync<UnauthorizedAccessException>(()=>service.CheckIfAdminAsync(user));
         }
 
         [Test]

@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
-using EPlast.BLL.Services.Events;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.Jwt;
-using EPlast.DataAccess.Entities.Event;
-using EPlast.DataAccess.Repositories;
-using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
@@ -80,7 +74,7 @@ namespace EPlast.Tests.Services.Jwt
                 new Claim(ClaimsIdentity.DefaultRoleClaimType, roles[1])
             };
 
-            
+
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("2af4ff57-4ca0-4b3a-804b-178ad27aaf88"));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -103,3 +97,4 @@ namespace EPlast.Tests.Services.Jwt
         }
     }
 }
+
