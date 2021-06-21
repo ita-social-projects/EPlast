@@ -39,7 +39,7 @@ namespace EPlast.BLL.Services.PDF.Documents
         public virtual PdfSharpCore.Pdf.PdfDocument GetDocument()
         {
             PdfPage page = document.AddPage();
-            document.Info.Title = PDFHelper.EncodingHack(settings.Title);
+            document.Info.Title = PdfHelper.EncodingHack(settings.Title);
             document.Info.Subject = settings.Subject;
             document.Info.Author = settings.Author;
 

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EPlast.BLL.Services.PDF
 {
-    public static class PDFHelper
+    public static class PdfHelper
     {
         public static string EncodingHack(string str)
         {
