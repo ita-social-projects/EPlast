@@ -28,7 +28,7 @@ namespace EPlast.BLL.Services.PDF
                 var blank = await GetBlankDataAsync(userId);
                 IPdfSettings pdfSettings = new PdfSettings
                 {
-                    Title = $"{blank.User.FirstName} {blank.User.LastName}",
+                    Title = $"{DateTime.Now.ToShortDateString()}_Заява_{blank.User.LastName}",
                     ImagePath = "Blank"
                 };
                 IPdfCreator creator = new PdfCreator(new BlankDocument(blank, pdfSettings));
