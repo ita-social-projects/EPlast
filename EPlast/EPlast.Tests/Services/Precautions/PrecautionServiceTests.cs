@@ -166,7 +166,7 @@ namespace EPlast.Tests.Services.Precautions
             var service = new PrecautionService(null, null, userManager.Object);
 
             //Assert
-            Assert.ThrowsAsync<UnauthorizedAccessException>(()=> service.CheckIfAdminAsync(new User()));
+            Assert.ThrowsAsync<UnauthorizedAccessException>(async()=> await service.CheckIfAdminAsync(new User()));
         }
         
         [Test]
@@ -219,9 +219,9 @@ namespace EPlast.Tests.Services.Precautions
         {
             //Arrange
             mockRepoWrapper
-               .Setup(x => x.Precaution.GetFirstAsync(It.IsAny<Expression<Func<Precaution, bool>>>(),
-                   It.IsAny<Func<IQueryable<Precaution>, IIncludableQueryable<Precaution, object>>>()))
-               .ReturnsAsync(Precaution);
+                .Setup(x => x.Precaution.GetFirstAsync(It.IsAny<Expression<Func<Precaution, bool>>>(),
+                    It.IsAny<Func<IQueryable<Precaution>, IIncludableQueryable<Precaution, object>>>()))
+                .ReturnsAsync(Precaution);
 
             userManager.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRolesWithoutAdmin());
 
@@ -230,21 +230,6 @@ namespace EPlast.Tests.Services.Precautions
                 async () => { await PrecautionService.ChangePrecautionAsync(PrecautionDTO, It.IsAny<User>()); });
             Assert.AreEqual("Attempted to perform an unauthorized operation.", exception.Message);
         }
-
-        [Test]
-        public async Task CheckIfAdminAsync_IsAdmin()
-        {
-            //Arrange
-            userManager
-                .Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRolesWithoutAdmin());
-
-            //Act
-            var service = new PrecautionService(null, null, userManager.Object);
-
-            //Assert
-            Assert.ThrowsAsync<UnauthorizedAccessException>(async() => await service.CheckIfAdminAsync(new User()));
-        }
-
 
         [Test]
         public void ChangePrecautionAsync_IfAdmin_WorksCorrectly()
