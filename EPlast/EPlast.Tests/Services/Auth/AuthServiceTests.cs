@@ -11,9 +11,13 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Globalization;
+using EPlast.BLL.Models;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BLL.Models;
+using Microsoft.Extensions.Configuration;
+using NLog.Extensions.Logging;
+
 
 namespace EPlast.Tests.Services
 {
@@ -218,6 +222,22 @@ namespace EPlast.Tests.Services
             //Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(true, result);
+        }
+
+        [Test]
+        public void GetGoogleUserAsync_Valid()
+        {
+            //Arrange
+            var memoryConfig = new Dictionary<string, string>();
+            memoryConfig["Mode"] = "Test";
+            ConfigSettingLayoutRenderer.DefaultConfiguration = new ConfigurationBuilder().AddInMemoryCollection(memoryConfig).Build();
+            var layoutRenderer = new ConfigSettingLayoutRenderer { Item = "Mode" };
+
+            //Act
+            var result =  _authService.GetGoogleUserAsync("providerToken");
+
+            //Assert
+            Assert.IsNotNull(result);
         }
 
         [SetUp]
