@@ -1148,6 +1148,23 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("Genders");
                 });
 
+            modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBody.GoverningBodyDocumentType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GoverningBodyDocumentTypes");
+                });
+
             modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBodyAdministration", b =>
                 {
                     b.Property<int>("Id")
@@ -1183,6 +1200,41 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("GoverningBodyAdministrations");
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBodyDocuments", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("BlobName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(64)")
+                        .HasMaxLength(64);
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(120)")
+                        .HasMaxLength(120);
+
+                    b.Property<int>("GoverningBodyDocumentTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GoverningBodyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("SubmitDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GoverningBodyDocumentTypeId");
+
+                    b.HasIndex("GoverningBodyId");
+
+                    b.ToTable("GoverningBodyDocuments");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.MembersStatistic", b =>
@@ -2571,7 +2623,7 @@ namespace EPlast.DataAccess.Migrations
                         .IsRequired();
 
                     b.HasOne("EPlast.DataAccess.Entities.Organization", "GoverningBody")
-                        .WithMany()
+                        .WithMany("GoverningBodyAdministration")
                         .HasForeignKey("GoverningBodyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2579,6 +2631,21 @@ namespace EPlast.DataAccess.Migrations
                     b.HasOne("EPlast.DataAccess.Entities.User", "User")
                         .WithMany("GoverningBodyAdministrations")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBodyDocuments", b =>
+                {
+                    b.HasOne("EPlast.DataAccess.Entities.GoverningBody.GoverningBodyDocumentType", "GoverningBodyDocumentType")
+                        .WithMany("GoverningBodyDocuments")
+                        .HasForeignKey("GoverningBodyDocumentTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EPlast.DataAccess.Entities.Organization", "GoverningBody")
+                        .WithMany()
+                        .HasForeignKey("GoverningBodyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

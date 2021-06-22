@@ -1,4 +1,4 @@
-﻿namespace EPlast.BLL
+﻿namespace EPlast.BLL.Services.PDF
 {
     public class PdfSettings : IPdfSettings
     {

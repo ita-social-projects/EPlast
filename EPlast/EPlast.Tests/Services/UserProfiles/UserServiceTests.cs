@@ -8,7 +8,6 @@ using EPlast.BLL.Services.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
@@ -26,7 +25,6 @@ namespace EPlast.Tests.Services.UserProfiles
     {
         private UserService _userService;
         private Mock<IRepositoryWrapper> _mockRepoWrapper;
-        private Mock<UserManager<User>> _mockUserManager;
         private Mock<IMapper> _mockMapper;
         private Mock<IUserPersonalDataService> _mockUserPersonalDataService;
         private Mock<IUserBlobStorageRepository> _mockUserBlobStorage;
@@ -39,14 +37,12 @@ namespace EPlast.Tests.Services.UserProfiles
         public void SetUp()
         {
             _mockRepoWrapper = new Mock<IRepositoryWrapper>();
-            var store = new Mock<IUserStore<User>>();
-            _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _mockMapper = new Mock<IMapper>();
             _mockUserPersonalDataService = new Mock<IUserPersonalDataService>();
             _mockUserBlobStorage = new Mock<IUserBlobStorageRepository>();
             _mockEnv = new Mock<IWebHostEnvironment>();
             _mockUniqueId = new Mock<IUniqueIdService>();
-            _userService = new UserService(_mockRepoWrapper.Object, _mockUserManager.Object, _mockMapper.Object, _mockUserPersonalDataService.Object, _mockUserBlobStorage.Object, _mockEnv.Object, _mockUniqueId.Object);
+            _userService = new UserService(_mockRepoWrapper.Object, _mockMapper.Object, _mockUserPersonalDataService.Object, _mockUserBlobStorage.Object, _mockEnv.Object, _mockUniqueId.Object);
             _confirmedUserDTO = new ConfirmedUserDTO();
             _userDTO = new UserDTO()
             {
