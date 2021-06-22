@@ -156,6 +156,20 @@ namespace EPlast.Tests.Services.Precautions
         }
 
         [Test]
+        public async Task CheckIfAdminAsync_IsAdmin()
+        {
+            //Arrange
+            userManager
+                .Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRolesWithoutAdmin());
+
+            //Act
+            var service = new PrecautionService(null, null, userManager.Object);
+
+            //Assert
+            Assert.ThrowsAsync<UnauthorizedAccessException>(()=> service.CheckIfAdminAsync(new User()));
+        }
+        
+        [Test]
         public void DeletePrecautionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
         {
             //Arrange
