@@ -154,20 +154,6 @@ namespace EPlast.Tests.Services.Precautions
             Assert.NotNull(result);
             Assert.IsInstanceOf<List<UserPrecautionsTableObject>>(result);
         }
-
-        [Test]
-        public async Task CheckIfAdminAsync_IsAdmin()
-        {
-            //Arrange
-            userManager
-                .Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRolesWithoutAdmin());
-
-            //Act
-            var service = new PrecautionService(null, null, userManager.Object);
-
-            //Assert
-            Assert.ThrowsAsync<UnauthorizedAccessException>(async()=> await service.CheckIfAdminAsync(new User()));
-        }
         
         [Test]
         public void DeletePrecautionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
