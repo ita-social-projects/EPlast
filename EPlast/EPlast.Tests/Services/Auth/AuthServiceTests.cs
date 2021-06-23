@@ -19,7 +19,7 @@ using Microsoft.Extensions.Configuration;
 using NLog.Extensions.Logging;
 
 
-namespace EPlast.Tests.Services
+namespace EPlast.Tests.Services.Auth
 {
     internal class AuthServiceTests
     {
