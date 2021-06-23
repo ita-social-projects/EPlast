@@ -18,7 +18,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace EPlast.BLL.Services.Auth
+namespace EPlast.BLL.Services
 {
     public class AuthService : IAuthService
     {
