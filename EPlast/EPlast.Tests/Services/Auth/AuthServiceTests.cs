@@ -10,13 +10,16 @@ using Microsoft.AspNetCore.Identity;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Globalization;
+using EPlast.BLL.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using NLog.Extensions.Logging;
 
-namespace EPlast.Tests.Services
+
+namespace EPlast.Tests.Services.Auth
 {
     internal class AuthServiceTests
     {
@@ -29,6 +32,7 @@ namespace EPlast.Tests.Services
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<SignInManager<User>> _signInManager;
         private Mock<UserManager<User>> _userManager;
+        private Mock<IGenderRepository> _gender;
 
         [Test]
         public void CheckingForLocking_Valid_Test()
@@ -45,6 +49,83 @@ namespace EPlast.Tests.Services
 
             //Assert
             _userManager.Verify();
+            Assert.IsNotNull(result);
+        }
+
+        [Test]
+        public async Task FacebookLoginAsync_IsNotNull()
+        {
+            //Arrange
+            var user = new User();
+            var userDto = new UserDTO();
+            var userId = Guid.NewGuid().ToString();
+            var facebookUser = new FacebookUserInfo()
+            {
+                Email = "test@test.com",
+                UserId = userId,
+                Name = "John",
+                Birthday = "11.08.2000"
+            };
+            _userManager.Setup(x => x.FindByEmailAsync(facebookUser.Email))
+                .ReturnsAsync(user);
+            _mapper.Setup(x => x.Map<User, UserDTO>(user)).Returns(userDto);
+            //Act
+            var result = await _authService.FacebookLoginAsync(facebookUser);
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(result, userDto);
+        }
+        [Test]
+        public async Task FacebookLoginAsync_IsNull()
+        {
+            //Arrange
+            var user = new User();
+            var userDto = new UserDTO();
+            var userId = Guid.NewGuid().ToString();
+            var facebookUser = new FacebookUserInfo()
+            {
+                Email = "test@test.com",
+                UserId = userId,
+                Name = "John Gasiuk",
+                Birthday = "11.08.2000",
+                Gender = "female"
+            };
+            _repoWrapper.SetupGet(x => x.Gender).Returns(_gender.Object);
+            var genders = new Gender[]
+            {
+                new Gender()
+                {
+                    ID = 3
+                }
+            }.AsQueryable();
+            _gender.Setup(x => x.FindByCondition(a => a.Name == facebookUser.Gender))
+                .Returns(genders);
+            user = new User
+            {
+                SocialNetworking = true,
+                UserName = facebookUser.Email ?? facebookUser.UserId,
+                FirstName = facebookUser.Name.Split(' ')[0],
+                Email = facebookUser.Email ?? "facebookdefaultmail@gmail.com",
+                LastName = facebookUser.Name.Split(' ')[1],
+                ImagePath = "default_user_image.png",
+                EmailConfirmed = true,
+                RegistredOn = DateTime.Now,
+                UserProfile = new UserProfile
+                {
+                    Birthday = DateTime.Parse(facebookUser.Birthday, CultureInfo.InvariantCulture),
+                    GenderID = 3
+                }
+            };
+            _userManager.Setup(x => x.FindByEmailAsync(facebookUser.Email))
+                .ReturnsAsync((User)null);
+
+            _userManager.Setup(x => x.CreateAsync(It.IsAny<User>()))
+                .ReturnsAsync(IdentityResult.Failed(new IdentityError { Code = "500", Description = "456" }));
+
+            _mapper.Setup(x => x.Map<User, UserDTO>(user)).Returns(userDto);
+            //Act
+            var result = await _authService.FacebookLoginAsync(facebookUser);
+            //Assert
             Assert.IsNotNull(result);
         }
 
@@ -82,7 +163,6 @@ namespace EPlast.Tests.Services
             _userManager.Verify();
             Assert.IsNotNull(result);
         }
-
         [Test]
         public async Task GetIdForUserAsync_Valid_TestAsync()
         {
@@ -186,13 +266,13 @@ namespace EPlast.Tests.Services
                                           _mockEmailContentService.Object,
                                           _mapper.Object,
                                           _repoWrapper.Object);
+            _gender = new Mock<IGenderRepository>();
         }
 
         private int GetTestDifferenceInTime()
         {
             return 360;
         }
-
         private UserDTO GetTestUserDtoWithAllFields()
         {
             return new UserDTO()
@@ -216,13 +296,12 @@ namespace EPlast.Tests.Services
                 SocialNetworking = true
             };
         }
-
         private User GetTestUserWithEmailsSendedTime()
         {
             IDateTimeHelper dateTimeResetingPassword = new DateTimeHelper();
             var timeEmailSended = dateTimeResetingPassword
-                    .GetCurrentTime()
-                    .AddMinutes(-GetTestDifferenceInTime());
+                .GetCurrentTime()
+                .AddMinutes(-GetTestDifferenceInTime());
 
             return new User()
             {
