@@ -199,14 +199,14 @@ namespace EPlast.BLL.Services.PDF.Documents
                 "Вкажіть, що вам допоможе ефективніше залучати волонтерів та створювати виховні частини (гнізда, курені)",
                 new XFont(FontName, BaseFontSize, XFontStyle.Italic, options), XBrushes.Black, column1_X,
                 currentRowY += 15, format);
-            gfx.DrawString($"{_annualReport.ImprovementNeeds}", font, XBrushes.Black, column1_X, currentRowY += 15, format);
+            gfx.DrawString($"{_annualReport.ListProperty}", font, XBrushes.Black, column1_X, currentRowY += 15, format);
 
             currentRowY += 20;
             gfx.DrawLine(pen, lineStart, currentRowY, lineEnd, currentRowY);
             //////////////////////////////////////////////////////////
             /// 
             gfx.DrawString("Вкажіть перелік майна, що є в станиці:", new XFont(FontName, BaseFontSize, XFontStyle.Italic, options), XBrushes.Black, column1_X, currentRowY += 15, format);
-            gfx.DrawString($"{_annualReport.ListProperty}", font, XBrushes.Black, column1_X, currentRowY+=20, format);
+            gfx.DrawString($"{_annualReport.ImprovementNeeds}", font, XBrushes.Black, column1_X, currentRowY+=20, format);
 
         }
     }

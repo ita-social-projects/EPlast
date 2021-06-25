@@ -143,6 +143,7 @@ namespace EPlast.BLL.Services.Club
                 .ToList();
             club.FollowerCount = club.ClubMembers
                 .Count(m => !m.IsApproved);
+            club.DocumentsCount = club.ClubDocuments.Count();
             var clubDoc = club.ClubDocuments.Take(6).ToList();
             var clubProfileDto = new ClubProfileDTO
             {

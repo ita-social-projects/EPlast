@@ -18,7 +18,9 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using EPlast.BLL;
 using EPlast.BLL.DTO.City;
+using EPlast.BLL.Services.PDF;
 using CityDTO = EPlast.BLL.DTO.AnnualReport.CityDTO;
 
 namespace EPlast.Tests.Controllers
@@ -31,6 +33,8 @@ namespace EPlast.Tests.Controllers
         private readonly Mock<ILoggerService<AnnualReportController>> _loggerService;
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<UserManager<User>> _userManager;
+        private readonly Mock<IPdfService> _pdfService;
+
 
         public AnnualReportControllerTest()
         {
@@ -39,6 +43,7 @@ namespace EPlast.Tests.Controllers
             _localizer = new Mock<IStringLocalizer<AnnualReportControllerMessage>>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            _pdfService = new Mock<IPdfService>();
             _clubAnnualReportService = new Mock<IClubAnnualReportService>();
             _mapper = new Mock<IMapper>();
         }
@@ -48,6 +53,7 @@ namespace EPlast.Tests.Controllers
             _loggerService.Object,
             _localizer.Object,
             _userManager.Object,
+            _pdfService.Object,
             _clubAnnualReportService.Object,
             _mapper.Object
             );
