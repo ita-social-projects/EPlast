@@ -90,10 +90,14 @@ namespace EPlast.BLL.Services.Club
                 return null;
             }
             var clubHead = club.ClubAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Куреня"
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHead
+                                     && (DateTime.Now < a.EndDate || a.EndDate == null));
+            var clubHeadDeputy = club.ClubAdministration?
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHeadDeputy
                                      && (DateTime.Now < a.EndDate || a.EndDate == null));
             var clubAdmins = club.ClubAdministration
-                .Where(a => a.AdminType.AdminTypeName != "Голова Куреня"
+                .Where(a => a.AdminType.AdminTypeName != Roles.KurinHead
+                            && a.AdminType.AdminTypeName != Roles.KurinHeadDeputy
                             && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .ToList();
             club.AdministrationCount = club.ClubAdministration

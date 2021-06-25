@@ -166,6 +166,63 @@ namespace EPlast.Tests.Controllers
         }
 
         [TestCase(2)]
+        public async Task GetClubMembersInfo_Valid_Test(int id)
+        {
+
+            _ClubService.Setup(c => c.GetClubMembersInfoAsync(It.IsAny<int>()))
+                .ReturnsAsync(new ClubProfileDTO());
+            _mapper
+                .Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
+                .Returns(new ClubViewModel());
+            ClubController Clubcon = CreateClubController;
+
+            // Act
+            var result = await Clubcon.GetClubMembersInfo(id);
+
+            // Assert
+            _mapper.Verify(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()));
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [TestCase(2)]
+        public async Task GetClubMembersInfo_Invalid_Test(int id)
+        {
+            // Arrange
+            _ClubService.
+                Setup(c => c.GetClubMembersInfoAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            _mapper
+                .Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
+                .Returns(new ClubViewModel());
+            ClubController Clubcon = CreateClubController;
+
+            // Act
+            var result = await Clubcon.GetClubMembersInfo(id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task GetClubMembersInfo_Invalid_Test()
+        {
+            // Arrange
+            _ClubService
+                .Setup(c => c.GetClubMembersInfoAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            ClubController Clubcon = CreateClubController;
+
+            // Act
+            var result = await Clubcon.GetClubMembersInfo(GetFakeID());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [TestCase(2)]
         public async Task GetMembers_Valid_Test(int id)
         {
 
