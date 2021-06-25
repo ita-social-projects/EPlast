@@ -83,50 +83,77 @@ namespace EPlast.BLL.Services.Club
         }
 
         /// <inheritdoc />
-        public async Task<ClubProfileDTO> GetClubProfileAsync(int ClubId)
+        public async Task<ClubProfileDTO> GetClubMembersInfoAsync(int ClubId)
         {
-            var Club = await GetByIdAsync(ClubId);
+            var Club = await GetClubInfoAsync(ClubId);
             if (Club == null)
             {
                 return null;
             }
+            Club.Head = (await setMembersCityName(new List<ClubAdministrationDTO>() { Club.Head! })).FirstOrDefault() as ClubAdministrationDTO;
+            Club.HeadDeputy =
+                (await setMembersCityName(new List<ClubAdministrationDTO>() {Club.HeadDeputy!})).FirstOrDefault() as
+                ClubAdministrationDTO;
+            Club.Members = await setMembersCityName(Club.Members) as List<ClubMembersDTO>;
+            Club.Followers = await setMembersCityName(Club.Followers) as List<ClubMembersDTO>;
+            Club.Admins = await setMembersCityName(Club.Admins) as List<ClubAdministrationDTO>;
+            Club.Documents = null;
 
-            var ClubHead = Club.ClubAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHead
-                    && (DateTime.Now < a.EndDate || a.EndDate == null));
-            var ClubHeadDeputy = Club.ClubAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHeadDeputy
-                    && (DateTime.Now < a.EndDate || a.EndDate == null));
-            var ClubAdmins = Club.ClubAdministration
-                .Where(a => a.AdminType.AdminTypeName != Roles.KurinHead
-                    && a.AdminType.AdminTypeName != Roles.KurinHeadDeputy
-                    && (DateTime.Now < a.EndDate || a.EndDate == null))
+            return Club;
+        }
+
+        public async Task<ClubProfileDTO> GetClubProfileAsync(int ClubId)
+        {
+            var club = await GetClubInfoAsync(ClubId);
+            if (club == null)
+            {
+                return null;
+            }
+            club.Members=club.Members.Take(9).ToList();
+            club.Followers = club.Followers.Take(6).ToList();
+            club.Documents = club.Documents.Take(6).ToList();
+            club.Admins = club.Admins.Take(6).ToList();
+            return club;
+        }
+
+
+        private async Task<ClubProfileDTO> GetClubInfoAsync(int ClubId)
+        {
+            var club = await GetByIdAsync(ClubId);
+            if (club == null)
+            {
+                return null;
+            }
+            var clubHead = club.ClubAdministration?
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == "Голова Куреня"
+                                     && (DateTime.Now < a.EndDate || a.EndDate == null));
+            var clubAdmins = club.ClubAdministration
+                .Where(a => a.AdminType.AdminTypeName != "Голова Куреня"
+                            && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .ToList();
-            Club.AdministrationCount = ClubHead == null ? ClubAdmins.Count : ClubAdmins.Count + 1;
-            Club.AdministrationCount = ClubHeadDeputy == null ? Club.AdministrationCount : Club.AdministrationCount + 1;
-            var members = Club.ClubMembers
+            club.AdministrationCount = club.ClubAdministration
+                .Count(a => (DateTime.Now < a.EndDate || a.EndDate == null));
+            var members = club.ClubMembers
                 .Where(m => m.IsApproved)
                 .ToList();
-            Club.MemberCount = members.Count;
-            var followers = Club.ClubMembers
+            club.MemberCount = club.ClubMembers
+                .Count(m => m.IsApproved);
+            var followers = club.ClubMembers
                 .Where(m => !m.IsApproved)
                 .ToList();
-            Club.FollowerCount = followers.Count;
-            var ClubDoc = Club.ClubDocuments
-                .ToList();
-
-            var ClubProfileDto = new ClubProfileDTO
+            club.FollowerCount = club.ClubMembers
+                .Count(m => !m.IsApproved);
+            var clubDoc = club.ClubDocuments.Take(6).ToList();
+            var clubProfileDto = new ClubProfileDTO
             {
-                Club = Club,
-                Head = (await setMembersCityName(new List<ClubAdministrationDTO>() { ClubHead! })).FirstOrDefault() as ClubAdministrationDTO,
-                HeadDeputy = (await setMembersCityName(new List<ClubAdministrationDTO>() { ClubHeadDeputy! })).FirstOrDefault() as ClubAdministrationDTO,
-                Members = await setMembersCityName(members) as List<ClubMembersDTO>,
-                Followers = await setMembersCityName(followers) as List<ClubMembersDTO>,
-                Admins = await setMembersCityName(ClubAdmins) as List<ClubAdministrationDTO>,
-                Documents = ClubDoc,
+                Club = club,
+                Head = clubHead,
+                Members = members,
+                Followers = followers,
+                Admins = clubAdmins,
+                Documents = clubDoc,
             };
-
-            return ClubProfileDto;
+            return clubProfileDto;
         }
 
         /// <inheritdoc />

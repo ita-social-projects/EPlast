@@ -49,6 +49,13 @@ namespace EPlast.BLL.Interfaces.Club
         Task<ClubProfileDTO> GetClubProfileAsync(int ClubId);
 
         /// <summary>
+        /// Get an information about members of the specific Club
+        /// </summary>
+        /// <param name="ClubId">The id of the Club</param>
+        /// <returns>An information about members of the specific Club</returns>
+        Task<ClubProfileDTO> GetClubMembersInfoAsync(int ClubId);
+
+        /// <summary>
         /// Get an information about a specific Club with 6 members per section
         /// </summary>
         /// <param name="ClubId">The id of the Club</param>
