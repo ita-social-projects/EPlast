@@ -21,5 +21,8 @@ namespace EPlast.BLL.DTO
         public string Comment { get; set; }
         public string UPUDegree { get; set; }
         public int UserSystemId { get; set; }
+        public int? RegionId { get; set; }
+        public int? CityId { get; set; }
+        public int? ClubId { get; set; }
     }
 }

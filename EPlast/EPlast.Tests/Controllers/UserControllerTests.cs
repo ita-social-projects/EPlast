@@ -711,6 +711,9 @@ namespace EPlast.Tests.Controllers
             var listCount = 2;
             var imageString = "SomeImgInBase64";
 
+            _userManagerService.Setup(x => x.GetRolesAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(new List<string> {Roles.KurinHead});
+
             _userService
                 .Setup((x) => x.GetUserAsync(idString))
                 .ReturnsAsync(CreateFakeUser());
@@ -720,7 +723,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(new List<ConfirmedUserDTO>());
 
             _userService
-                .Setup((x) => x.CanApprove(It.IsAny<List<ConfirmedUserDTO>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
+                .Setup((x) => x.CanApprove(It.IsAny<List<ConfirmedUserDTO>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns(canApprove);
 
             _userService
@@ -775,12 +778,12 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(actual);
             Assert.AreEqual(expectedUserId, actual.User.Id);
-            Assert.IsTrue(actual.canApprove);
+            Assert.IsTrue(actual.CanApprove);
             Assert.AreEqual(expectedTimeToJoinPlast, actual.TimeToJoinPlast);
             Assert.AreEqual(expectedListCount, (actual.ConfirmedUsers as List<ConfirmedUserViewModel>).Count);
             Assert.AreEqual(expectedId, actual.ClubApprover.ID);
             Assert.AreEqual(expectedId, actual.CityApprover.ID);
-            Assert.AreEqual(expectedCanApprove, actual.canApprove);
+            Assert.AreEqual(expectedCanApprove, actual.CanApprove);
             Assert.AreEqual(expectedIsUserHead, actual.IsUserHeadOfCity);
             Assert.IsFalse(actual.IsUserHeadOfCity);
             Assert.IsFalse(actual.IsUserHeadOfClub);
@@ -809,6 +812,50 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task ApproveUser_ForbiddenString_FormerPlastMember_ReturnsStatus403Forbidden()
+        {
+            // Assert
+            var idString = "1";
+            
+            _userManagerService.Setup(x => x.GetRolesAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(new List<string> { Roles.FormerPlastMember });
+
+            var expected = StatusCodes.Status403Forbidden;
+
+            // Act
+            var result = await _userController.ApproveUser(idString);
+            var actual = (result as StatusCodeResult).StatusCode;
+
+            // Assert
+            _loggerService.Verify((x) => x.LogError(It.IsAny<string>()), Times.Once);
+            _userManagerService.Verify(x => x.GetRolesAsync(It.IsAny<UserDTO>()));
+            Assert.AreEqual(expected, actual);
+            
+        }
+
+        [Test]
+        public async Task ApproveUser_ForbiddenString_RegisteredUser_ReturnsStatus403Forbidden()
+        {
+            // Assert
+            var idString = "1";
+
+            _userManagerService.Setup(x => x.GetRolesAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(new List<string> { Roles.RegisteredUser });
+
+            var expected = StatusCodes.Status403Forbidden;
+
+            // Act
+            var result = await _userController.ApproveUser(idString);
+            var actual = (result as StatusCodeResult).StatusCode;
+
+            // Assert
+            _loggerService.Verify((x) => x.LogError(It.IsAny<string>()), Times.Once);
+            _userManagerService.Verify(x => x.GetRolesAsync(It.IsAny<UserDTO>()));
+            Assert.AreEqual(expected, actual);
+
+        }
+
+        [Test]
         public async Task ApproveUser_NullUserIdString_ReturnsNotFoundResult()
         {
             // Act
@@ -827,6 +874,8 @@ namespace EPlast.Tests.Controllers
 
             _confirmedUserService
                 .Setup((x) => x.CreateAsync(It.IsAny<User>(), idString, It.IsAny<bool>(), It.IsAny<bool>()));
+            _userManagerService.Setup(x => x.GetRolesAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(new List<string> {Roles.KurinHead});
 
             // Act
             var result = await _userController.ApproveUser(idString, It.IsAny<bool>(), It.IsAny<bool>());

@@ -154,7 +154,7 @@ namespace EPlast.Tests.Services.Precautions
             Assert.NotNull(result);
             Assert.IsInstanceOf<List<UserPrecautionsTableObject>>(result);
         }
-
+        
         [Test]
         public void DeletePrecautionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
         {
@@ -205,9 +205,9 @@ namespace EPlast.Tests.Services.Precautions
         {
             //Arrange
             mockRepoWrapper
-               .Setup(x => x.Precaution.GetFirstAsync(It.IsAny<Expression<Func<Precaution, bool>>>(),
-                   It.IsAny<Func<IQueryable<Precaution>, IIncludableQueryable<Precaution, object>>>()))
-               .ReturnsAsync(Precaution);
+                .Setup(x => x.Precaution.GetFirstAsync(It.IsAny<Expression<Func<Precaution, bool>>>(),
+                    It.IsAny<Func<IQueryable<Precaution>, IIncludableQueryable<Precaution, object>>>()))
+                .ReturnsAsync(Precaution);
 
             userManager.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRolesWithoutAdmin());
 

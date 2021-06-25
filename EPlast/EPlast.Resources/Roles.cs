@@ -31,7 +31,7 @@
         public const string HeadsAndHeadDeputiesAndAdmin = Admin + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + "," + 
             KurinHead + "," + KurinHeadDeputy;
         public const string AdminAndOkrugaHeadAndOkrugaHeadDeputy = Admin + "," + OkrugaHead + "," + OkrugaHeadDeputy;
-        public const string HeadsAndHeadDeputiesAndAdminPlastunAndSupporter = Admin + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," 
+        public const string HeadsAndHeadDeputiesAndAdminPlastunAndSupporter = Admin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," 
             + CityHeadDeputy + "," + KurinHead + "," + KurinHeadDeputy + "," + PlastMember + "," + Supporter;
         public const string HeadsAndHeadDeputiesAndAdminPlastunSupporterAndRegisteredUser = Admin + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," 
             + CityHeadDeputy + "," + KurinHead + "," + KurinHeadDeputy + "," + PlastMember + "," + Supporter + "," + RegisteredUser;

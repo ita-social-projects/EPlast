@@ -123,6 +123,37 @@ namespace EPlast.Tests.Services
                     It.IsAny<Func<IQueryable<MethodicDocument>, IIncludableQueryable<MethodicDocument, object>>>()), Times.Once);
         }
 
+        [TestCase(1)]
+        public void DeleteMethodicDocumentAsyncTest_ThrowsArgumentNullException(int docId)
+        {
+            //Arrange
+            _repository
+                .Setup(rep => rep.MethodicDocument.GetFirstAsync(
+                    It.IsAny<Expression<Func<MethodicDocument, bool>>>(),
+                    It.IsAny<Func<IQueryable<MethodicDocument>, IIncludableQueryable<MethodicDocument, object>>>()))
+                .Returns(Task.FromResult<MethodicDocument>(null));
+
+            //Assert
+            Assert.ThrowsAsync<ArgumentNullException>(() => _service.DeleteMethodicDocumentAsync(docId));
+        }
+
+        [TestCase(1)]
+        public async Task DeleteMethodicDocumentAsyncTest_DeletesBlob(int docId)
+        {
+            //Arrange
+            _repository
+                .Setup(rep => rep.MethodicDocument.GetFirstAsync(
+                    It.IsAny<Expression<Func<MethodicDocument, bool>>>(),
+                    It.IsAny<Func<IQueryable<MethodicDocument>, IIncludableQueryable<MethodicDocument, object>>>()))
+                .ReturnsAsync(new MethodicDocument() { FileName = "someName" });
+
+            //Act
+            await _service.DeleteMethodicDocumentAsync(docId);
+
+            //Assert
+            _blobStorage.Verify(bs => bs.DeleteBlobAsync(It.IsAny<string>()), Times.Once);
+        }
+
         [TestCase(2)]
         [TestCase(4)]
         [TestCase(1)]
@@ -140,6 +171,31 @@ namespace EPlast.Tests.Services
 
             //Assert
             Assert.AreEqual(Id, actualReturn);
+        }
+
+        [TestCase(1)]
+        public async Task SaveMethodicDocumentAsyncTest_UploadsFileToBlob(int id)
+        {
+            //Arrange
+            _mapper
+                .Setup(x => x.Map<MethodicDocument>(It.IsAny<MethodicDocumentDTO>()))
+                .Returns(new MethodicDocument() { ID = id, FileName = "name"});
+            _repository
+                .Setup(rep => rep.MethodicDocument.Attach(new MethodicDocument()));
+            _repository
+                .Setup(rep => rep.MethodicDocument.Create(new MethodicDocument()));
+            _uniqueId
+                .Setup(x => x.GetUniqueId())
+                .Returns(Guid.NewGuid());
+
+            //Act
+            int res = await _service.SaveMethodicDocumentAsync(
+                new MethodicDocumentWraperDTO() { MethodicDocument = new MethodicDocumentDTO() { ID = id }, FileAsBase64 = "someName" });
+
+            //Assert
+            _blobStorage.Verify(bs => bs.UploadBlobForBase64Async(
+                It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            Assert.AreEqual(id, res);
         }
 
         [Test]
