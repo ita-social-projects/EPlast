@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Globalization;
-using System.Text;
-using EPlast.BLL.ExtensionMethods;
+﻿using EPlast.BLL.ExtensionMethods;
 using EPlast.DataAccess.Entities;
 using PdfSharpCore.Drawing;
-using PdfSharpCore.Drawing.Layout;
 using PdfSharpCore.Pdf;
 
 namespace EPlast.BLL.Services.PDF.Documents

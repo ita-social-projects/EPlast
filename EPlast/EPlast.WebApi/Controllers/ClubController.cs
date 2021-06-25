@@ -56,7 +56,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetClubs(int page, int pageSize, string clubName = null)
         {
-            var clubs = await _clubService.GetAllDTOAsync(clubName);
+            var clubs = await _clubService.GetAllDtoAsync(clubName);
             var clubsViewModel = new ClubsViewModel(page, pageSize, clubs, User.IsInRole(Roles.Admin));
 
             return Ok(clubsViewModel);

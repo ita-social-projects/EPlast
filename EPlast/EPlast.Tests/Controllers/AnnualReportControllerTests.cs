@@ -20,7 +20,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.BLL;
 using EPlast.BLL.DTO.City;
-using EPlast.BLL.Services.PDF;
 using CityDTO = EPlast.BLL.DTO.AnnualReport.CityDTO;
 
 namespace EPlast.Tests.Controllers
@@ -485,6 +484,29 @@ namespace EPlast.Tests.Controllers
                 .Verify(s => s["NoAccess"]);
             _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
             Assert.IsInstanceOf<ObjectResult>(result);
+        }
+
+        [Test]
+        public async Task CreatePdf_ReturnsOkObjectResult()
+        {
+            //Arrange
+            byte[] bytesReturn = new byte[3] { 0, 2, 3 };
+            _pdfService
+                .Setup(x => x.AnnualReportCreatePDFAsync(It.IsAny<int>()))
+                .ReturnsAsync(bytesReturn);
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            //Act
+            var result = await annualController.CreatePdf(It.IsAny<int>());
+            var resultValue = (result as ObjectResult).Value;
+
+            //Assert
+            _pdfService.Verify();
+            Assert.IsNotNull(resultValue);
+            Assert.IsInstanceOf<string>(resultValue);
+            Assert.AreNotEqual(string.Empty, resultValue);
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
         [Test]

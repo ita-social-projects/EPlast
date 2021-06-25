@@ -70,7 +70,7 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             clubcon.ControllerContext = context;
             _ClubService
-                .Setup(c => c.GetAllDTOAsync(It.IsAny<string>()))
+                .Setup(c => c.GetAllDtoAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetClubsBySearch());
 
             // Act

@@ -351,7 +351,7 @@ namespace EPlast.Tests.Services.Club
                 .ReturnsAsync(GetTestClub());
 
             // Act
-            var result = await _clubService.GetAllDTOAsync();
+            var result = await _clubService.GetAllDtoAsync();
 
             // Assert
             Assert.NotNull(result);

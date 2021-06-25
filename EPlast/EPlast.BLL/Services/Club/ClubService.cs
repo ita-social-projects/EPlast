@@ -56,7 +56,7 @@ namespace EPlast.BLL.Services.Club
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<ClubDTO>> GetAllDTOAsync(string clubName = null)
+        public async Task<IEnumerable<ClubDTO>> GetAllDtoAsync(string clubName = null)
         {
             return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubDTO>>(await GetAllAsync(clubName));
         }
