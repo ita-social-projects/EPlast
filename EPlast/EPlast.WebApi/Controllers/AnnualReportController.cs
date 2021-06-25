@@ -91,21 +91,6 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        ///  Returns pdf file as base64
-        /// </summary>
-        /// <param name="objId">AnnualReport id</param>
-        /// <returns>Pdf file as base64 what was created with AnnualReport data</returns>
-        /// <response code="200">Pdf file as base64</response>
-        [HttpGet("createPdf/{objId:int}")]
-        public async Task<IActionResult> CreatePdf(int objId)
-        {
-            var fileBytes = await _pdfService.AnnualReportCreatePDFAsync(objId);
-            var base64EncodedPdf = Convert.ToBase64String(fileBytes);
-
-            return Ok(base64EncodedPdf);
-        }
-
-        /// <summary>
         /// Method to get all searched reports that the user has access to
         /// </summary>
         /// <param name="searchedData">Searched Data</param>
@@ -131,6 +116,21 @@ namespace EPlast.WebApi.Controllers
                 _loggerService.LogError($"Annual reports not found");
                 return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["NotFound"].Value });
             }
+        }
+
+        /// <summary>
+        ///  Returns pdf file as base64
+        /// </summary>
+        /// <param name="objId">AnnualReport id</param>
+        /// <returns>Pdf file as base64 what was created with AnnualReport data</returns>
+        /// <response code="200">Pdf file as base64</response>
+        [HttpGet("createPdf/{objId:int}")]
+        public async Task<IActionResult> CreatePdf(int objId)
+        {
+            var fileBytes = await _pdfService.AnnualReportCreatePDFAsync(objId);
+            var base64EncodedPdf = Convert.ToBase64String(fileBytes);
+
+            return Ok(base64EncodedPdf);
         }
 
         /// <summary>

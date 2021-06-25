@@ -62,97 +62,100 @@ namespace EPlast.BLL.Services.PDF.Documents
                 format.Alignment = XStringAlignment.Far;
                 if (_annualReport.NewCityAdmin.Email!=null) 
                     gfx.DrawString($"{_annualReport.NewCityAdmin.Email}", font, XBrushes.Black, lineEnd, currentRowY, format);
-                if(_annualReport.NewCityAdmin.PhoneNumber!=null) 
-                    gfx.DrawString($"{_annualReport.NewCityAdmin.PhoneNumber}", font, XBrushes.Black, lineEnd, currentRowY += 15, format);
+                if (_annualReport.NewCityAdmin.PhoneNumber != null)
+                {
+                    currentRowY += 15;
+                    gfx.DrawString($"{_annualReport.NewCityAdmin.PhoneNumber}", font, XBrushes.Black, lineEnd, currentRowY, format);
+                }
                 format.Alignment = XStringAlignment.Near;
             }
 
             currentRowY += 15;
             gfx.DrawLine(pen, lineStart, currentRowY, lineEnd, currentRowY);
             ///////////////////////////////////////////////////////////
-            
-            gfx.DrawString("Правовий статус осередку:", font, XBrushes.Black, column1_X, currentRowY += 15, format);
+            currentRowY += 15;
+            gfx.DrawString("Правовий статус осередку:", font, XBrushes.Black, column1_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.NewCityLegalStatusType.GetDescription()}", font, XBrushes.Black, column2_X, currentRowY, format);
 
             currentRowY += 15;
             gfx.DrawLine(pen, lineStart, currentRowY, lineEnd, currentRowY);
             //////////////////////////////////////////////////////////
-            
-            gfx.DrawString("УПП", font, XBrushes.Black, column1_X, currentRowY += 15, format);
+            currentRowY += 15;
+            gfx.DrawString("УПП", font, XBrushes.Black, column1_X, currentRowY, format);
             gfx.DrawString("Кількість гніздечок пташат:", font, XBrushes.Black, column2_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.NumberOfSeatsPtashat}", font, XBrushes.Black, column3_X, currentRowY, format);
-
-            gfx.DrawString("Кількість пташат:", font, XBrushes.Black, column2_X, currentRowY+=15, format);
+            currentRowY += 15;
+            gfx.DrawString("Кількість пташат:", font, XBrushes.Black, column2_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.MembersStatistic.NumberOfPtashata}", font, XBrushes.Black, column3_X, currentRowY, format);
 
             currentRowY += 15;
             gfx.DrawLine(pen, lineStart, currentRowY, lineEnd, currentRowY);
             //////////////////////////////////////////////////////////
-
-            gfx.DrawString("УПН", font, XBrushes.Black, column1_X, currentRowY += 15, format);
+            currentRowY += 15;
+            gfx.DrawString("УПН", font, XBrushes.Black, column1_X, currentRowY, format);
             gfx.DrawString("Кількість самостійних роїв:", font, XBrushes.Black, column2_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.NumberOfIndependentRiy}", font, XBrushes.Black, column3_X, currentRowY, format);
-
-            gfx.DrawString("Кількість новацтва:", font, XBrushes.Black, column2_X, currentRowY += 15, format);
+            currentRowY += 15;
+            gfx.DrawString("Кількість новацтва:", font, XBrushes.Black, column2_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.MembersStatistic.NumberOfNovatstva}", font, XBrushes.Black, column3_X, currentRowY, format);
 
             currentRowY += 15;
             gfx.DrawLine(pen, lineStart, currentRowY, lineEnd, currentRowY);
             //////////////////////////////////////////////////////////
-
-            gfx.DrawString("УПЮ", font, XBrushes.Black, column1_X, currentRowY += 15, format);
+            currentRowY += 15;
+            gfx.DrawString("УПЮ", font, XBrushes.Black, column1_X, currentRowY, format);
             gfx.DrawString("Кількість куренів у станиці/паланці (окрузі/регіоні):", font, XBrushes.Black, column2_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.NumberOfClubs}", font, XBrushes.Black, column3_X, currentRowY, format);
 
             gfx.DrawString("Кількість самостійних гуртків:", font, XBrushes.Black, column2_X, currentRowY += 15, format);
             gfx.DrawString($"{_annualReport.NumberOfIndependentGroups}", font, XBrushes.Black, column3_X, currentRowY, format);
-
-            gfx.DrawString("Кількість неіменованих разом:", font, XBrushes.Black, column2_X, currentRowY += 15, format);
+            currentRowY += 15;
+            gfx.DrawString("Кількість неіменованих разом:", font, XBrushes.Black, column2_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.MembersStatistic.NumberOfUnatstvaNoname}", font, XBrushes.Black, column3_X, currentRowY, format);
-
-            gfx.DrawString("Кількість прихильників/ць:", font, XBrushes.Black, column2_X, currentRowY += 15, format);
+            currentRowY += 15;
+            gfx.DrawString("Кількість прихильників/ць:", font, XBrushes.Black, column2_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.MembersStatistic.NumberOfUnatstvaSupporters}", font, XBrushes.Black, column3_X, currentRowY, format);
-
-            gfx.DrawString("Кількість учасників/ць:", font, XBrushes.Black, column2_X, currentRowY += 15, format);
+            currentRowY += 15;
+            gfx.DrawString("Кількість учасників/ць:", font, XBrushes.Black, column2_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.MembersStatistic.NumberOfUnatstvaMembers}", font, XBrushes.Black, column3_X, currentRowY, format);
-
-            gfx.DrawString("Кількість розвідувачів:", font, XBrushes.Black, column2_X, currentRowY += 15, format);
+            currentRowY += 15;
+            gfx.DrawString("Кількість розвідувачів:", font, XBrushes.Black, column2_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.MembersStatistic.NumberOfUnatstvaProspectors}", font, XBrushes.Black, column3_X, currentRowY, format);
-
-            gfx.DrawString("Кількість скобів/вірлиць:", font, XBrushes.Black, column2_X, currentRowY += 15, format);
+            currentRowY += 15;
+            gfx.DrawString("Кількість скобів/вірлиць:", font, XBrushes.Black, column2_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.MembersStatistic.NumberOfUnatstvaSkobVirlyts}", font, XBrushes.Black, column3_X, currentRowY, format);
 
             currentRowY += 15;
             gfx.DrawLine(pen, lineStart, currentRowY, lineEnd, currentRowY);
             //////////////////////////////////////////////////////////
-
-            gfx.DrawString("УСП", font, XBrushes.Black, column1_X, currentRowY += 15, format);
+            currentRowY += 15;
+            gfx.DrawString("УСП", font, XBrushes.Black, column1_X, currentRowY, format);
             gfx.DrawString("Кількість старших пластунів прихильників:", font, XBrushes.Black, column2_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.MembersStatistic.NumberOfSeigneurSupporters}", font, XBrushes.Black, column3_X, currentRowY, format);
-
-            gfx.DrawString("Кількість старших пластунів:", font, XBrushes.Black, column2_X, currentRowY += 15, format);
+            currentRowY += 15;
+            gfx.DrawString("Кількість старших пластунів:", font, XBrushes.Black, column2_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.MembersStatistic.NumberOfSeigneurMembers}", font, XBrushes.Black, column3_X, currentRowY, format);
 
             currentRowY += 15;
             gfx.DrawLine(pen, lineStart, currentRowY, lineEnd, currentRowY);
             //////////////////////////////////////////////////////////
-
-            gfx.DrawString("УПС", font, XBrushes.Black, column1_X, currentRowY += 15, format);
+            currentRowY += 15;
+            gfx.DrawString("УПС", font, XBrushes.Black, column1_X, currentRowY, format);
             gfx.DrawString("Кількість сеньйорів пластунів прихильників:", font, XBrushes.Black, column2_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.MembersStatistic.NumberOfSeniorPlastynSupporters}", font, XBrushes.Black, column3_X, currentRowY, format);
-
-            gfx.DrawString("Кількість сеньйорів пластунів:", font, XBrushes.Black, column2_X, currentRowY += 15, format);
+            currentRowY += 15;
+            gfx.DrawString("Кількість сеньйорів пластунів:", font, XBrushes.Black, column2_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.MembersStatistic.NumberOfSeniorPlastynMembers}", font, XBrushes.Black, column3_X, currentRowY, format);
 
             currentRowY += 15;
             gfx.DrawLine(pen, lineStart, currentRowY, lineEnd, currentRowY);
             //////////////////////////////////////////////////////////
-
-            gfx.DrawString("Адміністрування та виховництво", font, XBrushes.Black, column1_X, currentRowY += 15, format);
+            currentRowY += 15;
+            gfx.DrawString("Адміністрування та виховництво", font, XBrushes.Black, column1_X, currentRowY, format);
             gfx.DrawString("Кількість діючих виховників (з усіх членів УСП, УПС):", font, XBrushes.Black, column2_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.NumberOfTeachers}", font, XBrushes.Black, column3_X, currentRowY, format);
-
-            gfx.DrawString("Кількість адміністраторів (в проводах будь якого рівня):", font, XBrushes.Black, column2_X, currentRowY += 15, format);
+            currentRowY += 15;
+            gfx.DrawString("Кількість адміністраторів (в проводах будь якого рівня):", font, XBrushes.Black, column2_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.NumberOfAdministrators}", font, XBrushes.Black, column3_X, currentRowY, format);
 
             gfx.DrawString("Кількість тих, хто поєднує виховництво та адміністрування:", font, XBrushes.Black, column2_X, currentRowY += 15, format);
@@ -161,32 +164,32 @@ namespace EPlast.BLL.Services.PDF.Documents
             currentRowY += 15;
             gfx.DrawLine(pen, lineStart, currentRowY, lineEnd, currentRowY);
             //////////////////////////////////////////////////////////
-
-            gfx.DrawString("Пластприят", font, XBrushes.Black, column1_X, currentRowY += 15, format);
+            currentRowY += 15;
+            gfx.DrawString("Пластприят", font, XBrushes.Black, column1_X, currentRowY, format);
             gfx.DrawString("Кількість пільговиків:", font, XBrushes.Black, column2_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.NumberOfBeneficiaries}", font, XBrushes.Black, column3_X, currentRowY, format);
-
-            gfx.DrawString("Кількість членів Пластприяту:", font, XBrushes.Black, column2_X, currentRowY += 15, format);
+            currentRowY += 15;
+            gfx.DrawString("Кількість членів Пластприяту:", font, XBrushes.Black, column2_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.NumberOfPlastpryiatMembers}", font, XBrushes.Black, column3_X, currentRowY, format);
-
-            gfx.DrawString("Кількість почесних членів:", font, XBrushes.Black, column2_X, currentRowY += 15, format);
+            currentRowY += 15;
+            gfx.DrawString("Кількість почесних членів:", font, XBrushes.Black, column2_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.NumberOfHonoraryMembers}", font, XBrushes.Black, column3_X, currentRowY, format);
 
             currentRowY += 15;
             gfx.DrawLine(pen, lineStart, currentRowY, lineEnd, currentRowY);
             //////////////////////////////////////////////////////////
-
-            gfx.DrawString("Залучені кошти", font, XBrushes.Black, column1_X, currentRowY += 15, format);
+            currentRowY += 15;
+            gfx.DrawString("Залучені кошти", font, XBrushes.Black, column1_X, currentRowY, format);
             gfx.DrawString("Державні кошти:", font, XBrushes.Black, column2_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.ContributionFunds}", font, XBrushes.Black, column3_X, currentRowY, format);
-
-            gfx.DrawString("Внески:", font, XBrushes.Black, column2_X, currentRowY += 15, format);
+            currentRowY += 15;
+            gfx.DrawString("Внески:", font, XBrushes.Black, column2_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.PublicFunds}", font, XBrushes.Black, column3_X, currentRowY, format);
-
-            gfx.DrawString("Пластовий заробіток:", font, XBrushes.Black, column2_X, currentRowY += 15, format);
+            currentRowY += 15;
+            gfx.DrawString("Пластовий заробіток:", font, XBrushes.Black, column2_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.PlastSalary}", font, XBrushes.Black, column3_X, currentRowY, format);
-
-            gfx.DrawString("Спонсорські кошти:", font, XBrushes.Black, column2_X, currentRowY += 15, format);
+            currentRowY += 15;
+            gfx.DrawString("Спонсорські кошти:", font, XBrushes.Black, column2_X, currentRowY, format);
             gfx.DrawString($"{_annualReport.SponsorshipFunds}", font, XBrushes.Black, column3_X, currentRowY, format);
 
             page = document.AddPage();
@@ -195,18 +198,21 @@ namespace EPlast.BLL.Services.PDF.Documents
             currentRowY = 40;
 
             gfx.DrawString("Майно та потреби станиці", font, XBrushes.Black, 250, currentRowY, format);
+            currentRowY += 15;
             gfx.DrawString(
                 "Вкажіть, що вам допоможе ефективніше залучати волонтерів та створювати виховні частини (гнізда, курені)",
                 new XFont(FontName, BaseFontSize, XFontStyle.Italic, options), XBrushes.Black, column1_X,
-                currentRowY += 15, format);
-            gfx.DrawString($"{_annualReport.ListProperty}", font, XBrushes.Black, column1_X, currentRowY += 15, format);
+                currentRowY, format);
+            currentRowY += 15;
+            gfx.DrawString($"{_annualReport.ListProperty}", font, XBrushes.Black, column1_X, currentRowY, format);
 
             currentRowY += 20;
             gfx.DrawLine(pen, lineStart, currentRowY, lineEnd, currentRowY);
             //////////////////////////////////////////////////////////
             /// 
             gfx.DrawString("Вкажіть перелік майна, що є в станиці:", new XFont(FontName, BaseFontSize, XFontStyle.Italic, options), XBrushes.Black, column1_X, currentRowY += 15, format);
-            gfx.DrawString($"{_annualReport.ImprovementNeeds}", font, XBrushes.Black, column1_X, currentRowY+=20, format);
+            currentRowY += 20;
+            gfx.DrawString($"{_annualReport.ImprovementNeeds}", font, XBrushes.Black, column1_X, currentRowY, format);
 
         }
     }

@@ -82,41 +82,6 @@ namespace EPlast.BLL.Services.Club
             return _mapper.Map<DataAccessClub.Club, ClubDTO>(Club);
         }
 
-        /// <inheritdoc />
-        public async Task<ClubProfileDTO> GetClubMembersInfoAsync(int ClubId)
-        {
-            var Club = await GetClubInfoAsync(ClubId);
-            if (Club == null)
-            {
-                return null;
-            }
-            Club.Head = (await setMembersCityName(new List<ClubAdministrationDTO>() { Club.Head! })).FirstOrDefault() as ClubAdministrationDTO;
-            Club.HeadDeputy =
-                (await setMembersCityName(new List<ClubAdministrationDTO>() {Club.HeadDeputy!})).FirstOrDefault() as
-                ClubAdministrationDTO;
-            Club.Members = await setMembersCityName(Club.Members) as List<ClubMembersDTO>;
-            Club.Followers = await setMembersCityName(Club.Followers) as List<ClubMembersDTO>;
-            Club.Admins = await setMembersCityName(Club.Admins) as List<ClubAdministrationDTO>;
-            Club.Documents = null;
-
-            return Club;
-        }
-
-        public async Task<ClubProfileDTO> GetClubProfileAsync(int ClubId)
-        {
-            var club = await GetClubInfoAsync(ClubId);
-            if (club == null)
-            {
-                return null;
-            }
-            club.Members=club.Members.Take(9).ToList();
-            club.Followers = club.Followers.Take(6).ToList();
-            club.Documents = club.Documents.Take(6).ToList();
-            club.Admins = club.Admins.Take(6).ToList();
-            return club;
-        }
-
-
         private async Task<ClubProfileDTO> GetClubInfoAsync(int ClubId)
         {
             var club = await GetByIdAsync(ClubId);
@@ -155,6 +120,40 @@ namespace EPlast.BLL.Services.Club
                 Documents = clubDoc,
             };
             return clubProfileDto;
+        }
+
+        /// <inheritdoc />
+        public async Task<ClubProfileDTO> GetClubMembersInfoAsync(int ClubId)
+        {
+            var Club = await GetClubInfoAsync(ClubId);
+            if (Club == null)
+            {
+                return null;
+            }
+            Club.Head = (await setMembersCityName(new List<ClubAdministrationDTO>() { Club.Head! })).FirstOrDefault() as ClubAdministrationDTO;
+            Club.HeadDeputy =
+                (await setMembersCityName(new List<ClubAdministrationDTO>() {Club.HeadDeputy!})).FirstOrDefault() as
+                ClubAdministrationDTO;
+            Club.Members = await setMembersCityName(Club.Members) as List<ClubMembersDTO>;
+            Club.Followers = await setMembersCityName(Club.Followers) as List<ClubMembersDTO>;
+            Club.Admins = await setMembersCityName(Club.Admins) as List<ClubAdministrationDTO>;
+            Club.Documents = null;
+
+            return Club;
+        }
+
+        public async Task<ClubProfileDTO> GetClubProfileAsync(int ClubId)
+        {
+            var club = await GetClubInfoAsync(ClubId);
+            if (club == null)
+            {
+                return null;
+            }
+            club.Members=club.Members.Take(9).ToList();
+            club.Followers = club.Followers.Take(6).ToList();
+            club.Documents = club.Documents.Take(6).ToList();
+            club.Admins = club.Admins.Take(6).ToList();
+            return club;
         }
 
         /// <inheritdoc />
