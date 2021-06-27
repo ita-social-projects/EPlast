@@ -135,8 +135,8 @@ namespace EPlast.BLL.Services
             var cityHead = GetCityHead(city);
             var cityHeadDeputy = GetCityHeadDeputy(city);
             var cityAdmins = GetCityAdmins(city);
-            city.AdministrationCount = city.CityAdministration
-                .Count(a => (DateTime.Now < a.EndDate || a.EndDate == null));
+            city.AdministrationCount = city.CityAdministration == null ? 0
+                :city.CityAdministration.Count(a => (DateTime.Now < a.EndDate || a.EndDate == null));
             var members = city.CityMembers
                 .Where(m => m.IsApproved)
                 .Take(9)
@@ -150,8 +150,8 @@ namespace EPlast.BLL.Services
             city.FollowerCount = city.CityMembers
                 .Count(m => !m.IsApproved);
             var cityDoc = city.CityDocuments.Take(6).ToList();
+            city.DocumentsCount = city.CityDocuments.Count();
             
-
             var cityProfileDto = new CityProfileDTO
             {
                 City = city,
@@ -267,6 +267,7 @@ namespace EPlast.BLL.Services
 
             return cityProfileDto;
         }
+
 
         /// <inheritdoc />
         public async Task<string> GetLogoBase64(string logoName)
