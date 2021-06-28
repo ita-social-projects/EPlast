@@ -258,5 +258,9 @@ namespace EPlast.DataAccess
         public DbSet<AchievementDocuments> AchievementDocuments { get; set; }
         public DbSet<ExtractFromUPUDocuments> ExtractFromUPUDocuments { get; set; }
         public DbSet<EventSection> EventSection { get; set; }
+        public DbSet<ClubReportPlastDegrees> ClubReportPlastDegrees { get; set; }
+        public DbSet<ClubReportMember> ClubReportMember { get; set; }
+        public DbSet<ClubReportAdmins> ClubReportAdmins { get; set; }
+        public DbSet<ClubMemberHistory> ClubMemberHistory { get; set; }
     }
 }
