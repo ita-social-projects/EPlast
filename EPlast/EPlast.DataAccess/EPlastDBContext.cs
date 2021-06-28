@@ -52,14 +52,14 @@ namespace EPlast.DataAccess
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<UserTableObject>().HasNoKey();
-            modelBuilder.Entity<AnnualReportTableObject>().HasNoKey();
-            modelBuilder.Entity<ClubAnnualReportTableObject>().HasNoKey();
-            modelBuilder.Entity<RegionAnnualReportTableObject>().HasNoKey();
-            modelBuilder.Entity<UserDistinctionsTableObject>().HasNoKey();
-            modelBuilder.Entity<UserPrecautionsTableObject>().HasNoKey();
-            modelBuilder.Entity<DecisionTableObject>().HasNoKey();
-            modelBuilder.Entity<RegionMembersInfoTableObject>().HasNoKey();
+            modelBuilder.Ignore<UserTableObject>();
+            modelBuilder.Ignore<AnnualReportTableObject>();
+            modelBuilder.Ignore<ClubAnnualReportTableObject>();
+            modelBuilder.Ignore<RegionAnnualReportTableObject>();
+            modelBuilder.Ignore<UserDistinctionsTableObject>();
+            modelBuilder.Ignore<DecisionTableObject>();
+            modelBuilder.Ignore<RegionMembersInfoTableObject>();
+            modelBuilder.Ignore<UserPrecautionsTableObject>();
 
             modelBuilder.Entity<Event>()
                 .HasKey(x => x.ID);
