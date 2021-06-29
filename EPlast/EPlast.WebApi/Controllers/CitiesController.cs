@@ -45,22 +45,6 @@ namespace EPlast.WebApi.Controllers
             _cityParticipantsService = cityParticipantsService;
         }
 
-        /// <summary>
-        /// Get a specific number of cities 
-        /// </summary>
-        /// <param name="page">A number of the page</param>
-        /// <param name="pageSize">A count of cities to display</param>
-        /// <param name="cityName">Optional param to find cities by name</param>
-        /// <returns>A specific number of cities</returns>
-        [HttpGet("Profiles/{page}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetCities(int page, int pageSize, string cityName = null)
-        {
-            var cities = await _cityService.GetAllDTOAsync(cityName);
-            var citiesViewModel = new CitiesViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
-
-            return Ok(citiesViewModel);
-        }
 
         /// <summary>
         /// Get all cities 
