@@ -27,7 +27,7 @@ namespace EPlast.DataAccess.Migrations
                         column: x => x.ClubId,
                         principalTable: "Clubs",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ClubMemberHistory_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -53,13 +53,13 @@ namespace EPlast.DataAccess.Migrations
                         column: x => x.ClubAdministrationId,
                         principalTable: "ClubAdministrations",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ClubReportAdmins_ClubAnnualReports_ClubAnnualReportId",
                         column: x => x.ClubAnnualReportId,
                         principalTable: "ClubAnnualReports",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -86,7 +86,7 @@ namespace EPlast.DataAccess.Migrations
                         column: x => x.PlastDegreeId,
                         principalTable: "PlastDegrees",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ClubReportPlastDegrees_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -112,13 +112,13 @@ namespace EPlast.DataAccess.Migrations
                         column: x => x.ClubAnnualReportId,
                         principalTable: "ClubAnnualReports",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ClubReportMember_ClubMemberHistory_ClubMemberHistoryId",
                         column: x => x.ClubMemberHistoryId,
                         principalTable: "ClubMemberHistory",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
