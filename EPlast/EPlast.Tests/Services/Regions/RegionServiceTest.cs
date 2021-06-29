@@ -363,6 +363,10 @@ namespace EPlast.Tests.Services.Regions
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(new List<string>() { Roles.Admin, Roles.OkrugaHead, Roles.OkrugaHeadDeputy });
+            _repoWrapper
+                .Setup(x => x.RegionDocument.GetAllAsync( It.IsAny<Expression<Func<RegionDocuments, bool>>>(),
+            It.IsAny<Func<IQueryable<RegionDocuments>, IIncludableQueryable<RegionDocuments, object>>>()))
+                .ReturnsAsync(new List<RegionDocuments>());
 
             // Act
             var result = await _regionService.GetRegionProfileByIdAsync(fakeId, user);
