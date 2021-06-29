@@ -45,22 +45,6 @@ namespace EPlast.WebApi.Controllers
             _userManager = userManager;
         }
 
-        /// <summary>
-        /// Get a specific number of Clubs 
-        /// </summary>
-        /// <param name="page">A number of the page</param>
-        /// <param name="pageSize">A count of Clubs to display</param>
-        /// <param name="clubName">Optional param to find Clubs by name</param>
-        /// <returns>A specific number of Clubs</returns>
-        [HttpGet("Profiles/{page}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetClubs(int page, int pageSize, string clubName = null)
-        {
-            var clubs = await _clubService.GetAllDTOAsync(clubName);
-            var clubsViewModel = new ClubsViewModel(page, pageSize, clubs, User.IsInRole(Roles.Admin));
-
-            return Ok(clubsViewModel);
-        }
 
         /// <summary>
         /// Get all clubs 

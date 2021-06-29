@@ -55,33 +55,7 @@ namespace EPlast.Tests.Controllers
            _userManager.Object
           );
 
-        [TestCase(1, 1, "Курінь")]
-        public async Task GetCities_Valid_Test(int page, int pageSize, string cityName)
-        {
-            // Arrange
-            ClubController clubcon = CreateClubController;
-            var httpContext = new Mock<HttpContext>();
-            httpContext
-                .Setup(m => m.User.IsInRole(Roles.Admin))
-                .Returns(true);
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            clubcon.ControllerContext = context;
-            _ClubService
-                .Setup(c => c.GetAllDTOAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetClubsBySearch());
-
-            // Act
-            var result = await clubcon.GetClubs(page, pageSize, cityName);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(((result as ObjectResult).Value as ClubsViewModel)
-                .Clubs.Where(c => c.Name.Equals("Курінь")));
-        }
+        
 
         [Test]
         public async Task GetCities_Valid_Test()

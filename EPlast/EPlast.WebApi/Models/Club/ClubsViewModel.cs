@@ -9,11 +9,20 @@ namespace EPlast.WebApi.Models.Club
 {
     public class ClubsViewModel
     {
-        public ClubsViewModel(int page, int pageSize, IEnumerable<ClubDTO> сlubs, bool isAdmin)
+        public ClubsViewModel(int page, int pageSize, IEnumerable<ClubDTO> сlubs, string clubName, bool isAdmin)
         {
-            Clubs = сlubs.Skip((page - 1) * pageSize).Take(pageSize);
-            Total = сlubs.Count();
-            CanCreate = isAdmin;
+            if (clubName == null)
+            {
+                Clubs = сlubs.Skip((page - 1) * pageSize).Take(pageSize);
+                Total = сlubs.Count();
+                CanCreate = isAdmin;
+            }
+            else
+            {
+                Clubs = from club in сlubs where club.Name.ToLower().Contains(clubName.ToLower()) select club;
+                Total = Clubs.Count();
+                CanCreate = isAdmin;
+            }
         }
 
         public IEnumerable<ClubDTO> Clubs { get; set; }

@@ -374,33 +374,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
-        [TestCase(1, 1, "Львів")]
-        public async Task GetCities_Valid_Test(int page, int pageSize, string cityName)
-        {
-            // Arrange
-            CitiesController citycon = CreateCityController;
-            var httpContext = new Mock<HttpContext>();
-            httpContext
-                .Setup(m => m.User.IsInRole(Roles.Admin))
-                .Returns(true);
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            citycon.ControllerContext = context;
-            _cityService
-                .Setup(c => c.GetAllDTOAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetCitiesBySearch());
-
-            // Act
-            var result = await citycon.GetCities(page, pageSize, cityName);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(((result as ObjectResult).Value as CitiesViewModel)
-                .Cities.Where(c => c.Name.Equals("Львів")));
-        }
+        
 
         [Test]
         public async Task GetCities_Valid_Test()
