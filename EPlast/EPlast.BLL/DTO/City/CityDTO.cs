@@ -43,6 +43,7 @@ namespace EPlast.BLL.DTO.City
         public int MemberCount { get; set; }
         public int FollowerCount { get; set; }
         public int AdministrationCount { get; set; }
+        public int DocumentsCount { get; set; }
         public IEnumerable<CityDocumentsDTO> CityDocuments { get; set; }
         public IEnumerable<CityMembersDTO> CityMembers { get; set; }
         public IEnumerable<CityAdministrationDTO> CityAdministration { get; set; }
