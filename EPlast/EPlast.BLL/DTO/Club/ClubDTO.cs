@@ -40,6 +40,7 @@ namespace EPlast.BLL.DTO.Club
         public int MemberCount { get; set; }
         public int FollowerCount { get; set; }
         public int AdministrationCount { get; set; }
+        public int DocumentsCount { get; set; }
         public IEnumerable<ClubDocumentsDTO> ClubDocuments { get; set; }
         public IEnumerable<ClubMembersDTO> ClubMembers { get; set; }
         public IEnumerable<ClubAdministrationDTO> ClubAdministration { get; set; }
