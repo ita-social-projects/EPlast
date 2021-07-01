@@ -347,11 +347,25 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to region followers page</response>
         /// <response code="404">The region followers page does not exist</response>
         [HttpGet("Followers/{regionId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
         public async Task<IActionResult> GetFollowers(int regionId)
         {
             var followers = await _regionService.GetFollowersAsync(regionId);
             return Ok(followers);
+        }
+
+        /// <summary>
+        /// Remove a specific follower from the region
+        /// </summary>
+        /// <param name="followerId">The id of the follower</param>
+        [HttpDelete("RemoveFollower/{followerId}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
+        public async Task<IActionResult> RemoveFollower(int followerId)
+        {
+            await _regionService.RemoveFollowerAsync(followerId);
+            _logger.LogInformation($"Follower with ID {{{followerId}}} was removed.");
+
+            return Ok();
         }
 
         [HttpGet("LogoBase64")]

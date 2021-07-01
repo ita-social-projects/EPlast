@@ -136,6 +136,15 @@ namespace EPlast.BLL.Services.Region
             return _mapper.Map<IEnumerable<RegionFollowers>, IEnumerable<RegionFollowerDTO>>(followers);
         }
 
+        public async Task RemoveFollowerAsync(int followerId)
+        {
+            var follower = await _repoWrapper.RegionFollowers
+                .GetFirstOrDefaultAsync(u => u.ID == followerId);
+
+            _repoWrapper.RegionFollowers.Delete(follower);
+            await _repoWrapper.SaveAsync();
+        }
+
         public async Task<RegionProfileDTO> GetRegionByNameAsync(string Name, User user)
         {
             var regionProfile = _mapper.Map<DataAccessRegion.Region, RegionProfileDTO>(await _repoWrapper.Region.GetFirstAsync(d => d.RegionName == Name));

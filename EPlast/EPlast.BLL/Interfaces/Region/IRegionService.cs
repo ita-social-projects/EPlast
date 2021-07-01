@@ -47,5 +47,11 @@ namespace EPlast.BLL.Interfaces.Region
         /// <param name="regionId">The id of the region</param>
         /// <returns>A list of followers of a specific region</returns>
         Task<IEnumerable<RegionFollowerDTO>> GetFollowersAsync(int regionId);
+
+        /// <summary>
+        /// Remove a specific follower from the region
+        /// </summary>
+        /// <param name="followerId">The id of the follower</param>
+        Task RemoveFollowerAsync(int followerId);
     }
 }
