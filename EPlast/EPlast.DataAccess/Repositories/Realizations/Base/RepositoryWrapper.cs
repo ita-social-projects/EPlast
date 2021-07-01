@@ -67,6 +67,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
 
         private IRegionRepository _region;
         private IRegionAdministrationRepository _regionAdministration;
+        private IRegionFollowersRepository _regionFollowers;
         private IAnnualReportsRepository _annualReports;
         private IMembersStatisticsRepository _membersStatistics;
         private ICityLegalStatusesRepository _cityLegalStatuses;
@@ -683,6 +684,19 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 }
 
                 return _regionAdministration;
+            }
+        }
+
+        public IRegionFollowersRepository RegionFollowers
+        {
+            get
+            {
+                if (_regionFollowers == null)
+                {
+                    _regionFollowers = new RegionFollowerRepository(_dbContext);
+                }
+
+                return _regionFollowers;
             }
         }
 

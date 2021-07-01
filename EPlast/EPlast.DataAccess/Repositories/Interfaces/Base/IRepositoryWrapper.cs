@@ -65,6 +65,7 @@ namespace EPlast.DataAccess.Repositories
         IPrecautionRepository Precaution { get; }
         IRegionRepository Region { get; }
         IRegionAdministrationRepository RegionAdministration { get; }
+        IRegionFollowersRepository RegionFollowers { get; }
         IRegionAnnualReportsRepository RegionAnnualReports { get; }
         IRegionDocumentRepository RegionDocument { get; }
         IReligionRepository Religion { get; }

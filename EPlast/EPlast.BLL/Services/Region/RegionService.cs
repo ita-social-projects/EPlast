@@ -130,6 +130,12 @@ namespace EPlast.BLL.Services.Region
             return _mapper.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDTO>>(cities);
         }
 
+        public async Task<IEnumerable<RegionFollowerDTO>> GetFollowersAsync(int regionId)
+        {
+            var followers = await _repoWrapper.RegionFollowers.GetAllAsync(d => d.RegionId == regionId);
+            return _mapper.Map<IEnumerable<RegionFollowers>, IEnumerable<RegionFollowerDTO>>(followers);
+        }
+
         public async Task<RegionProfileDTO> GetRegionByNameAsync(string Name, User user)
         {
             var regionProfile = _mapper.Map<DataAccessRegion.Region, RegionProfileDTO>(await _repoWrapper.Region.GetFirstAsync(d => d.RegionName == Name));

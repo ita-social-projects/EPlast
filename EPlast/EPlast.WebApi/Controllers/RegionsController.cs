@@ -338,6 +338,22 @@ namespace EPlast.WebApi.Controllers
             return Ok(members);
         }
 
+        /// <summary>
+        /// Method to get all region followers
+        /// </summary>
+        /// <param name="regionId">Region identification number Data</param>
+        /// <returns>Region followers</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="403">User hasn't access to region followers page</response>
+        /// <response code="404">The region followers page does not exist</response>
+        [HttpGet("Followers/{regionId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetFollowers(int regionId)
+        {
+            var followers = await _regionService.GetFollowersAsync(regionId);
+            return Ok(followers);
+        }
+
         [HttpGet("LogoBase64")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetPhotoBase64(string logoName)
