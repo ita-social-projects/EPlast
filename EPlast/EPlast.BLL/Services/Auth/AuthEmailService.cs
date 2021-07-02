@@ -52,6 +52,7 @@ namespace EPlast.BLL.Services.Auth
         public async Task<bool> SendEmailGreetingAsync(string email)
         {
             var citiesUrl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Cities"];
+            citiesUrl = citiesUrl.Remove(citiesUrl.Length - 1);
             var user = await _userManager.FindByEmailAsync(email);
             user.EmailSendedOnRegister = DateTime.Now;
             var emailContent = _emailContentService.GetAuthGreetingEmail(citiesUrl);
@@ -61,6 +62,7 @@ namespace EPlast.BLL.Services.Auth
         public async Task<bool> SendEmailJoinToCityReminderAsync(string email, string userId)
         {
             var citiesUrl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Cities"];
+            citiesUrl = citiesUrl.Remove(citiesUrl.Length - 1);
             var emailContent = await _emailContentService.GetAuthJoinToCityReminderEmailAsync(citiesUrl, userId);
             return await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message, emailContent.Title);
         }
