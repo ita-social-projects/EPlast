@@ -359,10 +359,18 @@ namespace EPlast.BLL.Services.City
                                                                   && (DateTime.Now < a.EndDate || a.EndDate == null));
             var emailContent = await _emailContentService.GetCityAdminAboutNewFollowerEmailAsync(user.Id,
                 user.FirstName, user.LastName, false);
-            await _emailSendingService.SendEmailAsync(cityHead.User.Email, emailContent.Subject, emailContent.Message,
-                emailContent.Title);
-            await _emailSendingService.SendEmailAsync(cityHeadDeputy.User.Email, emailContent.Subject, emailContent.Message,
-                emailContent.Title);
+            if (cityHead != null)
+            {
+                await _emailSendingService.SendEmailAsync(cityHead.User.Email, emailContent.Subject,
+                    emailContent.Message,
+                    emailContent.Title);
+            }
+            if (cityHeadDeputy != null)
+            {
+                await _emailSendingService.SendEmailAsync(cityHeadDeputy.User.Email, emailContent.Subject,
+                    emailContent.Message,
+                    emailContent.Title);
+            }
         }
 
         private async Task SendEmailCityApproveStatusAsync(string email, string userId, DataAccess.Entities.City city, bool isApproved)
