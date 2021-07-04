@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace EPlast.DataAccess.Entities
+namespace EPlast.DataAccess.Entities.GoverningBody
 {
     public class GoverningBodyAdministration
     {

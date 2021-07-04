@@ -4,6 +4,7 @@ using EPlast.DataAccess.Entities.Decision;
 using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Entities.GoverningBody;
+using EPlast.DataAccess.Entities.GoverningBody.Sector;
 using EPlast.DataAccess.Entities.UserEntities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -223,6 +224,11 @@ namespace EPlast.DataAccess
         public DbSet<GoverningBodyAdministration> GoverningBodyAdministrations { get; set; }
         public DbSet<GoverningBodyDocuments> GoverningBodyDocuments { get; set; }
         public DbSet<GoverningBodyDocumentType> GoverningBodyDocumentTypes { get; set; }
+
+        public DbSet<Sector> GoverningBodySectors { get; set; }
+        public DbSet<SectorAdministration> GoverningBodySectorAdministrations { get; set; }
+        public DbSet<SectorDocuments> GoverningBodySectorDocuments { get; set; }
+        public DbSet<SectorDocumentType> GoverningBodySectorDocumentTypes { get; set; }
 
         public DbSet<City> Cities { get; set; }
         public DbSet<CityAdministration> CityAdministrations { get; set; }

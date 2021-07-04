@@ -7,6 +7,7 @@ using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities.GoverningBody;
 
 namespace EPlast.BLL.Services.GoverningBodies
 {

@@ -6,6 +6,7 @@ using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Services.PDF;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
