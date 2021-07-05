@@ -46,7 +46,7 @@ namespace EPlast.BLL.Services.EmailSending
             {
                 Title = "EPlast",
                 Subject = "Вітаємо у системі!",
-                Message = $"Ви успішно активували свій акаунт!\nНе забудьте доєднатись до осередку, перейшовши за :  <a href='{citiesUrl}'>посиланням</a> "
+                Message = $"Ви успішно активували свій акаунт!\nНе забудьте доєднатись до осередку, перейшовши за <a href='{citiesUrl}'>посиланням</a>"
             };
         }
 
@@ -80,7 +80,7 @@ namespace EPlast.BLL.Services.EmailSending
             {
                 Title = "EPlast",
                 Subject = "Підтвердження реєстрації",
-                Message = $"Підтвердіть реєстрацію, перейшовши за :  <a href='{confirmationLink}'>посиланням</a>"
+                Message = $"Підтвердіть реєстрацію, перейшовши за <a href='{confirmationLink}'>посиланням</a>"
             };
         }
 
@@ -90,8 +90,8 @@ namespace EPlast.BLL.Services.EmailSending
             return new EmailModel
             {
                 Title = "Адміністрація сайту EPlast",
-                Subject = "Скидування пароля",
-                Message = $"Для скидування пароля перейдіть за : <a href='{confirmationLink}'>посиланням</a>"
+                Subject = "Скидання пароля",
+                Message = $"Для скидання пароля перейдіть за <a href='{confirmationLink}'>посиланням</a>"
             };
         }
 
