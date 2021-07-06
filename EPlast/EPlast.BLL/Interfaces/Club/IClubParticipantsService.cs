@@ -38,7 +38,7 @@ namespace EPlast.BLL.Interfaces.Club
         /// <summary>
         /// Removes roles from previous administrators
         /// </summary>
-        Task CheckPreviousAdministratorsToDelete();
+        Task ContinueAdminsDueToDate();
 
         /// <summary>
         ///returns administrations of given user
@@ -82,6 +82,13 @@ namespace EPlast.BLL.Interfaces.Club
         /// <param name="memberId">The id of the member</param>
         /// <returns>An information about a specific member</returns>
         Task<ClubMembersDTO> ToggleApproveStatusAsync(int memberId);
+
+        /// <summary>
+        /// Club name only for approved member
+        /// </summary>
+        /// <param name="memberId">The id of the member</param>
+        /// <returns>club name string</returns>
+        Task<string> ClubOfApprovedMember(string memberId);
 
         /// <summary>
         /// Remove a specific follower from the Club

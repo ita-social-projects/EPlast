@@ -4,7 +4,7 @@ using System;
 using System.IO;
 
 
-namespace EPlast.BLL
+namespace EPlast.BLL.Services.PDF.Documents
 {
     public abstract class PdfDocument : IPdfDocument
     {
@@ -39,7 +39,7 @@ namespace EPlast.BLL
         public virtual PdfSharpCore.Pdf.PdfDocument GetDocument()
         {
             PdfPage page = document.AddPage();
-            document.Info.Title = settings.Title;
+            document.Info.Title = PdfHelper.EncodingHack(settings.Title);
             document.Info.Subject = settings.Subject;
             document.Info.Author = settings.Author;
 

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace EPlast.BLL
+namespace EPlast.BLL.Services.PDF
 {
     internal class PdfCreator : IPdfCreator
     {

@@ -75,17 +75,52 @@ namespace EPlast.BLL.Services
             var city = await _repoWrapper.City.GetFirstOrDefaultAsync(
                     predicate: c => c.ID == cityId,
                     include: source => source
-                       .Include(c => c.CityAdministration)
-                           .ThenInclude(t => t.AdminType)
-                       .Include(k => k.CityAdministration)
-                           .ThenInclude(a => a.User)
-                       .Include(m => m.CityMembers)
-                           .ThenInclude(u => u.User)
                        .Include(l => l.CityDocuments)
                            .ThenInclude(d => d.CityDocumentType)
                        .Include(r => r.Region));
+            if (city != null)
+            {
+                var cityAdmins = await _repoWrapper.CityAdministration.GetAllAsync(
+                                 predicate: c => c.CityId == cityId && c.Status,
+                                 include: source => source
+                      .Include(t => t.AdminType)
+                      .Include(a => a.User));
 
+                var cityMembers = await _repoWrapper.CityMembers.GetAllAsync(
+                                  predicate: c => c.CityId == cityId,
+                                  include: source => source
+                        .Include(a => a.User));
+                city.CityAdministration = cityAdmins.ToList();
+                city.CityMembers = cityMembers.ToList();
+            }
             return _mapper.Map<DataAccessCity.City, CityDTO>(city);
+        }
+
+        public CityAdministrationDTO GetCityHead(CityDTO city)
+        {
+            var cityHead = city.CityAdministration?
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHead
+                    && (DateTime.Now < a.EndDate || a.EndDate == null));
+            return cityHead;
+        }
+
+        public CityAdministrationDTO GetCityHeadDeputy(CityDTO city)
+        {
+            var cityHeadDeputy = city.CityAdministration?
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHeadDeputy
+                    && (DateTime.Now < a.EndDate || a.EndDate == null));
+            return cityHeadDeputy;
+        }
+
+        public List<CityAdministrationDTO> GetCityAdmins(CityDTO city)
+        {
+            var cityAdmins = city.CityAdministration
+                .Where(a => a.AdminType.AdminTypeName != Roles.CityHead
+                    && a.AdminType.AdminTypeName != Roles.CityHeadDeputy
+                    && (DateTime.Now < a.EndDate || a.EndDate == null))
+                .Take(6)
+                .ToList();
+            return cityAdmins;
         }
 
         /// <inheritdoc />
@@ -97,16 +132,11 @@ namespace EPlast.BLL.Services
                 return null;
             }
 
-            var cityHead = city.CityAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHead
-                    && (DateTime.Now < a.EndDate || a.EndDate == null));
-            var cityAdmins = city.CityAdministration
-                .Where(a => a.AdminType.AdminTypeName != Roles.CityHead
-                    && (DateTime.Now < a.EndDate || a.EndDate == null))
-                .Take(6)
-                .ToList();
-            city.AdministrationCount = city.CityAdministration
-                .Count(a => (DateTime.Now < a.EndDate || a.EndDate == null));
+            var cityHead = GetCityHead(city);
+            var cityHeadDeputy = GetCityHeadDeputy(city);
+            var cityAdmins = GetCityAdmins(city);
+            city.AdministrationCount = city.CityAdministration == null ? 0
+                :city.CityAdministration.Count(a => (DateTime.Now < a.EndDate || a.EndDate == null));
             var members = city.CityMembers
                 .Where(m => m.IsApproved)
                 .Take(9)
@@ -120,12 +150,13 @@ namespace EPlast.BLL.Services
             city.FollowerCount = city.CityMembers
                 .Count(m => !m.IsApproved);
             var cityDoc = city.CityDocuments.Take(6).ToList();
+            city.DocumentsCount = city.CityDocuments.Count();
             
-
             var cityProfileDto = new CityProfileDTO
             {
                 City = city,
                 Head = cityHead,
+                HeadDeputy = cityHeadDeputy,
                 Members = members,
                 Followers = followers,
                 Admins = cityAdmins,
@@ -202,19 +233,16 @@ namespace EPlast.BLL.Services
                 return null;
             }
 
-            var cityHead = city.CityAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHead
-                    && (DateTime.Now < a.EndDate || a.EndDate == null));
-            var cityAdmins = city.CityAdministration
-                .Where(a => a.AdminType.AdminTypeName != Roles.CityHead
-                    && (DateTime.Now < a.EndDate || a.EndDate == null))
-                .ToList();
+            var cityHead = GetCityHead(city);
+            var cityHeadDeputy = GetCityHeadDeputy(city);
+            var cityAdmins = GetCityAdmins(city);
 
             var cityProfileDto = new CityProfileDTO
             {
                 City = city,
                 Admins = cityAdmins,
-                Head = cityHead
+                Head = cityHead,
+                HeadDeputy = cityHeadDeputy
             };
 
             return cityProfileDto;
@@ -239,6 +267,7 @@ namespace EPlast.BLL.Services
 
             return cityProfileDto;
         }
+
 
         /// <inheritdoc />
         public async Task<string> GetLogoBase64(string logoName)
@@ -422,3 +451,4 @@ namespace EPlast.BLL.Services
 
     }
 }
+

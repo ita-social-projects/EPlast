@@ -1,15 +1,15 @@
 ﻿using AutoMapper;
-using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using EPlast.Resources;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Precautions
@@ -142,18 +142,14 @@ namespace EPlast.BLL.Services.Precautions
             return userPrecaution;
         }
 
-        public async Task<IEnumerable<UserTableDTO>> UsersTableWithotPrecautionAsync()
+        public async Task<IEnumerable<ShortUserInformationDTO>> UsersTableWithoutPrecautionAsync()
         {
-            var userTable = await _adminService.GetUsersTableAsync(1, 10, "Confirmed", null, null, null, null);
-            var filteredtable = new List<UserTableDTO>();
-            foreach (var user in userTable.Item1)
+            var usersWithoutPrecautions = await _adminService.GetUsersAsync();
+            foreach (var user in usersWithoutPrecautions)
             {
-                if (!await CheckUserPrecautions(user.ID))
-                {
-                    filteredtable.Add(user);
-                }
+                user.IsInLowerRole = !user.IsInLowerRole ? await CheckUserPrecautions(user.ID) : user.IsInLowerRole;
             }
-            return filteredtable;
+            return usersWithoutPrecautions;
         }
 
         private async Task<bool> CheckUserPrecautions(string userId)

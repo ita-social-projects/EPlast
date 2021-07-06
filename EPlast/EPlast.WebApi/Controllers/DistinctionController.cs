@@ -13,7 +13,7 @@ namespace EPlast.WebApi.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [Authorize(Roles = Roles.HeadsAdminPlastunSupporterAndRegisteredUser)]
+    [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminPlastunSupporterAndRegisteredUser)]
 
     public class DistinctionController : ControllerBase
     {
@@ -54,6 +54,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>All user distinctions</returns>
         /// <response code="200">Array of all user distinction</response>
         [HttpGet("UserDistinctions")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminPlastunAndSupporter)]
         public async Task<IActionResult> GetUserDistinction()
         {
             IEnumerable<UserDistinctionDTO> userDistinctions = await _userDistinctionService.GetAllUsersDistinctionAsync();
@@ -101,6 +102,22 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             return Ok(userDistinctions);
         }
+
+        /// <summary>
+        /// Get all Users Distinctions
+        /// </summary>
+        /// <param name="searchedData">Searched Data</param>
+        /// <param name="page">Current page on pagination</param>
+        /// <param name="pageSize">Number of records per page</param>
+        /// <returns>List of UserDistinctionsTableObject</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("UsersDistinctionsForTable")]
+        public IActionResult GetUsersDistinctionsForTable(string searchedData, int page, int pageSize)
+        {
+            var distinctions = _distinctionService.GetUsersDistinctionsForTable(searchedData, page, pageSize);
+            return Ok(distinctions);
+        }
+
         /// <summary>
         /// Delete distinction type by id
         /// </summary>

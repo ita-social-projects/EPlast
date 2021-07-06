@@ -351,7 +351,7 @@ namespace EPlast.Tests.Services.Club
                 .ReturnsAsync(GetTestClub());
 
             // Act
-            var result = await _clubService.GetAllDTOAsync();
+            var result = await _clubService.GetAllDtoAsync();
 
             // Assert
             Assert.NotNull(result);
@@ -399,9 +399,48 @@ namespace EPlast.Tests.Services.Club
                 .Setup(r => r.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
                     It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
                 .ReturnsAsync(new ClubMembers());
+            _repoWrapper.Setup(x => x.UserPlastDegrees.GetAllAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
+                .ReturnsAsync(new List<UserPlastDegree>()
+                    {new UserPlastDegree() { UserId = "12345", PlastDegree = new PlastDegree() {Id = 1, Name = ""}}});
 
             // Act
-            var result = await clubService.GetClubProfileAsync(Id, It.IsAny<DataAccessClub.User>());
+            var result = await clubService.GetClubProfileAsync(Id, new User(){Id = "1"});
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<ClubProfileDTO>(result);
+        }
+
+        [Test]
+        public async Task GetCityProfileAsync_WithUserNullDegree_ReturnsCityProfile()
+        {
+            // Arrange
+            ClubService clubService = CreateClubService();
+            _userManager
+                .Setup(u => u.GetUserIdAsync(It.IsAny<DataAccessClub.User>()))
+                .ReturnsAsync(StringId);
+            _userManager
+                .Setup(u => u.GetRolesAsync(It.IsAny<DataAccessClub.User>()))
+                .ReturnsAsync(new List<string>());
+            var mockList = new Mock<IList<string>>();
+            mockList
+                .Setup(m => m.Contains(It.IsAny<string>()))
+                .Returns(true);
+            _clubAccessService
+                .Setup(c => c.HasAccessAsync(It.IsAny<DataAccessClub.User>(), It.IsAny<int>()))
+                .ReturnsAsync(true);
+            _repoWrapper
+                .Setup(r => r.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
+                .ReturnsAsync(new ClubMembers());
+            _repoWrapper.Setup(x => x.UserPlastDegrees.GetAllAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
+                .ReturnsAsync(new List<UserPlastDegree>()
+                    {new UserPlastDegree()});
+
+            // Act
+            var result = await clubService.GetClubProfileAsync(Id, new User() { Id = "1" });
 
             // Assert
             Assert.NotNull(result);
@@ -454,6 +493,23 @@ namespace EPlast.Tests.Services.Club
             // Assert
             Assert.NotNull(result);
             Assert.Null(result.Head);
+            Assert.AreEqual(result.Admins, new List<ClubAdministrationDTO>());
+        }
+
+        [Test]
+        public async Task GetClubAdminsAsync_WhereHeadDeputyIsNull_ReturnClubProfile()
+        {
+            // Arrange
+            ClubService clubService = CreateClubService();
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+                .Returns(CreateFakeClubDtoWithExAdmin(Count).FirstOrDefault());
+
+            // Act
+            var result = await clubService.GetClubAdminsAsync(Id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Null(result.HeadDeputy);
             Assert.AreEqual(result.Admins, new List<ClubAdministrationDTO>());
         }
 
@@ -624,6 +680,124 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
+        public async Task GetClubProfileAsync_WhereHeadDeputyIsNull_ReturnClubProfile()
+        {
+            // Arrange
+            ClubService clubService = CreateClubService();
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+                .Returns(CreateFakeClubDtoWithExAdmin(Count).FirstOrDefault());
+
+            // Act
+            var result = await clubService.GetClubProfileAsync(Id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Null(result.HeadDeputy);
+            Assert.AreEqual(result.Admins, new List<ClubAdministrationDTO>());
+        }
+
+        [Test]
+        public async Task GetClubMembersInfoAsync_ReturnsClubProfile()
+        {
+            // Arrange
+            ClubService clubService = CreateClubService();
+
+            // Act
+            var result = await clubService.GetClubMembersInfoAsync(Id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<ClubProfileDTO>(result);
+        }
+
+        [Test]
+        public async Task GetClubMembersInfoAsync_WhereAdminEndDateIsNull_ReturnClubProfile()
+        {
+            // Arrange
+            ClubService clubService = CreateClubService();
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+                .Returns(CreateFakeClubDtoWithoutMembersWithoutAdminEndDate(Count).FirstOrDefault());
+
+            // Act
+            var result = await clubService.GetClubMembersInfoAsync(Id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.NotNull(result.Head);
+            Assert.NotNull(result.Admins);
+            Assert.AreNotEqual(0, result.Club.AdministrationCount);
+        }
+
+        [Test]
+        public async Task GetClubMembersInfoAsync_WhereClubIsNull_ReturnNull()
+        {
+            // Arrange
+            ClubService clubService = CreateClubService();
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+                .Returns((ClubDTO)null);
+
+            // Act
+            var result = await clubService.GetClubMembersInfoAsync(Id);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Test]
+        public async Task GetClubMembersInfoAsync_WhereHeadIsNull_ReturnClubProfile()
+        {
+            // Arrange
+            ClubService clubService = CreateClubService();
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+                .Returns(CreateFakeClubDtoWithExAdmin(Count).FirstOrDefault());
+
+            // Act
+            var result = await clubService.GetClubMembersInfoAsync(Id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Null(result.Head);
+            Assert.AreEqual(result.Admins, new List<ClubAdministrationDTO>());
+        }
+
+        [Test]
+        public async Task GetClubMembersInfoAsync_WhereHeadDeputyIsNull_ReturnClubProfile()
+        {
+            // Arrange
+            ClubService clubService = CreateClubService();
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+                .Returns(CreateFakeClubDtoWithExAdmin(Count).FirstOrDefault());
+
+            // Act
+            var result = await clubService.GetClubMembersInfoAsync(Id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Null(result.HeadDeputy);
+            Assert.AreEqual(result.Admins, new List<ClubAdministrationDTO>());
+        }
+
+        [Test]
+        public async Task GetClubMembersInfoAsync_WhereCountIsNull_ReturnClubProfile()
+        {
+            // Arrange
+            var fakeClubDTO = CreateFakeClubDto(1).FirstOrDefault();
+            fakeClubDTO.ClubAdministration = null;
+            ClubService clubService = CreateClubService();
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+                .Returns(fakeClubDTO);
+
+            // Act
+            var result = await clubService.GetClubMembersInfoAsync(Id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Null(result.Head);
+            Assert.Null(result.HeadDeputy);
+            Assert.Null(result.Admins);
+        }
+
+        [Test]
         public async Task GetClubs_ReturnClubForAdministrationDTOs()
         {
             // Arrange
@@ -768,7 +942,14 @@ namespace EPlast.Tests.Services.Club
                         {
                             StartDate = new Random().Next(0,1) ==1 ? DateTime.Today : (DateTime?) null,
                             IsApproved = true,
-                            UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
+                            UserId = "12345",
+                            User=new ClubUserDTO()
+                        },
+                        new ClubMembersDTO
+                        {
+                            StartDate = new Random().Next(0,1) ==1 ? DateTime.Today : (DateTime?) null,
+                            IsApproved = false,
+                            UserId = "12345",
                             User=new ClubUserDTO()
                         }
                     },

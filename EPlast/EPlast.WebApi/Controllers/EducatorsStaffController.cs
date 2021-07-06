@@ -5,21 +5,20 @@ using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAdminPlastunSupporterAndRegisteredUser)]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminPlastunSupporterAndRegisteredUser)]
     public class EducatorsStaffController : ControllerBase
     {
         private readonly ILoggerService<EducatorsStaffController> _logger;
         private readonly IEducatorsStaffService _kvService;
         private readonly IEducatorsStaffTypesService _kvTypeService;
-     
-        public EducatorsStaffController(ILoggerService<EducatorsStaffController> logger,  IEducatorsStaffService kvService, IEducatorsStaffTypesService kvTypeService)
+
+        public EducatorsStaffController(ILoggerService<EducatorsStaffController> logger, IEducatorsStaffService kvService, IEducatorsStaffTypesService kvTypeService)
         {
             _logger = logger;
             _kvService = kvService;
@@ -36,10 +35,9 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> CreateKadra(EducatorsStaffDTO kvDTO)
         {
-                    var newKadra=await _kvService.CreateKadra(kvDTO);
-                   
-                return Ok(newKadra);
-                   
+            var newKadra = await _kvService.CreateKadra(kvDTO);
+
+            return Ok(newKadra);
         }
 
         /// <summary>
@@ -53,12 +51,9 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Remove(int kadraId)
         {
-            
-                    await _kvService.DeleteKadra(kadraId);
-                    return StatusCode(StatusCodes.Status200OK);
-
+            await _kvService.DeleteKadra(kadraId);
+            return StatusCode(StatusCodes.Status200OK);
         }
-
 
         /// <summary>
         /// Deletes Updates by id
@@ -68,16 +63,11 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User is not Admin</response>
         [HttpPut("EditKadra")]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> Update( EducatorsStaffDTO kadrasDTO)
+        public async Task<IActionResult> Update(EducatorsStaffDTO kadrasDTO)
         {
-           
-            
-                await _kvService.UpdateKadra(kadrasDTO);
-                return StatusCode(StatusCodes.Status200OK);
-            
-           
+            await _kvService.UpdateKadra(kadrasDTO);
+            return StatusCode(StatusCodes.Status200OK);
         }
-
 
         /// <summary>
         /// Returns Kadras of given user
@@ -96,14 +86,13 @@ namespace EPlast.WebApi.Controllers
             }
 
             var Kadras = await _kvService.GetKVsOfGivenUser(userId);
-           if(Kadras == null)
+            if (Kadras == null)
             {
                 return StatusCode(StatusCodes.Status404NotFound);
             }
 
-                return Ok(Kadras);
+            return Ok(Kadras);
         }
-
 
         /// <summary>
         /// Returns Kadras of given type
@@ -113,15 +102,11 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User is not Admin</response>
         ///  <response code="404"> param is not valid</response>
         [HttpGet("{kvTypeId}")]
-        
         public async Task<IActionResult> GetKVsWithType(int kvTypeId)
         {
-
-                    var Kadras = await _kvService.GetKVsWithKVType(kvTypeId);
-                    return Ok(Kadras);
-
+            var Kadras = await _kvService.GetKVsWithKVType(kvTypeId);
+            return Ok(Kadras);
         }
-
 
         /// <summary>
         /// Returns all kadra types
@@ -133,15 +118,15 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetKVTypes()
         {
             var Types = await _kvTypeService.GetAllKVTypesAsync();
-            if(Types == null)
+            if (Types == null)
             {
                 return StatusCode(StatusCodes.Status404NotFound);
             }
-            return Ok(Types);    
+            return Ok(Types);
         }
 
         /// <summary>
-        /// Returns all kadras 
+        /// Returns all kadras
         /// </summary>
         /// <response code="403">User is not Admin</response>
         ///  <response code="404"> no kadras yet in database</response>
@@ -149,18 +134,13 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> GetAllKVs()
         {
-           
-                var KVs = await _kvService.GetAllKVsAsync();
-                if (KVs == null)
-                {
-                    return StatusCode(StatusCodes.Status404NotFound);
-                }
-                return Ok(KVs);
-            
-            
+            var KVs = await _kvService.GetAllKVsAsync();
+            if (KVs == null)
+            {
+                return StatusCode(StatusCodes.Status404NotFound);
+            }
+            return Ok(KVs);
         }
-
-
 
         /// <summary>
         /// Detects if user has such type of educators staff
@@ -172,9 +152,7 @@ namespace EPlast.WebApi.Controllers
         {
             bool hasstaff = await _kvService.DoesUserHaveSuchStaff(UserId, kadraId);
             return hasstaff;
-
         }
-
 
         /// <summary>
         /// Detects if theres already a staff with such register number
@@ -186,11 +164,10 @@ namespace EPlast.WebApi.Controllers
         {
             bool hasstaff = await _kvService.StaffWithRegisternumberExists(numberInRegister);
             return hasstaff;
-
         }
 
         /// <summary>
-        /// Detects if user except this one has such type of educators staff 
+        /// Detects if user except this one has such type of educators staff
         /// </summary>
         /// <response code="200">Successful operation</response>
         [HttpGet("edit/{UserId}/{kadraId}")]
@@ -199,9 +176,7 @@ namespace EPlast.WebApi.Controllers
         {
             bool hasstaff = await _kvService.UserHasSuchStaffEdit(UserId, kadraId);
             return hasstaff;
-
         }
-
 
         /// <summary>
         /// Detects if edu staff with such register number except this one is already in database
@@ -209,15 +184,11 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         [HttpGet("edit/registerexist/{kadraId}/{numberInRegister}")]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<bool> GetStaffWithRegisternumberEdit( int kadraId, int numberInRegister)
+        public async Task<bool> GetStaffWithRegisternumberEdit(int kadraId, int numberInRegister)
         {
-
             bool hasstaff = await _kvService.StaffWithRegisternumberExistsEdit(kadraId, numberInRegister);
             return hasstaff;
-
         }
-
-
 
         [HttpGet("GetEduStaffById/{KadraID}")]
         [Authorize(Roles = Roles.Admin)]
@@ -225,21 +196,14 @@ namespace EPlast.WebApi.Controllers
         {
             var staff = await _kvService.GetKadraById(KadraID);
             return Ok(staff);
-
         }
 
-
-
-
         [HttpGet("findUserForRedirect/{EduStaffId}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminPlastunAndSupporter)]
         public async Task<string> GetUserByEduStaff(int EduStaffId)
         {
             string UserId = await _kvService.GetUserByEduStaff(EduStaffId);
             return UserId;
-
         }
-
-
     }
 }

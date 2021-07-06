@@ -37,7 +37,7 @@ namespace EPlast.BLL.Interfaces.City
         /// <summary>
         /// Removes roles from previous administrators
         /// </summary>
-        Task CheckPreviousAdministratorsToDelete();
+        Task ContinueAdminsDueToDate();
 
         /// <summary>
         ///returns administrations of given user
@@ -81,6 +81,13 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="memberId">The id of the member</param>
         /// <returns>An information about a specific member</returns>
         Task<CityMembersDTO> ToggleApproveStatusAsync(int memberId);
+
+        /// <summary>
+        /// City name only for approved member
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns>city name string</returns>
+        Task<string> CityOfApprovedMember(string memberId);
 
         /// <summary>
         /// Remove a specific follower from the city

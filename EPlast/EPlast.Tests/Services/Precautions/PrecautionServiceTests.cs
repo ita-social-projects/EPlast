@@ -138,6 +138,24 @@ namespace EPlast.Tests.Services.Precautions
         }
 
         [Test]
+        public void GetUsersPrecautionsForTable_ReturnsUserDistinctionsTableObject()
+        {
+            //Arrange
+            mockRepoWrapper
+                .Setup(x => x.UserPrecaution.GetUsersPrecautions(It.IsAny<string>(),
+                    It.IsAny<int>(), It.IsAny<int>()))
+                .Returns(new List<UserPrecautionsTableObject>());
+
+            //Act
+            var result = PrecautionService.GetUsersPrecautionsForTable(It.IsAny<string>(),
+                It.IsAny<int>(), It.IsAny<int>());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<List<UserPrecautionsTableObject>>(result);
+        }
+        
+        [Test]
         public void DeletePrecautionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
         {
             //Arrange
@@ -187,9 +205,9 @@ namespace EPlast.Tests.Services.Precautions
         {
             //Arrange
             mockRepoWrapper
-               .Setup(x => x.Precaution.GetFirstAsync(It.IsAny<Expression<Func<Precaution, bool>>>(),
-                   It.IsAny<Func<IQueryable<Precaution>, IIncludableQueryable<Precaution, object>>>()))
-               .ReturnsAsync(Precaution);
+                .Setup(x => x.Precaution.GetFirstAsync(It.IsAny<Expression<Func<Precaution, bool>>>(),
+                    It.IsAny<Func<IQueryable<Precaution>, IIncludableQueryable<Precaution, object>>>()))
+                .ReturnsAsync(Precaution);
 
             userManager.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRolesWithoutAdmin());
 
@@ -238,12 +256,12 @@ namespace EPlast.Tests.Services.Precautions
             Assert.DoesNotThrowAsync(async () => { await PrecautionService.AddPrecautionAsync(new PrecautionDTO(), new User()); });
         }
 
-        Precaution nullPrecaution = null;
-        PrecautionDTO nullPrecautionDTO = null;
-        List<PrecautionDTO> nullListPrecautionDTO = null;
-        List<Precaution> nullListPrecaution = null;
-        PrecautionDTO PrecautionDTO = new PrecautionDTO { Id = 1, Name = "За силу" };
-        Precaution Precaution = new Precaution { Id = 1, Name = "За силу" };
+        readonly Precaution nullPrecaution = null;
+        readonly PrecautionDTO nullPrecautionDTO = null;
+        readonly List<PrecautionDTO> nullListPrecautionDTO = null;
+        readonly List<Precaution> nullListPrecaution = null;
+        readonly PrecautionDTO PrecautionDTO = new PrecautionDTO { Id = 1, Name = "За силу" };
+        readonly Precaution Precaution = new Precaution { Id = 1, Name = "За силу" };
 
         private IEnumerable<Precaution> GetTestPlastPrecaution()
         {

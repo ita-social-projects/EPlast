@@ -25,7 +25,7 @@ namespace EPlast.BLL.Interfaces.Region
         Task<IEnumerable<RegionDocumentDTO>> GetRegionDocsAsync(int regionId);
         Task<string> DownloadFileAsync(string fileName);
         Task DeleteFileAsync(int documentId);
-        Task EndAdminsDueToDate();
+        Task ContinueAdminsDueToDate();
         Task<string> GetLogoBase64(string logoName);
         Task RedirectMembers(int prevRegId, int nextRegId);
 
@@ -34,5 +34,11 @@ namespace EPlast.BLL.Interfaces.Region
         /// </summary>
         /// <returns>All Regions</returns>
         Task<IEnumerable<RegionForAdministrationDTO>> GetRegions();
+
+        /// <summary>
+        /// >Get Region Users 
+        /// </summary>
+        /// <returns> All users of cities included in this region</returns>
+        Task<IEnumerable<RegionUserDTO>> GetRegionUsersAsync(int regionId);
     }
 }

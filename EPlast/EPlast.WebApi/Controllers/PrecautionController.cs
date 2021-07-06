@@ -13,7 +13,7 @@ namespace EPlast.WebApi.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [Authorize(Roles = Roles.HeadsAdminPlastunSupporterAndRegisteredUser)]
+    [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminPlastunSupporterAndRegisteredUser)]
 
     public class PrecautionController : ControllerBase
     {
@@ -58,6 +58,21 @@ namespace EPlast.WebApi.Controllers
         {
             IEnumerable<UserPrecautionDTO> userPrecautions = await _userPrecautionService.GetAllUsersPrecautionAsync();
             return Ok(userPrecautions);
+        }
+
+        /// <summary>
+        /// Get all Users Precautions
+        /// </summary>
+        /// <param name="searchedData">Searched Data</param>
+        /// <param name="page">Current page on pagination</param>
+        /// <param name="pageSize">Number of records per page</param>
+        /// <returns>List of UserPrecautionsTableObject</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("UsersPrecautionsForTable")]
+        public IActionResult GetUsersPrecautionsForTable(string searchedData, int page, int pageSize)
+        {
+            var distinctions = _precautionService.GetUsersPrecautionsForTable(searchedData, page, pageSize);
+            return Ok(distinctions);
         }
 
         /// <summary>
@@ -270,7 +285,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("usersWithoutPrecautions")]
         public async Task<IActionResult> UsersWithoutPrecautionsTable(string tab)
         {
-            var result = await _userPrecautionService.UsersTableWithotPrecautionAsync();
+            var result = await _userPrecautionService.UsersTableWithoutPrecautionAsync();
             return Ok(result);
         }
     }

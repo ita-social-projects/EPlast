@@ -380,8 +380,6 @@ namespace EPlast.Tests.Services.EducatorStaff
         {
             ID = 1,
             NumberInRegister = 2,
-            BasisOfGranting = "sdfghj",
-            Link = "eytfcvbnm"
         };
     }
 }

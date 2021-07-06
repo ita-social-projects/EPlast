@@ -8,13 +8,13 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.Resources;
 
 namespace EPlast.BLL.Services.UserProfiles
 {
@@ -27,12 +27,11 @@ namespace EPlast.BLL.Services.UserProfiles
         private readonly IUserBlobStorageRepository _userBlobStorage;
         private readonly IUniqueIdService _uniqueId;
 
-        public UserService(IRepositoryWrapper repoWrapper, 
-            UserManager<User> userManager, 
+        public UserService(IRepositoryWrapper repoWrapper,
             IMapper mapper,
             IUserPersonalDataService userPersonalDataService,
-            IUserBlobStorageRepository userBlobStorage, 
-            IWebHostEnvironment env, 
+            IUserBlobStorageRepository userBlobStorage,
+            IWebHostEnvironment env,
             IUniqueIdService uniqueId)
         {
             _repoWrapper = repoWrapper;
@@ -63,6 +62,7 @@ namespace EPlast.BLL.Services.UserProfiles
                         ThenInclude(g => g.Work).
                     Include(g => g.CityMembers).
                         ThenInclude(g => g.City).
+                        ThenInclude(g=>g.Region).
                     Include(g => g.ClubMembers).
                         ThenInclude(g => g.Club).
                     Include(g => g.UserProfile).
@@ -102,15 +102,10 @@ namespace EPlast.BLL.Services.UserProfiles
         }
 
         /// <inheritdoc />
-        public bool CanApprove(IEnumerable<ConfirmedUserDTO> confUsers, string userId, User user)
+        public bool CanApprove(IEnumerable<ConfirmedUserDTO> confUsers, string userId, string currentUserId, bool isAdmin = false)
         {
-            var currentUserId = user.Id;
-
-            var canApprove = confUsers.Count() < 3
-                    && !confUsers.Any(x => x.Approver.UserID == currentUserId)
-                    && currentUserId != userId;
-
-            return canApprove;
+            return confUsers.Count() < 3 && !confUsers.Any(x => x.Approver.UserID == currentUserId)
+                                         && (currentUserId != userId || isAdmin);
         }
 
         /// <inheritdoc />
@@ -134,6 +129,7 @@ namespace EPlast.BLL.Services.UserProfiles
                 return TimeSpan.Zero;
             }
         }
+
         public async Task UpdateAsyncForFile(UserDTO user, IFormFile file, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
             user.ImagePath = await UploadPhotoAsyncInFolder(user.Id, file);
@@ -154,8 +150,8 @@ namespace EPlast.BLL.Services.UserProfiles
         public async Task<string> GetImageBase64Async(string fileName)
         {
             return await _userBlobStorage.GetBlobBase64Async(fileName);
-
         }
+
         private async Task<int?> CheckEducationFieldsAsync(string firstName, string secondName, int? firstId, int? secondId)
         {
             if (secondId == firstId)
@@ -223,12 +219,12 @@ namespace EPlast.BLL.Services.UserProfiles
             }
             return model;
         }
+
         private async Task<string> UploadPhotoAsyncInFolder(string userId, IFormFile file)
         {
             var oldImageName = (await _repoWrapper.User.GetFirstOrDefaultAsync(x => x.Id == userId)).ImagePath;
             if (file != null && file.Length > 0)
             {
-
                 using (var img = System.Drawing.Image.FromStream(file.OpenReadStream()))
                 {
                     var uploads = Path.Combine(_env.WebRootPath, "images\\Users");
@@ -251,6 +247,7 @@ namespace EPlast.BLL.Services.UserProfiles
                 return oldImageName;
             }
         }
+
         private async Task<string> UploadPhotoAsyncFromBase64(string userId, string imageBase64)
         {
             var oldImageName = (await _repoWrapper.User.GetFirstOrDefaultAsync(x => x.Id == userId)).ImagePath;
@@ -271,8 +268,8 @@ namespace EPlast.BLL.Services.UserProfiles
             {
                 return oldImageName;
             }
-
         }
+
         /// <inheritdoc />
         private async Task UpdateAsync(UserDTO user, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
@@ -297,6 +294,7 @@ namespace EPlast.BLL.Services.UserProfiles
 
             return user;
         }
+
         private string SaveCorrectLink(string link, string socialMediaName)
         {
             if (link != null && link != "")
@@ -308,7 +306,7 @@ namespace EPlast.BLL.Services.UserProfiles
                         link = link.Substring(8);
                     }
                     link = link.Substring(socialMediaName.Length + 9);
-                }               
+                }
                 else if (link.Contains($"{socialMediaName}.com/"))
                 {
                     if (link.Contains("https://"))
@@ -326,7 +324,38 @@ namespace EPlast.BLL.Services.UserProfiles
         {
             var cityMember = await _repoWrapper.CityMembers
                  .GetFirstOrDefaultAsync(u => u.UserId == userId, m => m.Include(u => u.User));
-            return cityMember!=null && cityMember.IsApproved;
+            return cityMember != null && cityMember.IsApproved;
+        }
+
+        public async Task<string> GetUserGenderAsync(string userId)
+        {
+            var user = await _repoWrapper.User.GetFirstAsync(
+                i => i.Id == userId,
+                i =>
+                    i.Include(g => g.UserProfile).ThenInclude(x => x.Gender));
+            return user.UserProfile.Gender == null ? UserGenders.Undefined : user.UserProfile.Gender.Name;
+        }
+
+        public bool IsUserSameCity(UserDTO currentUser, UserDTO focusUser)
+        {
+            return currentUser.CityMembers.FirstOrDefault()?.CityId
+                       .Equals(focusUser.CityMembers.FirstOrDefault()?.CityId)
+                   == true;
+        }
+
+        public bool IsUserSameClub(UserDTO currentUser, UserDTO focusUser)
+        {
+            return currentUser.ClubMembers.FirstOrDefault()?.ClubId
+                       .Equals(focusUser.ClubMembers.FirstOrDefault()?.ClubId)
+                   == true;
+        }
+
+        public bool IsUserSameRegion(UserDTO currentUser, UserDTO focusUser)
+        {
+            return currentUser.RegionAdministrations.FirstOrDefault()?.RegionId
+                       .Equals(focusUser.RegionAdministrations.FirstOrDefault()?.RegionId) == true
+                   || currentUser.CityMembers.FirstOrDefault()?.City.RegionId
+                       .Equals(focusUser.CityMembers.FirstOrDefault()?.City.RegionId) == true;
         }
     }
 }

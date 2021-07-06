@@ -1,0 +1,66 @@
+{
+  "Admin": {
+    "CreateGB": true,
+    "ViewInfo": true,
+    "ViewDecisions": true,
+    "AddDecision": true,
+    "EditRB": true,
+    "ManipulateDocument": true
+  },
+  "Голова Керівного Органу": {
+    "CreateGB": true,
+    "ViewInfo": true,
+    "ViewDecisions": true,
+    "AddDecision": true,
+    "EditRB": true,
+    "ManipulateDocument": true
+  },
+  "Голова Округи": {
+    "CreateGB": false,
+    "ViewInfo": true,
+    "ViewDecisions": true,
+    "AddDecision": false,
+    "EditRB": false,
+    "ManipulateDocument": false
+  },
+  "Голова Станиці": {
+    "CreateGB": false,
+    "ViewInfo": true,
+    "ViewDecisions": true,
+    "AddDecision": false,
+    "EditRB": false,
+    "ManipulateDocument": false
+  },
+  "Голова Куреня": {
+    "CreateGB": false,
+    "ViewInfo": true,
+    "ViewDecisions": true,
+    "AddDecision": false,
+    "EditRB": false,
+    "ManipulateDocument": false
+  },
+  "Прихильник": {
+    "CreateGB": false,
+    "ViewInfo": true,
+    "ViewDecisions": false,
+    "AddDecision": false,
+    "EditRB": false,
+    "ManipulateDocument": false
+  },
+  "Дійсний член організації": {
+    "CreateGB": false,
+    "ViewInfo": true,
+    "ViewDecisions": true,
+    "AddDecision": false,
+    "EditRB": false,
+    "ManipulateDocument": false
+  },
+  "Зареєстрований користувач": {
+    "CreateGB": false,
+    "ViewInfo": true,
+    "ViewDecisions": false,
+    "AddDecision": false,
+    "EditRB": false,
+    "ManipulateDocument": false
+  }
+}

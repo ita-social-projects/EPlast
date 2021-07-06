@@ -376,10 +376,10 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
             Assert.IsInstanceOf<UserDistinctionDTO>(result);
         }
 
-        UserDistinction nullDistinction = null;
-        UserDistinctionDTO nullDistinctionDTO = null;
-        List<UserDistinction> nulluserDistinctions = null;
-        List<UserDistinctionDTO> nulluserDistinctionsDTO = null;
+        readonly UserDistinction nullDistinction = null;
+        readonly UserDistinctionDTO nullDistinctionDTO = null;
+        readonly List<UserDistinction> nulluserDistinctions = null;
+        readonly List<UserDistinctionDTO> nulluserDistinctionsDTO = null;
                 
         private string UserId => _uniqueId.GetUniqueId().ToString();
 

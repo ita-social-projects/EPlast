@@ -149,6 +149,21 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task GetCityNameOfApprovedMemberTest()
+        {
+            //Arrange
+            _cityParticipantsService
+                .Setup(c => c.CityOfApprovedMember(It.IsAny<string>()));
+            CitiesController citycon = CreateCityController;
+
+            //Act
+            var result = await citycon.CityNameOfApprovedMember(GetStringFakeId());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+        [Test]
         public async Task Create_InvalidModelState_Valid_Test()
         {
             // Arrange
@@ -775,6 +790,22 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkResult>(result);
+        }
+
+        [Test]
+        public async Task GetCitiesNameThatUserHasAccessTo_Succeeded()
+        {
+            // Arrange
+            _cityAccessService
+                .Setup(c => c.GetAllCitiesIdAndName(It.IsAny<User>()));
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.GetCitiesNameThatUserHasAccessTo();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
         private List<CityDTO> GetCitiesBySearch()

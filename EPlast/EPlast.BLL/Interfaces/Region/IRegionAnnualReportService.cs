@@ -1,6 +1,5 @@
 ﻿using EPlast.BLL.DTO.Region;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 
@@ -55,5 +54,76 @@ namespace EPlast.BLL.Interfaces.Region
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
         /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
         Task<IEnumerable<RegionAnnualReportDTO>> GetAllRegionsReportsAsync();
+
+
+        /// <summary>
+        /// Method to confirm region annual report
+        /// </summary>
+        /// <param name="roles">Authorized user roles</param>
+        /// <param name="id">Region annual report identification number</param>
+        /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to region annual report</exception>
+        /// <exception cref="System.NullReferenceException">Thrown when region annual report doesn't exist</exception>
+        Task ConfirmAsync(int id);
+
+        /// <summary>
+        /// Method to cancel region annual report
+        /// </summary>
+        /// <param name="roles">Authorized user roles</param>
+        /// <param name="id">Region annual report identification number</param>
+        /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to region annual report</exception>
+        /// <exception cref="System.NullReferenceException">Thrown when region annual report doesn't exist</exception>
+        Task CancelAsync(int id);
+
+        /// <summary>
+        /// Method to delete region annual report
+        /// </summary>
+        /// <param name="roles">Authorized user roles</param>
+        /// <param name="id">Region annual report identification number</param>
+        /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to region annual report</exception>
+        /// <exception cref="System.NullReferenceException">Thrown when region annual report doesn't exist</exception>
+        Task DeleteAsync(int id);
+
+        /// <summary>
+        /// Method to get all regions reports
+        /// </summary>
+        /// <param name="user">Authorized user</param>
+        /// <param name="isAdmin">Whether authorized user is admin</param>
+        /// <param name="searchedData">Searched Data</param>
+        /// <param name="page">current page on pagination</param>
+        /// <param name="pageSize">number of records per page</param>
+        /// <param name="sortKey">Key for sorting</param>
+        /// <param name="auth">Whether to select reports of that user is author</param>
+        /// <returns>RegionAnnualReportTableObject</returns>
+        /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
+        /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
+        Task<IEnumerable<RegionAnnualReportTableObject>> GetAllRegionsReportsAsync(User user, bool isAdmin,
+            string searchedData, int page, int pageSize, int sortKey, bool auth);
+
+        /// <summary>
+        /// Method to get region members info
+        /// </summary>
+        /// <param name="page">current page on pagination</param>
+        /// <param name="pageSize">number of records per page</param>
+        /// <param name="regionId">Region identification number</param>
+        /// <param name="year">Year of region members info</param>
+        /// <returns>RegionMembersInfoTableObject</returns>
+        Task<IEnumerable<RegionMembersInfoTableObject>> GetRegionMembersInfoAsync(int regionId, int year, int page, int pageSize);
+
+        /// <summary>
+        /// Method to edit region annual report
+        /// </summary>
+        /// <param name="regionAnnualReportQuestions">Region annual report questions</param>
+        /// <param name="reportId">Region annual report identification number</param>
+        /// <returns>Answer from backend</returns>
+        /// <response code="200">Region annual report was successfully edited</response>
+        /// <response code="400">Region annual report can not be edited</response>
+        /// <response code="403">User hasn't access to region annual report</response>
+        /// <response code="404">Region annual report does not exist</response>
+        /// <response code="404">Region annual report model is not valid</response>
+        Task EditAsync(int reportId, RegionAnnualReportQuestions regionAnnualReportQuestions);
+
+        Task UpdateMembersInfo(int regionId, int year);
+
+        Task<IEnumerable<RegionForAdministrationDTO>> GetAllRegionsIdAndName(User user);
     }
 }

@@ -326,7 +326,7 @@ namespace EPlast.Tests.Controllers
         public async Task UsersTable_Valid_Test()
         {
             _adminService.Setup(a => a.GetUsersTableAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
-                It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>()))
+                It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>(), It.IsAny<string>()))
                 .ReturnsAsync(CreateTuple);
 
             AdminController adminController = CreateAdminController;
@@ -339,6 +339,44 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
+        [Test]
+        public async Task GetUsers_Valid_Test()
+        {
+            _adminService.Setup(a => a.GetUsersAsync())
+                .ReturnsAsync(new List<ShortUserInformationDTO>());
+
+            AdminController adminController = CreateAdminController;
+
+            // Act
+            var result = await adminController.GetUsers();
+            var resultValue = (result as OkObjectResult)?.Value;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(resultValue);
+            Assert.IsInstanceOf<List<ShortUserInformationDTO>>(resultValue);
+        }
+
+        [TestCase("searchString")]
+        public async Task ShortUsersInfo_Valid_Test(string searchString)
+        {
+            // Arrange
+            _adminService.Setup(a => a.GetShortUserInfoAsync(It.IsAny<string>()))
+                .ReturnsAsync(new List<ShortUserInformationDTO>());
+
+            var adminController = CreateAdminController;
+
+            // Act
+            var result = await adminController.GetShortUsersInfo(searchString);
+            var resultValue = (result as OkObjectResult)?.Value;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(resultValue);
+            Assert.IsInstanceOf<List<ShortUserInformationDTO>>(resultValue);
+        }
 
         private TableFilterParameters CreateTableFilterParameters => new TableFilterParameters()
         {
@@ -349,7 +387,8 @@ namespace EPlast.Tests.Controllers
             Cities = new List<string>(),
             Regions = new List<string>(),
             Clubs = new List<string>(),
-            Degrees = new List<string>()
+            Degrees = new List<string>(),
+            SearchData = "Ольга"
         };
 
         private Tuple<IEnumerable<UserTableDTO>, int> CreateTuple => new Tuple<IEnumerable<UserTableDTO>, int>(CreateUserTableObjects, 100);

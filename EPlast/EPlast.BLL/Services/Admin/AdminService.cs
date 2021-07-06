@@ -2,6 +2,7 @@
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
+using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Region;
@@ -94,6 +95,7 @@ namespace EPlast.BLL.Services
                 case supporter:
                 case plastun:
                 case interested:
+                case registeredUser:
                     if (roles.Contains(supporter))
                     {
                         await _userManager.RemoveFromRoleAsync(user, supporter);
@@ -167,7 +169,7 @@ namespace EPlast.BLL.Services
             {
                 city.Region.RegionAdministration = city.Region.RegionAdministration.Where(r =>
                 {
-                    if (r.AdminType.AdminTypeName == Roles.OkrugaHead && (r.EndDate > DateTime.Now || r.EndDate == null))
+                    if ((r.AdminType.AdminTypeName == Roles.OkrugaHead || r.AdminType.AdminTypeName == Roles.OkrugaHeadDeputy) && (r.EndDate > DateTime.Now || r.EndDate == null))
                     {
                         r.Region = null;
                         return true;
@@ -197,17 +199,40 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(int pageNum, int pageSize, string tab, IEnumerable<string> regions, IEnumerable<string> cities, IEnumerable<string> clubs, IEnumerable<string> degrees)
+        public async Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(int pageNum, int pageSize, string tab, IEnumerable<string> regions, IEnumerable<string> cities, IEnumerable<string> clubs, IEnumerable<string> degrees, string searchData)
         {
             string strCities = cities == null ? null : string.Join(",", cities.ToArray());
             string strRegions = regions == null ? null : string.Join(",", regions.ToArray());
             string strClubs = clubs == null ? null : string.Join(",", clubs.ToArray());
             string strDegrees = degrees == null ? null : string.Join(",", degrees.ToArray());
-            var tuple = await _repoWrapper.AdminType.GetUserTableObjects(pageNum, pageSize, tab, strRegions, strCities, strClubs, strDegrees);
+            var tuple = await _repoWrapper.AdminType.GetUserTableObjects(pageNum, pageSize, tab, strRegions, strCities, strClubs, strDegrees, searchData);
             var users = tuple.Item1;
             var rowCount = tuple.Item2;
 
             return new Tuple<IEnumerable<UserTableDTO>, int>(_mapper.Map<IEnumerable<UserTableObject>, IEnumerable<UserTableDTO>>(users), rowCount);
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<ShortUserInformationDTO>> GetUsersAsync()
+        {
+            var lowerRoles = new List<string>
+            {
+                Roles.RegisteredUser,
+                Roles.Supporter,
+                Roles.FormerPlastMember,
+                Roles.Interested
+            };
+            var users = await _repoWrapper.User.GetAllAsync();
+            var usersDtos = new List<ShortUserInformationDTO>();
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                var isInLowerRole = roles.Intersect(lowerRoles).Any();
+                var shortUser = _mapper.Map<User, ShortUserInformationDTO>(user);
+                shortUser.IsInLowerRole = isInLowerRole;
+                usersDtos.Add(shortUser);
+            }
+            return usersDtos;
         }
 
         public async Task UpdateUserDatesByChangeRoleAsyncAsync(string userId, string role)
@@ -231,6 +256,14 @@ namespace EPlast.BLL.Services
             }
             _repoWrapper.UserMembershipDates.Update(userMembershipDates);
             await _repoWrapper.SaveAsync();
+        }
+
+        public async Task<IEnumerable<ShortUserInformationDTO>> GetShortUserInfoAsync(string searchString)
+        {
+            var users = await _repoWrapper.User.GetAllAsync(u =>
+                u.FirstName.Contains(searchString) || u.LastName.Contains(searchString));
+
+            return users.Select(user => _mapper.Map<User, ShortUserInformationDTO>(user)).ToList();
         }
 
         public Task<int> GetUsersCountAsync()

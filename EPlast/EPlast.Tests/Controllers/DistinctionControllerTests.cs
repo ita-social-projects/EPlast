@@ -12,6 +12,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
@@ -149,6 +150,28 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public void GetUsersDistinctionsForTable_ReturnsOkObjectResult()
+        {
+            //Arrange
+            _distinctionService
+                .Setup(x => x.GetUsersDistinctionsForTable(It.IsAny<string>(),
+                    It.IsAny<int>(), It.IsAny<int>()))
+                .Returns(new List<UserDistinctionsTableObject>());
+
+            //Act
+            var result = _distinctionController.GetUsersDistinctionsForTable(It.IsAny<string>(),
+                It.IsAny<int>(), It.IsAny<int>());
+            var resultValue = (result as OkObjectResult)?.Value;
+
+            //Assert
+            _distinctionService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(resultValue);
+            Assert.IsInstanceOf<List<UserDistinctionsTableObject>>(resultValue);
+        }
+
+        [Test]
         public async Task GetDistinctionsOfGivenUser_ReturnsOkObjectResult()
         {
             //Arrange
@@ -164,6 +187,23 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(resultValue);
             Assert.IsInstanceOf<List<UserDistinctionDTO>>(resultValue);
+        }
+
+        [Test]
+        public async Task GetDistinctionsOfGivenUser_ReturnsNotFoundResult()
+        {
+            //Arrange
+            _userDistinctionService
+                .Setup(x => x.GetUserDistinctionsOfUserAsync(It.IsAny<string>()))
+                .ReturnsAsync((List<UserDistinctionDTO>)null);
+            //Act
+            var result = await _distinctionController.GetDistinctionOfGivenUser(It.IsAny<string>());
+            var resultValue = (result as OkObjectResult)?.Value;
+            //Assert
+            _userDistinctionService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsNull(resultValue);
+            Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
         [Test]
@@ -190,6 +230,30 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task DeleteDistinction_ReturnsNullReferenceException()
+        {
+            //Arrange
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            _distinctionController.ControllerContext = context;
+            _distinctionService
+                .Setup(x => x.DeleteDistinctionAsync(It.IsAny<int>(), It.IsAny<User>()))
+                .Throws(new NullReferenceException());
+            //Act
+            var result = await _distinctionController.DeleteDistinction(It.IsAny<int>());
+            //Assert
+            _distinctionService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
         public async Task DeleteUserDistinction_ReturnsNoContentResult()
         {
             //Arrange
@@ -213,6 +277,30 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task DeleteUserDistinction_ReturnsNullReferenceException()
+        {
+            //Arrange
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            _distinctionController.ControllerContext = context;
+            _userDistinctionService
+                .Setup(x => x.DeleteUserDistinctionAsync(It.IsAny<int>(), It.IsAny<User>()))
+                .Throws(new NullReferenceException());
+            //Act
+            var result = await _distinctionController.DeleteUserDistinction(It.IsAny<int>());
+            //Assert
+            _userDistinctionService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
         public async Task AddUserDistinction_ReturnsNoContentResult()
         {
             //Arrange
@@ -233,6 +321,30 @@ namespace EPlast.Tests.Controllers
             _userDistinctionService.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NoContentResult>(result);
+        }
+
+        [Test]
+        public async Task AddUserDistinction_ReturnsNullReferenceException()
+        {
+            //Arrange
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            _distinctionController.ControllerContext = context;
+            _userDistinctionService
+                .Setup(x => x.AddUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), It.IsAny<User>()))
+                .Throws(new NullReferenceException());
+            //Act
+            var result = await _distinctionController.AddUserDistinction(It.IsAny<UserDistinctionDTO>());
+            //Assert
+            _userDistinctionService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
         [Test]
@@ -355,6 +467,31 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task ChangeUserDistinction_ReturnsNullReferenceException()
+        {
+            //Arrange
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor(), new ModelStateDictionary()));
+            _distinctionController.ControllerContext = context;
+            _userDistinctionService
+                .Setup(x => x.ChangeUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), It.IsAny<User>()))
+                .Throws(new NullReferenceException());
+            //Act
+            var result = await _distinctionController.EditUserDistinction(It.IsAny<UserDistinctionDTO>());
+
+            //Assert
+            _userDistinctionService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
         public async Task ChangeDistinction_ReturnsNoContentResult()
         {
             //Arrange
@@ -399,6 +536,30 @@ namespace EPlast.Tests.Controllers
             _distinctionService.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        }
+
+        [Test]
+        public async Task ChangeDistinction_ReturnsNullReferenceException()
+        {
+            //Arrange
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            _distinctionController.ControllerContext = context;
+            _distinctionService
+                .Setup(x => x.ChangeDistinctionAsync(It.IsAny<DistinctionDTO>(), It.IsAny<User>()))
+                .Throws(new NullReferenceException());
+            //Act
+            var result = await _distinctionController.EditDistinction(It.IsAny<DistinctionDTO>());
+            //Assert
+            _distinctionService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
         [TestCase(1)]

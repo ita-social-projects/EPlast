@@ -7,6 +7,10 @@ namespace EPlast.BLL
     {
         Task<byte[]> DecisionCreatePDFAsync(int decisionId);
 
+        Task<byte[]> MethodicDocumentCreatePdfAsync(int methodicDocumentId);
+
         Task<byte[]> BlankCreatePDFAsync(string userId);
+
+        Task<byte[]> AnnualReportCreatePDFAsync(int annualReportId);
     }
 }

@@ -10,6 +10,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities.Decision;
 
 namespace EPlast.Tests.Controllers
 {
@@ -230,6 +231,28 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<List<DecisionViewModel>>(resultValue);
             Assert.AreEqual(2, decisions.Count);
+        }
+
+        [Test]
+        public void GetDecisionsForTable_ReturnsOkObjectResult()
+        {
+            //Arrange
+            _decisionService
+                .Setup(x => x.GetDecisionsForTable(It.IsAny<string>(),
+                    It.IsAny<int>(), It.IsAny<int>()))
+                .Returns(new List<DecisionTableObject>());
+
+            //Act
+            var result = _decisionsController.GetDecisionsForTable(It.IsAny<string>(),
+                It.IsAny<int>(), It.IsAny<int>());
+            var resultValue = (result as OkObjectResult)?.Value;
+
+            //Assert
+            _decisionService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(resultValue);
+            Assert.IsInstanceOf<List<DecisionTableObject>>(resultValue);
         }
 
         [Test]

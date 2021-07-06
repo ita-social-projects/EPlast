@@ -18,6 +18,9 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using EPlast.BLL;
+using EPlast.BLL.DTO.City;
+using CityDTO = EPlast.BLL.DTO.AnnualReport.CityDTO;
 
 namespace EPlast.Tests.Controllers
 {
@@ -29,6 +32,8 @@ namespace EPlast.Tests.Controllers
         private readonly Mock<ILoggerService<AnnualReportController>> _loggerService;
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<UserManager<User>> _userManager;
+        private readonly Mock<IPdfService> _pdfService;
+
 
         public AnnualReportControllerTest()
         {
@@ -37,6 +42,7 @@ namespace EPlast.Tests.Controllers
             _localizer = new Mock<IStringLocalizer<AnnualReportControllerMessage>>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            _pdfService = new Mock<IPdfService>();
             _clubAnnualReportService = new Mock<IClubAnnualReportService>();
             _mapper = new Mock<IMapper>();
         }
@@ -46,6 +52,7 @@ namespace EPlast.Tests.Controllers
             _loggerService.Object,
             _localizer.Object,
             _userManager.Object,
+            _pdfService.Object,
             _clubAnnualReportService.Object,
             _mapper.Object
             );
@@ -75,36 +82,6 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expected, actual);
             _localizer
               .Verify(s => s["NotFound"]);
-            _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
-            Assert.IsInstanceOf<ObjectResult>(result);
-        }
-
-        [Test]
-        public async Task Cancel_Invalid_UnAuthorisedException_Test()
-        {
-            _annualReportService.Setup(a => a.CancelAsync(It.IsAny<User>(), It.IsAny<int>()))
-                .Throws(new UnauthorizedAccessException());
-
-            _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
-
-            _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
-
-            _localizer
-               .Setup(s => s["NoAccess"])
-               .Returns(GetNoAccess());
-
-            AnnualReportController annualController = CreateAnnualReportController;
-
-            // Act
-            var result = await annualController.Cancel(5);
-            var expected = StatusCodes.Status403Forbidden;
-            var actual = (result as ObjectResult).StatusCode;
-
-            // Assert
-            Assert.AreEqual(expected, actual);
-            Assert.NotNull(result);
-            _localizer
-              .Verify(s => s["NoAccess"]);
             _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
             Assert.IsInstanceOf<ObjectResult>(result);
         }
@@ -300,6 +277,239 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task CheckCreatedClubAnnualReport_Invalid_NotCreated_Test()
+        {
+            _clubAnnualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
+                .ReturnsAsync(false);
+
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            // Act
+            var result = await annualController.CheckCreatedClubAnnualReport(5);
+            var expected = StatusCodes.Status200OK;
+            var actual = (result as ObjectResult).StatusCode;
+            var hasCreatedValue = (result as ObjectResult).Value.GetType()
+                .GetProperty("hasCreated").GetValue((result as ObjectResult).Value);
+
+            // Assert
+            _clubAnnualReportService.Verify();
+            Assert.AreEqual(expected, actual);
+            Assert.IsFalse((bool)hasCreatedValue);
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<ObjectResult>(result);
+        }
+
+        [Test]
+        public async Task CheckCreatedClubAnnualReport_Invalid_NullReferenceException_Test()
+        {
+            _clubAnnualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
+                .Throws(new NullReferenceException());
+
+            _localizer
+              .Setup(s => s["ClubNotFound"])
+              .Returns(GetClubNotFound());
+
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            // Act
+            var result = await annualController.CheckCreatedClubAnnualReport(5);
+            var expected = StatusCodes.Status404NotFound;
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+            _localizer
+             .Verify(s => s["ClubNotFound"], Times.Once);
+            Assert.IsInstanceOf<ObjectResult>(result);
+        }
+
+        [Test]
+        public async Task CheckCreatedClubAnnualReport_Invalid_UnauthorizedAccessException_Test()
+        {
+            _clubAnnualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
+                .Throws(new UnauthorizedAccessException());
+
+            _localizer
+              .Setup(s => s["ClubNoAccess"])
+              .Returns(GetClubNoAccess());
+
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            // Act
+            var result = await annualController.CheckCreatedClubAnnualReport(5);
+            var expected = StatusCodes.Status403Forbidden;
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(expected, actual);
+            _localizer
+             .Verify(s => s["ClubNoAccess"], Times.Once);
+            Assert.IsInstanceOf<ObjectResult>(result);
+        }
+
+        [Test]
+        public async Task CheckCreatedClubAnnualReport_Valid_Test()
+        {
+            _clubAnnualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
+                .ReturnsAsync(true);
+
+            _localizer
+               .Setup(s => s["ClubHasReport"])
+               .Returns(GetClubHasReport());
+
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            // Act
+            var result = await annualController.CheckCreatedClubAnnualReport(5);
+            var expected = StatusCodes.Status200OK;
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(expected, actual);
+            _localizer
+              .Verify(s => s["ClubHasReport"], Times.Once);
+            Assert.IsInstanceOf<ObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetMembers_Valid()
+        {
+            //Arrange
+            _annualReportService.Setup(x => x.GetCityMembersAsync(It.IsAny<int>())).ReturnsAsync(new CityDTO()
+                {CityMembers = new List<CityMembersDTO>(), Name = ""});
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            // Act
+            var result = await annualController.GetMembers(5);
+            var expected = StatusCodes.Status200OK;
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public async Task GetMembers_ReturnsNotFaund()
+        {
+            //Arrange
+            _annualReportService.Setup(x => x.GetCityMembersAsync(It.IsAny<int>())).ReturnsAsync(null as CityDTO);
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            // Act
+            var result = await annualController.GetMembers(5);
+            var expected = StatusCodes.Status404NotFound;
+            var actual = (result as NotFoundResult).StatusCode;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public async Task GetEditForm_Valid()
+        {
+            //Arrange
+            _annualReportService.Setup(x => x.GetEditFormByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
+                .ReturnsAsync(new AnnualReportDTO());
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            // Act
+            var result = await annualController.GetEditForm(5);
+            var expected = StatusCodes.Status200OK;
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public async Task GetEditForm_NullReferenceException()
+        {
+            //Arrange
+            _annualReportService.Setup(x => x.GetEditFormByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
+                .ThrowsAsync(new NullReferenceException());
+            _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
+
+            _localizer
+                .Setup(s => s["NotFound"])
+                .Returns(GetNotFound());
+
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            // Act
+
+            var result = await annualController.GetEditForm(5);
+            var expected = StatusCodes.Status404NotFound;
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(expected, actual);
+            _localizer
+                .Verify(s => s["NotFound"]);
+            _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
+            Assert.IsInstanceOf<ObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetEditForm_UnauthorizedAccessException()
+        {
+            //Arrange
+            _annualReportService.Setup(x => x.GetEditFormByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
+                .ThrowsAsync(new UnauthorizedAccessException());
+            _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
+
+            _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
+
+            _localizer
+                .Setup(s => s["NoAccess"])
+                .Returns(GetNoAccess());
+
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            // Act
+            var result = await annualController.GetEditForm(5);
+            var expected = StatusCodes.Status403Forbidden;
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+            _localizer
+                .Verify(s => s["NoAccess"]);
+            _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
+            Assert.IsInstanceOf<ObjectResult>(result);
+        }
+
+        [Test]
+        public async Task CreatePdf_ReturnsOkObjectResult()
+        {
+            //Arrange
+            byte[] bytesReturn = new byte[3] { 0, 2, 3 };
+            _pdfService
+                .Setup(x => x.AnnualReportCreatePDFAsync(It.IsAny<int>()))
+                .ReturnsAsync(bytesReturn);
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            //Act
+            var result = await annualController.CreatePdf(It.IsAny<int>());
+            var resultValue = (result as ObjectResult).Value;
+
+            //Assert
+            _pdfService.Verify();
+            Assert.IsNotNull(resultValue);
+            Assert.IsInstanceOf<string>(resultValue);
+            Assert.AreNotEqual(string.Empty, resultValue);
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
         public async Task Confirm_Invalid_NullReferenceException_Test()
         {
             _annualReportService.Setup(a => a.ConfirmAsync(It.IsAny<User>(), It.IsAny<int>()))
@@ -324,37 +534,6 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expected, actual);
             _localizer
               .Verify(s => s["NotFound"]);
-            _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
-            Assert.IsInstanceOf<ObjectResult>(result);
-        }
-
-        [Test]
-        public async Task Confirm_Invalid_UnAuthorisedException_Test()
-        {
-            _annualReportService.Setup(a => a.ConfirmAsync(It.IsAny<User>(), It.IsAny<int>()))
-                .Throws(new UnauthorizedAccessException());
-
-            _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
-
-            _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
-
-            _localizer
-               .Setup(s => s["NoAccess"])
-               .Returns(GetNoAccess());
-
-            AnnualReportController annualController = CreateAnnualReportController;
-
-            // Act
-            var result = await annualController.Confirm(5);
-            var expected = StatusCodes.Status403Forbidden;
-            var actual = (result as ObjectResult).StatusCode;
-
-            // Assert
-
-            Assert.NotNull(result);
-            Assert.AreEqual(expected, actual);
-            _localizer
-              .Verify(s => s["NoAccess"]);
             _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
             Assert.IsInstanceOf<ObjectResult>(result);
         }
@@ -570,6 +749,24 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task Create_BadRequest()
+        {
+            AnnualReportController annualController = CreateAnnualReportController;
+            annualController.ModelState.AddModelError("EroreaNnualReport", "Required");
+            // Act
+            AnnualReportDTO rdto = new AnnualReportDTO();
+            var result = await annualController.Create(rdto);
+            var expected = StatusCodes.Status400BadRequest;
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.AreEqual(expected, actual);
+        }
+
+
+        [Test]
         public async Task CreateClubAnnualReport_Invalid_InvalidModelState_Test()
         {
             // Arrange
@@ -686,36 +883,6 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             _localizer
               .Verify(s => s["NotFound"]);
-            _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
-            Assert.IsInstanceOf<ObjectResult>(result);
-        }
-
-        [Test]
-        public async Task Delete_Invalid_UnAuthorisedException_Test()
-        {
-            _annualReportService.Setup(a => a.DeleteAsync(It.IsAny<User>(), It.IsAny<int>()))
-                .Throws(new UnauthorizedAccessException());
-
-            _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
-
-            _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
-
-            _localizer
-               .Setup(s => s["NoAccess"])
-               .Returns(GetNoAccess());
-
-            AnnualReportController annualController = CreateAnnualReportController;
-
-            // Act
-            var result = await annualController.Delete(5);
-            var expected = StatusCodes.Status403Forbidden;
-            var actual = (result as ObjectResult).StatusCode;
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.AreEqual(expected, actual);
-            _localizer
-              .Verify(s => s["NoAccess"]);
             _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
             Assert.IsInstanceOf<ObjectResult>(result);
         }
@@ -853,7 +1020,6 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             Assert.NotNull(result);
-
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
 
@@ -1090,6 +1256,99 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task Get_Succeded()
+        {
+            // Arrange
+            _userManager.Setup(r => r.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
+            _userManager.Setup(r => r.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
+            _annualReportService
+                .Setup(r => r.GetAllAsync(It.IsAny<User>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<int>(),
+                    It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>())).ReturnsAsync(new List<AnnualReportTableObject>());
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            // Act
+            var result = await annualController.Get("", 0, 0, 1, false);
+
+            // Assert
+            Assert.NotNull(result);
+            _annualReportService.Verify();
+        }
+
+        [Test]
+        public async Task Get_NullReferenceException()
+        {
+            // Arrange
+            _userManager.Setup(r => r.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
+            _userManager.Setup(r => r.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
+            _annualReportService
+                .Setup(r => r.GetAllAsync(It.IsAny<User>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<int>(),
+                    It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>())).Throws(new NullReferenceException());
+            
+            AnnualReportController annualController = CreateAnnualReportController;
+            _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
+            _localizer
+                .Setup(s => s["NotFound"])
+                .Returns(GetNotFound());
+
+            // Act
+            var expected = StatusCodes.Status404NotFound;
+            var result = await annualController.Get("", 0, 0,1,false);
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(expected, actual);
+            Assert.IsInstanceOf<ObjectResult>(result);
+        }
+
+
+        [Test]
+        public async Task GetAllClubAnnualReportst_Succeded()
+        {
+            // Arrange
+            _userManager.Setup(r => r.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
+            _userManager.Setup(r => r.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
+            _clubAnnualReportService
+                .Setup(r => r.GetAllAsync(It.IsAny<User>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<int>(),
+                    It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>())).ReturnsAsync(new List<ClubAnnualReportTableObject>());
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            // Act
+            var result = await annualController.GetAllClubAnnualReports("", 0, 0, 1, false);
+
+            // Assert
+            Assert.NotNull(result);
+            _annualReportService.Verify();
+        }
+
+        [Test]
+        public async Task GetAllClubAnnualReportst_NullReferenceException()
+        {
+            // Arrange
+            _userManager.Setup(r => r.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
+            _userManager.Setup(r => r.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
+            _clubAnnualReportService
+                .Setup(r => r.GetAllAsync(It.IsAny<User>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<int>(),
+                    It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>())).Throws(new NullReferenceException());
+
+            AnnualReportController annualController = CreateAnnualReportController;
+            _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
+            _localizer
+                .Setup(s => s["NotFound"])
+                .Returns(GetNotFound());
+
+            // Act
+            var expected = StatusCodes.Status404NotFound;
+            var result = await annualController.GetAllClubAnnualReports("", 0, 0, 1, false);
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(expected, actual);
+            Assert.IsInstanceOf<ObjectResult>(result);
+        }
+
+        [Test]
         public async Task Get_Valid_Test()
         {
             // Arrange
@@ -1252,10 +1511,24 @@ namespace EPlast.Tests.Controllers
             return localizedString;
         }
 
+        private LocalizedString GetClubNoAccess()
+        {
+            var localizedString = new LocalizedString("ClubNoAccess",
+                "Ви не маєте доступу до даного куреня!");
+            return localizedString;
+        }
+
         private LocalizedString GetCityNotFound()
         {
             var localizedString = new LocalizedString("CityNotFound",
                 "Не вдалося знайти інформацію про станицю!");
+            return localizedString;
+        }
+
+        private LocalizedString GetClubNotFound()
+        {
+            var localizedString = new LocalizedString("ClubNotFound",
+                "Не вдалося знайти інформацію про курінь!");
             return localizedString;
         }
 
@@ -1298,6 +1571,13 @@ namespace EPlast.Tests.Controllers
         {
             var localizedString = new LocalizedString("HasReport",
                 "Станиця вже має створений річний звіт!");
+            return localizedString;
+        }
+
+        private LocalizedString GetClubHasReport()
+        {
+            var localizedString = new LocalizedString("ClubHasReport",
+                "Курінь вже має створений річний звіт!");
             return localizedString;
         }
 

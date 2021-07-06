@@ -64,9 +64,10 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         /// </summary>
         /// <param name="confUsers">List of confirmed user(dto) which contains in selected user</param>
         /// <param name="userId">The id of the selected user</param>
-        /// <param name="user">Authorized user</param>
+        /// <param name="currentUserId">Authorized userId</param>
+        /// /// <param name="isAdmin">Whether user is Admin</param>
         /// <returns>Can the user approve</returns>
-        bool CanApprove(IEnumerable<ConfirmedUserDTO> confUsers, string userId, User user);
+        bool CanApprove(IEnumerable<ConfirmedUserDTO> confUsers, string userId, string currentUserId, bool isAdmin=false);
 
 
         /// <summary>
@@ -77,5 +78,16 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         Task<string> GetImageBase64Async(string fileName);
 
         Task<bool> IsApprovedCityMember(string userId);
+
+        /// <summary>
+        /// Get user gender
+        /// </summary>
+        /// <param name="userId">The id of the selected user</param>
+        /// <returns>User gender string</returns>
+        Task<string> GetUserGenderAsync(string userId);
+
+        bool IsUserSameCity(UserDTO currentUser, UserDTO focusUser);
+        bool IsUserSameClub(UserDTO currentUser, UserDTO focusUser);
+        bool IsUserSameRegion(UserDTO currentUser, UserDTO focusUser);
     }
 }

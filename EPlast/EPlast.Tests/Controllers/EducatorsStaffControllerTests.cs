@@ -46,8 +46,7 @@ namespace EPlast.Tests.Controllers
             _educatorsStaffService.Setup(x => x.CreateKadra(dto)).ReturnsAsync(dto);
 
             // Act
-
-            var result = await _educatorsStaffController.CreateKadra(dto);
+            await _educatorsStaffController.CreateKadra(dto);
 
             // Assert
             _educatorsStaffService.Verify(x => x.CreateKadra(dto));
@@ -112,7 +111,7 @@ namespace EPlast.Tests.Controllers
             _educatorsStaffService.Setup(x => x.DeleteKadra(kadraId));
 
             // Act
-            var result = await _educatorsStaffController.Remove(kadraId);
+            await _educatorsStaffController.Remove(kadraId);
 
             // Assert
             _educatorsStaffService.Verify(x => x.DeleteKadra(kadraId));
@@ -162,7 +161,8 @@ namespace EPlast.Tests.Controllers
             _educatorsStaffService.Setup(x => x.UpdateKadra(dto));
 
             // Act
-            var result = await _educatorsStaffController.Update(dto);
+            await _educatorsStaffController.Update(dto);
+            
             // Assert
             _educatorsStaffService.Verify(x => x.UpdateKadra(It.IsAny<EducatorsStaffDTO>()));
         }
@@ -213,6 +213,26 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expected, actual.StatusCode);
             Assert.NotNull(result);
             Assert.IsInstanceOf<IActionResult>(result);
+        }
+
+        [Test]
+        public async Task GetUsersKVs_Status404NotFound()
+        {
+            // Arange
+            string nullString = "1";
+
+            // Act
+            _educatorsStaffService.
+             Setup(x => x.GetKVsOfGivenUser(nullString)).
+             ReturnsAsync((List<EducatorsStaffDTO>)null);
+
+            var expected = StatusCodes.Status404NotFound;
+            var result = await _educatorsStaffController.GetUsersKVs(nullString);
+            var actual = result as StatusCodeResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(expected, actual.StatusCode);
         }
 
         [Test]
@@ -310,7 +330,7 @@ namespace EPlast.Tests.Controllers
                 ReturnsAsync(It.IsAny<bool>);
 
             // Act
-            var result = await _educatorsStaffController.GetUserStaff(userId, kadraId);
+            await _educatorsStaffController.GetUserStaff(userId, kadraId);
 
             // Assert
             _educatorsStaffService.Verify(x => x.DoesUserHaveSuchStaff(It.IsAny<string>(), It.IsAny<int>()));
@@ -326,7 +346,7 @@ namespace EPlast.Tests.Controllers
                 ReturnsAsync(It.IsAny<bool>);
 
             // Act
-            var result = await _educatorsStaffController.GetStaffWithRegisternumber(numberInRegister);
+            await _educatorsStaffController.GetStaffWithRegisternumber(numberInRegister);
 
             // Assert
             _educatorsStaffService.Verify(x => x.StaffWithRegisternumberExists(It.IsAny<int>()));
@@ -343,7 +363,7 @@ namespace EPlast.Tests.Controllers
                 ReturnsAsync(It.IsAny<bool>);
 
             // Act
-            var result = await _educatorsStaffController.GetUserStaffEdit(userId, kadraId);
+            await _educatorsStaffController.GetUserStaffEdit(userId, kadraId);
 
             // Assert
             _educatorsStaffService.Verify(x => x.UserHasSuchStaffEdit(It.IsAny<string>(), It.IsAny<int>()));
@@ -360,7 +380,7 @@ namespace EPlast.Tests.Controllers
                 ReturnsAsync(It.IsAny<bool>);
 
             // Act
-            var result = await _educatorsStaffController.GetStaffWithRegisternumberEdit(kadraId, numberInRegister);
+            await _educatorsStaffController.GetStaffWithRegisternumberEdit(kadraId, numberInRegister);
 
             // Assert
             _educatorsStaffService.Verify(x => x.StaffWithRegisternumberExistsEdit(It.IsAny<int>(), It.IsAny<int>()));
@@ -376,7 +396,7 @@ namespace EPlast.Tests.Controllers
                 ReturnsAsync(It.IsAny<string>);
 
             // Act
-            var result = await _educatorsStaffController.GetUserByEduStaff(eduStaffId);
+            await _educatorsStaffController.GetUserByEduStaff(eduStaffId);
 
             // Assert
             _educatorsStaffService.Verify(x => x.GetUserByEduStaff(It.IsAny<int>()));

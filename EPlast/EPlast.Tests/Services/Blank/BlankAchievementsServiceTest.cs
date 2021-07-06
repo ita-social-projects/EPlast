@@ -4,7 +4,6 @@ using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Services.Blank;
 using EPlast.DataAccess.Entities.Blank;
 using EPlast.DataAccess.Repositories;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
@@ -96,14 +95,6 @@ namespace EPlast.Tests.Services.Blank
         {
             ID = 1,
             BlobName = "newBlob,lastBlob",
-            FileName = "FileName",
-            UserId = "fgh123",
-        };
-
-        private AchievementDocumentsDTO AchievementDocumentsDTO => new AchievementDocumentsDTO
-        {
-            ID = 1,
-            BlobName = "newBlob,LastBlob",
             FileName = "FileName",
             UserId = "fgh123",
         };

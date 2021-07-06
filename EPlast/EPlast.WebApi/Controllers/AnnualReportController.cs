@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using EPlast.BLL;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.DataAccess.Entities;
@@ -21,20 +22,23 @@ using Microsoft.AspNetCore.Identity;
 namespace EPlast.WebApi.Controllers
 {
     [ApiController, Route("api/[controller]")]
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
     public class AnnualReportController : ControllerBase
     {
         private readonly IAnnualReportService _annualReportService;
         private readonly ILoggerService<AnnualReportController> _loggerService;
         private readonly IStringLocalizer<AnnualReportControllerMessage> _localizer;
         private readonly UserManager<User> _userManager;
+        private readonly IPdfService _pdfService;
         private readonly IClubAnnualReportService _clubAnnualReportService;
         private readonly IMapper _mapper;
 
-        public AnnualReportController(IAnnualReportService annualReportService, 
+        public AnnualReportController(
+            IAnnualReportService annualReportService, 
             ILoggerService<AnnualReportController> loggerService,
             IStringLocalizer<AnnualReportControllerMessage> localizer, 
-            UserManager<User> userManager, 
+            UserManager<User> userManager,
+            IPdfService pdfService,
             IClubAnnualReportService clubAnnualReportService, 
             IMapper mapper)
         {
@@ -42,6 +46,7 @@ namespace EPlast.WebApi.Controllers
             _loggerService = loggerService;
             _localizer = localizer;
             _userManager = userManager;
+            _pdfService = pdfService;
             _clubAnnualReportService = clubAnnualReportService;
             _mapper = mapper;
         }
@@ -57,7 +62,6 @@ namespace EPlast.WebApi.Controllers
             return StatusCode(StatusCodes.Status200OK, new { annualReports = await _annualReportService.GetAllAsync(await _userManager.GetUserAsync(User)) });
         }
 
-
         /// <summary>
         /// Method to get annual report
         /// </summary>
@@ -67,11 +71,102 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpGet("{id:int}")]
+        [Authorize(Roles = Roles.AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy)]
         public async Task<IActionResult> Get(int id)
         {
             try
             {
-                return StatusCode(StatusCodes.Status200OK, new { annualReport = await _annualReportService.GetByIdAsync(await _userManager.GetUserAsync(User), id)});
+                return StatusCode(StatusCodes.Status200OK, new { annualReport = await _annualReportService.GetByIdAsync(await _userManager.GetUserAsync(User), id) });
+            }
+            catch (NullReferenceException)
+            {
+                _loggerService.LogError($"Annual report (id: {id}) not found");
+                return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["NotFound"].Value });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                _loggerService.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to annual report (id: {id})");
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["NoAccess"].Value });
+            }
+        }
+
+        /// <summary>
+        /// Method to get all searched reports that the user has access to
+        /// </summary>
+        /// <param name="searchedData">Searched Data</param>
+        /// <param name="page">current page on pagination</param>
+        /// <param name="pageSize">number of records per page</param>
+        /// <param name="sortKey">Key for sorting</param>
+        /// <param name="auth">Whether to select reports of that user is author</param>
+        /// <returns>List of AnnualReportTableObject</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("Cities")]
+        public async Task<IActionResult> Get(string searchedData, int page, int pageSize, int sortKey, bool auth)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            try
+            {
+                return StatusCode(StatusCodes.Status200OK, new { annualReports = 
+                    await _annualReportService.GetAllAsync(user, 
+                        (await _userManager.GetRolesAsync(user)).Contains(Roles.Admin), 
+                        searchedData, page, pageSize, sortKey, auth) });
+            }
+            catch (NullReferenceException)
+            {
+                _loggerService.LogError($"Annual reports not found");
+                return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["NotFound"].Value });
+            }
+        }
+
+        /// <summary>
+        ///  Returns pdf file as base64
+        /// </summary>
+        /// <param name="objId">AnnualReport id</param>
+        /// <returns>Pdf file as base64 what was created with AnnualReport data</returns>
+        /// <response code="200">Pdf file as base64</response>
+        [HttpGet("createPdf/{objId:int}")]
+        public async Task<IActionResult> CreatePdf(int objId)
+        {
+            var fileBytes = await _pdfService.AnnualReportCreatePDFAsync(objId);
+            var base64EncodedPdf = Convert.ToBase64String(fileBytes);
+
+            return Ok(base64EncodedPdf);
+        }
+
+        /// <summary>
+        /// Get all members of a specific city
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        /// <returns>CityDTO</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">City not found</response>
+        [HttpGet("Members/{cityId}")]
+        public async Task<IActionResult> GetMembers(int cityId)
+        {
+            var cityDto = await _annualReportService.GetCityMembersAsync(cityId);
+            if (cityDto == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(new { cityDto.CityMembers, cityDto.Name });
+        }
+
+        /// <summary>
+        /// Method to get data to annual report edit form
+        /// </summary>
+        /// <param name="id">Annual report identification number</param>
+        /// <returns>Annual report</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="403">User hasn't access to annual report</response>
+        /// <response code="404">The annual report does not exist</response>
+        [HttpGet("EditCityAnnualReportForm/{id:int}")]
+        [Authorize(Roles = Roles.AdminAndCityHeadAndCityHeadDeputy)]
+        public async Task<IActionResult> GetEditForm(int id)
+        {
+            try
+            {
+                return StatusCode(StatusCodes.Status200OK, new { annualReport = await _annualReportService.GetEditFormByIdAsync(await _userManager.GetUserAsync(User), id) });
             }
             catch (NullReferenceException)
             {
@@ -96,6 +191,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">The city does not exist</response>
         /// <response code="404">Annual report model is not valid</response>
         [HttpPost]
+        [Authorize(Roles = Roles.AdminAndCityHeadAndCityHeadDeputy)]
         public async Task<IActionResult> Create(AnnualReportDTO annualReport)
         {
             if (ModelState.IsValid)
@@ -139,6 +235,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">The annual report does not exist</response>
         /// <response code="404">Annual report model is not valid</response>
         [HttpPut]
+        [Authorize(Roles = Roles.AdminAndCityHeadAndCityHeadDeputy)]
         public async Task<IActionResult> Edit(AnnualReportDTO annualReport)
         {
             if (ModelState.IsValid)
@@ -165,10 +262,7 @@ namespace EPlast.WebApi.Controllers
                     return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["NoAccess"].Value });
                 }
             }
-            else
-            {
-                return BadRequest(ModelState);
-            }
+            return BadRequest(ModelState);
         }
 
         /// <summary>
@@ -180,7 +274,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpPut("confirm/{id:int}")]
-        [Authorize(Roles = Roles.AdminAndOkrugaHead)]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Confirm(int id)
         {
             try
@@ -194,11 +288,6 @@ namespace EPlast.WebApi.Controllers
                 _loggerService.LogError($"Annual report (id: {id}) not found");
                 return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["NotFound"].Value });
             }
-            catch (UnauthorizedAccessException)
-            {
-                _loggerService.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to confirm annual report (id: {id})");
-                return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["NoAccess"].Value });
-            }
         }
 
         /// <summary>
@@ -210,7 +299,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpPut("cancel/{id:int}")]
-        [Authorize(Roles = Roles.AdminAndOkrugaHead)]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Cancel(int id)
         {
             try
@@ -224,11 +313,6 @@ namespace EPlast.WebApi.Controllers
                 _loggerService.LogError($"Annual report (id: {id}) not found");
                 return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["NotFound"].Value });
             }
-            catch (UnauthorizedAccessException)
-            {
-                _loggerService.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to cancel annual report (id: {id})");
-                return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["NoAccess"].Value });
-            }
         }
 
         /// <summary>
@@ -240,7 +324,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpDelete("{id:int}")]
-        [Authorize(Roles = Roles.AdminAndOkrugaHead)]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -254,10 +338,30 @@ namespace EPlast.WebApi.Controllers
                 _loggerService.LogError($"Annual report (id: {id}) not found");
                 return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["NotFound"].Value });
             }
+        }
+
+        private async Task<IActionResult> CheckBlocks(int id, bool city)
+        {
+            try
+            {
+                if (city
+                    ? await _annualReportService.CheckCreated(await _userManager.GetUserAsync(User), id)
+                    : await _clubAnnualReportService.CheckCreated(await _userManager.GetUserAsync(User), id))
+                {
+                    return StatusCode(StatusCodes.Status200OK,
+                        new {hasCreated = true, message = _localizer[city ? "HasReport" : "ClubHasReport"].Value});
+                }
+                return StatusCode(StatusCodes.Status200OK, new { hasCreated = false });
+            }
+            catch (NullReferenceException)
+            {
+                return StatusCode(StatusCodes.Status404NotFound,
+                    new {message = _localizer[city ? "CityNotFound" : "ClubNotFound"].Value});
+            }
             catch (UnauthorizedAccessException)
             {
-                _loggerService.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to delete annual report (id: {id})");
-                return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["NoAccess"].Value });
+                return StatusCode(StatusCodes.Status403Forbidden,
+                    new {message = _localizer[city ? "CityNoAccess" : "ClubNoAccess"].Value});
             }
         }
 
@@ -272,25 +376,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("checkCreated/{cityId:int}")]
         public async Task<IActionResult> CheckCreated(int cityId)
         {
-            try
-            {
-                if (await _annualReportService.CheckCreated(await _userManager.GetUserAsync(User), cityId))
-                {
-                    return StatusCode(StatusCodes.Status200OK, new { hasCreated = true, message = _localizer["HasReport"].Value });
-                }
-                else
-                {
-                    return StatusCode(StatusCodes.Status200OK, new { hasCreated = false });
-                }
-            }
-            catch (NullReferenceException)
-            {
-                return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["CityNotFound"].Value });
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["CityNoAccess"].Value });
-            }
+            return await CheckBlocks(cityId, true);
         }
 
         /// <summary>
@@ -310,13 +396,56 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Method to get information whether club has created annual report
+        /// </summary>
+        /// <param name="clubId">Club identification number</param>
+        /// <returns>Answer from backend</returns>
+        /// <response code="200">Successful operation</response>
+        /// /// <response code="403">User hasn't access to club</response>
+        /// <response code="404">The club not exist</response>
+        [HttpGet("checkCreatedClubReport/{clubId:int}")]
+        public async Task<IActionResult> CheckCreatedClubAnnualReport(int clubId)
+        {
+            return await CheckBlocks(clubId, false);
+        }
+
+        /// <summary>
+        /// Method to get all club reports that the user has access to
+        /// </summary>
+        /// <param name="searchedData">Searched Data</param>
+        /// <param name="page">current page on pagination</param>
+        /// <param name="pageSize">number of records per page</param>
+        /// <param name="sortKey">Key for sorting</param>
+        /// <param name="auth">Whether to select reports of that user is author</param>
+        /// <returns>List of ClubAnnualReportTableObject</returns>
+        /// <response code="200">Successful operation</response>
+
+        [HttpGet("~/api/Club/ClubAnnualReports")]
+        public async Task<IActionResult> GetAllClubAnnualReports(string searchedData, int page, int pageSize, int sortKey, bool auth)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            try
+            {
+                return StatusCode(StatusCodes.Status200OK, new
+                {
+                    clubAnnualReports = await _clubAnnualReportService.GetAllAsync(user,
+                        (await _userManager.GetRolesAsync(user)).Contains(Roles.Admin), searchedData, page, pageSize, sortKey, auth)
+                });
+            }
+            catch (NullReferenceException)
+            {
+                _loggerService.LogError($"Annual reports not found");
+                return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["NotFound"].Value });
+            }
+        }
+
+        /// <summary>
         /// Method to get all club reports that the user has access to
         /// </summary>
         /// <returns>List of annual reports</returns>
         /// <response code="200">Successful operation</response>
 
         [HttpGet("~/api/Club/GetAllClubAnnualReports")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
         public async Task<IActionResult> GetAllClubAnnualReports()
         {
             return StatusCode(StatusCodes.Status200OK, new { clubAnnualReports = await _clubAnnualReportService.GetAllAsync(await _userManager.GetUserAsync(User)) });
@@ -332,7 +461,6 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">The club annual report does not exist</response>
 
         [HttpGet("~/api/Club/GetClubAnnualReportById/{id:int}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
         public async Task<IActionResult> GetClubAnnualReportById(int id)
         {
             try
@@ -350,7 +478,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("~/api/Club/CreateClubAnnualReport")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
+        [Authorize(Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> CreateClubAnnualReport([FromBody] ClubAnnualReportViewModel annualReport)
         {
             if (ModelState.IsValid)
@@ -388,7 +516,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpPut("~/api/Club/confirmClubAnnualReport/{id:int}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> ConfirmClubAnnualReport(int id)
         {
             try
@@ -415,7 +543,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpPut("~/api/Club/cancelClubAnnualReport/{id:int}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> CancelClubAnnualReport(int id)
         {
             try
@@ -442,7 +570,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpDelete("~/api/Club/deleteClubAnnualReport/{id:int}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> DeleteClubAnnualReport(int id)
         {
             try
@@ -470,7 +598,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">The club annual report does not exist</response>
         /// <response code="404">Annual report model is not valid</response>
         [HttpPut("~/api/Club/editClubAnnualReport")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndAdmin)]
+        [Authorize(Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> EditClubAnnualReport(ClubAnnualReportDTO clubAnnualReport)
         {
             if (ModelState.IsValid)
@@ -489,10 +617,7 @@ namespace EPlast.WebApi.Controllers
                     return StatusCode(StatusCodes.Status403Forbidden);
                 }
             }
-            else
-            {
-                return BadRequest(ModelState);
-            }
+            return BadRequest(ModelState);
         }
 
     }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.WebApi.Models.Club
 {
@@ -23,7 +22,9 @@ namespace EPlast.WebApi.Models.Club
         public int MemberCount { get; set; }
         public int FollowerCount { get; set; }
         public int AdministrationCount { get; set; }
+        public int DocumentsCount { get; set; }
         public ClubAdministrationViewModel Head { get; set; }
+        public ClubAdministrationViewModel HeadDeputy { get; set; }
         public IEnumerable<ClubAdministrationViewModel> Administration { get; set; }
         public IEnumerable<ClubMembersViewModel> Members { get; set; }
         public IEnumerable<ClubMembersViewModel> Followers { get; set; }

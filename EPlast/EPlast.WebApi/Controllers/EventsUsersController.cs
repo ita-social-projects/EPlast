@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -25,6 +26,18 @@ namespace EPlast.WebApi.Controllers
             _userManager = userManager;
         }
 
+        private async Task<bool> HasAccessAsync()
+        {
+            var roles = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User));
+            foreach (var role in roles)
+            {
+                if (Roles.HeadsAndHeadDeputiesAndAdminAndPlastun.Contains(role))
+                    return true;
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Get all created, planned, visited events for user by id
         /// </summary>
@@ -35,8 +48,13 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("eventsUsers/{userId}")]
         public async Task<IActionResult> GetEventUserByUserId(string userId)
         {
-            var eventUserModel = await eventUserService.EventUserAsync(userId, await _userManager.GetUserAsync(User));
+            var currentUserId = _userManager.GetUserId(User);
+            if (currentUserId != userId && !(await HasAccessAsync()))
+            {
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
 
+            var eventUserModel = await eventUserService.EventUserAsync(userId, await _userManager.GetUserAsync(User));
             return Ok(eventUserModel);
         }
 
@@ -62,7 +80,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="201">Instance of EventCreateDTO</response>
         /// <response code="400">When the EventCreateDTO is null or empty</response> 
         [HttpPost("newEvent")]
-        [Authorize(Roles = Roles.AdminPlastMemberAndSupporter)]
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
         public async Task<IActionResult> EventCreate([FromBody] EventCreateDTO createDTO)
         {
             createDTO.Event.ID = await eventUserManager.CreateEventAsync(createDTO);
@@ -78,7 +96,6 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Instance of EventCreateDTO</response>
         /// <response code="400">When the EventCreateDTO is null or empty</response> 
         [HttpGet("editedEvent/{eventId:int}")]
-        [Authorize(Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> EventEdit(int eventId)
         {
             var eventCreateModel = await eventUserManager.InitializeEventEditDTOAsync(eventId);
@@ -94,7 +111,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">Resource updated successfully</response>
         /// <response code="400">When the EventCreateDTO is null or empty</response>
         [HttpPut("editedEvent")]
-        [Authorize(Roles = Roles.AdminPlastMemberAndSupporter)]
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
         public async Task<IActionResult> EventEdit([FromBody] EventCreateDTO createDTO)
         {
             await eventUserManager.EditEventAsync((createDTO));
@@ -110,7 +127,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">Resource updated successfully</response>
         /// <response code="400">When the Event is not approved</response>
         [HttpPut("approveEvent/{eventId}")]
-        [Authorize(Roles = Roles.AdminPlastMemberAndSupporter)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> ApproveEvent(int eventId)
         {
             var eventApproved = await eventUserManager.ApproveEventAsync(eventId);

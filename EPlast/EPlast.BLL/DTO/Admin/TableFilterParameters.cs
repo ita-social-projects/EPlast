@@ -12,5 +12,6 @@ namespace EPlast.BLL.DTO.Admin
         public IEnumerable<string> Regions { get; set; }
         public IEnumerable<string> Clubs { get; set; }
         public IEnumerable<string> Degrees { get; set; }
+        public string SearchData { get; set; }
     }
 }

@@ -4,6 +4,6 @@ namespace EPlast.BLL.Interfaces
 {
     public interface INewPlastMemberEmailGreetingService
     {
-        Task NotifyNewPlastMembersAsync();
+        Task NotifyNewPlastMembersAndCityAdminsAsync();
     }
 }

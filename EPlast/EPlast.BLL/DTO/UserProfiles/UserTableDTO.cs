@@ -13,7 +13,6 @@ namespace EPlast.BLL.DTO
         public DateTime? Birthday { get; set; }
         public GenderDTO Gender { get; set; }
         public string Email { get; set; }
-        public bool EmailConfirmed { get; set; }
         public string RegionName { get; set; }
         public string CityName { get; set; }
         public string ClubName { get; set; }
@@ -21,5 +20,9 @@ namespace EPlast.BLL.DTO
         public string UserRoles { get; set; }
         public string Comment { get; set; }
         public string UPUDegree { get; set; }
+        public int UserSystemId { get; set; }
+        public int? RegionId { get; set; }
+        public int? CityId { get; set; }
+        public int? ClubId { get; set; }
     }
 }

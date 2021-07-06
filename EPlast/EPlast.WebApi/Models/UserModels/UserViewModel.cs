@@ -59,8 +59,12 @@ namespace EPlast.WebApi.Models.UserModels
             ErrorMessage = "Поле 'Громадська, політична діяльність' має містити тільки літери та цифри")]
         [MaxLength(50, ErrorMessage = "Поле 'Громадська, політична діяльність' не може перевищувати 50 символів")]
         public string PublicPoliticalActivity { get; set; }
+        public string Region { get; set; }
         public string City { get; set; }
+        public int CityId { get; set; }
         public string Club { get; set; }
+        public int ClubId { get; set; }
+        public int RegionId { get; set; }
         public string FacebookLink { get; set; }
         public string TwitterLink { get; set; }
         public string InstagramLink { get; set; }

@@ -139,6 +139,24 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         }
 
         [Test]
+        public void GetUsersDistinctions_ReturnsUserDistinctionsTableObject()
+        {
+            //Arrange
+            mockRepoWrapper
+                .Setup(x => x.UserDistinction.GetUsersDistinctions(It.IsAny<string>(),
+                    It.IsAny<int>(), It.IsAny<int>()))
+                .Returns(new List<UserDistinctionsTableObject>());
+
+            //Act
+            var result =  distinctionService.GetUsersDistinctionsForTable(It.IsAny<string>(),
+                It.IsAny<int>(), It.IsAny<int>());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<List<UserDistinctionsTableObject>>(result);
+        }
+
+        [Test]
         public void DeleteDistinctionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
         {
             //Arrange
@@ -239,12 +257,12 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
             Assert.DoesNotThrowAsync(async () => { await distinctionService.AddDistinctionAsync( new DistinctionDTO(), new User()); });
         }
 
-        Distinction nullDistinction = null;
-        DistinctionDTO nullDistinctionDTO = null;
-        List<DistinctionDTO> nullListDistinctionDTO = null;
-        List<Distinction> nullListDistinction = null;
-        DistinctionDTO distinctionDTO = new DistinctionDTO { Id = 1, Name = "За силу" };
-        Distinction distinction = new Distinction { Id = 1, Name = "За силу" };
+        readonly Distinction nullDistinction = null;
+        readonly DistinctionDTO nullDistinctionDTO = null;
+        readonly List<DistinctionDTO> nullListDistinctionDTO = null;
+        readonly List<Distinction> nullListDistinction = null;
+        readonly DistinctionDTO distinctionDTO = new DistinctionDTO { Id = 1, Name = "За силу" };
+        readonly Distinction distinction = new Distinction { Id = 1, Name = "За силу" };
 
         private IEnumerable<Distinction> GetTestPlastDistinction()
         {

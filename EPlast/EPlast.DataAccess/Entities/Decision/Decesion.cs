@@ -29,5 +29,8 @@ namespace EPlast.DataAccess.Entities
         public DateTime Date { get; set; }
 
         public string FileName { get; set; }
+
+        public string UserId { get; set; }
+        public User User { get; set; }
     }
 }

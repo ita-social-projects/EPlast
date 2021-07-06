@@ -6,6 +6,7 @@ namespace EPlast.BLL.DTO.City
     {
         public int ID { get; set; }
         public bool IsApproved { get; set; }
+        public bool WasInRegisteredUserRole { get; set; }
         public string UserId { get; set; }
         public CityUserDTO User { get; set; }
         public string CityId { get; set; }

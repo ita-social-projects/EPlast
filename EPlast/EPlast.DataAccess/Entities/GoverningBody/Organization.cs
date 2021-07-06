@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.DataAccess.Entities
 {
@@ -18,5 +19,8 @@ namespace EPlast.DataAccess.Entities
         public string Email { get; set; }
 
         public string Logo { get; set; }
+
+        public ICollection<GoverningBodyAdministration> GoverningBodyAdministration { get; set; }
+        public ICollection<GoverningBodyDocuments> GoverningBodyDocuments { get; set; }
     }
 }

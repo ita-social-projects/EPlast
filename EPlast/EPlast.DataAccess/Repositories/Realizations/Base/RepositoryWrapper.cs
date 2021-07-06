@@ -2,6 +2,7 @@
 using EPlast.DataAccess.Repositories.Interfaces.Blank;
 using EPlast.DataAccess.Repositories.Interfaces.Club;
 using EPlast.DataAccess.Repositories.Interfaces.Events;
+using EPlast.DataAccess.Repositories.Interfaces.GoverningBody;
 using EPlast.DataAccess.Repositories.Interfaces.Region;
 using EPlast.DataAccess.Repositories.Interfaces;
 using EPlast.DataAccess.Repositories.Realizations.Blank;
@@ -12,6 +13,7 @@ using EPlast.DataAccess.Repositories.Realizations.Region;
 using EPlast.DataAccess.Repositories.Realizations;
 using NLog.Extensions.Logging;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Repositories.Realizations.GoverningBody;
 
 namespace EPlast.DataAccess.Repositories.Realizations.Base
 {
@@ -21,7 +23,6 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IUserRepository _user;
         private IUserProfileRepository _userprofile;
         private INationalityRepository _nationality;
-        private IOrganizationRepository _organization;
         private IDecesionTargetRepository _decesionTarget;
         private IDistinctionRepository _distinction;
         private IPrecautionRepository _precaution;
@@ -47,6 +48,11 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IDegreeRepository _degree;
         private IConfirmedUserRepository _confirmedUser;
         private IApproverRepository _approver;
+
+        private IOrganizationRepository _governingBody;
+        private IGoverningBodyAdministrationRepository _governingBodyAdministration;
+        private IGoverningBodyDocumentsRepository _governingBodyDocuments;
+        private IGoverningBodyDocumentTypeRepository _governingBodyDocumentType;
 
         private ICityAdministrationRepository _cityAdministration;
         private ICityDocumentsRepository _cityDocuments;
@@ -163,11 +169,50 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         {
             get
             {
-                if (_organization == null)
+                if (_governingBody == null)
                 {
-                    _organization = new OrganizationRepository(_dbContext);
+                    _governingBody = new OrganizationRepository(_dbContext);
                 }
-                return _organization;
+                return _governingBody;
+            }
+        }
+
+        public IGoverningBodyAdministrationRepository GoverningBodyAdministration
+        {
+            get
+            {
+                if (_governingBodyAdministration == null)
+                {
+                    _governingBodyAdministration = new GoverningBodyAdministrationRepository(_dbContext);
+                }
+
+                return _governingBodyAdministration;
+            }
+        }
+
+        public IGoverningBodyDocumentTypeRepository GoverningBodyDocumentType
+        {
+            get
+            {
+                if (_governingBodyDocumentType == null)
+                {
+                    _governingBodyDocumentType = new GoverningBodyDocumentTypeRepository(_dbContext);
+                }
+
+                return _governingBodyDocumentType;
+            }
+        }
+
+        public IGoverningBodyDocumentsRepository GoverningBodyDocuments
+        {
+            get
+            {
+                if (_governingBodyDocuments == null)
+                {
+                    _governingBodyDocuments = new GoverningBodyDocumentsRepository(_dbContext);
+                }
+
+                return _governingBodyDocuments;
             }
         }
 
@@ -226,11 +271,9 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         {
             get
             {
-
                 if (_eventAdministration == null)
                 {
                     _eventAdministration = new EventAdministrationRepository(_dbContext);
-
                 }
                 return _eventAdministration;
             }
@@ -240,11 +283,9 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         {
             get
             {
-
                 if (_eventAdministrationType == null)
                 {
                     _eventAdministrationType = new EventAdministrationTypeRepository(_dbContext);
-
                 }
                 return _eventAdministrationType;
             }
@@ -507,7 +548,6 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             }
         }
 
-
         public ICityDocumentTypeRepository CityDocumentType
         {
             get
@@ -598,6 +638,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 return _clubDocuments;
             }
         }
+
         public IClubDocumentTypeRepository ClubDocumentType
         {
             get
@@ -610,6 +651,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 return _clubDocumentType;
             }
         }
+
         public IClubAdministrationRepository ClubAdministration
         {
             get
@@ -749,8 +791,6 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             }
         }
 
-
-        
         public IClubLegalStatusesRepository ClubLegalStatuses
 
         {
@@ -812,6 +852,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 return _userDistinction;
             }
         }
+
         public IUserPrecautionRepository UserPrecaution
         {
             get
@@ -828,7 +869,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         {
             get
             {
-                if(_plastDegree == null)
+                if (_plastDegree == null)
                 {
                     _plastDegree = new PlastDegreeRepository(_dbContext);
                 }
@@ -847,7 +888,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 return _biographyDocumentsRepository;
             }
         }
-        
+
         public IUserNotificationRepository UserNotifications
         {
             get
@@ -871,7 +912,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 return _notificationTypes;
             }
         }
-        
+
         public IAchievementDocumentsRepository AchievementDocumentsRepository
         {
             get
@@ -888,7 +929,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         {
             get
             {
-                if(_extractFromUPUDocumentsRepository == null)
+                if (_extractFromUPUDocumentsRepository == null)
                 {
                     _extractFromUPUDocumentsRepository = new ExtractFromUPUDocumentsRepository(_dbContext);
                 }
@@ -917,7 +958,6 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             {
                 return ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Cities"];
             }
-            
         }
 
         

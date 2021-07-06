@@ -95,11 +95,16 @@ namespace EPlast.BLL.Services.Region
             var region = await GetRegionByIdAsync(regionId);
             var regionProfile = _mapper.Map<RegionDTO, RegionProfileDTO>(region);
             var userRoles = await _userManager.GetRolesAsync(user);
+            var documents = await _repoWrapper
+                .RegionDocument
+                .GetAllAsync(d => d.RegionId == regionId);
 
             var cities = await _cityService.GetCitiesByRegionAsync(regionId);
             regionProfile.Cities = cities;
             regionProfile.City = region.City;
-            regionProfile.CanEdit = userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.OkrugaHead);
+            regionProfile.CanEdit = userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.OkrugaHead) || userRoles.Contains(Roles.OkrugaHeadDeputy);
+            regionProfile.Documents = documents.Take(6);
+            regionProfile.DocumentsCount = documents.Count();
 
             return regionProfile;
         }
@@ -129,7 +134,7 @@ namespace EPlast.BLL.Services.Region
         {
             var regionProfile = _mapper.Map<DataAccessRegion.Region, RegionProfileDTO>(await _repoWrapper.Region.GetFirstAsync(d => d.RegionName == Name));
             var userRoles = await _userManager.GetRolesAsync(user);
-            regionProfile.CanEdit = userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.OkrugaHead);
+            regionProfile.CanEdit = userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.OkrugaHead) || userRoles.Contains(Roles.OkrugaHeadDeputy);
             return regionProfile;
         }
 
@@ -210,26 +215,36 @@ namespace EPlast.BLL.Services.Region
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task EndAdminsDueToDate()
+        public async Task ContinueAdminsDueToDate()
         {
-            var admins = await _repoWrapper.RegionAdministration.GetAllAsync();
+            var admins = await _repoWrapper.RegionAdministration.GetAllAsync(x => x.Status);
 
             foreach (var admin in admins)
             {
-                if (DateTime.Compare((DateTime)admin.EndDate, DateTime.Now) < 0)
+                if (admin.EndDate != null && DateTime.Compare((DateTime)admin.EndDate, DateTime.Now) < 0)
                 {
-                    admin.Status = false;
+                    admin.EndDate = admin.EndDate.Value.AddYears(1);
                     _repoWrapper.RegionAdministration.Update(admin);
-
                 }
             }
             await _repoWrapper.SaveAsync();
+        
         }
 
         /// <inheritdoc />
         public async Task<IEnumerable<RegionForAdministrationDTO>> GetRegions()
         {
             return _mapper.Map<IEnumerable<DataAccessRegion.Region>, IEnumerable<RegionForAdministrationDTO>>((await _repoWrapper.Region.GetAllAsync()).Where(r => r.Status != RegionsStatusType.RegionBoard));
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<RegionUserDTO>> GetRegionUsersAsync(int regionId)
+        {
+            var city = await _repoWrapper.CityMembers.GetAllAsync(d => d.City.RegionId == regionId,
+                include: source => source
+                    .Include(t => t.User));
+            var users = city.Select(x=>x.User);
+            return _mapper.Map<IEnumerable<DataAccessRegion.User>, IEnumerable<RegionUserDTO>>(users);
         }
     }
 }

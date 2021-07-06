@@ -17,9 +17,11 @@ using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Notifications;
 using EPlast.BLL.Interfaces.Region;
+using EPlast.BLL.Interfaces.RegionBoard;
 using EPlast.BLL.Interfaces.Resources;
 using EPlast.BLL.Interfaces.Statistics;
 using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.SecurityModel;
 using EPlast.BLL.Services;
 using EPlast.BLL.Services.AboutBase;
 using EPlast.BLL.Services.ActiveMembership;
@@ -41,6 +43,7 @@ using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.Jwt;
 using EPlast.BLL.Services.Logging;
 using EPlast.BLL.Services.Notifications;
+using EPlast.BLL.Services.PDF;
 using EPlast.BLL.Services.Precautions;
 using EPlast.BLL.Services.Region;
 using EPlast.BLL.Services.Region.RegionAccess;
@@ -99,6 +102,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IDistinctionService, DistinctionService>();
             services.AddScoped<IEducatorsStaffService, EducatorsStaffService>();
             services.AddScoped<IEducatorsStaffTypesService, EducatorsStaffTypesService>();
+            services.AddScoped<IEmailContentService, EmailContentService>();
             services.AddScoped<IEmailReminderService, EmailReminderService>();
             services.AddScoped<IEmailSendingService, EmailSendingService>();
             services.AddScoped<IEventAdmininistrationManager, EventAdministrationManager>();
@@ -117,7 +121,11 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IFileStreamManager, FileStreamManager>();
             services.AddScoped<IGlobalLoggerService, GlobalLoggerService>();
             services.AddScoped<IGoverningBodiesService, GoverningBodiesService>();
+            services.AddScoped<IGoverningBodyAdministrationService, GoverningBodyAdministrationService>();
+            services.AddScoped<IRegionsBoardService, RegionsBoardService>();
             services.AddScoped<IGoverningBodyBlobStorageRepository, GoverningBodyBlobStorageRepository>();
+            services.AddScoped<IGoverningBodyDocumentsService, GoverningBodyDocumentsService>();
+            services.AddScoped<IGoverningBodyFilesBlobStorageRepository, GoverningBodyFilesBlobStorageRepository>();
             services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IMethodicDocumentBlobStorageRepository, MethodicDocumentBlobStarageRepository>();
             services.AddScoped<IMethodicDocumentService, MethodicDocumentService>();
@@ -149,6 +157,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<StatisticsServiceSettings>();
             services.AddScoped<IAboutBaseSectionService, AboutBaseSectionService>();
             services.AddScoped<IAboutBaseSubsectionService, AboutBaseSubsectionService>();
+            services.AddScoped<ISecurityModel, SecurityModel>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddSingleton<INotificationConnectionManager, NotificationConnectionManager>();
@@ -157,6 +166,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddTransient<IEventUserService, EventUserService>();
             services.AddTransient<IJwtService, JwtService>();
             services.AddTransient<IUniqueIdService, UniqueIdService>();
+            services.AddSingleton<IUserMapService, UserMapService>();
             return services;
         }
     }
