@@ -82,30 +82,6 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _plastDegreeService.GetUserPlastDegreesAsync(userId));
         }
 
-        //[HttpPost("AddFollowerWithId/{cityId}/{userId}")]
-        //[Authorize(AuthenticationSchemes = "Bearer")]
-        //public async Task<IActionResult> AddFollowerWithId(int cityId, string userId)
-        //{
-        //    var follower = await _cityParticipantsService.AddFollowerAsync(cityId, userId);
-        //    _logger.LogInformation($"User {{{follower.UserId}}} became a follower of city {{{cityId}}}.");
-
-        //    return Ok(follower);
-        //}
-        //[Authorize(Roles = Roles.AdminRegionBoardHeadOkrugaCityHeadAndDeputy)]
-        //[HttpPost("AddUserPlastDegreeWithId/{userId}")]
-        //public async Task<IActionResult> AddPlastDegreeForUser( string userId)
-        //{
-        //    if (await HasAccessAsync(userId))
-        //    {
-        //        var userPlastDegree = await _plastDegreeService.AddPlastDegreeForUserAsync( userId);
-        //        _loggerService.LogInformation($"User {{{userId}}} receive a degree.");
-
-        //        return Ok(userPlastDegree);
-        //    }
-
-        //    return BadRequest();
-        //}
-
         [Authorize(Roles = Roles.AdminRegionBoardHeadOkrugaCityHeadAndDeputy)]
         [HttpPost("degree")]
         public async Task<IActionResult> AddPlastDegreeForUser(UserPlastDegreePostDTO userPlastDegreePostDTO)
