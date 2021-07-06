@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.Admin;
 using EPlast.DataAccess.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace EPlast.Tests.Controllers
 {
@@ -325,19 +326,20 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task UsersTable_Valid_Test()
         {
-            _adminService.Setup(a => a.GetUsersTableAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
-                It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>(), It.IsAny<string>()))
+            _adminService.Setup(a => a.GetUsersTableAsync(It.IsAny<TableFilterParameters>()))
                 .ReturnsAsync(CreateTuple);
 
             AdminController adminController = CreateAdminController;
+            var expected = StatusCodes.Status200OK;
 
             // Act
             var result = await adminController.GetUsersTable(CreateTableFilterParameters);
+            var actual = (result as ObjectResult).StatusCode;
 
             // Assert
             _adminService.Verify();
             Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.AreEqual(expected, actual);
         }
         [Test]
         public async Task GetUsers_Valid_Test()
@@ -384,10 +386,10 @@ namespace EPlast.Tests.Controllers
             PageSize = 10,
             TotalRow = 5,
             Tab = "TAB",
-            Cities = new List<string>(),
-            Regions = new List<string>(),
-            Clubs = new List<string>(),
-            Degrees = new List<string>(),
+            Cities = new List<int>(),
+            Regions = new List<int>(),
+            Clubs = new List<int>(),
+            Degrees = new List<int>(),
             SearchData = "Ольга"
         };
 
