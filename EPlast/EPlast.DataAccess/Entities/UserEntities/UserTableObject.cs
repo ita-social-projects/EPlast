@@ -5,7 +5,6 @@ namespace EPlast.DataAccess.Entities
     public class UserTableObject
     {
         public string ID { get; set; }
-        public long Index { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTime? Birthday { get; set; }
