@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.DTO.Region
 {
@@ -20,7 +21,8 @@ namespace EPlast.BLL.DTO.Region
         public int PostIndex { get; set; }
         public string City { get; set; }
         public bool CanEdit{ get; set; }
-        public IEnumerable<RegionDocumentDTO> Documents { get; set; }
+        public IEnumerable<RegionDocuments> Documents { get; set; }
+        public int DocumentsCount { get; set; }
         public IEnumerable<RegionAdministrationDTO> Administration { get; set; }
         public IEnumerable<CityDTO> Cities { get; set; }
         public RegionsStatusTypeDTO Status { get; set; }
