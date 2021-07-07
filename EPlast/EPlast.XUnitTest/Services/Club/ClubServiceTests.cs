@@ -90,7 +90,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
         {
             ClubService ClubService = CreateClubService();
 
-            var result = await ClubService.GetAllDTOAsync(null);
+            var result = await ClubService.GetAllDtoAsync(null);
 
             Assert.NotNull(result);
         }

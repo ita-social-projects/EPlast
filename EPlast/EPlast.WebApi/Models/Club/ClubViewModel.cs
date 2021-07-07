@@ -22,6 +22,7 @@ namespace EPlast.WebApi.Models.Club
         public int MemberCount { get; set; }
         public int FollowerCount { get; set; }
         public int AdministrationCount { get; set; }
+        public int DocumentsCount { get; set; }
         public ClubAdministrationViewModel Head { get; set; }
         public ClubAdministrationViewModel HeadDeputy { get; set; }
         public IEnumerable<ClubAdministrationViewModel> Administration { get; set; }
