@@ -231,7 +231,7 @@ namespace EPlast.BLL.Services.Club
         {
             var oldClubMember = await _repositoryWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(i => i.UserId == userId);
-            if (oldClubMember != null)
+            if (oldClubMember != null) //Видаляє з прихильників в попередньому курені та з членів
             {
                 _repositoryWrapper.ClubMembers.Delete(oldClubMember);
                 await _repositoryWrapper.SaveAsync();
@@ -243,6 +243,7 @@ namespace EPlast.BLL.Services.Club
             {
                 await RemoveAdministratorAsync(admin.ID);
             }
+            // видаляє з адмінки курення
 
             var ClubMember = new ClubMembers()
             {
@@ -310,5 +311,80 @@ namespace EPlast.BLL.Services.Club
             _repositoryWrapper.ClubMembers.Delete(member);
             await _repositoryWrapper.SaveAsync();
         }
+
+        public async Task<bool> AddFollowerInHistoryAsync(int ClubId, string userId)
+        {
+            var oldClubMember = await _repositoryWrapper.ClubMemberHistory
+               .GetFirstOrDefaultAsync(i => i.UserId == userId && !i.IsDeleted);
+
+            if (oldClubMember != null) //Видаляє з прихильників в попередньому курені 
+            {
+                await UpdateStatusFollowerInHistoryAsync(userId, true,true);
+            }
+
+            var clubHistoryUser = new ClubMemberHistory()
+            {
+                Date = DateTime.Now,
+                UserId = userId,
+                ClubId = ClubId,
+                IsFollower = true,
+                IsDeleted = false
+            };
+
+            await _repositoryWrapper.ClubMemberHistory.CreateAsync(clubHistoryUser);
+            await _repositoryWrapper.SaveAsync();
+
+            return true;
+        }
+
+        public async Task<IEnumerable<ClubMemberHistoryDTO>> GetFollowerInHistoryAsync(int ClubId, User user)
+        {
+
+            var ClubHistoryMembers = await _repositoryWrapper.ClubMemberHistory.GetAllAsync(
+                   predicate: c => c.ClubId == ClubId &&
+                                   c.UserId == user.Id && 
+                                   c.IsFollower && 
+                                   !c.IsDeleted);
+
+            return _mapper.Map<IEnumerable<ClubMemberHistory>, IEnumerable<ClubMemberHistoryDTO>>(ClubHistoryMembers);
+        }
+
+        public async Task<ClubMemberHistoryDTO> UpdateStatusFollowerInHistoryAsync(string usertID,bool IsFollower,bool IsDeleted)
+        {
+
+            var ClubHistoryMembers = await _repositoryWrapper.ClubMemberHistory.GetFirstOrDefaultAsync(
+                   predicate: c => c.UserId == usertID &&!c.IsDeleted);
+
+                ClubHistoryMembers.IsFollower = IsFollower;
+                ClubHistoryMembers.IsDeleted = IsDeleted;
+                ClubHistoryMembers.Date = DateTime.Now;
+
+                _repositoryWrapper.ClubMemberHistory.Update(ClubHistoryMembers);
+                await _repositoryWrapper.SaveAsync();
+      
+            return _mapper.Map<ClubMemberHistory, ClubMemberHistoryDTO>(ClubHistoryMembers);
+        }
+
+
+        //public async Task<ClubMemberHistoryDTO> UpdateFollowerInHistoryAsync(string userId)
+        //{
+
+        //    var ClubHistoryMembers = await _repositoryWrapper.ClubMemberHistory.GetFirstOrDefaultAsync(
+        //           predicate: c => c.UserId == userId &&
+        //                           c.IsFollower &&
+        //                           !c.IsDeleted);
+
+
+        //    ClubHistoryMembers.IsDeleted = !ClubHistoryMembers.IsDeleted;
+
+        //    _repositoryWrapper.ClubMemberHistory.Update(ClubHistoryMembers);
+        //    await _repositoryWrapper.SaveAsync();
+
+
+
+        //    return _mapper.Map<ClubMemberHistory, ClubMemberHistoryDTO>(ClubHistoryMembers);
+        //}
+
+
     }
 }

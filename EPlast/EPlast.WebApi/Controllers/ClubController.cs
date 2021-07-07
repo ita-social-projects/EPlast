@@ -310,7 +310,12 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminPlastunAndSupporter)]
         public async Task<IActionResult> AddFollower(int ClubId)
         {
-            var follower = await _clubParticipantsService.AddFollowerAsync(ClubId, await _userManager.GetUserAsync(User));
+            //добавити в історичну таблицю прихильника і також його видалення
+            User ItFollower = await _userManager.GetUserAsync(User);
+            
+            var isInsert = await _clubParticipantsService.AddFollowerInHistoryAsync(ClubId, ItFollower.Id);
+
+            var follower = await _clubParticipantsService.AddFollowerAsync(ClubId, ItFollower);
             _logger.LogInformation($"User {{{follower.UserId}}} became a follower of Club {{{ClubId}}}.");
 
             return Ok(follower);
@@ -326,6 +331,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> AddFollowerWithId(int clubId, string userId)
         {
+            //із таблиці користувачів коли людина е фоловером додає її в провід курення
             var follower = await _clubParticipantsService.AddFollowerAsync(clubId, userId);
             _logger.LogInformation($"User {{{follower.UserId}}} became a follower of city {{{clubId}}}.");
 
@@ -340,6 +346,10 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RemoveFollower(int followerId)
         {
+            ////Видалити із прихильників тут додати видалити із історичної прихильника
+            User ItFollower = await _userManager.GetUserAsync(User);
+            await _clubParticipantsService.UpdateStatusFollowerInHistoryAsync(ItFollower.Id, true, true);
+
             await _clubParticipantsService.RemoveFollowerAsync(followerId);
             _logger.LogInformation($"Follower with ID {{{followerId}}} was removed.");
 
@@ -355,7 +365,18 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> ChangeApproveStatus(int memberId)
         {
+            // із прихильника в користувачі
             var member = await _clubParticipantsService.ToggleApproveStatusAsync(memberId);
+            if (!member.IsApproved)
+            {
+                await _clubParticipantsService.UpdateStatusFollowerInHistoryAsync(member.UserId, false, true);
+
+                await _clubParticipantsService.AddFollowerInHistoryAsync(Convert.ToInt32(member.ClubId), member.User.ID);
+            }
+            else
+            {
+                await _clubParticipantsService.UpdateStatusFollowerInHistoryAsync(member.UserId, false, false);
+            }
             _logger.LogInformation($"Status of member with ID {{{memberId}}} was changed.");
 
             return Ok(member);

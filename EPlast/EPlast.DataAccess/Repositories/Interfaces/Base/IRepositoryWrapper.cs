@@ -29,6 +29,7 @@ namespace EPlast.DataAccess.Repositories
         IClubDocumentTypeRepository ClubDocumentType { get; }
         IClubLegalStatusesRepository ClubLegalStatuses { get; }
         IClubMembersRepository ClubMembers { get; }
+        IClubMemberHistoryRepository ClubMemberHistory { get; }
         IConfirmedUserRepository ConfirmedUser { get; }
         IDecesionRepository Decesion { get; }
         IDecesionTargetRepository DecesionTarget { get; }
