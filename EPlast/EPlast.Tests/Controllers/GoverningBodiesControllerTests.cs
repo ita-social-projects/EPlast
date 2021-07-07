@@ -47,6 +47,7 @@ namespace EPlast.Tests.Controllers
             list.Add(new Mock<GoverningBodyDTO>().Object);
             _governingBodiesService
                 .Setup(x => x.GetGoverningBodiesListAsync()).ReturnsAsync(list);
+
             //Act
             var result = await _controller.GetGoverningBodies();
             var resultValue = (result as ObjectResult)?.Value;
