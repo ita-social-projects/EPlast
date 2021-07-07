@@ -140,5 +140,10 @@ namespace EPlast.BLL.Interfaces.Club
         /// </summary>
         /// <returns>All clubs</returns>
         Task<IEnumerable<ClubForAdministrationDTO>> GetClubs();
+
+        /// <summary>
+        /// Get all data for report clubs
+        /// </summary>
+        Task<ClubProfileDTO> GetClubMembersForReport(int clubId);
     }
 }

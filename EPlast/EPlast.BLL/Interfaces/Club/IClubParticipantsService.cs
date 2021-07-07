@@ -107,16 +107,11 @@ namespace EPlast.BLL.Interfaces.Club
         /// Add  follower from the Club to history table
         /// </summary>
         Task<bool> AddFollowerInHistoryAsync(int ClubId, string userID);
-        /// <summary>
-        /// Get all users from the Club historical table
-        /// </summary>
-        Task<IEnumerable<ClubMemberHistoryDTO>> GetFollowerInHistoryAsync(int ClubId, User user);
+
 
         /// <summary>
-        /// update user in historical table insert property Isdelete
+        /// update user in historical table insert property 
         /// </summary>
         Task<ClubMemberHistoryDTO> UpdateStatusFollowerInHistoryAsync(string userId, bool IsFollower, bool IsDeleted);
-
-        //Task<ClubMemberHistoryDTO> UpdateFollowerInHistoryAsync(string userId);
     }
 }

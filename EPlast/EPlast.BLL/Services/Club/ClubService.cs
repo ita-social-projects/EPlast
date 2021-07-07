@@ -494,5 +494,76 @@ namespace EPlast.BLL.Services.Club
                 await _clubBlobStorage.DeleteBlobAsync(oldImageName);
             }
         }
+
+
+        public async Task<ClubProfileDTO> GetClubMembersForReport(int clubId)
+        {
+
+            var ClubHistoryMembers = await _repoWrapper.ClubMemberHistory.GetAllAsync(
+                   predicate: c => c.ClubId == clubId &&
+                                   c.IsFollower &&
+                                   !c.IsDeleted);
+
+
+            var club = await _repoWrapper.Club.GetFirstOrDefaultAsync(
+                  predicate: c => c.ID == clubId);
+
+            if (club != null)
+            {
+                var clubAdminins = await _repoWrapper.ClubAdministration.GetAllAsync(
+                                 predicate: c => c.ClubId == clubId && c.Status,
+                                 include: source => source
+                      .Include(t => t.AdminType)
+                      .Include(a => a.User));
+
+                //var cityMembers = await _repoWrapper.CityMembers.GetAllAsync(
+                //                  predicate: c => c.CityId == cityId,
+                //                  include: source => source
+                //        .Include(a => a.User));
+                club.ClubAdministration = clubAdminins.ToList();
+                //club.CityMembers = cityMembers.ToList();
+            }
+
+            var clubDto= _mapper.Map<DataAccessClub.Club, ClubDTO>(club);
+
+
+
+            //var clubHead = clubDto.ClubAdministration?
+            //    .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHead
+            //                         && (DateTime.Now < a.EndDate || a.EndDate == null));
+            //var clubHeadDeputy = clubDto.ClubAdministration?
+            //    .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHeadDeputy
+            //                         && (DateTime.Now < a.EndDate || a.EndDate == null));
+            //var clubAdmins = clubDto.ClubAdministration?
+            //    .Where(a => a.AdminType.AdminTypeName != Roles.KurinHead
+            //                && a.AdminType.AdminTypeName != Roles.KurinHeadDeputy
+            ////                && (DateTime.Now < a.EndDate || a.EndDate == null))
+            //    .ToList();
+            clubDto.AdministrationCount = clubDto.ClubAdministration == null ? 0
+                : clubDto.ClubAdministration.Count(a => (DateTime.Now < a.EndDate || a.EndDate == null));
+            var members = clubDto.ClubMembers
+                .Where(m => m.IsApproved)
+                .ToList();
+            clubDto.MemberCount = clubDto.ClubMembers
+                .Count(m => m.IsApproved);
+            var followers = clubDto.ClubMembers
+                .Where(m => !m.IsApproved)
+                .ToList();
+            clubDto.FollowerCount = clubDto.ClubMembers
+                .Count(m => !m.IsApproved);
+            clubDto.DocumentsCount = clubDto.ClubDocuments.Count();
+            var clubDoc = clubDto.ClubDocuments.Take(6).ToList();
+            var clubProfileDto = new ClubProfileDTO
+            {
+                Club = clubDto,
+                //Head = clubHead,
+                //HeadDeputy = clubHeadDeputy,
+                Members = members,
+                Followers = followers,
+                Admins = clubDto.ClubAdministration.ToList(),
+                Documents = clubDoc,
+            };
+            return clubProfileDto;
+        }
     }
 }

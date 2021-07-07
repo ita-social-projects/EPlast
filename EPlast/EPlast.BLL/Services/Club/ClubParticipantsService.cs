@@ -337,18 +337,6 @@ namespace EPlast.BLL.Services.Club
             return true;
         }
 
-        public async Task<IEnumerable<ClubMemberHistoryDTO>> GetFollowerInHistoryAsync(int ClubId, User user)
-        {
-
-            var ClubHistoryMembers = await _repositoryWrapper.ClubMemberHistory.GetAllAsync(
-                   predicate: c => c.ClubId == ClubId &&
-                                   c.UserId == user.Id && 
-                                   c.IsFollower && 
-                                   !c.IsDeleted);
-
-            return _mapper.Map<IEnumerable<ClubMemberHistory>, IEnumerable<ClubMemberHistoryDTO>>(ClubHistoryMembers);
-        }
-
         public async Task<ClubMemberHistoryDTO> UpdateStatusFollowerInHistoryAsync(string usertID,bool IsFollower,bool IsDeleted)
         {
 
@@ -364,27 +352,5 @@ namespace EPlast.BLL.Services.Club
       
             return _mapper.Map<ClubMemberHistory, ClubMemberHistoryDTO>(ClubHistoryMembers);
         }
-
-
-        //public async Task<ClubMemberHistoryDTO> UpdateFollowerInHistoryAsync(string userId)
-        //{
-
-        //    var ClubHistoryMembers = await _repositoryWrapper.ClubMemberHistory.GetFirstOrDefaultAsync(
-        //           predicate: c => c.UserId == userId &&
-        //                           c.IsFollower &&
-        //                           !c.IsDeleted);
-
-
-        //    ClubHistoryMembers.IsDeleted = !ClubHistoryMembers.IsDeleted;
-
-        //    _repositoryWrapper.ClubMemberHistory.Update(ClubHistoryMembers);
-        //    await _repositoryWrapper.SaveAsync();
-
-
-
-        //    return _mapper.Map<ClubMemberHistory, ClubMemberHistoryDTO>(ClubHistoryMembers);
-        //}
-
-
     }
 }
