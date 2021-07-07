@@ -1,15 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-using AutoMapper;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+﻿using AutoMapper;
+using EPlast.BLL.DTO.GoverningBody.Sector;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.GoverningBodies.Sector;
-using EPlast.Resources;
 using EPlast.DataAccess.Repositories;
-using EPlast.BLL.DTO.GoverningBody.Sector;
+using EPlast.Resources;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using GBSector = EPlast.DataAccess.Entities.GoverningBody.Sector.Sector;
 
 namespace EPlast.BLL.Services.GoverningBodies.Sector
@@ -43,7 +43,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             var oldImageName = (await _repoWrapper.GoverningBodySector.GetFirstOrDefaultAsync(i => i.Id == sector.Id))?.Logo;
             var logoBase64 = sector.Logo;
 
-            if (!string.IsNullOrWhiteSpace(logoBase64) && logoBase64.Length > 0)
+            if (!string.IsNullOrWhiteSpace(logoBase64))
             {
                 var logoBase64Parts = logoBase64.Split(',');
                 var extension = logoBase64Parts[0].Split(new[] { '/', ';' }, 3)[1];
@@ -142,7 +142,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                         .ThenInclude(a => a.User)
                     .Include(s => s.Documents)
                     .ThenInclude(d => d.SectorDocumentType));
-            return _mapper.Map<DataAccess.Entities.GoverningBody.Sector.Sector, SectorDTO>(sector);
+            return _mapper.Map<GBSector, SectorDTO>(sector);
         }
 
         public async Task<SectorProfileDTO> GetSectorDocumentsAsync(int sectorId)

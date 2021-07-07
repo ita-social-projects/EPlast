@@ -19,7 +19,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities.GoverningBody;
 
-namespace EPlast.Tests.Services
+namespace EPlast.Tests.Services.GoverningBody
 {
     internal class GoverningBodiesServiceTests
     {
@@ -114,13 +114,13 @@ namespace EPlast.Tests.Services
         }
 
         [TestCase("logopath", "logo64path")]
-        public async Task GetPhotoBase64_Valid_Test(string logopath, string logo64Path)
+        public async Task GetPhotoBase64_Valid_Test(string logoPath, string logo64Path)
         {
             //Arrange
             _blobStorage.Setup(x => x.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync(logo64Path);
 
             //Act
-            var result = await _service.GetLogoBase64Async(logopath);
+            var result = await _service.GetLogoBase64Async(logoPath);
 
             //Assert
             Assert.NotNull(result);
@@ -147,6 +147,27 @@ namespace EPlast.Tests.Services
             //Assert
             Assert.NotNull(result);
             Assert.AreEqual(CreateGoverningBodyDTO.Id, result.GoverningBody.Id);
+        }
+
+        [TestCase(1)]
+        public async Task GetProfileById_GoverningBodyNotFound(int id)
+        {
+            //Arrange
+            Organization organization = null;
+            _repoWrapper
+                .Setup(x => x.GoverningBody.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<Organization, bool>>>(), It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>()))
+                .ReturnsAsync(organization);
+            GoverningBodyDTO governingBodyDto = null;
+            _mapper
+                .Setup(x => x.Map<Organization, GoverningBodyDTO>(It.IsAny<Organization>()))
+                .Returns(governingBodyDto);
+
+            //Act
+            var result = await _service.GetGoverningBodyProfileAsync(id);
+
+            //Assert
+            Assert.AreEqual(null, result);
         }
 
         [Test]

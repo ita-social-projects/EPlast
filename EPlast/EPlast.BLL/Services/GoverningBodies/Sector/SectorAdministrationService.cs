@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using EPlast.BLL.DTO.GoverningBody.Sector;
+﻿using EPlast.BLL.DTO.GoverningBody.Sector;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.GoverningBodies.Sector;
 using EPlast.DataAccess.Entities;
@@ -8,6 +6,8 @@ using EPlast.DataAccess.Entities.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
+using System;
+using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.GoverningBodies.Sector
 {

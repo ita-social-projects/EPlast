@@ -2,12 +2,10 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using EPlast.BLL.DTO.GoverningBody;
 using EPlast.BLL.DTO.GoverningBody.Sector;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.GoverningBodies.Sector;
-using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Entities.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories;
 
