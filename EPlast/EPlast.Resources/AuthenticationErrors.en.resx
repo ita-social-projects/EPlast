@@ -130,7 +130,7 @@
     <value>Зміна пароля для користувачів, які увійшли використовуючи Google/Facebook не доступна.</value>
   </data>
   <data name="Confirm-Registration" xml:space="preserve">
-    <value>Перегляньте електронну адресу та підтвердьте реєстрацію у системі.</value>
+    <value>Перегляньте електронну пошту та підтвердьте реєстрацію у системі.</value>
   </data>
   <data name="Confirmed-Registration" xml:space="preserve">
     <value>Ви підтвердили свій вхід. Для того щоб увійти в профіль натисніть Увійти/Зареєструватись.</value>
