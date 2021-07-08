@@ -31,5 +31,6 @@ namespace EPlast.WebApi.Models.City
         public int MemberCount { get; set; }
         public int FollowerCount { get; set; }
         public int AdministrationCount { get; set; }
+        public int DocumentsCount { get; set; }
     }
 }

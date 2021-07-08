@@ -28,7 +28,7 @@ namespace EPlast.BLL.Services.PDF
                 var blank = await GetBlankDataAsync(userId);
                 IPdfSettings pdfSettings = new PdfSettings
                 {
-                    Title = $"{blank.User.FirstName} {blank.User.LastName}",
+                    Title = $"{DateTime.Now.ToShortDateString()}_Заява_{blank.User.LastName}",
                     ImagePath = "Blank"
                 };
                 IPdfCreator creator = new PdfCreator(new BlankDocument(blank, pdfSettings));
@@ -83,6 +83,36 @@ namespace EPlast.BLL.Services.PDF
                         ImagePath = base64,
                     };
                     IPdfCreator creator = new PdfCreator(new MethodicDocumentPdf(methodicDocument, pdfSettings));
+                    return await Task.Run(() => creator.GetPDFBytes());
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception: {e.Message}");
+            }
+
+            return null;
+        }
+
+        public async Task<byte[]> AnnualReportCreatePDFAsync(int annualReportId)
+        {
+            try
+            {
+                var annualReport = await _repoWrapper.AnnualReports.GetFirstOrDefaultAsync(
+                    predicate: a => a.ID == annualReportId,
+                    include: source => source
+                        .Include(a => a.NewCityAdmin)
+                        .Include(a => a.MembersStatistic)
+                        .Include(a => a.City));
+                if (annualReport != null)
+                {
+                    var base64 = await _decisionBlobStorage.GetBlobBase64Async("dafaultPhotoForPdf.jpg");
+                    IPdfSettings pdfSettings = new PdfSettings
+                    {
+                        Title = $"{annualReport.City.Name} {annualReport.Date.Year}",
+                        ImagePath = base64,
+                    };
+                    IPdfCreator creator = new PdfCreator(new AnnualReportPdf(annualReport, pdfSettings));
                     return await Task.Run(() => creator.GetPDFBytes());
                 }
             }
