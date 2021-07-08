@@ -7,7 +7,9 @@ namespace EPlast.DataAccess.Repositories.Contracts
 {
     public interface IAdminTypeRepository : IRepositoryBase<AdminType>
     {
-        Task<Tuple<IEnumerable<UserTableObject>, int>> GetUserTableObjects(int pageNum, int pageSize, string tab, string regions, string cities, string clubs, string degrees, string searchData);
+        Task<Tuple<IEnumerable<UserTableObject>, int>> GetUserTableObjects(int pageNum, int pageSize, string tab,
+            string regions, string cities, string clubs, string degrees, int sortKey, string searchData,
+            string filterRoles = "");
 
         Task<int> GetUsersCountAsync();
     }
