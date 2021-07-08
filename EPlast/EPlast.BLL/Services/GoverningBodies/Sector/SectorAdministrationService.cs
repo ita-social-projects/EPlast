@@ -102,7 +102,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                 GetFirstOrDefaultAsync(a => a.AdminTypeId == adminType.ID
                                             && a.Status && a.SectorId == sectorId);
 
-           if(!string.IsNullOrWhiteSpace(admin))
+           if(admin != null)
             {
                 await RemoveAdministratorAsync(admin.Id);
             }
