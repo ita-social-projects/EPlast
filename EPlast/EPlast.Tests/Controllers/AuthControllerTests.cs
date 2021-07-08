@@ -501,7 +501,7 @@ namespace EPlast.Tests.Controllers
         private LocalizedString GetConfirmRegistration()
         {
             var localizedString = new LocalizedString("Confirm-Registration",
-                "Перегляньте електронну адресу та підтвердьте реєстрацію у системі.");
+                "Перегляньте електронну пошту та підтвердьте реєстрацію у системі.");
             return localizedString;
         }
 
