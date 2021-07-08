@@ -49,6 +49,18 @@ namespace EPlast.BLL.Interfaces.Region
         Task<IEnumerable<RegionFollowerDTO>> GetFollowersAsync(int regionId);
 
         /// <summary>
+        /// Get a specific follower of the region
+        /// </summary>
+        /// <param name="followerId">The id of the follower</param>
+        Task<RegionFollowerDTO> GetFollowerAsync(int followerId);
+
+        /// <summary>
+        /// Create a new follower
+        /// </summary>
+        /// <param name="model">An information about a new follower</param>
+        Task CreateFollowerAsync(RegionFollowerDTO model);
+
+        /// <summary>
         /// Remove a specific follower from the region
         /// </summary>
         /// <param name="followerId">The id of the follower</param>

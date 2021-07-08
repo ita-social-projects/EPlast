@@ -355,6 +355,40 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get a specific follower of the region
+        /// </summary>
+        /// <param name="followerId">The id of the follower</param>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Follower not found</response>
+        [HttpDelete("GetFollower/{followerId}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
+        public async Task<IActionResult> GetFollower(int followerId)
+        {
+            var follower = await _regionService.GetFollowerAsync(followerId);
+            if (follower == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(follower);
+        }
+
+        /// <summary>
+        /// Create a new follower
+        /// </summary>
+        /// <param name="follower">An information about a new follower</param>
+        /// <response code="200">Successful operation</response>
+        /// <response code="400">Wrong input</response>
+        [HttpPost("CreateFollower")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> CreateFollower(RegionFollowerDTO follower)
+        {
+            await _regionService.CreateFollowerAsync(follower);
+
+            return Ok();
+        }
+
+        /// <summary>
         /// Remove a specific follower from the region
         /// </summary>
         /// <param name="followerId">The id of the follower</param>
