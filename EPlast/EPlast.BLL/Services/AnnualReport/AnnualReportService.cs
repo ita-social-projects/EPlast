@@ -50,8 +50,8 @@ namespace EPlast.BLL.Services
                         .Include(ar => ar.Creator)
                         .Include(ar => ar.City)
                             .ThenInclude(c => c.Region));
-            var citiesDTO = await _cityAccessService.GetCitiesAsync(user);
-            var filteredAnnualReports = annualReports.Where(ar => citiesDTO.Any(c => c.ID == ar.CityId));
+            var citiesDto = await _cityAccessService.GetCitiesAsync(user);
+            var filteredAnnualReports = annualReports.Where(ar => citiesDto.Any(c => c.ID == ar.CityId));
             return _mapper.Map<IEnumerable<AnnualReport>, IEnumerable<AnnualReportDTO>>(filteredAnnualReports);
         }
         
@@ -164,13 +164,11 @@ namespace EPlast.BLL.Services
         ///<inheritdoc/>
         public async Task<bool> CheckCreated(User user, int cityId)
         {
-            var city = await _repositoryWrapper.City.GetFirstOrDefaultAsync(
-                predicate: a => a.ID == cityId);
-            if (!await _cityAccessService.HasAccessAsync(user, city.ID))
+            if (!await _cityAccessService.HasAccessAsync(user, cityId))
             {
                 throw new UnauthorizedAccessException();
             }
-            return await CheckCreated(city.ID);
+            return await CheckCreated(cityId);
         }
 
         private async Task SaveLastConfirmedAsync(int cityId)
