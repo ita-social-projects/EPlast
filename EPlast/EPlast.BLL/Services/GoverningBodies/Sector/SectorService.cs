@@ -38,10 +38,10 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             _sectorBlobStorage = sectorBlobStorage;
         }
 
-        private async Task UploadPhotoAsync(SectorDTO sector)
+        private async Task UploadPhotoAsync(SectorDTO sectorDto)
         {
-            var oldImageName = (await _repoWrapper.GoverningBodySector.GetFirstOrDefaultAsync(i => i.Id == sector.Id))?.Logo;
-            var logoBase64 = sector.Logo;
+            var oldImageName = (await _repoWrapper.GoverningBodySector.GetFirstOrDefaultAsync(i => i.Id == sectorDto.Id))?.Logo;
+            var logoBase64 = sectorDto.Logo;
 
             if (!string.IsNullOrWhiteSpace(logoBase64))
             {
@@ -56,7 +56,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                 var fileName = $"{_uniqueId.GetUniqueId()}{extension}";
 
                 await _sectorBlobStorage.UploadBlobForBase64Async(logoBase64Parts[1], fileName);
-                sector.Logo = fileName;
+                sectorDto.Logo = fileName;
             }
 
             if (!string.IsNullOrWhiteSpace(oldImageName))
@@ -65,10 +65,10 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             }
         }
 
-        public async Task<int> CreateAsync(SectorDTO sector)
+        public async Task<int> CreateAsync(SectorDTO sectorDto)
         {
-            await UploadPhotoAsync(sector);
-            var newSector = await CreateSectorAsync(sector);
+            await UploadPhotoAsync(sectorDto);
+            var newSector = await CreateSectorAsync(sectorDto);
 
             _repoWrapper.GoverningBodySector.Attach(newSector);
             await _repoWrapper.GoverningBodySector.CreateAsync(newSector);
