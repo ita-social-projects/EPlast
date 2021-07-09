@@ -4,7 +4,6 @@ using EPlast.BLL.DTO.GoverningBody;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.GoverningBodies;
-using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities.GoverningBody;
 
 namespace EPlast.BLL.Services.GoverningBodies
 {
@@ -115,14 +115,19 @@ namespace EPlast.BLL.Services.GoverningBodies
             var governingBodyHead = governingBody.GoverningBodyAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.GoverningBodyHead
                                      && (DateTime.Now < a.EndDate || a.EndDate == null));
+
             var governingBodyAdmins = governingBody.GoverningBodyAdministration?
                 .Where(a => a.AdminType.AdminTypeName != Roles.GoverningBodyHead
                             && (DateTime.Now < a.EndDate || a.EndDate == null))
                 .Take(6)
                 .ToList();
-            governingBody.AdministrationCount = governingBody.GoverningBodyAdministration
-                .Count(a => (DateTime.Now < a.EndDate || a.EndDate == null));
+
+            governingBody.AdministrationCount = governingBody.GoverningBodyAdministration == null ? 0 :
+                governingBody.GoverningBodyAdministration.Count(a => (DateTime.Now < a.EndDate || a.EndDate == null));
+
             var governingBodyDoc = governingBody.GoverningBodyDocuments?.Take(6).ToList();
+
+            var governingBodySectors = governingBody.GoverningBodySectors?.Take(6).ToList();
 
             var governingBodyProfileDto = new GoverningBodyProfileDTO
             {
@@ -130,6 +135,7 @@ namespace EPlast.BLL.Services.GoverningBodies
                 Head = governingBodyHead,
                 GoverningBodyAdministration = governingBodyAdmins,
                 Documents = governingBodyDoc,
+                Sectors = governingBodySectors
             };
 
             return governingBodyProfileDto;
@@ -140,12 +146,13 @@ namespace EPlast.BLL.Services.GoverningBodies
             var governingBody = await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(
                 gb => gb.ID == id,
                 source => source
+                    .Include(g => g.GoverningBodySectors)
                     .Include(g => g.GoverningBodyAdministration)
                         .ThenInclude(a => a.AdminType)
                     .Include(g => g.GoverningBodyAdministration)
                         .ThenInclude(a => a.User)
                     .Include(g => g.GoverningBodyDocuments)
-                    .ThenInclude(d => d.GoverningBodyDocumentType));
+                        .ThenInclude(d => d.GoverningBodyDocumentType));
             return _mapper.Map<Organization, GoverningBodyDTO>(governingBody);
         }
 

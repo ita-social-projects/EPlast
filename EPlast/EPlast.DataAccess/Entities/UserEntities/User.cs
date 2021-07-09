@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using EPlast.DataAccess.Entities.Blank;
-using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Entities.Event;
+using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Entities.UserEntities;
 using Microsoft.AspNetCore.Identity;
 
