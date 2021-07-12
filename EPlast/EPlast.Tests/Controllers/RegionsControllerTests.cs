@@ -646,7 +646,7 @@ namespace EPlast.Tests.Controllers
             _regionAdministrationService.Setup(x => x.GetAdministrationAsync(id))
                 .ReturnsAsync(new List<RegionAdministrationDTO>() {new RegionAdministrationDTO() {ID = 30, Status = true}});
             _regionAdministrationService.Setup(x => x.DeleteAdminByIdAsync(30));
-            _regionService.Setup(x => x.DeleteRegionByIdAsync(2));
+            _regionService.Setup(x => x.DeleteRegionByIdAsync(id));
             // Act
             var result = await _regionController.RemoveRegion(id);
             // Assert
