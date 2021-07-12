@@ -638,12 +638,12 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task RemoveAdmin_ReturnsOkResult()
+        public async Task RemoveRegion_ReturnsOkResult()
         {
             // Arrange
             int id = 2;
             // Act
-            var result = await _regionController.RemoveAdmin(id);
+            var result = await _regionController.RemoveRegion(id);
             // Assert
             Assert.IsInstanceOf<OkResult>(result);
         }
