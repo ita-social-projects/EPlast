@@ -198,6 +198,42 @@ namespace EPlast.Tests.Services
                 It.IsAny<string>(), It.IsAny<string>()), Times.Once);
             Assert.AreEqual(id, res);
         }
+        //[Fact]
+        //public void GetDecisionsForTable_ReturnsUserDistinctionsTableObject()
+        //{
+        //    //Arrange
+        //    _decisionService = CreateDecisionService();
+        //    _repository
+        //        .Setup(x => x.Decesion.GetDecisions(It.IsAny<string>(),
+        //            It.IsAny<int>(), It.IsAny<int>()))
+        //        .Returns(new List<DecisionTableObject>());
+
+        //    //Act
+        //    var result = _decisionService.GetDecisionsForTable(It.IsAny<string>(),
+        //        It.IsAny<int>(), It.IsAny<int>());
+
+        //    //Assert
+        //    Assert.NotNull(result);
+        //    Assert.IsType<List<DecisionTableObject>>(result);
+        //}
+
+        [Test]
+        public void GetDocumentsForTable_ReturnsDocumentsTableObject()
+        {
+            //Arange
+            _repository
+                .Setup(x => x.MethodicDocument.GetFirstAsync(It.IsAny<Expression<Func<MethodicDocument, bool>>>(),
+                    It.IsAny<Func<IQueryable<MethodicDocument>, IIncludableQueryable<MethodicDocument, object>>>()))
+                .ReturnsAsync(new MethodicDocument());
+
+            //Act
+            var result = _service.GetDocumentsForTable(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(),
+                It.IsAny<string>());
+
+            //Assert
+            Assert.IsNotNull(result);
+            //Assert.IsInstanceOf<List<MethodicDocumentTableObject>>(result);
+        }
 
         [Test]
         public async Task GetDecisionOrganizationAsyncWithRightParameterTest()
