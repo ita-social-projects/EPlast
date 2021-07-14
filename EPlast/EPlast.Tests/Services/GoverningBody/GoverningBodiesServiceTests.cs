@@ -278,7 +278,7 @@ namespace EPlast.Tests.Services.GoverningBody
                     It.IsAny<Func<IQueryable<GoverningBodyAdministration>, IIncludableQueryable<GoverningBodyAdministration, object>>>()))
                 .ReturnsAsync(new List<GoverningBodyAdministration> { new GoverningBodyAdministration() { Id = fakeId } });
             _mapper
-                .Setup(m => m.Map<IEnumerable<CityAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(It.IsAny<IEnumerable<CityAdministration>>()))
+                .Setup(m => m.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(It.IsAny<IEnumerable<GoverningBodyAdministration>>()))
                 .Returns(GetTestGoverningBodyAdministration());
 
             //Act
@@ -302,7 +302,7 @@ namespace EPlast.Tests.Services.GoverningBody
                     GoverningBody = new DataAccess.Entities.GoverningBody.Organization()
                 } });
             _mapper
-                .Setup(m => m.Map<IEnumerable<CityAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(It.IsAny<IEnumerable<CityAdministration>>()))
+                .Setup(m => m.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(It.IsAny<IEnumerable<GoverningBodyAdministration>>()))
                 .Returns(GetTestGoverningBodyAdministration());
 
             //Act
@@ -326,7 +326,7 @@ namespace EPlast.Tests.Services.GoverningBody
                     GoverningBody = new DataAccess.Entities.GoverningBody.Organization ()
                 } });
             _mapper
-                .Setup(m => m.Map<IEnumerable<CityAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(It.IsAny<IEnumerable<CityAdministration>>()))
+                .Setup(m => m.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(It.IsAny<IEnumerable<GoverningBodyAdministration>>()))
                 .Returns(GetTestGoverningBodyAdministration());
 
             //Act
@@ -345,42 +345,7 @@ namespace EPlast.Tests.Services.GoverningBody
                 new GoverningBodyAdministrationDTO{UserId = Roles.CityHead}
             }.AsEnumerable();
         }
-        private IEnumerable<GoverningBodyAdministration> GetGoverningBodyAdministration()
-        {
-            return new List<GoverningBodyAdministration>
-            {
-                new GoverningBodyAdministration
-                {
-                    UserId = "userId",
-                    Id = 2,
-                    AdminType = new AdminType
-                    {
-                        AdminTypeName = Roles.GoverningBodyHead
-                    },
-                    User = new User()
-                },
-                new GoverningBodyAdministration
-                {
-                    UserId = "userId",
-                    Id = 3,
-                    AdminType = new AdminType
-                    {
-                        AdminTypeName = Roles.GoverningBodyHead
-                    },
-                    User = new User()
-                },
-                new GoverningBodyAdministration
-                {
-                    UserId = "userId",
-                    Id = 4,
-                    AdminType = new AdminType
-                    {
-                        AdminTypeName = Roles.GoverningBodyHead
-                    },
-                    User = new User()
-                }
-            }.AsEnumerable();
-        }
+        
         private GoverningBodyDTO CreateGoverningBodyDTO => new GoverningBodyDTO()
         {
             Id = 1,
