@@ -112,6 +112,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="searchedData">Searched Data</param>
         /// <param name="page">Current page on pagination</param>
         /// <param name="pageSize">Number of records per page</param>
+        /// <param name="status">Type of document</param>
         /// <returns>List of UserDocumentsTableObject</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("DocumentsForTable")]
