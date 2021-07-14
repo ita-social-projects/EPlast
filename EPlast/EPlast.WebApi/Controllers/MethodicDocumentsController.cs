@@ -107,6 +107,21 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get all Users Documents
+        /// </summary>
+        /// <param name="searchedData">Searched Data</param>
+        /// <param name="page">Current page on pagination</param>
+        /// <param name="pageSize">Number of records per page</param>
+        /// <returns>List of UserDocumentsTableObject</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("DocumentsForTable")]
+        public IActionResult GetDocumentsForTable(string searchedData, int page, int pageSize, string status)
+        {
+            var documents = _methodicDocService.GetDocumentsForTable(searchedData, page, pageSize, status);
+            return Ok(documents);
+        }
+
+        /// <summary>
         /// Creates new MethodicDocument
         /// </summary>
         /// <param name="documentWrapper">MethodicDocument wrapper</param>
