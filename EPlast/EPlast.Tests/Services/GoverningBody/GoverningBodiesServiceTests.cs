@@ -341,8 +341,8 @@ namespace EPlast.Tests.Services.GoverningBody
         {
             return new List<GoverningBodyAdministrationDTO>
             {
-                new GoverningBodyAdministrationDTO{UserId = Roles.CityHead},
-                new GoverningBodyAdministrationDTO{UserId = Roles.CityHead}
+                new GoverningBodyAdministrationDTO{UserId = Roles.GoverningBodyHead},
+                new GoverningBodyAdministrationDTO{UserId = Roles.GoverningBodyHead}
             }.AsEnumerable();
         }
         
