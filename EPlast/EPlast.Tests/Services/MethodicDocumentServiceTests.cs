@@ -200,6 +200,23 @@ namespace EPlast.Tests.Services
         }
 
         [Test]
+        public void GetDocumentsForTable_ReturnsDocumentsTableObject()
+        {
+            //Arange
+            _repository
+                .Setup(x => x.MethodicDocument.GetFirstAsync(It.IsAny<Expression<Func<MethodicDocument, bool>>>(),
+                    It.IsAny<Func<IQueryable<MethodicDocument>, IIncludableQueryable<MethodicDocument, object>>>()))
+                .ReturnsAsync(new MethodicDocument());
+
+            //Act
+            var result = _service.GetDocumentsForTable(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(),
+                It.IsAny<string>());
+
+            //Assert
+            Assert.IsNotNull(result);
+        }
+
+        [Test]
         public async Task GetDecisionOrganizationAsyncWithRightParameterTest()
         {
             //Arrange
