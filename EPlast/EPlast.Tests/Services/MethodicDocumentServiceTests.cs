@@ -198,24 +198,6 @@ namespace EPlast.Tests.Services
                 It.IsAny<string>(), It.IsAny<string>()), Times.Once);
             Assert.AreEqual(id, res);
         }
-        //[Fact]
-        //public void GetDecisionsForTable_ReturnsUserDistinctionsTableObject()
-        //{
-        //    //Arrange
-        //    _decisionService = CreateDecisionService();
-        //    _repository
-        //        .Setup(x => x.Decesion.GetDecisions(It.IsAny<string>(),
-        //            It.IsAny<int>(), It.IsAny<int>()))
-        //        .Returns(new List<DecisionTableObject>());
-
-        //    //Act
-        //    var result = _decisionService.GetDecisionsForTable(It.IsAny<string>(),
-        //        It.IsAny<int>(), It.IsAny<int>());
-
-        //    //Assert
-        //    Assert.NotNull(result);
-        //    Assert.IsType<List<DecisionTableObject>>(result);
-        //}
 
         [Test]
         public void GetDocumentsForTable_ReturnsDocumentsTableObject()
@@ -232,7 +214,6 @@ namespace EPlast.Tests.Services
 
             //Assert
             Assert.IsNotNull(result);
-            //Assert.IsInstanceOf<List<MethodicDocumentTableObject>>(result);
         }
 
         [Test]
