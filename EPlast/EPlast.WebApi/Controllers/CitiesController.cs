@@ -172,7 +172,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">City not found</response>
         [HttpGet("Documents/{cityId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetDocuments(int cityId)
         {
             var cityProfileDto = await _cityService.GetCityDocumentsAsync(cityId);
