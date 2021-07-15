@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EPlast.BLL.ExtensionMethods;
 
+
 namespace EPlast.BLL.Services
 {
     public class MethodicDocumentService : IMethodicDocumentService
@@ -94,6 +95,12 @@ namespace EPlast.BLL.Services
                  Text = MethodicDocumentType.GetDescription()
              }).ToList();
         }
+
+        public IEnumerable<MethodicDocumentTableObject> GetDocumentsForTable(string searchedData, int page, int pageSize, string status)
+        {
+            return _repoWrapper.MethodicDocument.GetMethodicDocuments(searchedData, page, pageSize, status);
+        }
+
 
         public async Task<IEnumerable<GoverningBodyDTO>> GetGoverningBodyListAsync()
         {
