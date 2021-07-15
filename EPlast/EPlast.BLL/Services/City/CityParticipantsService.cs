@@ -174,7 +174,7 @@ namespace EPlast.BLL.Services.City
 
         public async Task<IEnumerable<CityAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId)
         {
-            var admins = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.UserId == UserId && (a.EndDate > DateTime.Now || a.EndDate == null),
+            var admins = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.UserId == UserId && a.Status,
                  include:
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.City)
                  );

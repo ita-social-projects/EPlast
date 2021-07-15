@@ -146,7 +146,7 @@ namespace EPlast.BLL.Services.Region
 
         public async Task<IEnumerable<RegionAdministrationDTO>> GetUsersAdministrations(string userId)
         {
-            var secretaries = await _repoWrapper.RegionAdministration.GetAllAsync(a => a.UserId == userId && (a.EndDate > DateTime.Now || a.EndDate == null),
+            var secretaries = await _repoWrapper.RegionAdministration.GetAllAsync(a => a.UserId == userId && a.Status,
                 include: source => source
                  .Include(r => r.User)
                  .Include(r => r.Region)
