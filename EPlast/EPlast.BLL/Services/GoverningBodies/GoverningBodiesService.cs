@@ -193,5 +193,41 @@ namespace EPlast.BLL.Services.GoverningBodies
         {
             return await _securityModel.GetUserAccessAsync(userId);
         }
+
+        public async Task<IEnumerable<GoverningBodyAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId)
+        {
+            var admins = await _repoWrapper.GoverningBodyAdministration.GetAllAsync(a => a.UserId == UserId  && a.Status,
+                 include:
+                 source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.GoverningBody)
+                 );
+
+            foreach (var admin in admins)
+            {
+                if (admin.GoverningBody != null)
+                {
+                    admin.GoverningBody.GoverningBodyAdministration = null;
+                }
+            }
+
+            return _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(admins);
+        }
+
+        public async Task<IEnumerable<GoverningBodyAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string UserId)
+        {
+            var admins = await _repoWrapper.GoverningBodyAdministration.GetAllAsync(a => a.UserId == UserId && a.EndDate < DateTime.Now,
+                 include:
+                 source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.GoverningBody)
+                 );
+
+            foreach (var admin in admins)
+            {
+                if (admin.GoverningBody != null)
+                {
+                    admin.GoverningBody.GoverningBodyAdministration = null;
+                }
+            }
+
+            return _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(admins);
+        }
     }
 }
