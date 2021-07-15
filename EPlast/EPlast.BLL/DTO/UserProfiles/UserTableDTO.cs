@@ -7,7 +7,6 @@ namespace EPlast.BLL.DTO
     {
         public ShortUserInformationDTO User { get; set; }
         public string ID { get; set; }
-        public long UserProfileId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTime? Birthday { get; set; }

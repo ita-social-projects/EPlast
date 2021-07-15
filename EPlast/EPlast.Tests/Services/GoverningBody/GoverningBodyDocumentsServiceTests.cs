@@ -44,7 +44,8 @@ namespace EPlast.Tests.Services.GoverningBody
         {
             // Arrange
             _repoWrapper
-                .Setup(r => r.GoverningBodyDocumentType.GetAllAsync(It.IsAny<Expression<Func<GoverningBodyDocumentType, bool>>>(),
+                .Setup(r => r.GoverningBodyDocumentType.GetAllAsync(
+                    It.IsAny<Expression<Func<GoverningBodyDocumentType, bool>>>(),
                     It.IsAny<Func<IQueryable<GoverningBodyDocumentType>, IIncludableQueryable<GoverningBodyDocumentType, object>>>()))
                 .ReturnsAsync(new List<GoverningBodyDocumentType> { new GoverningBodyDocumentType { Id = 1 } });
 

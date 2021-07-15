@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using EPlast.DataAccess.Entities.GoverningBody;
 
 namespace EPlast.DataAccess.Entities
 {

@@ -4,8 +4,8 @@ using EPlast.DataAccess.Repositories.Interfaces.Club;
 using EPlast.DataAccess.Repositories.Interfaces.Events;
 using EPlast.DataAccess.Repositories.Interfaces.Region;
 using System.Threading.Tasks;
-using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories.Interfaces.GoverningBody;
+using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Sector;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -59,6 +59,10 @@ namespace EPlast.DataAccess.Repositories
         IGoverningBodyAdministrationRepository GoverningBodyAdministration { get; }
         IGoverningBodyDocumentsRepository GoverningBodyDocuments { get; }
         IGoverningBodyDocumentTypeRepository GoverningBodyDocumentType { get; }
+        ISectorRepository GoverningBodySector { get; }
+        ISectorAdministrationRepository GoverningBodySectorAdministration { get; }
+        ISectorDocumentsRepository GoverningBodySectorDocuments { get; }
+        ISectorDocumentTypeRepository GoverningBodySectorDocumentType { get; }
         IParticipantRepository Participant { get; }
         IParticipantStatusRepository ParticipantStatus { get; }
         IPlastDegreeRepository PlastDegrees { get; }

@@ -86,17 +86,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
             // Assert
             Assert.False(result);
         }
-
-        [Fact]
-        public async Task CheckCreatedNullReferenceException()
-        {
-            // Arrange
-            _repositoryWrapper.Setup(r => r.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(), null))
-                .ReturnsAsync((DatabaseEntities.City)null);
-
-            // Act & Assert
-            await Assert.ThrowsAsync<NullReferenceException>(() => _annualReportService.CheckCreated(It.IsAny<User>(), It.IsAny<int>()));
-        }
+        
 
         [Fact]
         public async Task CheckCreatedTrue()

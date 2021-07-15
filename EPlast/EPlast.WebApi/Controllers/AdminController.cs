@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -224,17 +225,11 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("Profiles")]
         public async Task<IActionResult> GetUsersTable([FromQuery] TableFilterParameters tableFilterParameters)
         {
-            var tuple = await _adminService.GetUsersTableAsync(tableFilterParameters.Page, tableFilterParameters.PageSize, tableFilterParameters.Tab,
-                              tableFilterParameters.Regions, tableFilterParameters.Cities, tableFilterParameters.Clubs, tableFilterParameters.Degrees, tableFilterParameters.SearchData);
+            var tuple = await _adminService.GetUsersTableAsync(tableFilterParameters);
             var users = tuple.Item1;
             var usersCount = tuple.Item2;
-            var tableViewModel = new AdminTypeViewModel()
-            {
-                Total = usersCount,
-                Users = users
-            };
 
-            return Ok(tableViewModel);
+            return StatusCode(StatusCodes.Status200OK, new {users=users, total=usersCount});
         }
 
         /// <summary>
