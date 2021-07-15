@@ -30,7 +30,7 @@ namespace EPlast.Tests.Services.GoverningBody
         private Mock<IGoverningBodyBlobStorageRepository> _blobStorage;
         private Mock<ISecurityModel> _securityModel;
         private protected Mock<UserManager<User>> _userManager;
-        private readonly int fakeId = 1;
+        private readonly int testId = 1;
 
         [SetUp]
         public void SetUp()
@@ -276,7 +276,7 @@ namespace EPlast.Tests.Services.GoverningBody
             _repoWrapper
                 .Setup(r => r.GoverningBodyAdministration.GetAllAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<GoverningBodyAdministration>, IIncludableQueryable<GoverningBodyAdministration, object>>>()))
-                .ReturnsAsync(new List<GoverningBodyAdministration> { new GoverningBodyAdministration() { Id = fakeId } });
+                .ReturnsAsync(new List<GoverningBodyAdministration> { new GoverningBodyAdministration() { Id = testId } });
             _mapper
                 .Setup(m => m.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(It.IsAny<IEnumerable<GoverningBodyAdministration>>()))
                 .Returns(GetTestGoverningBodyAdministration());
@@ -298,7 +298,7 @@ namespace EPlast.Tests.Services.GoverningBody
                     It.IsAny<Func<IQueryable<GoverningBodyAdministration>, IIncludableQueryable<GoverningBodyAdministration, object>>>()))
                 .ReturnsAsync(new List<GoverningBodyAdministration> { new GoverningBodyAdministration()
                 {
-                    Id = fakeId,
+                    Id = testId,
                     GoverningBody = new DataAccess.Entities.GoverningBody.Organization()
                 } });
             _mapper
@@ -322,7 +322,7 @@ namespace EPlast.Tests.Services.GoverningBody
                     It.IsAny<Func<IQueryable<GoverningBodyAdministration>, IIncludableQueryable<GoverningBodyAdministration, object>>>()))
                 .ReturnsAsync(new List<GoverningBodyAdministration> { new GoverningBodyAdministration()
                 {
-                    Id = fakeId,
+                    Id = testId,
                     GoverningBody = new DataAccess.Entities.GoverningBody.Organization ()
                 } });
             _mapper

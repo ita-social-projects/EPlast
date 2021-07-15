@@ -309,7 +309,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(new GoverningBodyAdministrationDTO());
 
             // Act
-            var result = await _governingBodiesController.RemoveAdmin(FakeId);
+            var result = await _governingBodiesController.RemoveAdmin(TestId);
 
             // Assert
             _logger.Verify();
@@ -352,7 +352,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(new GoverningBodyViewModel());
 
             // Act
-            var result = await _governingBodiesController.GetDocuments(FakeId);
+            var result = await _governingBodiesController.GetDocuments(TestId);
 
             // Assert
             Assert.NotNull(result);
@@ -430,7 +430,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
 
             // Act
-            var result = await _governingBodiesController.RemoveDocument(FakeId);
+            var result = await _governingBodiesController.RemoveDocument(TestId);
 
             // Assert
             Assert.NotNull(result);
@@ -446,7 +446,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(It.IsAny<IEnumerable<GoverningBodyAdministrationDTO>>());
            
             // Act
-            var result = await _governingBodiesController.GetUserAdministrations(GetStringFakeId());
+            var result = await _governingBodiesController.GetUserAdministrations(GetStringTestId());
 
             // Assert
             Assert.NotNull(result);
@@ -462,7 +462,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(It.IsAny<IEnumerable<GoverningBodyAdministrationDTO>>());
            
             // Act
-            var result = await _governingBodiesController.GetUserPreviousAdministrations(GetStringFakeId());
+            var result = await _governingBodiesController.GetUserPreviousAdministrations(GetStringTestId());
 
             // Assert
             Assert.NotNull(result);
@@ -470,9 +470,9 @@ namespace EPlast.Tests.Controllers
         }
 
 
-        private const int FakeId = 3;
+        private const int TestId = 3;
 
-        private string GetStringFakeId()
+        private string GetStringTestId()
         {
             return "1";
         }

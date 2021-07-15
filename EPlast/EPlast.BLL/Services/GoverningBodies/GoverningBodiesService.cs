@@ -196,7 +196,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
         public async Task<IEnumerable<GoverningBodyAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId)
         {
-            var admins = await _repoWrapper.GoverningBodyAdministration.GetAllAsync(a => a.UserId == UserId && (a.EndDate > DateTime.Now || a.EndDate == null),
+            var admins = await _repoWrapper.GoverningBodyAdministration.GetAllAsync(a => a.UserId == UserId  && a.Status,
                  include:
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.GoverningBody)
                  );
@@ -221,7 +221,10 @@ namespace EPlast.BLL.Services.GoverningBodies
 
             foreach (var admin in admins)
             {
-                admin.GoverningBody.GoverningBodyAdministration = null;
+                if (admin.GoverningBody != null)
+                {
+                    admin.GoverningBody.GoverningBodyAdministration = null;
+                }
             }
 
             return _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(admins);
