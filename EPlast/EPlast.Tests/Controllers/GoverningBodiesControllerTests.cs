@@ -21,7 +21,7 @@ namespace EPlast.Tests.Controllers
         private Mock<IGoverningBodyDocumentsService> _governingBodyDocumentsService;
         private Mock<IMapper> _mapper;
         private Mock<ILoggerService<GoverningBodiesController>> _logger;
-        private GoverningBodiesController _controller;
+        private GoverningBodiesController _governingBodiesController;
 
         [SetUp]
         public void SetUp()
@@ -31,7 +31,7 @@ namespace EPlast.Tests.Controllers
             _governingBodyDocumentsService = new Mock<IGoverningBodyDocumentsService>();
             _logger = new Mock<ILoggerService<GoverningBodiesController>>();
             _mapper = new Mock<IMapper>();
-            _controller = new GoverningBodiesController(
+            _governingBodiesController = new GoverningBodiesController(
                 _governingBodiesService.Object,
                 _logger.Object,
                 _governingBodyAdministrationService.Object,
@@ -49,7 +49,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(x => x.GetGoverningBodiesListAsync()).ReturnsAsync(list);
 
             //Act
-            var result = await _controller.GetGoverningBodies();
+            var result = await _governingBodiesController.GetGoverningBodies();
             var resultValue = (result as ObjectResult)?.Value;
 
             //Assert
@@ -63,10 +63,10 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             var testDTO = CreateGoverningBodyDTO;
-            _controller.ModelState.AddModelError("NameError", "Required");
+            _governingBodiesController.ModelState.AddModelError("NameError", "Required");
 
             // Act
-            var result = await _controller.Create(testDTO);
+            var result = await _governingBodiesController.Create(testDTO);
 
             // Assert
             Assert.NotNull(result);
@@ -81,7 +81,7 @@ namespace EPlast.Tests.Controllers
             _governingBodiesService.Setup(x => x.CreateAsync(It.IsAny<GoverningBodyDTO>())).ReturnsAsync(serviceReturnedId);
 
             // Act
-            var result = await _controller.Create(testDTO);
+            var result = await _governingBodiesController.Create(testDTO);
             var resultObject = result as OkObjectResult;
 
             // Assert
@@ -95,10 +95,10 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             var testDTO = CreateGoverningBodyDTO;
-            _controller.ModelState.AddModelError("NameError", "Required");
+            _governingBodiesController.ModelState.AddModelError("NameError", "Required");
 
             // Act
-            var result = await _controller.Edit(testDTO);
+            var result = await _governingBodiesController.Edit(testDTO);
 
             // Assert
             Assert.NotNull(result);
@@ -113,7 +113,7 @@ namespace EPlast.Tests.Controllers
             _governingBodiesService = new Mock<IGoverningBodiesService>();
 
             // Act
-            var result = await _controller.Edit(testDTO);
+            var result = await _governingBodiesController.Edit(testDTO);
 
             // Assert
             Assert.NotNull(result);
@@ -127,7 +127,7 @@ namespace EPlast.Tests.Controllers
             _governingBodiesService.Setup(x => x.GetLogoBase64Async(It.IsAny<string>())).ReturnsAsync(logo64Path);
 
             //Act
-            var result = await _controller.GetPhotoBase64(logopath);
+            var result = await _governingBodiesController.GetPhotoBase64(logopath);
             var resultObject = result as OkObjectResult;
 
             //Assert
@@ -140,7 +140,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetPhotoBase64_NullGot_Test(string logopath, string logo64Path)
         {
             //Act
-            var result = await _controller.GetPhotoBase64(logopath);
+            var result = await _governingBodiesController.GetPhotoBase64(logopath);
 
             //Assert
             Assert.NotNull(result);
@@ -158,7 +158,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(new GoverningBodyViewModel { Id = CreateGoverningBodyProfileDto.GoverningBody.Id });
 
             //Act
-            var result = await _controller.GetProfile(governingBodyid);
+            var result = await _governingBodiesController.GetProfile(governingBodyid);
             var resultValue = (result as OkObjectResult)?.Value as GoverningBodyViewModel;
 
             //Assert
@@ -175,7 +175,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(null as GoverningBodyProfileDTO);
 
             //Act
-            var result = await _controller.GetProfile(governingBodyid);
+            var result = await _governingBodiesController.GetProfile(governingBodyid);
 
             //Assert
             Assert.NotNull(result);
@@ -186,7 +186,7 @@ namespace EPlast.Tests.Controllers
         public async Task Remove_Test(int gbId)
         {
             //Act
-            var result = await _controller.Remove(gbId);
+            var result = await _governingBodiesController.Remove(gbId);
 
             //Assert
             Assert.NotNull(result);
@@ -204,7 +204,7 @@ namespace EPlast.Tests.Controllers
             _governingBodiesService.Setup(x => x.GetUserAccessAsync(It.IsAny<string>())).ReturnsAsync(dict);
 
             //Act
-            var result = await _controller.GetUserAccess(userId);
+            var result = await _governingBodiesController.GetUserAccess(userId);
             var resultValue = (result as OkObjectResult).Value as Dictionary<string, bool>;
 
             //Assert
@@ -224,7 +224,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(new GoverningBodyViewModel());
 
             // Act
-            var result = await _controller.GetAdmins(id);
+            var result = await _governingBodiesController.GetAdmins(id);
 
             // Assert
             Assert.NotNull(result);
@@ -243,7 +243,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(new GoverningBodyViewModel());
 
             // Act
-            var result = await _controller.GetAdmins(id);
+            var result = await _governingBodiesController.GetAdmins(id);
             var resultValue = (result as OkObjectResult)?.Value;
 
             // Assert
@@ -264,7 +264,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
 
             // Act
-            var result = await _controller.AddAdmin(new GoverningBodyAdministrationDTO { AdminType = new AdminTypeDTO() });
+            var result = await _governingBodiesController.AddAdmin(new GoverningBodyAdministrationDTO { AdminType = new AdminTypeDTO() });
             var resultValue = (result as OkObjectResult)?.Value;
 
             // Assert
@@ -286,7 +286,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
 
             // Act
-            var result = await _controller.EditAdmin(new GoverningBodyAdministrationDTO { AdminType = new AdminTypeDTO() });
+            var result = await _governingBodiesController.EditAdmin(new GoverningBodyAdministrationDTO { AdminType = new AdminTypeDTO() });
             var resultValue = (result as OkObjectResult)?.Value;
 
             // Assert
@@ -309,7 +309,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(new GoverningBodyAdministrationDTO());
 
             // Act
-            var result = await _controller.RemoveAdmin(FakeId);
+            var result = await _governingBodiesController.RemoveAdmin(TestId);
 
             // Assert
             _logger.Verify();
@@ -330,7 +330,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(new GoverningBodyViewModel());
 
             // Act
-            var result = await _controller.GetDocuments(id);
+            var result = await _governingBodiesController.GetDocuments(id);
             var resultValue = (result as OkObjectResult)?.Value;
 
             // Assert
@@ -352,7 +352,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(new GoverningBodyViewModel());
 
             // Act
-            var result = await _controller.GetDocuments(FakeId);
+            var result = await _governingBodiesController.GetDocuments(TestId);
 
             // Assert
             Assert.NotNull(result);
@@ -368,7 +368,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(new List<GoverningBodyDocumentTypeDTO> { new GoverningBodyDocumentTypeDTO() });
 
             // Act
-            var result = await _controller.GetDocumentTypesAsync();
+            var result = await _governingBodiesController.GetDocumentTypesAsync();
             var resultValue = (result as OkObjectResult)?.Value;
 
             // Assert
@@ -387,7 +387,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(fileName);
 
             // Act
-            var result = await _controller.GetFileBase64(fileName);
+            var result = await _governingBodiesController.GetFileBase64(fileName);
             var resultValue = (result as OkObjectResult)?.Value;
 
             // Assert
@@ -410,7 +410,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
 
             // Act
-            var result = await _controller.AddDocument(new GoverningBodyDocumentsDTO());
+            var result = await _governingBodiesController.AddDocument(new GoverningBodyDocumentsDTO());
             var resultValue = (result as OkObjectResult)?.Value;
 
             // Assert
@@ -430,15 +430,52 @@ namespace EPlast.Tests.Controllers
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
 
             // Act
-            var result = await _controller.RemoveDocument(FakeId);
+            var result = await _governingBodiesController.RemoveDocument(TestId);
 
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkResult>(result);
         }
 
-        private const int FakeId = 3;
+        [Test]
+        public async Task GetUserAdministrations_Valid_Test()
+        {
+            // Arrange
+            _governingBodiesService
+                .Setup(c => c.GetAdministrationsOfUserAsync(It.IsAny<string>()))
+                .ReturnsAsync(It.IsAny<IEnumerable<GoverningBodyAdministrationDTO>>());
+           
+            // Act
+            var result = await _governingBodiesController.GetUserAdministrations(GetStringTestId());
 
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetUserPreviousAdministrations_Valid_Test()
+        {
+            // Arrange
+            _governingBodiesService
+                .Setup(c => c.GetPreviousAdministrationsOfUserAsync(It.IsAny<string>()))
+                .ReturnsAsync(It.IsAny<IEnumerable<GoverningBodyAdministrationDTO>>());
+           
+            // Act
+            var result = await _governingBodiesController.GetUserPreviousAdministrations(GetStringTestId());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+
+        private const int TestId = 3;
+
+        private string GetStringTestId()
+        {
+            return "1";
+        }
         private GoverningBodyDTO CreateGoverningBodyDTO => new GoverningBodyDTO()
         {
             Id = 1,

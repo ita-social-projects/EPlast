@@ -161,7 +161,7 @@ namespace EPlast.BLL.Services.Club
 
         public async Task<IEnumerable<ClubAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId)
         {
-            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == UserId && (a.EndDate > DateTime.Now || a.EndDate == null),
+            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == UserId && a.Status,
                  include:
                  source => source.Include(c => c.User).Include(a => a.Club).Include(c => c.AdminType)
                  );
