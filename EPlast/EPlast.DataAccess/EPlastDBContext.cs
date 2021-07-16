@@ -45,6 +45,7 @@ namespace EPlast.DataAccess
         public DbSet<ClubAnnualReportTableObject> ClubAnnualReportTableObjects { get; set; }
         public DbSet<RegionAnnualReportTableObject> RegionAnnualReportTableObjects { get; set; }
         public DbSet<UserDistinctionsTableObject> UserDistinctionsTableObject { get; set; }
+        public DbSet<MethodicDocumentTableObject> MethodicDocumentTableObjects { get; set; }
         public DbSet<UserPrecautionsTableObject> UserPrecautionsTableObject { get; set; }
         public DbSet<DecisionTableObject> DecisionTableObject { get; set; }
         public DbSet<RegionMembersInfoTableObject> RegionMembersInfoTableObjects { get; set; }
@@ -61,6 +62,7 @@ namespace EPlast.DataAccess
             modelBuilder.Entity<UserPrecautionsTableObject>().HasNoKey();
             modelBuilder.Entity<DecisionTableObject>().HasNoKey();
             modelBuilder.Entity<RegionMembersInfoTableObject>().HasNoKey();
+            modelBuilder.Entity<MethodicDocumentTableObject>().HasNoKey();
 
             modelBuilder.Entity<Event>()
                 .HasKey(x => x.ID);

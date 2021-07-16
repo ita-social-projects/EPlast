@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.Resources;
+using System.Linq;
 
 namespace EPlast.BLL.Services.Region
 {
@@ -146,7 +147,7 @@ namespace EPlast.BLL.Services.Region
 
         public async Task<IEnumerable<RegionAdministrationDTO>> GetUsersAdministrations(string userId)
         {
-            var secretaries = await _repoWrapper.RegionAdministration.GetAllAsync(a => a.UserId == userId && (a.EndDate > DateTime.Now || a.EndDate == null),
+            var secretaries = await _repoWrapper.RegionAdministration.GetAllAsync(a => a.UserId == userId && a.Status,
                 include: source => source
                  .Include(r => r.User)
                  .Include(r => r.Region)
@@ -162,7 +163,7 @@ namespace EPlast.BLL.Services.Region
                  .Include(r => r.User)
                  .Include(r => r.Region)
                  .Include(r => r.AdminType));
-            return _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(secretaries);
+            return _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(secretaries).Reverse();
         }
 
         public async Task<RegionAdministrationDTO> GetHead(int regionId)

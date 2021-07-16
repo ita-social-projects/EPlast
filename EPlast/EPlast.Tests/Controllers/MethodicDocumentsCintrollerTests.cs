@@ -10,6 +10,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.Tests.Controllers
 {
@@ -225,6 +226,32 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<List<MethodicDocumentViewModel>>(resultValue);
             Assert.AreEqual(2, methodicDocuments.Count);
         }
+
+       
+
+        [Test]
+        public void GetMetodicDocumentsForTable_ReturnsOkObjectResult()
+        {
+            //Arange
+            _service
+                .Setup(x => x.GetDocumentsForTable(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(),
+                    It.IsAny<string>()))
+                .Returns(new List<MethodicDocumentTableObject>());
+
+            //Act
+            var result = _controller.GetDocumentsForTable(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(),
+                It.IsAny<string>());
+            var resultValue = (result as OkObjectResult)?.Value;
+
+            //Assert
+            _service.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(resultValue);
+            Assert.IsInstanceOf<List<MethodicDocumentTableObject>>(resultValue);
+        }
+
+
 
         [Test]
         public async Task Download_ReturnsOkObjectResult()
