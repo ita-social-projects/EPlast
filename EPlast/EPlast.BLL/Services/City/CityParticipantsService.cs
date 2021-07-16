@@ -222,7 +222,7 @@ namespace EPlast.BLL.Services.City
                 admin.City.CityAdministration = null;
             }
 
-            return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(admins);
+            return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(admins).Reverse();
         }
 
         /// <inheritdoc />

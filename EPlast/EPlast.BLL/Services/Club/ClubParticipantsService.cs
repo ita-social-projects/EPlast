@@ -190,7 +190,7 @@ namespace EPlast.BLL.Services.Club
                 admin.Club.ClubAdministration = null;
             }
 
-            return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationDTO>>(admins);
+            return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationDTO>>(admins).Reverse();
         }
 
         public async Task<IEnumerable<ClubAdministrationStatusDTO>> GetAdministrationStatuses(string UserId)
