@@ -360,7 +360,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="followerId">The id of the follower</param>
         /// <response code="200">Successful operation</response>
         /// <response code="404">Follower not found</response>
-        [HttpDelete("GetFollower/{followerId}")]
+        [HttpGet("GetFollower/{followerId}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
         public async Task<IActionResult> GetFollower(int followerId)
         {

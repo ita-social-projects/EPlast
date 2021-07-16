@@ -3201,13 +3201,6 @@ namespace EPlast.DataAccess.Migrations
                         .IsRequired();
                 });
 
-                    b.HasOne("EPlast.DataAccess.Entities.Organization", "GoverningBody")
-                        .WithMany()
-                        .HasForeignKey("GoverningBodyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("EPlast.DataAccess.Entities.MembersStatistic", b =>
                 {
                     b.HasOne("EPlast.DataAccess.Entities.AnnualReport", "AnnualReport")

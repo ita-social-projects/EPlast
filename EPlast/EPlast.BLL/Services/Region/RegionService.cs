@@ -134,7 +134,7 @@ namespace EPlast.BLL.Services.Region
         {
             var followers = await _repoWrapper.RegionFollowers.GetAllAsync(d => d.RegionId == regionId);
             return _mapper.Map<IEnumerable<RegionFollowers>, IEnumerable<RegionFollowerDTO>>(followers);
-        }
+            }
 
         public async Task<RegionFollowerDTO> GetFollowerAsync(int followerId)
         {
