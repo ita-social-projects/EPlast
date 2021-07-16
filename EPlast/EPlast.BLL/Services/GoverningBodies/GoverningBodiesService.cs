@@ -227,7 +227,7 @@ namespace EPlast.BLL.Services.GoverningBodies
                 }
             }
 
-            return _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(admins);
+            return _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(admins).Reverse();
         }
     }
 }
