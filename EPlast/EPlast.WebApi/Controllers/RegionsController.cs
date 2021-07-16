@@ -379,7 +379,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("getDocs/{regionId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetRegionDocs(int regionId)
         {
             var secretaries = await _regionService.GetRegionDocsAsync(regionId);
