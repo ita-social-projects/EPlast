@@ -39,7 +39,8 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                 AdminTypeId = adminType.ID,
                 SectorId = sectorAdministrationDto.SectorId,
                 UserId = sectorAdministrationDto.UserId,
-                Status = sectorAdministrationDto.Status
+                Status = sectorAdministrationDto.Status,
+                WorkEmail = sectorAdministrationDto.WorkEmail
             };
 
             var user = await _userManager.FindByIdAsync(sectorAdministrationDto.UserId);
@@ -65,6 +66,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             {
                 admin.StartDate = sectorAdministrationDto.StartDate ?? DateTime.Now;
                 admin.EndDate = sectorAdministrationDto.EndDate;
+                admin.WorkEmail = sectorAdministrationDto.WorkEmail;
 
                 _repositoryWrapper.GoverningBodySectorAdministration.Update(admin);
                 await _repositoryWrapper.SaveAsync();
