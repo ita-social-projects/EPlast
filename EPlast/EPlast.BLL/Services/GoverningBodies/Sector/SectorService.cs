@@ -153,7 +153,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                 return null;
             }
 
-            var sectorDocuments = sector.Documents.ToList();
+            var sectorDocuments = SortDocumentsBySubmitDate(sector.Documents);
 
             var sectorProfileDto = new SectorProfileDTO()
             {
@@ -162,6 +162,26 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             };
 
             return sectorProfileDto;
+        }
+
+        private IEnumerable<SectorDocumentsDTO> SortDocumentsBySubmitDate(IEnumerable<SectorDocumentsDTO> documents)
+        {
+            var sortedDocuments = documents.OrderBy(doc => doc.SubmitDate).ToList();
+
+            int lastDocWithoutDate = 0;
+            while (lastDocWithoutDate < sortedDocuments.Count && sortedDocuments[lastDocWithoutDate].SubmitDate == null)
+            {
+                ++lastDocWithoutDate;
+            }
+
+            if (lastDocWithoutDate != sortedDocuments.Count)
+            {
+                var docsWithNullDate = sortedDocuments.GetRange(0, lastDocWithoutDate);
+                sortedDocuments.RemoveRange(0, lastDocWithoutDate);
+                sortedDocuments.AddRange(docsWithNullDate);
+            }
+
+            return sortedDocuments;
         }
 
         public async Task<Dictionary<string, bool>> GetUserAccessAsync(string userId)

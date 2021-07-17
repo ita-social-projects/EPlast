@@ -182,7 +182,28 @@ namespace EPlast.BLL.Services.Region
         public async Task<IEnumerable<RegionDocumentDTO>> GetRegionDocsAsync(int regionId)
         {
             var documents = await _repoWrapper.RegionDocument.GetAllAsync(d => d.RegionId == regionId);
-            return _mapper.Map<IEnumerable<RegionDocuments>, IEnumerable<RegionDocumentDTO>>(documents);
+            var documentDtos = _mapper.Map<IEnumerable<RegionDocuments>, IEnumerable<RegionDocumentDTO>>(documents);
+            return SortDocumentsBySubmitDate(documentDtos);
+        }
+
+        private IEnumerable<RegionDocumentDTO> SortDocumentsBySubmitDate(IEnumerable<RegionDocumentDTO> documents)
+        {
+            var sortedDocuments = documents.OrderBy(doc => doc.SubmitDate).ToList();
+
+            int lastDocWithoutDate = 0;
+            while (lastDocWithoutDate < sortedDocuments.Count && sortedDocuments[lastDocWithoutDate].SubmitDate == null)
+            {
+                ++lastDocWithoutDate;
+            }
+
+            if (lastDocWithoutDate != sortedDocuments.Count)
+            {
+                var docsWithNullDate = sortedDocuments.GetRange(0, lastDocWithoutDate);
+                sortedDocuments.RemoveRange(0, lastDocWithoutDate);
+                sortedDocuments.AddRange(docsWithNullDate);
+            }
+
+            return sortedDocuments;
         }
 
         public async Task<string> DownloadFileAsync(string fileName)

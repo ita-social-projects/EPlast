@@ -178,7 +178,7 @@ namespace EPlast.BLL.Services.GoverningBodies
                 return null;
             }
 
-            var governingBodyDoc = governingBody.GoverningBodyDocuments.ToList();
+            var governingBodyDoc = SortDocumentsBySubmitDate(governingBody.GoverningBodyDocuments);
 
             var governingBodyProfileDto = new GoverningBodyProfileDTO
             {
@@ -187,6 +187,26 @@ namespace EPlast.BLL.Services.GoverningBodies
             };
 
             return governingBodyProfileDto;
+        }
+
+        private IEnumerable<GoverningBodyDocumentsDTO> SortDocumentsBySubmitDate(IEnumerable<GoverningBodyDocumentsDTO> documents)
+        {
+            var sortedDocuments = documents.OrderBy(doc => doc.SubmitDate).ToList();
+
+            int lastDocWithoutDate = 0;
+            while (lastDocWithoutDate < sortedDocuments.Count && sortedDocuments[lastDocWithoutDate].SubmitDate == null)
+            {
+                ++lastDocWithoutDate;
+            }
+
+            if (lastDocWithoutDate != sortedDocuments.Count)
+            {
+                var docsWithNullDate = sortedDocuments.GetRange(0, lastDocWithoutDate);
+                sortedDocuments.RemoveRange(0, lastDocWithoutDate);
+                sortedDocuments.AddRange(docsWithNullDate);
+            }
+
+            return sortedDocuments;
         }
 
         public async Task<Dictionary<string, bool>> GetUserAccessAsync(string userId)

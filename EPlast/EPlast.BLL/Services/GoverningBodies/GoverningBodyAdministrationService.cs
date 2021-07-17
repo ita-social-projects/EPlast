@@ -65,6 +65,7 @@ namespace EPlast.BLL.Services.GoverningBodies
             {
                 admin.StartDate = governingBodyAdministrationDto.StartDate ?? DateTime.Now;
                 admin.EndDate = governingBodyAdministrationDto.EndDate;
+                admin.WorkEmail = governingBodyAdministrationDto.WorkEmail;
 
                 _repositoryWrapper.GoverningBodyAdministration.Update(admin);
                 await _repositoryWrapper.SaveAsync();
