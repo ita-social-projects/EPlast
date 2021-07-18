@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO;
 using Microsoft.AspNetCore.Identity;
 using DataAccessRegion = EPlast.DataAccess.Entities;
 using EPlast.Resources;
@@ -183,27 +184,7 @@ namespace EPlast.BLL.Services.Region
         {
             var documents = await _repoWrapper.RegionDocument.GetAllAsync(d => d.RegionId == regionId);
             var documentDtos = _mapper.Map<IEnumerable<RegionDocuments>, IEnumerable<RegionDocumentDTO>>(documents);
-            return SortDocumentsBySubmitDate(documentDtos);
-        }
-
-        private IEnumerable<RegionDocumentDTO> SortDocumentsBySubmitDate(IEnumerable<RegionDocumentDTO> documents)
-        {
-            var sortedDocuments = documents.OrderBy(doc => doc.SubmitDate).ToList();
-
-            int lastDocWithoutDate = 0;
-            while (lastDocWithoutDate < sortedDocuments.Count && sortedDocuments[lastDocWithoutDate].SubmitDate == null)
-            {
-                ++lastDocWithoutDate;
-            }
-
-            if (lastDocWithoutDate != sortedDocuments.Count)
-            {
-                var docsWithNullDate = sortedDocuments.GetRange(0, lastDocWithoutDate);
-                sortedDocuments.RemoveRange(0, lastDocWithoutDate);
-                sortedDocuments.AddRange(docsWithNullDate);
-            }
-
-            return sortedDocuments;
+            return DocumentsSorter<RegionDocumentDTO>.SortDocumentsBySubmitDate(documentDtos);
         }
 
         public async Task<string> DownloadFileAsync(string fileName)

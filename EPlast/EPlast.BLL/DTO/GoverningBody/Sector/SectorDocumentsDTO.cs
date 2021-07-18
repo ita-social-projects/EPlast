@@ -2,7 +2,7 @@
 
 namespace EPlast.BLL.DTO.GoverningBody.Sector
 {
-    public class SectorDocumentsDTO
+    public class SectorDocumentsDTO : IDocumentDTO
     {
         public int Id { get; set; }
         public DateTime? SubmitDate { get; set; }
