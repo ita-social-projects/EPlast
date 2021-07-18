@@ -38,7 +38,8 @@ namespace EPlast.BLL.Services.GoverningBodies
                 AdminTypeId = adminType.ID,
                 GoverningBodyId = governingBodyAdministrationDto.GoverningBodyId,
                 UserId = governingBodyAdministrationDto.UserId,
-                Status = governingBodyAdministrationDto.Status
+                Status = governingBodyAdministrationDto.Status,
+                WorkEmail = governingBodyAdministrationDto.WorkEmail
             };
 
             var user = await _userManager.FindByIdAsync(governingBodyAdministrationDto.UserId);
