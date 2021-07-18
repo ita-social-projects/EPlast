@@ -19,6 +19,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.Resources;
 using System.Text;
+using System.Linq.Expressions;
 
 namespace EPlast.Tests.Controllers
 {
@@ -344,6 +345,72 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<IEnumerable<CityDTO>>(actual);
+        }
+
+        [Test]
+        public async Task GetFollowers_ReturnsOkObjectResult()
+        {
+            // Arrange
+            _regionService.Setup(x => x.GetFollowersAsync(It.IsAny<int>()))
+                .ReturnsAsync(new List<RegionFollowerDTO>());
+            // Act
+            var result = await _regionController.GetFollowers(It.IsAny<int>());
+            var actual = (result as ObjectResult).Value;
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsInstanceOf<IEnumerable<RegionFollowerDTO>>(actual);
+        }
+
+        [Test]
+        public async Task GetFollower_ReturnsOkObjectResult()
+        {
+            // Arrange
+            _regionService.Setup(x => x.GetFollowerAsync(It.IsAny<int>()))
+                .ReturnsAsync(new RegionFollowerDTO());
+            // Act
+            var result = await _regionController.GetFollower(It.IsAny<int>());
+            var actual = (result as ObjectResult).Value;
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsInstanceOf<RegionFollowerDTO>(actual);
+        }
+
+        [Test]
+        public async Task GetFollower_ReturnsNull()
+        {
+            // Arrange
+            RegionFollowerDTO regionFollower = null;
+            _regionService
+                .Setup(x => x.GetFollowerAsync(It.IsAny<int>()))
+                .ReturnsAsync(regionFollower);
+            // Act
+            var result = await _regionController.GetFollower(It.IsAny<int>());
+            // Assert
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task CreateFollower_ReturnsOkObjectResult()
+        {
+            // Arrange
+            RegionFollowerDTO testFollower = new RegionFollowerDTO();
+            _regionService.Setup(x => x.CreateFollowerAsync(It.IsAny<RegionFollowerDTO>()));
+            // Act
+            var result = await _regionController.CreateFollower(testFollower);
+            // Assert
+            Assert.IsInstanceOf<OkResult>(result);
+        }
+
+        [Test]
+        public async Task RemoveFollower_ReturnsOkObjectResult()
+        {
+            // Arrange
+            int id = 1;
+            _regionService.Setup(x => x.RemoveFollowerAsync(It.IsAny<int>()));
+            // Act
+            var result = await _regionController.RemoveFollower(id);
+            // Assert
+            Assert.IsInstanceOf<OkResult>(result);
         }
 
         [Test]
