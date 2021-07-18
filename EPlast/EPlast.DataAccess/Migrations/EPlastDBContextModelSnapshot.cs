@@ -3233,6 +3233,42 @@ namespace EPlast.DataAccess.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBody.Sector.SectorAdministration", b =>
+                {
+                    b.HasOne("EPlast.DataAccess.Entities.AdminType", "AdminType")
+                        .WithMany()
+                        .HasForeignKey("AdminTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EPlast.DataAccess.Entities.GoverningBody.Sector.Sector", "Sector")
+                        .WithMany("Administration")
+                        .HasForeignKey("SectorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EPlast.DataAccess.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBody.Sector.SectorDocuments", b =>
+                {
+                    b.HasOne("EPlast.DataAccess.Entities.GoverningBody.Sector.SectorDocumentType", "SectorDocumentType")
+                        .WithMany("Documents")
+                        .HasForeignKey("SectorDocumentTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EPlast.DataAccess.Entities.GoverningBody.Sector.Sector", "Sector")
+                        .WithMany("Documents")
+                        .HasForeignKey("SectorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("EPlast.DataAccess.Entities.MembersStatistic", b =>
                 {
                     b.HasOne("EPlast.DataAccess.Entities.AnnualReport", "AnnualReport")
