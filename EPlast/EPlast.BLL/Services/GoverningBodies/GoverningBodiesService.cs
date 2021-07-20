@@ -178,7 +178,7 @@ namespace EPlast.BLL.Services.GoverningBodies
                 return null;
             }
 
-            var governingBodyDoc = governingBody.GoverningBodyDocuments.ToList();
+            var governingBodyDoc = DocumentsSorter<GoverningBodyDocumentsDTO>.SortDocumentsBySubmitDate(governingBody.GoverningBodyDocuments);
 
             var governingBodyProfileDto = new GoverningBodyProfileDTO
             {

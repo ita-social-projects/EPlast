@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EPlast.BLL.DTO.Region
 {
-    public class RegionDocumentDTO
+    public class RegionDocumentDTO : IDocumentDTO
     {
             public int ID { get; set; }
             public DateTime? SubmitDate { get; set; }
