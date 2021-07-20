@@ -153,7 +153,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                 return null;
             }
 
-            var sectorDocuments = sector.Documents.ToList();
+            var sectorDocuments = DocumentsSorter<SectorDocumentsDTO>.SortDocumentsBySubmitDate(sector.Documents);
 
             var sectorProfileDto = new SectorProfileDTO()
             {

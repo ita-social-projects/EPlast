@@ -2,7 +2,7 @@
 
 namespace EPlast.BLL.DTO.GoverningBody
 {
-    public class GoverningBodyDocumentsDTO
+    public class GoverningBodyDocumentsDTO : IDocumentDTO
     {
         public int Id { get; set; }
         public DateTime? SubmitDate { get; set; }
