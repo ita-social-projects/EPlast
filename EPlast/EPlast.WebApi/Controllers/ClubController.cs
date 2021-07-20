@@ -348,7 +348,6 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RemoveFollower(int followerId)
         {
-            ////Видалити із прихильників тут додати видалити із історичної прихильника
             User ItFollower = await _userManager.GetUserAsync(User);
             await _clubParticipantsService.UpdateStatusFollowerInHistoryAsync(ItFollower.Id, true, true);
 

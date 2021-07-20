@@ -574,7 +574,7 @@ namespace EPlast.BLL.Services.Club
                 Followers = clubHistoryFollowersDTO.ToList(),
                 Admins = clubDto.ClubAdministration.ToList(),
                 CountUsersPerYear= await GetCountUsersPerYear(clubId),
-                CountdeletedUsersPerYear= await GetCountDeletedUsersPerYear(clubId),
+                CountDeletedUsersPerYear= await GetCountDeletedUsersPerYear(clubId),
             };
             return clubProfileDto;
         }

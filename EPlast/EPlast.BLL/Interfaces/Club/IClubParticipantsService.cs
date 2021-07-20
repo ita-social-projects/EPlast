@@ -106,7 +106,7 @@ namespace EPlast.BLL.Interfaces.Club
         /// <summary>
         /// Add  follower from the Club to history table
         /// </summary>
-        Task AddFollowerInHistoryAsync(int ClubId, string userID);
+        Task AddFollowerInHistoryAsync(int ClubId, string userId);
 
 
         /// <summary>

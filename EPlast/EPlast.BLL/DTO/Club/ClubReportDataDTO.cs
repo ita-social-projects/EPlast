@@ -10,6 +10,6 @@ namespace EPlast.BLL.DTO.Club
         public List<ClubMemberHistoryDTO> Members { get; set; }
         public List<ClubMemberHistoryDTO> Followers { get; set; }
         public int CountUsersPerYear {get;set;}
-        public int CountdeletedUsersPerYear { get; set; }
+        public int CountDeletedUsersPerYear { get; set; }
     }
 }
