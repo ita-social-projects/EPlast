@@ -93,7 +93,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                 Roles.GoverningBodySectorHead : Roles.GoverningBodySectorSecretary;
             await _userManager.RemoveFromRoleAsync(user, role);
 
-            _repositoryWrapper.GoverningBodySectorAdministration.Update(admin);
+            _repositoryWrapper.GoverningBodySectorAdministration.Delete(admin);
             await _repositoryWrapper.SaveAsync();
         }
 
