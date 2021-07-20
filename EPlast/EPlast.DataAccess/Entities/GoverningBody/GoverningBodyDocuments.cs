@@ -1,8 +1,7 @@
-﻿using EPlast.DataAccess.Entities.GoverningBody;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace EPlast.DataAccess.Entities
+namespace EPlast.DataAccess.Entities.GoverningBody
 {
     public class GoverningBodyDocuments
     {

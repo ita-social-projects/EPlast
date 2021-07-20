@@ -22,7 +22,10 @@
         public const string RegionBoardHead = "Голова Краю";
         public const string GoverningBodyHead = "Голова Керівного Органу";
         public const string GoverningBodySecretary = "Діловод Керівного Органу";
+        public const string GoverningBodySectorHead = "Голова Напряму Керівного Органу";
+        public const string GoverningBodySectorSecretary = "Діловод Напряму Керівного Органу";
 
+        public const string AdminAndGoverningBodySectorHead = Admin + "," + GoverningBodySectorHead;
         public const string AdminAndGoverningBodyHead = Admin + "," + GoverningBodyHead;
         public const string DegreeAssignRoles = Admin + "," + PlastHead + "," + EventAdministrator + "," + KurinHead + "," + KurinHeadDeputy + "," + KurinSecretary + "," +
             OkrugaHead + "," + OkrugaHeadDeputy + "," + OkrugaSecretary + "," + CityHead + "," + CityHeadDeputy + "," + CitySecretary;

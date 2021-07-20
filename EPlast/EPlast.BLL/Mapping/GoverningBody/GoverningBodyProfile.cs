@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.GoverningBody
     {
         public GoverningBodyProfile()
         {
-            CreateMap<DatabaseEntities.Organization, GoverningBodyDTO>()
+            CreateMap<DatabaseEntities.GoverningBody.Organization, GoverningBodyDTO>()
                 .ForMember(g => g.GoverningBodyName, o => o.MapFrom(n => n.OrganizationName)).ReverseMap();
         }
     }

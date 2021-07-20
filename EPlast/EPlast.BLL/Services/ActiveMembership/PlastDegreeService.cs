@@ -48,34 +48,43 @@ namespace EPlast.BLL.Services.ActiveMembership
 
             return _mapper.Map<IEnumerable<UserPlastDegreeDTO>>(userPlastDegrees);
         }
-
         /// <inheritdoc />
         public async Task<bool> AddPlastDegreeForUserAsync(UserPlastDegreePostDTO userPlastDegreePostDTO)
         {
             bool isAdded = false;
             var userDto = await _userManagerService.FindByIdAsync(userPlastDegreePostDTO.UserId);
+            var previousDegreeUserPlastDegree = await _repoWrapper.UserPlastDegrees
+                .GetFirstOrDefaultAsync(i => i.UserId == userPlastDegreePostDTO.UserId);
+
+            if (previousDegreeUserPlastDegree != null)
+            {
+                _repoWrapper.UserPlastDegrees.Delete(previousDegreeUserPlastDegree);
+                await _repoWrapper.SaveAsync();
+            }
+
             if (userDto != null)
             {
                 List<UserPlastDegree> userPlastDegrees = _mapper.Map<IEnumerable<UserPlastDegree>>(userDto.UserPlastDegrees).ToList();
                 if (!userPlastDegrees.Any(upd => upd.PlastDegree.Id == userPlastDegreePostDTO.PlastDegreeId))
                 {
                     UserPlastDegree userPlastDegree = _mapper.Map<UserPlastDegree>(userPlastDegreePostDTO);
-                    PlastDegree plastDegree = await _repoWrapper.PlastDegrees.GetFirstOrDefaultAsync(pd => pd.Id == userPlastDegreePostDTO.PlastDegreeId);
+                    PlastDegree plastDegree =
+                        await _repoWrapper.PlastDegrees.GetFirstOrDefaultAsync(pd =>
+                            pd.Id == userPlastDegreePostDTO.PlastDegreeId);
                     if (plastDegree != null)
                     {
                         userPlastDegree.PlastDegree = plastDegree;
-                        await SetDegreeAsCurrent(userPlastDegree.IsCurrent);
                         _repoWrapper.UserPlastDegrees.Attach(userPlastDegree);
                         _repoWrapper.UserPlastDegrees.Create(userPlastDegree);
                         await _repoWrapper.SaveAsync();
                         isAdded = true;
                     }
-
                 }
             }
-
             return isAdded;
         }
+
+
         private async Task SetDegreeAsCurrent(bool IsUserPlastDegreeCurrent)
         {
             if (IsUserPlastDegreeCurrent)

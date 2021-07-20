@@ -7,7 +7,7 @@ namespace EPlast.DataAccess.Entities
     {
         public int ID { get; set; }
 
-        [Required, MaxLength(30, ErrorMessage = "AdminTypeName name cannot exceed 30 characters")]
+        [Required, MaxLength(50, ErrorMessage = "AdminTypeName name cannot exceed 50 characters")]
         public string AdminTypeName { get; set; }
 
         public ICollection<CityAdministration> CityAdministration { get; set; }

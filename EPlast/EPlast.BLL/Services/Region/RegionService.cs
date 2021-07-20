@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO;
 using Microsoft.AspNetCore.Identity;
 using DataAccessRegion = EPlast.DataAccess.Entities;
 using EPlast.Resources;
@@ -182,7 +183,8 @@ namespace EPlast.BLL.Services.Region
         public async Task<IEnumerable<RegionDocumentDTO>> GetRegionDocsAsync(int regionId)
         {
             var documents = await _repoWrapper.RegionDocument.GetAllAsync(d => d.RegionId == regionId);
-            return _mapper.Map<IEnumerable<RegionDocuments>, IEnumerable<RegionDocumentDTO>>(documents);
+            var documentDtos = _mapper.Map<IEnumerable<RegionDocuments>, IEnumerable<RegionDocumentDTO>>(documents);
+            return DocumentsSorter<RegionDocumentDTO>.SortDocumentsBySubmitDate(documentDtos);
         }
 
         public async Task<string> DownloadFileAsync(string fileName)

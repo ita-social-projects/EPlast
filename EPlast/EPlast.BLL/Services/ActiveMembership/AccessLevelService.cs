@@ -34,8 +34,9 @@ namespace EPlast.BLL.Services.ActiveMembership
                 Roles.OkrugaHead,
                 Roles.OkrugaHeadDeputy,
                 Roles.OkrugaSecretary,
-                "Голова Керівного органу",
-                "Діловод Керівного органу"
+                Roles.GoverningBodyHead,
+                Roles.GoverningBodySecretary,
+                Roles.GoverningBodySectorHead
             };
 
             var supporterLevelDegree = "Пласт прият";

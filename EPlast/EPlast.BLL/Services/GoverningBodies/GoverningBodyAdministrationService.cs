@@ -7,6 +7,7 @@ using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities.GoverningBody;
 
 namespace EPlast.BLL.Services.GoverningBodies
 {
@@ -37,7 +38,8 @@ namespace EPlast.BLL.Services.GoverningBodies
                 AdminTypeId = adminType.ID,
                 GoverningBodyId = governingBodyAdministrationDto.GoverningBodyId,
                 UserId = governingBodyAdministrationDto.UserId,
-                Status = governingBodyAdministrationDto.Status
+                Status = governingBodyAdministrationDto.Status,
+                WorkEmail = governingBodyAdministrationDto.WorkEmail
             };
 
             var user = await _userManager.FindByIdAsync(governingBodyAdministrationDto.UserId);
@@ -63,6 +65,7 @@ namespace EPlast.BLL.Services.GoverningBodies
             {
                 admin.StartDate = governingBodyAdministrationDto.StartDate ?? DateTime.Now;
                 admin.EndDate = governingBodyAdministrationDto.EndDate;
+                admin.WorkEmail = governingBodyAdministrationDto.WorkEmail;
 
                 _repositoryWrapper.GoverningBodyAdministration.Update(admin);
                 await _repositoryWrapper.SaveAsync();

@@ -1,4 +1,4 @@
-﻿using EPlast.DataAccess.Entities;
+﻿using EPlast.DataAccess.Entities.GoverningBody;
 
 namespace EPlast.DataAccess.Repositories.Interfaces.GoverningBody
 {

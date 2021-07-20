@@ -21,6 +21,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using EPlast.Resources;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.Admin;
 
 namespace EPlast.Tests.Services
 {
@@ -685,7 +686,7 @@ namespace EPlast.Tests.Services
         }
 
         [TestCase]
-        public async Task UsersTableAsync_ReturnsIEnumerableUserTableDTO()
+        public async Task UsersTableAsync_NullInput_ReturnsIEnumerableUserTableDTO()
         {
             // Arrange
             _repoWrapper
@@ -710,7 +711,7 @@ namespace EPlast.Tests.Services
                 .ReturnsAsync(new List<CityMembers>());
             _repoWrapper
                 .Setup(x => x.AdminType.GetUserTableObjects(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
-                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),It.IsAny<string>())).ReturnsAsync(CreateTuple);
+                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(),It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(CreateTuple);
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(roles);
             _mapper
@@ -718,7 +719,52 @@ namespace EPlast.Tests.Services
                 .Returns(new ShortUserInformationDTO() { ID = Roles.Admin });
 
             // Act
-            var result = await service.GetUsersTableAsync(1, 2, null, null, null, null, null, null);
+            var result = await service.GetUsersTableAsync(new TableFilterParameters(){Page = 1, PageSize = 2, Cities = null, Regions = null, Clubs = null, Degrees = null, Tab = null, FilterRoles = null});
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<UserTableDTO>, int>>(result);
+        }
+
+        [TestCase]
+        public async Task UsersTableAsync_NotNullInput_ReturnsIEnumerableUserTableDTO()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
+               It.IsAny<Func<IQueryable<User>,
+               IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(new List<User>());
+            _repoWrapper
+                .Setup(x => x.City.GetAllAsync(It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
+               It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
+               IIncludableQueryable<DataAccess.Entities.City, object>>>()))
+                .ReturnsAsync(new List<DataAccess.Entities.City>());
+            _repoWrapper
+                 .Setup(x => x.ClubMembers.GetAllAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                It.IsAny<Func<IQueryable<ClubMembers>,
+                IIncludableQueryable<ClubMembers, object>>>()))
+                 .ReturnsAsync(new List<ClubMembers>());
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetAllAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+               It.IsAny<Func<IQueryable<CityMembers>,
+               IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync(new List<CityMembers>());
+            _repoWrapper
+                .Setup(x => x.AdminType.GetUserTableObjects(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
+                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(CreateTuple);
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(roles);
+            _mapper
+                .Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDTO() { ID = Roles.Admin });
+
+            // Act
+            var result = await service.GetUsersTableAsync(new TableFilterParameters()
+            {
+                Page = 1, PageSize = 2, Cities = new List<int> {1}, Regions = new List<int> {1},
+                Clubs = new List<int> {1}, Degrees = new List<int> {1}, Tab = null, FilterRoles = null
+            });
 
             // Assert
             Assert.NotNull(result);
