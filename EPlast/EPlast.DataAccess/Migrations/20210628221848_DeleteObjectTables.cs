@@ -7,12 +7,6 @@ namespace EPlast.DataAccess.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable("UserTableObjects");
-            migrationBuilder.DropTable("AnnualReportTableObjects");
-            migrationBuilder.DropTable("ClubAnnualReportTableObjects");
-            migrationBuilder.DropTable("RegionAnnualReportTableObjects");
-            migrationBuilder.DropTable("UserDistinctionsTableObject");
-            migrationBuilder.DropTable("DecisionTableObject");
-            migrationBuilder.DropTable("UserPrecautionsTableObject");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

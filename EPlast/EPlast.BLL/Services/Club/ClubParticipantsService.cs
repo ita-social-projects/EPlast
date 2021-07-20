@@ -231,7 +231,7 @@ namespace EPlast.BLL.Services.Club
         {
             var oldClubMember = await _repositoryWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(i => i.UserId == userId);
-            if (oldClubMember != null) //Видаляє з прихильників в попередньому курені та з членів
+            if (oldClubMember != null) 
             {
                 _repositoryWrapper.ClubMembers.Delete(oldClubMember);
                 await _repositoryWrapper.SaveAsync();
@@ -243,8 +243,6 @@ namespace EPlast.BLL.Services.Club
             {
                 await RemoveAdministratorAsync(admin.ID);
             }
-            // видаляє з адмінки курення
-
             var ClubMember = new ClubMembers()
             {
                 ClubId = ClubId,
@@ -312,12 +310,12 @@ namespace EPlast.BLL.Services.Club
             await _repositoryWrapper.SaveAsync();
         }
 
-        public async Task<bool> AddFollowerInHistoryAsync(int ClubId, string userId)
+        public async Task AddFollowerInHistoryAsync(int ClubId, string userId)
         {
             var oldClubMember = await _repositoryWrapper.ClubMemberHistory
                .GetFirstOrDefaultAsync(i => i.UserId == userId && !i.IsDeleted);
 
-            if (oldClubMember != null) //Видаляє з прихильників в попередньому курені 
+            if (oldClubMember != null)
             {
                 await UpdateStatusFollowerInHistoryAsync(userId, true,true);
             }
@@ -333,13 +331,10 @@ namespace EPlast.BLL.Services.Club
 
             await _repositoryWrapper.ClubMemberHistory.CreateAsync(clubHistoryUser);
             await _repositoryWrapper.SaveAsync();
-
-            return true;
         }
 
-        public async Task<ClubMemberHistoryDTO> UpdateStatusFollowerInHistoryAsync(string usertID,bool IsFollower,bool IsDeleted)
+        public async Task UpdateStatusFollowerInHistoryAsync(string usertID,bool IsFollower,bool IsDeleted)
         {
-
             var ClubHistoryMembers = await _repositoryWrapper.ClubMemberHistory.GetFirstOrDefaultAsync(
                    predicate: c => c.UserId == usertID &&!c.IsDeleted);
 
@@ -349,8 +344,6 @@ namespace EPlast.BLL.Services.Club
 
                 _repositoryWrapper.ClubMemberHistory.Update(ClubHistoryMembers);
                 await _repositoryWrapper.SaveAsync();
-      
-            return _mapper.Map<ClubMemberHistory, ClubMemberHistoryDTO>(ClubHistoryMembers);
         }
     }
 }

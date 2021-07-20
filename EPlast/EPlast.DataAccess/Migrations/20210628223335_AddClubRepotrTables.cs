@@ -14,7 +14,7 @@ namespace EPlast.DataAccess.Migrations
                     ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Date = table.Column<DateTime>(nullable: false),
-                    UserId = table.Column<string>(nullable: true),
+                    UserId = table.Column<string>(nullable: false),
                     ClubId = table.Column<int>(nullable: false),
                     IsFollower = table.Column<bool>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false)
@@ -69,7 +69,7 @@ namespace EPlast.DataAccess.Migrations
                     ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ClubAnnualReportId = table.Column<int>(nullable: false),
-                    UserId = table.Column<string>(nullable: true),
+                    UserId = table.Column<string>(nullable: false),
                     PlastDegreeId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
