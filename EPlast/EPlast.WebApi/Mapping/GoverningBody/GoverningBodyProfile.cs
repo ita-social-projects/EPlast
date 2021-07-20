@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.DTO.GoverningBody;
 using EPlast.WebApi.Models.GoverningBody;
 
@@ -20,7 +21,8 @@ namespace EPlast.WebApi.Mapping.GoverningBody
                 .ForMember(r => r.Email, s => s.MapFrom(t => t.GoverningBody.Email))
                 .ForMember(r => r.Description, s => s.MapFrom(t => t.GoverningBody.Description))
                 .ForMember(r => r.Logo, s => s.MapFrom(t => t.GoverningBody.Logo))
-                .ForMember(r => r.AdministrationCount, s => s.MapFrom(t => t.GoverningBody.AdministrationCount));
+                .ForMember(r => r.AdministrationCount, s => s.MapFrom(t => t.GoverningBody.AdministrationCount))
+                .ForMember(r => r.Sectors, s => s.MapFrom(t => t.Sectors));
         }
     }
 }

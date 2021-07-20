@@ -11,7 +11,9 @@ using EPlast.DataAccess.Repositories.Realizations.Events;
 using EPlast.DataAccess.Repositories.Realizations.Region;
 using NLog.Extensions.Logging;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories.Realizations.GoverningBody;
+using EPlast.DataAccess.Repositories.Realizations.GoverningBody.Sector;
 
 namespace EPlast.DataAccess.Repositories.Realizations.Base
 {
@@ -51,6 +53,11 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IGoverningBodyAdministrationRepository _governingBodyAdministration;
         private IGoverningBodyDocumentsRepository _governingBodyDocuments;
         private IGoverningBodyDocumentTypeRepository _governingBodyDocumentType;
+
+        private ISectorRepository _governingBodySector;
+        private ISectorAdministrationRepository _governingBodySectorAdministration;
+        private ISectorDocumentsRepository _governingBodySectorDocuments;
+        private ISectorDocumentTypeRepository _governingBodySectorDocumentType;
 
         private ICityAdministrationRepository _cityAdministration;
         private ICityDocumentsRepository _cityDocuments;
@@ -169,6 +176,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 {
                     _governingBody = new OrganizationRepository(_dbContext);
                 }
+
                 return _governingBody;
             }
         }
@@ -209,6 +217,58 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 }
 
                 return _governingBodyDocuments;
+            }
+        }
+
+        public ISectorRepository GoverningBodySector
+        {
+            get
+            {
+                if (_governingBodySector == null)
+                {
+                    _governingBodySector = new SectorRepository(_dbContext);
+                }
+
+                return _governingBodySector;
+            }
+        }
+
+        public ISectorAdministrationRepository GoverningBodySectorAdministration
+        {
+            get
+            {
+                if (_governingBodySectorAdministration == null)
+                {
+                    _governingBodySectorAdministration = new SectorAdministrationRepository(_dbContext);
+                }
+
+                return _governingBodySectorAdministration;
+            }
+        }
+
+        public ISectorDocumentTypeRepository GoverningBodySectorDocumentType
+        {
+            get
+            {
+                if (_governingBodySectorDocumentType == null)
+                {
+                    _governingBodySectorDocumentType = new SectorDocumentTypeRepository(_dbContext);
+                }
+
+                return _governingBodySectorDocumentType;
+            }
+        }
+
+        public ISectorDocumentsRepository GoverningBodySectorDocuments
+        {
+            get
+            {
+                if (_governingBodySectorDocuments == null)
+                {
+                    _governingBodySectorDocuments = new SectorDocumentsRepository(_dbContext);
+                }
+
+                return _governingBodySectorDocuments;
             }
         }
 

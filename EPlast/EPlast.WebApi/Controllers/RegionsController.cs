@@ -379,7 +379,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("getDocs/{regionId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetRegionDocs(int regionId)
         {
             var secretaries = await _regionService.GetRegionDocsAsync(regionId);
@@ -522,8 +522,13 @@ namespace EPlast.WebApi.Controllers
 
         [HttpDelete("RemoveRegion/{Id}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
-        public async Task<IActionResult> RemoveAdmin(int Id)
+        public async Task<IActionResult> RemoveRegion(int Id)
         {
+            var admins = await _regionAdministrationService.GetAdministrationAsync(Id);
+            foreach (var admin in admins)
+            {
+                await _regionAdministrationService.DeleteAdminByIdAsync(admin.ID);
+            }
             await _regionService.DeleteRegionByIdAsync(Id);
             return Ok();
         }

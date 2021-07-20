@@ -53,7 +53,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="clubName">Optional param to find Clubs by name</param>
         /// <returns>A specific number of Clubs</returns>
         [HttpGet("Profiles/{page}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetClubs(int page, int pageSize, string clubName = null)
         {
             var clubs = await _clubService.GetAllDtoAsync(clubName);
@@ -93,7 +93,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">Club not found</response>
         [HttpGet("Profile/{ClubId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetProfile(int clubId)
         {
             var clubProfileDto = await _clubService.GetClubProfileAsync(clubId, await _userManager.GetUserAsync(User));
@@ -115,7 +115,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">Club not found</response>
         [HttpGet("ClubMembersInfo/{ClubId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetClubMembersInfo(int clubId)
         {
             var clubProfileDto = await _clubService.GetClubDataForReport(clubId);
@@ -137,7 +137,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">Club not found</response>
         [HttpGet("Members/{ClubId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetMembers(int clubId)
         {
             var clubProfileDto = await _clubService.GetClubMembersAsync(clubId);
@@ -160,7 +160,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">Club not found</response>
         [HttpGet("Followers/{ClubId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetFollowers(int clubId)
         {
             var clubProfileDto = await _clubService.GetClubFollowersAsync(clubId);
@@ -183,7 +183,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">Club not found</response>
         [HttpGet("Admins/{ClubId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetAdmins(int clubId)
         {
             var clubProfileDto = await _clubService.GetClubAdminsAsync(clubId);
@@ -206,7 +206,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">Club not found</response>
         [HttpGet("Documents/{ClubId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetDocuments(int clubId)
         {
             var clubProfileDto = await _clubService.GetClubDocumentsAsync(clubId);

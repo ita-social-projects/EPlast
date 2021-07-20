@@ -1,4 +1,5 @@
 ﻿using EPlast.BLL.DTO;
+using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -65,5 +66,6 @@ namespace EPlast.BLL
         /// <param name="fileName">File name</param>
         /// <returns>File as base64</returns>
         Task<string> DownloadMethodicDocumentFileFromBlobAsync(string fileName);
+        IEnumerable<MethodicDocumentTableObject> GetDocumentsForTable(string searchedData, int page, int pageSize, string status);
     }
 }

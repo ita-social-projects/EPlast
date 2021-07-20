@@ -16,6 +16,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities.GoverningBody;
 
 namespace EPlast.Tests.Services
 {
@@ -196,6 +197,23 @@ namespace EPlast.Tests.Services
             _blobStorage.Verify(bs => bs.UploadBlobForBase64Async(
                 It.IsAny<string>(), It.IsAny<string>()), Times.Once);
             Assert.AreEqual(id, res);
+        }
+
+        [Test]
+        public void GetDocumentsForTable_ReturnsDocumentsTableObject()
+        {
+            //Arange
+            _repository
+                .Setup(x => x.MethodicDocument.GetFirstAsync(It.IsAny<Expression<Func<MethodicDocument, bool>>>(),
+                    It.IsAny<Func<IQueryable<MethodicDocument>, IIncludableQueryable<MethodicDocument, object>>>()))
+                .ReturnsAsync(new MethodicDocument());
+
+            //Act
+            var result = _service.GetDocumentsForTable(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(),
+                It.IsAny<string>());
+
+            //Assert
+            Assert.IsNotNull(result);
         }
 
         [Test]

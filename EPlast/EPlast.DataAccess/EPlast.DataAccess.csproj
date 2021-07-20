@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Entities\MethodicDocument\MethodicDocumetsTableObject.cs" />
     <Compile Remove="Migrations\20200413203808_add-foreign-key.cs" />
     <Compile Remove="Migrations\20200413203808_add-foreign-key.Designer.cs" />
     <Compile Remove="Migrations\20200825075232_somethingChanged.cs" />
