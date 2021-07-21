@@ -148,7 +148,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [TestCase(1)]
-        public async Task Profile_GBExists_Test(int governingBodyid)
+        public async Task Profile_GBExists_Test(int governingBodyId)
         {
             //Arrange
             _governingBodiesService.Setup(x => x.GetGoverningBodyProfileAsync(It.IsAny<int>()))
@@ -158,13 +158,14 @@ namespace EPlast.Tests.Controllers
                 .Returns(new GoverningBodyViewModel { Id = CreateGoverningBodyProfileDto.GoverningBody.Id });
 
             //Act
-            var result = await _governingBodiesController.GetProfile(governingBodyid);
-            var resultValue = (result as OkObjectResult)?.Value as GoverningBodyViewModel;
+            var result = await _governingBodiesController.GetProfile(governingBodyId);
+            var resultValue = (result as OkObjectResult)?.Value;
 
-            //Assert
+            // Assert
+            _mapper.Verify(m => m.Map<GoverningBodyProfileDTO, GoverningBodyViewModel>(It.IsAny<GoverningBodyProfileDTO>()));
             Assert.NotNull(result);
-            Assert.AreEqual(CreateGoverningBodyProfileDto.GoverningBody.Id, resultValue?.Id);
             Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(resultValue);
         }
 
         [TestCase(0)]
@@ -483,7 +484,8 @@ namespace EPlast.Tests.Controllers
             Description = "gbDesc",
             Email = "gbEmail",
             Logo = null,
-            PhoneNumber = "12345"
+            PhoneNumber = "12345",
+            GoverningBodyDocuments = new List<GoverningBodyDocumentsDTO>()
         };
 
         private GoverningBodyProfileDTO CreateGoverningBodyProfileDto => new GoverningBodyProfileDTO()
