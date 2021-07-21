@@ -71,6 +71,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IClubDocumentTypeRepository _clubDocumentType;
         private IClubMembersRepository _clubMembers;
         private IClubRepository _club;
+        private IClubMemberHistoryRepository _clubMemberHistory;
 
         private IRegionRepository _region;
         private IRegionAdministrationRepository _regionAdministration;
@@ -717,6 +718,19 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 }
 
                 return _clubAdministration;
+            }
+        }
+
+        public IClubMemberHistoryRepository ClubMemberHistory
+        {
+            get
+            {
+                if (_clubMemberHistory == null)
+                {
+                    _clubMemberHistory = new ClubMemberHistoryReposetory(_dbContext);
+                }
+
+                return _clubMemberHistory;
             }
         }
 

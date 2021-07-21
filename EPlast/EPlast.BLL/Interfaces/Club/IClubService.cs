@@ -140,5 +140,37 @@ namespace EPlast.BLL.Interfaces.Club
         /// </summary>
         /// <returns>All clubs</returns>
         Task<IEnumerable<ClubForAdministrationDTO>> GetClubs();
+
+        /// <summary>
+        /// Get all data for report clubs
+        /// </summary>
+        Task<ClubReportDataDTO> GetClubDataForReport(int clubId);
+
+        /// <summary>
+        /// Get all club followers from history
+        /// </summary>
+        Task<IEnumerable<ClubMemberHistoryDTO>> GetClubHistoryFollowers(int clubId);
+
+        /// <summary>
+        ///  Get all club members from history
+        /// </summary>
+        Task<IEnumerable<ClubMemberHistoryDTO>> GetClubHistoryMembers(int clubId);
+
+        /// <summary>
+        /// Get all club administrations
+        /// </summary>
+        Task<IEnumerable<DataAccessClub.ClubAdministration>> GetClubAdministrations(int clubId);
+
+        /// <summary>
+        /// Get count of users per year
+        /// </summary>
+        /// <returns>count of users</returns>
+        Task<int> GetCountUsersPerYear(int clubId);
+
+        /// <summary>
+        /// Get count of deleted users 
+        /// </summary>
+        /// <returns>count of deletet users</returns>
+        Task<int> GetCountDeletedUsersPerYear(int clubId);
     }
 }

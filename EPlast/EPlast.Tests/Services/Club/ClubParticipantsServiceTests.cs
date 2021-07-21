@@ -740,6 +740,62 @@ namespace EPlast.Tests.Services.Club
             _repoWrapper.Verify(r => r.SaveAsync(), Times.Once());
         }
 
+        [Test]
+        public async Task UpdateStatusFollowerInHistoryAsync_Tests()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(s => s.ClubMemberHistory.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMemberHistory, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubMemberHistory>, IIncludableQueryable<ClubMemberHistory, object>>>()))
+                .ReturnsAsync(new ClubMemberHistory());
+
+            _repoWrapper
+             .Setup(s => s.ClubMemberHistory.Update(It.IsAny<ClubMemberHistory>()));
+
+
+            //Act
+            await _clubParticipantsService.UpdateStatusFollowerInHistoryAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>());
+
+            //Assert
+            _repoWrapper.Verify(i => i.ClubMemberHistory.Update(It.IsAny<ClubMemberHistory>()), Times.Once());
+            _repoWrapper.Verify(i => i.SaveAsync(), Times.Once());
+        }
+
+        [Test]
+        public async Task AddFollowerInHistoryAsync_ValidOldMember_Tests()
+        {
+            // Arrange
+            _repoWrapper
+               .Setup(s => s.ClubMemberHistory.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMemberHistory, bool>>>(),
+                   It.IsAny<Func<IQueryable<ClubMemberHistory>, IIncludableQueryable<ClubMemberHistory, object>>>()))
+               .ReturnsAsync(new ClubMemberHistory());
+       
+
+            // Act
+            await _clubParticipantsService.AddFollowerInHistoryAsync(It.IsAny<int>(),It.IsAny<string>());
+
+            // Assert
+            _repoWrapper.Verify(r => r.ClubMemberHistory.CreateAsync(It.IsAny<ClubMemberHistory>()), Times.Once());
+        }
+
+        [Test]
+        public async Task AddFollowerInHistoryAsync_InvalidOldMember_Tests()
+        {
+            // Arrange
+            _repoWrapper
+               .Setup(s => s.ClubMemberHistory.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMemberHistory, bool>>>(),
+                   It.IsAny<Func<IQueryable<ClubMemberHistory>, IIncludableQueryable<ClubMemberHistory, object>>>()))
+               .ReturnsAsync(() => null);
+
+
+            // Act
+            await _clubParticipantsService.AddFollowerInHistoryAsync(It.IsAny<int>(), It.IsAny<string>());
+
+            // Assert
+            _repoWrapper.Verify(r => r.ClubMemberHistory.CreateAsync(It.IsAny<ClubMemberHistory>()), Times.Once());
+            _repoWrapper.Verify(i => i.SaveAsync(), Times.Once());
+        }
+
         private IEnumerable<ClubAdministrationDTO> GetTestClubAdministration()
         {
             return new List<ClubAdministrationDTO>
