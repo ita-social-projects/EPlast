@@ -7,9 +7,6 @@ namespace EPlast.DataAccess.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "GoverningBodySectors");
-
             migrationBuilder.CreateTable(
                 name: "GoverningBodySectorDocumentTypes",
                 columns: table => new
