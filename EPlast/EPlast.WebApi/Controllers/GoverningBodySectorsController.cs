@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using EPlast.BLL.Interfaces.Logging;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using EPlast.BLL.DTO.GoverningBody.Sector;
 using EPlast.BLL.Interfaces.GoverningBodies.Sector;
 using EPlast.Resources;
 using EPlast.WebApi.Models.GoverningBody.Sector;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -94,7 +95,7 @@ namespace EPlast.WebApi.Controllers
             }
 
             var sectorViewModel = _mapper.Map<SectorProfileDTO, SectorViewModel>(sectorProfileDto);
-            return Ok(sectorViewModel);
+            return Ok(new { sectorViewModel, documentsCount = sectorProfileDto.Sector.Documents.Count() });
         }
 
         [HttpDelete("RemoveSector/{sectorId}")]
