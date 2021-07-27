@@ -87,7 +87,9 @@ namespace EPlast.WebApi.StartupExtensions
                 Roles.OkrugaHeadDeputy,
                 Roles.KurinHeadDeputy,
                 Roles.GoverningBodyHead,
-                Roles.GoverningBodySecretary
+                Roles.GoverningBodySecretary,
+                Roles.GoverningBodySectorHead,
+                Roles.GoverningBodySectorSecretary
             };
             foreach (var role in roles)
             {

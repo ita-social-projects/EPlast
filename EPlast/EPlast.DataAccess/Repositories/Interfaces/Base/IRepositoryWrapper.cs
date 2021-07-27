@@ -29,6 +29,7 @@ namespace EPlast.DataAccess.Repositories
         IClubDocumentTypeRepository ClubDocumentType { get; }
         IClubLegalStatusesRepository ClubLegalStatuses { get; }
         IClubMembersRepository ClubMembers { get; }
+        IClubMemberHistoryRepository ClubMemberHistory { get; }
         IConfirmedUserRepository ConfirmedUser { get; }
         IDecesionRepository Decesion { get; }
         IDecesionTargetRepository DecesionTarget { get; }
@@ -69,6 +70,7 @@ namespace EPlast.DataAccess.Repositories
         IPrecautionRepository Precaution { get; }
         IRegionRepository Region { get; }
         IRegionAdministrationRepository RegionAdministration { get; }
+        IRegionFollowersRepository RegionFollowers { get; }
         IRegionAnnualReportsRepository RegionAnnualReports { get; }
         IRegionDocumentRepository RegionDocument { get; }
         IReligionRepository Religion { get; }

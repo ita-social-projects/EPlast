@@ -120,6 +120,87 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
+        public async Task GetFollowersAsync_ReturnsIEnumerableRegionFollowerDTO()
+        {
+            // Arrange
+            _repoWrapper.Setup(x => x.RegionFollowers.GetAllAsync(It.IsAny<Expression<Func<RegionFollowers, bool>>>(),
+              It.IsAny<Func<IQueryable<RegionFollowers>, IIncludableQueryable<RegionFollowers, object>>>()))
+                .ReturnsAsync(new List<RegionFollowers>());
+
+            _mapper
+                .Setup(x => x.Map<IEnumerable<RegionFollowers>, IEnumerable<RegionFollowerDTO>>(It.IsAny<IEnumerable<RegionFollowers>>()))
+                .Returns(regionFollowers);
+
+            // Act
+            var result = await _regionService.GetFollowersAsync(It.IsAny<int>());
+
+            // Assert
+            Assert.IsInstanceOf<IEnumerable<RegionFollowerDTO>>(result);
+            Assert.IsNotNull(result);
+        }
+
+        [Test]
+        public async Task GetFollowerAsync_ReturnsRegionFollowerDTO()
+        {
+            // Arrange
+            RegionFollowerDTO regionFollower = new RegionFollowerDTO();
+            _repoWrapper.Setup(x => x.RegionFollowers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionFollowers, bool>>>(),
+              It.IsAny<Func<IQueryable<RegionFollowers>, IIncludableQueryable<RegionFollowers, object>>>()))
+                .ReturnsAsync(new RegionFollowers());
+
+            _mapper
+                .Setup(x => x.Map<RegionFollowers, RegionFollowerDTO>(It.IsAny<RegionFollowers>()))
+                .Returns(regionFollower);
+
+            // Act
+            var result = await _regionService.GetFollowerAsync(It.IsAny<int>());
+
+            // Assert
+            Assert.IsInstanceOf<RegionFollowerDTO>(result);
+            Assert.IsNotNull(result);
+        }
+
+        [Test]
+        public void CreateFollowerAsync_ReturnsSuccess()
+        {
+            // Arrange
+            RegionFollowers regionFollowers = new RegionFollowers();
+            _mapper
+               .Setup(x => x.Map<RegionFollowerDTO, RegionFollowers>(It.IsAny<RegionFollowerDTO>()))
+               .Returns(regionFollowers);
+            _repoWrapper
+                   .Setup(x => x.RegionFollowers.CreateAsync(regionFollowers));
+            _repoWrapper
+                  .Setup(x => x.SaveAsync());
+            // Act
+            var result = _regionService.CreateFollowerAsync(It.IsAny<RegionFollowerDTO>());
+            // Assert
+            _repoWrapper.Verify();
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public void RemoveFollowerAsync_ReturnsCorrect()
+        {
+            // Arrange
+            _repoWrapper
+                   .Setup(x => x.RegionFollowers
+                   .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionFollowers, bool>>>(),
+                   It.IsAny<Func<IQueryable<RegionFollowers>, IIncludableQueryable<RegionFollowers, object>>>()))
+                   .ReturnsAsync(It.IsAny<RegionFollowers>());
+            _repoWrapper
+                .Setup(x => x.RegionFollowers.Delete(It.IsAny<RegionFollowers>()));
+            _repoWrapper
+                  .Setup(x => x.SaveAsync());
+            // Act
+            var result = _regionService.RemoveFollowerAsync(It.IsAny<int>());
+
+            // Assert
+            _repoWrapper.Verify();
+            Assert.NotNull(result);
+        }
+
+        [Test]
         public async Task GetRegionByNameAsync_ReturnsRegionProfileDTO()
         {
             // Arrange
@@ -499,6 +580,12 @@ namespace EPlast.Tests.Services.Regions
         {
             new CityDTO { ID = 1, Name = "Золочів" },
             new CityDTO { ID = 2, Name = "Перемишляни" }
+        };
+
+        private readonly IEnumerable<RegionFollowerDTO> regionFollowers = new List<RegionFollowerDTO>
+        {
+            new RegionFollowerDTO { ID = 1, CityName = "Золочів" },
+            new RegionFollowerDTO { ID = 2, CityName = "Перемишляни" }
         };
 
         private readonly IEnumerable<DataAccess.Entities.City> city = new List<DataAccess.Entities.City>

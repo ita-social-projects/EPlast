@@ -338,6 +338,70 @@ namespace EPlast.WebApi.Controllers
             return Ok(members);
         }
 
+        /// <summary>
+        /// Method to get all region followers
+        /// </summary>
+        /// <param name="regionId">Region identification number Data</param>
+        /// <returns>Region followers</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="403">User hasn't access to region followers page</response>
+        /// <response code="404">The region followers page does not exist</response>
+        [HttpGet("Followers/{regionId}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
+        public async Task<IActionResult> GetFollowers(int regionId)
+        {
+            var followers = await _regionService.GetFollowersAsync(regionId);
+            return Ok(followers);
+        }
+
+        /// <summary>
+        /// Get a specific follower of the region
+        /// </summary>
+        /// <param name="followerId">The id of the follower</param>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Follower not found</response>
+        [HttpGet("GetFollower/{followerId}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
+        public async Task<IActionResult> GetFollower(int followerId)
+        {
+            var follower = await _regionService.GetFollowerAsync(followerId);
+            if (follower == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(follower);
+        }
+
+        /// <summary>
+        /// Create a new follower
+        /// </summary>
+        /// <param name="follower">An information about a new follower</param>
+        /// <response code="200">Successful operation</response>
+        /// <response code="400">Wrong input</response>
+        [HttpPost("CreateFollower")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> CreateFollower(RegionFollowerDTO follower)
+        {
+            await _regionService.CreateFollowerAsync(follower);
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Remove a specific follower from the region
+        /// </summary>
+        /// <param name="followerId">The id of the follower</param>
+        [HttpDelete("RemoveFollower/{followerId}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
+        public async Task<IActionResult> RemoveFollower(int followerId)
+        {
+            await _regionService.RemoveFollowerAsync(followerId);
+            _logger.LogInformation($"Follower with ID {{{followerId}}} was removed.");
+
+            return Ok();
+        }
+
         [HttpGet("LogoBase64")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetPhotoBase64(string logoName)

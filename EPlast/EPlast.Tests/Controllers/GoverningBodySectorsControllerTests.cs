@@ -164,7 +164,13 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _sectorService
                 .Setup(x => x.GetSectorProfileAsync(It.IsAny<int>()))
-                .ReturnsAsync(new SectorProfileDTO());
+                .ReturnsAsync(new SectorProfileDTO()
+                {
+                    Sector = new SectorDTO()
+                    {
+                        Documents = new List<SectorDocumentsDTO>()
+                    }
+                });
             var testSectorViewModel = new SectorViewModel();
             _mapper
                 .Setup(x => x.Map<SectorProfileDTO, SectorViewModel>(It.IsAny<SectorProfileDTO>()))
@@ -174,9 +180,11 @@ namespace EPlast.Tests.Controllers
             var result = await _controller.GetProfile(id);
             var resultValue = (result as OkObjectResult)?.Value;
 
-            //Assert
+            // Assert
+            _mapper.Verify(m => m.Map<SectorProfileDTO, SectorViewModel>(It.IsAny<SectorProfileDTO>()));
+            Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.AreEqual(testSectorViewModel, resultValue);
+            Assert.NotNull(resultValue);
         }
 
         [TestCase(1)]

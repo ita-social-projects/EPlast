@@ -231,7 +231,7 @@ namespace EPlast.BLL.Services.Club
         {
             var oldClubMember = await _repositoryWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(i => i.UserId == userId);
-            if (oldClubMember != null)
+            if (oldClubMember != null) 
             {
                 _repositoryWrapper.ClubMembers.Delete(oldClubMember);
                 await _repositoryWrapper.SaveAsync();
@@ -243,7 +243,6 @@ namespace EPlast.BLL.Services.Club
             {
                 await RemoveAdministratorAsync(admin.ID);
             }
-
             var ClubMember = new ClubMembers()
             {
                 ClubId = ClubId,
@@ -309,6 +308,42 @@ namespace EPlast.BLL.Services.Club
         {
             _repositoryWrapper.ClubMembers.Delete(member);
             await _repositoryWrapper.SaveAsync();
+        }
+
+        public async Task AddFollowerInHistoryAsync(int ClubId, string userId)
+        {
+            var oldClubMember = await _repositoryWrapper.ClubMemberHistory
+               .GetFirstOrDefaultAsync(i => i.UserId == userId && !i.IsDeleted);
+
+            if (oldClubMember != null)
+            {
+                await UpdateStatusFollowerInHistoryAsync(userId, true,true);
+            }
+
+            var clubHistoryUser = new ClubMemberHistory()
+            {
+                Date = DateTime.Now,
+                UserId = userId,
+                ClubId = ClubId,
+                IsFollower = true,
+                IsDeleted = false
+            };
+
+            await _repositoryWrapper.ClubMemberHistory.CreateAsync(clubHistoryUser);
+            await _repositoryWrapper.SaveAsync();
+        }
+
+        public async Task UpdateStatusFollowerInHistoryAsync(string userId, bool IsFollower,bool IsDeleted)
+        {
+            var ClubHistoryMembers = await _repositoryWrapper.ClubMemberHistory.GetFirstOrDefaultAsync(
+                   predicate: c => c.UserId == userId && !c.IsDeleted);
+
+                ClubHistoryMembers.IsFollower = IsFollower;
+                ClubHistoryMembers.IsDeleted = IsDeleted;
+                ClubHistoryMembers.Date = DateTime.Now;
+
+                _repositoryWrapper.ClubMemberHistory.Update(ClubHistoryMembers);
+                await _repositoryWrapper.SaveAsync();
         }
     }
 }
