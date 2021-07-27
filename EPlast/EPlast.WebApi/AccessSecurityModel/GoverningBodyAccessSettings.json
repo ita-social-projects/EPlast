@@ -96,7 +96,7 @@
     "DeleteGB": false,
     "CreateDirection": false,
     "AddGBSecretary": false,
-    "GoToSecretaryProfile": true,
+    "GoToSecretaryProfile": false,
     "EditRBMembers": false,
     "DeleteGBMembers": false,
     "BecomeRBMember": true,
