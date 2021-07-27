@@ -3,11 +3,12 @@ using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.GoverningBody;
 using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.BLL.Interfaces.Logging;
+using EPlast.Resources;
 using EPlast.WebApi.Models.GoverningBody;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System.Threading.Tasks;
-using EPlast.Resources;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -93,7 +94,7 @@ namespace EPlast.WebApi.Controllers
 
             var governingBodyViewModel = _mapper.Map<GoverningBodyProfileDTO, GoverningBodyViewModel>(governingBodyProfileDto);
 
-            return Ok(governingBodyViewModel);
+            return Ok(new { governingBodyViewModel, documentsCount = governingBodyProfileDto.GoverningBody.GoverningBodyDocuments.Count() });
         }
 
         [HttpDelete("RemoveGoverningBody/{governingBodyId}")]

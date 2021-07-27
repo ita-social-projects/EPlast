@@ -131,6 +131,33 @@ namespace EPlast.BLL.Services.Region
             return _mapper.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDTO>>(cities);
         }
 
+        public async Task<IEnumerable<RegionFollowerDTO>> GetFollowersAsync(int regionId)
+        {
+            var followers = await _repoWrapper.RegionFollowers.GetAllAsync(d => d.RegionId == regionId);
+            return _mapper.Map<IEnumerable<RegionFollowers>, IEnumerable<RegionFollowerDTO>>(followers);
+            }
+
+        public async Task<RegionFollowerDTO> GetFollowerAsync(int followerId)
+        {
+            var follower = await _repoWrapper.RegionFollowers.GetFirstOrDefaultAsync(d => d.ID == followerId);
+            return _mapper.Map<RegionFollowers, RegionFollowerDTO>(follower);
+        }
+
+        public async Task CreateFollowerAsync(RegionFollowerDTO model)
+        {
+            await _repoWrapper.RegionFollowers.CreateAsync(_mapper.Map<RegionFollowerDTO, RegionFollowers>(model));
+            await _repoWrapper.SaveAsync();
+        }
+
+        public async Task RemoveFollowerAsync(int followerId)
+        {
+            var follower = await _repoWrapper.RegionFollowers
+                .GetFirstOrDefaultAsync(u => u.ID == followerId);
+
+            _repoWrapper.RegionFollowers.Delete(follower);
+            await _repoWrapper.SaveAsync();
+        }
+
         public async Task<RegionProfileDTO> GetRegionByNameAsync(string Name, User user)
         {
             var regionProfile = _mapper.Map<DataAccessRegion.Region, RegionProfileDTO>(await _repoWrapper.Region.GetFirstAsync(d => d.RegionName == Name));

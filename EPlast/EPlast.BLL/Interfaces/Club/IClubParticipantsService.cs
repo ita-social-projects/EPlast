@@ -103,5 +103,15 @@ namespace EPlast.BLL.Interfaces.Club
         /// <param name="member">The member of the club</param>
         Task RemoveMemberAsync(ClubMembers member);
 
+        /// <summary>
+        /// Add  follower from the Club to history table
+        /// </summary>
+        Task AddFollowerInHistoryAsync(int ClubId, string userId);
+
+
+        /// <summary>
+        /// update user in historical table insert property 
+        /// </summary>
+        Task UpdateStatusFollowerInHistoryAsync(string userId, bool IsFollower, bool IsDeleted);
     }
 }
