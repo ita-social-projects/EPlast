@@ -103,7 +103,7 @@ namespace EPlast.BLL.Services.Club
             {
                 admin.StartDate = adminDTO.StartDate ?? DateTime.Now;
                 admin.EndDate = adminDTO.EndDate;
-                adminDTO.Status = DateTime.Now < adminDTO.EndDate || adminDTO.EndDate == null;
+                admin.Status = DateTime.Now < adminDTO.EndDate || adminDTO.EndDate == null;
                 _repositoryWrapper.ClubAdministration.Update(admin);
                 await _repositoryWrapper.SaveAsync();
             }
