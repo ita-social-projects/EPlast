@@ -319,7 +319,7 @@ namespace EPlast.BLL.Services.Club
             var clubProfileDto = new ClubProfileDTO
             {
                 Club = club,
-                Documents = clubDoc
+                Documents = clubDoc.ToList()
             };
 
             return clubProfileDto;

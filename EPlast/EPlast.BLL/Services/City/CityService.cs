@@ -262,7 +262,7 @@ namespace EPlast.BLL.Services
             var cityProfileDto = new CityProfileDTO
             {
                 City = city,
-                Documents = cityDoc
+                Documents = cityDoc.ToList()
             };
 
             return cityProfileDto;

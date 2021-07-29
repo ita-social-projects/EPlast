@@ -11,6 +11,6 @@ namespace EPlast.BLL.DTO.Club
         public List<ClubAdministrationDTO> Admins { get; set; }
         public List<ClubMembersDTO> Members { get; set; }
         public List<ClubMembersDTO> Followers { get; set; }
-        public IEnumerable<ClubDocumentsDTO> Documents { get; set; }
+        public List<ClubDocumentsDTO> Documents { get; set; }
     }
 }
