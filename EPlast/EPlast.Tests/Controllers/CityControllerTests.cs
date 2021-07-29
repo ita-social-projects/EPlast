@@ -319,7 +319,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task EditAdmin_OldEndDate_ThrowsException()
+        public void EditAdmin_OldEndDate_ThrowsException()
         {
             //Arrange
             var testAdmin = new CityAdministrationViewModel() { EndDate = DateTime.MinValue };
