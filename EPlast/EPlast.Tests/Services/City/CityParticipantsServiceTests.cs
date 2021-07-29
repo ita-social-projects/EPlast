@@ -52,7 +52,8 @@ namespace EPlast.Tests.Services.City
                 ID = 1
             },
             AdminTypeId = AdminType.ID,
-            UserId = Roles.CityHead
+            UserId = Roles.CityHead,
+            Status = true
         };
 
         private readonly CityAdministrationDTO cityAdmDTOEndDateToday = new CityAdministrationDTO
@@ -75,6 +76,7 @@ namespace EPlast.Tests.Services.City
             AdminTypeId = 1,
             StartDate = DateTime.Now,
             EndDate = null,
+            Status = true,
             User = new CityUserDTO(),
             UserId = Roles.CityHead
         };
@@ -88,6 +90,19 @@ namespace EPlast.Tests.Services.City
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IUserStore<User>> _user;
         private Mock<UserManager<User>> _userManager;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _repoWrapper = new Mock<IRepositoryWrapper>();
+            _mapper = new Mock<IMapper>();
+            _adminTypeService = new Mock<IAdminTypeService>();
+            _user = new Mock<IUserStore<User>>();
+            _userManager = new Mock<UserManager<User>>(_user.Object, null, null, null, null, null, null, null, null);
+            _emailSendingService = new Mock<IEmailSendingService>();
+            _emailContentService = new Mock<IEmailContentService>();
+            _cityParticipantsService = new CityParticipantsService(_repoWrapper.Object, _mapper.Object, _userManager.Object, _adminTypeService.Object, _emailSendingService.Object, _emailContentService.Object);
+        }
 
         [Test]
         public async Task AddAdministratorAsync_EndDateToday_ReturnsAdministrator()
@@ -417,6 +432,17 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
+        public void EditAdministratorAsync_OldEndDate_ThrowsException()
+        {
+            //Arrange
+            var testAdminDto = new CityAdministrationDTO() { EndDate = DateTime.MinValue };
+
+            //Assert
+            Assert.ThrowsAsync<ArgumentException>(async () =>
+                await _cityParticipantsService.EditAdministratorAsync(testAdminDto));
+        }
+
+        [Test]
         public async Task GetAdministrationByIdAsync_ReturnsAdministrations()
         {
             // Arrange
@@ -715,19 +741,6 @@ namespace EPlast.Tests.Services.City
             _repoWrapper.Verify();
         }
 
-        [SetUp]
-        public void SetUp()
-        {
-            _repoWrapper = new Mock<IRepositoryWrapper>();
-            _mapper = new Mock<IMapper>();
-            _adminTypeService = new Mock<IAdminTypeService>();
-            _user = new Mock<IUserStore<User>>();
-            _userManager = new Mock<UserManager<User>>(_user.Object, null, null, null, null, null, null, null, null);
-            _emailSendingService = new Mock<IEmailSendingService>();
-            _emailContentService = new Mock<IEmailContentService>();
-            _cityParticipantsService = new CityParticipantsService(_repoWrapper.Object, _mapper.Object, _userManager.Object, _adminTypeService.Object, _emailSendingService.Object, _emailContentService.Object);
-        }
-
         [TestCase(true)]
         [TestCase(false)]
         public async Task ToggleApproveStatusAsync_Valid_Test(bool isInRole)
@@ -786,6 +799,7 @@ namespace EPlast.Tests.Services.City
             Assert.NotNull(result);
             Assert.IsInstanceOf<CityMembersDTO>(result);
         }
+
         [Test]
         public async Task CityOfApprovedMemberTest()
         {

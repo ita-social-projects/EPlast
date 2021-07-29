@@ -141,6 +141,11 @@ namespace EPlast.BLL.Services.City
         /// <inheritdoc />
         public async Task<CityAdministrationDTO> EditAdministratorAsync(CityAdministrationDTO adminDTO)
         {
+            if (adminDTO.EndDate != null && adminDTO.EndDate < DateTime.Today)
+            {
+                throw new ArgumentException("End date cannot be less than today");
+            }
+
             var admin = await _repositoryWrapper.CityAdministration.GetFirstOrDefaultAsync(a => a.ID == adminDTO.ID);
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
 
@@ -148,37 +153,10 @@ namespace EPlast.BLL.Services.City
             {
                 admin.StartDate = adminDTO.StartDate ?? DateTime.Now;
                 admin.EndDate = adminDTO.EndDate;
+                admin.Status = true;
 
-                admin.Status = DateTime.Now < adminDTO.EndDate || adminDTO.EndDate == null;
-                if (!admin.Status)
-                {
-                    var newAdminCandidates = await _repositoryWrapper.CityAdministration.GetAllAsync(
-                        predicate: a => a.CityId == admin.CityId && a.AdminTypeId == admin.AdminTypeId && admin.ID != a.ID && a.EndDate > admin.EndDate,
-                        include: x => x.Include(q => q.User).
-                            Include(q => q.AdminType));
-
-                    if (newAdminCandidates != null)
-                    {
-                        var maxEndDate = newAdminCandidates.Max(a => a.EndDate);
-                        var newAdmin = newAdminCandidates.First(
-                                a => a.AdminTypeId == admin.AdminTypeId && a.EndDate == maxEndDate);
-
-                        newAdmin.Status = true;
-                        _repositoryWrapper.CityAdministration.Update(newAdmin);
-                        await RemoveAdministratorAsync(admin.ID);
-                    }
-                    else
-                    {
-                        admin.Status = true;
-                        _repositoryWrapper.CityAdministration.Update(admin);
-                        await _repositoryWrapper.SaveAsync();
-                    }
-                }
-                else
-                {
-                    _repositoryWrapper.CityAdministration.Update(admin);
-                    await _repositoryWrapper.SaveAsync();
-                }
+                _repositoryWrapper.CityAdministration.Update(admin);
+                await _repositoryWrapper.SaveAsync();
             }
             else
             {
