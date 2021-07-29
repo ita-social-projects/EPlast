@@ -103,7 +103,7 @@ namespace EPlast.BLL.Services.Club
             {
                 admin.StartDate = adminDTO.StartDate ?? DateTime.Now;
                 admin.EndDate = adminDTO.EndDate;
-
+                admin.Status = DateTime.Now < adminDTO.EndDate || adminDTO.EndDate == null;
                 _repositoryWrapper.ClubAdministration.Update(admin);
                 await _repositoryWrapper.SaveAsync();
             }
@@ -206,8 +206,7 @@ namespace EPlast.BLL.Services.Club
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminTypeName);
             var admin = await _repositoryWrapper.ClubAdministration.
-                GetFirstOrDefaultAsync(a => a.AdminTypeId == adminType.ID
-                    && (DateTime.Now < a.EndDate || a.EndDate == null) && a.ClubId == clubId);
+                GetFirstOrDefaultAsync(a => a.AdminTypeId == adminType.ID && a.ClubId == clubId && a.Status);
 
             if (admin != null)
             {
