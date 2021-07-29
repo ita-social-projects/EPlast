@@ -161,18 +161,24 @@ namespace EPlast.BLL.Services.City
                     {
                         var maxEndDate = newAdminCandidates.Max(a => a.EndDate);
                         var newAdmin = newAdminCandidates.First(
-                            a => a.AdminTypeId == admin.AdminTypeId && a.EndDate == maxEndDate);
+                                a => a.AdminTypeId == admin.AdminTypeId && a.EndDate == maxEndDate);
+
                         newAdmin.Status = true;
                         _repositoryWrapper.CityAdministration.Update(newAdmin);
+                        await RemoveAdministratorAsync(admin.ID);
                     }
                     else
                     {
                         admin.Status = true;
+                        _repositoryWrapper.CityAdministration.Update(admin);
+                        await _repositoryWrapper.SaveAsync();
                     }
                 }
-
-                _repositoryWrapper.CityAdministration.Update(admin);
-                await _repositoryWrapper.SaveAsync();
+                else
+                {
+                    _repositoryWrapper.CityAdministration.Update(admin);
+                    await _repositoryWrapper.SaveAsync();
+                }
             }
             else
             {
@@ -352,6 +358,7 @@ namespace EPlast.BLL.Services.City
             var admin = await _repositoryWrapper.CityAdministration.
                 GetFirstOrDefaultAsync(a => a.AdminTypeId == adminType.ID && a.CityId == cityId && a.Status);
 
+            newAdmin.Status = false;
             if (admin != null)
             {
                 if (newAdmin.EndDate == null || admin.EndDate < newAdmin.EndDate)
