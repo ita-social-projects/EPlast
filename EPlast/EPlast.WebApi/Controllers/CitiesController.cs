@@ -399,7 +399,7 @@ namespace EPlast.WebApi.Controllers
         {
             if (admin.EndDate != null && admin.EndDate < DateTime.Today)
             {
-                throw new ArgumentException("End date cannot be less than today");
+                return BadRequest();
             }
 
             var adminDTO = _mapper.Map<CityAdministrationViewModel, CityAdministrationDTO>(admin);

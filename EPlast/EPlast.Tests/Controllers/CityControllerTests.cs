@@ -319,14 +319,17 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public void EditAdmin_OldEndDate_ThrowsException()
+        public async Task EditAdmin_OldEndDate_ThrowsException()
         {
             //Arrange
             var testAdmin = new CityAdministrationViewModel() { EndDate = DateTime.MinValue };
             var controller = CreateCityController;
 
+            //Act
+            var result = await controller.EditAdmin(testAdmin);
+
             //Assert
-            Assert.ThrowsAsync<ArgumentException>(async () => await controller.EditAdmin(testAdmin));
+            Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [TestCase(2)]
