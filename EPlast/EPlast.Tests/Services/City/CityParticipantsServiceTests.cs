@@ -432,17 +432,6 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
-        public void EditAdministratorAsync_OldEndDate_ThrowsException()
-        {
-            //Arrange
-            var testAdminDto = new CityAdministrationDTO() { EndDate = DateTime.MinValue };
-
-            //Assert
-            Assert.ThrowsAsync<ArgumentException>(async () =>
-                await _cityParticipantsService.EditAdministratorAsync(testAdminDto));
-        }
-
-        [Test]
         public async Task GetAdministrationByIdAsync_ReturnsAdministrations()
         {
             // Arrange

@@ -141,11 +141,6 @@ namespace EPlast.BLL.Services.City
         /// <inheritdoc />
         public async Task<CityAdministrationDTO> EditAdministratorAsync(CityAdministrationDTO adminDTO)
         {
-            if (adminDTO.EndDate != null && adminDTO.EndDate < DateTime.Today)
-            {
-                throw new ArgumentException("End date cannot be less than today");
-            }
-
             var admin = await _repositoryWrapper.CityAdministration.GetFirstOrDefaultAsync(a => a.ID == adminDTO.ID);
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
 
