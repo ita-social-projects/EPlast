@@ -10,6 +10,6 @@ namespace EPlast.BLL.DTO.City
         public List<CityAdministrationDTO> Admins { get; set; }
         public List<CityMembersDTO> Members { get; set; }
         public List<CityMembersDTO> Followers { get; set; }
-        public List<CityDocumentsDTO> Documents { get; set; }
+        public IEnumerable<CityDocumentsDTO> Documents { get; set; }
     }
 }
