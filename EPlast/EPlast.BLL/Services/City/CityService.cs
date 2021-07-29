@@ -257,12 +257,12 @@ namespace EPlast.BLL.Services
                 return null;
             }
 
-            var cityDoc = city.CityDocuments.ToList();
+            var cityDoc = DocumentsSorter<CityDocumentsDTO>.SortDocumentsBySubmitDate(city.CityDocuments);
 
             var cityProfileDto = new CityProfileDTO
             {
                 City = city,
-                Documents = cityDoc
+                Documents = cityDoc.ToList()
             };
 
             return cityProfileDto;

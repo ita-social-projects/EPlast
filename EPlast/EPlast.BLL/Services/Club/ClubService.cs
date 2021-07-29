@@ -314,12 +314,12 @@ namespace EPlast.BLL.Services.Club
                 return null;
             }
 
-            var clubDoc = club.ClubDocuments.ToList();
+            var clubDoc = DocumentsSorter<ClubDocumentsDTO>.SortDocumentsBySubmitDate(club.ClubDocuments);
 
             var clubProfileDto = new ClubProfileDTO
             {
                 Club = club,
-                Documents = clubDoc
+                Documents = clubDoc.ToList()
             };
 
             return clubProfileDto;
