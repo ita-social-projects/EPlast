@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL.DTO.Club
 {
-    public class ClubDocumentsDTO
+    public class ClubDocumentsDTO : IDocumentDTO
     {
         public int ID { get; set; }
         public DateTime? SubmitDate { get; set; }

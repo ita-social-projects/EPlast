@@ -1173,7 +1173,8 @@ namespace EPlast.Tests.Services.Club
                         AdminType = new AdminTypeDTO
                         {
                             AdminTypeName = Roles.KurinHead
-                        }
+                        },
+                        Status=true
                     },
                     new ClubAdministrationDTO
                     {
@@ -1183,6 +1184,7 @@ namespace EPlast.Tests.Services.Club
                         {
                             AdminTypeName = "----------",
                         },
+                        Status=true
                     }
                 };
                 clubs.Add(clubDto);

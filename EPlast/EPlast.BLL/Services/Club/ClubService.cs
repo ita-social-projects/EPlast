@@ -285,10 +285,10 @@ namespace EPlast.BLL.Services.Club
 
             var clubHead = club.ClubAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHead
-                    && (DateTime.Now < a.EndDate || a.EndDate == null));
+                    && a.Status);
             var clubHeadDeputy = club.ClubAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHeadDeputy
-                    && (DateTime.Now < a.EndDate || a.EndDate == null));
+                    && a.Status);
 
             var clubProfileDto = new ClubProfileDTO
             {
@@ -296,7 +296,7 @@ namespace EPlast.BLL.Services.Club
                 Admins = await setMembersCityName(club.ClubAdministration
                         .Where(a => a.AdminType.AdminTypeName != Roles.KurinHead
                             && a.AdminType.AdminTypeName != Roles.KurinHeadDeputy
-                            && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList()) as
+                            && a.Status).ToList()) as
                     List<ClubAdministrationDTO>,
                 Head = (await setMembersCityName(new List<ClubAdministrationDTO>() { clubHead })).FirstOrDefault() as ClubAdministrationDTO,
                 HeadDeputy = (await setMembersCityName(new List<ClubAdministrationDTO>() { clubHeadDeputy })).FirstOrDefault() as ClubAdministrationDTO
@@ -314,12 +314,12 @@ namespace EPlast.BLL.Services.Club
                 return null;
             }
 
-            var clubDoc = club.ClubDocuments.ToList();
+            var clubDoc = DocumentsSorter<ClubDocumentsDTO>.SortDocumentsBySubmitDate(club.ClubDocuments);
 
             var clubProfileDto = new ClubProfileDTO
             {
                 Club = club,
-                Documents = clubDoc
+                Documents = clubDoc.ToList()
             };
 
             return clubProfileDto;
