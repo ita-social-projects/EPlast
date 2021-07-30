@@ -70,7 +70,7 @@ namespace EPlast.BLL.Services.City
             }
             await _userManager.AddToRoleAsync(user, role);
 
-            await CheckCityHasAdmin(adminDTO.CityId, adminType.AdminTypeName, newAdmin);
+            await CheckCityHasAdminAsync(adminDTO.CityId, adminType.AdminTypeName, newAdmin);
 
             await _repositoryWrapper.CityAdministration.CreateAsync(newAdmin);
             await _repositoryWrapper.SaveAsync();
@@ -325,7 +325,7 @@ namespace EPlast.BLL.Services.City
             }
         }
 
-        private async Task CheckCityHasAdmin(int cityId, string adminTypeName, CityAdministration newAdmin)
+        private async Task CheckCityHasAdminAsync(int cityId, string adminTypeName, CityAdministration newAdmin)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminTypeName);
             var admin = await _repositoryWrapper.CityAdministration.
