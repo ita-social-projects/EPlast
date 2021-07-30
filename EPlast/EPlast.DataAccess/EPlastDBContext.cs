@@ -64,6 +64,7 @@ namespace EPlast.DataAccess
             modelBuilder.Entity<RegionMembersInfoTableObject>().HasNoKey();
             modelBuilder.Entity<MethodicDocumentTableObject>().HasNoKey();
 
+
             modelBuilder.Entity<Event>()
                 .HasKey(x => x.ID);
 
@@ -249,6 +250,7 @@ namespace EPlast.DataAccess
         public DbSet<Region> Regions { get; set; }
         public DbSet<RegionDocuments> RegionDocs { get; set; }
         public DbSet<RegionAdministration> RegionAdministrations { get; set; }
+        public DbSet<RegionFollowers> RegionFollowers { get; set; }
         public DbSet<CityLegalStatus> CityLegalStatuses { get; set; }
         public DbSet<ClubLegalStatus> ClubLegalStatuses { get; set; }
         public DbSet<UserPlastDegree> UserPlastDegrees { get; set; }
@@ -266,5 +268,9 @@ namespace EPlast.DataAccess
         public DbSet<AchievementDocuments> AchievementDocuments { get; set; }
         public DbSet<ExtractFromUPUDocuments> ExtractFromUPUDocuments { get; set; }
         public DbSet<EventSection> EventSection { get; set; }
+        public DbSet<ClubReportPlastDegrees> ClubReportPlastDegrees { get; set; }
+        public DbSet<ClubReportMember> ClubReportMember { get; set; }
+        public DbSet<ClubReportAdmins> ClubReportAdmins { get; set; }
+        public DbSet<ClubMemberHistory> ClubMemberHistory { get; set; }
     }
 }

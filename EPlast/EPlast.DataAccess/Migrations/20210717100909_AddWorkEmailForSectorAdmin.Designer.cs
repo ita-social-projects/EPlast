@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20210717100909_AddWorkEmailForSectorAdmin")]
+    partial class AddWorkEmailForSectorAdmin
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -723,37 +725,6 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("ClubLegalStatuses");
                 });
 
-            modelBuilder.Entity("EPlast.DataAccess.Entities.ClubMemberHistory", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("ClubId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsFollower")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("ClubId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ClubMemberHistory");
-                });
-
             modelBuilder.Entity("EPlast.DataAccess.Entities.ClubMembers", b =>
                 {
                     b.Property<int>("ID")
@@ -784,77 +755,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ClubMembers");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.ClubReportAdmins", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("ClubAdministrationId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ClubAnnualReportId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("ClubAdministrationId");
-
-                    b.HasIndex("ClubAnnualReportId");
-
-                    b.ToTable("ClubReportAdmins");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.ClubReportMember", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("ClubAnnualReportId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ClubMemberHistoryId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("ClubAnnualReportId");
-
-                    b.HasIndex("ClubMemberHistoryId");
-
-                    b.ToTable("ClubReportMember");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.ClubReportPlastDegrees", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("ClubAnnualReportId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PlastDegreeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("ClubAnnualReportId");
-
-                    b.HasIndex("PlastDegreeId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ClubReportPlastDegrees");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.ConfirmedUser", b =>
@@ -2090,76 +1990,6 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("RegionDocs");
                 });
 
-            modelBuilder.Entity("EPlast.DataAccess.Entities.RegionFollowers", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Appeal")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1024)")
-                        .HasMaxLength(1024);
-
-                    b.Property<string>("CityDescription")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CityName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
-
-                    b.Property<string>("HouseNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(10)")
-                        .HasMaxLength(10);
-
-                    b.Property<string>("Logo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OfficeNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(10)")
-                        .HasMaxLength(10);
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(20)")
-                        .HasMaxLength(20);
-
-                    b.Property<string>("PostIndex")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(10)")
-                        .HasMaxLength(10);
-
-                    b.Property<int>("RegionId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Street")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("СityURL")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("RegionId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RegionFollowers");
-                });
-
             modelBuilder.Entity("EPlast.DataAccess.Entities.RegionMembersInfoTableObject", b =>
                 {
                     b.Property<int?>("CityAnnualReportId")
@@ -3137,19 +2967,6 @@ namespace EPlast.DataAccess.Migrations
                         .HasForeignKey("ClubID");
                 });
 
-            modelBuilder.Entity("EPlast.DataAccess.Entities.ClubMemberHistory", b =>
-                {
-                    b.HasOne("EPlast.DataAccess.Entities.Club", "Club")
-                        .WithMany()
-                        .HasForeignKey("ClubId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EPlast.DataAccess.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-                });
-
             modelBuilder.Entity("EPlast.DataAccess.Entities.ClubMembers", b =>
                 {
                     b.HasOne("EPlast.DataAccess.Entities.Club", "Club")
@@ -3163,55 +2980,6 @@ namespace EPlast.DataAccess.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.ClubReportAdmins", b =>
-                {
-                    b.HasOne("EPlast.DataAccess.Entities.ClubAdministration", "ClubAdministration")
-                        .WithMany()
-                        .HasForeignKey("ClubAdministrationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EPlast.DataAccess.Entities.ClubAnnualReport", "ClubAnnualReport")
-                        .WithMany()
-                        .HasForeignKey("ClubAnnualReportId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.ClubReportMember", b =>
-                {
-                    b.HasOne("EPlast.DataAccess.Entities.ClubAnnualReport", "ClubAnnualReport")
-                        .WithMany()
-                        .HasForeignKey("ClubAnnualReportId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EPlast.DataAccess.Entities.ClubMemberHistory", "ClubMemberHistory")
-                        .WithMany()
-                        .HasForeignKey("ClubMemberHistoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.ClubReportPlastDegrees", b =>
-                {
-                    b.HasOne("EPlast.DataAccess.Entities.ClubAnnualReport", "ClubAnnualReport")
-                        .WithMany()
-                        .HasForeignKey("ClubAnnualReportId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EPlast.DataAccess.Entities.PlastDegree", "PlastDegree")
-                        .WithMany()
-                        .HasForeignKey("PlastDegreeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EPlast.DataAccess.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.ConfirmedUser", b =>
@@ -3510,21 +3278,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasOne("EPlast.DataAccess.Entities.Region", null)
                         .WithMany("Documents")
                         .HasForeignKey("RegionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.RegionFollowers", b =>
-                {
-                    b.HasOne("EPlast.DataAccess.Entities.Region", "Region")
-                        .WithMany()
-                        .HasForeignKey("RegionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EPlast.DataAccess.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

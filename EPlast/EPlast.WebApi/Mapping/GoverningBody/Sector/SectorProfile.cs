@@ -12,7 +12,7 @@ namespace EPlast.WebApi.Mapping.GoverningBody.Sector
             CreateMap<SectorProfileDTO, SectorViewModel>()
                 .ForMember(r => r.Id, s => s.MapFrom(t => t.Sector.Id))
                 .ForMember(r => r.Head, s => s.MapFrom(t => t.Head))
-                .ForMember(r => r.Administration, s => s.MapFrom(t => t.Sector.Administration))
+                .ForMember(r => r.Administration, s => s.MapFrom(t => t.Administration))
                 .ForMember(r => r.Documents, s => s.MapFrom(t => t.Documents))
                 .ForMember(r => r.Name, s => s.MapFrom(t => t.Sector.Name))
                 .ForMember(r => r.PhoneNumber, s => s.MapFrom(t => t.Sector.PhoneNumber))

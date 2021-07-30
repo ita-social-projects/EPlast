@@ -135,8 +135,8 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
             var result = await _service.EditSectorAdministratorAsync(testSectorAdmin);
 
             //Assert
-            _repoWrapper.Verify(x => x.GoverningBodySectorAdministration.Update(
-                It.IsAny<SectorAdministration>()), Times.Exactly(2));
+            _repoWrapper.Verify(x => x.GoverningBodySectorAdministration.Delete(
+                It.IsAny<SectorAdministration>()));
             _repoWrapper.Verify(x => x.GoverningBodySectorAdministration.CreateAsync(
                 It.IsAny<SectorAdministration>()), Times.Once);
             _repoWrapper.Verify(x => x.SaveAsync(), Times.Exactly(3));

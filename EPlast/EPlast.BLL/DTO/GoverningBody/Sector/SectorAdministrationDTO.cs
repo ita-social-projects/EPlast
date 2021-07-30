@@ -15,5 +15,6 @@ namespace EPlast.BLL.DTO.GoverningBody.Sector
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public bool Status { get; set; }
+        public string WorkEmail { get; set; }
     }
 }

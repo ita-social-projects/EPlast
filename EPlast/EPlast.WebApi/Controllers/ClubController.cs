@@ -118,15 +118,15 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetClubMembersInfo(int clubId)
         {
-            var clubProfileDto = await _clubService.GetClubMembersInfoAsync(clubId);
+            var clubProfileDto = await _clubService.GetClubDataForReport(clubId);
+
+
             if (clubProfileDto == null)
             {
                 return NotFound();
             }
 
-            var clubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(clubProfileDto);
-
-            return Ok(clubProfile);
+            return Ok(clubProfileDto);
         }
 
         /// <summary>
@@ -329,27 +329,16 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminPlastunAndSupporter)]
         public async Task<IActionResult> AddFollower(int clubId)
         {
-            var follower = await _clubParticipantsService.AddFollowerAsync(clubId, await _userManager.GetUserAsync(User));
+            User ItFollower = await _userManager.GetUserAsync(User);
+
+            await _clubParticipantsService.AddFollowerInHistoryAsync(clubId, ItFollower.Id);
+
+            var follower = await _clubParticipantsService.AddFollowerAsync(clubId, ItFollower);
             _logger.LogInformation($"User {{{follower.UserId}}} became a follower of Club {{{clubId}}}.");
 
             return Ok(follower);
         }
 
-        /// <summary>
-        /// Add the user to followers
-        /// </summary>
-        /// <param name="clubId">An id of the city</param>
-        /// <param name="userId">An id of the user</param>
-        /// <returns>An information about a new follower</returns>
-        [HttpPost("AddFollowerWithId/{clubId}/{userId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> AddFollowerWithId(int clubId, string userId)
-        {
-            var follower = await _clubParticipantsService.AddFollowerAsync(clubId, userId);
-            _logger.LogInformation($"User {{{follower.UserId}}} became a follower of city {{{clubId}}}.");
-
-            return Ok(follower);
-        }
 
         /// <summary>
         /// Remove a specific follower from the Club
@@ -359,6 +348,10 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RemoveFollower(int followerId)
         {
+            User ItFollower = await _userManager.GetUserAsync(User);
+            await _clubParticipantsService.UpdateStatusFollowerInHistoryAsync(ItFollower.Id, true, true);
+
+
             await _clubParticipantsService.RemoveFollowerAsync(followerId);
             _logger.LogInformation($"Follower with ID {{{followerId}}} was removed.");
 
@@ -374,10 +367,22 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> ChangeApproveStatus(int memberId)
         {
+      
             var member = await _clubParticipantsService.ToggleApproveStatusAsync(memberId);
+            if (!member.IsApproved)
+            {
+                await _clubParticipantsService.UpdateStatusFollowerInHistoryAsync(member.UserId, false, true);
+
+                await _clubParticipantsService.AddFollowerInHistoryAsync(Convert.ToInt32(member.ClubId), member.User.ID);
+            }
+            else
+            {
+                await _clubParticipantsService.UpdateStatusFollowerInHistoryAsync(member.UserId, false, false);
+            }
             _logger.LogInformation($"Status of member with ID {{{memberId}}} was changed.");
 
             return Ok(member);
+
         }
         /// <summary>
         /// Club name only for approved member
@@ -507,7 +512,6 @@ namespace EPlast.WebApi.Controllers
 
 
         [HttpGet("GetUserAdmins/{UserId}")]
-
         public async Task<IActionResult> GetUserAdministrations(string userId)
         {
             var userAdmins = await _clubParticipantsService.GetAdministrationsOfUserAsync(userId);
@@ -517,7 +521,6 @@ namespace EPlast.WebApi.Controllers
 
 
         [HttpGet("GetUserPreviousAdmins/{UserId}")]
-
         public async Task<IActionResult> GetUserPreviousAdministrations(string userId)
         {
             var userAdmins = await _clubParticipantsService.GetPreviousAdministrationsOfUserAsync(userId);
