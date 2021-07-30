@@ -26,6 +26,7 @@ namespace EPlast.DataAccess.Entities
         public string PostIndex { get; set; }
         [StringLength(int.MaxValue, MinimumLength = 3)]
         public string Logo { get; set; }
+        public bool IsActive { get; set; }
         public ICollection<ClubDocuments> ClubDocuments { get; set; }
         public ICollection<ClubMembers> ClubMembers { get; set; }
         public ICollection<ClubAdministration> ClubAdministration { get; set; }

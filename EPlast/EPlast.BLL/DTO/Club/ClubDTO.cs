@@ -34,6 +34,7 @@ namespace EPlast.BLL.DTO.Club
         [MaxLength(7, ErrorMessage = "Поштовий індекс куреня не має перевищувати 7 символів")]
         public string PostIndex { get; set; }
         public string Logo { get; set; }
+        public bool IsActive { get; set; }
         public bool CanCreate { get; set; }
         public bool CanEdit { get; set; }
         public bool CanJoin { get; set; }

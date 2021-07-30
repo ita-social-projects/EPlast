@@ -63,6 +63,40 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get a specific number of active clubs 
+        /// </summary>
+        /// <param name="page">A number of the page</param>
+        /// <param name="pageSize">A count of cities to display</param>
+        /// <param name="clubName">Optional param to find cities by name</param>
+        /// <returns>A specific number of active clubs</returns>
+        [HttpGet("Profiles/Active/{page}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetActiveClubs(int page, int pageSize, string clubName = null)
+        {
+            var cities = await _clubService.GetAllActiveDTOAsync(clubName);
+            var citiesViewModel = new ClubsViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
+
+            return Ok(citiesViewModel);
+        }
+
+        /// <summary>
+        /// Get a specific number of not active clubs 
+        /// </summary>
+        /// <param name="page">A number of the page</param>
+        /// <param name="pageSize">A count of cities to display</param>
+        /// <param name="clubName">Optional param to find cities by name</param>
+        /// <returns>A specific number of not active clubs</returns>
+        [HttpGet("Profiles/NotActive/{page}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetNotActiveClubs(int page, int pageSize, string clubName = null)
+        {
+            var cities = await _clubService.GetAllNotActiveDTOAsync(clubName);
+            var citiesViewModel = new ClubsViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
+
+            return Ok(citiesViewModel);
+        }
+
+        /// <summary>
         /// Get all clubs 
         /// </summary>
         /// <returns>List of clubs</returns>
@@ -414,6 +448,30 @@ namespace EPlast.WebApi.Controllers
                 $" with role {{{admin.AdminType.AdminTypeName}}}.");
 
             return Ok(admin);
+        }
+
+        /// <summary>
+        /// Archive a specific club
+        /// </summary>
+        /// <param name="clubId">The id of the club</param>
+        [HttpPut("ArchiveClub/{clubId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> Archive(int clubId)
+        {
+            await _clubService.ArchiveAsync(clubId);
+            return Ok();
+        }
+
+        /// <summary>
+        /// Archive a specific club
+        /// </summary>
+        /// <param name="clubId">The id of the club</param>
+        [HttpPut("UnArchiveClub/{clubId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> UnArchive(int clubId)
+        {
+            await _clubService.UnArchiveAsync(clubId);
+            return Ok();
         }
 
         /// <summary>

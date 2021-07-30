@@ -469,22 +469,44 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Get all regions using redis cache
+        /// Get all active regions using redis cache
         /// </summary>
-        /// <returns>List of regions</returns>
-        [HttpGet("Profiles/{page}")]
+        /// <returns>List of active regions</returns>
+        [HttpGet("Profiles/Active/{page}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetRegions(int page, int pageSize, string regionName)
         {
-            string recordKey = "Regions_" + DateTime.Now.ToString("yyyyMMdd_hhmm");
+            string recordKey = "ActiveRegions_" + DateTime.Now.ToString("yyyyMMdd_hhmm");
             IEnumerable<RegionDTO> regions = await _cache.GetRecordAsync<IEnumerable<RegionDTO>>(recordKey);
 
             if (regions is null)
             {
-                regions = await _regionService.GetAllRegionsAsync();
+                regions = await _regionService.GetAllActiveRegionsAsync();
                 await _cache.SetRecordAsync(recordKey, regions);
             }
             var regionsViewModel = new RegionsViewModel(page, pageSize, regions, regionName, User.IsInRole(Roles.Admin));
+
+            return Ok(regionsViewModel);
+        }
+
+
+        /// <summary>
+        /// Get all not active regions using redis cache
+        /// </summary>
+        /// <returns>List of not active regions</returns>
+        [HttpGet("Profiles/NotActive/{page}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetNotActiveRegions(int page, int pageSize, string regionName)
+        {
+            string recordKey = "NotActiveRegions_" + DateTime.Now.ToString("yyyyMMdd_hhmm");
+            IEnumerable<RegionDTO> regions = await _cache.GetRecordAsync<IEnumerable<RegionDTO>>(recordKey);
+            if (regions is null)
+            {
+                regions = await _regionService.GetAllNotActiveRegionsAsync();
+                await _cache.SetRecordAsync(recordKey, regions);
+            }
+
+            var regionsViewModel = new RegionsViewModel(page, pageSize, regions, regionName, false);
 
             return Ok(regionsViewModel);
         }
@@ -567,12 +589,36 @@ namespace EPlast.WebApi.Controllers
             return Ok(regions);
         }
 
+        [HttpGet("Profiles/Active")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> ActiveRegions()
+        {
+            var regions = await _regionService.GetAllActiveRegionsAsync();
+            return Ok(regions);
+        }
+
+        [HttpGet("Profiles/NotActive")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> NotActiveRegions()
+        {
+            var regions = await _regionService.GetAllNotActiveRegionsAsync();
+            return Ok(regions);
+        }
+
         [HttpPut("RedirectCities/{prevRegId}/{nextRegId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RedirectCities(int prevRegId, int nextRegId)
         {
             await _regionService.RedirectMembers(prevRegId, nextRegId);
 
+            return Ok();
+        }
+
+        [HttpPut("ArchiveRegion/{Id}")]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<IActionResult> ArchiveRegion(int Id)
+        {
+            await _regionService.ArchiveRegion(Id);
             return Ok();
         }
 
@@ -606,6 +652,7 @@ namespace EPlast.WebApi.Controllers
 
             return Ok();
         }
+
         [HttpGet("RegionUsers/{regionId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetRegionUsers(int regionId)
@@ -613,6 +660,14 @@ namespace EPlast.WebApi.Controllers
             var regionUsers = await _regionService.GetRegionUsersAsync(regionId);
 
             return Ok(regionUsers);
+        }
+
+        [HttpPut("UnArchiveRegion/{Id}")]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<IActionResult> UnArchiveRegion(int Id)
+        {
+            await _regionService.UnArchiveRegion(Id);
+            return Ok();
         }
     }
 }

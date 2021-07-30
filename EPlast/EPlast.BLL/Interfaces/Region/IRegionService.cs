@@ -11,7 +11,11 @@ namespace EPlast.BLL.Interfaces.Region
 {
     public interface IRegionService
     {
+        Task ArchiveRegion(int regionId);
+        Task UnArchiveRegion(int regionId);
         Task<IEnumerable<RegionDTO>> GetAllRegionsAsync();
+        Task<IEnumerable<RegionDTO>> GetAllActiveRegionsAsync();
+        Task<IEnumerable<RegionDTO>> GetAllNotActiveRegionsAsync();
         Task<RegionDTO> GetRegionByIdAsync(int regionId);
         Task<RegionProfileDTO> GetRegionProfileByIdAsync(int regionId, User user);
         Task DeleteRegionByIdAsync(int regionId);

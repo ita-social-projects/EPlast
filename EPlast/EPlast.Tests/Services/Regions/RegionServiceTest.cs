@@ -50,6 +50,47 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
+        public void ArchivRegionAsync_ReturnsCorrect()
+        {
+            // Arrange
+
+            Region reg = new Region() { ID = 2 };
+            _repoWrapper
+                   .Setup(x => x.Region.GetFirstAsync(It.IsAny<Expression<Func<Region, bool>>>(),
+                It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
+                .ReturnsAsync(reg);
+
+            _repoWrapper
+                .Setup(x => x.Region.Update(reg));
+
+            _repoWrapper
+                  .Setup(x => x.SaveAsync());
+            // Act
+            var result = _regionService.ArchiveRegion(fakeId);
+
+            // Assert
+            _repoWrapper.Verify(r => r.Region.Update(It.IsAny<Region>()), Times.Once);
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
+        }
+
+        [Test]
+        public async Task GetAllActiveRegionsAsync_ReturnsIEnumerableActiveRegionDTO()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.Region.GetAllAsync(It.IsAny<Expression<Func<Region, bool>>>(),
+                It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
+                .ReturnsAsync(new List<Region>());
+            _mapper.Setup(x => x.Map<IEnumerable<Region>, IEnumerable<RegionDTO>>(It.IsAny<IEnumerable<Region>>()))
+                .Returns(regions);
+            // Act
+            var result = await _regionService.GetAllActiveRegionsAsync();
+            // Assert
+            Assert.IsInstanceOf<IEnumerable<RegionDTO>>(result);
+            Assert.IsNotNull(result);
+        }
+
+        [Test]
         public async Task GetAllRegionsAsync_ReturnsIEnumerableRegionDTO()
         {
             // Arrange
@@ -61,6 +102,23 @@ namespace EPlast.Tests.Services.Regions
                 .Returns(regions);
             // Act
             var result = await _regionService.GetAllRegionsAsync();
+            // Assert
+            Assert.IsInstanceOf<IEnumerable<RegionDTO>>(result);
+            Assert.IsNotNull(result);
+        }
+
+        [Test]
+        public async Task GetAllNotActiveRegionsAsync_ReturnsIEnumerableNotActiveRegionDTO()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.Region.GetAllAsync(It.IsAny<Expression<Func<Region, bool>>>(),
+                It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
+                .ReturnsAsync(new List<Region>());
+            _mapper.Setup(x => x.Map<IEnumerable<Region>, IEnumerable<RegionDTO>>(It.IsAny<IEnumerable<Region>>()))
+                .Returns(regions);
+            // Act
+            var result = await _regionService.GetAllNotActiveRegionsAsync();
             // Assert
             Assert.IsInstanceOf<IEnumerable<RegionDTO>>(result);
             Assert.IsNotNull(result);
@@ -534,6 +592,31 @@ namespace EPlast.Tests.Services.Regions
             _repoWrapper.Verify();
             Assert.IsInstanceOf<Task<IEnumerable<RegionUserDTO>>>(result);
         }
+
+        [Test]
+        public void UnArchivRegionAsync_ReturnsCorrect()
+        {
+            // Arrange
+
+            Region reg = new Region() { ID = 2 };
+            _repoWrapper
+                   .Setup(x => x.Region.GetFirstAsync(It.IsAny<Expression<Func<Region, bool>>>(),
+                It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
+                .ReturnsAsync(reg);
+
+            _repoWrapper
+                .Setup(x => x.Region.Update(reg));
+
+            _repoWrapper
+                  .Setup(x => x.SaveAsync());
+            // Act
+            var result = _regionService.UnArchiveRegion(fakeId);
+
+            // Assert
+            _repoWrapper.Verify(r => r.Region.Update(It.IsAny<Region>()), Times.Once);
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
+        }
+
         private readonly int fakeId = 6;
         
         private readonly User user = new User();

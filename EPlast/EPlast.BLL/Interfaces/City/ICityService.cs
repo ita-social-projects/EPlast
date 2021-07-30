@@ -9,6 +9,13 @@ namespace EPlast.BLL.Interfaces.City
 {
     public interface ICityService
     {
+
+        /// <summary>
+        /// Archive a specific city
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        Task ArchiveAsync(int cityId);
+
         /// <summary>
         /// Get all cities
         /// </summary>
@@ -17,11 +24,39 @@ namespace EPlast.BLL.Interfaces.City
         Task<IEnumerable<DataAccessCity.City>> GetAllAsync(string cityName = null);
 
         /// <summary>
+        /// Get all active cities
+        /// </summary>
+        /// <param name="cityName">Optional param to find cities by name</param>
+        /// <returns>All active cities of type City</returns>
+        Task<IEnumerable<DataAccessCity.City>> GetAllActiveAsync(string cityName = null);
+
+        /// <summary>
+        /// Get all not active cities
+        /// </summary>
+        /// <param name="cityName">Optional param to find cities by name</param>
+        /// <returns>All not active cities of type City</returns>
+        Task<IEnumerable<DataAccessCity.City>> GetAllNotActiveAsync(string cityName = null);
+
+        /// <summary>
         /// Get all cities
         /// </summary>
         /// <param name="cityName">Optional param to find cities by name</param>
         /// <returns>All cities of type CityDTO</returns>
         Task<IEnumerable<CityDTO>> GetAllDTOAsync(string cityName = null);
+
+        /// <summary>
+        /// Get all active cities
+        /// </summary>
+        /// <param name="cityName">Optional param to find cities by name</param>
+        /// <returns>All active cities of type CityDTO</returns>
+        Task<IEnumerable<CityDTO>> GetAllActiveDTOAsync(string cityName = null);
+
+        /// <summary>
+        /// Get all not active cities
+        /// </summary>
+        /// <param name="cityName">Optional param to find cities by name</param>
+        /// <returns>All not active cities of type CityDTO</returns>
+        Task<IEnumerable<CityDTO>> GetAllNotActiveDTOAsync(string cityName = null);
 
         /// <summary>
         /// Get a list of cities by region
@@ -136,5 +171,11 @@ namespace EPlast.BLL.Interfaces.City
         /// </summary>
         /// <returns>All cities</returns>
         Task<IEnumerable<CityForAdministrationDTO>> GetCities();
+
+        /// <summary>
+        /// Unarchive a specific city
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        Task UnArchiveAsync(int cityId);
     }
 }

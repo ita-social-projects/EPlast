@@ -10,6 +10,8 @@ namespace EPlast.BLL.Mapping.Region
         {
             CreateMap<DatabaseEntities.Region, RegionDTO>().ReverseMap();
             CreateMap<DatabaseEntities.Region, RegionProfileDTO>().ReverseMap();
+            CreateMap<DatabaseEntities.Region, RegionProfileDTO>()
+                .ForMember(r => r.IsActive, s => s.MapFrom(t => t.IsActive));
             CreateMap<RegionDTO, RegionProfileDTO>().ReverseMap();
         }
     }

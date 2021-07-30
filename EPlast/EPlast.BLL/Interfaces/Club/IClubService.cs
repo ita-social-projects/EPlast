@@ -13,18 +13,52 @@ namespace EPlast.BLL.Interfaces.Club
     public interface IClubService
     {
         /// <summary>
-        /// Get all cities
+        /// Archive a specific club
         /// </summary>
-        /// <param name="clubName">Optional param to find cities by name</param>
-        /// <returns>All cities of type Club</returns>
-        Task<IEnumerable<DataAccessClub.Club>> GetAllAsync(string clubName = null);
+        /// <param name="clubId">The id of the club</param>
+        Task ArchiveAsync(int clubId);
 
         /// <summary>
         /// Get all cities
         /// </summary>
-        /// <param name="clubName">Optional param to find cities by name</param>
+        /// <param name="clubName">Optional param to find club by name</param>
+        /// <returns>All clubs of type Club</returns>
+        Task<IEnumerable<DataAccessClub.Club>> GetAllAsync(string clubName = null);
+
+        /// <summary>
+        /// Get all clubs
+        /// </summary>
+        /// <param name="clubName">Optional param to find club by name</param>
+        /// <returns>All active clubs of type Club</returns>
+        Task<IEnumerable<DataAccessClub.Club>> GetAllActiveAsync(string clubName = null);
+
+        /// <summary>
+        /// Get all clubs
+        /// </summary>
+        /// <param name="clubName">Optional param to find club by name</param>
+        /// <returns>All not active clubs of type Club</returns>
+        Task<IEnumerable<DataAccessClub.Club>> GetAllNotActiveAsync(string clubName = null);
+
+        /// <summary>
+        /// Get all clubs
+        /// </summary>
+        /// <param name="clubName">Optional param to find club by name</param>
         /// <returns>All cities of type ClubDTO</returns>
         Task<IEnumerable<ClubDTO>> GetAllDtoAsync(string clubName = null);
+
+        /// <summary>
+        /// Get all active clubs
+        /// </summary>
+        /// <param name="clubName">Optional param to find active club by name</param>
+        /// <returns>All active cities of type ClubDTO</returns>
+        Task<IEnumerable<ClubDTO>> GetAllActiveDTOAsync(string clubName = null);
+
+        /// <summary>
+        /// Get all not active clubs
+        /// </summary>
+        /// <param name="clubName">Optional param to find not active club by name</param>
+        /// <returns>All not active cities of type ClubDTO</returns>
+        Task<IEnumerable<ClubDTO>> GetAllNotActiveDTOAsync(string clubName = null);
 
         /// <summary>
         /// Get a specific Club
@@ -172,5 +206,11 @@ namespace EPlast.BLL.Interfaces.Club
         /// </summary>
         /// <returns>count of deletet users</returns>
         Task<int> GetCountDeletedUsersPerYear(int clubId);
+
+        /// <summary>
+        /// Unarchive a specific club
+        /// </summary>
+        /// <param name="clubId">The id of the club</param>
+        Task UnArchiveAsync(int clubId);
     }
 }
