@@ -79,7 +79,6 @@ namespace EPlast.BLL.Services
             }
 
             await _userManager.AddToRoleAsync(user, Roles.FormerPlastMember);
-            await _repoWrapper.SaveAsync();
         }
 
         public async Task ChangeCurrentRoleAsync(string userId, string role)
