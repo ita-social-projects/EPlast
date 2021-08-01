@@ -455,6 +455,11 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy)]
         public async Task<IActionResult> EditAdmin(CityAdministrationViewModel admin)
         {
+            if (admin.EndDate != null && admin.EndDate < DateTime.Today)
+            {
+                return BadRequest();
+            }
+
             var adminDTO = _mapper.Map<CityAdministrationViewModel, CityAdministrationDTO>(admin);
 
             await _cityParticipantsService.EditAdministratorAsync(adminDTO);
