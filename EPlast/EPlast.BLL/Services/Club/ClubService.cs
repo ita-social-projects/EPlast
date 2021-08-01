@@ -47,7 +47,7 @@ namespace EPlast.BLL.Services.Club
 
         public async Task ArchiveAsync(int clubId)
         {
-            var club = await _repoWrapper.Club.GetFirstOrDefaultAsync(c => c.ID == clubId && c.IsActive == true);
+            var club = await _repoWrapper.Club.GetFirstOrDefaultAsync(c => c.ID == clubId && c.IsActive);
             club.IsActive = false;
             _repoWrapper.Club.Update(club);
             await _repoWrapper.SaveAsync();
@@ -66,7 +66,7 @@ namespace EPlast.BLL.Services.Club
         public async Task<IEnumerable<DataAccessClub.Club>> GetAllActiveAsync(string clubName = null)
         {
             var clubs = await _repoWrapper.Club.GetAllAsync();
-            var filteredClubs = clubs.Where(c => c.IsActive == true);
+            var filteredClubs = clubs.Where(c => c.IsActive);
             return string.IsNullOrEmpty(clubName)
                 ? filteredClubs
                 : filteredClubs.Where(c => c.Name.ToLower().Contains(clubName.ToLower()));
@@ -75,7 +75,7 @@ namespace EPlast.BLL.Services.Club
         public async Task<IEnumerable<DataAccessClub.Club>> GetAllNotActiveAsync(string clubName = null)
         {
             var clubs = await _repoWrapper.Club.GetAllAsync();
-            var filteredClubs = clubs.Where(c => c.IsActive == false);
+            var filteredClubs = clubs.Where(c => !c.IsActive);
             return string.IsNullOrEmpty(clubName)
                 ? filteredClubs
                 : filteredClubs.Where(c => c.Name.ToLower().Contains(clubName.ToLower()));
@@ -475,7 +475,7 @@ namespace EPlast.BLL.Services.Club
         public async Task<IEnumerable<ClubForAdministrationDTO>> GetClubs()
         {
             var clubs = await _repoWrapper.Club.GetAllAsync();  
-            var filteredClubs = clubs.Where(c => c.IsActive == true);
+            var filteredClubs = clubs.Where(c => c.IsActive);
             return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubForAdministrationDTO>>(filteredClubs);
         }
 
@@ -617,7 +617,7 @@ namespace EPlast.BLL.Services.Club
         }
         public async Task UnArchiveAsync(int clubId)
         {
-            var club = await _repoWrapper.Club.GetFirstOrDefaultAsync(c => c.ID == clubId && c.IsActive == false);
+            var club = await _repoWrapper.Club.GetFirstOrDefaultAsync(c => c.ID == clubId && !c.IsActive);
             club.IsActive = true;
             _repoWrapper.Club.Update(club);
             await _repoWrapper.SaveAsync();

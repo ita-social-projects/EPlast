@@ -63,6 +63,17 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get all cities 
+        /// </summary>
+        /// <returns>List of cities</returns>
+        [HttpGet("Cities")]
+        public async Task<IActionResult> GetCities()
+        {
+            var cities = await _cityService.GetCities();
+            return Ok(cities);
+        }
+
+        /// <summary>
         /// Get a specific number of active cities 
         /// </summary>
         /// <param name="page">A number of the page</param>
@@ -71,7 +82,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>A specific number of active cities</returns>
         [HttpGet("Profiles/Active/{page}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetActiveCities(int page, int pageSize, string cityName = null)
+        public async Task<IActionResult> GetActiveProfile(int page, int pageSize, string cityName = null)
         {
             var cities = await _cityService.GetAllActiveDTOAsync(cityName);
             var citiesViewModel = new CitiesViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
@@ -88,23 +99,12 @@ namespace EPlast.WebApi.Controllers
         /// <returns>A specific number of not active cities</returns>
         [HttpGet("Profiles/NotActive/{page}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetNotActiveCities(int page, int pageSize, string cityName = null)
+        public async Task<IActionResult> GetNotActiveProfile(int page, int pageSize, string cityName = null)
         {
             var cities = await _cityService.GetAllNotActiveDTOAsync(cityName);
             var citiesViewModel = new CitiesViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
 
             return Ok(citiesViewModel);
-        }
-
-        /// <summary>
-        /// Get all cities 
-        /// </summary>
-        /// <returns>List of cities</returns>
-        [HttpGet("Cities")]
-        public async Task<IActionResult> GetCities()
-        {
-            var cities = await _cityService.GetCities();
-            return Ok(cities);
         }
 
         /// <summary>

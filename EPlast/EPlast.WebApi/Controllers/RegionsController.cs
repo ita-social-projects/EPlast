@@ -474,7 +474,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>List of active regions</returns>
         [HttpGet("Profiles/Active/{page}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetRegions(int page, int pageSize, string regionName)
+        public async Task<IActionResult> GetActiveRegions(int page, int pageSize, string regionName)
         {
             string recordKey = "ActiveRegions_" + DateTime.Now.ToString("yyyyMMdd_hhmm");
             IEnumerable<RegionDTO> regions = await _cache.GetRecordAsync<IEnumerable<RegionDTO>>(recordKey);

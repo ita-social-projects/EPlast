@@ -223,6 +223,30 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task Get_AllActiveRegions_ReturnsAllregionsOkResult()
+        {
+            // Arrange
+            _regionService.Setup(x => x.GetAllActiveRegionsAsync()).ReturnsAsync(GetRegions());
+            // Act
+            var result = await _regionController.ActiveRegions();
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsInstanceOf<List<RegionDTO>>((result as ObjectResult).Value);
+        }
+
+        [Test]
+        public async Task Get_AllNotActiveRegions_ReturnsAllregionsOkResult()
+        {
+            // Arrange
+            _regionService.Setup(x => x.GetAllNotActiveRegionsAsync()).ReturnsAsync(GetRegions());
+            // Act
+            var result = await _regionController.NotActiveRegions();
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsInstanceOf<List<RegionDTO>>((result as ObjectResult).Value);
+        }
+
+        [Test]
         public async Task GetAllRegionsReportsAsync_TakesParameters_OkObjectResult()
         {
             //Arrange
@@ -667,6 +691,26 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task Archive_AnyInt_ReturnsOkResult()
+        {
+            // Act
+            var result = await _regionController.ArchiveRegion(2);
+
+            // Assert
+            Assert.IsInstanceOf<OkResult>(result);
+        }
+
+        [Test]
+        public async Task UnArchive_AnyInt_ReturnsOkResult()
+        {
+            // Act
+            var result = await _regionController.UnArchiveRegion(2);
+
+            // Assert
+            Assert.IsInstanceOf<OkResult>(result);
+        }
+
+        [Test]
         public async Task Remove_ReturnsRegions()
         {
             // Arrange
@@ -883,7 +927,7 @@ namespace EPlast.Tests.Controllers
 
 
         [Test]
-        public async Task GetRegions_Ok()
+        public async Task GetActiveeRegions_Ok()
         {
             // Arrange
             int page = 0;
@@ -899,7 +943,7 @@ namespace EPlast.Tests.Controllers
             _cache.Setup(x => x.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(bytes);
 
             // Act
-            var result = await _regionController.GetRegions(page, pageSize, regionName);
+            var result = await _regionController.GetActiveRegions(page, pageSize, regionName);
             
             // Assert
             Assert.NotNull(result);
@@ -909,7 +953,7 @@ namespace EPlast.Tests.Controllers
 
 
         [Test]
-        public async Task GetRegions_regionsIsnull()
+        public async Task GetActiveRegions_regionsIsnull()
         {
             // Arrange
             int page = 0;
@@ -925,8 +969,58 @@ namespace EPlast.Tests.Controllers
             _cache.Setup(x => x.GetAsync(It.IsAny<string>(), default)).ReturnsAsync((byte[])null);
        
             // Act
-            var result = await _regionController.GetRegions(page, pageSize, regionName);
+            var result = await _regionController.GetActiveRegions(page, pageSize, regionName);
             
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetNotActiveRegions_Ok()
+        {
+            // Arrange
+            int page = 0;
+            int pageSize = 1;
+            string regionName = "Lviv";
+
+            var mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(m => m.User).Returns(new ClaimsPrincipal());
+
+            _regionController.ControllerContext.HttpContext = mockHttpContext.Object;
+
+            byte[] bytes = Encoding.ASCII.GetBytes("[]");
+            _cache.Setup(x => x.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(bytes);
+
+            // Act
+            var result = await _regionController.GetNotActiveRegions(page, pageSize, regionName);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+
+
+        [Test]
+        public async Task GetNotActiveRegions_regionsIsnull()
+        {
+            // Arrange
+            int page = 0;
+            int pageSize = 1;
+            string regionName = "Lviv";
+
+            var mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(m => m.User).Returns(new ClaimsPrincipal());
+
+            _regionController.ControllerContext.HttpContext = mockHttpContext.Object;
+
+            byte[] bytes = new byte[2];
+            _cache.Setup(x => x.GetAsync(It.IsAny<string>(), default)).ReturnsAsync((byte[])null);
+
+            // Act
+            var result = await _regionController.GetNotActiveRegions(page, pageSize, regionName);
+
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);

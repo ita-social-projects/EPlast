@@ -380,7 +380,7 @@ namespace EPlast.BLL.Services
         public async Task<IEnumerable<CityForAdministrationDTO>> GetCities()
         {
             var cities = await _repoWrapper.City.GetAllAsync();
-            var filteredCities = cities.Where(c => c.IsActive == true);
+            var filteredCities = cities.Where(c => c.IsActive);
             return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityForAdministrationDTO>>(filteredCities);
         }
 
@@ -458,7 +458,7 @@ namespace EPlast.BLL.Services
 
         public async Task ArchiveAsync(int cityId)
         {
-            var city = await _repoWrapper.City.GetFirstOrDefaultAsync(c => c.ID == cityId && c.IsActive == true);
+            var city = await _repoWrapper.City.GetFirstOrDefaultAsync(c => c.ID == cityId && c.IsActive);
             city.IsActive = false;
             _repoWrapper.City.Update(city);
             await _repoWrapper.SaveAsync();
@@ -467,7 +467,7 @@ namespace EPlast.BLL.Services
         public async Task<IEnumerable<DataAccessCity.City>> GetAllActiveAsync(string cityName = null)
         {
             var cities = await _repoWrapper.City.GetAllAsync();
-            var filteredCities = cities.Where(c => c.IsActive == true);
+            var filteredCities = cities.Where(c => c.IsActive);
             return string.IsNullOrEmpty(cityName)
                 ? filteredCities
                 : filteredCities.Where(c => c.Name.ToLower().Contains(cityName.ToLower()));
@@ -476,7 +476,7 @@ namespace EPlast.BLL.Services
         public async Task<IEnumerable<DataAccessCity.City>> GetAllNotActiveAsync(string cityName = null)
         {
             var cities = await _repoWrapper.City.GetAllAsync();
-            var filteredCities = cities.Where(c => c.IsActive == false);
+            var filteredCities = cities.Where(c => !c.IsActive);
             return string.IsNullOrEmpty(cityName)
                 ? filteredCities
                 : filteredCities.Where(c => c.Name.ToLower().Contains(cityName.ToLower()));
@@ -494,7 +494,7 @@ namespace EPlast.BLL.Services
 
         public async Task UnArchiveAsync(int cityId)
         {
-            var city = await _repoWrapper.City.GetFirstOrDefaultAsync(c => c.ID == cityId && c.IsActive == false);
+            var city = await _repoWrapper.City.GetFirstOrDefaultAsync(c => c.ID == cityId && !c.IsActive);
             city.IsActive = true;
             _repoWrapper.City.Update(city);
             await _repoWrapper.SaveAsync();

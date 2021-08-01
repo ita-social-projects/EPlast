@@ -46,7 +46,7 @@ namespace EPlast.BLL.Services.Region
         }
         public async Task ArchiveRegion(int regionId)
         {
-            var region = await _repoWrapper.Region.GetFirstAsync(d => d.ID == regionId && d.IsActive == true);
+            var region = await _repoWrapper.Region.GetFirstAsync(d => d.ID == regionId && d.IsActive);
             region.IsActive = false;
             _repoWrapper.Region.Update(region);
             await _repoWrapper.SaveAsync();
@@ -85,7 +85,7 @@ namespace EPlast.BLL.Services.Region
                include: source => source
                    .Include(r => r.RegionAdministration)
                        .ThenInclude(t => t.AdminType));
-            var filteredRegions = regions.Where(r => r.Status != RegionsStatusType.RegionBoard && r.IsActive == true);
+            var filteredRegions = regions.Where(r => r.Status != RegionsStatusType.RegionBoard && r.IsActive);
             return _mapper.Map<IEnumerable<DataAccessRegion.Region>, IEnumerable<RegionDTO>>(filteredRegions);
         }
 
@@ -95,7 +95,7 @@ namespace EPlast.BLL.Services.Region
               include: source => source
                   .Include(r => r.RegionAdministration)
                       .ThenInclude(t => t.AdminType));
-            var filteredRegions = regions.Where(r => r.Status != RegionsStatusType.RegionBoard && r.IsActive == false);
+            var filteredRegions = regions.Where(r => r.Status != RegionsStatusType.RegionBoard && !r.IsActive );
             return _mapper.Map<IEnumerable<DataAccessRegion.Region>, IEnumerable<RegionDTO>>(filteredRegions);
         }
 
@@ -291,7 +291,7 @@ namespace EPlast.BLL.Services.Region
         public async Task<IEnumerable<RegionForAdministrationDTO>> GetRegions()
         {
             return _mapper.Map<IEnumerable<DataAccessRegion.Region>, IEnumerable<RegionForAdministrationDTO>>((await _repoWrapper.Region
-                .GetAllAsync()).Where(r => r.Status != RegionsStatusType.RegionBoard && r.IsActive == true));
+                .GetAllAsync()).Where(r => r.Status != RegionsStatusType.RegionBoard && r.IsActive));
         }
 
         /// <inheritdoc />
@@ -305,7 +305,7 @@ namespace EPlast.BLL.Services.Region
         }
         public async Task UnArchiveRegion(int regionId)
         {
-            var region = await _repoWrapper.Region.GetFirstAsync(d => d.ID == regionId && d.IsActive == false);
+            var region = await _repoWrapper.Region.GetFirstAsync(d => d.ID == regionId && !d.IsActive);
             region.IsActive = true;
             _repoWrapper.Region.Update(region);
             await _repoWrapper.SaveAsync();
