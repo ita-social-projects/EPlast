@@ -44,6 +44,17 @@ namespace EPlast.WebApi.Controllers
             _clubAccessService = clubAccessService;
             _userManager = userManager;
         }
+        /// <summary>
+        /// Get all clubs 
+        /// </summary>
+        /// <returns>List of clubs</returns>
+        [HttpGet("Clubs")]
+        public async Task<IActionResult> GetClubs()
+        {
+            var clubs = await _clubService.GetClubs();
+            return Ok(clubs);
+
+        }
 
         /// <summary>
         /// Get a specific number of Clubs 
@@ -96,17 +107,7 @@ namespace EPlast.WebApi.Controllers
             return Ok(citiesViewModel);
         }
 
-        /// <summary>
-        /// Get all clubs 
-        /// </summary>
-        /// <returns>List of clubs</returns>
-        [HttpGet("Clubs")]
-        public async Task<IActionResult> GetClubs()
-        {
-            var clubs = await _clubService.GetClubs();
-            return Ok(clubs);
-
-        }
+        
 
         /// <summary>
         /// Get id and name from all clubs that the user has access to
