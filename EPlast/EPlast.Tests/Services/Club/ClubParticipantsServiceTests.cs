@@ -232,6 +232,66 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
+        public async Task EditAdministratorAsync_WhereDifferentTimes()
+        {
+            //Arrange
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AdminTypeDTO());
+            _repoWrapper
+                .Setup(r => r.ClubAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubAdministration>,
+                    IIncludableQueryable<ClubAdministration, object>>>()))
+                .ReturnsAsync(new ClubAdministration());
+            _repoWrapper
+                .Setup(r => r.ClubAdministration.Update(It.IsAny<ClubAdministration>()));
+            _repoWrapper
+                .Setup(r => r.SaveAsync());
+   
+            List<ClubAdministrationDTO> ItemsToTest = new List<ClubAdministrationDTO>();
+
+            ItemsToTest.Add(new ClubAdministrationDTO() { StartDate = DateTime.Now, EndDate = null, AdminType = new AdminTypeDTO() });
+            ItemsToTest.Add(new ClubAdministrationDTO() { StartDate = DateTime.Now, EndDate = DateTime.Now.AddDays(1), AdminType = new AdminTypeDTO() });
+            ItemsToTest.Add(new ClubAdministrationDTO() { StartDate = DateTime.Now, EndDate = DateTime.Now.AddDays(-2), AdminType = new AdminTypeDTO() });
+
+            foreach (var item in ItemsToTest)
+            {
+                //Act
+                var result = await _clubParticipantsService.EditAdministratorAsync(item);
+
+                //Assert
+                _repoWrapper.Verify();
+                Assert.IsInstanceOf<ClubAdministrationDTO>(result);
+            }
+        }
+
+        [Test]
+        public async Task AddAdministratorAsync_DifferentEndDates()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(s => s.ClubAdministration.CreateAsync(_clubAdministration));
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(AdminType);
+            List<ClubAdministrationDTO> ItemsToTest = new List<ClubAdministrationDTO>();
+
+            ItemsToTest.Add(new ClubAdministrationDTO() { StartDate = DateTime.Now, EndDate = null, AdminType = new AdminTypeDTO() });
+            ItemsToTest.Add(new ClubAdministrationDTO() { StartDate = DateTime.Now, EndDate = DateTime.Now.AddDays(1), AdminType = new AdminTypeDTO() });
+            ItemsToTest.Add(new ClubAdministrationDTO() { StartDate = DateTime.Now, EndDate = DateTime.Now.AddDays(-2), AdminType = new AdminTypeDTO() });
+
+            foreach (var item in ItemsToTest)
+            {
+                //Act
+                var result = await _clubParticipantsService.AddAdministratorAsync(item);
+
+                //Assert
+                Assert.IsInstanceOf<ClubAdministrationDTO>(result);
+            }
+        }
+
+
+        [Test]
         public async Task EditAdministratorAsync_ReturnsEditedAdministratorWithDifferentId()
         {
             //Arrange
@@ -841,7 +901,8 @@ namespace EPlast.Tests.Services.Club
             EndDate = DateTime.Today,
             StartDate = DateTime.Now,
             User = new ClubUserDTO(),
-            UserId = Roles.KurinHead
+            UserId = Roles.KurinHead,
+            Status=false
         };
 
         private readonly ClubAdministrationDTO clubAdmDTONullDate = new ClubAdministrationDTO
@@ -851,9 +912,10 @@ namespace EPlast.Tests.Services.Club
             ClubId = 1,
             AdminTypeId = 1,
             EndDate = null,
-            StartDate = DateTime.Now,
+            StartDate =null,
             User = new ClubUserDTO(),
-            UserId = Roles.KurinHead
+            UserId = Roles.KurinHead,
+            Status=false
         };
 
         private readonly ClubAdministration _clubAdministration = new ClubAdministration

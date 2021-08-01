@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BLL.DTO.AboutBase;
 using EPlast.BLL.Services.AboutBase;
 using EPlast.DataAccess.Entities;
