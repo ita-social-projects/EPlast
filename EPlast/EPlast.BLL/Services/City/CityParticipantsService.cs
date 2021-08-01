@@ -44,7 +44,7 @@ namespace EPlast.BLL.Services.City
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
             adminDTO.Status = DateTime.Now < adminDTO.EndDate || adminDTO.EndDate == null;
-            var admin = new CityAdministration()
+            var newAdmin = new CityAdministration()
             {
                 StartDate = adminDTO.StartDate ?? DateTime.Now,
                 EndDate = adminDTO.EndDate,
@@ -70,11 +70,11 @@ namespace EPlast.BLL.Services.City
             }
             await _userManager.AddToRoleAsync(user, role);
 
-            await CheckCityHasAdmin(adminDTO.CityId, adminType.AdminTypeName);
+            await CheckCityHasAdminAsync(adminDTO.CityId, adminType.AdminTypeName, newAdmin);
 
-            await _repositoryWrapper.CityAdministration.CreateAsync(admin);
+            await _repositoryWrapper.CityAdministration.CreateAsync(newAdmin);
             await _repositoryWrapper.SaveAsync();
-            adminDTO.ID = admin.ID;
+            adminDTO.ID = newAdmin.ID;
 
             return adminDTO;
         }
@@ -148,6 +148,7 @@ namespace EPlast.BLL.Services.City
             {
                 admin.StartDate = adminDTO.StartDate ?? DateTime.Now;
                 admin.EndDate = adminDTO.EndDate;
+                admin.Status = true;
 
                 _repositoryWrapper.CityAdministration.Update(admin);
                 await _repositoryWrapper.SaveAsync();
@@ -324,15 +325,24 @@ namespace EPlast.BLL.Services.City
             }
         }
 
-        private async Task CheckCityHasAdmin(int cityId, string adminTypeName)
+        private async Task CheckCityHasAdminAsync(int cityId, string adminTypeName, CityAdministration newAdmin)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminTypeName);
             var admin = await _repositoryWrapper.CityAdministration.
                 GetFirstOrDefaultAsync(a => a.AdminTypeId == adminType.ID && a.CityId == cityId && a.Status);
 
+            newAdmin.Status = false;
             if (admin != null)
             {
-                await RemoveAdministratorAsync(admin.ID);
+                if (newAdmin.EndDate == null || admin.EndDate < newAdmin.EndDate)
+                {
+                    await RemoveAdministratorAsync(admin.ID);
+                    newAdmin.Status = true;
+                }
+            }
+            else
+            {
+                newAdmin.Status = true;
             }
         }
 
