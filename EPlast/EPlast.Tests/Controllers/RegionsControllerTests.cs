@@ -239,8 +239,10 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _regionService.Setup(x => x.GetAllNotActiveRegionsAsync()).ReturnsAsync(GetRegions());
+
             // Act
             var result = await _regionController.NotActiveRegions();
+
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<List<RegionDTO>>((result as ObjectResult).Value);

@@ -50,21 +50,19 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
-        public void ArchivRegionAsync_ReturnsCorrect()
+        public void ArchiveRegionAsync_ReturnsCorrect()
         {
             // Arrange
-
             Region reg = new Region() { ID = 2 };
             _repoWrapper
                    .Setup(x => x.Region.GetFirstAsync(It.IsAny<Expression<Func<Region, bool>>>(),
                 It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
                 .ReturnsAsync(reg);
-
             _repoWrapper
                 .Setup(x => x.Region.Update(reg));
-
             _repoWrapper
                   .Setup(x => x.SaveAsync());
+
             // Act
             var result = _regionService.ArchiveRegion(fakeId);
 
@@ -83,8 +81,10 @@ namespace EPlast.Tests.Services.Regions
                 .ReturnsAsync(new List<Region>());
             _mapper.Setup(x => x.Map<IEnumerable<Region>, IEnumerable<RegionDTO>>(It.IsAny<IEnumerable<Region>>()))
                 .Returns(regions);
+
             // Act
             var result = await _regionService.GetAllActiveRegionsAsync();
+
             // Assert
             Assert.IsInstanceOf<IEnumerable<RegionDTO>>(result);
             Assert.IsNotNull(result);
@@ -117,8 +117,10 @@ namespace EPlast.Tests.Services.Regions
                 .ReturnsAsync(new List<Region>());
             _mapper.Setup(x => x.Map<IEnumerable<Region>, IEnumerable<RegionDTO>>(It.IsAny<IEnumerable<Region>>()))
                 .Returns(regions);
+
             // Act
             var result = await _regionService.GetAllNotActiveRegionsAsync();
+
             // Assert
             Assert.IsInstanceOf<IEnumerable<RegionDTO>>(result);
             Assert.IsNotNull(result);
@@ -597,18 +599,16 @@ namespace EPlast.Tests.Services.Regions
         public void UnArchivRegionAsync_ReturnsCorrect()
         {
             // Arrange
-
             Region reg = new Region() { ID = 2 };
             _repoWrapper
                    .Setup(x => x.Region.GetFirstAsync(It.IsAny<Expression<Func<Region, bool>>>(),
                 It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
                 .ReturnsAsync(reg);
-
             _repoWrapper
                 .Setup(x => x.Region.Update(reg));
-
             _repoWrapper
                   .Setup(x => x.SaveAsync());
+
             // Act
             var result = _regionService.UnArchiveRegion(fakeId);
 

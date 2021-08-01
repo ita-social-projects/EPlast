@@ -272,7 +272,6 @@ namespace EPlast.Tests.Services.City
             // Act
             var result = await _cityService.GetAllActiveDTOAsync();
 
-
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<CityDTO>>(result);
@@ -292,7 +291,6 @@ namespace EPlast.Tests.Services.City
 
             // Act
             var result = await _cityService.GetAllDTOAsync();
-
 
             // Assert
             Assert.NotNull(result);
