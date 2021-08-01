@@ -56,7 +56,7 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<CityDTO>> GetAllDTOAsync(string cityName = null)
+        public async Task<IEnumerable<CityDTO>> GetAllCitiesAsync(string cityName = null)
         {
             return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(await GetAllAsync(cityName));
         }
@@ -481,12 +481,12 @@ namespace EPlast.BLL.Services
                 : filteredCities.Where(c => c.Name.ToLower().Contains(cityName.ToLower()));
         }
 
-        public async Task<IEnumerable<CityDTO>> GetAllActiveDTOAsync(string cityName = null)
+        public async Task<IEnumerable<CityDTO>> GetAllActiveCitiesAsync(string cityName = null)
         {
             return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(await GetAllActiveAsync(cityName));
         }
 
-        public async Task<IEnumerable<CityDTO>> GetAllNotActiveDTOAsync(string cityName = null)
+        public async Task<IEnumerable<CityDTO>> GetAllNotActiveCitiesAsync(string cityName = null)
         {
             return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(await GetAllNotActiveAsync(cityName));
         }

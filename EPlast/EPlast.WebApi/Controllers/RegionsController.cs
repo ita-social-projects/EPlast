@@ -618,7 +618,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> ArchiveRegion(int Id)
         {
-            await _regionService.ArchiveRegion(Id);
+            await _regionService.ArchiveRegionAsync(Id);
             return Ok();
         }
 
@@ -666,7 +666,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> UnArchiveRegion(int Id)
         {
-            await _regionService.UnArchiveRegion(Id);
+            await _regionService.UnArchiveRegionAsync(Id);
             return Ok();
         }
     }

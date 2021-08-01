@@ -64,7 +64,7 @@ namespace EPlast.Tests.Services.Regions
                   .Setup(x => x.SaveAsync());
 
             // Act
-            var result = _regionService.ArchiveRegion(fakeId);
+            var result = _regionService.ArchiveRegionAsync(fakeId);
 
             // Assert
             _repoWrapper.Verify(r => r.Region.Update(It.IsAny<Region>()), Times.Once);
@@ -610,7 +610,7 @@ namespace EPlast.Tests.Services.Regions
                   .Setup(x => x.SaveAsync());
 
             // Act
-            var result = _regionService.UnArchiveRegion(fakeId);
+            var result = _regionService.UnArchiveRegionAsync(fakeId);
 
             // Assert
             _repoWrapper.Verify(r => r.Region.Update(It.IsAny<Region>()), Times.Once);

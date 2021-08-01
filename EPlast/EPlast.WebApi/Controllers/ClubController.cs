@@ -67,7 +67,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetClubs(int page, int pageSize, string clubName = null)
         {
-            var clubs = await _clubService.GetAllDtoAsync(clubName);
+            var clubs = await _clubService.GetAllClubsAsync(clubName);
             var clubsViewModel = new ClubsViewModel(page, pageSize, clubs, User.IsInRole(Roles.Admin));
 
             return Ok(clubsViewModel);
@@ -84,7 +84,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetActiveClubs(int page, int pageSize, string clubName = null)
         {
-            var cities = await _clubService.GetAllActiveDTOAsync(clubName);
+            var cities = await _clubService.GetAllActiveClubsAsync(clubName);
             var citiesViewModel = new ClubsViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
 
             return Ok(citiesViewModel);
@@ -101,7 +101,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetNotActiveClubs(int page, int pageSize, string clubName = null)
         {
-            var cities = await _clubService.GetAllNotActiveDTOAsync(clubName);
+            var cities = await _clubService.GetAllNotActiveClubsAsync(clubName);
             var citiesViewModel = new ClubsViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
 
             return Ok(citiesViewModel);

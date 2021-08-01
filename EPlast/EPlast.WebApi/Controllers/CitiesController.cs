@@ -56,7 +56,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetCities(int page, int pageSize, string cityName = null)
         {
-            var cities = await _cityService.GetAllDTOAsync(cityName);
+            var cities = await _cityService.GetAllCitiesAsync(cityName);
             var citiesViewModel = new CitiesViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
 
             return Ok(citiesViewModel);
@@ -84,7 +84,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetActiveProfile(int page, int pageSize, string cityName = null)
         {
-            var cities = await _cityService.GetAllActiveDTOAsync(cityName);
+            var cities = await _cityService.GetAllActiveCitiesAsync(cityName);
             var citiesViewModel = new CitiesViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
 
             return Ok(citiesViewModel);
@@ -101,7 +101,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetNotActiveProfile(int page, int pageSize, string cityName = null)
         {
-            var cities = await _cityService.GetAllNotActiveDTOAsync(cityName);
+            var cities = await _cityService.GetAllNotActiveCitiesAsync(cityName);
             var citiesViewModel = new CitiesViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
 
             return Ok(citiesViewModel);

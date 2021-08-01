@@ -81,18 +81,18 @@ namespace EPlast.BLL.Services.Club
                 : filteredClubs.Where(c => c.Name.ToLower().Contains(clubName.ToLower()));
         }
 
-        public async Task<IEnumerable<ClubDTO>> GetAllActiveDTOAsync(string clubName = null)
+        public async Task<IEnumerable<ClubDTO>> GetAllActiveClubsAsync(string clubName = null)
         {
             return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubDTO>>(await GetAllActiveAsync(clubName));
         }
 
-        public async Task<IEnumerable<ClubDTO>> GetAllNotActiveDTOAsync(string clubName = null)
+        public async Task<IEnumerable<ClubDTO>> GetAllNotActiveClubsAsync(string clubName = null)
         {
             return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubDTO>>(await GetAllNotActiveAsync(clubName));
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<ClubDTO>> GetAllDtoAsync(string clubName = null)
+        public async Task<IEnumerable<ClubDTO>> GetAllClubsAsync(string clubName = null)
         {
             return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubDTO>>(await GetAllAsync(clubName));
         }

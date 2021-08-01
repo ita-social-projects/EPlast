@@ -11,8 +11,8 @@ namespace EPlast.BLL.Interfaces.Region
 {
     public interface IRegionService
     {
-        Task ArchiveRegion(int regionId);
-        Task UnArchiveRegion(int regionId);
+        Task ArchiveRegionAsync(int regionId);
+        Task UnArchiveRegionAsync(int regionId);
         Task<IEnumerable<RegionDTO>> GetAllRegionsAsync();
         Task<IEnumerable<RegionDTO>> GetAllActiveRegionsAsync();
         Task<IEnumerable<RegionDTO>> GetAllNotActiveRegionsAsync();
@@ -34,38 +34,38 @@ namespace EPlast.BLL.Interfaces.Region
         Task RedirectMembers(int prevRegId, int nextRegId);
 
         /// <summary>
-        /// Get all Regions
+        /// Gets all Regions
         /// </summary>
         /// <returns>All Regions</returns>
         Task<IEnumerable<RegionForAdministrationDTO>> GetRegions();
 
         /// <summary>
-        /// >Get Region Users 
+        /// >Gets Region Users 
         /// </summary>
         /// <returns> All users of cities included in this region</returns>
         Task<IEnumerable<RegionUserDTO>> GetRegionUsersAsync(int regionId);
 
         /// <summary>
-        /// Get a list of followers of a specific region
+        /// Gets a list of followers of a specific region
         /// </summary>
         /// <param name="regionId">The id of the region</param>
         /// <returns>A list of followers of a specific region</returns>
         Task<IEnumerable<RegionFollowerDTO>> GetFollowersAsync(int regionId);
 
         /// <summary>
-        /// Get a specific follower of the region
+        /// Gets a specific follower of the region
         /// </summary>
         /// <param name="followerId">The id of the follower</param>
         Task<RegionFollowerDTO> GetFollowerAsync(int followerId);
 
         /// <summary>
-        /// Create a new follower
+        /// Creates a new follower
         /// </summary>
         /// <param name="model">An information about a new follower</param>
         Task CreateFollowerAsync(RegionFollowerDTO model);
 
         /// <summary>
-        /// Remove a specific follower from the region
+        /// Removes a specific follower from the region
         /// </summary>
         /// <param name="followerId">The id of the follower</param>
         Task RemoveFollowerAsync(int followerId);

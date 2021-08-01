@@ -70,7 +70,7 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             clubcon.ControllerContext = context;
             _ClubService
-                .Setup(c => c.GetAllDtoAsync(It.IsAny<string>()))
+                .Setup(c => c.GetAllClubsAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetClubsBySearch());
 
             // Act
@@ -98,7 +98,7 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             clubcon.ControllerContext = context;
             _ClubService
-                .Setup(c => c.GetAllActiveDTOAsync(It.IsAny<string>()))
+                .Setup(c => c.GetAllActiveClubsAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetClubsBySearch());
 
             // Act
@@ -126,7 +126,7 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             clubcon.ControllerContext = context;
             _ClubService
-                .Setup(c => c.GetAllNotActiveDTOAsync(It.IsAny<string>()))
+                .Setup(c => c.GetAllNotActiveClubsAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetClubsBySearch());
 
             // Act

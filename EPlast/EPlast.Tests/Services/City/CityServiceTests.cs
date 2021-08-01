@@ -258,7 +258,7 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
-        public async Task GetAllActiveDTOAsync_ReturnsAllActiveDTO()
+        public async Task GetAllActiveCitiesAsync_ReturnsAllActiveCities()
         {
             // Arrange
             _mapper
@@ -270,7 +270,7 @@ namespace EPlast.Tests.Services.City
                 .ReturnsAsync(GetTestCity());
 
             // Act
-            var result = await _cityService.GetAllActiveDTOAsync();
+            var result = await _cityService.GetAllActiveCitiesAsync();
 
             // Assert
             Assert.NotNull(result);
@@ -278,7 +278,7 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
-        public async Task GetAllDTOAsync_ReturnsAllDTO()
+        public async Task GetAllCitiesAsync_ReturnsAllCities()
         {
             // Arrange
             _mapper
@@ -290,7 +290,7 @@ namespace EPlast.Tests.Services.City
                 .ReturnsAsync(GetTestCity());
 
             // Act
-            var result = await _cityService.GetAllDTOAsync();
+            var result = await _cityService.GetAllCitiesAsync();
 
             // Assert
             Assert.NotNull(result);
@@ -298,7 +298,7 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
-        public async Task GetAllNotActiveDTOAsync_ReturnsAllNotActiveDTO()
+        public async Task GetAllNotActiveCitiesAsync_ReturnsAllNotActiveCities()
         {
             // Arrange
             _mapper
@@ -310,7 +310,7 @@ namespace EPlast.Tests.Services.City
                 .ReturnsAsync(GetTestCity());
 
             // Act
-            var result = await _cityService.GetAllNotActiveDTOAsync();
+            var result = await _cityService.GetAllNotActiveCitiesAsync();
 
 
             // Assert

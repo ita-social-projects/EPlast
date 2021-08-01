@@ -44,7 +44,7 @@ namespace EPlast.BLL.Services.Region
             _uniqueId = uniqueId;
             _userManager = userManager;
         }
-        public async Task ArchiveRegion(int regionId)
+        public async Task ArchiveRegionAsync(int regionId)
         {
             var region = await _repoWrapper.Region.GetFirstAsync(d => d.ID == regionId && d.IsActive);
             region.IsActive = false;
@@ -303,7 +303,7 @@ namespace EPlast.BLL.Services.Region
             var users = city.Select(x => x.User);
             return _mapper.Map<IEnumerable<DataAccessRegion.User>, IEnumerable<RegionUserDTO>>(users);
         }
-        public async Task UnArchiveRegion(int regionId)
+        public async Task UnArchiveRegionAsync(int regionId)
         {
             var region = await _repoWrapper.Region.GetFirstAsync(d => d.ID == regionId && !d.IsActive);
             region.IsActive = true;
