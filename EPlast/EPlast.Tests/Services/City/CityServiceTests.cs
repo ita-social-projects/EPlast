@@ -81,7 +81,8 @@ namespace EPlast.Tests.Services.City
                     AdminType = new AdminTypeDTO()
                     {
                         AdminTypeName = Roles.CityHead
-                    }
+                    },
+                    Status = true
                 }
             };
 
@@ -142,7 +143,8 @@ namespace EPlast.Tests.Services.City
                     AdminType = new AdminTypeDTO()
                     {
                         AdminTypeName = Roles.CityHeadDeputy
-                    }
+                    },
+                    Status = true
                 }
             };
 
@@ -1098,29 +1100,32 @@ namespace EPlast.Tests.Services.City
                       AdminType = new AdminTypeDTO
                       {
                            AdminTypeName = Roles.CityHead
-                      }
-
+                      },
+                      Status = true
                  },
                  new CityAdministrationDTO
                  {
                       AdminType = new AdminTypeDTO
                       {
                            AdminTypeName = "----------"
-                      }
+                      },
+                      Status = true
                  },
                  new CityAdministrationDTO
                  {
                        AdminType = new AdminTypeDTO
                        {
                             AdminTypeName = Roles.CityHead
-                       }
+                       },
+                       Status = true
                  },
                  new CityAdministrationDTO
                  {
                        AdminType = new AdminTypeDTO
                        {
                             AdminTypeName = "----------"
-                       }
+                       },
+                       Status = true
                  }
             };
         }
@@ -1140,7 +1145,8 @@ namespace EPlast.Tests.Services.City
                         {
                             AdminTypeName = Roles.CityHead
                         },
-                        EndDate = DateTime.Now.AddMonths(-3)
+                        EndDate = DateTime.Now.AddMonths(-3),
+                        Status = false
                     },
                     new CityAdministrationDTO
                     {
@@ -1148,7 +1154,8 @@ namespace EPlast.Tests.Services.City
                         {
                             AdminTypeName = "----------",
                         },
-                        EndDate = DateTime.Now.AddMonths(-3)
+                        EndDate = DateTime.Now.AddMonths(-3),
+                        Status = false
                     }
                 };
                 cities.Add(cityDto);
@@ -1172,6 +1179,7 @@ namespace EPlast.Tests.Services.City
                         {
                             AdminTypeName = Roles.CityHead
                         },
+                        Status = true
                     },
                     new CityAdministrationDTO
                     {
@@ -1179,6 +1187,7 @@ namespace EPlast.Tests.Services.City
                         {
                             AdminTypeName = "----------",
                         },
+                        Status = true
                     }
                 };
                 cities.Add(cityDto);
