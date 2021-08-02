@@ -398,7 +398,7 @@ namespace EPlast.Tests.Services.Club
                 .ReturnsAsync(GetTestClub());
 
             // Act
-            var result = await _clubService.GetAllActiveDTOAsync();
+            var result = await _clubService.GetAllActiveClubsAsync();
 
             // Assert
             Assert.NotNull(result);
@@ -418,7 +418,7 @@ namespace EPlast.Tests.Services.Club
                 .ReturnsAsync(GetTestClub());
 
             // Act
-            var result = await _clubService.GetAllNotActiveDTOAsync();
+            var result = await _clubService.GetAllNotActiveClubsAsync();
 
             // Assert
             Assert.NotNull(result);
@@ -438,7 +438,7 @@ namespace EPlast.Tests.Services.Club
                 .ReturnsAsync(GetTestClub());
 
             // Act
-            var result = await _clubService.GetAllDtoAsync();
+            var result = await _clubService.GetAllClubsAsync();
 
             // Assert
             Assert.NotNull(result);

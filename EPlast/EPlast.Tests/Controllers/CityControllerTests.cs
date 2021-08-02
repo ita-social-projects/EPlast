@@ -404,7 +404,7 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             controller.ControllerContext = context;
             _cityService
-                .Setup(c => c.GetAllDTOAsync(It.IsAny<string>()))
+                .Setup(c => c.GetAllCitiesAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetCitiesBySearch());
 
             // Act
@@ -432,7 +432,7 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             citycon.ControllerContext = context;
             _cityService
-                .Setup(c => c.GetAllActiveDTOAsync(It.IsAny<string>()))
+                .Setup(c => c.GetAllActiveCitiesAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetCitiesBySearch());
 
             // Act
@@ -460,7 +460,7 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             citycon.ControllerContext = context;
             _cityService
-                .Setup(c => c.GetAllNotActiveDTOAsync(It.IsAny<string>()))
+                .Setup(c => c.GetAllNotActiveCitiesAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetCitiesBySearch());
 
             // Act
