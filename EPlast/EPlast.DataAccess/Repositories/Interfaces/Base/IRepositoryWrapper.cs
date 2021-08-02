@@ -83,6 +83,8 @@ namespace EPlast.DataAccess.Repositories
         IUserPrecautionRepository UserPrecaution { get; }
         IUserProfileRepository UserProfile { get; }
         IWorkRepository Work { get; }
+        ISectionRepository AboutBaseSection { get; }
+        ISubsectionRepository AboutBaseSubsection { get; }
 
         void Save();
 
