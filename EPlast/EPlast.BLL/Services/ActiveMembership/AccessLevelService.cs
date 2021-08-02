@@ -52,10 +52,14 @@ namespace EPlast.BLL.Services.ActiveMembership
             }
 
             if (userRoles.Contains(RolesForActiveMembershipTypeDTO.Supporter.GetDescription())
-                     || userRoles.Contains(RolesForActiveMembershipTypeDTO.FormerPlastMember.GetDescription())
                      || isInSupporterDegree)
             {
                 accessLevels.Add(AccessLevelTypeDTO.Supporter.GetDescription());
+            }
+
+            if (userRoles.Contains(RolesForActiveMembershipTypeDTO.FormerPlastMember.GetDescription()))
+            {
+                accessLevels.Add(AccessLevelTypeDTO.FormerPlastMember.GetDescription());
             }
 
             if (userRoles.Contains(RolesForActiveMembershipTypeDTO.PlastMember.GetDescription()))

@@ -14,6 +14,9 @@ namespace EPlast.BLL.DTO.ActiveMembership
         PlastMember,
 
         [Description("Доступ члена проводу організації")]
-        LeadershipMember
+        LeadershipMember,
+
+        [Description("Доступ колишнього члена організації")]
+        FormerPlastMember
     }
 }
