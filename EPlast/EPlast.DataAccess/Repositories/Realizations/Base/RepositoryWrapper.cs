@@ -4,11 +4,13 @@ using EPlast.DataAccess.Repositories.Interfaces.Club;
 using EPlast.DataAccess.Repositories.Interfaces.Events;
 using EPlast.DataAccess.Repositories.Interfaces.GoverningBody;
 using EPlast.DataAccess.Repositories.Interfaces.Region;
+using EPlast.DataAccess.Repositories.Interfaces;
 using EPlast.DataAccess.Repositories.Realizations.Blank;
 using EPlast.DataAccess.Repositories.Realizations.Club;
 using EPlast.DataAccess.Repositories.Realizations.EducatorsStaff;
 using EPlast.DataAccess.Repositories.Realizations.Events;
 using EPlast.DataAccess.Repositories.Realizations.Region;
+using EPlast.DataAccess.Repositories.Realizations;
 using NLog.Extensions.Logging;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Sector;
@@ -96,6 +98,9 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IExtractFromUPUDocumentsRepository _extractFromUPUDocumentsRepository;
         private IClubAnnualReportsRepository _clubAnnualReports;
         private IRegionAnnualReportsRepository _regionAnnualReports;
+
+        private SectionRepository _sectionRepository;
+        private SubsectionRepository _subsectionRepository;
 
         public IEducatorsStaffTypesRepository KVTypes
         {
@@ -810,6 +815,33 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             }
         }
 
+
+        public ISectionRepository AboutBaseSection
+        {
+            get
+            {
+                if(_sectionRepository == null)
+                {
+                    _sectionRepository = new SectionRepository(_dbContext);
+                }
+                return _sectionRepository;
+            }
+        }
+
+        public ISubsectionRepository AboutBaseSubsection
+        {
+            get
+            {
+                if(_subsectionRepository == null)
+                {
+                    _subsectionRepository = new SubsectionRepository(_dbContext);
+                }
+                return _subsectionRepository;
+            }
+        }
+
+
+
         public IMembersStatisticsRepository MembersStatistics
         {
             get
@@ -1015,5 +1047,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 return ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Cities"];
             }
         }
+
+        
     }
 }

@@ -99,8 +99,7 @@ namespace EPlast.BLL.Services
         public CityAdministrationDTO GetCityHead(CityDTO city)
         {
             var cityHead = city.CityAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHead
-                    && (DateTime.Now < a.EndDate || a.EndDate == null));
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHead && a.Status);
             return cityHead;
         }
 
@@ -108,7 +107,7 @@ namespace EPlast.BLL.Services
         {
             var cityHeadDeputy = city.CityAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHeadDeputy
-                    && (DateTime.Now < a.EndDate || a.EndDate == null));
+                    && a.Status);
             return cityHeadDeputy;
         }
 
@@ -117,7 +116,7 @@ namespace EPlast.BLL.Services
             var cityAdmins = city.CityAdministration
                 .Where(a => a.AdminType.AdminTypeName != Roles.CityHead
                     && a.AdminType.AdminTypeName != Roles.CityHeadDeputy
-                    && (DateTime.Now < a.EndDate || a.EndDate == null))
+                    && a.Status)
                 .Take(6)
                 .ToList();
             return cityAdmins;
@@ -136,7 +135,7 @@ namespace EPlast.BLL.Services
             var cityHeadDeputy = GetCityHeadDeputy(city);
             var cityAdmins = GetCityAdmins(city);
             city.AdministrationCount = city.CityAdministration == null ? 0
-                :city.CityAdministration.Count(a => (DateTime.Now < a.EndDate || a.EndDate == null));
+                : city.CityAdministration.Count(a => a.Status);
             var members = city.CityMembers
                 .Where(m => m.IsApproved)
                 .Take(9)
@@ -257,12 +256,12 @@ namespace EPlast.BLL.Services
                 return null;
             }
 
-            var cityDoc = city.CityDocuments.ToList();
+            var cityDoc = DocumentsSorter<CityDocumentsDTO>.SortDocumentsBySubmitDate(city.CityDocuments);
 
             var cityProfileDto = new CityProfileDTO
             {
                 City = city,
-                Documents = cityDoc
+                Documents = cityDoc.ToList()
             };
 
             return cityProfileDto;
