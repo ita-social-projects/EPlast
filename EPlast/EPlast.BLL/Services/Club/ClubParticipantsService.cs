@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.Club;
@@ -103,7 +103,7 @@ namespace EPlast.BLL.Services.Club
             {
                 admin.StartDate = adminDTO.StartDate ?? DateTime.Now;
                 admin.EndDate = adminDTO.EndDate;
-                admin.Status = DateTime.Now < adminDTO.EndDate || adminDTO.EndDate == null;
+                admin.Status = true;
 
                 _repositoryWrapper.ClubAdministration.Update(admin);
                 await _repositoryWrapper.SaveAsync();
@@ -225,12 +225,12 @@ namespace EPlast.BLL.Services.Club
 
         public async Task<IEnumerable<ClubMembersDTO>> GetMembersByClubIdAsync(int clubId)
         {
-            var ClubMembers = await _repositoryWrapper.ClubMembers.GetAllAsync(
+            var сlubMembers = await _repositoryWrapper.ClubMembers.GetAllAsync(
                     predicate: c => c.ClubId == clubId && c.EndDate == null,
                     include: source => source
                         .Include(c => c.User));
 
-            return _mapper.Map<IEnumerable<ClubMembers>, IEnumerable<ClubMembersDTO>>(ClubMembers);
+            return _mapper.Map<IEnumerable<ClubMembers>, IEnumerable<ClubMembersDTO>>(сlubMembers);
         }
 
         /// <inheritdoc />
@@ -304,10 +304,10 @@ namespace EPlast.BLL.Services.Club
         /// <inheritdoc />
         public async Task RemoveFollowerAsync(int followerId)
         {
-            var ClubMember = await _repositoryWrapper.ClubMembers
+            var сlubMember = await _repositoryWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(u => u.ID == followerId);
 
-            _repositoryWrapper.ClubMembers.Delete(ClubMember);
+            _repositoryWrapper.ClubMembers.Delete(сlubMember);
             await _repositoryWrapper.SaveAsync();
         }
 

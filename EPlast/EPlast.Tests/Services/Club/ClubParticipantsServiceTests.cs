@@ -856,6 +856,34 @@ namespace EPlast.Tests.Services.Club
             _repoWrapper.Verify(i => i.SaveAsync(), Times.Once());
         }
 
+        [Test]
+        public async Task CheckCityHasAdminAsync_OldEndDate_RemovesOldAdmin()
+        {
+            //Arrange
+            _adminTypeService
+                .Setup(x => x.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AdminTypeDTO());
+            _adminTypeService
+                .Setup(x => x.GetAdminTypeByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new AdminTypeDTO());
+            _repoWrapper
+            .Setup(x => x.ClubAdministration.GetFirstOrDefaultAsync(
+                It.IsAny<Expression<Func<ClubAdministration, bool>>>(),
+                It.IsAny<Func<IQueryable<ClubAdministration>, IIncludableQueryable<ClubAdministration, object>>>()))
+            .ReturnsAsync(new ClubAdministration());
+            _userManager
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(new User());
+
+            //Act
+            await _clubParticipantsService.CheckClubHasAdminAsync(1, "admin", new ClubAdministration());
+
+            //Assert
+            _userManager.Verify(x => x.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
+            _repoWrapper.Verify(x => x.ClubAdministration.Update(It.IsAny<ClubAdministration>()));
+            _repoWrapper.Verify(x => x.SaveAsync());
+        }
+
         private IEnumerable<ClubAdministrationDTO> GetTestClubAdministration()
         {
             return new List<ClubAdministrationDTO>
