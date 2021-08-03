@@ -76,6 +76,26 @@ namespace EPlast.Tests.Services.ActiveMembership
         }
 
         [Test]
+        public async Task GetUserAccessLevelsAsync_UserIsFormer_ReturnsIEnumerableOfStringsWithPlastunRolesForActiveMembership()
+        {
+            // Arrange
+            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(UserDTO);
+            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(GetUserRolesAsFormer());
+
+            // Act
+            var result = await _accessLevelService.GetUserAccessLevelsAsync(UserId);
+            var listResult = result.ToList();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<string>>(result);
+            Assert.AreEqual(GetUserRolesAsFormer().ToList().Count, listResult.Count);
+            Assert.AreEqual(AccessLevelTypeDTO.FormerPlastMember.GetDescription(), listResult[0]);
+        }
+
+        [Test]
         public async Task GetUserAccessLevelsAsync_UserIsPlastun_ReturnsIEnumerableOfStringsWithPlastunRolesForActiveMembership()
         {
             // Arrange
@@ -165,6 +185,14 @@ namespace EPlast.Tests.Services.ActiveMembership
             return new List<string>
             {
                 RolesForActiveMembershipTypeDTO.RegisteredUser.GetDescription()
+            };
+        }
+
+        private IEnumerable<string> GetUserRolesAsFormer()
+        {
+            return new List<string>
+            {
+                RolesForActiveMembershipTypeDTO.FormerPlastMember.GetDescription()
             };
         }
 
