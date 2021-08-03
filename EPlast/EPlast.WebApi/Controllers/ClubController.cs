@@ -44,6 +44,17 @@ namespace EPlast.WebApi.Controllers
             _clubAccessService = clubAccessService;
             _userManager = userManager;
         }
+        /// <summary>
+        /// Get all clubs 
+        /// </summary>
+        /// <returns>List of clubs</returns>
+        [HttpGet("Clubs")]
+        public async Task<IActionResult> GetClubs()
+        {
+            var clubs = await _clubService.GetClubs();
+            return Ok(clubs);
+
+        }
 
         /// <summary>
         /// Get a specific number of Clubs 
@@ -56,23 +67,47 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetClubs(int page, int pageSize, string clubName = null)
         {
-            var clubs = await _clubService.GetAllDtoAsync(clubName);
+            var clubs = await _clubService.GetAllClubsAsync(clubName);
             var clubsViewModel = new ClubsViewModel(page, pageSize, clubs, User.IsInRole(Roles.Admin));
 
             return Ok(clubsViewModel);
         }
 
         /// <summary>
-        /// Get all clubs 
+        /// Get a specific number of active clubs 
         /// </summary>
-        /// <returns>List of clubs</returns>
-        [HttpGet("Clubs")]
-        public async Task<IActionResult> GetClubs()
+        /// <param name="page">A number of the page</param>
+        /// <param name="pageSize">A count of cities to display</param>
+        /// <param name="clubName">Optional param to find cities by name</param>
+        /// <returns>A specific number of active clubs</returns>
+        [HttpGet("Profiles/Active/{page}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetActiveClubs(int page, int pageSize, string clubName = null)
         {
-            var clubs = await _clubService.GetClubs();
-            return Ok(clubs);
+            var cities = await _clubService.GetAllActiveClubsAsync(clubName);
+            var citiesViewModel = new ClubsViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
 
+            return Ok(citiesViewModel);
         }
+
+        /// <summary>
+        /// Get a specific number of not active clubs 
+        /// </summary>
+        /// <param name="page">A number of the page</param>
+        /// <param name="pageSize">A count of cities to display</param>
+        /// <param name="clubName">Optional param to find cities by name</param>
+        /// <returns>A specific number of not active clubs</returns>
+        [HttpGet("Profiles/NotActive/{page}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetNotActiveClubs(int page, int pageSize, string clubName = null)
+        {
+            var cities = await _clubService.GetAllNotActiveClubsAsync(clubName);
+            var citiesViewModel = new ClubsViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
+
+            return Ok(citiesViewModel);
+        }
+
+        
 
         /// <summary>
         /// Get id and name from all clubs that the user has access to
@@ -414,6 +449,30 @@ namespace EPlast.WebApi.Controllers
                 $" with role {{{admin.AdminType.AdminTypeName}}}.");
 
             return Ok(admin);
+        }
+
+        /// <summary>
+        /// Archive a specific club
+        /// </summary>
+        /// <param name="clubId">The id of the club</param>
+        [HttpPut("ArchiveClub/{clubId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> Archive(int clubId)
+        {
+            await _clubService.ArchiveAsync(clubId);
+            return Ok();
+        }
+
+        /// <summary>
+        /// Archive a specific club
+        /// </summary>
+        /// <param name="clubId">The id of the club</param>
+        [HttpPut("UnArchiveClub/{clubId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> UnArchive(int clubId)
+        {
+            await _clubService.UnArchiveAsync(clubId);
+            return Ok();
         }
 
         /// <summary>

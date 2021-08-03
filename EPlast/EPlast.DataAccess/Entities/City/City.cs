@@ -36,6 +36,7 @@ namespace EPlast.DataAccess.Entities
 
         [StringLength(int.MaxValue, MinimumLength = 3)]
         public string Logo { get; set; }
+        public bool IsActive { get; set; }
 
         public ICollection<CityDocuments> CityDocuments { get; set; }
         public ICollection<CityMembers> CityMembers { get; set; }

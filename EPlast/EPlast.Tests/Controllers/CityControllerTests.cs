@@ -390,7 +390,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [TestCase(1, 1, "Львів")]
-        public async Task GetCities_Valid_Test(int page, int pageSize, string cityName)
+        public async Task GetAllCities_Valid_Test(int page, int pageSize, string cityName)
         {
             // Arrange
             CitiesController controller = CreateCityController;
@@ -404,11 +404,67 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             controller.ControllerContext = context;
             _cityService
-                .Setup(c => c.GetAllDTOAsync(It.IsAny<string>()))
+                .Setup(c => c.GetAllCitiesAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetCitiesBySearch());
 
             // Act
             var result = await controller.GetCities(page, pageSize, cityName);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(((result as ObjectResult).Value as CitiesViewModel)
+                .Cities.Where(c => c.Name.Equals("Львів")));
+        }
+
+        [TestCase(1, 1, "Львів")]
+        public async Task GetActiveCities_Valid_Test(int page, int pageSize, string cityName)
+        {
+            // Arrange
+            CitiesController citycon = CreateCityController;
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            citycon.ControllerContext = context;
+            _cityService
+                .Setup(c => c.GetAllActiveCitiesAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetCitiesBySearch());
+
+            // Act
+            var result = await citycon.GetActiveProfile(page, pageSize, cityName);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(((result as ObjectResult).Value as CitiesViewModel)
+                .Cities.Where(c => c.Name.Equals("Львів")));
+        }
+
+        [TestCase(1, 1, "Львів")]
+        public async Task GetNotActiveCities_Valid_Test(int page, int pageSize, string cityName)
+        {
+            // Arrange
+            CitiesController citycon = CreateCityController;
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            citycon.ControllerContext = context;
+            _cityService
+                .Setup(c => c.GetAllNotActiveCitiesAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetCitiesBySearch());
+
+            // Act
+            var result = await citycon.GetNotActiveProfile(page, pageSize, cityName);
 
             // Assert
             Assert.NotNull(result);
@@ -714,6 +770,38 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task Archive_Valid_Test()
+        {
+            // Arrange
+            _cityService
+                .Setup(c => c.ArchiveAsync(It.IsAny<int>()));
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.Archive(GetFakeID());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
+        }
+
+        [Test]
+        public async Task UnArchive_Valid_Test()
+        {
+            // Arrange
+            _cityService
+                .Setup(c => c.UnArchiveAsync(It.IsAny<int>()));
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.UnArchive(GetFakeID());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
         }
 
         [Test]

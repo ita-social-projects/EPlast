@@ -31,6 +31,7 @@ namespace EPlast.WebApi.Mapping.Club
                 .ForMember(r => r.CanCreate, s => s.MapFrom(t => t.Club.CanCreate))
                 .ForMember(r => r.CanJoin, s => s.MapFrom(t => t.Club.CanJoin))
                 .ForMember(r => r.CanEdit, s => s.MapFrom(t => t.Club.CanEdit))
+                .ForMember(r => r.isActive, s => s.MapFrom(t => t.Club.IsActive))
                 .ForMember(r => r.MemberCount, s => s.MapFrom(t => t.Club.MemberCount))
                 .ForMember(r => r.AdministrationCount, s => s.MapFrom(t => t.Club.AdministrationCount))
                 .ForMember(r => r.FollowerCount, s => s.MapFrom(t => t.Club.FollowerCount))

@@ -56,7 +56,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetCities(int page, int pageSize, string cityName = null)
         {
-            var cities = await _cityService.GetAllDTOAsync(cityName);
+            var cities = await _cityService.GetAllCitiesAsync(cityName);
             var citiesViewModel = new CitiesViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
 
             return Ok(citiesViewModel);
@@ -71,6 +71,40 @@ namespace EPlast.WebApi.Controllers
         {
             var cities = await _cityService.GetCities();
             return Ok(cities);
+        }
+
+        /// <summary>
+        /// Get a specific number of active cities 
+        /// </summary>
+        /// <param name="page">A number of the page</param>
+        /// <param name="pageSize">A count of cities to display</param>
+        /// <param name="cityName">Optional param to find cities by name</param>
+        /// <returns>A specific number of active cities</returns>
+        [HttpGet("Profiles/Active/{page}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetActiveProfile(int page, int pageSize, string cityName = null)
+        {
+            var cities = await _cityService.GetAllActiveCitiesAsync(cityName);
+            var citiesViewModel = new CitiesViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
+
+            return Ok(citiesViewModel);
+        }
+
+        /// <summary>
+        /// Get a specific number of active cities 
+        /// </summary>
+        /// <param name="page">A number of the page</param>
+        /// <param name="pageSize">A count of cities to display</param>
+        /// <param name="cityName">Optional param to find cities by name</param>
+        /// <returns>A specific number of not active cities</returns>
+        [HttpGet("Profiles/NotActive/{page}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetNotActiveProfile(int page, int pageSize, string cityName = null)
+        {
+            var cities = await _cityService.GetAllNotActiveCitiesAsync(cityName);
+            var citiesViewModel = new CitiesViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
+
+            return Ok(citiesViewModel);
         }
 
         /// <summary>
@@ -265,6 +299,30 @@ namespace EPlast.WebApi.Controllers
             await _cityService.EditAsync(cityDTO);
             _logger.LogInformation($"City {{{cityDTO.Name}}} was edited.");
 
+            return Ok();
+        }
+
+        /// <summary>
+        /// Archive a specific city
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        [HttpPut("ArchiveCity/{cityId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> Archive(int cityId)
+        {
+            await _cityService.ArchiveAsync(cityId);
+            return Ok();
+        }
+
+        /// <summary>
+        /// Unarchive a specific city
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        [HttpPut("UnArchiveCity/{cityId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> UnArchive(int cityId)
+        {
+            await _cityService.UnArchiveAsync(cityId);
             return Ok();
         }
 
