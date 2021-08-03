@@ -69,8 +69,8 @@ namespace EPlast.Tests.Controllers
                     httpContext.Object, new RouteData(),
                     new ControllerActionDescriptor()));
 
-            clubcon.ControllerContext = context;
-            _ClubService
+            controller.ControllerContext = context;
+            _clubService
                 .Setup(c => c.GetAllClubsAsync(It.IsAny<string>()))
 
                 .ReturnsAsync(GetClubsBySearch());
@@ -99,7 +99,7 @@ namespace EPlast.Tests.Controllers
                     httpContext.Object, new RouteData(),
                     new ControllerActionDescriptor()));
             clubcon.ControllerContext = context;
-            _ClubService
+            _clubService
                 .Setup(c => c.GetAllActiveClubsAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetClubsBySearch());
 
@@ -127,7 +127,7 @@ namespace EPlast.Tests.Controllers
                     httpContext.Object, new RouteData(),
                     new ControllerActionDescriptor()));
             clubcon.ControllerContext = context;
-            _ClubService
+            _clubService
                 .Setup(c => c.GetAllNotActiveClubsAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetClubsBySearch());
 
@@ -796,7 +796,7 @@ namespace EPlast.Tests.Controllers
         public async Task ArchiveClub_valid_Test()
         {
             //Arrange
-            _ClubService
+            _clubService
                 .Setup(c => c.ArchiveAsync(It.IsAny<int>()));
             ClubController Clubcon = CreateClubController;
 
@@ -812,7 +812,7 @@ namespace EPlast.Tests.Controllers
         public async Task UnArchiveClub_valid_Test()
         {
             //Arrange
-            _ClubService
+            _clubService
                 .Setup(c => c.UnArchiveAsync(It.IsAny<int>()));
             ClubController Clubcon = CreateClubController;
 
