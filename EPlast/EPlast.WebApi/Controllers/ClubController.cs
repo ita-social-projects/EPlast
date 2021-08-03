@@ -431,14 +431,19 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Edit an information about a specific admininstrator
+        /// Edit an information about a specific administrator
         /// </summary>
         /// <param name="admin">An information about a new administrator</param>
-        /// <returns>An information about a specific admininstrator</returns>
+        /// <returns>An information about a specific administrator</returns>
         [HttpPut("EditAdmin/{adminId}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> EditAdmin(ClubAdministrationViewModel admin)
         {
+            if (admin.EndDate != null && admin.EndDate < DateTime.Today)
+            {
+                return BadRequest();
+            }
+
             var adminDto = _mapper.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(admin);
 
             await _clubParticipantsService.EditAdministratorAsync(adminDto);
