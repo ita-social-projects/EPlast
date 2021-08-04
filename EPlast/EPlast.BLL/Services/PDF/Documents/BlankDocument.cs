@@ -135,14 +135,14 @@ namespace EPlast.BLL.Services.PDF.Documents
             SetText(gfx, "Орієнтація до куреня УСП /", XFontStyle.Regular, 50, 500);
             SetText(gfx, "УПС", XFontStyle.Regular, 50, 510);
             SetText(gfx, $"{blank?.ClubMembers?.Club?.Name}", XFontStyle.Italic, 180, 498);
-            SetLine(gfx, 163, 510, 550, 510);
+            SetLine(gfx, 170, 510, 550, 510);
 
             SetDashLine(gfx, 40, 530, 560, 530);
 
             SetText(gfx, "Поручення куреня УСП /", XFontStyle.Regular, 50, 540);
             SetText(gfx, "УПС (назва куреня і підпис", XFontStyle.Regular, 50, 550);
             SetText(gfx, "його представника)", XFontStyle.Regular, 50, 560);
-            SetLine(gfx, 163, 555, 550, 555);
+            SetLine(gfx, 170, 555, 550, 555);
             SetLine(gfx, 50, 580, 390, 580);
             SetText(gfx, "Дата", XFontStyle.Regular, 400, 570);
             SetLine(gfx, 430, 580, 500, 580);
