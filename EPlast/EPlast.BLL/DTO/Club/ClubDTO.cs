@@ -7,7 +7,7 @@ namespace EPlast.BLL.DTO.Club
     {
         public int ID { get; set; }
 
-        [Required, MaxLength(50, ErrorMessage = "Назва куреня не має перевищувати 50 символів")]
+        [Required, MaxLength(200, ErrorMessage = "Назва куреня не має перевищувати 200 символів")]
         public string Name { get; set; }
 
         [StringLength(18, ErrorMessage = "Контактний номер куреня повинен містити 12 цифр")]
