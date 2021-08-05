@@ -28,7 +28,7 @@ namespace EPlast.BLL.DTO.ActiveMembership
         [Description("Доступ члена проводу організації, Заступник Голови Куреня")]
         LeadershipMemberForKurinHeadDeputy,
 
-        [Description("Доступ члена проводу організації, Діловод Куреня")]
+        [Description("Діловод Куреня")]
         LeadershipMemberForKurinSecretary,
 
         [Description("Доступ члена проводу організації, Голова Станиці")]
@@ -37,7 +37,7 @@ namespace EPlast.BLL.DTO.ActiveMembership
         [Description("Доступ члена проводу організації, Заступник Голови Станиці")]
         LeadershipMemberForCityHeadDeputy,
 
-        [Description("Доступ члена проводу організації, Діловод Станиці")]
+        [Description("Діловод Станиці")]
         LeadershipMemberForCitySecretary,
 
         [Description("Доступ члена проводу організації, Голова Округи")]
@@ -46,7 +46,7 @@ namespace EPlast.BLL.DTO.ActiveMembership
         [Description("Доступ члена проводу організації, Заступник Голови Округи")]
         LeadershipMemberForOkrugaHeadDeputy,
 
-        [Description("Доступ члена проводу організації, Діловод Округи")]
+        [Description("Діловод Округи")]
         LeadershipMemberForOkrugaSecretary,
 
         [Description("Доступ колишнього члена організації")]
