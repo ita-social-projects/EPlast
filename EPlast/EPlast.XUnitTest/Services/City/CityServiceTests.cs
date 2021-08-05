@@ -82,7 +82,7 @@ namespace EPlast.XUnitTest.Services.City
         {
             CityService cityService = CreateCityService();
 
-            var result = await cityService.GetAllDTOAsync(null);
+            var result = await cityService.GetAllCitiesAsync(null);
 
             Assert.NotNull(result);
         }
