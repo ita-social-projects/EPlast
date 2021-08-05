@@ -76,7 +76,7 @@ namespace EPlast.Tests.Services.ActiveMembership
         }
 
         [Test]
-        public async Task GetUserAccessLevelsAsync_UserIsFormer_ReturnsIEnumerableOfStringsWithPlastunRolesForActiveMembership()
+        public async Task GetUserAccessLevelsAsync_UserIsFormer_ReturnsIEnumerableOfStringsWithFormerRolesForActiveMembership()
         {
             // Arrange
             _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
@@ -136,13 +136,13 @@ namespace EPlast.Tests.Services.ActiveMembership
         }
 
         [Test]
-        public async Task GetUserAccessLevelsAsync_UserIsLeadershipMember_ReturnsIEnumerableOfStringsWithLeadershipMemberRolesForActiveMembership()
+        public async Task GetUserAccessLevelsAsync_UserIsGoverningBodyHead_ReturnsIEnumerableOfStringsWithGoverningBodyHeadRolesForActiveMembership()
         {
             // Arrange
             _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(UserDTO);
             _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
-                .ReturnsAsync(GetUserRolesAsLeadershipMember());
+                .ReturnsAsync(GetUserRolesAsGoverningBodyHead());
 
             // Act
             var result = await _accessLevelService.GetUserAccessLevelsAsync(UserId);
@@ -151,9 +151,240 @@ namespace EPlast.Tests.Services.ActiveMembership
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<string>>(result);
-            Assert.AreEqual(GetUserRolesAsLeadershipMember().ToList().Count, listResult.Count);
+            Assert.AreEqual(GetUserRolesAsGoverningBodyHead().ToList().Count, listResult.Count);
             Assert.AreEqual(AccessLevelTypeDTO.PlastMember.GetDescription(), listResult[0]);
-            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMember.GetDescription(), listResult[1]);
+            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMemberForGoverningBodyHead.GetDescription(), listResult[1]);
+        }
+
+        [Test]
+        public async Task GetUserAccessLevelsAsync_UserIsGoverningBodySectorHead_ReturnsIEnumerableOfStringsWithGoverningBodySectorHeadDeputyRolesForActiveMembership()
+        {
+            // Arrange
+            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(UserDTO);
+            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(GetUserRolesAsGoverningBodySectorHead());
+
+            // Act
+            var result = await _accessLevelService.GetUserAccessLevelsAsync(UserId);
+            var listResult = result.ToList();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<string>>(result);
+            Assert.AreEqual(GetUserRolesAsGoverningBodySectorHead().ToList().Count, listResult.Count);
+            Assert.AreEqual(AccessLevelTypeDTO.PlastMember.GetDescription(), listResult[0]);
+            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMemberForGoverningBodySectorHead.GetDescription(), listResult[1]);
+        }
+
+        [Test]
+        public async Task GetUserAccessLevelsAsync_UserIsGoverningBodySecretary_ReturnsIEnumerableOfStringsWithGoverningBodySecretarySecretaryRolesForActiveMembership()
+        {
+            // Arrange
+            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(UserDTO);
+            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(GetUserRolesAsGoverningBodySecretary());
+
+            // Act
+            var result = await _accessLevelService.GetUserAccessLevelsAsync(UserId);
+            var listResult = result.ToList();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<string>>(result);
+            Assert.AreEqual(GetUserRolesAsGoverningBodySecretary().ToList().Count, listResult.Count);
+            Assert.AreEqual(AccessLevelTypeDTO.PlastMember.GetDescription(), listResult[0]);
+            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMemberForGoverningBodySecretary.GetDescription(), listResult[1]);
+        }
+
+        [Test]
+        public async Task GetUserAccessLevelsAsync_UserIsOkrugaHead_ReturnsIEnumerableOfStringsWithOkrugaHeadRolesForActiveMembership()
+        {
+            // Arrange
+            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(UserDTO);
+            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(GetUserRolesAsOkrugaHead());
+
+            // Act
+            var result = await _accessLevelService.GetUserAccessLevelsAsync(UserId);
+            var listResult = result.ToList();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<string>>(result);
+            Assert.AreEqual(GetUserRolesAsOkrugaHead().ToList().Count, listResult.Count);
+            Assert.AreEqual(AccessLevelTypeDTO.PlastMember.GetDescription(), listResult[0]);
+            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMemberForOkrugaHead.GetDescription(), listResult[1]);
+        }
+
+        [Test]
+        public async Task GetUserAccessLevelsAsync_UserIsOkrugaHeadDeputy_ReturnsIEnumerableOfStringsWithOkrugaHeadDeputyRolesForActiveMembership()
+        {
+            // Arrange
+            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(UserDTO);
+            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(GetUserRolesAsOkrugaHeadDeputy());
+
+            // Act
+            var result = await _accessLevelService.GetUserAccessLevelsAsync(UserId);
+            var listResult = result.ToList();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<string>>(result);
+            Assert.AreEqual(GetUserRolesAsOkrugaHead().ToList().Count, listResult.Count);
+            Assert.AreEqual(AccessLevelTypeDTO.PlastMember.GetDescription(), listResult[0]);
+            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMemberForOkrugaHeadDeputy.GetDescription(), listResult[1]);
+        }
+
+        [Test]
+        public async Task GetUserAccessLevelsAsync_UserIsOkrugaSecretary_ReturnsIEnumerableOfStringsWithOkrugaSecretaryRolesForActiveMembership()
+        {
+            // Arrange
+            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(UserDTO);
+            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(GetUserRolesAsOkrugaSecretary());
+
+            // Act
+            var result = await _accessLevelService.GetUserAccessLevelsAsync(UserId);
+            var listResult = result.ToList();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<string>>(result);
+            Assert.AreEqual(GetUserRolesAsOkrugaSecretary().ToList().Count, listResult.Count);
+            Assert.AreEqual(AccessLevelTypeDTO.PlastMember.GetDescription(), listResult[0]);
+            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMemberForOkrugaSecretary.GetDescription(), listResult[1]);
+        }
+
+        [Test]
+        public async Task GetUserAccessLevelsAsync_UserIsCityHead_ReturnsIEnumerableOfStringsWithCityHeadRolesForActiveMembership()
+        {
+            // Arrange
+            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(UserDTO);
+            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(GetUserRolesAsCityHead());
+
+            // Act
+            var result = await _accessLevelService.GetUserAccessLevelsAsync(UserId);
+            var listResult = result.ToList();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<string>>(result);
+            Assert.AreEqual(GetUserRolesAsCityHead().ToList().Count, listResult.Count);
+            Assert.AreEqual(AccessLevelTypeDTO.PlastMember.GetDescription(), listResult[0]);
+            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMemberForCityHead.GetDescription(), listResult[1]);
+        }
+
+        [Test]
+        public async Task GetUserAccessLevelsAsync_UserIsCityHeadDeputy_ReturnsIEnumerableOfStringsWithCityHeadDeputyRolesForActiveMembership()
+        {
+            // Arrange
+            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(UserDTO);
+            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(GetUserRolesAsCityHeadDeputy());
+
+            // Act
+            var result = await _accessLevelService.GetUserAccessLevelsAsync(UserId);
+            var listResult = result.ToList();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<string>>(result);
+            Assert.AreEqual(GetUserRolesAsCityHeadDeputy().ToList().Count, listResult.Count);
+            Assert.AreEqual(AccessLevelTypeDTO.PlastMember.GetDescription(), listResult[0]);
+            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMemberForCityHeadDeputy.GetDescription(), listResult[1]);
+        }
+
+        [Test]
+        public async Task GetUserAccessLevelsAsync_UserIsCitySecretary_ReturnsIEnumerableOfStringsWithCitySecretaryRolesForActiveMembership()
+        {
+            // Arrange
+            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(UserDTO);
+            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(GetUserRolesAsCitySecretary());
+
+            // Act
+            var result = await _accessLevelService.GetUserAccessLevelsAsync(UserId);
+            var listResult = result.ToList();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<string>>(result);
+            Assert.AreEqual(GetUserRolesAsCitySecretary().ToList().Count, listResult.Count);
+            Assert.AreEqual(AccessLevelTypeDTO.PlastMember.GetDescription(), listResult[0]);
+            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMemberForCitySecretary.GetDescription(), listResult[1]);
+        }
+
+        [Test]
+        public async Task GetUserAccessLevelsAsync_UserIsKurinHead_ReturnsIEnumerableOfStringsWithKurinHeadRolesForActiveMembership()
+        {
+            // Arrange
+            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(UserDTO);
+            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(GetUserRolesAsKurinHead());
+
+            // Act
+            var result = await _accessLevelService.GetUserAccessLevelsAsync(UserId);
+            var listResult = result.ToList();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<string>>(result);
+            Assert.AreEqual(GetUserRolesAsKurinHead().ToList().Count, listResult.Count);
+            Assert.AreEqual(AccessLevelTypeDTO.PlastMember.GetDescription(), listResult[0]);
+            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMemberForKurinHead.GetDescription(), listResult[1]);
+        }
+
+        [Test]
+        public async Task GetUserAccessLevelsAsync_UserIsKurinHeadDeputy_ReturnsIEnumerableOfStringsWithKurinHeadDeputyRolesForActiveMembership()
+        {
+            // Arrange
+            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(UserDTO);
+            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(GetUserRolesAsKurinHeadDeputy());
+
+            // Act
+            var result = await _accessLevelService.GetUserAccessLevelsAsync(UserId);
+            var listResult = result.ToList();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<string>>(result);
+            Assert.AreEqual(GetUserRolesAsKurinHeadDeputy().ToList().Count, listResult.Count);
+            Assert.AreEqual(AccessLevelTypeDTO.PlastMember.GetDescription(), listResult[0]);
+            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMemberForKurinHeadDeputy.GetDescription(), listResult[1]);
+        }
+
+        [Test]
+        public async Task GetUserAccessLevelsAsync_UserIsKurinSecretary_ReturnsIEnumerableOfStringsWithKurinSecretaryRolesForActiveMembership()
+        {
+            // Arrange
+            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(UserDTO);
+            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(GetUserRolesAsKurinSecretary());
+
+            // Act
+            var result = await _accessLevelService.GetUserAccessLevelsAsync(UserId);
+            var listResult = result.ToList();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<string>>(result);
+            Assert.AreEqual(GetUserRolesAsKurinSecretary().ToList().Count, listResult.Count);
+            Assert.AreEqual(AccessLevelTypeDTO.PlastMember.GetDescription(), listResult[0]);
+            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMemberForKurinSecretary.GetDescription(), listResult[1]);
         }
 
         private string UserId => _uniqueId.GetUniqueId().ToString();
@@ -212,12 +443,118 @@ namespace EPlast.Tests.Services.ActiveMembership
             };
         }
 
-        private IEnumerable<string> GetUserRolesAsLeadershipMember()
+        private IEnumerable<string> GetUserRolesAsGoverningBodyHead()
+        {
+            return new List<string>
+            {
+                 RolesForActiveMembershipTypeDTO.PlastMember.GetDescription(),
+                 Roles.GoverningBodyHead
+
+            };
+        }
+
+        private IEnumerable<string> GetUserRolesAsGoverningBodySectorHead()
+        {
+            return new List<string>
+            {
+                 RolesForActiveMembershipTypeDTO.PlastMember.GetDescription(),
+                 Roles.GoverningBodySectorHead
+
+            };
+        }
+
+        private IEnumerable<string> GetUserRolesAsGoverningBodySecretary()
+        {
+            return new List<string>
+            {
+                 RolesForActiveMembershipTypeDTO.PlastMember.GetDescription(),
+                 Roles.GoverningBodySecretary
+
+            };
+        }
+
+        private IEnumerable<string> GetUserRolesAsOkrugaHead()
         {
             return new List<string>
             {
                  RolesForActiveMembershipTypeDTO.PlastMember.GetDescription(),
                  Roles.OkrugaHead
+
+            };
+        }
+
+        private IEnumerable<string> GetUserRolesAsOkrugaHeadDeputy()
+        {
+            return new List<string>
+            {
+                 RolesForActiveMembershipTypeDTO.PlastMember.GetDescription(),
+                 Roles.OkrugaHeadDeputy
+
+            };
+        }
+
+        private IEnumerable<string> GetUserRolesAsOkrugaSecretary()
+        {
+            return new List<string>
+            {
+                 RolesForActiveMembershipTypeDTO.PlastMember.GetDescription(),
+                 Roles.OkrugaSecretary
+
+            };
+        }
+
+        private IEnumerable<string> GetUserRolesAsCityHead()
+        {
+            return new List<string>
+            {
+                 RolesForActiveMembershipTypeDTO.PlastMember.GetDescription(),
+                 Roles.CityHead
+
+            };
+        }
+        private IEnumerable<string> GetUserRolesAsCityHeadDeputy()
+        {
+            return new List<string>
+            {
+                 RolesForActiveMembershipTypeDTO.PlastMember.GetDescription(),
+                 Roles.CityHeadDeputy
+
+            };
+        }
+        private IEnumerable<string> GetUserRolesAsCitySecretary()
+        {
+            return new List<string>
+            {
+                 RolesForActiveMembershipTypeDTO.PlastMember.GetDescription(),
+                 Roles.CitySecretary
+
+            };
+        }
+
+        private IEnumerable<string> GetUserRolesAsKurinHead()
+        {
+            return new List<string>
+            {
+                 RolesForActiveMembershipTypeDTO.PlastMember.GetDescription(),
+                 Roles.KurinHead
+
+            };
+        }
+        private IEnumerable<string> GetUserRolesAsKurinHeadDeputy()
+        {
+            return new List<string>
+            {
+                 RolesForActiveMembershipTypeDTO.PlastMember.GetDescription(),
+                 Roles.KurinHeadDeputy
+
+            };
+        }
+        private IEnumerable<string> GetUserRolesAsKurinSecretary()
+        {
+            return new List<string>
+            {
+                 RolesForActiveMembershipTypeDTO.PlastMember.GetDescription(),
+                 Roles.KurinSecretary
 
             };
         }
