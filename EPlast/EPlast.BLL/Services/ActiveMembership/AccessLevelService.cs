@@ -83,7 +83,7 @@ namespace EPlast.BLL.Services.ActiveMembership
                  Roles.OkrugaSecretary
             };
 
-            var supporterLevelDegree = "Пласт прият";
+            var supporterLevelDegree = "Пластприят";
             var accessLevels = new List<string>();
             var user = await _userManagerService.FindByIdAsync(userId);
             var userRoles = (await _userManagerService.GetRolesAsync(user)).ToList();

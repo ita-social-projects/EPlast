@@ -45,6 +45,14 @@ namespace EPlast.BLL.Services.Club
             _uniqueId = uniqueId;
         }
 
+        public async Task ArchiveAsync(int clubId)
+        {
+            var club = await _repoWrapper.Club.GetFirstOrDefaultAsync(c => c.ID == clubId && c.IsActive);
+            club.IsActive = false;
+            _repoWrapper.Club.Update(club);
+            await _repoWrapper.SaveAsync();
+        }
+
         /// <inheritdoc />
         public async Task<IEnumerable<DataAccessClub.Club>> GetAllAsync(string clubName = null)
         {
@@ -55,8 +63,36 @@ namespace EPlast.BLL.Services.Club
                 : cities.Where(c => c.Name.ToLower().Contains(clubName.ToLower()));
         }
 
+        public async Task<IEnumerable<DataAccessClub.Club>> GetAllActiveAsync(string clubName = null)
+        {
+            var clubs = await _repoWrapper.Club.GetAllAsync();
+            var filteredClubs = clubs.Where(c => c.IsActive);
+            return string.IsNullOrEmpty(clubName)
+                ? filteredClubs
+                : filteredClubs.Where(c => c.Name.ToLower().Contains(clubName.ToLower()));
+        }
+
+        public async Task<IEnumerable<DataAccessClub.Club>> GetAllNotActiveAsync(string clubName = null)
+        {
+            var clubs = await _repoWrapper.Club.GetAllAsync();
+            var filteredClubs = clubs.Where(c => !c.IsActive);
+            return string.IsNullOrEmpty(clubName)
+                ? filteredClubs
+                : filteredClubs.Where(c => c.Name.ToLower().Contains(clubName.ToLower()));
+        }
+
+        public async Task<IEnumerable<ClubDTO>> GetAllActiveClubsAsync(string clubName = null)
+        {
+            return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubDTO>>(await GetAllActiveAsync(clubName));
+        }
+
+        public async Task<IEnumerable<ClubDTO>> GetAllNotActiveClubsAsync(string clubName = null)
+        {
+            return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubDTO>>(await GetAllNotActiveAsync(clubName));
+        }
+
         /// <inheritdoc />
-        public async Task<IEnumerable<ClubDTO>> GetAllDtoAsync(string clubName = null)
+        public async Task<IEnumerable<ClubDTO>> GetAllClubsAsync(string clubName = null)
         {
             return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubDTO>>(await GetAllAsync(clubName));
         }
@@ -438,8 +474,9 @@ namespace EPlast.BLL.Services.Club
         /// <inheritdoc />
         public async Task<IEnumerable<ClubForAdministrationDTO>> GetClubs()
         {
-            var clubs = await _repoWrapper.Club.GetAllAsync();
-            return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubForAdministrationDTO>>(clubs);
+            var clubs = await _repoWrapper.Club.GetAllAsync();  
+            var filteredClubs = clubs.Where(c => c.IsActive);
+            return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubForAdministrationDTO>>(filteredClubs);
         }
 
         private DataAccessClub.Club CreateClubFromProfileAsync(ClubProfileDTO model)
@@ -577,6 +614,13 @@ namespace EPlast.BLL.Services.Club
                 CountDeletedUsersPerYear= await GetCountDeletedUsersPerYear(clubId),
             };
             return clubProfileDto;
+        }
+        public async Task UnArchiveAsync(int clubId)
+        {
+            var club = await _repoWrapper.Club.GetFirstOrDefaultAsync(c => c.ID == clubId && !c.IsActive);
+            club.IsActive = true;
+            _repoWrapper.Club.Update(club);
+            await _repoWrapper.SaveAsync();
         }
     }
 }

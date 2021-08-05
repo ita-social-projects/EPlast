@@ -68,13 +68,71 @@ namespace EPlast.Tests.Controllers
                 new ActionContext(
                     httpContext.Object, new RouteData(),
                     new ControllerActionDescriptor()));
+
             controller.ControllerContext = context;
             _clubService
-                .Setup(c => c.GetAllDtoAsync(It.IsAny<string>()))
+                .Setup(c => c.GetAllClubsAsync(It.IsAny<string>()))
+
                 .ReturnsAsync(GetClubsBySearch());
 
             // Act
             var result = await controller.GetClubs(page, pageSize, cityName);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(((result as ObjectResult).Value as ClubsViewModel)
+                .Clubs.Where(c => c.Name.Equals("Курінь")));
+        }
+
+        [TestCase(1, 1, "Курінь")]
+        public async Task GetActivClub_Valid_Test(int page, int pageSize, string clubName)
+        {
+            // Arrange
+            ClubController clubcon = CreateClubController;
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            clubcon.ControllerContext = context;
+            _clubService
+                .Setup(c => c.GetAllActiveClubsAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetClubsBySearch());
+
+            // Act
+            var result = await clubcon.GetActiveClubs(page, pageSize, clubName);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(((result as ObjectResult).Value as ClubsViewModel)
+                .Clubs.Where(c => c.Name.Equals("Курінь")));
+        }
+
+        [TestCase(1, 1, "Курінь")]
+        public async Task GetNotActivClub_Valid_Test(int page, int pageSize, string clubName)
+        {
+            // Arrange
+            ClubController clubcon = CreateClubController;
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            clubcon.ControllerContext = context;
+            _clubService
+                .Setup(c => c.GetAllNotActiveClubsAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetClubsBySearch());
+
+            // Act
+            var result = await clubcon.GetNotActiveClubs(page, pageSize, clubName);
 
             // Assert
             Assert.NotNull(result);
@@ -735,6 +793,37 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task ArchiveClub_valid_Test()
+        {
+            //Arrange
+            _clubService
+                .Setup(c => c.ArchiveAsync(It.IsAny<int>()));
+            ClubController Clubcon = CreateClubController;
+
+            //Act
+            var result = await Clubcon.Archive(GetFakeID());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
+        }
+
+        [Test]
+        public async Task UnArchiveClub_valid_Test()
+        {
+            //Arrange
+            _clubService
+                .Setup(c => c.UnArchiveAsync(It.IsAny<int>()));
+            ClubController Clubcon = CreateClubController;
+
+            //Act
+            var result = await Clubcon.UnArchive(GetFakeID());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
+        }  
+
         public async Task EditAdmin_OldEndDate_ReturnsBadRequest()
         {
             // Arrange

@@ -406,7 +406,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             {
                 new UserPlastDegreeDTO
                 {
-                    PlastDegree = new PlastDegreeDTO { Name = "Пласт прият" }
+                    PlastDegree = new PlastDegreeDTO { Name = "Пластприят" }
                 }
             };
         }

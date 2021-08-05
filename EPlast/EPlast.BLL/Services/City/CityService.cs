@@ -56,7 +56,7 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<CityDTO>> GetAllDTOAsync(string cityName = null)
+        public async Task<IEnumerable<CityDTO>> GetAllCitiesAsync(string cityName = null)
         {
             return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(await GetAllAsync(cityName));
         }
@@ -65,6 +65,12 @@ namespace EPlast.BLL.Services
         public async Task<IEnumerable<CityDTO>> GetCitiesByRegionAsync(int regionId)
         {
             var cities = await _repoWrapper.City.GetAllAsync(c => c.RegionId == regionId);
+            foreach (var city in cities)
+            {
+                var cityMembers = await _repoWrapper.CityMembers.GetAllAsync(
+                                  predicate: c => c.CityId == city.ID);
+                city.CityMembers = cityMembers.ToList();
+            }
 
             return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(cities);
         }
@@ -373,7 +379,8 @@ namespace EPlast.BLL.Services
         public async Task<IEnumerable<CityForAdministrationDTO>> GetCities()
         {
             var cities = await _repoWrapper.City.GetAllAsync();
-            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityForAdministrationDTO>>(cities);
+            var filteredCities = cities.Where(c => c.IsActive);
+            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityForAdministrationDTO>>(filteredCities);
         }
 
         private async Task<DataAccessCity.City> CreateCityAndRegionAsync(CityProfileDTO model)
@@ -448,6 +455,49 @@ namespace EPlast.BLL.Services
             }
         }
 
+        public async Task ArchiveAsync(int cityId)
+        {
+            var city = await _repoWrapper.City.GetFirstOrDefaultAsync(c => c.ID == cityId && c.IsActive);
+            city.IsActive = false;
+            _repoWrapper.City.Update(city);
+            await _repoWrapper.SaveAsync();
+        }
+
+        public async Task<IEnumerable<DataAccessCity.City>> GetAllActiveAsync(string cityName = null)
+        {
+            var cities = await _repoWrapper.City.GetAllAsync();
+            var filteredCities = cities.Where(c => c.IsActive);
+            return string.IsNullOrEmpty(cityName)
+                ? filteredCities
+                : filteredCities.Where(c => c.Name.ToLower().Contains(cityName.ToLower()));
+        }
+
+        public async Task<IEnumerable<DataAccessCity.City>> GetAllNotActiveAsync(string cityName = null)
+        {
+            var cities = await _repoWrapper.City.GetAllAsync();
+            var filteredCities = cities.Where(c => !c.IsActive);
+            return string.IsNullOrEmpty(cityName)
+                ? filteredCities
+                : filteredCities.Where(c => c.Name.ToLower().Contains(cityName.ToLower()));
+        }
+
+        public async Task<IEnumerable<CityDTO>> GetAllActiveCitiesAsync(string cityName = null)
+        {
+            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(await GetAllActiveAsync(cityName));
+        }
+
+        public async Task<IEnumerable<CityDTO>> GetAllNotActiveCitiesAsync(string cityName = null)
+        {
+            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(await GetAllNotActiveAsync(cityName));
+        }
+
+        public async Task UnArchiveAsync(int cityId)
+        {
+            var city = await _repoWrapper.City.GetFirstOrDefaultAsync(c => c.ID == cityId && !c.IsActive);
+            city.IsActive = true;
+            _repoWrapper.City.Update(city);
+            await _repoWrapper.SaveAsync();
+        }
     }
 }
 
