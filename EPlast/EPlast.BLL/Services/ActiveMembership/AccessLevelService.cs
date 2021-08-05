@@ -23,20 +23,64 @@ namespace EPlast.BLL.Services.ActiveMembership
         /// <inheritdoc />
         public async Task<IEnumerable<string>> GetUserAccessLevelsAsync(string userId)
         {
-            var leadershipLevelRoles = new List<string>
+            var leadershipLevelRoleForGoverningBodyHead = new List<string>
             {
-                Roles.KurinHead,
-                Roles.KurinHeadDeputy,
-                Roles.KurinSecretary,
-                Roles.CityHead,
-                Roles.CityHeadDeputy,
-                Roles.CitySecretary,
-                Roles.OkrugaHead,
-                Roles.OkrugaHeadDeputy,
-                Roles.OkrugaSecretary,
-                Roles.GoverningBodyHead,
-                Roles.GoverningBodySecretary,
+                Roles.GoverningBodyHead
+            };
+
+            var leadershipLevelRoleForSectorHead = new List<string>
+            {
                 Roles.GoverningBodySectorHead
+            };
+
+            var leadershipLevelRoleForGoverningBodySecretary = new List<string>
+            {
+                Roles.GoverningBodySecretary
+            };
+
+            var leadershipLevelRoleForKurinHead = new List<string>
+            {
+                Roles.KurinHead
+            };
+
+            var leadershipLevelRoleForKurinHeadDeputy = new List<string>
+            {
+                Roles.KurinHeadDeputy
+            };
+
+            var leadershipLevelRoleForKurinSecretary = new List<string>
+            {
+                Roles.KurinSecretary
+            };
+
+            var leadershipLevelRoleForCityHead = new List<string>
+            {
+                Roles.CityHead
+            };
+
+            var leadershipLevelRoleForCityHeadDeputy = new List<string>
+            {
+                Roles.CityHeadDeputy
+            };
+
+            var leadershipLevelRoleForCitySecretary = new List<string>
+            {
+                Roles.CitySecretary
+            };
+
+            var leadershipLevelRoleForOkrugaHead = new List<string>
+            {
+                Roles.OkrugaHead
+            };
+
+            var leadershipLevelRoleForOkrugaHeadDeputy = new List<string>
+            {
+                Roles.OkrugaHeadDeputy
+            };
+
+            var leadershipLevelRoleForOkrugaSecretary = new List<string>
+            {
+                 Roles.OkrugaSecretary
             };
 
             var supporterLevelDegree = "Пласт прият";
@@ -67,9 +111,64 @@ namespace EPlast.BLL.Services.ActiveMembership
                 accessLevels.Add(AccessLevelTypeDTO.PlastMember.GetDescription());
             }
 
-            if (userRoles.Intersect(leadershipLevelRoles).Any())
+            if (userRoles.Intersect(leadershipLevelRoleForGoverningBodyHead).Any())
             {
-                accessLevels.Add(AccessLevelTypeDTO.LeadershipMember.GetDescription());
+                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForGoverningBodyHead.GetDescription());
+            }
+
+            if (userRoles.Intersect(leadershipLevelRoleForSectorHead).Any())
+            {
+                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForGoverningBodySectorHead.GetDescription());
+            }
+
+            if (userRoles.Intersect(leadershipLevelRoleForGoverningBodySecretary).Any())
+            {
+                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForGoverningBodySecretary.GetDescription());
+            }
+
+            if (userRoles.Intersect(leadershipLevelRoleForKurinHead).Any())
+            {
+                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForKurinHead.GetDescription());
+            }
+
+            if (userRoles.Intersect(leadershipLevelRoleForKurinHeadDeputy).Any())
+            {
+                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForKurinHeadDeputy.GetDescription());
+            }
+
+            if (userRoles.Intersect(leadershipLevelRoleForKurinSecretary).Any())
+            {
+                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForKurinSecretary.GetDescription());
+            }
+
+            if (userRoles.Intersect(leadershipLevelRoleForCityHead).Any())
+            {
+                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForCityHead.GetDescription());
+            }
+
+            if (userRoles.Intersect(leadershipLevelRoleForCityHeadDeputy).Any())
+            {
+                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForCityHeadDeputy.GetDescription());
+            }
+
+            if (userRoles.Intersect(leadershipLevelRoleForCitySecretary).Any())
+            {
+                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForCitySecretary.GetDescription());
+            }
+
+            if (userRoles.Intersect(leadershipLevelRoleForOkrugaHead).Any())
+            {
+                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForOkrugaHead.GetDescription());
+            }
+
+            if (userRoles.Intersect(leadershipLevelRoleForOkrugaHeadDeputy).Any())
+            {
+                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForOkrugaHeadDeputy.GetDescription());
+            }
+
+            if (userRoles.Intersect(leadershipLevelRoleForOkrugaSecretary).Any())
+            {
+                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForOkrugaSecretary.GetDescription());
             }
 
             return accessLevels.AsEnumerable();
