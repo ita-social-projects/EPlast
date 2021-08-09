@@ -9,7 +9,6 @@ namespace EPlast.DataAccess.Entities
         public DateTime? SubmitDate { get; set; }
         [Required, MaxLength(64)]
         public string BlobName { get; set; }
-        [Required, MaxLength(120)]
         public string FileName { get; set; }
         [Required]
         public int ClubDocumentTypeId { get; set; }
