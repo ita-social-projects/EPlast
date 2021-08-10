@@ -2,7 +2,7 @@
 
 namespace EPlast.BLL.DTO.City
 {
-    public class CityDocumentsDTO
+    public class CityDocumentsDTO : IDocumentDTO
     {
         public int ID { get; set; }
         public DateTime? SubmitDate { get; set; }

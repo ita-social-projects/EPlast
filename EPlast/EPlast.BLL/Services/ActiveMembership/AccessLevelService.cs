@@ -39,7 +39,7 @@ namespace EPlast.BLL.Services.ActiveMembership
                 Roles.GoverningBodySectorHead
             };
 
-            var supporterLevelDegree = "Пласт прият";
+            var supporterLevelDegree = "Пластприят";
             var accessLevels = new List<string>();
             var user = await _userManagerService.FindByIdAsync(userId);
             var userRoles = (await _userManagerService.GetRolesAsync(user)).ToList();
@@ -52,10 +52,14 @@ namespace EPlast.BLL.Services.ActiveMembership
             }
 
             if (userRoles.Contains(RolesForActiveMembershipTypeDTO.Supporter.GetDescription())
-                     || userRoles.Contains(RolesForActiveMembershipTypeDTO.FormerPlastMember.GetDescription())
                      || isInSupporterDegree)
             {
                 accessLevels.Add(AccessLevelTypeDTO.Supporter.GetDescription());
+            }
+
+            if (userRoles.Contains(RolesForActiveMembershipTypeDTO.FormerPlastMember.GetDescription()))
+            {
+                accessLevels.Add(AccessLevelTypeDTO.FormerPlastMember.GetDescription());
             }
 
             if (userRoles.Contains(RolesForActiveMembershipTypeDTO.PlastMember.GetDescription()))

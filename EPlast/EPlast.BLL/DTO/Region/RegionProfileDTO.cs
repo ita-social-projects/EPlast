@@ -15,6 +15,7 @@ namespace EPlast.BLL.DTO.Region
         public string phoneNumber { get; set; }
         public string Email { get; set; }
         public string Link { get; set; }
+        public bool IsActive { get; set; }
         public string Street { get; set; }
         public string HouseNumber { get; set; }
         public string OfficeNumber { get; set; }

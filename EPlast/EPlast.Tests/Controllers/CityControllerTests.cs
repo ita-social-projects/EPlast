@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Logging;
@@ -61,10 +62,10 @@ namespace EPlast.Tests.Controllers
                 .Setup(c => c.AddAdministratorAsync(It.IsAny<CityAdministrationDTO>()));
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.AddAdmin(admin);
+            var result = await controller.AddAdmin(admin);
 
             // Assert
             Assert.NotNull(result);
@@ -83,10 +84,10 @@ namespace EPlast.Tests.Controllers
                 .Setup(c => c.AddDocumentAsync(It.IsAny<CityDocumentsDTO>()));
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.AddDocument(document);
+            var result = await controller.AddDocument(document);
 
             // Assert
             Assert.NotNull(result);
@@ -100,10 +101,10 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(new CityMembersDTO());
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.AddFollower(GetFakeID());
+            var result = await controller.AddFollower(GetFakeID());
 
             // Assert
             Assert.NotNull(result);
@@ -119,10 +120,10 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(new CityMembersDTO());
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.AddFollowerWithId(GetFakeID(), GetStringFakeId());
+            var result = await controller.AddFollowerWithId(GetFakeID(), GetStringFakeId());
 
             // Assert
             Assert.NotNull(result);
@@ -138,10 +139,10 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(new CityMembersDTO());
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.ChangeApproveStatus(GetFakeID());
+            var result = await controller.ChangeApproveStatus(GetFakeID());
 
             // Assert
             Assert.NotNull(result);
@@ -154,10 +155,10 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _cityParticipantsService
                 .Setup(c => c.CityOfApprovedMember(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             //Act
-            var result = await citycon.CityNameOfApprovedMember(GetStringFakeId());
+            var result = await controller.CityNameOfApprovedMember(GetStringFakeId());
 
             //Assert
             Assert.NotNull(result);
@@ -176,11 +177,11 @@ namespace EPlast.Tests.Controllers
                 .Returns(new CityDTO());
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
-            citycon.ModelState.AddModelError("NameError", "Required");
+            CitiesController controller = CreateCityController;
+            controller.ModelState.AddModelError("NameError", "Required");
 
             // Act
-            var result = await citycon.Create(TestVM);
+            var result = await controller.Create(TestVM);
 
             // Assert
             Assert.NotNull(result);
@@ -200,10 +201,10 @@ namespace EPlast.Tests.Controllers
                 .Returns(new CityDTO());
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.Create(TestVM);
+            var result = await controller.Create(TestVM);
 
             // Assert
             Assert.NotNull(result);
@@ -220,10 +221,10 @@ namespace EPlast.Tests.Controllers
             _mapper
                 .Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
                 .Returns(new CityViewModel());
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.Details(GetFakeID());
+            var result = await controller.Details(GetFakeID());
 
             // Assert
             Assert.NotNull(result);
@@ -240,10 +241,10 @@ namespace EPlast.Tests.Controllers
             _mapper
                 .Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
                 .Returns(new CityViewModel());
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.Details(GetFakeID());
+            var result = await controller.Details(GetFakeID());
 
             // Assert
             Assert.NotNull(result);
@@ -262,11 +263,11 @@ namespace EPlast.Tests.Controllers
                 .Returns(new CityDTO());
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
-            citycon.ModelState.AddModelError("NameError", "Required");
+            CitiesController controller = CreateCityController;
+            controller.ModelState.AddModelError("NameError", "Required");
 
             // Act
-            var result = await citycon.Edit(TestVM);
+            var result = await controller.Edit(TestVM);
 
             // Assert
             Assert.NotNull(result);
@@ -285,10 +286,10 @@ namespace EPlast.Tests.Controllers
                 .Returns(new CityDTO());
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.Edit(TestVM);
+            var result = await controller.Edit(TestVM);
 
             // Assert
             Assert.NotNull(result);
@@ -307,14 +308,28 @@ namespace EPlast.Tests.Controllers
                 .Setup(c => c.EditAdministratorAsync(It.IsAny<CityAdministrationDTO>()));
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.EditAdmin(admin);
+            var result = await controller.EditAdmin(admin);
 
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task EditAdmin_OldEndDate_ThrowsException()
+        {
+            //Arrange
+            var testAdmin = new CityAdministrationViewModel() { EndDate = DateTime.MinValue };
+            var controller = CreateCityController;
+
+            //Act
+            var result = await controller.EditAdmin(testAdmin);
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [TestCase(2)]
@@ -326,10 +341,10 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(() => null);
             _mapper.Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
                 .Returns(new CityViewModel());
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.GetAdmins(id);
+            var result = await controller.GetAdmins(id);
 
             // Assert
             Assert.NotNull(result);
@@ -346,10 +361,10 @@ namespace EPlast.Tests.Controllers
             _mapper
                 .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
                 .Returns(new CityViewModel());
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.GetAdmins(id);
+            var result = await controller.GetAdmins(id);
 
             // Assert
             _mapper.Verify(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()));
@@ -364,10 +379,10 @@ namespace EPlast.Tests.Controllers
             _cityParticipantsService
                 .Setup(c => c.GetAdministrationStatuses(It.IsAny<string>()))
                 .ReturnsAsync(It.IsAny<IEnumerable<CityAdministrationStatusDTO>>());
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.GetAllAdministrationStatuses(GetStringFakeId());
+            var result = await controller.GetAllAdministrationStatuses(GetStringFakeId());
 
             // Assert
             Assert.NotNull(result);
@@ -375,7 +390,35 @@ namespace EPlast.Tests.Controllers
         }
 
         [TestCase(1, 1, "Львів")]
-        public async Task GetCities_Valid_Test(int page, int pageSize, string cityName)
+        public async Task GetAllCities_Valid_Test(int page, int pageSize, string cityName)
+        {
+            // Arrange
+            CitiesController controller = CreateCityController;
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            controller.ControllerContext = context;
+            _cityService
+                .Setup(c => c.GetAllCitiesAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetCitiesBySearch());
+
+            // Act
+            var result = await controller.GetCities(page, pageSize, cityName);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(((result as ObjectResult).Value as CitiesViewModel)
+                .Cities.Where(c => c.Name.Equals("Львів")));
+        }
+
+        [TestCase(1, 1, "Львів")]
+        public async Task GetActiveCities_Valid_Test(int page, int pageSize, string cityName)
         {
             // Arrange
             CitiesController citycon = CreateCityController;
@@ -389,11 +432,39 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             citycon.ControllerContext = context;
             _cityService
-                .Setup(c => c.GetAllDTOAsync(It.IsAny<string>()))
+                .Setup(c => c.GetAllActiveCitiesAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetCitiesBySearch());
 
             // Act
-            var result = await citycon.GetCities(page, pageSize, cityName);
+            var result = await citycon.GetActiveProfile(page, pageSize, cityName);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(((result as ObjectResult).Value as CitiesViewModel)
+                .Cities.Where(c => c.Name.Equals("Львів")));
+        }
+
+        [TestCase(1, 1, "Львів")]
+        public async Task GetNotActiveCities_Valid_Test(int page, int pageSize, string cityName)
+        {
+            // Arrange
+            CitiesController citycon = CreateCityController;
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            citycon.ControllerContext = context;
+            _cityService
+                .Setup(c => c.GetAllNotActiveCitiesAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetCitiesBySearch());
+
+            // Act
+            var result = await citycon.GetNotActiveProfile(page, pageSize, cityName);
 
             // Assert
             Assert.NotNull(result);
@@ -406,19 +477,19 @@ namespace EPlast.Tests.Controllers
         public async Task GetCities_Valid_Test()
         {
             // Arrange
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
             var httpContext = new Mock<HttpContext>();
             var context = new ControllerContext(
                 new ActionContext(
                     httpContext.Object, new RouteData(),
                     new ControllerActionDescriptor()));
-            citycon.ControllerContext = context;
+            controller.ControllerContext = context;
             _cityService
                 .Setup(c => c.GetCities())
                 .ReturnsAsync(GetFakeCitiesForAdministration());
 
             // Act
-            var result = await citycon.GetCities();
+            var result = await controller.GetCities();
 
             // Assert
             Assert.NotNull(result);
@@ -433,10 +504,10 @@ namespace EPlast.Tests.Controllers
             // Arrange
             _cityAccessService
                 .Setup(c => c.GetCitiesAsync(It.IsAny<User>()));
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.GetCitiesThatUserHasAccessTo();
+            var result = await controller.GetCitiesThatUserHasAccessTo();
 
             // Assert
             Assert.NotNull(result);
@@ -453,10 +524,10 @@ namespace EPlast.Tests.Controllers
             _mapper
                 .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
                 .Returns(new CityViewModel());
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.GetDocuments(id);
+            var result = await controller.GetDocuments(id);
 
             // Assert
             _mapper.Verify(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()));
@@ -474,10 +545,10 @@ namespace EPlast.Tests.Controllers
             _mapper
                 .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
                 .Returns(new CityViewModel());
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.GetDocuments(GetFakeID());
+            var result = await controller.GetDocuments(GetFakeID());
 
             // Assert
             Assert.NotNull(result);
@@ -491,10 +562,10 @@ namespace EPlast.Tests.Controllers
             _cityDocumentsService
                 .Setup(c => c.GetAllCityDocumentTypesAsync())
                 .ReturnsAsync(It.IsAny<IEnumerable<CityDocumentTypeDTO>>());
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.GetDocumentTypesAsync();
+            var result = await controller.GetDocumentTypesAsync();
 
             // Assert
             Assert.NotNull(result);
@@ -508,11 +579,11 @@ namespace EPlast.Tests.Controllers
             _cityDocumentsService
                 .Setup(c => c.DownloadFileAsync(It.IsAny<string>()))
                 .ReturnsAsync(It.IsAny<string>());
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             _cityParticipantsService.Setup(c => c.RemoveAdministratorAsync(It.IsAny<int>()));
             // Act
-            var result = await citycon.GetFileBase64(GetFakeFileName());
+            var result = await controller.GetFileBase64(GetFakeFileName());
 
             // Assert
             Assert.NotNull(result);
@@ -529,10 +600,10 @@ namespace EPlast.Tests.Controllers
             _mapper
                 .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
                 .Returns(new CityViewModel());
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.GetFollowers(id);
+            var result = await controller.GetFollowers(id);
 
             // Assert
             Assert.NotNull(result);
@@ -549,10 +620,10 @@ namespace EPlast.Tests.Controllers
             _mapper
                 .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
                 .Returns(new CityViewModel());
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.GetFollowers(id);
+            var result = await controller.GetFollowers(id);
 
             // Assert
             _mapper.Verify(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()));
@@ -564,10 +635,10 @@ namespace EPlast.Tests.Controllers
         public void GetLegalStatuses_Valid_Test()
         {
             // Arrange
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = citycon.GetLegalStatuses();
+            var result = controller.GetLegalStatuses();
 
             // Assert
             Assert.NotNull(result);
@@ -622,10 +693,10 @@ namespace EPlast.Tests.Controllers
             _cityService
                 .Setup(c => c.GetLogoBase64(It.IsAny<string>()))
                 .ReturnsAsync(new string("some string"));
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.GetPhotoBase64(logoName);
+            var result = await controller.GetPhotoBase64(logoName);
 
             // Assert
             Assert.NotNull(result);
@@ -640,10 +711,10 @@ namespace EPlast.Tests.Controllers
             _mapper
                 .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
                 .Returns(new CityViewModel());
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.GetProfile(id);
+            var result = await controller.GetProfile(id);
 
             // Assert
             Assert.NotNull(result);
@@ -655,10 +726,10 @@ namespace EPlast.Tests.Controllers
         {
             _cityService.Setup(c => c.GetCityProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(() => null);
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.GetProfile(GetFakeID());
+            var result = await controller.GetProfile(GetFakeID());
 
             // Assert
             Assert.NotNull(result);
@@ -673,10 +744,10 @@ namespace EPlast.Tests.Controllers
             _mapper
                 .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
                 .Returns(new CityViewModel());
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.GetProfile(id);
+            var result = await controller.GetProfile(id);
 
             // Assert
             _mapper.Verify(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()));
@@ -691,14 +762,46 @@ namespace EPlast.Tests.Controllers
             _cityParticipantsService
                 .Setup(c => c.GetAdministrationsOfUserAsync(It.IsAny<string>()))
                 .ReturnsAsync(It.IsAny<IEnumerable<CityAdministrationDTO>>());
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.GetUserAdministrations(GetStringFakeId());
+            var result = await controller.GetUserAdministrations(GetStringFakeId());
 
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task Archive_Valid_Test()
+        {
+            // Arrange
+            _cityService
+                .Setup(c => c.ArchiveAsync(It.IsAny<int>()));
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.Archive(GetFakeID());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
+        }
+
+        [Test]
+        public async Task UnArchive_Valid_Test()
+        {
+            // Arrange
+            _cityService
+                .Setup(c => c.UnArchiveAsync(It.IsAny<int>()));
+            CitiesController citycon = CreateCityController;
+
+            // Act
+            var result = await citycon.UnArchive(GetFakeID());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
         }
 
         [Test]
@@ -708,10 +811,10 @@ namespace EPlast.Tests.Controllers
             _cityParticipantsService
                 .Setup(c => c.GetPreviousAdministrationsOfUserAsync(It.IsAny<string>()))
                 .ReturnsAsync(It.IsAny<IEnumerable<CityAdministrationDTO>>());
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.GetUserPreviousAdministrations(GetStringFakeId());
+            var result = await controller.GetUserPreviousAdministrations(GetStringFakeId());
 
             // Assert
             Assert.NotNull(result);
@@ -724,10 +827,10 @@ namespace EPlast.Tests.Controllers
             // Arrange
             _cityService
                 .Setup(c => c.RemoveAsync(It.IsAny<int>()));
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.Remove(GetFakeID());
+            var result = await controller.Remove(GetFakeID());
 
             // Assert
             Assert.NotNull(result);
@@ -745,11 +848,11 @@ namespace EPlast.Tests.Controllers
                 .Setup(c => c.RemoveAdministratorAsync(It.IsAny<int>()));
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             _cityParticipantsService.Setup(c => c.EditAdministratorAsync(It.IsAny<CityAdministrationDTO>()));
             // Act
-            var result = await citycon.RemoveAdmin(GetFakeID());
+            var result = await controller.RemoveAdmin(GetFakeID());
 
             // Assert
             Assert.NotNull(result);
@@ -764,10 +867,10 @@ namespace EPlast.Tests.Controllers
                 .Setup(c => c.DeleteFileAsync(It.IsAny<int>()));
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.RemoveDocument(GetFakeID());
+            var result = await controller.RemoveDocument(GetFakeID());
 
             // Assert
             Assert.NotNull(result);
@@ -782,10 +885,10 @@ namespace EPlast.Tests.Controllers
                 .Setup(c => c.RemoveFollowerAsync(It.IsAny<int>()));
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.RemoveFollower(GetFakeID());
+            var result = await controller.RemoveFollower(GetFakeID());
 
             // Assert
             Assert.NotNull(result);
@@ -798,10 +901,10 @@ namespace EPlast.Tests.Controllers
             // Arrange
             _cityAccessService
                 .Setup(c => c.GetAllCitiesIdAndName(It.IsAny<User>()));
-            CitiesController citycon = CreateCityController;
+            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await citycon.GetCitiesNameThatUserHasAccessTo();
+            var result = await controller.GetCitiesNameThatUserHasAccessTo();
 
             // Assert
             Assert.NotNull(result);
