@@ -54,6 +54,22 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
+        public async Task ArchiveAsync_WithMode_ReturnsArchived()
+        {
+            // Arrange
+            CityService cityService = CreateCityService();
+            _repoWrapper.Setup(r => r.City.Update(It.IsAny<DataAccessCity.City>()));
+            _repoWrapper.Setup(r => r.SaveAsync());
+
+            // Act
+            await cityService.ArchiveAsync(Id);
+
+            // Assert
+            _repoWrapper.Verify(r => r.City.Update(It.IsAny<DataAccessCity.City>()), Times.Once);
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
+        }
+
+        [Test]
         public void GetCityHead_ReturnsCityHead_Valid()
         {
             // Arrange
@@ -65,7 +81,8 @@ namespace EPlast.Tests.Services.City
                     AdminType = new AdminTypeDTO()
                     {
                         AdminTypeName = Roles.CityHead
-                    }
+                    },
+                    Status = true
                 }
             };
 
@@ -126,7 +143,8 @@ namespace EPlast.Tests.Services.City
                     AdminType = new AdminTypeDTO()
                     {
                         AdminTypeName = Roles.CityHeadDeputy
-                    }
+                    },
+                    Status = true
                 }
             };
 
@@ -176,6 +194,38 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
+        public async Task GetAllActiveAsync_ReturnsAllActiveCities()
+        {
+            // Arrange
+            _repoWrapper.Setup(rw => rw.City.GetAllAsync(It.IsAny<Expression<Func<DataAccessCity.City, bool>>>(),
+                It.IsAny<Func<IQueryable<DataAccessCity.City>, IIncludableQueryable<DataAccessCity.City, object>>>()))
+                .ReturnsAsync(() => new List<DataAccessCity.City>());
+
+            // Act
+            var result = await _cityService.GetAllActiveAsync();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<DataAccessCity.City>>(result);
+        }
+
+        [Test]
+        public async Task GetAllNotActiveAsync_ReturnsAllNotActiveCities()
+        {
+            // Arrange
+            _repoWrapper.Setup(rw => rw.City.GetAllAsync(It.IsAny<Expression<Func<DataAccessCity.City, bool>>>(),
+                It.IsAny<Func<IQueryable<DataAccessCity.City>, IIncludableQueryable<DataAccessCity.City, object>>>()))
+                .ReturnsAsync(() => new List<DataAccessCity.City>());
+
+            // Act
+            var result = await _cityService.GetAllNotActiveAsync();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<DataAccessCity.City>>(result);
+        }
+
+        [Test]
         public async Task GetAllAsync_ReturnsAllCities()
         {
             // Arrange
@@ -208,7 +258,27 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
-        public async Task GetAllDTOAsync_ReturnsAllDTO()
+        public async Task GetAllActiveCitiesAsync_ReturnsAllActiveCities()
+        {
+            // Arrange
+            _mapper
+                .Setup(m => m.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(It.IsAny<IEnumerable<DataAccessCity.City>>()))
+                .Returns(GetTestCityDTO());
+            _repoWrapper
+                .Setup(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DataAccessCity.City, bool>>>(),
+                It.IsAny<Func<IQueryable<DataAccessCity.City>, IIncludableQueryable<DataAccessCity.City, object>>>()))
+                .ReturnsAsync(GetTestCity());
+
+            // Act
+            var result = await _cityService.GetAllActiveCitiesAsync();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<CityDTO>>(result);
+        }
+
+        [Test]
+        public async Task GetAllCitiesAsync_ReturnsAllCities()
         {
             // Arrange
             _mapper
@@ -220,7 +290,27 @@ namespace EPlast.Tests.Services.City
                 .ReturnsAsync(GetTestCity());
 
             // Act
-            var result = await _cityService.GetAllDTOAsync();
+            var result = await _cityService.GetAllCitiesAsync();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<CityDTO>>(result);
+        }
+
+        [Test]
+        public async Task GetAllNotActiveCitiesAsync_ReturnsAllNotActiveCities()
+        {
+            // Arrange
+            _mapper
+                .Setup(m => m.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(It.IsAny<IEnumerable<DataAccessCity.City>>()))
+                .Returns(GetTestCityDTO());
+            _repoWrapper
+                .Setup(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DataAccessCity.City, bool>>>(),
+                It.IsAny<Func<IQueryable<DataAccessCity.City>, IIncludableQueryable<DataAccessCity.City, object>>>()))
+                .ReturnsAsync(GetTestCity());
+
+            // Act
+            var result = await _cityService.GetAllNotActiveCitiesAsync();
 
 
             // Assert
@@ -239,6 +329,10 @@ namespace EPlast.Tests.Services.City
                 .Setup(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DataAccessCity.City, bool>>>(),
                 It.IsAny<Func<IQueryable<DataAccessCity.City>, IIncludableQueryable<DataAccessCity.City, object>>>()))
                 .ReturnsAsync(GetTestCity());
+            _repoWrapper
+                .Setup(r => r.CityMembers.GetAllAsync(It.IsAny<Expression<Func<DataAccessCity.CityMembers, bool>>>(),
+                 It.IsAny<Func<IQueryable<DataAccessCity.CityMembers>, IIncludableQueryable<DataAccessCity.CityMembers, object>>>()))
+                .ReturnsAsync(new List<CityMembers>());
 
             // Act
             var result = await _cityService.GetCitiesByRegionAsync(Id);
@@ -859,6 +953,22 @@ namespace EPlast.Tests.Services.City
             Assert.IsInstanceOf<IEnumerable<CityForAdministrationDTO>>(result);
         }
 
+        [Test]
+        public async Task UnArchiveAsync_WithMode_ReturnsArchived()
+        {
+            // Arrange
+            CityService cityService = CreateCityService();
+            _repoWrapper.Setup(r => r.City.Update(It.IsAny<DataAccessCity.City>()));
+            _repoWrapper.Setup(r => r.SaveAsync());
+
+            // Act
+            await cityService.UnArchiveAsync(Id);
+
+            // Assert
+            _repoWrapper.Verify(r => r.City.Update(It.IsAny<DataAccessCity.City>()), Times.Once);
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
+        }
+
         private int Id => 1;
         private string stringId => "1";
         private int count => 2;
@@ -988,29 +1098,32 @@ namespace EPlast.Tests.Services.City
                       AdminType = new AdminTypeDTO
                       {
                            AdminTypeName = Roles.CityHead
-                      }
-
+                      },
+                      Status = true
                  },
                  new CityAdministrationDTO
                  {
                       AdminType = new AdminTypeDTO
                       {
                            AdminTypeName = "----------"
-                      }
+                      },
+                      Status = true
                  },
                  new CityAdministrationDTO
                  {
                        AdminType = new AdminTypeDTO
                        {
                             AdminTypeName = Roles.CityHead
-                       }
+                       },
+                       Status = true
                  },
                  new CityAdministrationDTO
                  {
                        AdminType = new AdminTypeDTO
                        {
                             AdminTypeName = "----------"
-                       }
+                       },
+                       Status = true
                  }
             };
         }
@@ -1030,7 +1143,8 @@ namespace EPlast.Tests.Services.City
                         {
                             AdminTypeName = Roles.CityHead
                         },
-                        EndDate = DateTime.Now.AddMonths(-3)
+                        EndDate = DateTime.Now.AddMonths(-3),
+                        Status = false
                     },
                     new CityAdministrationDTO
                     {
@@ -1038,7 +1152,8 @@ namespace EPlast.Tests.Services.City
                         {
                             AdminTypeName = "----------",
                         },
-                        EndDate = DateTime.Now.AddMonths(-3)
+                        EndDate = DateTime.Now.AddMonths(-3),
+                        Status = false
                     }
                 };
                 cities.Add(cityDto);
@@ -1062,6 +1177,7 @@ namespace EPlast.Tests.Services.City
                         {
                             AdminTypeName = Roles.CityHead
                         },
+                        Status = true
                     },
                     new CityAdministrationDTO
                     {
@@ -1069,6 +1185,7 @@ namespace EPlast.Tests.Services.City
                         {
                             AdminTypeName = "----------",
                         },
+                        Status = true
                     }
                 };
                 cities.Add(cityDto);

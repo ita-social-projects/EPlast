@@ -7,7 +7,7 @@ namespace EPlast.BLL.DTO.Club
     {
         public int ID { get; set; }
 
-        [Required, MaxLength(50, ErrorMessage = "Назва куреня не має перевищувати 50 символів")]
+        [Required, MaxLength(200, ErrorMessage = "Назва куреня не має перевищувати 200 символів")]
         public string Name { get; set; }
 
         [StringLength(18, ErrorMessage = "Контактний номер куреня повинен містити 12 цифр")]
@@ -34,6 +34,7 @@ namespace EPlast.BLL.DTO.Club
         [MaxLength(7, ErrorMessage = "Поштовий індекс куреня не має перевищувати 7 символів")]
         public string PostIndex { get; set; }
         public string Logo { get; set; }
+        public bool IsActive { get; set; }
         public bool CanCreate { get; set; }
         public bool CanEdit { get; set; }
         public bool CanJoin { get; set; }

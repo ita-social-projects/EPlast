@@ -35,13 +35,13 @@
     "EditGB": false,
     "DeleteGB": false,
     "CreateDirection": false,
-    "AddGBSecretary": true,
+    "AddGBSecretary": false,
     "GoToSecretaryProfile": true,
     "EditRBMembers": false,
     "DeleteGBMembers": false,
     "BecomeRBMember": true,
     "ManipulatePoster": false,
-    "ManipulateDocument": true,
+    "ManipulateDocument": false,
     "AddGBSector": false
   },
   "Голова Станиці": {

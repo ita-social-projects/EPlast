@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20210804140917_ChangedClubNameMaxLength")]
+    partial class ChangedClubNameMaxLength
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -187,7 +189,9 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(120)")
+                        .HasMaxLength(120);
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -211,7 +215,9 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(120)")
+                        .HasMaxLength(120);
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -235,7 +241,9 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(120)")
+                        .HasMaxLength(120);
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -384,7 +392,9 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(120)")
+                        .HasMaxLength(120);
 
                     b.Property<DateTime?>("SubmitDate")
                         .HasColumnType("datetime2");
@@ -674,7 +684,9 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(120)")
+                        .HasMaxLength(120);
 
                     b.Property<DateTime?>("SubmitDate")
                         .HasColumnType("datetime2");
@@ -1345,29 +1357,6 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("Genders");
                 });
 
-            modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBody.Announcement.GoverningBodyAnnouncements", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Text")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("GoverningBodyAnnouncement");
-                });
-
             modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBody.GoverningBodyAdministration", b =>
                 {
                     b.Property<int>("Id")
@@ -1438,7 +1427,9 @@ namespace EPlast.DataAccess.Migrations
                         .HasMaxLength(64);
 
                     b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(120)")
+                        .HasMaxLength(120);
 
                     b.Property<int>("GoverningBodyDocumentTypeId")
                         .HasColumnType("int");
@@ -1592,7 +1583,9 @@ namespace EPlast.DataAccess.Migrations
                         .HasMaxLength(64);
 
                     b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(120)")
+                        .HasMaxLength(120);
 
                     b.Property<int>("SectorDocumentTypeId")
                         .HasColumnType("int");
@@ -3413,13 +3406,6 @@ namespace EPlast.DataAccess.Migrations
                         .HasForeignKey("GallaryID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBody.Announcement.GoverningBodyAnnouncements", b =>
-                {
-                    b.HasOne("EPlast.DataAccess.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBody.GoverningBodyAdministration", b =>

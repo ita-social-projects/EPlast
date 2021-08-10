@@ -15,6 +15,7 @@ namespace EPlast.WebApi.Models.Club
         public string OfficeNumber { get; set; }
         public string PostIndex { get; set; }
         public string Logo { get; set; }
+        public bool isActive { get; set; }
         public string Region { get; set; }
         public bool CanCreate { get; set; }
         public bool CanEdit { get; set; }
