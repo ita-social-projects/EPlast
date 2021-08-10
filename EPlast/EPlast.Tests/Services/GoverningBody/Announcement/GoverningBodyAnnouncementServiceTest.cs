@@ -63,7 +63,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
         }
 
         [Test]
-        public async Task DeleteAnnouncement_Valid()
+        public void DeleteAnnouncement_Valid()
         {
             //Arrange
             _repoWrapper.Setup(g => g.GoverningBodyAnnouncement.GetFirstAsync(It.IsAny<Expression<Func<GoverningBodyAnnouncement, bool>>>(),
@@ -109,7 +109,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
             _mapper.Setup(m => m.Map<IEnumerable<UserDTO>>(a));
 
             //Act
-            var result = _governingBodyAnnouncementService.GetAllAnnouncementAsync();
+            var result = await _governingBodyAnnouncementService.GetAllAnnouncementAsync();
 
             //Assert
             Assert.IsNotNull(result);
@@ -148,7 +148,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
             _mapper.Setup(m => m.Map<IEnumerable<UserDTO>>(a));
 
             //Act
-            var result = _governingBodyAnnouncementService.GetAllUserAsync();
+            var result = await _governingBodyAnnouncementService.GetAllUserAsync();
 
             //Assert
             Assert.IsNotNull(result);
