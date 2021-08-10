@@ -56,7 +56,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
             _userManager.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>()));
 
             //Act
-            var result = await _governingBodyAnnouncementService.AddAnnouncement(It.IsAny<string>());
+            var result = await _governingBodyAnnouncementService.AddAnnouncementAsync(It.IsAny<string>());
 
             //Assert
             Assert.IsNotNull(result);
@@ -71,7 +71,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
                 .ReturnsAsync(new GoverningBodyAnnouncement());
 
             //Act
-            var result = _governingBodyAnnouncementService.DeleteAnnouncement(It.IsAny<int>());
+            var result = _governingBodyAnnouncementService.DeleteAnnouncementAsync(It.IsAny<int>());
 
             //Assert
             Assert.IsNotNull(result);
@@ -88,12 +88,10 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
 
             //Assert
             Exception exception = Assert.ThrowsAsync(typeof(ArgumentNullException),
-               async () => { await _governingBodyAnnouncementService.DeleteAnnouncement(It.IsAny<int>()); });
+               async () => { await _governingBodyAnnouncementService.DeleteAnnouncementAsync(It.IsAny<int>()); });
             Assert.AreEqual("Value cannot be null. (Parameter 'Announcement with 0 not found')", exception.Message);
         }
 
-
-        //_repoWrapper.User.GetFirstOrDefaultAsync(d => d.Id == announcement.UserId
         [Test]
         public async Task GetAllAnnouncement_Valid()
         {
@@ -131,7 +129,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
             _mapper.Setup(m => m.Map<IEnumerable<UserDTO>>(a));
 
             //Act
-            var res = await _governingBodyAnnouncementService.GetAnnouncementById(It.IsAny<int>());
+            var res = await _governingBodyAnnouncementService.GetAnnouncementByIdAsync(It.IsAny<int>());
 
             //Assert
             Assert.IsNotNull(res);

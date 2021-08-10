@@ -31,7 +31,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
             _userManager = userManager;
         }
 
-        public async Task<bool> AddAnnouncement(string text)
+        public async Task<bool> AddAnnouncementAsync(string text)
         {
             if (text != null)
             {
@@ -47,7 +47,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
             return false;
         }
 
-        public async Task DeleteAnnouncement(int id)
+        public async Task DeleteAnnouncementAsync(int id)
         {
             var announcement = (await _repoWrapper.GoverningBodyAnnouncement.GetFirstAsync(d => d.Id == id));
             if (announcement == null)
@@ -68,7 +68,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
             return announcements.OrderByDescending(d => d.Date);
         }
 
-        public async Task<GoverningBodyAnnouncementUserDTO> GetAnnouncementById(int id)
+        public async Task<GoverningBodyAnnouncementUserDTO> GetAnnouncementByIdAsync(int id)
         {
             var announcement = _mapper.Map<GoverningBodyAnnouncementUserDTO>(await _repoWrapper.GoverningBodyAnnouncement.GetFirstAsync(d => d.Id == id));
             announcement.User = _mapper.Map<UserDTO>(await _repoWrapper.User.GetFirstOrDefaultAsync(d => d.Id == announcement.UserId));

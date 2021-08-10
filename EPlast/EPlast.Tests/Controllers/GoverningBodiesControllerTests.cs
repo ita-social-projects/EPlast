@@ -481,7 +481,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _governingBodyAnnouncementService
-                .Setup(c => c.AddAnnouncement(It.IsAny<string>()));
+                .Setup(c => c.AddAnnouncementAsync(It.IsAny<string>()));
 
             //Act
             var result = await _governingBodiesController.AddAnnouncement(It.IsAny<string>());
@@ -497,7 +497,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _governingBodiesController.ModelState.AddModelError("text", "is required");
             _governingBodyAnnouncementService
-                .Setup(c => c.AddAnnouncement(It.IsAny<string>()));
+                .Setup(c => c.AddAnnouncementAsync(It.IsAny<string>()));
 
             //Act
             var result = await _governingBodiesController.AddAnnouncement(It.IsAny<string>());
@@ -511,7 +511,7 @@ namespace EPlast.Tests.Controllers
         public async Task DeleteAnnouncement_Valid()
         {
             //Arrange
-            _governingBodyAnnouncementService.Setup(d => d.DeleteAnnouncement(It.IsAny<int>()));
+            _governingBodyAnnouncementService.Setup(d => d.DeleteAnnouncementAsync(It.IsAny<int>()));
 
             //Act
             var result = await _governingBodiesController.Delete(It.IsAny<int>());
@@ -555,12 +555,13 @@ namespace EPlast.Tests.Controllers
         public async Task GetById_Valid()
         {
             //Arrange
-            _governingBodyAnnouncementService.Setup(g => g.GetAnnouncementById(It.IsAny<int>()))
+            _governingBodyAnnouncementService.Setup(g => g.GetAnnouncementByIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(new GoverningBodyAnnouncementUserDTO());
 
             //Act
             var result = await _governingBodiesController.GetById(It.IsAny<int>());
             var resultValue = (result as ObjectResult).Value;
+
             //Assert
             _governingBodyAnnouncementService.Verify();
             Assert.IsNotNull(result);
@@ -573,7 +574,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetById_ReturnNoContent()
         {
             //Arrange
-            _governingBodyAnnouncementService.Setup(g => g.GetAnnouncementById(It.IsAny<int>()))
+            _governingBodyAnnouncementService.Setup(g => g.GetAnnouncementByIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(null as GoverningBodyAnnouncementUserDTO);
 
             //Act
@@ -600,15 +601,6 @@ namespace EPlast.Tests.Controllers
             PhoneNumber = "12345",
             GoverningBodyDocuments = new List<GoverningBodyDocumentsDTO>()
         };
-
-        //private GoverningBodyAnnouncementUserDTO CreateGoverningBodyAnnouncementUserDTO => new GoverningBodyAnnouncementUserDTO()
-        //{
-        //    Id = 1,
-        //    Text = "Announcement",
-        //    UserId = "",
-        //    DateTime = ,
-        //    UserDTO =
-        //};
 
         private GoverningBodyProfileDTO CreateGoverningBodyProfileDto => new GoverningBodyProfileDTO()
         {

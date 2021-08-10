@@ -9,9 +9,9 @@ namespace EPlast.BLL.Interfaces.GoverningBodies
     public interface IGoverningBodyAnnouncementService
     {
         Task<IEnumerable<GoverningBodyAnnouncementUserDTO>> GetAllAnnouncementAsync();
-        Task DeleteAnnouncement(int id);
-        Task<bool> AddAnnouncement(string text);
-        Task<GoverningBodyAnnouncementUserDTO> GetAnnouncementById(int id);
+        Task DeleteAnnouncementAsync(int id);
+        Task<bool> AddAnnouncementAsync(string text);
+        Task<GoverningBodyAnnouncementUserDTO> GetAnnouncementByIdAsync(int id);
         Task<List<string>> GetAllUserAsync();
     }
 }

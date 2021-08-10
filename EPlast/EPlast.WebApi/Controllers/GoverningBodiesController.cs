@@ -292,7 +292,7 @@ namespace EPlast.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _governingBodyAnnouncementService.AddAnnouncement(text);
+                await _governingBodyAnnouncementService.AddAnnouncementAsync(text);
                 return NoContent();
             }
             return BadRequest(ModelState);
@@ -301,14 +301,14 @@ namespace EPlast.WebApi.Controllers
         [HttpDelete("DeleteAnnouncement/{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _governingBodyAnnouncementService.DeleteAnnouncement(id);
+            await _governingBodyAnnouncementService.DeleteAnnouncementAsync(id);
             return NoContent();
         }
 
         [HttpGet("GetAnnouncement/{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            GoverningBodyAnnouncementUserDTO governingBodyAnnouncementUserDTO = await _governingBodyAnnouncementService.GetAnnouncementById(id);
+            GoverningBodyAnnouncementUserDTO governingBodyAnnouncementUserDTO = await _governingBodyAnnouncementService.GetAnnouncementByIdAsync(id);
 
             if (governingBodyAnnouncementUserDTO == null)
             {
