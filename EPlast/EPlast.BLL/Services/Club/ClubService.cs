@@ -28,6 +28,11 @@ namespace EPlast.BLL.Services.Club
         private readonly UserManager<DataAccessClub.User> _userManager;
         private readonly IUniqueIdService _uniqueId;
 
+        private const int MembersDisplayCount = 9;
+        private const int FollowersDisplayCount = 6;
+        private const int DocumentsDisplayCount = 6;
+        private const int AdminsDisplayCount = 6;
+
         public ClubService(IRepositoryWrapper repoWrapper,
             IMapper mapper,
             IWebHostEnvironment env,
@@ -125,18 +130,15 @@ namespace EPlast.BLL.Services.Club
                 return null;
             }
             var clubHead = club.ClubAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHead
-                                     && (DateTime.Now < a.EndDate || a.EndDate == null));
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHead && a.Status);
             var clubHeadDeputy = club.ClubAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHeadDeputy
-                                     && (DateTime.Now < a.EndDate || a.EndDate == null));
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHeadDeputy && a.Status);
             var clubAdmins = club.ClubAdministration?
                 .Where(a => a.AdminType.AdminTypeName != Roles.KurinHead
-                            && a.AdminType.AdminTypeName != Roles.KurinHeadDeputy
-                            && (DateTime.Now < a.EndDate || a.EndDate == null))
+                            && a.AdminType.AdminTypeName != Roles.KurinHeadDeputy && a.Status)
                 .ToList();
             club.AdministrationCount = club.ClubAdministration == null ? 0
-                : club.ClubAdministration.Count(a => (DateTime.Now < a.EndDate || a.EndDate == null));
+                : club.ClubAdministration.Count(a => a.Status);
             var members = club.ClubMembers
                 .Where(m => m.IsApproved)
                 .ToList();
@@ -190,10 +192,12 @@ namespace EPlast.BLL.Services.Club
             {
                 return null;
             }
-            club.Members = club.Members.Take(9).ToList();
-            club.Followers = club.Followers.Take(6).ToList();
-            club.Documents = club.Documents.Take(6).ToList();
-            club.Admins = club.Admins.Take(6).ToList();
+
+            club.Members = club.Members.Take(MembersDisplayCount).ToList();
+            club.Followers = club.Followers.Take(FollowersDisplayCount).ToList();
+            club.Documents = club.Documents.Take(DocumentsDisplayCount).ToList();
+            club.Admins = club.Admins.Take(AdminsDisplayCount).ToList();
+
             return club;
         }
 
@@ -211,8 +215,12 @@ namespace EPlast.BLL.Services.Club
             foreach (var member in members)
             {
                 var id = member.UserId;
-                var userPlastDegrees = await _repoWrapper.UserPlastDegrees.GetAllAsync(upd => upd.UserId == id, include: pd => pd.Include(d => d.PlastDegree));
+
+                var userPlastDegrees = await _repoWrapper.UserPlastDegrees.GetAllAsync(
+                    upd => upd.UserId == id, 
+                    include: pd => pd.Include(d => d.PlastDegree));
                 var userDegree = userPlastDegrees?.FirstOrDefault(u => u.UserId == id)?.PlastDegree;
+
                 member.User.PlastDegree = userDegree == null ? null : new DataAccessClub.PlastDegree
                 {
                     Id = userDegree.Id,
@@ -236,6 +244,7 @@ namespace EPlast.BLL.Services.Club
                     Name = userDegree.Name,
                 };
             }
+
             foreach (var follower in followers)
             {
                 var userPlastDegrees = await _repoWrapper.UserPlastDegrees.GetAllAsync(upd => upd.UserId == follower.UserId, include: pd => pd.Include(d => d.PlastDegree));
