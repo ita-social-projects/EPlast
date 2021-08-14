@@ -373,6 +373,37 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
+        public async Task EditAdministratorAsync_ReturnsEditedAdministratorWithOtherId()
+        {
+            //Arrange
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AdminTypeDTO() { AdminTypeName = Roles.CityHead, ID = fakeId });
+            _repoWrapper
+                .Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>,
+                    IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new CityAdministration() { ID = 3 });
+            _repoWrapper
+                .Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>,
+                    IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new CityAdministration() { UserId = Roles.CityHead});
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
+               .ReturnsAsync(new AdminTypeDTO() { ID = fakeId });
+            _repoWrapper
+                .Setup(r => r.SaveAsync());
+
+            //Act
+            var result = await _cityParticipantsService.EditAdministratorAsync(cityAdmDTOEndDateToday);
+
+            //Assert
+            _repoWrapper.Verify();
+            Assert.IsInstanceOf<CityAdministrationDTO>(result);
+        }
+
+        [Test]
         public async Task EditAdministratorAsync_WhereStartTimeIsNull_ReturnsEditedAdministratorWithSameId()
         {
             //Arrange

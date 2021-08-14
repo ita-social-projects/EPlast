@@ -204,6 +204,36 @@ namespace EPlast.Tests.Services.Club
             _repoWrapper.Verify();
             Assert.IsInstanceOf<ClubAdministrationDTO>(result);
         }
+        [Test]
+        public async Task EditAdministratorAsync_ReturnsEditedAdministratorWithOtherId()
+        {
+            //Arrange
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AdminTypeDTO() { AdminTypeName = Roles.KurinHead, ID = fakeId });
+            _repoWrapper
+                .Setup(r => r.ClubAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubAdministration>,
+                    IIncludableQueryable<ClubAdministration, object>>>()))
+                .ReturnsAsync(_clubAdministration);
+            _repoWrapper
+                .Setup(r => r.ClubAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubAdministration>,
+                    IIncludableQueryable<ClubAdministration, object>>>()))
+                .ReturnsAsync(new ClubAdministration() { UserId = Roles.KurinHead });
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
+               .ReturnsAsync(new AdminTypeDTO() { ID = fakeId });
+            _repoWrapper
+                .Setup(r => r.SaveAsync());
+
+            //Act
+            var result = await _clubParticipantsService.EditAdministratorAsync(clubAdmDTOTodayDate);
+
+            //Assert
+            _repoWrapper.Verify();
+            Assert.IsInstanceOf<ClubAdministrationDTO>(result);
+        }
 
         [Test]
         public async Task EditAdministratorAsync_WhereStartTimeIsNull_ReturnsEditedAdministratorWithSameId()
