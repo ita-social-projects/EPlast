@@ -16,14 +16,8 @@ namespace EPlast.DataAccess.Entities
         public string ClubURL { get; set; }
         [MaxLength(1024, ErrorMessage = "Історія куреня не має перевищувати 1024 символів")]
         public string Description { get; set; }
-        [MaxLength(60, ErrorMessage = "Назва вулиці розташування куреня не має перевищувати 60 символів")]
-        public string Street { get; set; }
-        [MaxLength(10, ErrorMessage = "Номер будинку розташування куреня не має перевищувати 10 символів")]
-        public string HouseNumber { get; set; }
-        [MaxLength(10, ErrorMessage = "Номер офісу/квартири розташування куреня не має перевищувати 10 символів")]
-        public string OfficeNumber { get; set; }
-        [MaxLength(7, ErrorMessage = "Поштовий індекс куреня не має перевищувати 7 символів")]
-        public string PostIndex { get; set; }
+        [MaxLength(500, ErrorMessage = "Гасло куреня не має перевищувати 500 символів")]
+        public string Slogan { get; set; }
         [StringLength(int.MaxValue, MinimumLength = 3)]
         public string Logo { get; set; }
         public bool IsActive { get; set; }
