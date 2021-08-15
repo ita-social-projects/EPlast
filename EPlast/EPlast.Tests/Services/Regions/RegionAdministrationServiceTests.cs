@@ -262,7 +262,7 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
-        public void EditRegionAdministrator_SameAdminTypeID_ReturnsCorrect()
+        public async Task EditRegionAdministrator_SameAdminTypeID_ReturnsCorrect()
         {
             //Arrange
             RegionAdministrationDTO regionAdministrationDTO = regionAdmDTOEndDateNull;
@@ -280,14 +280,14 @@ namespace EPlast.Tests.Services.Regions
             _repoWrapper
                 .Setup(r => r.SaveAsync());
             //Act
-            var result = _servise.EditRegionAdministrator(regionAdministrationDTO);
+            var result = await _servise.EditRegionAdministrator(regionAdministrationDTO);
             //Assert
             _repoWrapper.Verify();
-            Assert.NotNull(result);
+            Assert.IsInstanceOf<RegionAdministrationDTO>(result);
         }
 
         [Test]
-        public void EditRegionAdministrator_OtherAdminTypeID_ReturnsCorrect()
+        public async Task EditRegionAdministrator_OtherAdminTypeID_ReturnsCorrect()
         {
             //Arrange
             RegionAdministrationDTO regionAdministrationDTO = regionAdmDTOEndDateNull;
@@ -297,20 +297,23 @@ namespace EPlast.Tests.Services.Regions
                 IIncludableQueryable<RegionAdministration, object>>>()))
                 .ReturnsAsync(regionAdmHead);
             _adminTypeService
-                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(new AdminTypeDTO() {AdminTypeName = Roles.OkrugaHeadDeputy, ID = 2 });
+                 .SetupSequence(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                 .ReturnsAsync(AdminTypeSecretary)
+                 .ReturnsAsync(AdminTypeHead)
+                 .ReturnsAsync(AdminTypeHeadDeputy)
+                 .ReturnsAsync(AdminTypeSecretary);
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
                .ReturnsAsync(AdminTypeHeadDeputy);
             //Act
-            var result = _servise.EditRegionAdministrator(regionAdministrationDTO);
+            var result = await _servise.EditRegionAdministrator(regionAdministrationDTO);
             //Assert
             _repoWrapper.Verify();
-            Assert.NotNull(result);
+            Assert.IsInstanceOf<RegionAdministrationDTO>(result);
         }
 
         [Test]
-        public void EditRegionAdministrator_DifferentAdminTypeID_ReturnsCorrect()
+        public async Task EditRegionAdministrator_EditHeadAndRemoveHeadDeputy_ReturnsCorrect()
         {
             //Arrange
             RegionAdministrationDTO regionAdministrationDTO = regionAdmDTOEndDateNull;
@@ -318,10 +321,10 @@ namespace EPlast.Tests.Services.Regions
                 .Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
                 It.IsAny<Func<IQueryable<RegionAdministration>,
                 IIncludableQueryable<RegionAdministration, object>>>()))
-                .ReturnsAsync(regionAdmHead);
+                .ReturnsAsync(regionAdmSecretary);
             _adminTypeService
                 .SetupSequence(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(AdminTypeSecretary)
+                .ReturnsAsync(AdminTypeHead)
                 .ReturnsAsync(AdminTypeHead)
                 .ReturnsAsync(AdminTypeHeadDeputy)
                 .ReturnsAsync(AdminTypeSecretary);
@@ -333,41 +336,42 @@ namespace EPlast.Tests.Services.Regions
             _repoWrapper
                 .Setup(r => r.SaveAsync());
             //Act
-            var result = _servise.EditRegionAdministrator(regionAdministrationDTO);
+            var result = await _servise.EditRegionAdministrator(regionAdministrationDTO);
             //Assert
             _repoWrapper.Verify();
-            Assert.NotNull(result);
+            Assert.IsInstanceOf<RegionAdministrationDTO>(result);
         }
 
         [Test]
-        public void EditRegionAdministrator_NotNull_ReturnsCorrect()
+        public async Task EditRegionAdministrator_EditHeadNotHeadDeputy_ReturnsCorrect()
         {
             //Arrange
-            RegionAdministration regionAdmFake = new RegionAdministration
-            {
-                ID = 1,
-                AdminType = new AdminType()
-                {
-                    AdminTypeName = Roles.OkrugaHead,
-                    ID = 1
-                },
-                Status = true,
-                AdminTypeId = AdminTypeHead.ID,
-                UserId = Roles.OkrugaHead
-            };
             _repoWrapper
-                .Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
+                .SetupSequence(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
                 It.IsAny<Func<IQueryable<RegionAdministration>,
                 IIncludableQueryable<RegionAdministration, object>>>()))
-                .ReturnsAsync(regionAdmFake);
+                .ReturnsAsync(regionAdmSecretary)
+                .ReturnsAsync(new RegionAdministration() { UserId = Roles.CityHeadDeputy })
+                .ReturnsAsync(regionAdmHead)
+                .ReturnsAsync(regionAdmSecretary);
+            _adminTypeService
+                .SetupSequence(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(AdminTypeHead)
+                .ReturnsAsync(AdminTypeHead)
+                .ReturnsAsync(AdminTypeHeadDeputy)
+                .ReturnsAsync(AdminTypeSecretary);
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
-                .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminTypeHead));
+               .ReturnsAsync(AdminTypeHead);
+            _repoWrapper
+                .Setup(r => r.RegionAdministration.Update(It.IsAny<RegionAdministration>()));
+            _repoWrapper
+                .Setup(r => r.SaveAsync());
             //Act
-            var result = _servise.EditRegionAdministrator(It.IsAny<RegionAdministrationDTO>());
+            var result = await _servise.EditRegionAdministrator(regionAdmDTOEndDateNull);
             //Assert
             _repoWrapper.Verify();
-            Assert.NotNull(result);
+            Assert.IsInstanceOf<RegionAdministrationDTO>(result);
         }
 
         [Test]
