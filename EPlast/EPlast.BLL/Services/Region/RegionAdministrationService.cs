@@ -102,6 +102,8 @@ namespace EPlast.BLL.Services.Region
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(regionAdministrationDTO.AdminType.AdminTypeName);
             var headType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.OkrugaHead);
             var headDeputyType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.OkrugaHeadDeputy);
+            var headDeputy = await _repoWrapper.RegionAdministration
+                    .GetFirstOrDefaultAsync(a => a.AdminTypeId == headDeputyType.ID && a.RegionId == regionAdministrationDTO.RegionId && a.Status);
             if (adminType.ID == admin.AdminTypeId)
             {
                 admin.StartDate = regionAdministrationDTO.StartDate ?? DateTime.Now;
@@ -111,16 +113,11 @@ namespace EPlast.BLL.Services.Region
                 _repoWrapper.RegionAdministration.Update(admin);
                 await _repoWrapper.SaveAsync();
             }
-            else if (adminType.AdminTypeName == headType.AdminTypeName && admin.AdminTypeId != headDeputyType.ID)
+            else if (adminType.AdminTypeName == headType.AdminTypeName && admin.AdminTypeId != headDeputyType.ID && headDeputy?.UserId == regionAdministrationDTO.UserId)
             {
-                var headDeputy = await _repoWrapper.RegionAdministration
-                    .GetFirstOrDefaultAsync(a => a.AdminTypeId == headDeputyType.ID && a.RegionId == regionAdministrationDTO.RegionId && a.Status);
-                if (headDeputy != null && headDeputy.UserId == regionAdministrationDTO.UserId)
-                {
                     await DeleteAdminByIdAsync(headDeputy.ID);
                     await DeleteAdminByIdAsync(regionAdministrationDTO.ID);
                     await AddRegionAdministrator(regionAdministrationDTO);
-                }
             }
             else
             {

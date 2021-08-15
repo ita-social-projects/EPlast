@@ -323,7 +323,8 @@ namespace EPlast.Tests.Services.Regions
                 .SetupSequence(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(AdminTypeSecretary)
                 .ReturnsAsync(AdminTypeHead)
-                .ReturnsAsync(AdminTypeHeadDeputy);
+                .ReturnsAsync(AdminTypeHeadDeputy)
+                .ReturnsAsync(AdminTypeSecretary);
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
                .ReturnsAsync(AdminTypeHead);
