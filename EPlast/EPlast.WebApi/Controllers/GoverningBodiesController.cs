@@ -293,7 +293,8 @@ namespace EPlast.WebApi.Controllers
             if (ModelState.IsValid)
             {
                 await _governingBodyAnnouncementService.AddAnnouncementAsync(text);
-                return NoContent();
+
+                return Ok();
             }
             return BadRequest(ModelState);
         }
@@ -302,6 +303,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _governingBodyAnnouncementService.DeleteAnnouncementAsync(id);
+
             return NoContent();
         }
 
@@ -321,6 +323,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetAllAnnouncement()
         {
             var announcements = await _governingBodyAnnouncementService.GetAllAnnouncementAsync();
+
             return Ok(announcements);
         }
 
@@ -328,6 +331,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetAllUserId()
         {
             var users = await _governingBodyAnnouncementService.GetAllUserAsync();
+
             return Ok(users);
         }
 

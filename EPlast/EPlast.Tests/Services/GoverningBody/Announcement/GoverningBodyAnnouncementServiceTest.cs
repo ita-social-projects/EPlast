@@ -7,6 +7,7 @@ using EPlast.DataAccess.Entities.GoverningBody.Announcement;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
@@ -60,6 +61,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
 
             //Assert
             Assert.IsNotNull(result);
+            Assert.DoesNotThrowAsync(async () => { await _governingBodyAnnouncementService.AddAnnouncementAsync(It.IsAny<string>()); });
         }
 
         [Test]
@@ -75,7 +77,6 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
 
             //Assert
             Assert.IsNotNull(result);
-
         }
 
         [Test]
@@ -111,6 +112,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
 
             //Assert
             Assert.IsNotNull(result);
+            Assert.IsInstanceOf<IEnumerable<GoverningBodyAnnouncementUserDTO>>(result);
         }
 
         [Test]
@@ -150,6 +152,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
 
             //Assert
             Assert.IsNotNull(result);
+            Assert.IsInstanceOf<List<string>>(result);
         }
 
         readonly GoverningBodyAnnouncement nullGoverningBodyAnnouncement = null;

@@ -42,6 +42,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
                 announcement.Date = DateTime.Now;
                 await _repoWrapper.GoverningBodyAnnouncement.CreateAsync(announcement);
                 await _repoWrapper.SaveAsync();
+
                 return true;
             }
             return false;
@@ -72,6 +73,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
         {
             var announcement = _mapper.Map<GoverningBodyAnnouncementUserDTO>(await _repoWrapper.GoverningBodyAnnouncement.GetFirstAsync(d => d.Id == id));
             announcement.User = _mapper.Map<UserDTO>(await _repoWrapper.User.GetFirstOrDefaultAsync(d => d.Id == announcement.UserId));
+
             return announcement;
         }
 
@@ -83,6 +85,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
             {
                 userIds.Add(user.Id);
             }
+
             return userIds;
         }
     }
