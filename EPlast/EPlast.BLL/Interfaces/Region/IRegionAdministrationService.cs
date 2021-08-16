@@ -9,7 +9,7 @@ namespace EPlast.BLL.Interfaces.Region
     {
         Task AddRegionAdministrator(RegionAdministrationDTO regionAdministrationDTO);
 
-        Task EditRegionAdministrator(RegionAdministrationDTO regionAdministrationDTO);
+        Task<RegionAdministrationDTO> EditRegionAdministrator(RegionAdministrationDTO regionAdministrationDTO);
 
         Task DeleteAdminByIdAsync(int Id);
 
