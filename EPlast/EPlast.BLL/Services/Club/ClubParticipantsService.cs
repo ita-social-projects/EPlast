@@ -98,7 +98,9 @@ namespace EPlast.BLL.Services.Club
         {
             var admin = await _repositoryWrapper.ClubAdministration.GetFirstOrDefaultAsync(a => a.ID == adminDTO.ID);
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
-
+            var headType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.KurinHead);
+            var headDeputyType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.KurinHeadDeputy);
+            
             if (adminType.ID == admin.AdminTypeId)
             {
                 admin.StartDate = adminDTO.StartDate ?? DateTime.Now;
@@ -107,13 +109,23 @@ namespace EPlast.BLL.Services.Club
 
                 _repositoryWrapper.ClubAdministration.Update(admin);
                 await _repositoryWrapper.SaveAsync();
+                return adminDTO;
             }
-            else
+            else if (adminType.AdminTypeName == headType.AdminTypeName && admin.AdminTypeId != headDeputyType.ID)
             {
-                await RemoveAdministratorAsync(adminDTO.ID);
-                adminDTO = await AddAdministratorAsync(adminDTO);
+                var headDeputy = await _repositoryWrapper.ClubAdministration
+                    .GetFirstOrDefaultAsync(a => a.AdminTypeId == headDeputyType.ID && a.ClubId == adminDTO.ClubId && a.Status);
+                if (headDeputy != null && headDeputy.UserId == adminDTO.UserId)
+                {
+                    await RemoveAdministratorAsync(headDeputy.ID);
+                    await RemoveAdministratorAsync(adminDTO.ID);
+                    adminDTO = await AddAdministratorAsync(adminDTO);
+                    return adminDTO;
+                }
             }
 
+            await RemoveAdministratorAsync(adminDTO.ID);
+            adminDTO = await AddAdministratorAsync(adminDTO);
             return adminDTO;
         }
 
