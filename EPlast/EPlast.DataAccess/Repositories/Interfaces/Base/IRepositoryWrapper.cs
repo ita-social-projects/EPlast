@@ -6,6 +6,7 @@ using EPlast.DataAccess.Repositories.Interfaces.Region;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Repositories.Interfaces.GoverningBody;
 using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Sector;
+using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Announcement;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -36,6 +37,7 @@ namespace EPlast.DataAccess.Repositories
         IDegreeRepository Degree { get; }
         IDistinctionRepository Distinction { get; }
         IDocumentTemplateRepository DocumentTemplate { get; }
+        IGoverningBodyAnnouncementRepository GoverningBodyAnnouncement { get; }
         IEducationRepository Education { get; }
         IEventRepository Event { get; }
         IEventAdminRepository EventAdmin { get; }
