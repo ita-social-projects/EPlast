@@ -17,18 +17,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities.GoverningBody;
 
-namespace EPlast.Tests.Services
+namespace EPlast.Tests.Services.GoverningBody
 {
     internal class GoverningBodiesServiceTests
     {
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IMapper> _mapper;
-        private GoverningBodiesService _service;
+        private GoverningBodiesService _governingBodiesService;
         private Mock<IUniqueIdService> _uniqueIdService;
         private Mock<IGoverningBodyBlobStorageRepository> _blobStorage;
         private Mock<ISecurityModel> _securityModel;
         private protected Mock<UserManager<User>> _userManager;
+        private readonly int testId = 1;
 
         [SetUp]
         public void SetUp()
@@ -40,7 +42,7 @@ namespace EPlast.Tests.Services
             var store = new Mock<Microsoft.AspNetCore.Identity.IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _securityModel = new Mock<ISecurityModel>();
-            _service = new GoverningBodiesService(
+            _governingBodiesService = new GoverningBodiesService(
                 _repoWrapper.Object,
                 _mapper.Object,
                 _uniqueIdService.Object,
@@ -60,7 +62,7 @@ namespace EPlast.Tests.Services
                 .Setup(x => x.Map<IEnumerable<GoverningBodyDTO>>(new List<Organization>())).Returns(new List<GoverningBodyDTO>());
 
             //Act
-            var result = await _service.GetGoverningBodiesListAsync();
+            var result = await _governingBodiesService.GetGoverningBodiesListAsync();
             //Assert
             Assert.IsInstanceOf<IEnumerable<GoverningBodyDTO>>(result);
         }
@@ -81,7 +83,7 @@ namespace EPlast.Tests.Services
                 .ReturnsAsync(_mapper.Object.Map<Organization>(testDTO));
 
             //Act
-            var result = await _service.CreateAsync(testDTO);
+            var result = await _governingBodiesService.CreateAsync(testDTO);
 
             //Assert
             Assert.AreEqual(testDTO.Id, result);
@@ -104,7 +106,7 @@ namespace EPlast.Tests.Services
             _repoWrapper.Setup(r => r.SaveAsync());
 
             // Act
-            await _service.EditAsync(testDTO);
+            await _governingBodiesService.EditAsync(testDTO);
 
             // Assert
             _repoWrapper.Verify(r => r.GoverningBody.Attach(It.IsAny<Organization>()), Times.Once);
@@ -113,13 +115,13 @@ namespace EPlast.Tests.Services
         }
 
         [TestCase("logopath", "logo64path")]
-        public async Task GetPhotoBase64_Valid_Test(string logopath, string logo64Path)
+        public async Task GetPhotoBase64_Valid_Test(string logoPath, string logo64Path)
         {
             //Arrange
             _blobStorage.Setup(x => x.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync(logo64Path);
 
             //Act
-            var result = await _service.GetLogoBase64Async(logopath);
+            var result = await _governingBodiesService.GetLogoBase64Async(logoPath);
 
             //Assert
             Assert.NotNull(result);
@@ -141,11 +143,32 @@ namespace EPlast.Tests.Services
                 .ReturnsAsync(_mapper.Object.Map<Organization>(testDTO));
 
             //Act
-            var result = await _service.GetGoverningBodyProfileAsync(id);
+            var result = await _governingBodiesService.GetGoverningBodyProfileAsync(id);
 
             //Assert
             Assert.NotNull(result);
             Assert.AreEqual(CreateGoverningBodyDTO.Id, result.GoverningBody.Id);
+        }
+
+        [TestCase(1)]
+        public async Task GetProfileById_GoverningBodyNotFound(int id)
+        {
+            //Arrange
+            Organization organization = null;
+            _repoWrapper
+                .Setup(x => x.GoverningBody.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<Organization, bool>>>(), It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>()))
+                .ReturnsAsync(organization);
+            GoverningBodyDTO governingBodyDto = null;
+            _mapper
+                .Setup(x => x.Map<Organization, GoverningBodyDTO>(It.IsAny<Organization>()))
+                .Returns(governingBodyDto);
+
+            //Act
+            var result = await _governingBodiesService.GetGoverningBodyProfileAsync(id);
+
+            //Assert
+            Assert.AreEqual(null, result);
         }
 
         [Test]
@@ -164,7 +187,7 @@ namespace EPlast.Tests.Services
             _repoWrapper.Setup(r => r.SaveAsync());
 
             // Act
-            await _service.RemoveAsync(It.IsAny<int>());
+            await _governingBodiesService.RemoveAsync(It.IsAny<int>());
 
             // Assert
             _blobStorage.Verify(c => c.DeleteBlobAsync(It.IsAny<string>()), Times.Once);
@@ -183,7 +206,7 @@ namespace EPlast.Tests.Services
             _repoWrapper.Setup(r => r.SaveAsync());
 
             // Act
-            await _service.RemoveAsync(It.IsAny<int>());
+            await _governingBodiesService.RemoveAsync(It.IsAny<int>());
 
             // Assert
             _blobStorage.Verify(c => c.DeleteBlobAsync(It.IsAny<string>()), Times.Never);
@@ -202,7 +225,7 @@ namespace EPlast.Tests.Services
             _securityModel.Setup(x => x.GetUserAccessAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(dict);
 
             //Act
-            var result = await _service.GetUserAccessAsync(userId);
+            var result = await _governingBodiesService.GetUserAccessAsync(userId);
 
             //Assert
             Assert.NotNull(result);
@@ -221,7 +244,7 @@ namespace EPlast.Tests.Services
                 .ReturnsAsync(_mapper.Object.Map<Organization>(CreateGoverningBodyDTO));
 
             // Act
-            var result = await _service.GetGoverningBodyDocumentsAsync(governingBodyId);
+            var result = await _governingBodiesService.GetGoverningBodyDocumentsAsync(governingBodyId);
 
             // Assert
             Assert.NotNull(result);
@@ -240,12 +263,89 @@ namespace EPlast.Tests.Services
                 .Returns((GoverningBodyDTO)null);
 
             // Act
-            var result = await _service.GetGoverningBodyDocumentsAsync(governingBodyId);
+            var result = await _governingBodiesService.GetGoverningBodyDocumentsAsync(governingBodyId);
 
             // Assert
             Assert.Null(result);
         }
 
+        [Test]
+        public async Task GetAdministrationsOfUserAsync_ReturnsCorrectAdministrations()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(r => r.GoverningBodyAdministration.GetAllAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<GoverningBodyAdministration>, IIncludableQueryable<GoverningBodyAdministration, object>>>()))
+                .ReturnsAsync(new List<GoverningBodyAdministration> { new GoverningBodyAdministration() { Id = testId } });
+            _mapper
+                .Setup(m => m.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(It.IsAny<IEnumerable<GoverningBodyAdministration>>()))
+                .Returns(GetTestGoverningBodyAdministration());
+
+            //Act
+            var result = await _governingBodiesService.GetAdministrationsOfUserAsync(It.IsAny<string>());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<GoverningBodyAdministrationDTO>>(result);
+        }
+
+        [Test]
+        public async Task GetAdministrationsOfUserAsync_WithGoverningBody_ReturnsCorrectAdministrations()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(r => r.GoverningBodyAdministration.GetAllAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<GoverningBodyAdministration>, IIncludableQueryable<GoverningBodyAdministration, object>>>()))
+                .ReturnsAsync(new List<GoverningBodyAdministration> { new GoverningBodyAdministration()
+                {
+                    Id = testId,
+                    GoverningBody = new DataAccess.Entities.GoverningBody.Organization()
+                } });
+            _mapper
+                .Setup(m => m.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(It.IsAny<IEnumerable<GoverningBodyAdministration>>()))
+                .Returns(GetTestGoverningBodyAdministration());
+
+            //Act
+            var result = await _governingBodiesService.GetAdministrationsOfUserAsync(It.IsAny<string>());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<GoverningBodyAdministrationDTO>>(result);
+        }
+
+        [Test]
+        public async Task GetPreviousAdministrationsOfUserAsync_ReturnsCorrectAdministrations()
+        {
+            //Arrange
+            _ = _repoWrapper
+                .Setup(r => r.GoverningBodyAdministration.GetAllAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<GoverningBodyAdministration>, IIncludableQueryable<GoverningBodyAdministration, object>>>()))
+                .ReturnsAsync(new List<GoverningBodyAdministration> { new GoverningBodyAdministration()
+                {
+                    Id = testId,
+                    GoverningBody = new DataAccess.Entities.GoverningBody.Organization ()
+                } });
+            _mapper
+                .Setup(m => m.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(It.IsAny<IEnumerable<GoverningBodyAdministration>>()))
+                .Returns(GetTestGoverningBodyAdministration());
+
+            //Act
+            var result = await _governingBodiesService.GetPreviousAdministrationsOfUserAsync(It.IsAny<string>());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<GoverningBodyAdministrationDTO>>(result);
+        }
+
+        private IEnumerable<GoverningBodyAdministrationDTO> GetTestGoverningBodyAdministration()
+        {
+            return new List<GoverningBodyAdministrationDTO>
+            {
+                new GoverningBodyAdministrationDTO{UserId = Roles.GoverningBodyHead},
+                new GoverningBodyAdministrationDTO{UserId = Roles.GoverningBodyHead}
+            }.AsEnumerable();
+        }
+        
         private GoverningBodyDTO CreateGoverningBodyDTO => new GoverningBodyDTO()
         {
             Id = 1,

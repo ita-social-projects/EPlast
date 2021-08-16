@@ -6,6 +6,7 @@ using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Services.PDF;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
@@ -250,6 +251,42 @@ namespace EPlast.Tests.Services.PDF
             Assert.Null(actualReturn.Result);
         }
 
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void AnnualReportCreatePDFAsync_ReturnsByteArray_Test(int annualReportId)
+        {
+
+            _repository.Setup(rep => rep.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<AnnualReport, bool>>>(),
+                    It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()))
+                .ReturnsAsync(AnnualReports.FirstOrDefault(x=>x.ID==annualReportId));
+            _decisionBlobStorage.Setup(blob => blob.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync("Blank");
+
+            var actualReturn = _pdfService.AnnualReportCreatePDFAsync(annualReportId);
+
+            _repository.Verify(rep => rep.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<AnnualReport, bool>>>(),
+                It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()), Times.Once);
+            Assert.IsInstanceOf<byte[]>(actualReturn.Result);
+        }
+
+        [TestCase(8)]
+        public void AnnualReportCreatePDFAsync_ReturnsNull_Test(int annualReportId)
+        {
+            // Arrange
+            _repository.Setup(rep => rep.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<AnnualReport, bool>>>(),
+                It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()))
+                .ReturnsAsync((AnnualReport)null);
+
+            // Act
+            var actualReturn = _pdfService.AnnualReportCreatePDFAsync(annualReportId);
+
+            // Assert
+            _repository.Verify(rep => rep.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<AnnualReport, bool>>>(),
+                It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()), Times.Once);
+            _logger.Verify();
+            Assert.Null(actualReturn.Result);
+        }
+
         private static User GetUserWithFatherName(string userId)
         {
             return new User()
@@ -408,6 +445,94 @@ namespace EPlast.Tests.Services.PDF
                 Description = "FDS", Name = "FS", FileName = "dsf", DecesionTarget = new DecesionTarget(),
                 Organization = new Organization()
             }
+        }.AsQueryable();
+
+        private MembersStatistic _fakeMembersStatistic()
+        {
+            return new MembersStatistic()
+            {
+                Id = 1,
+                AnnualReportId = 1,
+                NumberOfNovatstva = 1,
+                NumberOfPtashata = 1,
+                NumberOfSeigneurMembers = 1,
+                NumberOfSeigneurSupporters = 1,
+                NumberOfSeniorPlastynMembers = 1,
+                NumberOfSeniorPlastynSupporters = 1,
+                NumberOfUnatstvaMembers = 1,
+                NumberOfUnatstvaNoname = 1,
+                NumberOfUnatstvaProspectors = 1,
+                NumberOfUnatstvaSkobVirlyts = 1,
+                NumberOfUnatstvaSupporters = 1
+            };
+        }
+        private IQueryable<AnnualReport> AnnualReports => new List<AnnualReport>()
+        {
+            new AnnualReport()
+            {
+                ID = 1,
+                CityId = 1,
+                City = new DataAccess.Entities.City()
+                {
+                    Name = "CityName"
+                },
+                Date = DateTime.Now,
+                NewCityAdmin = new User(){FirstName = "FName", LastName = "LName"},
+                NumberOfAdministrators = 1,
+                NumberOfBeneficiaries = 1,
+                NumberOfClubs = 1,
+                NumberOfHonoraryMembers = 1,
+                NumberOfIndependentGroups = 1,
+                NumberOfIndependentRiy = 1,
+                NumberOfPlastpryiatMembers = 1,
+                NumberOfSeatsPtashat = 1,
+                NumberOfTeacherAdministrators = 1,
+                NumberOfTeachers = 1,
+                MembersStatistic = _fakeMembersStatistic(),
+            },
+            new AnnualReport()
+            {
+                ID = 2,
+                CityId = 2,
+                City = new DataAccess.Entities.City()
+                {
+                    Name = "SecondCityName"
+                },
+                Date = DateTime.Now,
+                NumberOfAdministrators = 2,
+                NumberOfBeneficiaries = 2,
+                NumberOfClubs = 2,
+                NumberOfHonoraryMembers = 2,
+                NumberOfIndependentGroups = 2,
+                NumberOfIndependentRiy = 2,
+                NumberOfPlastpryiatMembers = 2,
+                NumberOfSeatsPtashat = 2,
+                NumberOfTeacherAdministrators = 2,
+                NumberOfTeachers = 2,
+                MembersStatistic = _fakeMembersStatistic(),
+            },
+            new AnnualReport()
+            {
+                ID = 3,
+                CityId = 3,
+                City = new DataAccess.Entities.City()
+                {
+                    Name = "CityName"
+                },
+                Date = DateTime.Now,
+                NewCityAdmin = new User(){FirstName = "FName", LastName = "LName", Email = "email@email.com", PhoneNumber = "0123456"},
+                NumberOfAdministrators = 3,
+                NumberOfBeneficiaries = 3,
+                NumberOfClubs = 3,
+                NumberOfHonoraryMembers = 3,
+                NumberOfIndependentGroups = 3,
+                NumberOfIndependentRiy = 3,
+                NumberOfPlastpryiatMembers = 3,
+                NumberOfSeatsPtashat = 3,
+                NumberOfTeacherAdministrators = 3,
+                NumberOfTeachers = 3,
+                MembersStatistic = _fakeMembersStatistic(),
+            },
         }.AsQueryable();
 
         private IQueryable<MethodicDocument> MethodicDocuments => new List<MethodicDocument>()

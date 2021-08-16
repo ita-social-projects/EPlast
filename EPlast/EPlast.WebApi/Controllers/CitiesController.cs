@@ -47,6 +47,24 @@ namespace EPlast.WebApi.Controllers
 
 
         /// <summary>
+        /// Get a specific number of cities 
+        /// </summary>
+        /// <param name="page">A number of the page</param>
+        /// <param name="pageSize">A count of cities to display</param>
+        /// <param name="cityName">Optional param to find cities by name</param>
+        /// <returns>A specific number of cities</returns>
+        [HttpGet("Profiles/{page}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetCities(int page, int pageSize, string cityName = null)
+        {
+            var cities = await _cityService.GetAllCitiesAsync(cityName);
+            var citiesViewModel = new CitiesViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
+
+            return Ok(citiesViewModel);
+        }
+
+
+        /// <summary>
         /// Get all cities 
         /// </summary>
         /// <returns>List of cities</returns>
@@ -55,6 +73,40 @@ namespace EPlast.WebApi.Controllers
         {
             var cities = await _cityService.GetCities();
             return Ok(cities);
+        }
+
+        /// <summary>
+        /// Get a specific number of active cities 
+        /// </summary>
+        /// <param name="page">A number of the page</param>
+        /// <param name="pageSize">A count of cities to display</param>
+        /// <param name="cityName">Optional param to find cities by name</param>
+        /// <returns>A specific number of active cities</returns>
+        [HttpGet("Profiles/Active/{page}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetActiveProfile(int page, int pageSize, string cityName = null)
+        {
+            var cities = await _cityService.GetAllActiveCitiesAsync(cityName);
+            var citiesViewModel = new CitiesViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
+
+            return Ok(citiesViewModel);
+        }
+
+        /// <summary>
+        /// Get a specific number of active cities 
+        /// </summary>
+        /// <param name="page">A number of the page</param>
+        /// <param name="pageSize">A count of cities to display</param>
+        /// <param name="cityName">Optional param to find cities by name</param>
+        /// <returns>A specific number of not active cities</returns>
+        [HttpGet("Profiles/NotActive/{page}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetNotActiveProfile(int page, int pageSize, string cityName = null)
+        {
+            var cities = await _cityService.GetAllNotActiveCitiesAsync(cityName);
+            var citiesViewModel = new CitiesViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
+
+            return Ok(citiesViewModel);
         }
 
         /// <summary>
@@ -156,7 +208,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">City not found</response>
         [HttpGet("Documents/{cityId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetDocuments(int cityId)
         {
             var cityProfileDto = await _cityService.GetCityDocumentsAsync(cityId);
@@ -249,6 +301,30 @@ namespace EPlast.WebApi.Controllers
             await _cityService.EditAsync(cityDTO);
             _logger.LogInformation($"City {{{cityDTO.Name}}} was edited.");
 
+            return Ok();
+        }
+
+        /// <summary>
+        /// Archive a specific city
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        [HttpPut("ArchiveCity/{cityId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> Archive(int cityId)
+        {
+            await _cityService.ArchiveAsync(cityId);
+            return Ok();
+        }
+
+        /// <summary>
+        /// Unarchive a specific city
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        [HttpPut("UnArchiveCity/{cityId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> UnArchive(int cityId)
+        {
+            await _cityService.UnArchiveAsync(cityId);
             return Ok();
         }
 
@@ -373,14 +449,19 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Edit an information about a specific admininstrator
+        /// Edit an information about a specific administrator
         /// </summary>
         /// <param name="admin">An information about a new administrator</param>
-        /// <returns>An information about a specific admininstrator</returns>
+        /// <returns>An information about a specific administrator</returns>
         [HttpPut("EditAdmin/{adminId}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy)]
         public async Task<IActionResult> EditAdmin(CityAdministrationViewModel admin)
         {
+            if (admin.EndDate != null && admin.EndDate < DateTime.Today)
+            {
+                return BadRequest();
+            }
+
             var adminDTO = _mapper.Map<CityAdministrationViewModel, CityAdministrationDTO>(admin);
 
             await _cityParticipantsService.EditAdministratorAsync(adminDTO);

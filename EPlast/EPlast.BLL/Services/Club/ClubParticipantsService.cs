@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.Club;
@@ -35,10 +35,10 @@ namespace EPlast.BLL.Services.Club
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<ClubAdministrationDTO>> GetAdministrationByIdAsync(int ClubId)
+        public async Task<IEnumerable<ClubAdministrationDTO>> GetAdministrationByIdAsync(int clubId)
         {
             var ClubAdministration = await _repositoryWrapper.ClubAdministration.GetAllAsync(
-                predicate: x => x.ClubId == ClubId,
+                predicate: x => x.ClubId == clubId,
                 include: x => x.Include(q => q.User).
                      Include(q => q.AdminType));
 
@@ -50,7 +50,7 @@ namespace EPlast.BLL.Services.Club
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
             adminDTO.Status = DateTime.Now < adminDTO.EndDate || adminDTO.EndDate == null;
-            var admin = new ClubAdministration()
+            var newAdmin = new ClubAdministration()
             {
                 StartDate = adminDTO.StartDate ?? DateTime.Now,
                 EndDate = adminDTO.EndDate,
@@ -84,11 +84,11 @@ namespace EPlast.BLL.Services.Club
                 ExceptionDispatchInfo.Capture(e).Throw();
             }
 
-            await CheckClubHasAdmin(adminDTO.ClubId, adminType.AdminTypeName);
+            await CheckClubHasAdminAsync(adminDTO.ClubId, adminType.AdminTypeName, newAdmin);
 
-            await _repositoryWrapper.ClubAdministration.CreateAsync(admin);
+            await _repositoryWrapper.ClubAdministration.CreateAsync(newAdmin);
             await _repositoryWrapper.SaveAsync();
-            adminDTO.ID = admin.ID;
+            adminDTO.ID = newAdmin.ID;
 
             return adminDTO;
         }
@@ -98,21 +98,34 @@ namespace EPlast.BLL.Services.Club
         {
             var admin = await _repositoryWrapper.ClubAdministration.GetFirstOrDefaultAsync(a => a.ID == adminDTO.ID);
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
-
+            var headType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.KurinHead);
+            var headDeputyType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.KurinHeadDeputy);
+            
             if (adminType.ID == admin.AdminTypeId)
             {
                 admin.StartDate = adminDTO.StartDate ?? DateTime.Now;
                 admin.EndDate = adminDTO.EndDate;
+                admin.Status = true;
 
                 _repositoryWrapper.ClubAdministration.Update(admin);
                 await _repositoryWrapper.SaveAsync();
+                return adminDTO;
             }
-            else
+            else if (adminType.AdminTypeName == headType.AdminTypeName && admin.AdminTypeId != headDeputyType.ID)
             {
-                await RemoveAdministratorAsync(adminDTO.ID);
-                adminDTO = await AddAdministratorAsync(adminDTO);
+                var headDeputy = await _repositoryWrapper.ClubAdministration
+                    .GetFirstOrDefaultAsync(a => a.AdminTypeId == headDeputyType.ID && a.ClubId == adminDTO.ClubId && a.Status);
+                if (headDeputy != null && headDeputy.UserId == adminDTO.UserId)
+                {
+                    await RemoveAdministratorAsync(headDeputy.ID);
+                    await RemoveAdministratorAsync(adminDTO.ID);
+                    adminDTO = await AddAdministratorAsync(adminDTO);
+                    return adminDTO;
+                }
             }
 
+            await RemoveAdministratorAsync(adminDTO.ID);
+            adminDTO = await AddAdministratorAsync(adminDTO);
             return adminDTO;
         }
 
@@ -159,9 +172,9 @@ namespace EPlast.BLL.Services.Club
             await _repositoryWrapper.SaveAsync();
         }
 
-        public async Task<IEnumerable<ClubAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId)
+        public async Task<IEnumerable<ClubAdministrationDTO>> GetAdministrationsOfUserAsync(string userId)
         {
-            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == UserId && (a.EndDate > DateTime.Now || a.EndDate == null),
+            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == userId && a.Status,
                  include:
                  source => source.Include(c => c.User).Include(a => a.Club).Include(c => c.AdminType)
                  );
@@ -177,10 +190,9 @@ namespace EPlast.BLL.Services.Club
             return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationDTO>>(admins);
         }
 
-
-        public async Task<IEnumerable<ClubAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string UserId)
+        public async Task<IEnumerable<ClubAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string userId)
         {
-            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == UserId && a.EndDate < DateTime.Now,
+            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == userId && a.EndDate < DateTime.Now,
                  include:
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(c => c.Club)
                  );
@@ -190,48 +202,55 @@ namespace EPlast.BLL.Services.Club
                 admin.Club.ClubAdministration = null;
             }
 
-            return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationDTO>>(admins);
+            return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationDTO>>(admins).Reverse();
         }
 
-        public async Task<IEnumerable<ClubAdministrationStatusDTO>> GetAdministrationStatuses(string UserId)
+        public async Task<IEnumerable<ClubAdministrationStatusDTO>> GetAdministrationStatuses(string userId)
         {
-            var clubAdmins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == UserId && !a.Status,
+            var clubAdmins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == userId && !a.Status,
                              include:
                              source => source.Include(c => c.User).Include(c => c.AdminType).Include(c => c.Club)
                              );
             return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationStatusDTO>>(clubAdmins);
         }
 
-        public async Task CheckClubHasAdmin(int clubId, string adminTypeName)
+        public async Task CheckClubHasAdminAsync(int clubId, string adminTypeName, ClubAdministration newAdmin)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminTypeName);
             var admin = await _repositoryWrapper.ClubAdministration.
-                GetFirstOrDefaultAsync(a => a.AdminTypeId == adminType.ID
-                    && (DateTime.Now < a.EndDate || a.EndDate == null) && a.ClubId == clubId);
-
+                GetFirstOrDefaultAsync(a => a.AdminTypeId == adminType.ID && a.ClubId == clubId && a.Status);
+            
+            newAdmin.Status = false;
             if (admin != null)
             {
-                await RemoveAdministratorAsync(admin.ID);
+                if (newAdmin.EndDate == null || admin.EndDate < newAdmin.EndDate)
+                {
+                    await RemoveAdministratorAsync(admin.ID);
+                    newAdmin.Status = true;
+                }
             }
-
+            else
+            {
+                newAdmin.Status = true;
+            }
         }
 
-        public async Task<IEnumerable<ClubMembersDTO>> GetMembersByClubIdAsync(int ClubId)
+        public async Task<IEnumerable<ClubMembersDTO>> GetMembersByClubIdAsync(int clubId)
         {
-            var ClubMembers = await _repositoryWrapper.ClubMembers.GetAllAsync(
-                    predicate: c => c.ClubId == ClubId && c.EndDate == null,
+            var сlubMembers = await _repositoryWrapper.ClubMembers.GetAllAsync(
+                    predicate: c => c.ClubId == clubId && c.EndDate == null,
                     include: source => source
                         .Include(c => c.User));
 
-            return _mapper.Map<IEnumerable<ClubMembers>, IEnumerable<ClubMembersDTO>>(ClubMembers);
+            return _mapper.Map<IEnumerable<ClubMembers>, IEnumerable<ClubMembersDTO>>(сlubMembers);
         }
 
         /// <inheritdoc />
-        public async Task<ClubMembersDTO> AddFollowerAsync(int ClubId, string userId)
+        public async Task<ClubMembersDTO> AddFollowerAsync(int clubId, string userId)
         {
             var oldClubMember = await _repositoryWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(i => i.UserId == userId);
-            if (oldClubMember != null)
+            if (oldClubMember != null) 
             {
                 _repositoryWrapper.ClubMembers.Delete(oldClubMember);
                 await _repositoryWrapper.SaveAsync();
@@ -243,10 +262,9 @@ namespace EPlast.BLL.Services.Club
             {
                 await RemoveAdministratorAsync(admin.ID);
             }
-
             var ClubMember = new ClubMembers()
             {
-                ClubId = ClubId,
+                ClubId = clubId,
                 IsApproved = false,
                 UserId = userId,
                 User = await _userManager.FindByIdAsync(userId)
@@ -259,11 +277,11 @@ namespace EPlast.BLL.Services.Club
         }
 
         /// <inheritdoc />
-        public async Task<ClubMembersDTO> AddFollowerAsync(int ClubId, User user)
+        public async Task<ClubMembersDTO> AddFollowerAsync(int clubId, User user)
         {
             var userId = await _userManager.GetUserIdAsync(user);
 
-            return await AddFollowerAsync(ClubId, userId);
+            return await AddFollowerAsync(clubId, userId);
         }
 
         /// <inheritdoc />
@@ -298,16 +316,52 @@ namespace EPlast.BLL.Services.Club
         /// <inheritdoc />
         public async Task RemoveFollowerAsync(int followerId)
         {
-            var ClubMember = await _repositoryWrapper.ClubMembers
+            var сlubMember = await _repositoryWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(u => u.ID == followerId);
 
-            _repositoryWrapper.ClubMembers.Delete(ClubMember);
+            _repositoryWrapper.ClubMembers.Delete(сlubMember);
             await _repositoryWrapper.SaveAsync();
         }
 
         public async Task RemoveMemberAsync(ClubMembers member)
         {
             _repositoryWrapper.ClubMembers.Delete(member);
+            await _repositoryWrapper.SaveAsync();
+        }
+
+        public async Task AddFollowerInHistoryAsync(int clubId, string userId)
+        {
+            var oldClubMember = await _repositoryWrapper.ClubMemberHistory
+               .GetFirstOrDefaultAsync(i => i.UserId == userId && !i.IsDeleted);
+
+            if (oldClubMember != null)
+            {
+                await UpdateStatusFollowerInHistoryAsync(userId, true,true);
+            }
+
+            var clubHistoryUser = new ClubMemberHistory()
+            {
+                Date = DateTime.Now,
+                UserId = userId,
+                ClubId = clubId,
+                IsFollower = true,
+                IsDeleted = false
+            };
+
+            await _repositoryWrapper.ClubMemberHistory.CreateAsync(clubHistoryUser);
+            await _repositoryWrapper.SaveAsync();
+        }
+
+        public async Task UpdateStatusFollowerInHistoryAsync(string userId, bool isFollower,bool isDeleted)
+        {
+            var clubHistoryMembers = await _repositoryWrapper.ClubMemberHistory.GetFirstOrDefaultAsync(
+                   predicate: c => c.UserId == userId && !c.IsDeleted);
+
+            clubHistoryMembers.IsFollower = isFollower;
+            clubHistoryMembers.IsDeleted = isDeleted;
+            clubHistoryMembers.Date = DateTime.Now;
+
+            _repositoryWrapper.ClubMemberHistory.Update(clubHistoryMembers);
             await _repositoryWrapper.SaveAsync();
         }
     }

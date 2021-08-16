@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using EPlast.WebApi.Models.GoverningBody.Sector;
 
 namespace EPlast.WebApi.Models.GoverningBody
 {
@@ -12,6 +13,7 @@ namespace EPlast.WebApi.Models.GoverningBody
         public string PhoneNumber { get; set; }
         public int AdministrationCount { get; set; }
         public GoverningBodyAdministrationViewModel Head { get; set; }
+        public IEnumerable<SectorViewModel> Sectors { get; set; }
         public IEnumerable<GoverningBodyAdministrationViewModel> Administration { get; set; }
         public IEnumerable<GoverningBodyDocumentsViewModel> Documents { get; set; }
     }

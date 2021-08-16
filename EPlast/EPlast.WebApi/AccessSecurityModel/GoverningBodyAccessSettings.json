@@ -11,7 +11,8 @@
     "DeleteGBMembers": true,
     "BecomeRBMember": true,
     "ManipulatePoster": true,
-    "ManipulateDocument": true
+    "ManipulateDocument": true,
+    "AddGBSector": true
   },
   "Голова Керівного Органу": {
     "ViewInfo": true,
@@ -25,7 +26,8 @@
     "DeleteGBMembers": true,
     "BecomeRBMember": true,
     "ManipulatePoster": true,
-    "ManipulateDocument": true
+    "ManipulateDocument": true,
+    "AddGBSector": true
   },
   "Голова Округи": {
     "ViewInfo": true,
@@ -33,13 +35,14 @@
     "EditGB": false,
     "DeleteGB": false,
     "CreateDirection": false,
-    "AddGBSecretary": true,
+    "AddGBSecretary": false,
     "GoToSecretaryProfile": true,
     "EditRBMembers": false,
     "DeleteGBMembers": false,
     "BecomeRBMember": true,
     "ManipulatePoster": false,
-    "ManipulateDocument": true
+    "ManipulateDocument": false,
+    "AddGBSector": false
   },
   "Голова Станиці": {
     "ViewInfo": true,
@@ -53,7 +56,8 @@
     "DeleteGBMembers": false,
     "BecomeRBMember": true,
     "ManipulatePoster": false,
-    "ManipulateDocument": false
+    "ManipulateDocument": false,
+    "AddGBSector": false
   },
   "Голова Куреня": {
     "ViewInfo": true,
@@ -67,7 +71,8 @@
     "DeleteGBMembers": false,
     "BecomeRBMember": true,
     "ManipulatePoster": false,
-    "ManipulateDocument": false
+    "ManipulateDocument": false,
+    "AddGBSector": false
   },
   "Прихильник": {
     "ViewInfo": true,
@@ -81,7 +86,8 @@
     "DeleteGBMembers": false,
     "BecomeRBMember": false,
     "ManipulatePoster": false,
-    "ManipulateDocument": false
+    "ManipulateDocument": false,
+    "AddGBSector": false
   },
   "Дійсний член організації": {
     "ViewInfo": true,
@@ -90,11 +96,12 @@
     "DeleteGB": false,
     "CreateDirection": false,
     "AddGBSecretary": false,
-    "GoToSecretaryProfile": true,
+    "GoToSecretaryProfile": false,
     "EditRBMembers": false,
     "DeleteGBMembers": false,
     "BecomeRBMember": true,
     "ManipulatePoster": false,
-    "ManipulateDocument": false
+    "ManipulateDocument": false,
+    "AddGBSector": false
   }
 }

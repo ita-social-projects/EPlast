@@ -502,7 +502,7 @@ namespace EPlast.Tests.Controllers
         private LocalizedString GetForgotPasswordConfirmation()
         {
             var localizedString = new LocalizedString("ForgotPasswordConfirmation",
-                "Для скидування пароля, перейдіть за посиланням в листі, яке відправлене на вашу електронну пошту.");
+                "Для скидання пароля, перейдіть за посиланням в листі, яке відправлене на вашу електронну пошту.");
             return localizedString;
         }
 
@@ -530,7 +530,7 @@ namespace EPlast.Tests.Controllers
         private LocalizedString GetResetPasswordProblems()
         {
             var localizedString = new LocalizedString("Reset-PasswordProblems",
-                "Проблеми зі скидуванням пароля або введений новий пароль повинен вміщати 8 символів, " +
+                "Проблеми зі скиданням пароля або введений новий пароль повинен вміщати 8 символів, " +
                 "включаючи літери та цифри");
             return localizedString;
         }

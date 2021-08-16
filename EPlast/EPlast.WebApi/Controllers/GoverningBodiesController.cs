@@ -1,13 +1,19 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.GoverningBody;
+using EPlast.BLL.DTO.GoverningBody.Announcement;
 using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.BLL.Interfaces.Logging;
+using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using EPlast.WebApi.Models.GoverningBody;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
-using EPlast.Resources;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -20,12 +26,18 @@ namespace EPlast.WebApi.Controllers
         private readonly IGoverningBodyDocumentsService _governingBodyDocumentsService;
         private readonly ILoggerService<GoverningBodiesController> _logger;
         private readonly IMapper _mapper;
+        private readonly IGoverningBodyAnnouncementService _governingBodyAnnouncementService;
 
         public GoverningBodiesController(IGoverningBodiesService service,
-            ILoggerService<GoverningBodiesController> logger, IGoverningBodyAdministrationService governingBodyAdministrationService, IMapper mapper, IGoverningBodyDocumentsService governingBodyDocumentsService)
+            ILoggerService<GoverningBodiesController> logger,
+            IGoverningBodyAdministrationService governingBodyAdministrationService,
+            IGoverningBodyAnnouncementService governingBodyAnnouncementService,
+            IMapper mapper,
+            IGoverningBodyDocumentsService governingBodyDocumentsService)
         {
             _governingBodiesService = service;
             _logger = logger;
+            _governingBodyAnnouncementService = governingBodyAnnouncementService;
             _governingBodyAdministrationService = governingBodyAdministrationService;
             _mapper = mapper;
             _governingBodyDocumentsService = governingBodyDocumentsService;
@@ -93,7 +105,7 @@ namespace EPlast.WebApi.Controllers
 
             var governingBodyViewModel = _mapper.Map<GoverningBodyProfileDTO, GoverningBodyViewModel>(governingBodyProfileDto);
 
-            return Ok(governingBodyViewModel);
+            return Ok(new { governingBodyViewModel, documentsCount = governingBodyProfileDto.GoverningBody.GoverningBodyDocuments.Count() });
         }
 
         [HttpDelete("RemoveGoverningBody/{governingBodyId}")]
@@ -257,5 +269,71 @@ namespace EPlast.WebApi.Controllers
         {
             return Ok(await _governingBodiesService.GetUserAccessAsync(userId));
         }
+
+        [HttpGet("GetUserAdmins/{UserId}")]
+        public async Task<IActionResult> GetUserAdministrations(string UserId)
+        {
+            var userAdmins = await _governingBodiesService.GetAdministrationsOfUserAsync(UserId);
+
+            return Ok(userAdmins);
+        }
+
+        [HttpGet("GetUserPreviousAdmins/{UserId}")]
+        public async Task<IActionResult> GetUserPreviousAdministrations(string UserId)
+        {
+            var userAdmins = await _governingBodiesService.GetPreviousAdministrationsOfUserAsync(UserId);
+
+            return Ok(userAdmins);
+        }
+
+        [HttpPost("AddAnnouncement/{text}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> AddAnnouncement(string text)
+        {
+            if (ModelState.IsValid)
+            {
+                await _governingBodyAnnouncementService.AddAnnouncementAsync(text);
+
+                return Ok();
+            }
+            return BadRequest(ModelState);
+        }
+
+        [HttpDelete("DeleteAnnouncement/{id:int}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _governingBodyAnnouncementService.DeleteAnnouncementAsync(id);
+
+            return NoContent();
+        }
+
+        [HttpGet("GetAnnouncement/{id:int}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            GoverningBodyAnnouncementUserDTO governingBodyAnnouncementUserDTO = await _governingBodyAnnouncementService.GetAnnouncementByIdAsync(id);
+
+            if (governingBodyAnnouncementUserDTO == null)
+            {
+                return NotFound();
+            }
+            return Ok(governingBodyAnnouncementUserDTO);
+        }
+
+        [HttpGet("GetAllAnnouncements")]
+        public async Task<IActionResult> GetAllAnnouncement()
+        {
+            var announcements = await _governingBodyAnnouncementService.GetAllAnnouncementAsync();
+
+            return Ok(announcements);
+        }
+
+        [HttpGet("GetAllUsersId")]
+        public async Task<IActionResult> GetAllUserId()
+        {
+            var users = await _governingBodyAnnouncementService.GetAllUserAsync();
+
+            return Ok(users);
+        }
+
     }
 }

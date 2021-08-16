@@ -50,6 +50,47 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
+        public void ArchiveRegionAsync_ReturnsCorrect()
+        {
+            // Arrange
+            Region reg = new Region() { ID = 2 };
+            _repoWrapper
+                   .Setup(x => x.Region.GetFirstAsync(It.IsAny<Expression<Func<Region, bool>>>(),
+                It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
+                .ReturnsAsync(reg);
+            _repoWrapper
+                .Setup(x => x.Region.Update(reg));
+            _repoWrapper
+                  .Setup(x => x.SaveAsync());
+
+            // Act
+            var result = _regionService.ArchiveRegionAsync(fakeId);
+
+            // Assert
+            _repoWrapper.Verify(r => r.Region.Update(It.IsAny<Region>()), Times.Once);
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
+        }
+
+        [Test]
+        public async Task GetAllActiveRegionsAsync_ReturnsIEnumerableActiveRegionDTO()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.Region.GetAllAsync(It.IsAny<Expression<Func<Region, bool>>>(),
+                It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
+                .ReturnsAsync(new List<Region>());
+            _mapper.Setup(x => x.Map<IEnumerable<Region>, IEnumerable<RegionDTO>>(It.IsAny<IEnumerable<Region>>()))
+                .Returns(regions);
+
+            // Act
+            var result = await _regionService.GetAllActiveRegionsAsync();
+
+            // Assert
+            Assert.IsInstanceOf<IEnumerable<RegionDTO>>(result);
+            Assert.IsNotNull(result);
+        }
+
+        [Test]
         public async Task GetAllRegionsAsync_ReturnsIEnumerableRegionDTO()
         {
             // Arrange
@@ -61,6 +102,25 @@ namespace EPlast.Tests.Services.Regions
                 .Returns(regions);
             // Act
             var result = await _regionService.GetAllRegionsAsync();
+            // Assert
+            Assert.IsInstanceOf<IEnumerable<RegionDTO>>(result);
+            Assert.IsNotNull(result);
+        }
+
+        [Test]
+        public async Task GetAllNotActiveRegionsAsync_ReturnsIEnumerableNotActiveRegionDTO()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.Region.GetAllAsync(It.IsAny<Expression<Func<Region, bool>>>(),
+                It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
+                .ReturnsAsync(new List<Region>());
+            _mapper.Setup(x => x.Map<IEnumerable<Region>, IEnumerable<RegionDTO>>(It.IsAny<IEnumerable<Region>>()))
+                .Returns(regions);
+
+            // Act
+            var result = await _regionService.GetAllNotActiveRegionsAsync();
+
             // Assert
             Assert.IsInstanceOf<IEnumerable<RegionDTO>>(result);
             Assert.IsNotNull(result);
@@ -117,6 +177,87 @@ namespace EPlast.Tests.Services.Regions
             // Assert
             Assert.IsInstanceOf<IEnumerable<CityDTO>>(result);
             Assert.IsNotNull(result);
+        }
+
+        [Test]
+        public async Task GetFollowersAsync_ReturnsIEnumerableRegionFollowerDTO()
+        {
+            // Arrange
+            _repoWrapper.Setup(x => x.RegionFollowers.GetAllAsync(It.IsAny<Expression<Func<RegionFollowers, bool>>>(),
+              It.IsAny<Func<IQueryable<RegionFollowers>, IIncludableQueryable<RegionFollowers, object>>>()))
+                .ReturnsAsync(new List<RegionFollowers>());
+
+            _mapper
+                .Setup(x => x.Map<IEnumerable<RegionFollowers>, IEnumerable<RegionFollowerDTO>>(It.IsAny<IEnumerable<RegionFollowers>>()))
+                .Returns(regionFollowers);
+
+            // Act
+            var result = await _regionService.GetFollowersAsync(It.IsAny<int>());
+
+            // Assert
+            Assert.IsInstanceOf<IEnumerable<RegionFollowerDTO>>(result);
+            Assert.IsNotNull(result);
+        }
+
+        [Test]
+        public async Task GetFollowerAsync_ReturnsRegionFollowerDTO()
+        {
+            // Arrange
+            RegionFollowerDTO regionFollower = new RegionFollowerDTO();
+            _repoWrapper.Setup(x => x.RegionFollowers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionFollowers, bool>>>(),
+              It.IsAny<Func<IQueryable<RegionFollowers>, IIncludableQueryable<RegionFollowers, object>>>()))
+                .ReturnsAsync(new RegionFollowers());
+
+            _mapper
+                .Setup(x => x.Map<RegionFollowers, RegionFollowerDTO>(It.IsAny<RegionFollowers>()))
+                .Returns(regionFollower);
+
+            // Act
+            var result = await _regionService.GetFollowerAsync(It.IsAny<int>());
+
+            // Assert
+            Assert.IsInstanceOf<RegionFollowerDTO>(result);
+            Assert.IsNotNull(result);
+        }
+
+        [Test]
+        public void CreateFollowerAsync_ReturnsSuccess()
+        {
+            // Arrange
+            RegionFollowers regionFollowers = new RegionFollowers();
+            _mapper
+               .Setup(x => x.Map<RegionFollowerDTO, RegionFollowers>(It.IsAny<RegionFollowerDTO>()))
+               .Returns(regionFollowers);
+            _repoWrapper
+                   .Setup(x => x.RegionFollowers.CreateAsync(regionFollowers));
+            _repoWrapper
+                  .Setup(x => x.SaveAsync());
+            // Act
+            var result = _regionService.CreateFollowerAsync(It.IsAny<RegionFollowerDTO>());
+            // Assert
+            _repoWrapper.Verify();
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public void RemoveFollowerAsync_ReturnsCorrect()
+        {
+            // Arrange
+            _repoWrapper
+                   .Setup(x => x.RegionFollowers
+                   .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionFollowers, bool>>>(),
+                   It.IsAny<Func<IQueryable<RegionFollowers>, IIncludableQueryable<RegionFollowers, object>>>()))
+                   .ReturnsAsync(It.IsAny<RegionFollowers>());
+            _repoWrapper
+                .Setup(x => x.RegionFollowers.Delete(It.IsAny<RegionFollowers>()));
+            _repoWrapper
+                  .Setup(x => x.SaveAsync());
+            // Act
+            var result = _regionService.RemoveFollowerAsync(It.IsAny<int>());
+
+            // Assert
+            _repoWrapper.Verify();
+            Assert.NotNull(result);
         }
 
         [Test]
@@ -363,6 +504,10 @@ namespace EPlast.Tests.Services.Regions
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(new List<string>() { Roles.Admin, Roles.OkrugaHead, Roles.OkrugaHeadDeputy });
+            _repoWrapper
+                .Setup(x => x.RegionDocument.GetAllAsync( It.IsAny<Expression<Func<RegionDocuments, bool>>>(),
+            It.IsAny<Func<IQueryable<RegionDocuments>, IIncludableQueryable<RegionDocuments, object>>>()))
+                .ReturnsAsync(new List<RegionDocuments>());
 
             // Act
             var result = await _regionService.GetRegionProfileByIdAsync(fakeId, user);
@@ -449,6 +594,29 @@ namespace EPlast.Tests.Services.Regions
             _repoWrapper.Verify();
             Assert.IsInstanceOf<Task<IEnumerable<RegionUserDTO>>>(result);
         }
+
+        [Test]
+        public void UnArchivRegionAsync_ReturnsCorrect()
+        {
+            // Arrange
+            Region reg = new Region() { ID = 2 };
+            _repoWrapper
+                   .Setup(x => x.Region.GetFirstAsync(It.IsAny<Expression<Func<Region, bool>>>(),
+                It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
+                .ReturnsAsync(reg);
+            _repoWrapper
+                .Setup(x => x.Region.Update(reg));
+            _repoWrapper
+                  .Setup(x => x.SaveAsync());
+
+            // Act
+            var result = _regionService.UnArchiveRegionAsync(fakeId);
+
+            // Assert
+            _repoWrapper.Verify(r => r.Region.Update(It.IsAny<Region>()), Times.Once);
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
+        }
+
         private readonly int fakeId = 6;
         
         private readonly User user = new User();
@@ -495,6 +663,12 @@ namespace EPlast.Tests.Services.Regions
         {
             new CityDTO { ID = 1, Name = "Золочів" },
             new CityDTO { ID = 2, Name = "Перемишляни" }
+        };
+
+        private readonly IEnumerable<RegionFollowerDTO> regionFollowers = new List<RegionFollowerDTO>
+        {
+            new RegionFollowerDTO { ID = 1, CityName = "Золочів" },
+            new RegionFollowerDTO { ID = 2, CityName = "Перемишляни" }
         };
 
         private readonly IEnumerable<DataAccess.Entities.City> city = new List<DataAccess.Entities.City>

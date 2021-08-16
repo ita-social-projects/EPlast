@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.Admin;
 
 namespace EPlast.BLL.Services
 {
@@ -199,13 +200,15 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(int pageNum, int pageSize, string tab, IEnumerable<string> regions, IEnumerable<string> cities, IEnumerable<string> clubs, IEnumerable<string> degrees, string searchData)
+        public async Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(TableFilterParameters tableFilterParameters)
         {
-            string strCities = cities == null ? null : string.Join(",", cities.ToArray());
-            string strRegions = regions == null ? null : string.Join(",", regions.ToArray());
-            string strClubs = clubs == null ? null : string.Join(",", clubs.ToArray());
-            string strDegrees = degrees == null ? null : string.Join(",", degrees.ToArray());
-            var tuple = await _repoWrapper.AdminType.GetUserTableObjects(pageNum, pageSize, tab, strRegions, strCities, strClubs, strDegrees, searchData);
+            string strCities = tableFilterParameters.Cities == null ? null : string.Join(",", tableFilterParameters.Cities.ToArray());
+            string strRegions = tableFilterParameters.Regions == null ? null : string.Join(",", tableFilterParameters.Regions.ToArray());
+            string strClubs = tableFilterParameters.Clubs == null ? null : string.Join(",", tableFilterParameters.Clubs.ToArray());
+            string strDegrees = tableFilterParameters.Degrees == null ? null : string.Join(",", tableFilterParameters.Degrees.ToArray());
+            var tuple = await _repoWrapper.AdminType.GetUserTableObjects(tableFilterParameters.Page,
+                tableFilterParameters.PageSize, tableFilterParameters.Tab, strRegions, strCities, strClubs, strDegrees,
+                tableFilterParameters.SortKey, tableFilterParameters.SearchData, tableFilterParameters.FilterRoles);
             var users = tuple.Item1;
             var rowCount = tuple.Item2;
 

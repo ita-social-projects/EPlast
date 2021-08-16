@@ -18,6 +18,7 @@ using Xunit;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities.Decision;
+using EPlast.DataAccess.Entities.GoverningBody;
 
 namespace EPlast.XUnitTest
 {

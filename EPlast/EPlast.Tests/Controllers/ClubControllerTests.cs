@@ -24,23 +24,23 @@ namespace EPlast.Tests.Controllers
     [TestFixture]
     class ClubControllerTests
     {
-        private readonly Mock<IClubService> _ClubService;
+        private readonly Mock<IClubService> _clubService;
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<ILoggerService<ClubController>> _logger;
-        private readonly Mock<IClubParticipantsService> _ClubParticipantsService;
-        private readonly Mock<IClubAccessService> _ClubAccessService;
-        private readonly Mock<IClubDocumentsService> _ClubDocumentsService;
+        private readonly Mock<IClubParticipantsService> _clubParticipantsService;
+        private readonly Mock<IClubAccessService> _clubAccessService;
+        private readonly Mock<IClubDocumentsService> _clubDocumentsService;
         private readonly Mock<UserManager<User>> _userManager;
 
 
         public ClubControllerTests()
         {
-            _ClubAccessService = new Mock<IClubAccessService>();
-            _ClubService = new Mock<IClubService>();
+            _clubAccessService = new Mock<IClubAccessService>();
+            _clubService = new Mock<IClubService>();
             _mapper = new Mock<IMapper>();
             _logger = new Mock<ILoggerService<ClubController>>();
-            _ClubParticipantsService = new Mock<IClubParticipantsService>();
-            _ClubDocumentsService = new Mock<IClubDocumentsService>();
+            _clubParticipantsService = new Mock<IClubParticipantsService>();
+            _clubDocumentsService = new Mock<IClubDocumentsService>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
 
@@ -48,32 +48,118 @@ namespace EPlast.Tests.Controllers
 
         private ClubController CreateClubController => new ClubController(_logger.Object,
              _mapper.Object,
-           _ClubService.Object,
-           _ClubParticipantsService.Object,
-           _ClubDocumentsService.Object,
-           _ClubAccessService.Object,
+           _clubService.Object,
+           _clubParticipantsService.Object,
+           _clubDocumentsService.Object,
+           _clubAccessService.Object,
            _userManager.Object
           );
 
-        
 
-        [Test]
-        public async Task GetCities_Valid_Test()
+        [TestCase(1, 1, "Курінь")]
+        public async Task GetCities_Valid_Test(int page, int pageSize, string cityName)
+        {
+            // Arrange
+            ClubController controller = CreateClubController;
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+
+            controller.ControllerContext = context;
+            _clubService
+                .Setup(c => c.GetAllClubsAsync(It.IsAny<string>()))
+
+                .ReturnsAsync(GetClubsBySearch());
+
+            // Act
+            var result = await controller.GetClubs(page, pageSize, cityName);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(((result as ObjectResult).Value as ClubsViewModel)
+                .Clubs.Where(c => c.Name.Equals("Курінь")));
+        }
+
+        [TestCase(1, 1, "Курінь")]
+        public async Task GetActivClub_Valid_Test(int page, int pageSize, string clubName)
         {
             // Arrange
             ClubController clubcon = CreateClubController;
             var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Returns(true);
             var context = new ControllerContext(
                 new ActionContext(
                     httpContext.Object, new RouteData(),
                     new ControllerActionDescriptor()));
             clubcon.ControllerContext = context;
-            _ClubService
+            _clubService
+                .Setup(c => c.GetAllActiveClubsAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetClubsBySearch());
+
+            // Act
+            var result = await clubcon.GetActiveClubs(page, pageSize, clubName);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(((result as ObjectResult).Value as ClubsViewModel)
+                .Clubs.Where(c => c.Name.Equals("Курінь")));
+        }
+
+
+        [TestCase(1, 1, "Курінь")]
+        public async Task GetNotActivClub_Valid_Test(int page, int pageSize, string clubName)
+        {
+            // Arrange
+            ClubController clubcon = CreateClubController;
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(m => m.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            clubcon.ControllerContext = context;
+            _clubService
+                .Setup(c => c.GetAllNotActiveClubsAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetClubsBySearch());
+
+            // Act
+            var result = await clubcon.GetNotActiveClubs(page, pageSize, clubName);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(((result as ObjectResult).Value as ClubsViewModel)
+                .Clubs.Where(c => c.Name.Equals("Курінь")));
+        }
+
+        [Test]
+        public async Task GetClubs_Valid_Test()
+        {
+            // Arrange
+            ClubController controller = CreateClubController;
+            var httpContext = new Mock<HttpContext>();
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            controller.ControllerContext = context;
+            _clubService
                 .Setup(c => c.GetClubs())
                 .ReturnsAsync(GetFakeClubsForAdministration());
 
             // Act
-            var result = await clubcon.GetClubs();
+            var result = await controller.GetClubs();
 
             // Assert
             Assert.NotNull(result);
@@ -86,15 +172,15 @@ namespace EPlast.Tests.Controllers
         public async Task GetProfile_Valid_Test(int id)
         {
 
-            _ClubService.Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
+            _clubService.Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(new ClubProfileDTO());
             _mapper
                 .Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
                 .Returns(new ClubViewModel());
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.GetProfile(id);
+            var result = await controller.GetProfile(id);
 
             // Assert
             _mapper.Verify(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()));
@@ -106,16 +192,16 @@ namespace EPlast.Tests.Controllers
         public async Task GetProfile_Invalid_Test(int id)
         {
             // Arrange
-            _ClubService.
+            _clubService.
                 Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(() => null);
             _mapper
                 .Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
                 .Returns(new ClubViewModel());
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.GetProfile(id);
+            var result = await controller.GetProfile(id);
 
             // Assert
             Assert.NotNull(result);
@@ -126,13 +212,65 @@ namespace EPlast.Tests.Controllers
         public async Task GetProfile_Invalid_Test()
         {
             // Arrange
-            _ClubService
+            _clubService
                 .Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(() => null);
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.GetProfile(GetFakeID());
+            var result = await controller.GetProfile(GetFakeID());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [TestCase(2)]
+        public async Task GetClubMembersInfo_Valid_Test(int id)
+        {
+
+            _clubService.Setup(c => c.GetClubDataForReport(It.IsAny<int>()))
+                .ReturnsAsync(new ClubReportDataDTO());
+
+            ClubController controller = CreateClubController;
+
+            // Act
+            var result = await controller.GetClubMembersInfo(id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [TestCase(2)]
+        public async Task GetClubMembersInfo_Invalid_Test(int id)
+        {
+            // Arrange
+            _clubService.
+                Setup(c => c.GetClubMembersInfoAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+
+            ClubController controller = CreateClubController;
+
+            // Act
+            var result = await controller.GetClubMembersInfo(id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task GetClubMembersInfo_Invalid_Test()
+        {
+            // Arrange
+            _clubService
+                .Setup(c => c.GetClubMembersInfoAsync(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+            ClubController controller = CreateClubController;
+
+            // Act
+            var result = await controller.GetClubMembersInfo(GetFakeID());
 
             // Assert
             Assert.NotNull(result);
@@ -143,11 +281,11 @@ namespace EPlast.Tests.Controllers
         public async Task GetMembers_Valid_Test(int id)
         {
 
-            _ClubService.Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
+            _clubService.Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(() => null);
 
             // Arrange
-            _ClubService
+            _clubService
                 .Setup(cs => cs.GetClubMembersAsync(It.IsAny<int>()))
                 .ReturnsAsync(new ClubProfileDTO());
             _mapper
@@ -168,7 +306,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetMembers_Invalid_Test(int id)
         {
             // Arrange
-            _ClubService
+            _clubService
                 .Setup(cs => cs.GetClubMembersAsync(It.IsAny<int>()))
                 .ReturnsAsync(() => null);
             _mapper
@@ -188,18 +326,18 @@ namespace EPlast.Tests.Controllers
         public async Task GetFollowers_Valid_Test(int id)
         {
             // Arrange
-            _ClubService
+            _clubService
                 .Setup(c => c.GetClubFollowersAsync(It.IsAny<int>()))
                 .ReturnsAsync(new ClubProfileDTO());
             _mapper
                 .Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
                 .Returns(new ClubViewModel());
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.GetFollowers(id);
+            var result = await controller.GetFollowers(id);
 
-            _ClubService.Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
+            _clubService.Setup(c => c.GetClubProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(() => null);
             // Assert
             _mapper.Verify(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()));
@@ -211,16 +349,16 @@ namespace EPlast.Tests.Controllers
         public async Task GetFollowers_Invalid_Test(int id)
         {
             // Arrange
-            _ClubService
+            _clubService
                 .Setup(c => c.GetClubFollowersAsync(It.IsAny<int>()))
                 .ReturnsAsync(() => null);
             _mapper
                 .Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
                 .Returns(new ClubViewModel());
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.GetFollowers(id);
+            var result = await controller.GetFollowers(id);
 
             // Assert
             Assert.NotNull(result);
@@ -231,16 +369,16 @@ namespace EPlast.Tests.Controllers
         public async Task GetAdmins_Valid_Test(int id)
         {
             // Arrange
-            _ClubService
+            _clubService
                 .Setup(c => c.GetClubAdminsAsync(It.IsAny<int>()))
                 .ReturnsAsync(new ClubProfileDTO());
             _mapper
                 .Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
                 .Returns(new ClubViewModel());
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.GetAdmins(id);
+            var result = await controller.GetAdmins(id);
 
             // Assert
             _mapper.Verify(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()));
@@ -252,16 +390,16 @@ namespace EPlast.Tests.Controllers
         public async Task GetAdmins_Invalid_Test(int id)
         {
             // Arrange
-            _ClubService
+            _clubService
                 .Setup(c => c.GetClubAdminsAsync(It.IsAny<int>()))
                 .ReturnsAsync(() => null);
             _mapper
                 .Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
                 .Returns(new ClubViewModel());
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.GetAdmins(id);
+            var result = await controller.GetAdmins(id);
 
             // Assert
             Assert.NotNull(result);
@@ -272,16 +410,16 @@ namespace EPlast.Tests.Controllers
         public async Task GetDocuments_Valid_Test(int id)
         {
             // Arrange
-            _ClubService
+            _clubService
                 .Setup(c => c.GetClubDocumentsAsync(It.IsAny<int>()))
                 .ReturnsAsync(new ClubProfileDTO());
             _mapper
                 .Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
                 .Returns(new ClubViewModel());
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.GetDocuments(id);
+            var result = await controller.GetDocuments(id);
 
             // Assert
             _mapper.Verify(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()));
@@ -293,14 +431,14 @@ namespace EPlast.Tests.Controllers
         public async Task GetDocumentsInvalidCheck()
         {
             // Arrange
-            _ClubService.Setup(c => c.GetClubDocumentsAsync(It.IsAny<int>()))
+            _clubService.Setup(c => c.GetClubDocumentsAsync(It.IsAny<int>()))
                 .ReturnsAsync(() => null);
             _mapper.Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
                 .Returns(new ClubViewModel());
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.GetDocuments(GetFakeID());
+            var result = await controller.GetDocuments(GetFakeID());
 
             // Assert
             Assert.NotNull(result);
@@ -311,16 +449,16 @@ namespace EPlast.Tests.Controllers
         public async Task Details_Valid_Test()
         {
             // Arrange
-            _ClubService
+            _clubService
                 .Setup(c => c.GetClubProfileAsync(It.IsAny<int>()))
                 .ReturnsAsync(new ClubProfileDTO());
             _mapper
                 .Setup(m => m.Map<ClubDTO, ClubViewModel>(It.IsAny<ClubDTO>()))
                 .Returns(new ClubViewModel());
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.Details(GetFakeID());
+            var result = await controller.Details(GetFakeID());
 
             // Assert
             Assert.NotNull(result);
@@ -331,16 +469,16 @@ namespace EPlast.Tests.Controllers
         public async Task Details_Invalid_Test()
         {
             // Arrange
-            _ClubService
+            _clubService
                 .Setup(c => c.GetByIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(() => null);
             _mapper
                 .Setup(m => m.Map<ClubDTO, ClubViewModel>(It.IsAny<ClubDTO>()))
                 .Returns(new ClubViewModel());
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.Details(GetFakeID());
+            var result = await controller.Details(GetFakeID());
 
             // Assert
             Assert.NotNull(result);
@@ -351,13 +489,13 @@ namespace EPlast.Tests.Controllers
         public async Task GetPhotoBase64_Valid_Test(string logoName)
         {
             // Arrange
-            _ClubService
+            _clubService
                 .Setup(c => c.GetLogoBase64(It.IsAny<string>()))
                 .ReturnsAsync(new string("some string"));
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.GetPhotoBase64(logoName);
+            var result = await controller.GetPhotoBase64(logoName);
 
             // Assert
             Assert.NotNull(result);
@@ -369,7 +507,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             ClubViewModel TestVM = new ClubViewModel();
-            _ClubService
+            _clubService
                 .Setup(c => c.CreateAsync(It.IsAny<ClubDTO>()))
                 .ReturnsAsync(new int());
             _mapper
@@ -377,10 +515,10 @@ namespace EPlast.Tests.Controllers
                 .Returns(new ClubDTO());
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.Create(TestVM);
+            var result = await controller.Create(TestVM);
 
             // Assert
             Assert.NotNull(result);
@@ -392,7 +530,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             ClubViewModel TestVM = new ClubViewModel();
-            _ClubService
+            _clubService
                 .Setup(c => c.CreateAsync(It.IsAny<ClubDTO>()))
                 .ReturnsAsync(new int());
             _mapper
@@ -400,11 +538,11 @@ namespace EPlast.Tests.Controllers
                 .Returns(new ClubDTO());
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            ClubController Clubcon = CreateClubController;
-            Clubcon.ModelState.AddModelError("NameError", "Required");
+            ClubController controller = CreateClubController;
+            controller.ModelState.AddModelError("NameError", "Required");
 
             // Act
-            var result = await Clubcon.Create(TestVM);
+            var result = await controller.Create(TestVM);
 
             // Assert
             Assert.NotNull(result);
@@ -416,15 +554,15 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             ClubViewModel TestVM = new ClubViewModel();
-            _ClubService
+            _clubService
                 .Setup(c => c.CreateAsync(It.IsAny<ClubDTO>())).ThrowsAsync(new InvalidOperationException());
             _mapper
                 .Setup(m => m.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
                 .Returns(new ClubDTO());
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.Create(TestVM);
+            var result = await controller.Create(TestVM);
 
             // Assert
             Assert.IsInstanceOf<StatusCodeResult>(result);
@@ -435,17 +573,17 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             ClubViewModel TestVM = new ClubViewModel();
-            _ClubService
+            _clubService
                 .Setup(c => c.EditAsync(It.IsAny<ClubDTO>()));
             _mapper
                 .Setup(m => m.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
                 .Returns(new ClubDTO());
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.Edit(TestVM);
+            var result = await controller.Edit(TestVM);
 
             // Assert
             Assert.NotNull(result);
@@ -457,18 +595,18 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             ClubViewModel TestVM = new ClubViewModel();
-            _ClubService
+            _clubService
                 .Setup(c => c.EditAsync(It.IsAny<ClubDTO>()));
             _mapper
                 .Setup(m => m.Map<ClubViewModel, ClubDTO>(It.IsAny<ClubViewModel>()))
                 .Returns(new ClubDTO());
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            ClubController Clubcon = CreateClubController;
-            Clubcon.ModelState.AddModelError("NameError", "Required");
+            ClubController controller = CreateClubController;
+            controller.ModelState.AddModelError("NameError", "Required");
 
             // Act
-            var result = await Clubcon.Edit(TestVM);
+            var result = await controller.Edit(TestVM);
 
             // Assert
             Assert.NotNull(result);
@@ -479,12 +617,12 @@ namespace EPlast.Tests.Controllers
         public async Task Remove_Valid_Test()
         {
             // Arrange
-            _ClubService
+            _clubService
                 .Setup(c => c.RemoveAsync(It.IsAny<int>()));
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.Remove(GetFakeID());
+            var result = await controller.Remove(GetFakeID());
 
             // Assert
             Assert.NotNull(result);
@@ -494,33 +632,21 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task AddFollower_Valid_Test()
         {
-            _ClubParticipantsService.Setup(c => c.AddFollowerAsync(It.IsAny<int>(), It.IsAny<User>()))
-                .ReturnsAsync(new ClubMembersDTO());
-            _logger
-                .Setup(l => l.LogInformation(It.IsAny<string>()));
-            ClubController Clubcon = CreateClubController;
-
-            // Act
-            var result = await Clubcon.AddFollower(GetFakeID());
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-        }
-
-        [Test]
-        public async Task AddFollowerWithId_Valid_Test()
-        {
             // Arrange
-            _ClubParticipantsService
-                .Setup(c => c.AddFollowerAsync(It.IsAny<int>(), It.IsAny<string>()))
+            ClubController controller = CreateClubController;
+
+            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
+            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { "Admin" });
+
+            _clubParticipantsService.Setup(c => c.AddFollowerInHistoryAsync(It.IsAny<int>(), It.IsAny<string>()));
+            _clubParticipantsService.Setup(c => c.AddFollowerAsync(It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(new ClubMembersDTO());
+
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            ClubController Clubcon = CreateClubController;
-
+       
             // Act
-            var result = await Clubcon.AddFollowerWithId(GetFakeID(), GetStringFakeId());
+            var result = await controller.AddFollower(GetFakeID());
 
             // Assert
             Assert.NotNull(result);
@@ -531,14 +657,14 @@ namespace EPlast.Tests.Controllers
         public async Task RemoveFollower_Valid_Test()
         {
             // Arrange
-            _ClubParticipantsService
+            _clubParticipantsService
                 .Setup(c => c.RemoveFollowerAsync(It.IsAny<int>()));
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.RemoveFollower(GetFakeID());
+            var result = await controller.RemoveFollower(GetFakeID());
 
             // Assert
             Assert.NotNull(result);
@@ -546,18 +672,19 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task ChangeApproveStatus_Valid_Test()
+        public async Task ChangeApproveStatusFalse_Valid_Test()
         {
             // Arrange
-            _ClubParticipantsService
+            _clubParticipantsService
                 .Setup(c => c.ToggleApproveStatusAsync(It.IsAny<int>()))
-                .ReturnsAsync(new ClubMembersDTO());
+                .ReturnsAsync(new ClubMembersDTO() {ClubId="1",User=new ClubUserDTO(){ ID="1"}});
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            ClubController Clubcon = CreateClubController;
-
+            ClubController controller = CreateClubController;
+            _clubParticipantsService.Setup(c => c.UpdateStatusFollowerInHistoryAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()));
+            _clubParticipantsService.Setup(c => c.AddFollowerInHistoryAsync(It.IsAny<Int32>(), It.IsAny<string>()));
             // Act
-            var result = await Clubcon.ChangeApproveStatus(GetFakeID());
+            var result = await controller.ChangeApproveStatus(GetFakeID());
 
             // Assert
             Assert.NotNull(result);
@@ -565,15 +692,38 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task ChangeApproveStatusTrue_Valid_Test()
+        {
+            // Arrange
+            _clubParticipantsService
+                .Setup(c => c.ToggleApproveStatusAsync(It.IsAny<int>()))
+                .ReturnsAsync(new ClubMembersDTO() { ClubId = "1", User = new ClubUserDTO() { ID = "1" },IsApproved=true });
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+            ClubController controller = CreateClubController;
+            _clubParticipantsService.Setup(c => c.UpdateStatusFollowerInHistoryAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()));
+            _clubParticipantsService.Setup(c => c.AddFollowerInHistoryAsync(It.IsAny<Int32>(), It.IsAny<string>()));
+            // Act
+            var result = await controller.ChangeApproveStatus(GetFakeID());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+
+
+
+        [Test]
         public async Task GetClubNameOfApprovedMemberTest()
         {
             //Arrange
-            _ClubParticipantsService
+            _clubParticipantsService
                 .Setup(c => c.ClubOfApprovedMember(It.IsAny<string>()));
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             //Act
-            var result = await Clubcon.ClubNameOfApprovedMember(GetStringFakeId());
+            var result = await controller.ClubNameOfApprovedMember(GetStringFakeId());
 
             //Assert
             Assert.NotNull(result);
@@ -587,14 +737,14 @@ namespace EPlast.Tests.Controllers
             _mapper
                 .Setup(m => m.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(It.IsAny<ClubAdministrationViewModel>()))
                 .Returns(new ClubAdministrationDTO() { AdminType = new BLL.DTO.Admin.AdminTypeDTO() });
-            _ClubParticipantsService
+            _clubParticipantsService
                 .Setup(c => c.AddAdministratorAsync(It.IsAny<ClubAdministrationDTO>()));
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.AddAdmin(new ClubAdministrationViewModel());
+            var result = await controller.AddAdmin(new ClubAdministrationViewModel());
 
             // Assert
             Assert.NotNull(result);
@@ -608,14 +758,14 @@ namespace EPlast.Tests.Controllers
             _mapper
                 .Setup(m => m.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(It.IsAny<ClubAdministrationViewModel>()))
                 .Returns(new ClubAdministrationDTO());
-            _ClubParticipantsService
+            _clubParticipantsService
                 .Setup(c => c.RemoveAdministratorAsync(It.IsAny<int>()));
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.RemoveAdmin(GetFakeID());
+            var result = await controller.RemoveAdmin(GetFakeID());
 
             // Assert
             Assert.NotNull(result);
@@ -630,18 +780,63 @@ namespace EPlast.Tests.Controllers
             _mapper
                 .Setup(m => m.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(It.IsAny<ClubAdministrationViewModel>()))
                 .Returns(new ClubAdministrationDTO());
-            _ClubParticipantsService
+            _clubParticipantsService
                 .Setup(c => c.EditAdministratorAsync(It.IsAny<ClubAdministrationDTO>()));
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.EditAdmin(admin);
+            var result = await controller.EditAdmin(admin);
 
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task ArchiveClub_valid_Test()
+        {
+            //Arrange
+            _clubService
+                .Setup(c => c.ArchiveAsync(It.IsAny<int>()));
+            ClubController Clubcon = CreateClubController;
+
+            //Act
+            var result = await Clubcon.Archive(GetFakeID());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
+        }
+
+        [Test]
+        public async Task UnArchiveClub_valid_Test()
+        {
+            //Arrange
+            _clubService
+                .Setup(c => c.UnArchiveAsync(It.IsAny<int>()));
+            ClubController Clubcon = CreateClubController;
+
+            //Act
+            var result = await Clubcon.UnArchive(GetFakeID());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
+        }  
+
+        public async Task EditAdmin_OldEndDate_ReturnsBadRequest()
+        {
+            // Arrange
+            var testAdmin = new ClubAdministrationViewModel() { EndDate = DateTime.MinValue };
+            ClubController controller = CreateClubController;
+
+            // Act
+            var result = await controller.EditAdmin(testAdmin);
+
+            // Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
@@ -652,14 +847,14 @@ namespace EPlast.Tests.Controllers
             _mapper
                 .Setup(m => m.Map<ClubDocumentsViewModel, ClubDocumentsDTO>(It.IsAny<ClubDocumentsViewModel>()))
                 .Returns(new ClubDocumentsDTO());
-            _ClubDocumentsService
+            _clubDocumentsService
                 .Setup(c => c.AddDocumentAsync(It.IsAny<ClubDocumentsDTO>()));
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.AddDocument(document);
+            var result = await controller.AddDocument(document);
 
             // Assert
             Assert.NotNull(result);
@@ -670,13 +865,13 @@ namespace EPlast.Tests.Controllers
         public async Task GetFileBase64_Valid_Test()
         {
             // Arrange
-            _ClubDocumentsService
+            _clubDocumentsService
                 .Setup(c => c.DownloadFileAsync(It.IsAny<string>()))
                 .ReturnsAsync(It.IsAny<string>());
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.GetFileBase64(GetFakeFileName());
+            var result = await controller.GetFileBase64(GetFakeFileName());
 
             // Assert
             Assert.NotNull(result);
@@ -687,14 +882,14 @@ namespace EPlast.Tests.Controllers
         public async Task RemoveDocument_Valid_Test()
         {
             // Arrange
-            _ClubDocumentsService
+            _clubDocumentsService
                 .Setup(c => c.DeleteFileAsync(It.IsAny<int>()));
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.RemoveDocument(GetFakeID());
+            var result = await controller.RemoveDocument(GetFakeID());
 
             // Assert
             Assert.NotNull(result);
@@ -706,13 +901,13 @@ namespace EPlast.Tests.Controllers
         public async Task GetDocumentTypesAsync_Valid_Test()
         {
             // Arrange
-            _ClubDocumentsService
+            _clubDocumentsService
                 .Setup(c => c.GetAllClubDocumentTypesAsync())
                 .ReturnsAsync(It.IsAny<IEnumerable<ClubDocumentTypeDTO>>());
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.GetDocumentTypesAsync();
+            var result = await controller.GetDocumentTypesAsync();
 
             // Assert
             Assert.NotNull(result);
@@ -723,12 +918,12 @@ namespace EPlast.Tests.Controllers
         public async Task GetClubThatUserHasAccessTo_Valid_Test()
         {
             // Arrange
-            _ClubAccessService
+            _clubAccessService
                 .Setup(c => c.GetClubsAsync(It.IsAny<User>()));
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.GetClubsThatUserHasAccessTo();
+            var result = await controller.GetClubsThatUserHasAccessTo();
 
             // Assert
             Assert.NotNull(result);
@@ -739,13 +934,13 @@ namespace EPlast.Tests.Controllers
         public async Task GetUserAdministrations_Valid_Test()
         {
             // Arrange
-            _ClubParticipantsService
+            _clubParticipantsService
                 .Setup(c => c.GetAdministrationsOfUserAsync(It.IsAny<string>()))
                 .ReturnsAsync(It.IsAny<IEnumerable<ClubAdministrationDTO>>());
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.GetUserAdministrations(GetStringFakeId());
+            var result = await controller.GetUserAdministrations(GetStringFakeId());
 
             // Assert
             Assert.NotNull(result);
@@ -756,13 +951,13 @@ namespace EPlast.Tests.Controllers
         public async Task GetUserPreviousAdministrations_Valid_Test()
         {
             // Arrange
-            _ClubParticipantsService
+            _clubParticipantsService
                 .Setup(c => c.GetPreviousAdministrationsOfUserAsync(It.IsAny<string>()))
                 .ReturnsAsync(It.IsAny<IEnumerable<ClubAdministrationDTO>>());
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.GetUserPreviousAdministrations(GetStringFakeId());
+            var result = await controller.GetUserPreviousAdministrations(GetStringFakeId());
 
             // Assert
             Assert.NotNull(result);
@@ -773,13 +968,13 @@ namespace EPlast.Tests.Controllers
         public async Task GetAllAdministrationStatuses_Valid_Test()
         {
             // Arrange
-            _ClubParticipantsService
+            _clubParticipantsService
                 .Setup(c => c.GetAdministrationStatuses(It.IsAny<string>()))
                 .ReturnsAsync(It.IsAny<IEnumerable<ClubAdministrationStatusDTO>>());
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             // Act
-            var result = await Clubcon.GetAllAdministrationStatuses(GetStringFakeId());
+            var result = await controller.GetAllAdministrationStatuses(GetStringFakeId());
 
             // Assert
             Assert.NotNull(result);
@@ -791,12 +986,12 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _userManager.Setup(r => r.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
-            _ClubAccessService.Setup(r => r.GetAllClubsIdAndName(It.IsAny<User>()))
+            _clubAccessService.Setup(r => r.GetAllClubsIdAndName(It.IsAny<User>()))
                 .ReturnsAsync(new List<ClubForAdministrationDTO>());
-            ClubController Clubcon = CreateClubController;
+            ClubController controller = CreateClubController;
 
             //Act
-            var result = await Clubcon.GetClubsOptionsThatUserHasAccessTo();
+            var result = await controller.GetClubsOptionsThatUserHasAccessTo();
 
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);

@@ -1,8 +1,7 @@
-﻿using EPlast.DataAccess.Entities.GoverningBody;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace EPlast.DataAccess.Entities
+namespace EPlast.DataAccess.Entities.GoverningBody
 {
     public class GoverningBodyDocuments
     {
@@ -12,7 +11,6 @@ namespace EPlast.DataAccess.Entities
         [Required, MaxLength(64)]
         public string BlobName { get; set; }
 
-        [Required, MaxLength(120)]
         public string FileName { get; set; }
 
         [Required]

@@ -4,14 +4,19 @@ using EPlast.DataAccess.Repositories.Interfaces.Club;
 using EPlast.DataAccess.Repositories.Interfaces.Events;
 using EPlast.DataAccess.Repositories.Interfaces.GoverningBody;
 using EPlast.DataAccess.Repositories.Interfaces.Region;
+using EPlast.DataAccess.Repositories.Interfaces;
 using EPlast.DataAccess.Repositories.Realizations.Blank;
 using EPlast.DataAccess.Repositories.Realizations.Club;
 using EPlast.DataAccess.Repositories.Realizations.EducatorsStaff;
 using EPlast.DataAccess.Repositories.Realizations.Events;
 using EPlast.DataAccess.Repositories.Realizations.Region;
+using EPlast.DataAccess.Repositories.Realizations;
 using NLog.Extensions.Logging;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories.Realizations.GoverningBody;
+using EPlast.DataAccess.Repositories.Realizations.GoverningBody.Sector;
+using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Announcement;
 
 namespace EPlast.DataAccess.Repositories.Realizations.Base
 {
@@ -52,6 +57,11 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IGoverningBodyDocumentsRepository _governingBodyDocuments;
         private IGoverningBodyDocumentTypeRepository _governingBodyDocumentType;
 
+        private ISectorRepository _governingBodySector;
+        private ISectorAdministrationRepository _governingBodySectorAdministration;
+        private ISectorDocumentsRepository _governingBodySectorDocuments;
+        private ISectorDocumentTypeRepository _governingBodySectorDocumentType;
+
         private ICityAdministrationRepository _cityAdministration;
         private ICityDocumentsRepository _cityDocuments;
         private ICityDocumentTypeRepository _cityDocumentType;
@@ -64,9 +74,11 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IClubDocumentTypeRepository _clubDocumentType;
         private IClubMembersRepository _clubMembers;
         private IClubRepository _club;
+        private IClubMemberHistoryRepository _clubMemberHistory;
 
         private IRegionRepository _region;
         private IRegionAdministrationRepository _regionAdministration;
+        private IRegionFollowersRepository _regionFollowers;
         private IAnnualReportsRepository _annualReports;
         private IMembersStatisticsRepository _membersStatistics;
         private ICityLegalStatusesRepository _cityLegalStatuses;
@@ -87,6 +99,10 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IExtractFromUPUDocumentsRepository _extractFromUPUDocumentsRepository;
         private IClubAnnualReportsRepository _clubAnnualReports;
         private IRegionAnnualReportsRepository _regionAnnualReports;
+        private IGoverningBodyAnnouncementRepository _governingBodyAnnouncement;
+
+        private SectionRepository _sectionRepository;
+        private SubsectionRepository _subsectionRepository;
 
         public IEducatorsStaffTypesRepository KVTypes
         {
@@ -168,6 +184,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 {
                     _governingBody = new OrganizationRepository(_dbContext);
                 }
+
                 return _governingBody;
             }
         }
@@ -208,6 +225,70 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 }
 
                 return _governingBodyDocuments;
+            }
+        }
+
+        public ISectorRepository GoverningBodySector
+        {
+            get
+            {
+                if (_governingBodySector == null)
+                {
+                    _governingBodySector = new SectorRepository(_dbContext);
+                }
+
+                return _governingBodySector;
+            }
+        }
+
+        public ISectorAdministrationRepository GoverningBodySectorAdministration
+        {
+            get
+            {
+                if (_governingBodySectorAdministration == null)
+                {
+                    _governingBodySectorAdministration = new SectorAdministrationRepository(_dbContext);
+                }
+
+                return _governingBodySectorAdministration;
+            }
+        }
+
+        public ISectorDocumentTypeRepository GoverningBodySectorDocumentType
+        {
+            get
+            {
+                if (_governingBodySectorDocumentType == null)
+                {
+                    _governingBodySectorDocumentType = new SectorDocumentTypeRepository(_dbContext);
+                }
+
+                return _governingBodySectorDocumentType;
+            }
+        }
+
+        public ISectorDocumentsRepository GoverningBodySectorDocuments
+        {
+            get
+            {
+                if (_governingBodySectorDocuments == null)
+                {
+                    _governingBodySectorDocuments = new SectorDocumentsRepository(_dbContext);
+                }
+
+                return _governingBodySectorDocuments;
+            }
+        }
+
+        public IGoverningBodyAnnouncementRepository GoverningBodyAnnouncement
+        {
+            get
+            {
+                if (_governingBodyAnnouncement == null)
+                {
+                    _governingBodyAnnouncement = new GoverningBodyAnnouncementRepository(_dbContext);
+                }
+                return _governingBodyAnnouncement;
             }
         }
 
@@ -660,6 +741,19 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             }
         }
 
+        public IClubMemberHistoryRepository ClubMemberHistory
+        {
+            get
+            {
+                if (_clubMemberHistory == null)
+                {
+                    _clubMemberHistory = new ClubMemberHistoryReposetory(_dbContext);
+                }
+
+                return _clubMemberHistory;
+            }
+        }
+
         public IRegionRepository Region
         {
             get
@@ -683,6 +777,19 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 }
 
                 return _regionAdministration;
+            }
+        }
+
+        public IRegionFollowersRepository RegionFollowers
+        {
+            get
+            {
+                if (_regionFollowers == null)
+                {
+                    _regionFollowers = new RegionFollowerRepository(_dbContext);
+                }
+
+                return _regionFollowers;
             }
         }
 
@@ -721,6 +828,33 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 return _regionAnnualReports;
             }
         }
+
+
+        public ISectionRepository AboutBaseSection
+        {
+            get
+            {
+                if(_sectionRepository == null)
+                {
+                    _sectionRepository = new SectionRepository(_dbContext);
+                }
+                return _sectionRepository;
+            }
+        }
+
+        public ISubsectionRepository AboutBaseSubsection
+        {
+            get
+            {
+                if(_subsectionRepository == null)
+                {
+                    _subsectionRepository = new SubsectionRepository(_dbContext);
+                }
+                return _subsectionRepository;
+            }
+        }
+
+
 
         public IMembersStatisticsRepository MembersStatistics
         {
@@ -927,5 +1061,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 return ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Cities"];
             }
         }
+
+        
     }
 }

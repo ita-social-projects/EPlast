@@ -4,6 +4,8 @@ using EPlast.DataAccess.Entities.Decision;
 using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Entities.GoverningBody;
+using EPlast.DataAccess.Entities.GoverningBody.Announcement;
+using EPlast.DataAccess.Entities.GoverningBody.Sector;
 using EPlast.DataAccess.Entities.UserEntities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -40,13 +42,17 @@ namespace EPlast.DataAccess
         public DbSet<EventAdministration> EventAdministration { get; set; }
         public DbSet<EventAdministrationType> EventAdministrationType { get; set; }
         public DbSet<UserTableObject> UserTableObjects { get; set; }
+        public DbSet<Section> Sections { get; set; }
+        public DbSet<Subsection> Subsections { get; set; }
         public DbSet<AnnualReportTableObject> AnnualReportTableObjects { get; set; }
         public DbSet<ClubAnnualReportTableObject> ClubAnnualReportTableObjects { get; set; }
         public DbSet<RegionAnnualReportTableObject> RegionAnnualReportTableObjects { get; set; }
         public DbSet<UserDistinctionsTableObject> UserDistinctionsTableObject { get; set; }
+        public DbSet<MethodicDocumentTableObject> MethodicDocumentTableObjects { get; set; }
         public DbSet<UserPrecautionsTableObject> UserPrecautionsTableObject { get; set; }
         public DbSet<DecisionTableObject> DecisionTableObject { get; set; }
         public DbSet<RegionMembersInfoTableObject> RegionMembersInfoTableObjects { get; set; }
+        public DbSet<GoverningBodyAnnouncement> GoverningBodyAnnouncement { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -60,6 +66,8 @@ namespace EPlast.DataAccess
             modelBuilder.Entity<UserPrecautionsTableObject>().HasNoKey();
             modelBuilder.Entity<DecisionTableObject>().HasNoKey();
             modelBuilder.Entity<RegionMembersInfoTableObject>().HasNoKey();
+            modelBuilder.Entity<MethodicDocumentTableObject>().HasNoKey();
+
 
             modelBuilder.Entity<Event>()
                 .HasKey(x => x.ID);
@@ -224,6 +232,11 @@ namespace EPlast.DataAccess
         public DbSet<GoverningBodyDocuments> GoverningBodyDocuments { get; set; }
         public DbSet<GoverningBodyDocumentType> GoverningBodyDocumentTypes { get; set; }
 
+        public DbSet<Sector> GoverningBodySectors { get; set; }
+        public DbSet<SectorAdministration> GoverningBodySectorAdministrations { get; set; }
+        public DbSet<SectorDocuments> GoverningBodySectorDocuments { get; set; }
+        public DbSet<SectorDocumentType> GoverningBodySectorDocumentTypes { get; set; }
+
         public DbSet<City> Cities { get; set; }
         public DbSet<CityAdministration> CityAdministrations { get; set; }
         public DbSet<CityDocuments> CityDocuments { get; set; }
@@ -241,6 +254,7 @@ namespace EPlast.DataAccess
         public DbSet<Region> Regions { get; set; }
         public DbSet<RegionDocuments> RegionDocs { get; set; }
         public DbSet<RegionAdministration> RegionAdministrations { get; set; }
+        public DbSet<RegionFollowers> RegionFollowers { get; set; }
         public DbSet<CityLegalStatus> CityLegalStatuses { get; set; }
         public DbSet<ClubLegalStatus> ClubLegalStatuses { get; set; }
         public DbSet<UserPlastDegree> UserPlastDegrees { get; set; }
@@ -258,5 +272,9 @@ namespace EPlast.DataAccess
         public DbSet<AchievementDocuments> AchievementDocuments { get; set; }
         public DbSet<ExtractFromUPUDocuments> ExtractFromUPUDocuments { get; set; }
         public DbSet<EventSection> EventSection { get; set; }
+        public DbSet<ClubReportPlastDegrees> ClubReportPlastDegrees { get; set; }
+        public DbSet<ClubReportMember> ClubReportMember { get; set; }
+        public DbSet<ClubReportAdmins> ClubReportAdmins { get; set; }
+        public DbSet<ClubMemberHistory> ClubMemberHistory { get; set; }
     }
 }

@@ -13,86 +13,120 @@ namespace EPlast.BLL.Interfaces.Club
     public interface IClubService
     {
         /// <summary>
-        /// Get all cities
+        /// Archives a specific club
         /// </summary>
-        /// <param name="ClubName">Optional param to find cities by name</param>
-        /// <returns>All cities of type Club</returns>
-        Task<IEnumerable<DataAccessClub.Club>> GetAllAsync(string ClubName = null);
+        /// <param name="clubId">The id of the club</param>
+        Task ArchiveAsync(int clubId);
 
         /// <summary>
-        /// Get all cities
+        /// Gets all cities
         /// </summary>
-        /// <param name="ClubName">Optional param to find cities by name</param>
+        /// <param name="clubName">Optional param to find club by name</param>
+        /// <returns>All clubs of type Club</returns>
+        Task<IEnumerable<DataAccessClub.Club>> GetAllAsync(string clubName = null);
+
+        /// <summary>
+        /// Gets all clubs
+        /// </summary>
+        /// <param name="clubName">Optional param to find club by name</param>
+        /// <returns>All active clubs of type Club</returns>
+        Task<IEnumerable<DataAccessClub.Club>> GetAllActiveAsync(string clubName = null);
+
+        /// <summary>
+        /// Gets all clubs
+        /// </summary>
+        /// <param name="clubName">Optional param to find club by name</param>
+        /// <returns>All not active clubs of type Club</returns>
+        Task<IEnumerable<DataAccessClub.Club>> GetAllNotActiveAsync(string clubName = null);
+
+        /// <summary>
+        /// Gets all clubs
+        /// </summary>
+        /// <param name="clubName">Optional param to find club by name</param>
         /// <returns>All cities of type ClubDTO</returns>
-        Task<IEnumerable<ClubDTO>> GetAllDTOAsync(string ClubName = null);
+        Task<IEnumerable<ClubDTO>> GetAllClubsAsync(string clubName = null);
 
         /// <summary>
-        /// Get a list of cities by region
+        /// Gets all active clubs
         /// </summary>
-        /// <param name="regionId">The id of the region</param>
-        /// <returns>List of cities by region</returns>
-        //Task<IEnumerable<ClubDTO>> GetCitiesByRegionAsync(int regionId);
+        /// <param name="clubName">Optional param to find active club by name</param>
+        /// <returns>All active cities of type ClubDTO</returns>
+        Task<IEnumerable<ClubDTO>> GetAllActiveClubsAsync(string clubName = null);
 
         /// <summary>
-        /// Get a specific Club
+        /// Gets all not active clubs
         /// </summary>
-        /// <param name="ClubId">The id of the Club</param>
+        /// <param name="clubName">Optional param to find not active club by name</param>
+        /// <returns>All not active cities of type ClubDTO</returns>
+        Task<IEnumerable<ClubDTO>> GetAllNotActiveClubsAsync(string clubName = null);
+
+        /// <summary>
+        /// Gets a specific Club
+        /// </summary>
+        /// <param name="clubId">The id of the Club</param>
         /// <returns></returns>
-        Task<ClubDTO> GetByIdAsync(int ClubId);
+        Task<ClubDTO> GetByIdAsync(int clubId);
 
         /// <summary>
-        /// Get an information about a specific Club with 6 members per section
+        /// Gets an information about a specific Club with 6 members per section
         /// </summary>
-        /// <param name="ClubId">The id of the Club</param>
+        /// <param name="clubId">The id of the Club</param>
         /// <returns>An information about a specific Club</returns>
         /// See <see cref="IClubService.GetClubProfileAsync(int, ClaimsPrincipal)"/> to get information about a specific Club including user roles
-        Task<ClubProfileDTO> GetClubProfileAsync(int ClubId);
+        Task<ClubProfileDTO> GetClubProfileAsync(int clubId);
 
         /// <summary>
-        /// Get an information about a specific Club with 6 members per section
+        /// Gets an information about members of the specific Club
         /// </summary>
-        /// <param name="ClubId">The id of the Club</param>
+        /// <param name="clubId">The id of the Club</param>
+        /// <returns>An information about members of the specific Club</returns>
+        Task<ClubProfileDTO> GetClubMembersInfoAsync(int clubId);
+
+        /// <summary>
+        /// Gets an information about a specific Club with 6 members per section
+        /// </summary>
+        /// <param name="clubId">The id of the Club</param>
         /// <param name="user">Current user</param>
         /// See <see cref="IClubService.GetClubProfileAsync(int)"/> to get information about a specific Club
-        Task<ClubProfileDTO> GetClubProfileAsync(int ClubId, DataAccessClub.User user);
+        Task<ClubProfileDTO> GetClubProfileAsync(int clubId, DataAccessClub.User user);
 
         /// <summary>
-        /// Get a list of members of a specific Club
+        /// Gets a list of members of a specific Club
         /// </summary>
-        /// <param name="ClubId">The id of the Club</param>
+        /// <param name="clubId">The id of the Club</param>
         /// <returns>A list of members of a specific Club</returns>
-        Task<ClubProfileDTO> GetClubMembersAsync(int ClubId);
+        Task<ClubProfileDTO> GetClubMembersAsync(int clubId);
 
         /// <summary>
-        /// Get a list of followers of a specific Club
+        /// Gets a list of followers of a specific Club
         /// </summary>
-        /// <param name="ClubId">The id of the Club</param>
+        /// <param name="clubId">The id of the Club</param>
         /// <returns>A list of followers of a specific Club including user roles</returns>
-        Task<ClubProfileDTO> GetClubFollowersAsync(int ClubId);
+        Task<ClubProfileDTO> GetClubFollowersAsync(int clubId);
 
         /// <summary>
-        /// Get a list of administrators of a specific Club
+        /// Gets a list of administrators of a specific Club
         /// </summary>
-        /// <param name="ClubId">The id of the Club</param>
+        /// <param name="clubId">The id of the Club</param>
         /// <returns>A list of followers of a specific Club</returns>
-        Task<ClubProfileDTO> GetClubAdminsAsync(int ClubId);
+        Task<ClubProfileDTO> GetClubAdminsAsync(int clubId);
 
         /// <summary>
-        /// Get a list of documents of a specific Club
+        /// Gets a list of documents of a specific Club
         /// </summary>
-        /// <param name="ClubId">The id of the Club</param>
+        /// <param name="clubId">The id of the Club</param>
         /// <returns>A list of documents of a specific Club</returns>
-        Task<ClubProfileDTO> GetClubDocumentsAsync(int ClubId);
+        Task<ClubProfileDTO> GetClubDocumentsAsync(int clubId);
 
         /// <summary>
-        /// Edit a specific Club
+        /// Edits a specific Club
         /// </summary>
-        /// <param name="ClubId">The id of the Club</param>
+        /// <param name="clubId">The id of the Club</param>
         /// <returns>An information about an edited Club</returns>
-        Task<ClubProfileDTO> EditAsync(int ClubId);
+        Task<ClubProfileDTO> EditAsync(int clubId);
 
         /// <summary>
-        /// Edit a specific Club
+        /// Edits a specific Club
         /// </summary>
         /// <param name="model">An information about an edited Club</param>
         /// <param name="file">A new Club image</param>
@@ -100,14 +134,14 @@ namespace EPlast.BLL.Interfaces.Club
         Task EditAsync(ClubProfileDTO model, IFormFile file);
 
         /// <summary>
-        /// Edit a specific Club
+        /// Edits a specific Club
         /// </summary>
         /// <param name="model">An information about an edited Club</param>
         /// <returns>An information about an edited Club</returns>
         Task EditAsync(ClubDTO model);
 
         /// <summary>
-        /// Create a new Club
+        /// Creates a new Club
         /// </summary>
         /// <param name="model">An information about a new Club</param>
         /// <param name="file">A new Club image</param>
@@ -115,20 +149,20 @@ namespace EPlast.BLL.Interfaces.Club
         Task<int> CreateAsync(ClubProfileDTO model, IFormFile file);
 
         /// <summary>
-        /// Create a new Club
+        /// Creates a new Club
         /// </summary>
         /// <param name="model">An information about a new Club</param>
         /// <returns>The id of a new Club</returns>
         Task<int> CreateAsync(ClubDTO model);
 
         /// <summary>
-        /// Remove a specific Club
+        /// Removes a specific Club
         /// </summary>
-        /// <param name="ClubId">The id of the Club</param>
-        Task RemoveAsync(int ClubId);
+        /// <param name="clubId">The id of the Club</param>
+        Task RemoveAsync(int clubId);
 
         /// <summary>
-        /// Get a photo in base64 format
+        /// Gets a photo in base64 format
         /// </summary>
         /// <param name="logoName">The name of a Club logo</param>
         /// <returns>A base64 string of the Club logo</returns>
@@ -136,9 +170,47 @@ namespace EPlast.BLL.Interfaces.Club
 
 
         /// <summary>
-        /// Get all clubs
+        /// Gets all clubs
         /// </summary>
         /// <returns>All clubs</returns>
         Task<IEnumerable<ClubForAdministrationDTO>> GetClubs();
+
+        /// <summary>
+        /// Gets all data for report clubs
+        /// </summary>
+        Task<ClubReportDataDTO> GetClubDataForReport(int clubId);
+
+        /// <summary>
+        /// Gets all club followers from history
+        /// </summary>
+        Task<IEnumerable<ClubMemberHistoryDTO>> GetClubHistoryFollowers(int clubId);
+
+        /// <summary>
+        ///  Gets all club members from history
+        /// </summary>
+        Task<IEnumerable<ClubMemberHistoryDTO>> GetClubHistoryMembers(int clubId);
+
+        /// <summary>
+        /// Gets all club administrations
+        /// </summary>
+        Task<IEnumerable<DataAccessClub.ClubAdministration>> GetClubAdministrations(int clubId);
+
+        /// <summary>
+        /// Gets count of users per year
+        /// </summary>
+        /// <returns>count of users</returns>
+        Task<int> GetCountUsersPerYear(int clubId);
+
+        /// <summary>
+        /// Gets count of deleted users 
+        /// </summary>
+        /// <returns>count of deletet users</returns>
+        Task<int> GetCountDeletedUsersPerYear(int clubId);
+
+        /// <summary>
+        /// Unarchives a specific club
+        /// </summary>
+        /// <param name="clubId">The id of the club</param>
+        Task UnArchiveAsync(int clubId);
     }
 }

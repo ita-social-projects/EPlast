@@ -4,8 +4,9 @@ using EPlast.DataAccess.Repositories.Interfaces.Club;
 using EPlast.DataAccess.Repositories.Interfaces.Events;
 using EPlast.DataAccess.Repositories.Interfaces.Region;
 using System.Threading.Tasks;
-using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories.Interfaces.GoverningBody;
+using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Sector;
+using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Announcement;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -29,12 +30,14 @@ namespace EPlast.DataAccess.Repositories
         IClubDocumentTypeRepository ClubDocumentType { get; }
         IClubLegalStatusesRepository ClubLegalStatuses { get; }
         IClubMembersRepository ClubMembers { get; }
+        IClubMemberHistoryRepository ClubMemberHistory { get; }
         IConfirmedUserRepository ConfirmedUser { get; }
         IDecesionRepository Decesion { get; }
         IDecesionTargetRepository DecesionTarget { get; }
         IDegreeRepository Degree { get; }
         IDistinctionRepository Distinction { get; }
         IDocumentTemplateRepository DocumentTemplate { get; }
+        IGoverningBodyAnnouncementRepository GoverningBodyAnnouncement { get; }
         IEducationRepository Education { get; }
         IEventRepository Event { get; }
         IEventAdminRepository EventAdmin { get; }
@@ -59,12 +62,17 @@ namespace EPlast.DataAccess.Repositories
         IGoverningBodyAdministrationRepository GoverningBodyAdministration { get; }
         IGoverningBodyDocumentsRepository GoverningBodyDocuments { get; }
         IGoverningBodyDocumentTypeRepository GoverningBodyDocumentType { get; }
+        ISectorRepository GoverningBodySector { get; }
+        ISectorAdministrationRepository GoverningBodySectorAdministration { get; }
+        ISectorDocumentsRepository GoverningBodySectorDocuments { get; }
+        ISectorDocumentTypeRepository GoverningBodySectorDocumentType { get; }
         IParticipantRepository Participant { get; }
         IParticipantStatusRepository ParticipantStatus { get; }
         IPlastDegreeRepository PlastDegrees { get; }
         IPrecautionRepository Precaution { get; }
         IRegionRepository Region { get; }
         IRegionAdministrationRepository RegionAdministration { get; }
+        IRegionFollowersRepository RegionFollowers { get; }
         IRegionAnnualReportsRepository RegionAnnualReports { get; }
         IRegionDocumentRepository RegionDocument { get; }
         IReligionRepository Religion { get; }
@@ -77,6 +85,8 @@ namespace EPlast.DataAccess.Repositories
         IUserPrecautionRepository UserPrecaution { get; }
         IUserProfileRepository UserProfile { get; }
         IWorkRepository Work { get; }
+        ISectionRepository AboutBaseSection { get; }
+        ISubsectionRepository AboutBaseSubsection { get; }
 
         void Save();
 

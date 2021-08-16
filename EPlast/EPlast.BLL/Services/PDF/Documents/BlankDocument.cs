@@ -58,7 +58,7 @@ namespace EPlast.BLL.Services.PDF.Documents
                 }
                 else if (blank.User.ConfirmedUsers.ElementAt(i).isClubAdmin)
                 {
-                    SetText(gfx, $"{blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.ClubMembers?.FirstOrDefault().Club?.Name}, {blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.FirstName} {blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.LastName} ",
+                    SetText(gfx, $"{blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.ClubMembers?.FirstOrDefault()?.Club?.Name}, {blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.FirstName} {blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.LastName} ",
                     XFontStyle.Regular, 180, 543);
                     SetText(gfx, $" {blank.User.ConfirmedUsers?.ElementAt(i)?.ConfirmDate:dd.MM.yyyy}", XFontStyle.Italic, 435, 568);
                 }
@@ -75,7 +75,7 @@ namespace EPlast.BLL.Services.PDF.Documents
 
             SetText(gfx, $"{DateTime.Now:dd.MM.yyyy}, {blank?.CityMembers?.City?.Name}", XFontStyle.Underline, 80, 310);
             SetLine(gfx, 370, 310, 460, 310);
-            SetText(gfx, $"({blank.User.LastName} {blank.User.FirstName?[0]}. {(blank.User.FatherName != null ? blank.User.FatherName[0] + "." : "")})", XFontStyle.Italic, 463, 300);
+            SetText(gfx, $"({blank.User.LastName} {blank.User.FirstName?[0]}. {(blank.User.FatherName != null && blank.User.FatherName != "" ? blank.User.FatherName[0] + "." : "")})", XFontStyle.Italic, 463, 300);
             SetText(gfx, "Підпис Заявника", XFontStyle.Italic, 410, 310);
 
             SetDashLine(gfx, 40, 330, 560, 330);
@@ -135,14 +135,14 @@ namespace EPlast.BLL.Services.PDF.Documents
             SetText(gfx, "Орієнтація до куреня УСП /", XFontStyle.Regular, 50, 500);
             SetText(gfx, "УПС", XFontStyle.Regular, 50, 510);
             SetText(gfx, $"{blank?.ClubMembers?.Club?.Name}", XFontStyle.Italic, 180, 498);
-            SetLine(gfx, 165, 510, 550, 510);
+            SetLine(gfx, 170, 510, 550, 510);
 
             SetDashLine(gfx, 40, 530, 560, 530);
 
             SetText(gfx, "Поручення куреня УСП /", XFontStyle.Regular, 50, 540);
             SetText(gfx, "УПС (назва куреня і підпис", XFontStyle.Regular, 50, 550);
             SetText(gfx, "його представника)", XFontStyle.Regular, 50, 560);
-            SetLine(gfx, 165, 555, 550, 555);
+            SetLine(gfx, 170, 555, 550, 555);
             SetLine(gfx, 50, 580, 390, 580);
             SetText(gfx, "Дата", XFontStyle.Regular, 400, 570);
             SetLine(gfx, 430, 580, 500, 580);

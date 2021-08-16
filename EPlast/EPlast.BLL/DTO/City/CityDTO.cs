@@ -35,6 +35,7 @@ namespace EPlast.BLL.DTO.City
         [MaxLength(7, ErrorMessage = "Поштовий індекс станиці не має перевищувати 7 символів")]
         public string PostIndex { get; set; }
         public string Logo { get; set; }
+        public bool IsActive { get; set; }
         public int RegionId { get; set; }
         public RegionDTO Region { get; set; }
         public bool CanCreate { get; set; }
@@ -43,6 +44,7 @@ namespace EPlast.BLL.DTO.City
         public int MemberCount { get; set; }
         public int FollowerCount { get; set; }
         public int AdministrationCount { get; set; }
+        public int DocumentsCount { get; set; }
         public IEnumerable<CityDocumentsDTO> CityDocuments { get; set; }
         public IEnumerable<CityMembersDTO> CityMembers { get; set; }
         public IEnumerable<CityAdministrationDTO> CityAdministration { get; set; }

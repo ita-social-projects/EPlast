@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using EPlast.BLL;
 using EPlast.BLL.DTO.City;
 using CityDTO = EPlast.BLL.DTO.AnnualReport.CityDTO;
 
@@ -31,6 +32,8 @@ namespace EPlast.Tests.Controllers
         private readonly Mock<ILoggerService<AnnualReportController>> _loggerService;
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<UserManager<User>> _userManager;
+        private readonly Mock<IPdfService> _pdfService;
+
 
         public AnnualReportControllerTest()
         {
@@ -39,6 +42,7 @@ namespace EPlast.Tests.Controllers
             _localizer = new Mock<IStringLocalizer<AnnualReportControllerMessage>>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            _pdfService = new Mock<IPdfService>();
             _clubAnnualReportService = new Mock<IClubAnnualReportService>();
             _mapper = new Mock<IMapper>();
         }
@@ -48,6 +52,7 @@ namespace EPlast.Tests.Controllers
             _loggerService.Object,
             _localizer.Object,
             _userManager.Object,
+            _pdfService.Object,
             _clubAnnualReportService.Object,
             _mapper.Object
             );
@@ -479,6 +484,29 @@ namespace EPlast.Tests.Controllers
                 .Verify(s => s["NoAccess"]);
             _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
             Assert.IsInstanceOf<ObjectResult>(result);
+        }
+
+        [Test]
+        public async Task CreatePdf_ReturnsOkObjectResult()
+        {
+            //Arrange
+            byte[] bytesReturn = new byte[3] { 0, 2, 3 };
+            _pdfService
+                .Setup(x => x.AnnualReportCreatePDFAsync(It.IsAny<int>()))
+                .ReturnsAsync(bytesReturn);
+            AnnualReportController annualController = CreateAnnualReportController;
+
+            //Act
+            var result = await annualController.CreatePdf(It.IsAny<int>());
+            var resultValue = (result as ObjectResult).Value;
+
+            //Assert
+            _pdfService.Verify();
+            Assert.IsNotNull(resultValue);
+            Assert.IsInstanceOf<string>(resultValue);
+            Assert.AreNotEqual(string.Empty, resultValue);
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
         [Test]

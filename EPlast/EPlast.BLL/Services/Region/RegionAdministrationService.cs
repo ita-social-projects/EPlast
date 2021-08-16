@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.Resources;
+using System.Linq;
 
 namespace EPlast.BLL.Services.Region
 {
@@ -36,7 +37,7 @@ namespace EPlast.BLL.Services.Region
 
         public async Task AddRegionAdministrator(RegionAdministrationDTO regionAdministrationDTO)
         {
-            var adminType = await _adminTypeService.GetAdminTypeByIdAsync(regionAdministrationDTO.AdminTypeId);
+            var adminType = await _adminTypeService.GetAdminTypeByNameAsync(regionAdministrationDTO.AdminType.AdminTypeName);
             var newRegionAdmin = new RegionAdministration()
             {
                 StartDate = regionAdministrationDTO.StartDate ?? DateTime.Now,
@@ -95,28 +96,38 @@ namespace EPlast.BLL.Services.Region
             }
         }
 
-        public async Task EditRegionAdministrator(RegionAdministrationDTO regionAdministrationDTO)
+        public async Task<RegionAdministrationDTO> EditRegionAdministrator(RegionAdministrationDTO regionAdministrationDTO)
         {
             var admin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.ID == regionAdministrationDTO.ID);
-            if (admin != null)
+            var adminType = await _adminTypeService.GetAdminTypeByNameAsync(regionAdministrationDTO.AdminType.AdminTypeName);
+            var headType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.OkrugaHead);
+            var headDeputyType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.OkrugaHeadDeputy);
+            if (adminType.ID == admin.AdminTypeId)
             {
-                var adminType = await _adminTypeService.GetAdminTypeByIdAsync(regionAdministrationDTO.AdminTypeId);
+                admin.StartDate = regionAdministrationDTO.StartDate ?? DateTime.Now;
+                admin.EndDate = regionAdministrationDTO.EndDate;
+                admin.Status = true;
 
-                if (adminType.ID == admin.AdminTypeId)
+                _repoWrapper.RegionAdministration.Update(admin);
+                await _repoWrapper.SaveAsync();
+                return regionAdministrationDTO;
+            }
+            else if (adminType.AdminTypeName == headType.AdminTypeName && admin.AdminTypeId != headDeputyType.ID)
+            {
+                var headDeputy = await _repoWrapper.RegionAdministration
+                    .GetFirstOrDefaultAsync(a => a.AdminTypeId == headDeputyType.ID && a.RegionId == regionAdministrationDTO.RegionId && a.Status);
+                if (headDeputy != null && headDeputy.UserId == regionAdministrationDTO.UserId)
                 {
-                    admin.StartDate = regionAdministrationDTO.StartDate ?? DateTime.Now;
-                    admin.EndDate = regionAdministrationDTO.EndDate;
-
-                    _repoWrapper.RegionAdministration.Update(admin);
-                    await _repoWrapper.SaveAsync();
-                }
-
-                else
-                {
+                    await DeleteAdminByIdAsync(headDeputy.ID);
                     await DeleteAdminByIdAsync(regionAdministrationDTO.ID);
                     await AddRegionAdministrator(regionAdministrationDTO);
+                    return regionAdministrationDTO;
                 }
             }
+            await DeleteAdminByIdAsync(regionAdministrationDTO.ID);
+            await AddRegionAdministrator(regionAdministrationDTO);
+            return regionAdministrationDTO;
+
         }
 
         public async Task DeleteAdminByIdAsync(int Id)
@@ -146,7 +157,7 @@ namespace EPlast.BLL.Services.Region
 
         public async Task<IEnumerable<RegionAdministrationDTO>> GetUsersAdministrations(string userId)
         {
-            var secretaries = await _repoWrapper.RegionAdministration.GetAllAsync(a => a.UserId == userId && (a.EndDate > DateTime.Now || a.EndDate == null),
+            var secretaries = await _repoWrapper.RegionAdministration.GetAllAsync(a => a.UserId == userId && a.Status,
                 include: source => source
                  .Include(r => r.User)
                  .Include(r => r.Region)
@@ -162,7 +173,7 @@ namespace EPlast.BLL.Services.Region
                  .Include(r => r.User)
                  .Include(r => r.Region)
                  .Include(r => r.AdminType));
-            return _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(secretaries);
+            return _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(secretaries).Reverse();
         }
 
         public async Task<RegionAdministrationDTO> GetHead(int regionId)

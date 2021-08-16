@@ -44,8 +44,6 @@ namespace EPlast.WebApi.Controllers
             _clubAccessService = clubAccessService;
             _userManager = userManager;
         }
-
-
         /// <summary>
         /// Get all clubs 
         /// </summary>
@@ -57,6 +55,60 @@ namespace EPlast.WebApi.Controllers
             return Ok(clubs);
 
         }
+
+
+        /// <summary>
+        /// Get a specific number of Clubs 
+        /// </summary>
+        /// <param name="page">A number of the page</param>
+        /// <param name="pageSize">A count of Clubs to display</param>
+        /// <param name="clubName">Optional param to find Clubs by name</param>
+        /// <returns>A specific number of Clubs</returns>
+        [HttpGet("Profiles/{page}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
+        public async Task<IActionResult> GetClubs(int page, int pageSize, string clubName = null)
+        {
+            var clubs = await _clubService.GetAllClubsAsync(clubName);
+            var clubsViewModel = new ClubsViewModel(page, pageSize, clubs, User.IsInRole(Roles.Admin));
+
+            return Ok(clubsViewModel);
+        }
+
+        /// <summary>
+        /// Get a specific number of active clubs 
+        /// </summary>
+        /// <param name="page">A number of the page</param>
+        /// <param name="pageSize">A count of cities to display</param>
+        /// <param name="clubName">Optional param to find cities by name</param>
+        /// <returns>A specific number of active clubs</returns>
+        [HttpGet("Profiles/Active/{page}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetActiveClubs(int page, int pageSize, string clubName = null)
+        {
+            var cities = await _clubService.GetAllActiveClubsAsync(clubName);
+            var citiesViewModel = new ClubsViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
+
+            return Ok(citiesViewModel);
+        }
+
+        /// <summary>
+        /// Get a specific number of not active clubs 
+        /// </summary>
+        /// <param name="page">A number of the page</param>
+        /// <param name="pageSize">A count of cities to display</param>
+        /// <param name="clubName">Optional param to find cities by name</param>
+        /// <returns>A specific number of not active clubs</returns>
+        [HttpGet("Profiles/NotActive/{page}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetNotActiveClubs(int page, int pageSize, string clubName = null)
+        {
+            var cities = await _clubService.GetAllNotActiveClubsAsync(clubName);
+            var citiesViewModel = new ClubsViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
+
+            return Ok(citiesViewModel);
+        }
+
+        
 
         /// <summary>
         /// Get id and name from all clubs that the user has access to
@@ -72,135 +124,157 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Get a specific Club
         /// </summary>
-        /// <param name="ClubId">The id of the Club</param>
+        /// <param name="clubId">The id of the Club</param>
         /// <returns>A specific Club</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="404">Club not found</response>
         [HttpGet("Profile/{ClubId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetProfile(int ClubId)
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
+        public async Task<IActionResult> GetProfile(int clubId)
         {
-            var ClubProfileDto = await _clubService.GetClubProfileAsync(ClubId, await _userManager.GetUserAsync(User));
-            if (ClubProfileDto == null)
+            var clubProfileDto = await _clubService.GetClubProfileAsync(clubId, await _userManager.GetUserAsync(User));
+            if (clubProfileDto == null)
             {
                 return NotFound();
             }
 
-            var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
+            var clubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(clubProfileDto);
 
-            return Ok(ClubProfile);
+            return Ok(clubProfile);
+        }
+
+        /// <summary>
+        /// Get members info of the specific Club
+        /// </summary>
+        /// <param name="clubId">The id of the Club</param>
+        /// <returns>A specific Club</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Club not found</response>
+        [HttpGet("ClubMembersInfo/{ClubId}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
+        public async Task<IActionResult> GetClubMembersInfo(int clubId)
+        {
+            var clubProfileDto = await _clubService.GetClubDataForReport(clubId);
+
+
+            if (clubProfileDto == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(clubProfileDto);
         }
 
         /// <summary>
         /// Get all members of a specific Club
         /// </summary>
-        /// <param name="ClubId">The id of the Club</param>
+        /// <param name="clubId">The id of the Club</param>
         /// <returns>All members of a specific Club</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="404">Club not found</response>
         [HttpGet("Members/{ClubId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetMembers(int ClubId)
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
+        public async Task<IActionResult> GetMembers(int clubId)
         {
-            var ClubProfileDto = await _clubService.GetClubMembersAsync(ClubId);
-            if (ClubProfileDto == null)
+            var clubProfileDto = await _clubService.GetClubMembersAsync(clubId);
+            if (clubProfileDto == null)
             {
                 return NotFound();
             }
 
-            var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
-            ClubProfile.CanEdit = await _clubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), ClubId);
+            var clubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(clubProfileDto);
+            clubProfile.CanEdit = await _clubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), clubId);
 
-            return Ok(new { ClubProfile.Members, ClubProfile.CanEdit, ClubProfile.Name });
+            return Ok(new { clubProfile.Members, clubProfile.CanEdit, clubProfile.Name });
         }
 
         /// <summary>
         /// Get all followers of a specific Club
         /// </summary>
-        /// <param name="ClubId">The id of the Club</param>
+        /// <param name="clubId">The id of the Club</param>
         /// <returns>All followers of a specific Club</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="404">Club not found</response>
         [HttpGet("Followers/{ClubId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetFollowers(int ClubId)
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
+        public async Task<IActionResult> GetFollowers(int clubId)
         {
-            var ClubProfileDto = await _clubService.GetClubFollowersAsync(ClubId);
-            if (ClubProfileDto == null)
+            var clubProfileDto = await _clubService.GetClubFollowersAsync(clubId);
+            if (clubProfileDto == null)
             {
                 return NotFound();
             }
 
-            var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
-            ClubProfile.CanEdit = await _clubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), ClubId);
+            var clubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(clubProfileDto);
+            clubProfile.CanEdit = await _clubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), clubId);
 
-            return Ok(new { ClubProfile.Followers, ClubProfile.CanEdit, ClubProfile.Name });
+            return Ok(new { clubProfile.Followers, clubProfile.CanEdit, clubProfile.Name });
         }
 
         /// <summary>
         /// Get all administrators of a specific Club
         /// </summary>
-        /// <param name="ClubId">The id of the Club</param>
+        /// <param name="clubId">The id of the Club</param>
         /// <returns>All administrators of a specific Club</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="404">Club not found</response>
         [HttpGet("Admins/{ClubId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetAdmins(int ClubId)
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
+        public async Task<IActionResult> GetAdmins(int clubId)
         {
-            var ClubProfileDto = await _clubService.GetClubAdminsAsync(ClubId);
-            if (ClubProfileDto == null)
+            var clubProfileDto = await _clubService.GetClubAdminsAsync(clubId);
+            if (clubProfileDto == null)
             {
                 return NotFound();
             }
 
-            var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
-            ClubProfile.CanEdit = await _clubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), ClubId);
+            var clubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(clubProfileDto);
+            clubProfile.CanEdit = await _clubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), clubId);
 
-            return Ok(new { ClubProfile.Administration, ClubProfile.Head, ClubProfile.HeadDeputy, ClubProfile.CanEdit, ClubProfile.Name });
+            return Ok(new { clubProfile.Administration, clubProfile.Head, clubProfile.HeadDeputy, clubProfile.CanEdit, clubProfile.Name });
         }
 
         /// <summary>
         /// Get all documents of a specific Club
         /// </summary>
-        /// <param name="ClubId">The id of the Club</param>
+        /// <param name="clubId">The id of the Club</param>
         /// <returns>All documents of a specific Club</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="404">Club not found</response>
         [HttpGet("Documents/{ClubId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetDocuments(int ClubId)
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
+        public async Task<IActionResult> GetDocuments(int clubId)
         {
-            var ClubProfileDto = await _clubService.GetClubDocumentsAsync(ClubId);
-            if (ClubProfileDto == null)
+            var clubProfileDto = await _clubService.GetClubDocumentsAsync(clubId);
+            if (clubProfileDto == null)
             {
                 return NotFound();
             }
 
-            var ClubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(ClubProfileDto);
-            ClubProfile.CanEdit = await _clubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), ClubId);
+            var clubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(clubProfileDto);
+            clubProfile.CanEdit = await _clubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), clubId);
 
-            return Ok(new { ClubProfile.Documents, ClubProfile.CanEdit });
+            return Ok(new { clubProfile.Documents, clubProfile.CanEdit });
         }
 
         /// <summary>
         /// Get an information about a specific Club
         /// </summary>
-        /// <param name="ClubId">The id of the Club</param>
+        /// <param name="clubId">The id of the Club</param>
         /// <returns>An information about a specific Club</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="404">Club not found</response>
         [HttpGet("Details/{ClubId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> Details(int ClubId)
+        public async Task<IActionResult> Details(int clubId)
         {
-            var ClubDto = await _clubService.GetClubProfileAsync(ClubId);
-            if (ClubDto == null)
+            var clubDto = await _clubService.GetClubProfileAsync(clubId);
+            if (clubDto == null)
             {
                 return NotFound();
             }
 
-            return Ok(ClubDto);
+            return Ok(clubDto);
         }
 
         /// <summary>
@@ -220,53 +294,50 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Create a new Club
         /// </summary>
-        /// <param name="Club">An information about a new Club</param>
+        /// <param name="club">An information about a new Club</param>
         /// <returns>An id of a new Club</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="400">Wrong input</response>
         [HttpPost("CreateClub")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> Create(ClubViewModel Club)
+        public async Task<IActionResult> Create(ClubViewModel club)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var ClubDTO = _mapper.Map<ClubViewModel, ClubDTO>(Club);
-                    ClubDTO.ID = await _clubService.CreateAsync(ClubDTO);
-                    _logger.LogInformation($"Club {{{ClubDTO.Name}}} was created.");
-                    return Ok(ClubDTO.ID);
+                    var clubDto = _mapper.Map<ClubViewModel, ClubDTO>(club);
+                    clubDto.ID = await _clubService.CreateAsync(clubDto);
+                    _logger.LogInformation($"Club {{{clubDto.Name}}} was created.");
+                    return Ok(clubDto.ID);
                 }
                 catch (InvalidOperationException)
                 {
                     return StatusCode(StatusCodes.Status400BadRequest);
                 }
             }
-            else
-            {
-                return BadRequest(ModelState);
-            }
+            return BadRequest(ModelState);
         }
 
         /// <summary>
         /// Edit a specific Club
         /// </summary>
-        /// <param name="Club">An information about an edited Club</param>
+        /// <param name="club">An information about an edited Club</param>
         /// <response code="200">Successful operation</response>
         /// <response code="400">Wrong input</response>
         [HttpPut("EditClub/{ClubId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> Edit(ClubViewModel Club)
+        public async Task<IActionResult> Edit(ClubViewModel club)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var ClubDTO = _mapper.Map<ClubViewModel, ClubDTO>(Club);
+            var clubDto = _mapper.Map<ClubViewModel, ClubDTO>(club);
 
-            await _clubService.EditAsync(ClubDTO);
-            _logger.LogInformation($"Club {{{ClubDTO.Name}}} was edited.");
+            await _clubService.EditAsync(clubDto);
+            _logger.LogInformation($"Club {{{clubDto.Name}}} was edited.");
 
             return Ok();
         }
@@ -274,13 +345,13 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Remove a specific Club
         /// </summary>
-        /// <param name="ClubId">The id of the Club</param>
+        /// <param name="clubId">The id of the Club</param>
         [HttpDelete("RemoveClub/{ClubId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> Remove(int ClubId)
+        public async Task<IActionResult> Remove(int clubId)
         {
-            await _clubService.RemoveAsync(ClubId);
-            _logger.LogInformation($"Club with id {{{ClubId}}} was deleted.");
+            await _clubService.RemoveAsync(clubId);
+            _logger.LogInformation($"Club with id {{{clubId}}} was deleted.");
 
             return Ok();
         }
@@ -288,33 +359,22 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Add a current user to followers
         /// </summary>
-        /// <param name="ClubId">An id of the Club</param>
+        /// <param name="clubId">An id of the Club</param>
         /// <returns>An information about a new follower</returns>
         [HttpPost("AddFollower/{ClubId}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminPlastunAndSupporter)]
-        public async Task<IActionResult> AddFollower(int ClubId)
+        public async Task<IActionResult> AddFollower(int clubId)
         {
-            var follower = await _clubParticipantsService.AddFollowerAsync(ClubId, await _userManager.GetUserAsync(User));
-            _logger.LogInformation($"User {{{follower.UserId}}} became a follower of Club {{{ClubId}}}.");
+            User ItFollower = await _userManager.GetUserAsync(User);
+
+            await _clubParticipantsService.AddFollowerInHistoryAsync(clubId, ItFollower.Id);
+
+            var follower = await _clubParticipantsService.AddFollowerAsync(clubId, ItFollower);
+            _logger.LogInformation($"User {{{follower.UserId}}} became a follower of Club {{{clubId}}}.");
 
             return Ok(follower);
         }
 
-        /// <summary>
-        /// Add the user to followers
-        /// </summary>
-        /// <param name="clubId">An id of the city</param>
-        /// <param name="userId">An id of the user</param>
-        /// <returns>An information about a new follower</returns>
-        [HttpPost("AddFollowerWithId/{clubId}/{userId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> AddFollowerWithId(int clubId, string userId)
-        {
-            var follower = await _clubParticipantsService.AddFollowerAsync(clubId, userId);
-            _logger.LogInformation($"User {{{follower.UserId}}} became a follower of city {{{clubId}}}.");
-
-            return Ok(follower);
-        }
 
         /// <summary>
         /// Remove a specific follower from the Club
@@ -324,6 +384,10 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RemoveFollower(int followerId)
         {
+            User ItFollower = await _userManager.GetUserAsync(User);
+            await _clubParticipantsService.UpdateStatusFollowerInHistoryAsync(ItFollower.Id, true, true);
+
+
             await _clubParticipantsService.RemoveFollowerAsync(followerId);
             _logger.LogInformation($"Follower with ID {{{followerId}}} was removed.");
 
@@ -339,10 +403,22 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> ChangeApproveStatus(int memberId)
         {
+      
             var member = await _clubParticipantsService.ToggleApproveStatusAsync(memberId);
+            if (!member.IsApproved)
+            {
+                await _clubParticipantsService.UpdateStatusFollowerInHistoryAsync(member.UserId, false, true);
+
+                await _clubParticipantsService.AddFollowerInHistoryAsync(Convert.ToInt32(member.ClubId), member.User.ID);
+            }
+            else
+            {
+                await _clubParticipantsService.UpdateStatusFollowerInHistoryAsync(member.UserId, false, false);
+            }
             _logger.LogInformation($"Status of member with ID {{{memberId}}} was changed.");
 
             return Ok(member);
+
         }
         /// <summary>
         /// Club name only for approved member
@@ -377,6 +453,30 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Archive a specific club
+        /// </summary>
+        /// <param name="clubId">The id of the club</param>
+        [HttpPut("ArchiveClub/{clubId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> Archive(int clubId)
+        {
+            await _clubService.ArchiveAsync(clubId);
+            return Ok();
+        }
+
+        /// <summary>
+        /// Archive a specific club
+        /// </summary>
+        /// <param name="clubId">The id of the club</param>
+        [HttpPut("UnArchiveClub/{clubId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> UnArchive(int clubId)
+        {
+            await _clubService.UnArchiveAsync(clubId);
+            return Ok();
+        }
+
+        /// <summary>
         /// Remove a specific administrator from the Club
         /// </summary>
         /// <param name="adminId">The id of the administrator</param>
@@ -391,20 +491,25 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Edit an information about a specific admininstrator
+        /// Edit an information about a specific administrator
         /// </summary>
         /// <param name="admin">An information about a new administrator</param>
-        /// <returns>An information about a specific admininstrator</returns>
+        /// <returns>An information about a specific administrator</returns>
         [HttpPut("EditAdmin/{adminId}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> EditAdmin(ClubAdministrationViewModel admin)
         {
-            var adminDTO = _mapper.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(admin);
+            if (admin.EndDate != null && admin.EndDate < DateTime.Today)
+            {
+                return BadRequest();
+            }
 
-            await _clubParticipantsService.EditAdministratorAsync(adminDTO);
+            var adminDto = _mapper.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(admin);
+
+            await _clubParticipantsService.EditAdministratorAsync(adminDto);
             _logger.LogInformation($"Admin with User-ID {{{admin.UserId}}} was edited.");
 
-            return Ok(adminDTO);
+            return Ok(adminDto);
         }
 
         /// <summary>
@@ -416,12 +521,12 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> AddDocument(ClubDocumentsViewModel document)
         {
-            var documentDTO = _mapper.Map<ClubDocumentsViewModel, ClubDocumentsDTO>(document);
+            var documentDto = _mapper.Map<ClubDocumentsViewModel, ClubDocumentsDTO>(document);
 
-            await _clubDocumentsService.AddDocumentAsync(documentDTO);
-            _logger.LogInformation($"Document with id {{{documentDTO.ID}}} was added.");
+            await _clubDocumentsService.AddDocumentAsync(documentDto);
+            _logger.LogInformation($"Document with id {{{documentDto.ID}}} was added.");
 
-            return Ok(documentDTO);
+            return Ok(documentDto);
         }
 
         /// <summary>
@@ -472,28 +577,26 @@ namespace EPlast.WebApi.Controllers
 
 
         [HttpGet("GetUserAdmins/{UserId}")]
-
-        public async Task<IActionResult> GetUserAdministrations(string UserId)
+        public async Task<IActionResult> GetUserAdministrations(string userId)
         {
-            var userAdmins = await _clubParticipantsService.GetAdministrationsOfUserAsync(UserId);
+            var userAdmins = await _clubParticipantsService.GetAdministrationsOfUserAsync(userId);
 
             return Ok(userAdmins);
         }
 
 
         [HttpGet("GetUserPreviousAdmins/{UserId}")]
-
-        public async Task<IActionResult> GetUserPreviousAdministrations(string UserId)
+        public async Task<IActionResult> GetUserPreviousAdministrations(string userId)
         {
-            var userAdmins = await _clubParticipantsService.GetPreviousAdministrationsOfUserAsync(UserId);
+            var userAdmins = await _clubParticipantsService.GetPreviousAdministrationsOfUserAsync(userId);
 
             return Ok(userAdmins);
         }
 
         [HttpGet("GetAllAdministrationStatuses/{UserId}")]
-        public async Task<IActionResult> GetAllAdministrationStatuses(string UserId)
+        public async Task<IActionResult> GetAllAdministrationStatuses(string userId)
         {
-            var userAdmins = await _clubParticipantsService.GetAdministrationStatuses(UserId);
+            var userAdmins = await _clubParticipantsService.GetAdministrationStatuses(userId);
 
             return Ok(userAdmins);
         }

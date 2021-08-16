@@ -23,17 +23,17 @@ namespace EPlast.WebApi.Mapping.Club
                 .ForMember(r => r.Email, s => s.MapFrom(t => t.Club.Email))
                 .ForMember(r => r.ClubURL, s => s.MapFrom(t => t.Club.ClubURL))
                 .ForMember(r => r.Description, s => s.MapFrom(t => t.Club.Description))
-                .ForMember(r => r.Street, s => s.MapFrom(t => t.Club.Street))
-                .ForMember(r => r.HouseNumber, s => s.MapFrom(t => t.Club.HouseNumber))
-                .ForMember(r => r.OfficeNumber, s => s.MapFrom(t => t.Club.OfficeNumber))
-                .ForMember(r => r.PostIndex, s => s.MapFrom(t => t.Club.PostIndex))
+                .ForMember(r => r.Slogan, s => s.MapFrom(t => t.Club.Slogan))
                 .ForMember(r => r.Logo, s => s.MapFrom(t => t.Club.Logo))
                 .ForMember(r => r.CanCreate, s => s.MapFrom(t => t.Club.CanCreate))
                 .ForMember(r => r.CanJoin, s => s.MapFrom(t => t.Club.CanJoin))
                 .ForMember(r => r.CanEdit, s => s.MapFrom(t => t.Club.CanEdit))
+                .ForMember(r => r.isActive, s => s.MapFrom(t => t.Club.IsActive))
                 .ForMember(r => r.MemberCount, s => s.MapFrom(t => t.Club.MemberCount))
                 .ForMember(r => r.AdministrationCount, s => s.MapFrom(t => t.Club.AdministrationCount))
-                .ForMember(r => r.FollowerCount, s => s.MapFrom(t => t.Club.FollowerCount));
+                .ForMember(r => r.FollowerCount, s => s.MapFrom(t => t.Club.FollowerCount))
+                .ForMember(r => r.DocumentsCount, s => s.MapFrom(t => t.Club.DocumentsCount));
+
 
         }
     }

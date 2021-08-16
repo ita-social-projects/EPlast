@@ -11,9 +11,9 @@ namespace EPlast.BLL.Interfaces.Club
         /// <summary>
         /// Get an information about a specific administrator
         /// </summary>
-        /// <param name="ClubId"></param>
+        /// <param name="clubId"></param>
         /// <returns>An information about a specific administrator</returns>
-        Task<IEnumerable<ClubAdministrationDTO>> GetAdministrationByIdAsync(int ClubId);
+        Task<IEnumerable<ClubAdministrationDTO>> GetAdministrationByIdAsync(int clubId);
 
         /// <summary>
         /// Add a new administrator to the Club
@@ -23,10 +23,10 @@ namespace EPlast.BLL.Interfaces.Club
         Task<ClubAdministrationDTO> AddAdministratorAsync(ClubAdministrationDTO adminDTO);
 
         /// <summary>
-        /// Edit an information about a specific admininstrator
+        /// Edit an information about a specific administrator
         /// </summary>
         /// <param name="adminDTO">An information about an edited administrator</param>
-        /// <returns>An information about a specific admininstrator</returns>
+        /// <returns>An information about a specific administrator</returns>
         Task<ClubAdministrationDTO> EditAdministratorAsync(ClubAdministrationDTO adminDTO);
 
         /// <summary>
@@ -43,38 +43,38 @@ namespace EPlast.BLL.Interfaces.Club
         /// <summary>
         ///returns administrations of given user
         /// </summary>
-        Task<IEnumerable<ClubAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId);
+        Task<IEnumerable<ClubAdministrationDTO>> GetAdministrationsOfUserAsync(string userId);
 
         /// <summary>
         ///returns administrations of given user
         /// </summary>
-        Task<IEnumerable<ClubAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string UserId);
-        Task<IEnumerable<ClubAdministrationStatusDTO>> GetAdministrationStatuses(string UserId);
+        Task<IEnumerable<ClubAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string userId);
+        Task<IEnumerable<ClubAdministrationStatusDTO>> GetAdministrationStatuses(string userId);
 
         /// <summary>
         /// Get all members by specific Club
         /// </summary>
-        /// <param name="ClubId">The id of the Club</param>
+        /// <param name="clubId">The id of the Club</param>
         /// <returns>All members of a specific Club</returns>
-        Task<IEnumerable<ClubMembersDTO>> GetMembersByClubIdAsync(int ClubId);
+        Task<IEnumerable<ClubMembersDTO>> GetMembersByClubIdAsync(int clubId);
 
         /// <summary>
         /// Add follower to a specific Club
         /// </summary>
-        /// <param name="ClubId">The id of the Club</param>
+        /// <param name="clubId">The id of the Club</param>
         /// <param name="userId">The id of the user</param>
         /// <returns>An information about a new follower</returns>
         /// See <see cref="IClubParticipantsService.AddFollowerAsync(int, ClaimsPrincipal)"/> to add current user
-        Task<ClubMembersDTO> AddFollowerAsync(int ClubId, string userId);
+        Task<ClubMembersDTO> AddFollowerAsync(int clubId, string userId);
 
         /// <summary>
         /// Add follower to a specific Club
         /// </summary>
-        /// <param name="ClubId">The id of the Club</param>
+        /// <param name="clubId">The id of the Club</param>
         /// <param name="user">Current user</param>
         /// <returns>An information about a new follower</returns>
         /// See <see cref="IClubParticipantsService.AddFollowerAsync(int, string)"/> to add user by id
-        Task<ClubMembersDTO> AddFollowerAsync(int ClubId, User user);
+        Task<ClubMembersDTO> AddFollowerAsync(int clubId, User user);
 
         /// <summary>
         /// Toggle approve status of a specific member
@@ -103,5 +103,15 @@ namespace EPlast.BLL.Interfaces.Club
         /// <param name="member">The member of the club</param>
         Task RemoveMemberAsync(ClubMembers member);
 
+        /// <summary>
+        /// Add  follower from the Club to history table
+        /// </summary>
+        Task AddFollowerInHistoryAsync(int clubId, string userId);
+
+
+        /// <summary>
+        /// update user in historical table insert property 
+        /// </summary>
+        Task UpdateStatusFollowerInHistoryAsync(string userId, bool isFollower, bool isDeleted);
     }
 }
