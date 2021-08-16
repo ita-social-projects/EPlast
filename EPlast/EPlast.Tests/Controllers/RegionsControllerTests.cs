@@ -185,7 +185,8 @@ namespace EPlast.Tests.Controllers
             // Act
             var result = await _regionController.EditAdministrator(admin);
             // Assert
-            Assert.IsInstanceOf<NoContentResult>(result);
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
         [Test]

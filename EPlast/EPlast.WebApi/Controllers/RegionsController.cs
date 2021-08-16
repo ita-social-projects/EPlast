@@ -123,7 +123,7 @@ namespace EPlast.WebApi.Controllers
             {
                 await _regionAdministrationService.EditRegionAdministrator(admin);
                 _logger.LogInformation($"Successful edit Admin: {admin.UserId}");
-                return NoContent();
+                return Ok(admin);
             }
             _logger.LogError("Admin is null");
 
