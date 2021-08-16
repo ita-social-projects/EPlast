@@ -33,19 +33,18 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
 
         public async Task<bool> AddAnnouncementAsync(string text)
         {
-            if (text != null)
+            if (text == null)
             {
-                var governingBodyAnnouncementDTO = new GoverningBodyAnnouncementDTO();
-                governingBodyAnnouncementDTO.Text = text;
-                governingBodyAnnouncementDTO.UserId = _userManager.GetUserId(_context.HttpContext.User);
-                var announcement = _mapper.Map<GoverningBodyAnnouncementDTO, GoverningBodyAnnouncement>(governingBodyAnnouncementDTO);
-                announcement.Date = DateTime.Now;
-                await _repoWrapper.GoverningBodyAnnouncement.CreateAsync(announcement);
-                await _repoWrapper.SaveAsync();
-
-                return true;
+                return false;
             }
-            return false;
+            var governingBodyAnnouncementDTO = new GoverningBodyAnnouncementDTO();
+            governingBodyAnnouncementDTO.Text = text;
+            governingBodyAnnouncementDTO.UserId = _userManager.GetUserId(_context.HttpContext.User);
+            var announcement = _mapper.Map<GoverningBodyAnnouncementDTO, GoverningBodyAnnouncement>(governingBodyAnnouncementDTO);
+            announcement.Date = DateTime.Now;
+            await _repoWrapper.GoverningBodyAnnouncement.CreateAsync(announcement);
+            await _repoWrapper.SaveAsync();
+            return true;
         }
 
         public async Task DeleteAnnouncementAsync(int id)
