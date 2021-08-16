@@ -487,7 +487,7 @@ namespace EPlast.Tests.Controllers
             var result = await _governingBodiesController.AddAnnouncement(It.IsAny<string>());
 
             //Assert
-            Assert.IsInstanceOf<NoContentResult>(result);
+            Assert.IsInstanceOf<OkResult>(result);
             _governingBodyAnnouncementService.Verify();
         }
 
