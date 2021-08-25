@@ -1,4 +1,6 @@
-﻿namespace EPlast.Resources
+﻿using System.Collections.Generic;
+
+namespace EPlast.Resources
 {
     public static class Roles
     {
@@ -47,5 +49,25 @@
             + CityHead + "," + CityHeadDeputy;
         public const string AdminRegionBoardHeadOkrugaHeadAndDeputy = Admin + "," + RegionBoardHead + "," + OkrugaHead + "," + OkrugaHeadDeputy;
         public const string AdminAndCityHeadAndCityHeadDeputy = Admin + "," + CityHead + "," + CityHeadDeputy;
+        public static List<string> ListOfRoles = new List<string>
+        {
+            Roles.GoverningBodyHead,
+            Roles.GoverningBodySectorHead,
+            Roles.GoverningBodySecretary,
+            Roles.KurinHead,
+            Roles.KurinHeadDeputy,
+            Roles.KurinSecretary,
+            Roles.CityHead,
+            Roles.CityHeadDeputy,
+            Roles.CitySecretary,
+            Roles.OkrugaHead,
+            Roles.OkrugaHeadDeputy,
+            Roles.OkrugaSecretary,
+            Roles.PlastMember,
+            Roles.FormerPlastMember,
+            Roles.Supporter,
+            Roles.RegisteredUser,
+            Roles.Admin
+        };
     }
 }

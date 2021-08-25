@@ -68,5 +68,7 @@ namespace EPlast.WebApi.Models.UserModels
         public string FacebookLink { get; set; }
         public string TwitterLink { get; set; }
         public string InstagramLink { get; set; }
+        public bool ClubMemberIsApproved { get; set; }
+        public bool CityMemberIsApproved { get; set; }
     }
 }
