@@ -438,7 +438,6 @@ namespace EPlast.Tests.Services.Regions
         public async Task AddRegionAdministrator_Head_RemovesHeadDeputy_ReturnsCorrect()
         {
             //Arrange
-            RegionAdministration adm = null;
             _repoWrapper
                 .SetupSequence(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
                 It.IsAny<Func<IQueryable<RegionAdministration>,
