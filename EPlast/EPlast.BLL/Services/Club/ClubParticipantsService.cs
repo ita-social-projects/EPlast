@@ -49,6 +49,8 @@ namespace EPlast.BLL.Services.Club
         public async Task<ClubAdministrationDTO> AddAdministratorAsync(ClubAdministrationDTO adminDTO)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
+            var headType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.KurinHead);
+            var headDeputyType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.KurinHeadDeputy);
             adminDTO.Status = DateTime.Now < adminDTO.EndDate || adminDTO.EndDate == null;
             var newAdmin = new ClubAdministration()
             {
@@ -83,6 +85,15 @@ namespace EPlast.BLL.Services.Club
                 Console.WriteLine(e.Message);
                 ExceptionDispatchInfo.Capture(e).Throw();
             }
+            if (adminType.AdminTypeName == headType.AdminTypeName)
+            {
+                var headDeputy = await _repositoryWrapper.ClubAdministration
+                    .GetFirstOrDefaultAsync(a => a.AdminTypeId == headDeputyType.ID && a.ClubId == adminDTO.ClubId && a.Status);
+                if (headDeputy != null && headDeputy.UserId == adminDTO.UserId)
+                {
+                    await RemoveAdministratorAsync(headDeputy.ID);
+                }
+            }
 
             await CheckClubHasAdminAsync(adminDTO.ClubId, adminType.AdminTypeName, newAdmin);
 
@@ -98,8 +109,6 @@ namespace EPlast.BLL.Services.Club
         {
             var admin = await _repositoryWrapper.ClubAdministration.GetFirstOrDefaultAsync(a => a.ID == adminDTO.ID);
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
-            var headType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.KurinHead);
-            var headDeputyType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.KurinHeadDeputy);
             
             if (adminType.ID == admin.AdminTypeId)
             {
@@ -111,19 +120,7 @@ namespace EPlast.BLL.Services.Club
                 await _repositoryWrapper.SaveAsync();
                 return adminDTO;
             }
-            else if (adminType.AdminTypeName == headType.AdminTypeName && admin.AdminTypeId != headDeputyType.ID)
-            {
-                var headDeputy = await _repositoryWrapper.ClubAdministration
-                    .GetFirstOrDefaultAsync(a => a.AdminTypeId == headDeputyType.ID && a.ClubId == adminDTO.ClubId && a.Status);
-                if (headDeputy != null && headDeputy.UserId == adminDTO.UserId)
-                {
-                    await RemoveAdministratorAsync(headDeputy.ID);
-                    await RemoveAdministratorAsync(adminDTO.ID);
-                    adminDTO = await AddAdministratorAsync(adminDTO);
-                    return adminDTO;
-                }
-            }
-
+         
             await RemoveAdministratorAsync(adminDTO.ID);
             adminDTO = await AddAdministratorAsync(adminDTO);
             return adminDTO;

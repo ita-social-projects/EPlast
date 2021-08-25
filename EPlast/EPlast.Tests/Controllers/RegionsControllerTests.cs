@@ -42,7 +42,7 @@ namespace EPlast.Tests.Controllers
             // Act
             var result = await _regionController.AddAdministrator(admin);
             // Assert
-            Assert.IsInstanceOf<NoContentResult>(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
         [Test]
@@ -53,7 +53,7 @@ namespace EPlast.Tests.Controllers
             // Act
             var result = await _regionController.AddAdministrator(admin);
             // Assert
-            Assert.IsInstanceOf<NoContentResult>(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
         [Test]
