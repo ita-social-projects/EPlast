@@ -435,7 +435,7 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
-        public async Task AddRegionAdministrator_Head_RemovesHeadDeputy_ReturnsCorrect()
+        public async Task AddRegionAdministrator_Head_RemovesHeadDeputy_ReturnsRegionAdministrationDTO()
         {
             //Arrange
             _repoWrapper

@@ -34,7 +34,7 @@ namespace EPlast.Tests.Controllers
         private Mock<UserManager<User>> _userManager;
 
         [Test]
-        public async Task AddAdministrator_CorrectData_ReturnsNoContentResult()
+        public async Task AddAdministrator_CorrectData_ReturnsOkObjectResult()
         {
             // Arrange
             RegionAdministrationDTO admin = new RegionAdministrationDTO() { ID = 2 };
@@ -176,7 +176,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task EditAdministrator_CorrectData_ReturnsNoContentResult()
+        public async Task EditAdministrator_CorrectData_ReturnsOkObjectResult()
         {
             // Arrange
             RegionAdministrationDTO admin = new RegionAdministrationDTO() { ID = 2 };
