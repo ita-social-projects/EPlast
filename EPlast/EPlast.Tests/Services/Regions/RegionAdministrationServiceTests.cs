@@ -461,9 +461,11 @@ namespace EPlast.Tests.Services.Regions
                 .Setup(x => x.AddToRoleAsync(new User() { Id = "Some" }, Roles.OkrugaHead));
             _repoWrapper
                 .Setup(x => x.RegionAdministration.CreateAsync(regionAdmHead));
+
             //Act
             var result = await _servise.AddRegionAdministrator(regionAdmDTOEndDateToday);
-            //Assert
+
+            //Assert    
             _adminTypeService.Verify();
             _userManager.Verify();
             Assert.IsInstanceOf<RegionAdministrationDTO>(result);
