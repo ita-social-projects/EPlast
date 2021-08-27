@@ -446,6 +446,11 @@ namespace EPlast.Tests.Services.City
                    AdminTypeName = Roles.CityHead,
                    ID = fakeId
                });
+            _repoWrapper
+               .Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                   It.IsAny<Func<IQueryable<CityAdministration>,
+                   IIncludableQueryable<CityAdministration, object>>>()))
+               .ReturnsAsync(new CityAdministration() { UserId = Roles.CityHead });
             _adminTypeService
                .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
                .ReturnsAsync(new AdminTypeDTO
@@ -453,6 +458,9 @@ namespace EPlast.Tests.Services.City
                    AdminTypeName = Roles.CityHead,
                    ID = fakeId
                });
+            _userManager
+                .Setup(r => r.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(new User());
 
             //Act
             var result = await _cityParticipantsService.EditAdministratorAsync(cityAdmDTOEndDateToday);

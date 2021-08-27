@@ -134,8 +134,7 @@ namespace EPlast.BLL.Services.Club
             var clubHeadDeputy = club.ClubAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHeadDeputy && a.Status);
             var clubAdmins = club.ClubAdministration?
-                .Where(a => a.AdminType.AdminTypeName != Roles.KurinHead
-                            && a.AdminType.AdminTypeName != Roles.KurinHeadDeputy && a.Status)
+                .Where(a => a.Status)
                 .ToList();
             club.AdministrationCount = club.ClubAdministration == null ? 0
                 : club.ClubAdministration.Count(a => a.Status);

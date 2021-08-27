@@ -49,7 +49,7 @@ namespace EPlast.WebApi.Controllers
         {
             await _regionAdministrationService.AddRegionAdministrator(admin);
 
-            return NoContent();
+            return Ok(admin);
         }
 
         [HttpPost("AddDocument")]
