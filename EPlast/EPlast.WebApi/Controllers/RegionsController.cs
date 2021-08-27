@@ -669,5 +669,20 @@ namespace EPlast.WebApi.Controllers
             await _regionService.UnArchiveRegionAsync(Id);
             return Ok();
         }
+
+        /// <summary>
+        /// Checks if theres already a Region with such name
+        /// </summary>
+        /// <param name="name">Name which checking</param>
+        /// <returns>True if exist</returns>
+        /// <returns>False if doesn't exist</returns>
+        /// <response code="200">Check was successfull</response>
+        [HttpGet("CheckRegionNameExists/{name}")]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<IActionResult> CheckRegionNameExists(string name)
+        {
+            bool result = await _regionService.CheckRegionNameExistsAsync(name);
+            return Ok(result);
+        }
     }
 }

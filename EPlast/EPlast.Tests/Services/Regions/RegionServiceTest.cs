@@ -617,9 +617,52 @@ namespace EPlast.Tests.Services.Regions
             _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
         }
 
+        [Test]
+        public async Task CheckRegionNameExistsAsync_ReturnsTrue()
+        {
+            //Arrange
+            _repoWrapper
+               .Setup(x => x.Region.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Region, bool>>>(),
+                    It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
+                .ReturnsAsync(new Region());
+            _mapper
+                .Setup(m => m.Map<RegionDTO>(It.IsAny<Region>()))
+                .Returns(new RegionDTO());
+
+            //Act
+            var result = await _regionService.CheckRegionNameExistsAsync(It.IsAny<string>());
+
+            //Assert
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public async Task CheckRegionNameExistsAsync_ReturnsFalse()
+        {
+            //Arrange
+            //Arrange
+            _repoWrapper
+               .Setup(x => x.Region.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Region, bool>>>(),
+                    It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
+                .ReturnsAsync(nullRegion);
+            _mapper
+                .Setup(m => m.Map<RegionDTO>(It.IsAny<Region>()))
+                .Returns(nullRegionDTO);
+
+            //Act
+            var result = await _regionService.CheckRegionNameExistsAsync(It.IsAny<string>());
+
+            //Assert
+            Assert.IsFalse(result);
+        }
+
         private readonly int fakeId = 6;
         
         private readonly User user = new User();
+
+        private readonly Region nullRegion = null;
+        private readonly RegionDTO nullRegionDTO = null;
+
 
         private readonly Region fakeRegion = new Region()
         {
