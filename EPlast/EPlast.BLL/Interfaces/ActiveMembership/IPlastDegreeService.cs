@@ -19,7 +19,7 @@ namespace EPlast.BLL.Interfaces.ActiveMembership
         /// Check allowed degrees
         /// </summary>
         /// <param name="degreeName">Degree name</param>
-        /// <returns>A bool value that says that degree contains</returns>
+        /// <returns>A bool value that says if there is such degree at the  list of degrees</returns>
         public Task<bool> GetDergeeAsync(int degreeId, List<string> appropriateDegrees);
         /// <summary>
         /// Returns user date of entry
