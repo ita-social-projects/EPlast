@@ -34,12 +34,12 @@ namespace EPlast.BLL.Services.ActiveMembership
         }
 
         /// <inheritdoc />
-        public async Task<bool> GetDergeeAsync(int degreeId, List<string> allowedDegrees)
+        public async Task<bool> GetDergeeAsync(int degreeId, List<string> appropriateDegrees)
         {
             var degree = await _repoWrapper.PlastDegrees
                 .GetFirstAsync(predicate: p => p.Id == degreeId);
 
-            return allowedDegrees.Contains(degree.Name);
+            return appropriateDegrees.Contains(degree.Name);
         }
 
         /// <inheritdoc />

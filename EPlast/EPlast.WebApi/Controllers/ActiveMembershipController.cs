@@ -98,13 +98,11 @@ namespace EPlast.WebApi.Controllers
                 return Created("GetAllDegrees", userPlastDegreePostDTO.PlastDegreeId);
             }
 
-            if (roles.Contains(Roles.CityHead) || roles.Contains(Roles.CityHeadDeputy)) 
+            if ((roles.Contains(Roles.CityHead) || roles.Contains(Roles.CityHeadDeputy)) &&
+                    (!await _plastDegreeService.GetDergeeAsync(userPlastDegreePostDTO.PlastDegreeId,
+                    AllowedDegreesForCityHeadAndDeputy.degrees)))
             {
-                if (!await _plastDegreeService.GetDergeeAsync(userPlastDegreePostDTO.PlastDegreeId,
-                    AllowedDegreesForCityHeadAndDeputy.degrees))
-                {
-                    return BadRequest();
-                }
+                 return BadRequest();
             }
             await _plastDegreeService.AddPlastDegreeForUserAsync(userPlastDegreePostDTO);
             return Created("GetAllDegrees", userPlastDegreePostDTO.PlastDegreeId);
