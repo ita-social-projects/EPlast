@@ -1063,14 +1063,14 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task CheckRegionNameExists_ReturnsOkObjectResult()
+        public async Task CheckIfRegionNameExists_ReturnsOkObjectResult()
         {
             //Arrange
-            _regionService.Setup(x => x.CheckRegionNameExistsAsync(It.IsAny<string>()))
+            _regionService.Setup(x => x.CheckIfRegionNameExistsAsync(It.IsAny<string>()))
                 .ReturnsAsync(true);
 
             //Act
-            var result = await _regionController.CheckRegionNameExists(It.IsAny<string>());
+            var result = await _regionController.CheckIfRegionNameExists(It.IsAny<string>());
             var resultObject = (result as ObjectResult).Value;
 
             //Assert

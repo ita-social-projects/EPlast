@@ -312,7 +312,7 @@ namespace EPlast.BLL.Services.Region
 
         }
 
-        public async Task<bool> CheckRegionNameExistsAsync(string name)
+        public async Task<bool> CheckIfRegionNameExistsAsync(string name)
         {
             var result = await _repoWrapper.Region.GetFirstOrDefaultAsync(x => x.RegionName == name);
             return result != null;

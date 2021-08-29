@@ -618,7 +618,7 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
-        public async Task CheckRegionNameExistsAsync_ReturnsTrue()
+        public async Task CheckIfRegionNameExistsAsync_ReturnsTrue()
         {
             //Arrange
             _repoWrapper
@@ -630,14 +630,14 @@ namespace EPlast.Tests.Services.Regions
                 .Returns(new RegionDTO());
 
             //Act
-            var result = await _regionService.CheckRegionNameExistsAsync(It.IsAny<string>());
+            var result = await _regionService.CheckIfRegionNameExistsAsync(It.IsAny<string>());
 
             //Assert
             Assert.IsTrue(result);
         }
 
         [Test]
-        public async Task CheckRegionNameExistsAsync_ReturnsFalse()
+        public async Task CheckIfRegionNameExistsAsync_ReturnsFalse()
         {
             //Arrange
             //Arrange
@@ -650,7 +650,7 @@ namespace EPlast.Tests.Services.Regions
                 .Returns(nullRegionDTO);
 
             //Act
-            var result = await _regionService.CheckRegionNameExistsAsync(It.IsAny<string>());
+            var result = await _regionService.CheckIfRegionNameExistsAsync(It.IsAny<string>());
 
             //Assert
             Assert.IsFalse(result);
