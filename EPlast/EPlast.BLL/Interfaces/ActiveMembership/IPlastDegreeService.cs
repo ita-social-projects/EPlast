@@ -16,6 +16,12 @@ namespace EPlast.BLL.Interfaces.ActiveMembership
         /// <returns>All plast degrees</returns>
         public Task<IEnumerable<PlastDegreeDTO>> GetDergeesAsync();
         /// <summary>
+        /// Check allowed degrees
+        /// </summary>
+        /// <param name="degreeName">Degree name</param>
+        /// <returns>A bool value that says that degree contains</returns>
+        public Task<bool> GetDergeeAsync(int degreeId, List<string> appropriateDegrees);
+        /// <summary>
         /// Returns user date of entry
         /// </summary>
         /// <param name="userId">User id</param>

@@ -100,61 +100,76 @@ namespace EPlast.Tests.Controllers
         }
 
         [TestCase(2)]
-        public async Task AddPlastDegreeForUser_Valid_Test(int id)
+        public async Task AddPlastDegreeForUser_Valid_Test(int degreeId)
         {
             //Arrange
             bool successfulAdded = true;
             string userId = "1";
-            var user = new UserDTO()
-            {
-                Id = userId,
-                CityMembers = new List<CityMembers>(),
-                ClubMembers = new List<ClubMembers>(),
-                RegionAdministrations = new List<RegionAdministration>(),
-            };
-            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = userId });
-            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(user);
-            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Admin });
-            _plastDegreeService.Setup(cs => cs.AddPlastDegreeForUserAsync(It.IsAny<UserPlastDegreePostDTO>())).ReturnsAsync(successfulAdded);
+            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User() { Id = userId });
+            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>()))
+                .ReturnsAsync(_user);
+            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string>() { Roles.Admin });
+            _plastDegreeService.Setup(cs => cs.AddPlastDegreeForUserAsync(It.IsAny<UserPlastDegreePostDTO>()))
+                .ReturnsAsync(successfulAdded);               
 
             ActiveMembershipController activeMembershipController = _activeMembershipController;
 
             //Act
-            var result = await activeMembershipController.AddPlastDegreeForUser(new UserPlastDegreePostDTO() { PlastDegreeId = id, UserId = userId});
+            var result = await activeMembershipController.AddPlastDegreeForUser(new UserPlastDegreePostDTO() { PlastDegreeId = degreeId, UserId = userId});
 
             //Assert
             Assert.IsInstanceOf<CreatedResult>(result);
             var cr = (CreatedResult)result;
             Assert.NotNull(cr.Value);
             Assert.IsInstanceOf<int>(cr.Value);
-            Assert.AreEqual(id, cr.Value);
+            Assert.AreEqual(degreeId, cr.Value);
         }
 
-        [TestCase(2)]
-        public async Task AddPlastDegreeForUser_InValid_Test(int id)
+        [TestCase(1)]
+        public async Task AddPlastDegreeForUser_InValidForCityAdmin(int degreeId)
         {
             //Arrange
+            bool successfulAdded = true;
             string userId = "1";
-            var user = new UserDTO()
-            {
-                Id = userId,
-                CityMembers = new List<CityMembers>(),
-                ClubMembers = new List<ClubMembers>(),
-                RegionAdministrations = new List<RegionAdministration>(),
-            };
-            bool successfulAdded = false;
-            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() {Id = userId});
-            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(user);
-            _userManager.Setup(x=>x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Admin});
-            _plastDegreeService.Setup(cs => cs.AddPlastDegreeForUserAsync(It.IsAny<UserPlastDegreePostDTO>())).ReturnsAsync(successfulAdded);
+            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User() { Id = userId });
+            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>()))
+                .ReturnsAsync(_user);
+            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string>() { Roles.CityHead,Roles.CityHeadDeputy});
+            _plastDegreeService.Setup(cs => cs.AddPlastDegreeForUserAsync(It.IsAny<UserPlastDegreePostDTO>()))
+                .ReturnsAsync(successfulAdded); 
+            _userService.Setup(x => x.IsUserSameCity(_user, _user)).Returns(true);
 
+            ActiveMembershipController activeMembershipController = _activeMembershipController;
+
+            //Act
+            var result = await activeMembershipController.AddPlastDegreeForUser(new UserPlastDegreePostDTO() { PlastDegreeId = degreeId, UserId = _userId });
+
+            //Assert
+            Assert.IsInstanceOf<StatusCodeResult>(result);
+        }
+
+        [TestCase(3)]
+        public async Task AddPlastDegreeForUser_ValidForCityAdminAndDeputy(int id)
+        {
+            //Arrange
+            bool successfulAdded = false;
+            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = _userId });
+            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(_user);
+            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.CityHeadDeputy});
+            _plastDegreeService.Setup(cs => cs.AddPlastDegreeForUserAsync(It.IsAny<UserPlastDegreePostDTO>())).ReturnsAsync(successfulAdded);
+            _plastDegreeService.Setup(ps => ps.GetDergeeAsync(It.IsAny<int>(), It.IsAny<List<string>>())).ReturnsAsync(true);
+            _userService.Setup(x => x.IsUserSameCity(_user, _user)).Returns(true);
             ActiveMembershipController activeMembershipController = _activeMembershipController;
 
             //Act
             var result = await activeMembershipController.AddPlastDegreeForUser(new UserPlastDegreePostDTO() { PlastDegreeId = id });
 
             //Assert
-            Assert.IsInstanceOf<BadRequestResult>(result);
+            Assert.IsInstanceOf<CreatedResult>(result);
         }
 
         [TestCase(2)]
