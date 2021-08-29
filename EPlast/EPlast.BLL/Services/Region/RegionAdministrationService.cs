@@ -35,9 +35,11 @@ namespace EPlast.BLL.Services.Region
 
         }
 
-        public async Task AddRegionAdministrator(RegionAdministrationDTO regionAdministrationDTO)
+        public async Task<RegionAdministrationDTO> AddRegionAdministrator(RegionAdministrationDTO regionAdministrationDTO)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(regionAdministrationDTO.AdminType.AdminTypeName);
+            var headType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.OkrugaHead);
+            var headDeputyType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.OkrugaHeadDeputy);
             var newRegionAdmin = new RegionAdministration()
             {
                 StartDate = regionAdministrationDTO.StartDate ?? DateTime.Now,
@@ -68,6 +70,16 @@ namespace EPlast.BLL.Services.Region
             }
             await _userManager.AddToRoleAsync(newUser, role);
 
+            if (adminType.AdminTypeName == headType.AdminTypeName)
+            {
+                var headDeputy = await _repoWrapper.RegionAdministration
+                    .GetFirstOrDefaultAsync(a => a.AdminTypeId == headDeputyType.ID && a.RegionId == regionAdministrationDTO.RegionId && a.Status);
+                if (headDeputy != null && headDeputy.UserId == regionAdministrationDTO.UserId)
+                {
+                    await DeleteAdminByIdAsync(headDeputy.ID);
+                }
+            }
+
             if (oldAdmin != null)
             {
                 if (DateTime.Now < newRegionAdmin.EndDate || newRegionAdmin.EndDate == null)
@@ -86,6 +98,8 @@ namespace EPlast.BLL.Services.Region
                 await _repoWrapper.SaveAsync();
                 await _repoWrapper.RegionAdministration.CreateAsync(newRegionAdmin);
                 await _repoWrapper.SaveAsync();
+                regionAdministrationDTO.ID = newRegionAdmin.ID;
+                return regionAdministrationDTO;
             }
             else
             {
@@ -93,15 +107,15 @@ namespace EPlast.BLL.Services.Region
                 await _repoWrapper.SaveAsync();
                 await _repoWrapper.RegionAdministration.CreateAsync(newRegionAdmin);
                 await _repoWrapper.SaveAsync();
+                regionAdministrationDTO.ID = newRegionAdmin.ID;
+                return regionAdministrationDTO;
             }
         }
 
         public async Task<RegionAdministrationDTO> EditRegionAdministrator(RegionAdministrationDTO regionAdministrationDTO)
         {
             var admin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.ID == regionAdministrationDTO.ID);
-            var adminType = await _adminTypeService.GetAdminTypeByNameAsync(regionAdministrationDTO.AdminType.AdminTypeName);
-            var headType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.OkrugaHead);
-            var headDeputyType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.OkrugaHeadDeputy);
+            var adminType = await _adminTypeService.GetAdminTypeByNameAsync(regionAdministrationDTO.AdminType.AdminTypeName);           
             if (adminType.ID == admin.AdminTypeId)
             {
                 admin.StartDate = regionAdministrationDTO.StartDate ?? DateTime.Now;
@@ -112,18 +126,7 @@ namespace EPlast.BLL.Services.Region
                 await _repoWrapper.SaveAsync();
                 return regionAdministrationDTO;
             }
-            else if (adminType.AdminTypeName == headType.AdminTypeName && admin.AdminTypeId != headDeputyType.ID)
-            {
-                var headDeputy = await _repoWrapper.RegionAdministration
-                    .GetFirstOrDefaultAsync(a => a.AdminTypeId == headDeputyType.ID && a.RegionId == regionAdministrationDTO.RegionId && a.Status);
-                if (headDeputy != null && headDeputy.UserId == regionAdministrationDTO.UserId)
-                {
-                    await DeleteAdminByIdAsync(headDeputy.ID);
-                    await DeleteAdminByIdAsync(regionAdministrationDTO.ID);
-                    await AddRegionAdministrator(regionAdministrationDTO);
-                    return regionAdministrationDTO;
-                }
-            }
+
             await DeleteAdminByIdAsync(regionAdministrationDTO.ID);
             await AddRegionAdministrator(regionAdministrationDTO);
             return regionAdministrationDTO;
