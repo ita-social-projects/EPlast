@@ -296,13 +296,7 @@ namespace EPlast.Tests.Services.PDF
                 LastName = "LastName",
                 FatherName = "FatherName",
                 ConfirmedUsers = listConfirmedUsers,
-                UserPlastDegrees = new List<UserPlastDegree>()
-                {
-                    new UserPlastDegree()
-                    {
-                        IsCurrent = true
-                    }
-                }
+                UserPlastDegrees = new UserPlastDegree()
             };
         }
 

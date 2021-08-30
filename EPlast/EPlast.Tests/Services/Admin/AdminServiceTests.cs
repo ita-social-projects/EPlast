@@ -860,13 +860,7 @@ namespace EPlast.Tests.Services
                             Name = "UpuDegreeName"
                         }
                     },
-                    UserPlastDegrees = new List<UserPlastDegree>
-                    {
-                        new UserPlastDegree
-                        {
-                            PlastDegree = new PlastDegree()
-                        }
-                    }
+                    UserPlastDegrees = new UserPlastDegree()
 
                 },
                 new  User
@@ -880,13 +874,13 @@ namespace EPlast.Tests.Services
                             Name = "UpuDegreeName"
                         }
                     },
-                    UserPlastDegrees = new List<UserPlastDegree>
-                    {
-                        new UserPlastDegree
-                        {
-                            PlastDegree = new PlastDegree()
-                        }
-                    }
+                    UserPlastDegrees = new UserPlastDegree()
+                    //{
+                    //    new UserPlastDegree
+                    //    {
+                    //        PlastDegree = new PlastDegree()
+                    //    }
+                    //}
 
                 },
             }.AsEnumerable();

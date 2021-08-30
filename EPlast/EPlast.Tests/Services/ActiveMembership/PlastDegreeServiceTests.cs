@@ -233,72 +233,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             // Assert
             Assert.IsTrue(result);
         }
-
-        [Test]
-        public async Task AddEndDateForUserPlastDegreeAsync_DegreeForUserDoesNotExist_ReturnsFalse()
-        {
-            // Arrange
-            _repoWrapper.Setup(rw => rw.UserPlastDegrees.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
-                    It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
-                .ReturnsAsync(() => null);
-
-            //Act
-            var result = await _activeMembershipService.AddEndDateForUserPlastDegreeAsync(It.IsAny<UserPlastDegreePutDTO>());
-
-            // Assert
-            Assert.IsFalse(result);
-
-        }
-
-        [Test]
-        public async Task AddEndDateForUserPlastDegreeAsync_AddsEndDateDegreeForUser_ReturnsTrue()
-        {
-            // Arrange
-            _repoWrapper.Setup(rw => rw.UserPlastDegrees.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
-                    It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
-                .ReturnsAsync(new UserPlastDegree());
-            _repoWrapper.Setup(rw => rw.UserPlastDegrees.Update(It.IsAny<UserPlastDegree>()));
-            _repoWrapper.Setup(rw => rw.SaveAsync());
-
-            //Act
-            var result = await _activeMembershipService.AddEndDateForUserPlastDegreeAsync(new UserPlastDegreePutDTO());
-
-            // Assert
-            Assert.IsTrue(result);
-        }
-
-        [Test]
-        public async Task SetPlastDegreeForUserAsCurrentAsync_DegreeForUserDoesNotExist_ReturnsFalse()
-        {
-            // Arrange
-            _repoWrapper.Setup(rw => rw.UserPlastDegrees.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
-                    It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
-                .ReturnsAsync(() => null);
-
-            //Act
-            var result = await _activeMembershipService.SetPlastDegreeForUserAsCurrentAsync(It.IsAny<string>(), It.IsAny<int>());
-
-            // Assert
-            Assert.IsFalse(result);
-
-        }
-
-        [Test]
-        public async Task SetPlastDegreeForUserAsCurrentAsync_SetsDegreeAsCurrent_ReturnsTrue()
-        {
-            // Arrange
-            _repoWrapper.Setup(rw => rw.UserPlastDegrees.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
-                    It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
-                .ReturnsAsync(new UserPlastDegree());
-            _repoWrapper.Setup(rw => rw.UserPlastDegrees.Update(It.IsAny<UserPlastDegree>()));
-            _repoWrapper.Setup(rw => rw.SaveAsync());
-
-            //Act
-            var result = await _activeMembershipService.SetPlastDegreeForUserAsCurrentAsync(UserId, DoesNotExistingId);
-
-            // Assert
-            Assert.IsTrue(result);
-        }
+        
         private string UserId => _uniqueId.GetUniqueId().ToString();
         private DateTime UserDateOfEntry => DateTime.Today;
         private int DoesNotExistingId => 42;
