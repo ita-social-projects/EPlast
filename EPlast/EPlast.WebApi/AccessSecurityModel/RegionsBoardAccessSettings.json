@@ -23,6 +23,14 @@
     "EditRB": false,
     "ManipulateDocument": false
   },
+  "Заступник Голови Округи": {
+    "CreateGB": false,
+    "ViewInfo": true,
+    "ViewDecisions": true,
+    "AddDecision": false,
+    "EditRB": false,
+    "ManipulateDocument": false
+  },
   "Голова Станиці": {
     "CreateGB": false,
     "ViewInfo": true,
@@ -31,7 +39,23 @@
     "EditRB": false,
     "ManipulateDocument": false
   },
+  "Заступник Голови Станиці": {
+    "CreateGB": false,
+    "ViewInfo": true,
+    "ViewDecisions": true,
+    "AddDecision": false,
+    "EditRB": false,
+    "ManipulateDocument": false
+  },
   "Голова Куреня": {
+    "CreateGB": false,
+    "ViewInfo": true,
+    "ViewDecisions": true,
+    "AddDecision": false,
+    "EditRB": false,
+    "ManipulateDocument": false
+  },
+  "Заступник Голови Куреня": {
     "CreateGB": false,
     "ViewInfo": true,
     "ViewDecisions": true,
