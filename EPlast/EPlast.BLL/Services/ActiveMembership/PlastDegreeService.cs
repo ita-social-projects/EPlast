@@ -34,6 +34,15 @@ namespace EPlast.BLL.Services.ActiveMembership
         }
 
         /// <inheritdoc />
+        public async Task<bool> CheckDegreeAsync(int degreeId, List<string> appropriateDegrees)
+        {
+            var degree = await _repoWrapper.PlastDegrees
+                .GetFirstAsync(predicate: p => p.Id == degreeId);
+
+            return appropriateDegrees.Contains(degree.Name);
+        }
+
+        /// <inheritdoc />
         public async Task<DateTime> GetDateOfEntryAsync(string userId)
         {
             var userDTO = await _userManagerService.FindByIdAsync(userId);
@@ -58,8 +67,14 @@ namespace EPlast.BLL.Services.ActiveMembership
 
             if (previousDegreeUserPlastDegree != null)
             {
-                _repoWrapper.UserPlastDegrees.Delete(previousDegreeUserPlastDegree);
+                previousDegreeUserPlastDegree.UserId = userPlastDegreePostDTO.UserId;
+                previousDegreeUserPlastDegree.PlastDegreeId = userPlastDegreePostDTO.PlastDegreeId;
+                previousDegreeUserPlastDegree.DateStart = userPlastDegreePostDTO.DateStart;
+                    
+                _repoWrapper.UserPlastDegrees.Update(previousDegreeUserPlastDegree);
                 await _repoWrapper.SaveAsync();
+
+                return isAdded;
             }
 
             if (userDto != null)
