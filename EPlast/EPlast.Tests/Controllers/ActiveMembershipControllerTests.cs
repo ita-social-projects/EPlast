@@ -161,7 +161,7 @@ namespace EPlast.Tests.Controllers
             _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(_user);
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.CityHeadDeputy});
             _plastDegreeService.Setup(cs => cs.AddPlastDegreeForUserAsync(It.IsAny<UserPlastDegreePostDTO>())).ReturnsAsync(successfulAdded);
-            _plastDegreeService.Setup(ps => ps.GetDergeeAsync(It.IsAny<int>(), It.IsAny<List<string>>())).ReturnsAsync(true);
+            _plastDegreeService.Setup(ps => ps.CheckDegreeAsync(It.IsAny<int>(), It.IsAny<List<string>>())).ReturnsAsync(true);
             _userService.Setup(x => x.IsUserSameCity(_user, _user)).Returns(true);
             ActiveMembershipController activeMembershipController = _activeMembershipController;
 

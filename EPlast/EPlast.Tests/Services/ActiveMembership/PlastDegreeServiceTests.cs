@@ -65,7 +65,7 @@ namespace EPlast.Tests.Services.ActiveMembership
                 .ReturnsAsync(new PlastDegree { Id = 1, Name = "Старший пластун прихильник / Старша пластунка прихильниця" });
 
             // Act
-            var result = await _activeMembershipService.GetDergeeAsync(degreeId, degrees);
+            var result = await _activeMembershipService.CheckDegreeAsync(degreeId, degrees);
 
             // Assert
             Assert.True(result);

@@ -99,7 +99,7 @@ namespace EPlast.WebApi.Controllers
             }
 
             if ((roles.Contains(Roles.CityHead) || roles.Contains(Roles.CityHeadDeputy)) &&
-                    (!await _plastDegreeService.GetDergeeAsync(userPlastDegreePostDTO.PlastDegreeId,
+                    (!await _plastDegreeService.CheckDegreeAsync(userPlastDegreePostDTO.PlastDegreeId,
                     AllowedDegreesForCityHeadAndDeputy.degrees)))
             {
                  return BadRequest();

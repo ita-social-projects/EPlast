@@ -34,7 +34,7 @@ namespace EPlast.BLL.Services.ActiveMembership
         }
 
         /// <inheritdoc />
-        public async Task<bool> GetDergeeAsync(int degreeId, List<string> appropriateDegrees)
+        public async Task<bool> CheckDegreeAsync(int degreeId, List<string> appropriateDegrees)
         {
             var degree = await _repoWrapper.PlastDegrees
                 .GetFirstAsync(predicate: p => p.Id == degreeId);
