@@ -861,7 +861,6 @@ namespace EPlast.Tests.Services
                         }
                     },
                     UserPlastDegrees = new UserPlastDegree()
-
                 },
                 new  User
                 {
@@ -875,13 +874,6 @@ namespace EPlast.Tests.Services
                         }
                     },
                     UserPlastDegrees = new UserPlastDegree()
-                    //{
-                    //    new UserPlastDegree
-                    //    {
-                    //        PlastDegree = new PlastDegree()
-                    //    }
-                    //}
-
                 },
             }.AsEnumerable();
         }
