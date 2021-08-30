@@ -242,10 +242,7 @@ namespace EPlast.Tests.Services.ActiveMembership
         {
             Id = UserId,
             RegistredOn = UserDateOfEntry,
-            UserPlastDegrees = new List<UserPlastDegreeDTO>
-            {
-                new UserPlastDegreeDTO()
-            }
+            UserPlastDegrees = new UserPlastDegreeDTO()
         };
 
         private IEnumerable<UserPlastDegree> GetTestUserPlastDegrees()
