@@ -1061,6 +1061,24 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<List<RegionUserDTO>>((result as ObjectResult).Value);
         }
+
+        [Test]
+        public async Task CheckIfRegionNameExists_ReturnsOkObjectResult()
+        {
+            //Arrange
+            _regionService.Setup(x => x.CheckIfRegionNameExistsAsync(It.IsAny<string>()))
+                .ReturnsAsync(true);
+
+            //Act
+            var result = await _regionController.CheckIfRegionNameExists(It.IsAny<string>());
+            var resultObject = (result as ObjectResult).Value;
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(true, resultObject);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
         private RegionAnnualReportQuestions fakeRegionAnnualReportQuestions()
         {
             return new RegionAnnualReportQuestions()

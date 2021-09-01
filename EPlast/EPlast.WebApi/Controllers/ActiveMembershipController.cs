@@ -5,12 +5,12 @@ using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
 using EPlast.BLL.Interfaces.UserProfiles;
+using System.Collections.Generic;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -90,22 +90,22 @@ namespace EPlast.WebApi.Controllers
             {
                 return StatusCode(StatusCodes.Status403Forbidden);
             }
-            if (await _plastDegreeService.AddPlastDegreeForUserAsync(userPlastDegreePostDTO) &&
-                (((await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User))).Contains(Roles.CityHead)
-                  && new List<int>() { 1, 7 }.Contains(userPlastDegreePostDTO.PlastDegreeId)) ||
-                 !(await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User))).Contains(Roles.CityHead)))
+
+            var roles = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User));
+            if(roles.Contains(Roles.Admin) || roles.Contains(Roles.OkrugaHead) || roles.Contains(Roles.OkrugaHeadDeputy))
             {
-                return Created("GetAllDegrees", userPlastDegreePostDTO.PlastDegreeId);
-            }
-            if (await _plastDegreeService.AddPlastDegreeForUserAsync(userPlastDegreePostDTO) &&
-                (((await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User))).Contains(Roles.CityHeadDeputy)
-                  && new List<int>() { 1, 7 }.Contains(userPlastDegreePostDTO.PlastDegreeId)) ||
-                 !(await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User))).Contains(Roles.CityHeadDeputy)))
-            {
+                await _plastDegreeService.AddPlastDegreeForUserAsync(userPlastDegreePostDTO);
                 return Created("GetAllDegrees", userPlastDegreePostDTO.PlastDegreeId);
             }
 
-            return BadRequest();
+            if ((roles.Contains(Roles.CityHead) || roles.Contains(Roles.CityHeadDeputy)) &&
+                    (!await _plastDegreeService.CheckDegreeAsync(userPlastDegreePostDTO.PlastDegreeId,
+                    AllowedDegreesForCityHeadAndDeputy.degrees)))
+            {
+                 return BadRequest();
+            }
+            await _plastDegreeService.AddPlastDegreeForUserAsync(userPlastDegreePostDTO);
+            return Created("GetAllDegrees", userPlastDegreePostDTO.PlastDegreeId);
         }
 
         [Authorize(Roles = Roles.AdminRegionBoardHeadOkrugaHeadAndDeputy)]
@@ -155,7 +155,7 @@ namespace EPlast.WebApi.Controllers
 
             return BadRequest();
         }
-        
+
         [HttpGet("dates/{userId}")]
         public async Task<IActionResult> GetUserDates(string userId)
         {

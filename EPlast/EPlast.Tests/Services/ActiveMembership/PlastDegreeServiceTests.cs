@@ -53,6 +53,24 @@ namespace EPlast.Tests.Services.ActiveMembership
             Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<PlastDegreeDTO>>(result);
         }
+
+        [TestCase(7)]
+        public async Task GetDergeeAsync_ReturnsAllowedDergees(int degreeId)
+        {
+            // Arrange
+            List<string> degrees = new List<string>(){ "Старший пластун прихильник / Старша пластунка прихильниця",
+                    "Пластун сеніор прихильник / Пластунка сеніорка прихильниця"};
+            _repoWrapper
+                .Setup(rw => rw.PlastDegrees.GetFirstAsync(It.IsAny<Expression<Func<PlastDegree, bool>>>(), null))
+                .ReturnsAsync(new PlastDegree { Id = 1, Name = "Старший пластун прихильник / Старша пластунка прихильниця" });
+
+            // Act
+            var result = await _activeMembershipService.CheckDegreeAsync(degreeId, degrees);
+
+            // Assert
+            Assert.True(result);
+            Assert.NotNull(result);
+        }
         [Test]
         public async Task GetDateOfEntry_ReturnsUserDateOfEntry()
         {
