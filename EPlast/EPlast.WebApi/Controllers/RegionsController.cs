@@ -677,7 +677,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>True if exist</returns>
         /// <returns>False if doesn't exist</returns>
         /// <response code="200">Check was successfull</response>
-        [HttpGet("CheckRegionNameExists/{name}")]
+        [HttpGet("CheckIfRegionNameExists/{name}")]
         [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> CheckIfRegionNameExists(string name)
         {
