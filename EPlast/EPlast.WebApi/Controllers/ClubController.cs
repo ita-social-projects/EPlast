@@ -107,7 +107,12 @@ namespace EPlast.WebApi.Controllers
             return Ok(citiesViewModel);
         }
 
-        
+        [HttpGet("GetUserAccesses/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetUserAccess(string userId)
+        {
+            return Ok(await _clubService.GetUserClubAccessAsync(userId));
+        }
 
         /// <summary>
         /// Get id and name from all clubs that the user has access to

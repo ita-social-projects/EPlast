@@ -35,6 +35,7 @@ namespace EPlast.Tests.Services.Club
         private Mock<IUniqueIdService> _uniqueId;
         private Mock<IUserStore<User>> _user;
         private Mock<UserManager<User>> _userManager;
+        private Mock<ISecurityModel> _securityModel;
         private string ClubName => "Club";
 
         private int Count => 2;
@@ -44,6 +45,22 @@ namespace EPlast.Tests.Services.Club
         private string LogoName => "logoName";
 
         private string StringId => "1";
+
+        [Test]
+        public async Task getGoverningBodies_ReturnsGoverningBodiesList()
+        {
+            //Arrange
+            Dictionary<string, bool> dict = new Dictionary<string, bool>();
+            dict.Add("action", It.IsAny<bool>());
+            _securityModel.Setup(x => x.GetUserAccessAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(dict);
+
+            //Act
+            var result = await _clubService.GetUserClubAccessAsync(It.IsAny<string>());
+
+            //Assert
+            Assert.IsNotEmpty(result);
+            Assert.IsInstanceOf<Dictionary<string, bool>>(result);
+        }
 
         [Test]
         public async Task ArchiveAsync_WithModel_ReturnsClubArchived()
@@ -1131,9 +1148,10 @@ namespace EPlast.Tests.Services.Club
             _clubAccessService = new Mock<IClubAccessService>();
             _user = new Mock<IUserStore<User>>();
             _uniqueId = new Mock<IUniqueIdService>();
+            _securityModel = new Mock<ISecurityModel>();
             _userManager = new Mock<UserManager<User>>(_user.Object, null, null, null, null, null, null, null, null);
             _clubService = new ClubService(_repoWrapper.Object, _mapper.Object, _env.Object, _clubBlobStorage.Object,
-                   _clubAccessService.Object, _userManager.Object, _uniqueId.Object);
+                   _clubAccessService.Object, _userManager.Object, _uniqueId.Object, _securityModel.Object);
         }
 
         private ClubService CreateClubService()
@@ -1171,7 +1189,7 @@ namespace EPlast.Tests.Services.Club
             _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
                 .ReturnsAsync(GetTestNewClub());
 
-            return new ClubService(_repoWrapper.Object, _mapper.Object, _env.Object, _clubBlobStorage.Object, _clubAccessService.Object, _userManager.Object, _uniqueId.Object);
+            return new ClubService(_repoWrapper.Object, _mapper.Object, _env.Object, _clubBlobStorage.Object, _clubAccessService.Object, _userManager.Object, _uniqueId.Object, _securityModel.Object);
         }
 
         private IQueryable<DataAccessClub.Club> CreateFakeCities(int count)

@@ -212,5 +212,11 @@ namespace EPlast.BLL.Interfaces.Club
         /// </summary>
         /// <param name="clubId">The id of the club</param>
         Task UnArchiveAsync(int clubId);
+
+        /// <summary>
+        /// Gets user access roles in club
+        /// </summary>
+        /// <returns>Dictionary with user access</returns>
+        Task<Dictionary<string, bool>> GetUserClubAccessAsync(string userId);
     }
 }

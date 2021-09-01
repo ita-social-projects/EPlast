@@ -30,6 +30,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
         private readonly Mock<IClubBlobStorageRepository> _ClubBlobStorage;
         private readonly Mock<IClubAccessService> _ClubAccessService;
         private readonly Mock<IUniqueIdService> _uniqueId;
+        private readonly Mock<ISecurityModel> _securityModel;
 
         public ClubServiceTests()
         {
@@ -39,6 +40,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
             _ClubBlobStorage = new Mock<IClubBlobStorageRepository>();
             _ClubAccessService = new Mock<IClubAccessService>();
             _uniqueId = new Mock<IUniqueIdService>();
+            _securityModel = new Mock<ISecurityModel>();
         }
 
         private ClubService CreateClubService()
@@ -72,7 +74,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
             _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.Club, bool>>>(), null))
                 .ReturnsAsync(GetTestClub());
 
-            return new ClubService(_repoWrapper.Object, _mapper.Object, _env.Object, _ClubBlobStorage.Object, _ClubAccessService.Object, null, _uniqueId.Object);
+            return new ClubService(_repoWrapper.Object, _mapper.Object, _env.Object, _ClubBlobStorage.Object, _ClubAccessService.Object, null, _uniqueId.Object, _securityModel.Object);
         }
 
         [Fact]

@@ -27,11 +27,13 @@ namespace EPlast.BLL.Services.Club
         private readonly IClubAccessService _clubAccessService;
         private readonly UserManager<DataAccessClub.User> _userManager;
         private readonly IUniqueIdService _uniqueId;
+        private readonly ISecurityModel _securityModel;
 
         private const int MembersDisplayCount = 9;
         private const int FollowersDisplayCount = 6;
         private const int DocumentsDisplayCount = 6;
         private const int AdminsDisplayCount = 6;
+        private const string SecuritySettingsFile = "ClubAccessSettings.json";
 
         public ClubService(IRepositoryWrapper repoWrapper,
             IMapper mapper,
@@ -39,7 +41,8 @@ namespace EPlast.BLL.Services.Club
             IClubBlobStorageRepository clubBlobStorage,
             IClubAccessService clubAccessService,
             UserManager<DataAccessClub.User> userManager,
-            IUniqueIdService uniqueId)
+            IUniqueIdService uniqueId,
+            ISecurityModel securityModel)
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
@@ -48,6 +51,8 @@ namespace EPlast.BLL.Services.Club
             _clubAccessService = clubAccessService;
             _userManager = userManager;
             _uniqueId = uniqueId;
+            _securityModel = securityModel;
+            _securityModel.SetSettingsFile(SecuritySettingsFile);
         }
 
         public async Task ArchiveAsync(int clubId)
@@ -254,8 +259,6 @@ namespace EPlast.BLL.Services.Club
                     Name = userDegree.Name,
                 };
             }
-
-            clubProfileDto.Club.CanCreate = userRoles.Contains(Roles.Admin);
             clubProfileDto.Club.CanEdit = await _clubAccessService.HasAccessAsync(user, clubId);
             clubProfileDto.Club.CanJoin = (await _repoWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(u => u.User.Id == userId && u.ClubId == clubId)) == null;
@@ -629,6 +632,10 @@ namespace EPlast.BLL.Services.Club
             club.IsActive = true;
             _repoWrapper.Club.Update(club);
             await _repoWrapper.SaveAsync();
+        }
+        public async Task<Dictionary<string, bool>> GetUserClubAccessAsync(string userId)
+        {
+            return await _securityModel.GetUserAccessAsync(userId);
         }
     }
 }

@@ -55,6 +55,27 @@ namespace EPlast.Tests.Controllers
            _userManager.Object
           );
 
+        [Test]
+        public async Task GetUserAccesses_ReturnsAccessList()
+        {
+            //Arrange
+            Dictionary<string, bool> dict = new Dictionary<string, bool>();
+            dict.Add("action", It.IsAny<bool>());
+            ClubController controller = CreateClubController;
+            _clubService
+                .Setup(x => x.GetUserClubAccessAsync(It.IsAny<string>()))
+                .ReturnsAsync(dict);
+
+            //Act
+            var result = await controller.GetUserAccess(It.IsAny<string>());
+            var resultValue = (result as ObjectResult)?.Value;
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotEmpty(resultValue as Dictionary<string, bool>);
+            Assert.IsInstanceOf<Dictionary<string, bool>>(resultValue);
+        }
+
         [TestCase(1, 1, "Курінь")]
         public async Task GetCities_Valid_Test(int page, int pageSize, string cityName)
         {
