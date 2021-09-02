@@ -96,15 +96,15 @@ namespace EPlast.Tests.Services.ActiveMembership
             _repoWrapper.Setup(rw => rw.UserPlastDegrees.GetAllAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
                 .ReturnsAsync(GetTestUserPlastDegrees());
-            _mapper.Setup(m => m.Map<IEnumerable<UserPlastDegreeDTO>>(It.IsAny<IEnumerable<UserPlastDegree>>()))
+            _mapper.Setup(m => m.Map<UserPlastDegreeDTO>(It.IsAny<UserPlastDegree>()))
                 .Returns(GetTestUserPlastDegreesDTO());
 
             // Act
             var result = await _activeMembershipService.GetUserPlastDegreesAsync(UserId);
 
             // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<IEnumerable<UserPlastDegreeDTO>>(result);
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<UserPlastDegreeDTO>(result);
 
         }
 
@@ -269,24 +269,17 @@ namespace EPlast.Tests.Services.ActiveMembership
                }
             }.AsEnumerable();
         }
-        private IEnumerable<UserPlastDegreeDTO> GetTestUserPlastDegreesDTO()
+
+        private UserPlastDegreeDTO GetTestUserPlastDegreesDTO()
         {
-            return new List<UserPlastDegreeDTO>
+
+            return new UserPlastDegreeDTO
             {
-               new  UserPlastDegreeDTO
-               {
-                   PlastDegree = GetTestPlastDegreesDTO().ToList()[0]
-               },
-               new  UserPlastDegreeDTO
-               {
-                   PlastDegree = GetTestPlastDegreesDTO().ToList()[1]
-               },
-               new  UserPlastDegreeDTO
-               {
-                   PlastDegree = GetTestPlastDegreesDTO().ToList()[2]
-               }
-            }.AsEnumerable();
+                PlastDegree = new PlastDegreeDTO { Name = "Пластприят" }
+            };
+
         }
+       
         private IEnumerable<PlastDegree> GetTestPlastDegrees()
         {
             return new List<PlastDegree>

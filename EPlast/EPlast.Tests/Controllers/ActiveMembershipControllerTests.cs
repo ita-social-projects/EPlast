@@ -84,7 +84,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetUserDergees_Valid_Test(string id)
         {
             //Arrange
-            _plastDegreeService.Setup(cs => cs.GetUserPlastDegreesAsync(It.IsAny<string>())).ReturnsAsync(new List<UserPlastDegreeDTO>());
+            _plastDegreeService.Setup(cs => cs.GetUserPlastDegreesAsync(It.IsAny<string>())).ReturnsAsync(new UserPlastDegreeDTO());
 
             ActiveMembershipController activeMembershipController = _activeMembershipController;
 
@@ -95,8 +95,7 @@ namespace EPlast.Tests.Controllers
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(result);
-            Assert.IsInstanceOf<List<UserPlastDegreeDTO>>(resultValue);
-            Assert.AreEqual(0, (resultValue as List<UserPlastDegreeDTO>).Count);
+            Assert.IsInstanceOf<UserPlastDegreeDTO>(resultValue);
         }
 
         [TestCase(2)]

@@ -32,7 +32,7 @@ namespace EPlast.BLL.Interfaces.ActiveMembership
         /// </summary>
         /// <param name="userId">User id</param>
         /// <returns>All degrees of current user</returns>
-        public Task<IEnumerable<UserPlastDegreeDTO>> GetUserPlastDegreesAsync(string userId);
+        public Task<UserPlastDegreeDTO> GetUserPlastDegreesAsync(string userId);
         /// <summary>
         /// Adds plast degree for user
         /// </summary>

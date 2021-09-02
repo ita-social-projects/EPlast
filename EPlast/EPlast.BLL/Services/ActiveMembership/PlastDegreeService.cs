@@ -51,11 +51,11 @@ namespace EPlast.BLL.Services.ActiveMembership
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<UserPlastDegreeDTO>> GetUserPlastDegreesAsync(string userId)
+        public async Task<UserPlastDegreeDTO> GetUserPlastDegreesAsync(string userId)
         {
-            var userPlastDegrees = await _repoWrapper.UserPlastDegrees.GetAllAsync(upd => upd.UserId == userId, include: pd => pd.Include(d => d.PlastDegree));
+            var userPlastDegrees = await _repoWrapper.UserPlastDegrees.GetFirstOrDefaultAsync(upd => upd.UserId == userId, include: pd => pd.Include(d => d.PlastDegree));
 
-            return _mapper.Map<IEnumerable<UserPlastDegreeDTO>>(userPlastDegrees);
+            return _mapper.Map<UserPlastDegreeDTO>(userPlastDegrees);
         }
         /// <inheritdoc />
         public async Task<bool> AddPlastDegreeForUserAsync(UserPlastDegreePostDTO userPlastDegreePostDTO)
@@ -79,9 +79,11 @@ namespace EPlast.BLL.Services.ActiveMembership
 
             if (userDto != null)
             {
-                List<UserPlastDegree> userPlastDegrees = _mapper.Map<IEnumerable<UserPlastDegree>>(userDto.UserPlastDegrees).ToList();
-                if (!userPlastDegrees.Any(upd => upd.PlastDegree.Id == userPlastDegreePostDTO.PlastDegreeId))
+                UserPlastDegree userPlastDegrees = _mapper.Map<UserPlastDegree>(userDto.UserPlastDegrees);
+                if (userPlastDegrees != null && userPlastDegrees.PlastDegreeId == userPlastDegreePostDTO.PlastDegreeId)
                 {
+                    return isAdded;
+                }
                     UserPlastDegree userPlastDegree = _mapper.Map<UserPlastDegree>(userPlastDegreePostDTO);
                     PlastDegree plastDegree =
                         await _repoWrapper.PlastDegrees.GetFirstOrDefaultAsync(pd =>
@@ -94,7 +96,6 @@ namespace EPlast.BLL.Services.ActiveMembership
                         await _repoWrapper.SaveAsync();
                         isAdded = true;
                     }
-                }
             }
             return isAdded;
         }
