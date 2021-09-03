@@ -320,5 +320,21 @@ namespace EPlast.Tests.Services.UserProfiles
             Assert.IsNotNull(result);
             Assert.IsFalse(result);
         }
+
+        [Test]
+        public void CheckOrAddPlastunRoleTest_Valid()
+        {
+            //Arrange
+            DateTime registeredOn = DateTime.MinValue;
+            var timeToJoinPlast = registeredOn.AddYears(1) - DateTime.Now;
+            _mockRepoWrapper.Setup(x => x.ConfirmedUser.FindByCondition(It.IsAny<Expression<Func<ConfirmedUser, bool>>>()))
+               .Returns(new List<ConfirmedUser>().AsQueryable());
+
+            // Act
+            var result = _userService.CheckOrAddPlastunRole("1", DateTime.MinValue);
+
+            // Assert
+            Assert.IsInstanceOf<TimeSpan>(result);
+        }
     }
 }
