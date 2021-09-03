@@ -127,6 +127,25 @@ namespace EPlast.Tests.Services.ActiveMembership
         }
 
         [Test]
+        public async Task AddPlastDegreeForUserAsync_UserHasDegreeWhichHeAlreadyHas()
+        {
+            // Arrange
+            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(UserDTO);
+            _mapper.Setup(m => m.Map<UserPlastDegree>(It.IsAny<UserPlastDegreeDTO>()))
+                .Returns(new UserPlastDegree { PlastDegreeId = 1 });
+            _repoWrapper.Setup(x => x.UserPlastDegrees.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
+                .ReturnsAsync(new UserPlastDegree());
+
+            //Act
+            var result = await _activeMembershipService.AddPlastDegreeForUserAsync(new UserPlastDegreePostDTO { PlastDegreeId = 1 });
+
+            // Assert
+            Assert.IsFalse(result);
+        }
+
+        [Test]
         public async Task AddPlastDegreeForUserAsync_UserHasDegreeWhichHeAlreadyHas_ReturnsFalse()
         {
             // Arrange
