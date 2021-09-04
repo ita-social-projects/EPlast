@@ -184,21 +184,17 @@ namespace EPlast.Tests.Services.ActiveMembership
         {
             Id = UserId,
             RegistredOn = UserDateOfEntry,
-            UserPlastDegrees = new List<UserPlastDegreeDTO>
-            {
-                new UserPlastDegreeDTO()
-            }
+            UserPlastDegrees = new UserPlastDegreeDTO()
         };
 
-        private IEnumerable<UserPlastDegreeDTO> getUserPlastDegreeDtos()
+        private UserPlastDegreeDTO getUserPlastDegreeDtos()
         {
-            return new List<UserPlastDegreeDTO>
+
+            return new UserPlastDegreeDTO
             {
-                new UserPlastDegreeDTO
-                {
-                    PlastDegree = new PlastDegreeDTO { Name = "Пластприят" }
-                }
+                PlastDegree = new PlastDegreeDTO { Name = "Пластприят" }
             };
+            
         }
 
         private IEnumerable<string> GetUserRolesAsRegisteredUser()

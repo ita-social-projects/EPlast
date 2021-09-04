@@ -96,15 +96,15 @@ namespace EPlast.Tests.Services.ActiveMembership
             _repoWrapper.Setup(rw => rw.UserPlastDegrees.GetAllAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
                 .ReturnsAsync(GetTestUserPlastDegrees());
-            _mapper.Setup(m => m.Map<IEnumerable<UserPlastDegreeDTO>>(It.IsAny<IEnumerable<UserPlastDegree>>()))
+            _mapper.Setup(m => m.Map<UserPlastDegreeDTO>(It.IsAny<UserPlastDegree>()))
                 .Returns(GetTestUserPlastDegreesDTO());
 
             // Act
             var result = await _activeMembershipService.GetUserPlastDegreesAsync(UserId);
 
             // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<IEnumerable<UserPlastDegreeDTO>>(result);
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<UserPlastDegreeDTO>(result);
 
         }
 
@@ -121,6 +121,25 @@ namespace EPlast.Tests.Services.ActiveMembership
 
             //Act
             var result = await _activeMembershipService.AddPlastDegreeForUserAsync(new UserPlastDegreePostDTO());
+
+            // Assert
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public async Task AddPlastDegreeForUserAsync_UserHasDegreeWhichHeAlreadyHas()
+        {
+            // Arrange
+            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(UserDTO);
+            _mapper.Setup(m => m.Map<UserPlastDegree>(It.IsAny<UserPlastDegreeDTO>()))
+                .Returns(new UserPlastDegree { PlastDegreeId = 1 });
+            _repoWrapper.Setup(x => x.UserPlastDegrees.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
+                .ReturnsAsync(new UserPlastDegree());
+
+            //Act
+            var result = await _activeMembershipService.AddPlastDegreeForUserAsync(new UserPlastDegreePostDTO { PlastDegreeId = 1 });
 
             // Assert
             Assert.IsFalse(result);
@@ -233,72 +252,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             // Assert
             Assert.IsTrue(result);
         }
-
-        [Test]
-        public async Task AddEndDateForUserPlastDegreeAsync_DegreeForUserDoesNotExist_ReturnsFalse()
-        {
-            // Arrange
-            _repoWrapper.Setup(rw => rw.UserPlastDegrees.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
-                    It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
-                .ReturnsAsync(() => null);
-
-            //Act
-            var result = await _activeMembershipService.AddEndDateForUserPlastDegreeAsync(It.IsAny<UserPlastDegreePutDTO>());
-
-            // Assert
-            Assert.IsFalse(result);
-
-        }
-
-        [Test]
-        public async Task AddEndDateForUserPlastDegreeAsync_AddsEndDateDegreeForUser_ReturnsTrue()
-        {
-            // Arrange
-            _repoWrapper.Setup(rw => rw.UserPlastDegrees.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
-                    It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
-                .ReturnsAsync(new UserPlastDegree());
-            _repoWrapper.Setup(rw => rw.UserPlastDegrees.Update(It.IsAny<UserPlastDegree>()));
-            _repoWrapper.Setup(rw => rw.SaveAsync());
-
-            //Act
-            var result = await _activeMembershipService.AddEndDateForUserPlastDegreeAsync(new UserPlastDegreePutDTO());
-
-            // Assert
-            Assert.IsTrue(result);
-        }
-
-        [Test]
-        public async Task SetPlastDegreeForUserAsCurrentAsync_DegreeForUserDoesNotExist_ReturnsFalse()
-        {
-            // Arrange
-            _repoWrapper.Setup(rw => rw.UserPlastDegrees.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
-                    It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
-                .ReturnsAsync(() => null);
-
-            //Act
-            var result = await _activeMembershipService.SetPlastDegreeForUserAsCurrentAsync(It.IsAny<string>(), It.IsAny<int>());
-
-            // Assert
-            Assert.IsFalse(result);
-
-        }
-
-        [Test]
-        public async Task SetPlastDegreeForUserAsCurrentAsync_SetsDegreeAsCurrent_ReturnsTrue()
-        {
-            // Arrange
-            _repoWrapper.Setup(rw => rw.UserPlastDegrees.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
-                    It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
-                .ReturnsAsync(new UserPlastDegree());
-            _repoWrapper.Setup(rw => rw.UserPlastDegrees.Update(It.IsAny<UserPlastDegree>()));
-            _repoWrapper.Setup(rw => rw.SaveAsync());
-
-            //Act
-            var result = await _activeMembershipService.SetPlastDegreeForUserAsCurrentAsync(UserId, DoesNotExistingId);
-
-            // Assert
-            Assert.IsTrue(result);
-        }
+        
         private string UserId => _uniqueId.GetUniqueId().ToString();
         private DateTime UserDateOfEntry => DateTime.Today;
         private int DoesNotExistingId => 42;
@@ -307,10 +261,7 @@ namespace EPlast.Tests.Services.ActiveMembership
         {
             Id = UserId,
             RegistredOn = UserDateOfEntry,
-            UserPlastDegrees = new List<UserPlastDegreeDTO>
-            {
-                new UserPlastDegreeDTO()
-            }
+            UserPlastDegrees = new UserPlastDegreeDTO()
         };
 
         private IEnumerable<UserPlastDegree> GetTestUserPlastDegrees()
@@ -337,24 +288,17 @@ namespace EPlast.Tests.Services.ActiveMembership
                }
             }.AsEnumerable();
         }
-        private IEnumerable<UserPlastDegreeDTO> GetTestUserPlastDegreesDTO()
+
+        private UserPlastDegreeDTO GetTestUserPlastDegreesDTO()
         {
-            return new List<UserPlastDegreeDTO>
+
+            return new UserPlastDegreeDTO
             {
-               new  UserPlastDegreeDTO
-               {
-                   PlastDegree = GetTestPlastDegreesDTO().ToList()[0]
-               },
-               new  UserPlastDegreeDTO
-               {
-                   PlastDegree = GetTestPlastDegreesDTO().ToList()[1]
-               },
-               new  UserPlastDegreeDTO
-               {
-                   PlastDegree = GetTestPlastDegreesDTO().ToList()[2]
-               }
-            }.AsEnumerable();
+                PlastDegree = new PlastDegreeDTO { Name = "Пластприят" }
+            };
+
         }
+       
         private IEnumerable<PlastDegree> GetTestPlastDegrees()
         {
             return new List<PlastDegree>

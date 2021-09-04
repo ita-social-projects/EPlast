@@ -124,38 +124,6 @@ namespace EPlast.WebApi.Controllers
             return BadRequest();
         }
 
-        [Authorize(Roles = Roles.AdminRegionBoardHeadOkrugaHeadAndDeputy)]
-        [HttpPut("degree/setAsCurrent/{userId}/{plastDegreeId}")]
-        public async Task<IActionResult> SetPlastDegreeAsCurrent(string userId, int plastDegreeId)
-        {
-            if (!await HasAccessAsync(userId))
-            {
-                return StatusCode(StatusCodes.Status403Forbidden);
-            }
-            if (await _plastDegreeService.SetPlastDegreeForUserAsCurrentAsync(userId, plastDegreeId))
-            {
-                return NoContent();
-            }
-
-            return BadRequest();
-        }
-
-        [Authorize(Roles = Roles.AdminRegionBoardHeadOkrugaHeadAndDeputy)]
-        [HttpPut("degree/endDate")]
-        public async Task<IActionResult> AddEndDatePlastDegreeForUser(UserPlastDegreePutDTO userPlastDegreePutDTO)
-        {
-            if (!await HasAccessAsync(userPlastDegreePutDTO.UserId))
-            {
-                return StatusCode(StatusCodes.Status403Forbidden);
-            }
-            if (await _plastDegreeService.AddEndDateForUserPlastDegreeAsync(userPlastDegreePutDTO))
-            {
-                return NoContent();
-            }
-
-            return BadRequest();
-        }
-
         [HttpGet("dates/{userId}")]
         public async Task<IActionResult> GetUserDates(string userId)
         {

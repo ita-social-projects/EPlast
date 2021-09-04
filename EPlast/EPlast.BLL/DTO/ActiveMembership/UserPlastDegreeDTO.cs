@@ -11,7 +11,5 @@ namespace EPlast.BLL.DTO.ActiveMembership
         public PlastDegreeDTO PlastDegree { get; set; }
 
         public DateTime DateStart { get; set; }
-        public DateTime? DateFinish { get; set; }
-        public bool IsCurrent { get; set; }
     }
 }
