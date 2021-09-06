@@ -179,6 +179,44 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task GoogleLogin_Invalid_BadRequestUserFormerMember()
+        {
+            // Arrange
+            var (mockAuthService,
+                mockResources,
+                _,
+                _,
+                _,
+                mockUserManagerService,
+                loginController) = CreateLoginController();
+
+            mockAuthService
+                .Setup(s => s.GetGoogleUserAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
+
+
+            mockUserManagerService
+                .Setup(s => s.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
+                .ReturnsAsync(true);
+
+            mockResources
+                .Setup(s => s.ResourceForErrors["User-FormerMember"])
+                .Returns(GetLoginUserFormerMember());
+
+
+            // Act
+            var result = await loginController.GoogleLogin(It.IsAny<string>()) as BadRequestObjectResult;
+
+            // Assert
+            mockAuthService.Verify();
+            mockUserManagerService.Verify();
+            mockResources.Verify();
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.AreEqual(GetLoginUserFormerMember().ToString(), result.Value.ToString());
+            Assert.NotNull(result);
+        }
+
+        [Test]
         public async Task GoogleLogin_Invalid_Exception_Test()
         {
             // Arrange
@@ -341,6 +379,46 @@ namespace EPlast.Tests.Controllers
             mockResources.Verify();
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
             Assert.AreEqual(GetLoginNotConfirmed().ToString(), result.Value.ToString());
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task Test_LoginPost_UserFormerMember()
+        {
+            //Arrange
+            var (mockAuthService,
+                mockResources,
+                _,
+                _,
+                _,
+                mockUserManagerService,
+                loginController) = CreateLoginController();
+
+            mockAuthService
+                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
+
+            mockAuthService
+                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(true);
+
+            mockUserManagerService
+                .Setup(s => s.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
+                .ReturnsAsync(true);
+
+            mockResources
+                .Setup(s => s.ResourceForErrors["User-FormerMember"])
+                .Returns(GetLoginUserFormerMember());
+
+            //Act
+            var result = await loginController.Login(GetTestLoginDto()) as BadRequestObjectResult;
+
+            //Assert
+            mockAuthService.Verify();
+            mockUserManagerService.Verify();
+            mockResources.Verify();
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.AreEqual(GetLoginUserFormerMember().ToString(), result.Value.ToString());
             Assert.NotNull(result);
         }
 
@@ -524,6 +602,13 @@ namespace EPlast.Tests.Controllers
         {
             var localizedString = new LocalizedString("Login-NotConfirmed",
                 "Ваш акаунт не підтверджений, будь ласка увійдіть та зробіть підтвердження");
+            return localizedString;
+        }
+
+        private LocalizedString GetLoginUserFormerMember()
+        {
+            var localizedString = new LocalizedString("User-FormerMember",
+                "User-FormerMember");
             return localizedString;
         }
 
