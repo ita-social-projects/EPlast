@@ -6,6 +6,7 @@ using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Resources;
 using EPlast.BLL.Models;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +27,7 @@ namespace EPlast.Tests.Controllers
             Mock<IJwtService>,
             Mock<ILoggerService<LoginController>>,
             Mock<IUserDatesService>,
+            Mock<IUserManagerService>,
             LoginController
             ) CreateLoginController()
         {
@@ -34,12 +36,14 @@ namespace EPlast.Tests.Controllers
             Mock<IJwtService> mockJwtService = new Mock<IJwtService>();
             Mock<ILoggerService<LoginController>> mockLoggerService = new Mock<ILoggerService<LoginController>>();
             Mock<IUserDatesService> mockUserDataServices = new Mock<IUserDatesService>();
+            Mock<IUserManagerService> mockUserManagerService = new Mock<IUserManagerService>();
             LoginController loginController = new LoginController(
                 mockAuthService.Object,
                 mockResources.Object,
                 mockJwtService.Object,
                 mockLoggerService.Object,
-                mockUserDataServices.Object);
+                mockUserDataServices.Object,
+                mockUserManagerService.Object);
 
             return (
                 mockAuthService,
@@ -47,6 +51,7 @@ namespace EPlast.Tests.Controllers
                 mockJwtService,
                 mockLoggerService,
                 mockUserDataServices,
+                mockUserManagerService,
                 loginController
                 );
         }
@@ -59,6 +64,7 @@ namespace EPlast.Tests.Controllers
                 mockResources,
                 _,
                 mockLoggerService,
+                _,
                 _,
                 loginController) = CreateLoginController();
             var userInfo = GetTestFacebookUserInfoWithSomeFields();
@@ -91,6 +97,7 @@ namespace EPlast.Tests.Controllers
                 _,
                 _,
                 _,
+                _,
                 loginController) = CreateLoginController();
             var userInfo = GetTestFacebookUserInfoWithSomeFields();
 
@@ -119,6 +126,7 @@ namespace EPlast.Tests.Controllers
                 _,
                 _,
                 mockUserDataServices,
+                _,
                 loginController) = CreateLoginController();
             var userInfo = GetTestFacebookUserInfoWithSomeFields();
 
@@ -155,6 +163,7 @@ namespace EPlast.Tests.Controllers
                 _,
                 _,
                 _,
+                _,
                 loginController) = CreateLoginController();
             string googleToken = It.IsAny<string>();
 
@@ -177,6 +186,7 @@ namespace EPlast.Tests.Controllers
                 _,
                 _,
                 mockLoggerService,
+                _,
                 _,
                 loginController) = CreateLoginController();
             string googleToken = It.IsAny<string>();
@@ -208,6 +218,7 @@ namespace EPlast.Tests.Controllers
                 _,
                 _,
                 _,
+                _,
                 loginController) = CreateLoginController();
             mockAuthService
                 .Setup(s => s.SignOutAsync());
@@ -233,6 +244,7 @@ namespace EPlast.Tests.Controllers
                 _,
                 _,
                 mockUserDataServices,
+                _,
                 loginController) = CreateLoginController();
             string googleToken = It.IsAny<string>();
             mockAuthService
@@ -264,6 +276,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var (mockAuthService,
                 mockResources,
+                _,
                 _,
                 _,
                 _,
@@ -305,6 +318,7 @@ namespace EPlast.Tests.Controllers
                 _,
                 _,
                 _,
+                _,
                 loginController) = CreateLoginController();
 
             mockAuthService
@@ -336,6 +350,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var (mockAuthService,
                 mockResources,
+                _,
                 _,
                 _,
                 _,
@@ -377,6 +392,7 @@ namespace EPlast.Tests.Controllers
                 _,
                 _,
                 _,
+                _,
                 loginController) = CreateLoginController();
             loginController.ModelState.AddModelError("NameError", "Required");
 
@@ -401,6 +417,7 @@ namespace EPlast.Tests.Controllers
             var (mockAuthService,
                 _,
                 mockJwtService,
+                _,
                 _,
                 _,
                 loginController) = CreateLoginController();
@@ -440,6 +457,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var (mockAuthService,
                 mockResources,
+                _,
                 _,
                 _,
                 _,
