@@ -95,9 +95,9 @@ namespace EPlast.Tests.Services.ActiveMembership
             // Arrange
             _repoWrapper.Setup(rw => rw.UserPlastDegree.GetAllAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
-                .ReturnsAsync(GetTestUserPlastDegrees());
+                .ReturnsAsync(GetTestUserPlastDegree());
             _mapper.Setup(m => m.Map<UserPlastDegreeDTO>(It.IsAny<UserPlastDegree>()))
-                .Returns(GetTestUserPlastDegreesDTO());
+                .Returns(GetTestUserPlastDegreeDTO());
 
             // Act
             var result = await _activeMembershipService.GetUserPlastDegreeAsync(UserId);
@@ -152,7 +152,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(UserDTO);
             _mapper.Setup(m => m.Map<IEnumerable<UserPlastDegree>>(It.IsAny<IEnumerable<UserPlastDegreeDTO>>()))
-                .Returns(GetTestUserPlastDegrees());
+                .Returns(GetTestUserPlastDegree());
             _repoWrapper.Setup(x => x.UserPlastDegree.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
                 .ReturnsAsync(new UserPlastDegree());
@@ -174,7 +174,7 @@ namespace EPlast.Tests.Services.ActiveMembership
                     It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
                 .ReturnsAsync(new UserPlastDegree());
             _mapper.Setup(m => m.Map<IEnumerable<UserPlastDegree>>(It.IsAny<IEnumerable<UserPlastDegreeDTO>>()))
-                .Returns(GetTestUserPlastDegrees());
+                .Returns(GetTestUserPlastDegree());
             _mapper.Setup(m => m.Map<UserPlastDegree>(It.IsAny<UserPlastDegreePostDTO>()))
                .Returns(new UserPlastDegree());
             _mapper.Setup(m => m.Map<User>(It.IsAny<UserDTO>()))
@@ -199,7 +199,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(UserDTO);
             _mapper.Setup(m => m.Map<IEnumerable<UserPlastDegree>>(It.IsAny<IEnumerable<UserPlastDegreeDTO>>()))
-                .Returns(GetTestUserPlastDegrees());
+                .Returns(GetTestUserPlastDegree());
             _mapper.Setup(m => m.Map<UserPlastDegree>(It.IsAny<UserPlastDegreePostDTO>()))
                .Returns(new UserPlastDegree());
             _mapper.Setup(m => m.Map<User>(It.IsAny<UserDTO>()))
@@ -264,7 +264,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             UserPlastDegrees = new UserPlastDegreeDTO()
         };
 
-        private IEnumerable<UserPlastDegree> GetTestUserPlastDegrees()
+        private IEnumerable<UserPlastDegree> GetTestUserPlastDegree()
         {
             return new List<UserPlastDegree>
             {
@@ -289,7 +289,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             }.AsEnumerable();
         }
 
-        private UserPlastDegreeDTO GetTestUserPlastDegreesDTO()
+        private UserPlastDegreeDTO GetTestUserPlastDegreeDTO()
         {
 
             return new UserPlastDegreeDTO
