@@ -55,7 +55,7 @@ namespace EPlast.Tests.Services.ActiveMembership
         }
 
         [TestCase(7)]
-        public async Task GetDergeeAsync_ReturnsAllowedDergees(int degreeId)
+        public async Task CheckDegreeAsync_ReturnsAllowedDergees(int degreeId)
         {
             // Arrange
             List<string> degrees = new List<string>(){ "Старший пластун прихильник / Старша пластунка прихильниця",
@@ -90,7 +90,7 @@ namespace EPlast.Tests.Services.ActiveMembership
         }
 
         [Test]
-        public async Task GetUserPlastDegreesAsync_ReturnsAllUserDegrees()
+        public async Task GetUserPlastDegreeAsync_ReturnsUserDegree()
         {
             // Arrange
             _repoWrapper.Setup(rw => rw.UserPlastDegree.GetAllAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
@@ -105,9 +105,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             // Assert
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<UserPlastDegreeDTO>(result);
-
         }
-
 
         [Test]
         public async Task AddPlastDegreeForUserAsync_UserDoesNotExist_ReturnsFalse()
