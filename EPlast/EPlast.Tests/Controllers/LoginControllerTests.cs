@@ -179,7 +179,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GoogleLogin_Invalid_BadRequestUserFormerMember()
+        public async Task GoogleLogin_BadRequestUserFormerMember()
         {
             // Arrange
             var (mockAuthService,
@@ -208,12 +208,12 @@ namespace EPlast.Tests.Controllers
             var result = await loginController.GoogleLogin(It.IsAny<string>()) as BadRequestObjectResult;
 
             // Assert
-            mockAuthService.Verify();
-            mockUserManagerService.Verify();
-            mockResources.Verify();
+            mockAuthService.Verify(x => x.GetGoogleUserAsync(It.IsAny<string>()));
+            mockUserManagerService.Verify(x => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()));
+            mockResources.Verify(x => x.ResourceForErrors["User-FormerMember"]);
+            Assert.NotNull(result);
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
             Assert.AreEqual(GetLoginUserFormerMember().ToString(), result.Value.ToString());
-            Assert.NotNull(result);
         }
 
         [Test]
@@ -383,7 +383,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task Test_LoginPost_UserFormerMember()
+        public async Task LoginPost_BadRequestUserFormerMember()
         {
             //Arrange
             var (mockAuthService,
@@ -414,12 +414,13 @@ namespace EPlast.Tests.Controllers
             var result = await loginController.Login(GetTestLoginDto()) as BadRequestObjectResult;
 
             //Assert
-            mockAuthService.Verify();
-            mockUserManagerService.Verify();
-            mockResources.Verify();
+            mockAuthService.Verify(x => x.FindByEmailAsync(It.IsAny<string>()));
+            mockAuthService.Verify(x => x.IsEmailConfirmedAsync(It.IsAny<UserDTO>()));
+            mockUserManagerService.Verify(x => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()));
+            mockResources.Verify(x => x.ResourceForErrors["User-FormerMember"]);
+            Assert.NotNull(result);
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
             Assert.AreEqual(GetLoginUserFormerMember().ToString(), result.Value.ToString());
-            Assert.NotNull(result);
         }
 
         [Test]
