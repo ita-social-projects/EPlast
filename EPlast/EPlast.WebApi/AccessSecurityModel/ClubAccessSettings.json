@@ -1,0 +1,122 @@
+{
+  "Admin": {
+    "AdminRights": true,
+    "ViewInfo": true,
+    "EditClub": true,
+    "DeleteClub": true,
+    "AddClubSecretary": true,
+    "AddClubHead": true,
+    "GoToSecretaryProfile": true,
+    "BecomeClubMember": true,
+    "ManipulateDocument": true,
+    "DownloadDocument": true
+  },
+  "Голова Округи": {
+    "AdminRights": false,
+    "ViewInfo": true,
+    "EditClub": false,
+    "DeleteClub": false,
+    "AddClubSecretary": false,
+    "AddClubHead": false,
+    "GoToSecretaryProfile": true,
+    "BecomeClubMember": true,
+    "ManipulateDocument": false,
+    "DownloadDocument": true
+  },
+  "Заступник Голови Округи": {
+    "AdminRights": false,
+    "ViewInfo": true,
+    "EditClub": false,
+    "DeleteClub": false,
+    "AddClubSecretary": false,
+    "AddClubHead": false,
+    "GoToSecretaryProfile": true,
+    "BecomeClubMember": true,
+    "ManipulateDocument": false,
+    "DownloadDocument": true
+  },
+  "Голова Станиці": {
+    "AdminRights": false,
+    "ViewInfo": true,
+    "EditClub": false,
+    "DeleteClub": false,
+    "AddClubSecretary": false,
+    "AddClubHead": false,
+    "GoToSecretaryProfile": true,
+    "BecomeClubMember": true,
+    "ManipulateDocument": false,
+    "DownloadDocument": true
+  },
+  "Заступник Голови Станиці": {
+    "AdminRights": false,
+    "ViewInfo": true,
+    "EditClub": false,
+    "DeleteClub": false,
+    "AddClubSecretary": false,
+    "AddClubHead": false,
+    "GoToSecretaryProfile": true,
+    "BecomeClubMember": true,
+    "ManipulateDocument": false,
+    "DownloadDocument": true
+  },
+  "Голова Куреня": {
+    "AdminRights": false,
+    "ViewInfo": true,
+    "EditClub": true,
+    "DeleteClub": false,
+    "AddClubSecretary": true,
+    "AddClubHead": true,
+    "GoToSecretaryProfile": true,
+    "BecomeClubMember": true,
+    "ManipulateDocument": true,
+    "DownloadDocument": true
+  },
+  "Заступник Голови Куреня": {
+    "AdminRights": false,
+    "ViewInfo": true,
+    "EditClub": true,
+    "DeleteClub": false,
+    "AddClubSecretary": true,
+    "AddClubHead": false,
+    "GoToSecretaryProfile": true,
+    "BecomeClubMember": true,
+    "ManipulateDocument": true,
+    "DownloadDocument": true
+  },
+  "Прихильник": {
+    "AdminRights": false,
+    "ViewInfo": true,
+    "EditClub": false,
+    "DeleteClub": false,
+    "AddClubSecretary": false,
+    "AddClubHead": false,
+    "GoToSecretaryProfile": true,
+    "BecomeClubMember": true,
+    "ManipulateDocument": false,
+    "DownloadDocument": true
+  },
+  "Дійсний член організації": {
+    "AdminRights": false,
+    "ViewInfo": true,
+    "EditClub": false,
+    "DeleteClub": false,
+    "AddClubSecretary": false,
+    "AddClubHead": false,
+    "GoToSecretaryProfile": true,
+    "BecomeClubMember": true,
+    "ManipulateDocument": false,
+    "DownloadDocument": true
+  },
+  "Зареєстрований користувач": {
+    "AdminRights": false,
+    "ViewInfo": false,
+    "EditClub": false,
+    "DeleteClub": false,
+    "AddClubSecretary": false,
+    "AddClubHead": false,
+    "GoToSecretaryProfile": false,
+    "BecomeClubMember": false,
+    "ManipulateDocument": false,
+    "DownloadDocument": false
+  }
+}
