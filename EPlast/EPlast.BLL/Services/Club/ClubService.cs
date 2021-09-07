@@ -215,10 +215,10 @@ namespace EPlast.BLL.Services.Club
             {
                 var id = member.UserId;
 
-                var userPlastDegrees = await _repoWrapper.UserPlastDegrees.GetAllAsync(
+                var userPlastDegree = await _repoWrapper.UserPlastDegree.GetAllAsync(
                     upd => upd.UserId == id, 
                     include: pd => pd.Include(d => d.PlastDegree));
-                var userDegree = userPlastDegrees?.FirstOrDefault(u => u.UserId == id)?.PlastDegree;
+                var userDegree = userPlastDegree?.FirstOrDefault(u => u.UserId == id)?.PlastDegree;
 
                 member.User.PlastDegree = userDegree == null ? null : new DataAccessClub.PlastDegree
                 {
@@ -235,7 +235,7 @@ namespace EPlast.BLL.Services.Club
 
             foreach (var admin in admins)
             {
-                var userPlastDegrees = await _repoWrapper.UserPlastDegrees.GetAllAsync(upd => upd.UserId == admin.UserId, include: pd => pd.Include(d => d.PlastDegree));
+                var userPlastDegrees = await _repoWrapper.UserPlastDegree.GetAllAsync(upd => upd.UserId == admin.UserId, include: pd => pd.Include(d => d.PlastDegree));
                 var userDegree = userPlastDegrees?.FirstOrDefault(u => u.UserId == admin.UserId)?.PlastDegree;
                 admin.User.PlastDegree = userDegree == null ? null : new DataAccessClub.PlastDegree
                 {
@@ -246,7 +246,7 @@ namespace EPlast.BLL.Services.Club
 
             foreach (var follower in followers)
             {
-                var userPlastDegrees = await _repoWrapper.UserPlastDegrees.GetAllAsync(upd => upd.UserId == follower.UserId, include: pd => pd.Include(d => d.PlastDegree));
+                var userPlastDegrees = await _repoWrapper.UserPlastDegree.GetAllAsync(upd => upd.UserId == follower.UserId, include: pd => pd.Include(d => d.PlastDegree));
                 var userDegree = userPlastDegrees?.FirstOrDefault(u => u.UserId == follower.UserId)?.PlastDegree;
                 follower.User.PlastDegree = userDegree == null ? null : new DataAccessClub.PlastDegree
                 {
