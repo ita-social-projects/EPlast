@@ -97,8 +97,8 @@ namespace EPlast.BLL.Services.Club
             StringBuilder clubMembers = new StringBuilder();
             foreach (var item in club.ClubMembers)
             {
-                var userPlastDegrees = await _repositoryWrapper.UserPlastDegrees.GetAllAsync(upd => upd.UserId == item.UserId, include: pd => pd.Include(d => d.PlastDegree));
-                var degree = userPlastDegrees.FirstOrDefault(u=> u.UserId == item.UserId);
+                var userPlastDegree = await _repositoryWrapper.UserPlastDegree.GetAllAsync(upd => upd.UserId == item.UserId, include: pd => pd.Include(d => d.PlastDegree));
+                var degree = userPlastDegree.FirstOrDefault(u=> u.UserId == item.UserId);
                 var cityMember = await _repositoryWrapper.CityMembers.GetFirstOrDefaultAsync(predicate: a => a.UserId == item.UserId, include: source => source.Include(ar => ar.City));
 
                 clubMembers.Append(new StringBuilder($"{degree?.PlastDegree.Name.TrimEnd()}, {item.User.FirstName} {item.User.LastName}, {cityMember?.City.Name}\n"));
@@ -109,8 +109,8 @@ namespace EPlast.BLL.Services.Club
             StringBuilder clubAdmins = new StringBuilder();
             foreach (var item in club.ClubAdministration)
             {
-                var userPlastDegrees = await _repositoryWrapper.UserPlastDegrees.GetAllAsync(upd => upd.UserId == item.UserId, include: pd => pd.Include(d => d.PlastDegree));
-                var degree = userPlastDegrees.FirstOrDefault(user => user.UserId == item.UserId);
+                var userPlastDegree = await _repositoryWrapper.UserPlastDegree.GetAllAsync(upd => upd.UserId == item.UserId, include: pd => pd.Include(d => d.PlastDegree));
+                var degree = userPlastDegree.FirstOrDefault(user => user.UserId == item.UserId);
                 if (item.AdminTypeId == 69)
                 {
                     clubAdmins.Append(new StringBuilder(

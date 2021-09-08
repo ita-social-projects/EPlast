@@ -77,9 +77,9 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("degree/{userId}")]
-        public async Task<IActionResult> GetUserDegrees(string userId)
+        public async Task<IActionResult> GetUserDegree(string userId)
         {
-            return Ok(await _plastDegreeService.GetUserPlastDegreesAsync(userId));
+            return Ok(await _plastDegreeService.GetUserPlastDegreeAsync(userId));
         }
 
         [Authorize(Roles = Roles.AdminRegionBoardHeadOkrugaCityHeadAndDeputy)]
