@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.Query;
 using System.Linq;
+using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Services.Events;
 using Microsoft.AspNetCore.Http;
 
@@ -47,6 +48,8 @@ namespace EPlast.Tests.Services.Events
                 _mockEventWrapper.Object
             );
         }
+
+       
 
         [Test]
         public void CheckEventsStatusesAsync_Valid()
