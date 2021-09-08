@@ -101,10 +101,10 @@ namespace EPlast.BLL.Services.ActiveMembership
             var accessLevels = new List<string>();
             var user = await _userManagerService.FindByIdAsync(userId);
             var userRoles = (await _userManagerService.GetRolesAsync(user)).ToList();
-            var userPlastDegrees = await _plastDegreeService.GetUserPlastDegreesAsync(userId);
-            if(userPlastDegrees != null)
+            var userPlastDegree = await _plastDegreeService.GetUserPlastDegreeAsync(userId);
+            if(userPlastDegree != null)
             {
-                var isInSupporterDegree = userPlastDegrees.PlastDegree.Name == DegreeLevels.SupporterLevelDegree;
+                var isInSupporterDegree = userPlastDegree.PlastDegree.Name == DegreeLevels.SupporterLevelDegree;
                 if (isInSupporterDegree)
                 {
                     accessLevels.Add(AccessLevelTypeDTO.Supporter.GetDescription());
