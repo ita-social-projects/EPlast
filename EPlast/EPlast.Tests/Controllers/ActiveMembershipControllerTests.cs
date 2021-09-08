@@ -81,7 +81,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [TestCase("2")]
-        public async Task GetUserDergees_Valid_Test(string id)
+        public async Task GetUserDergee_Valid_Test(string id)
         {
             //Arrange
             _plastDegreeService.Setup(cs => cs.GetUserPlastDegreeAsync(It.IsAny<string>())).ReturnsAsync(new UserPlastDegreeDTO());
