@@ -61,7 +61,7 @@ namespace EPlast.Tests.Services.ActiveMembership
                 .ReturnsAsync(UserDTO);
             _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
                 .ReturnsAsync(GetUserRolesWithNoRoles());
-            _plastDegreeService.Setup(pds => pds.GetUserPlastDegreesAsync(It.IsAny<string>()))
+            _plastDegreeService.Setup(pds => pds.GetUserPlastDegreeAsync(It.IsAny<string>()))
                 .ReturnsAsync(getUserPlastDegreeDtos());
 
             // Act
