@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using EPlast.BLL.DTO.Events;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Services.Events;
 using EPlast.DataAccess.Entities.Event;
@@ -41,7 +40,6 @@ namespace EPlast.Tests.Services.Events
                  _eventCategoryManager.GetDTOByEventPageAsync(testEventTypeId, testPage, testPageSize, "CategoryName");
 
             //Assert
-            Assert.IsAssignableFrom<Task<IEnumerable<EventCategoryDTO>>>(result);
             Assert.IsNotNull(result);
 
         }

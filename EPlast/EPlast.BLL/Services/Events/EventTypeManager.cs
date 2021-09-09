@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-
 namespace EPlast.BLL.Services.Events
 {
     public class EventTypeManager : IEventTypeManager
@@ -32,14 +31,14 @@ namespace EPlast.BLL.Services.Events
         public async Task<IEnumerable<EventTypeDTO>> GetDTOAsync()
         {
             var eventTypes = await _repoWrapper.EventType.GetAllAsync();
-            var dto =  eventTypes
+            var dto = eventTypes
                 .Select(eventType => new EventTypeDTO()
                 {
                     ID = eventType.ID,
                     EventTypeName = eventType.EventTypeName
-                });
+                });     
 
-            return  dto;
+            return dto;
         }
 
         /// <inheritdoc />
