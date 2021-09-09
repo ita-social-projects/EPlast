@@ -214,6 +214,27 @@ namespace EPlast.Tests.Services.PDF
         }
 
         [TestCase(1)]
+        [TestCase(546546)]
+        public void DecisionCreatePDFAsync_ThrowsException_CallsLogErrorMethod(int decisionId)
+        {
+            //Arrange
+            _repository.Setup(rep => rep.Decesion.GetFirstAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
+                   It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
+                .ReturnsAsync(Decesions.FirstOrDefault());
+            _decisionBlobStorage.Setup(blob => blob.GetBlobBase64Async(It.IsAny<string>()))
+                .Throws(new Exception("Test"));
+
+            //Act
+            var actualReturn = _pdfService.DecisionCreatePDFAsync(decisionId);
+
+            //Assert
+            _repository.Verify(rep => rep.Decesion.GetFirstAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
+                It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()), Times.Once);
+            _logger.Verify(x => x.LogError($"Exception: Test"));
+            Assert.Null(actualReturn.Result);
+        }
+
+        [TestCase(1)]
         [TestCase(55)]
         [TestCase(101)]
         [TestCase(155)]
@@ -251,6 +272,23 @@ namespace EPlast.Tests.Services.PDF
             Assert.Null(actualReturn.Result);
         }
 
+        [TestCase(155)]
+        public void MethodicDocumentCreatePdfAsync_ThrowsException_CallsLogErrorMethod(int methodicDocumentId)
+        {
+            // Arrange
+            var methodicDocumentRepository = new Mock<IMethodicDocumentRepository>();
+            _repository.Setup(rep => rep.MethodicDocument)
+                .Throws(new Exception("Test"));
+
+            // Act
+            var actualReturn = _pdfService.MethodicDocumentCreatePdfAsync(methodicDocumentId);
+
+            // Assert
+            _repository.Verify(rep => rep.MethodicDocument, Times.Once);
+            _logger.Verify(x => x.LogError("Exception: Test"));
+            Assert.Null(actualReturn.Result);
+        }
+
         [TestCase(1)]
         [TestCase(2)]
         [TestCase(3)]
@@ -284,6 +322,24 @@ namespace EPlast.Tests.Services.PDF
             _repository.Verify(rep => rep.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<AnnualReport, bool>>>(),
                 It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()), Times.Once);
             _logger.Verify();
+            Assert.Null(actualReturn.Result);
+        }
+
+        [TestCase(8)]
+        public void AnnualReportCreatePDFAsync_ThrowsException_CallsLogErrorMethod(int annualReportId)
+        {
+            // Arrange
+            _repository.Setup(rep => rep.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<AnnualReport, bool>>>(),
+                It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()))
+                .Throws(new Exception("Test"));
+
+            // Act
+            var actualReturn = _pdfService.AnnualReportCreatePDFAsync(annualReportId);
+
+            // Assert
+            _repository.Verify(rep => rep.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<AnnualReport, bool>>>(),
+                It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()), Times.Once);
+            _logger.Verify(x => x.LogError("Exception: Test"));
             Assert.Null(actualReturn.Result);
         }
 
