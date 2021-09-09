@@ -265,7 +265,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="400">Wrong input</response>
         [HttpPost("CreateCity")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> Create(CityViewModel city)
         {
             if (!ModelState.IsValid)

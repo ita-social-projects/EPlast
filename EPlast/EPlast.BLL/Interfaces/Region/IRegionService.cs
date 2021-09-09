@@ -69,5 +69,6 @@ namespace EPlast.BLL.Interfaces.Region
         /// </summary>
         /// <param name="followerId">The id of the follower</param>
         Task RemoveFollowerAsync(int followerId);
+        Task<bool> CheckIfRegionNameExistsAsync(string name);
     }
 }
