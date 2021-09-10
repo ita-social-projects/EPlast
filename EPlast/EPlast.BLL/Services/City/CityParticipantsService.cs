@@ -43,6 +43,8 @@ namespace EPlast.BLL.Services.City
         public async Task<CityAdministrationDTO> AddAdministratorAsync(CityAdministrationDTO adminDTO)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
+            var headType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.CityHead);
+            var headDeputyType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.CityHeadDeputy);
             adminDTO.Status = DateTime.Now < adminDTO.EndDate || adminDTO.EndDate == null;
             var newAdmin = new CityAdministration()
             {
@@ -69,6 +71,15 @@ namespace EPlast.BLL.Services.City
                     break;
             }
             await _userManager.AddToRoleAsync(user, role);
+            if (adminType.AdminTypeName == headType.AdminTypeName)
+            {
+                var headDeputy = await _repositoryWrapper.CityAdministration
+                    .GetFirstOrDefaultAsync(a => a.AdminTypeId == headDeputyType.ID && a.CityId == adminDTO.CityId && a.Status);
+                if (headDeputy != null && headDeputy.UserId == adminDTO.UserId)
+                {
+                    await RemoveAdministratorAsync(headDeputy.ID);
+                }
+            }
 
             await CheckCityHasAdminAsync(adminDTO.CityId, adminType.AdminTypeName, newAdmin);
 
@@ -143,8 +154,6 @@ namespace EPlast.BLL.Services.City
         {
             var admin = await _repositoryWrapper.CityAdministration.GetFirstOrDefaultAsync(a => a.ID == adminDTO.ID);
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
-            var headType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.CityHead);
-            var headDeputyType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.CityHeadDeputy);
 
             if (adminType.ID == admin.AdminTypeId)
             {
@@ -155,18 +164,6 @@ namespace EPlast.BLL.Services.City
                 _repositoryWrapper.CityAdministration.Update(admin);
                 await _repositoryWrapper.SaveAsync();
                 return adminDTO;
-            }
-            else if (adminType.AdminTypeName == headType.AdminTypeName && admin.AdminTypeId != headDeputyType.ID)
-            {
-                var headDeputy = await _repositoryWrapper.CityAdministration
-                    .GetFirstOrDefaultAsync(a => a.AdminTypeId == headDeputyType.ID && a.CityId == adminDTO.CityId && a.Status);
-                if (headDeputy != null && headDeputy.UserId == adminDTO.UserId)
-                {
-                    await RemoveAdministratorAsync(headDeputy.ID);
-                    await RemoveAdministratorAsync(adminDTO.ID);
-                    adminDTO = await AddAdministratorAsync(adminDTO);
-                    return adminDTO;    
-                }
             }
 
             await RemoveAdministratorAsync(adminDTO.ID);

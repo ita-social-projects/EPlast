@@ -3,9 +3,9 @@ using EPlast.DataAccess.Repositories.Contracts;
 
 namespace EPlast.DataAccess.Repositories
 {
-    public class UserPlastDegreesRepository : RepositoryBase<UserPlastDegree>, IUserPlastDegreesRepository
+    public class UserPlastDegreeRepository : RepositoryBase<UserPlastDegree>, IUserPlastDegreeRepository
     {
-        public UserPlastDegreesRepository(EPlastDBContext dbContext)
+        public UserPlastDegreeRepository(EPlastDBContext dbContext)
             : base(dbContext)
         {
         }

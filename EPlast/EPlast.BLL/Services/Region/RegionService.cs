@@ -311,5 +311,11 @@ namespace EPlast.BLL.Services.Region
             await _repoWrapper.SaveAsync();
 
         }
+
+        public async Task<bool> CheckIfRegionNameExistsAsync(string name)
+        {
+            var result = await _repoWrapper.Region.GetFirstOrDefaultAsync(x => x.RegionName == name);
+            return result != null;
+        }
     }
 }
