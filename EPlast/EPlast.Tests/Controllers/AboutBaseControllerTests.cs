@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
 using Microsoft.AspNetCore.Identity;
@@ -139,6 +140,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<List<SubsectionDTO>>(resultValue);
         }
+
         [Test]
         public async Task DeleteAboutBaseSubsection_ReturnsNoContentResult()
         {
@@ -161,6 +163,30 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NoContentResult>(result);
         }
+
+        [Test]
+        public async Task DeleteAboutBaseSubsection_ReturnsNotFound()
+        {
+            //Arrange
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(u => u.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            _aboutbaseController.ControllerContext = context;
+            _subsectionSercive
+                .Setup(x => x.DeleteSubsection(It.IsAny<int>(), It.IsAny<User>())).ThrowsAsync(new NullReferenceException("Not found"));
+            //Act
+            var result = await _aboutbaseController.DeleteAboutBaseSubsection(It.IsAny<int>());
+            //Assert
+            _subsectionSercive.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
         [Test]
         public async Task DeleteAboutBaseSection_ReturnsNoContentResult()
         {
@@ -318,6 +344,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
+
         [Test]
         public async Task EditAboutBaseSubsection_ReturnsNoContentResult()
         {
@@ -340,6 +367,30 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NoContentResult>(result);
         }
+
+        [Test]
+        public async Task EditAboutBaseSubsection_ReturnsNotFoundResult()
+        {
+            //Arrange
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(u => u.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            _aboutbaseController.ControllerContext = context;
+            _subsectionSercive
+                .Setup(x => x.ChangeSubsection(It.IsAny<SubsectionDTO>(), It.IsAny<User>())).ThrowsAsync(new NullReferenceException("Not found"));
+            //Act
+            var result = await _aboutbaseController.EditAboutBaseSubsection(It.IsAny<SubsectionDTO>());
+            //Assert
+            _subsectionSercive.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
         [Test]
         public async Task EditAboutBaseSubsection_ReturnsBadRequestResult()
         {
