@@ -40,7 +40,7 @@ namespace EPlast.BLL.Services.Events
         /// <inheritdoc />
         public async Task<IEnumerable<EventTypeDTO>> GetEventTypesAsync()
         {
-            var dto = await _eventWrapper.EventTypeManager.GetDTOAsync();
+            var dto = await _eventWrapper.EventTypeManager.GetEventTypesDTOAsync();
             return dto;
         }
 
