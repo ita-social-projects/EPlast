@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore.Query;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities.Event;
 
+
 namespace EPlast.Tests.Services.Events
 {
     internal class EventTypeManagerTests
@@ -34,54 +35,56 @@ namespace EPlast.Tests.Services.Events
         }
 
         [Test]
-        public void GetEventTypes_ReturnsEventTypes_Valid()
+        public async Task GetEventTypes_ReturnsEventTypes()
         {
             //Arrange
-            var eventToCheck = _mockRepoWrapper.Setup(x => x.EventType.GetAllAsync(
-                    It.IsAny<Expression<Func<DataAccess.Entities.Event.EventType, bool>>>(),
-                    It.IsAny<Func<IQueryable<DataAccess.Entities.Event.EventType>,
-                        IIncludableQueryable<DataAccess.Entities.Event.EventType, object>>>()))
-                .ReturnsAsync(new List<DataAccess.Entities.Event.EventType>());
+           _mockRepoWrapper.Setup(x => x.EventType.GetAllAsync(
+                    It.IsAny<Expression<Func<EventType, bool>>>(),
+                    It.IsAny<Func<IQueryable<EventType>,
+                        IIncludableQueryable<EventType, object>>>()))
+                .ReturnsAsync(new List<EventType>() { new EventType() { ID = 1 } });
 
             //Act
-            var result = _eventTypeManager.GetEventTypesDTOAsync();
+            var result = await _eventTypeManager.GetEventTypesDTOAsync();
 
             //Assert
             Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count());
         }
 
         [Test]
-        public void GetTypeByIdAsync_ReturnsType_Valid()
+        public async Task GetTypeByIdAsync_ReturnsType()
         {   //Arrange
-            var eventType = _mockRepoWrapper.Setup(x => x.EventType.GetFirstAsync(
-                       It.IsAny<Expression<Func<DataAccess.Entities.Event.EventType, bool>>>(),
-                       It.IsAny<Func<IQueryable<DataAccess.Entities.Event.EventType>,
-                           IIncludableQueryable<DataAccess.Entities.Event.EventType, object>>>()))
-                    .ReturnsAsync(new DataAccess.Entities.Event.EventType());
+            _mockRepoWrapper.Setup(x => x.EventType.GetFirstAsync(
+                       It.IsAny<Expression<Func<EventType, bool>>>(),
+                       It.IsAny<Func<IQueryable<EventType>,
+                           IIncludableQueryable<EventType, object>>>()))
+                    .ReturnsAsync(new EventType() { ID = 1 });
 
             //Act
-            var result = _eventTypeManager.GetTypeByIdAsync(1);
+            var result = await _eventTypeManager.GetTypeByIdAsync(1);
 
             //Assert
-            Assert.IsAssignableFrom<Task<EventType>>(result);
+            Assert.IsAssignableFrom<EventType>(result);
+            Assert.AreEqual(1, result.ID);
             Assert.IsNotNull(result);
         }
 
         [Test]
-        public void GetTypeIdAsync_ReturnsTypeId_Valid()
+        public async Task GetTypeIdAsync_ReturnsTypeId()
         { 
             //Arrange
-            var eventType = _mockRepoWrapper.Setup(x => x.EventType.GetFirstAsync(
-                    It.IsAny<Expression<Func<DataAccess.Entities.Event.EventType, bool>>>(),
-                    It.IsAny<Func<IQueryable<DataAccess.Entities.Event.EventType>,
-                        IIncludableQueryable<DataAccess.Entities.Event.EventType, object>>>()))
-                .ReturnsAsync(new DataAccess.Entities.Event.EventType());
+            _mockRepoWrapper.Setup(x => x.EventType.GetFirstAsync(
+                    It.IsAny<Expression<Func<EventType, bool>>>(),
+                    It.IsAny<Func<IQueryable<EventType>,
+                        IIncludableQueryable<EventType, object>>>()))
+                .ReturnsAsync(new EventType());
 
             //Act
-            var result = _eventTypeManager.GetTypeByIdAsync(1);
+            var result = await _eventTypeManager.GetTypeByIdAsync(1);
 
             //Assert
-            Assert.IsAssignableFrom<Task<EventType>>(result);
+            Assert.IsInstanceOf<EventType>(result);
             Assert.IsNotNull(result);
         }
     }
