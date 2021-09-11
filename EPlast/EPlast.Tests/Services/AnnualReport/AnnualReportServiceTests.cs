@@ -21,7 +21,6 @@ namespace EPlast.Tests.Services
     {
         private IAnnualReportService _annualReportService;
         private Mock<ICityAccessService> _cityAccessService;
-
         private Mock<IRegionAnnualReportService> _regionAnnualReportService;
         private Mock<IRepositoryWrapper> _repositoryWrapper;
         private Mapper _mapper;
@@ -29,19 +28,17 @@ namespace EPlast.Tests.Services
         [SetUp]
         public void SetUp()
         {
-
             _cityAccessService = new Mock<ICityAccessService>();
             _regionAnnualReportService = new Mock<IRegionAnnualReportService>();
             _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile<AnnualReportProfile>()));
             _repositoryWrapper = new Mock<IRepositoryWrapper>();
-
             _annualReportService = new AnnualReportService(
                 _repositoryWrapper.Object,
                 _cityAccessService.Object,
                 _regionAnnualReportService.Object,
-                _mapper
-                );
+                _mapper);
         }
+        
         [Test]
         public void CreateAsync_AnnualReportExists_ThrowsInvalidOperationException()
         {
@@ -64,7 +61,6 @@ namespace EPlast.Tests.Services
 
             //Assert
             Assert.ThrowsAsync<InvalidOperationException>(() => _annualReportService.CreateAsync(new User() { Id = "0" }, new AnnualReportDTO() { ID = 0 }));
-
         }
 
         [Test]
@@ -89,9 +85,7 @@ namespace EPlast.Tests.Services
 
             //Assert
             Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.CreateAsync(new User() { Id = "0" }, new AnnualReportDTO() { ID = 0 }));
-
         }
-
 
         [Test]
         public void CreateAsync_CreatesAnnualReport()
@@ -121,7 +115,6 @@ namespace EPlast.Tests.Services
             _repositoryWrapper.Verify(x => x.SaveAsync(), Times.Once);
         }
 
-
         [Test]
         public void EditAsync_EditsAnnualReport()
         {
@@ -142,14 +135,11 @@ namespace EPlast.Tests.Services
             //Assert
             _repositoryWrapper.Verify(x => x.AnnualReports.Update(It.IsAny<EPlast.DataAccess.Entities.AnnualReport>()), Times.Once);
             _repositoryWrapper.Verify(x => x.SaveAsync(), Times.Once);
-
-
         }
 
         [Test]
         async public Task GetCityMembersAsync_CityIsNull_ReturnsNull()
         {
-
             //Arrange
             _repositoryWrapper
                   .Setup(x => x.City.GetFirstOrDefaultAsync(
@@ -163,6 +153,4 @@ namespace EPlast.Tests.Services
             Assert.IsNull(res);
         }
     }
-
-
 }
