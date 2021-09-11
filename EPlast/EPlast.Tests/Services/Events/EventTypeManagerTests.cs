@@ -34,65 +34,55 @@ namespace EPlast.Tests.Services.Events
         }
 
         [Test]
-        public void GetEventTypes_Valid()
+        public void GetEventTypes_ReturnsEventTypes_Valid()
         {
+            //Arrange
             var eventToCheck = _mockRepoWrapper.Setup(x => x.EventType.GetAllAsync(
                     It.IsAny<Expression<Func<DataAccess.Entities.Event.EventType, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.Event.EventType>,
                         IIncludableQueryable<DataAccess.Entities.Event.EventType, object>>>()))
                 .ReturnsAsync(new List<DataAccess.Entities.Event.EventType>());
 
+            //Act
             var result = _eventTypeManager.GetEventTypesDTOAsync();
 
+            //Assert
             Assert.IsNotNull(result);
         }
 
         [Test]
-        public void GetTypeByIdAsync_Valid()
-        {
+        public void GetTypeByIdAsync_ReturnsType_Valid()
+        {   //Arrange
             var eventType = _mockRepoWrapper.Setup(x => x.EventType.GetFirstAsync(
                        It.IsAny<Expression<Func<DataAccess.Entities.Event.EventType, bool>>>(),
                        It.IsAny<Func<IQueryable<DataAccess.Entities.Event.EventType>,
                            IIncludableQueryable<DataAccess.Entities.Event.EventType, object>>>()))
                     .ReturnsAsync(new DataAccess.Entities.Event.EventType());
 
+            //Act
             var result = _eventTypeManager.GetTypeByIdAsync(1);
 
+            //Assert
             Assert.IsAssignableFrom<Task<EventType>>(result);
             Assert.IsNotNull(result);
         }
 
         [Test]
-        public void GetTypeIdAsync_Valid()
-        {
+        public void GetTypeIdAsync_ReturnsTypeId_Valid()
+        { 
+            //Arrange
             var eventType = _mockRepoWrapper.Setup(x => x.EventType.GetFirstAsync(
                     It.IsAny<Expression<Func<DataAccess.Entities.Event.EventType, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.Event.EventType>,
                         IIncludableQueryable<DataAccess.Entities.Event.EventType, object>>>()))
                 .ReturnsAsync(new DataAccess.Entities.Event.EventType());
 
+            //Act
             var result = _eventTypeManager.GetTypeByIdAsync(1);
 
+            //Assert
             Assert.IsAssignableFrom<Task<EventType>>(result);
             Assert.IsNotNull(result);
         }
-
-        [Test]
-        public void GetTypeIdAsync()
-        {
-            var type = _mockRepoWrapper.Setup(x => x.EventType.GetFirstAsync(
-                    It.IsAny<Expression<Func<DataAccess.Entities.Event.EventType, bool>>>(),
-                    It.IsAny<Func<IQueryable<DataAccess.Entities.Event.EventType>,
-                        IIncludableQueryable<DataAccess.Entities.Event.EventType, object>>>()))
-                .ReturnsAsync(new EventType() { ID = 1 });
-
-            var result = _eventTypeManager.GetTypeIdAsync("");
-
-            Assert.IsAssignableFrom<Task<int>>(result);
-            Assert.IsNotNull(result);
-        }
-
-
     }
-
 }
