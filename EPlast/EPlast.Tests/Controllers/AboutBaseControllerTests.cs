@@ -183,7 +183,6 @@ namespace EPlast.Tests.Controllers
             var result = await _aboutbaseController.DeleteAboutBaseSubsection(It.IsAny<int>());
             //Assert
             _subsectionSercive.Verify();
-            Assert.IsNotNull(result);
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
 

@@ -301,9 +301,7 @@ namespace EPlast.Tests.Controllers
             _userManagerService.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync((UserDTO) null);
             //Act
             var result = await adminController.GetCityAndRegionAdminsOfUser(username);
-
             //Assert
-            Assert.NotNull(result);
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
 

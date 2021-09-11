@@ -152,6 +152,19 @@ namespace EPlast.Tests.Services.Decision
                     It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()), Times.Once);
         }
 
+        [Test]
+        public void DeleteDecisionAsync_DecisionIsNull_ThrowArgumentNullException()
+        {
+            //Arrange
+            _repository
+                .Setup(rep => rep.Decesion.GetFirstAsync(
+                    It.IsAny<Expression<Func<Decesion, bool>>>(), It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
+                .ReturnsAsync(null as Decesion);
+
+            //Assert
+            Assert.ThrowsAsync<ArgumentNullException>(() => _decisionService.DeleteDecisionAsync(It.IsAny<int>()));
+        }
+
         [TestCase(2)]
         [TestCase(4)]
         [TestCase(1)]
