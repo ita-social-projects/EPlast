@@ -389,6 +389,5 @@ namespace EPlast.Tests.Services.UserProfiles
             //Assert
             Assert.AreEqual(res,TimeSpan.Zero);
         }
-
     }
 }
