@@ -24,6 +24,8 @@ namespace EPlast.Tests.Services
         private Mock<IRegionAnnualReportService> _regionAnnualReportService;
         private Mock<IRepositoryWrapper> _repositoryWrapper;
         private Mapper _mapper;
+        private User _user;
+        private AnnualReportDTO _annualReportDTO;
 
         [SetUp]
         public void SetUp()
@@ -37,6 +39,8 @@ namespace EPlast.Tests.Services
                 _cityAccessService.Object,
                 _regionAnnualReportService.Object,
                 _mapper);
+            _user = new User() { Id = "1" };
+            _annualReportDTO = new AnnualReportDTO() { ID = 0 };
         }
         
         [Test]
@@ -60,7 +64,7 @@ namespace EPlast.Tests.Services
                 .ReturnsAsync(new EPlast.DataAccess.Entities.AnnualReport() { ID = 1 });
 
             //Assert
-            Assert.ThrowsAsync<InvalidOperationException>(() => _annualReportService.CreateAsync(new User() { Id = "0" }, new AnnualReportDTO() { ID = 0 }));
+            Assert.ThrowsAsync<InvalidOperationException>(() => _annualReportService.CreateAsync(_user, _annualReportDTO));
         }
 
         [Test]
@@ -84,7 +88,7 @@ namespace EPlast.Tests.Services
                 .ReturnsAsync(new EPlast.DataAccess.Entities.AnnualReport() { ID = 1 });
 
             //Assert
-            Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.CreateAsync(new User() { Id = "0" }, new AnnualReportDTO() { ID = 0 }));
+            Assert.ThrowsAsync<UnauthorizedAccessException>(() => _annualReportService.CreateAsync(_user, _annualReportDTO));
         }
 
         [Test]
@@ -108,7 +112,7 @@ namespace EPlast.Tests.Services
                 .ReturnsAsync(() => null);
 
             //Act
-            _annualReportService.CreateAsync(new User() { Id = "0" }, new AnnualReportDTO() { ID = 0 });
+            _annualReportService.CreateAsync(_user, _annualReportDTO);
 
             //Assert
             _repositoryWrapper.Verify(x => x.AnnualReports.CreateAsync(It.IsAny<EPlast.DataAccess.Entities.AnnualReport>()), Times.Once);
