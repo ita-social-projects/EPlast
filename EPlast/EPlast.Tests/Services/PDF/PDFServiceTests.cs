@@ -228,8 +228,6 @@ namespace EPlast.Tests.Services.PDF
             var actualReturn = _pdfService.DecisionCreatePDFAsync(decisionId);
 
             //Assert
-            _repository.Verify(rep => rep.Decesion.GetFirstAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
-                It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()), Times.Once);
             _logger.Verify(x => x.LogError($"Exception: Test"));
             Assert.Null(actualReturn.Result);
         }
@@ -276,7 +274,6 @@ namespace EPlast.Tests.Services.PDF
         public void MethodicDocumentCreatePdfAsync_ThrowsException_CallsLogErrorMethod(int methodicDocumentId)
         {
             // Arrange
-            var methodicDocumentRepository = new Mock<IMethodicDocumentRepository>();
             _repository.Setup(rep => rep.MethodicDocument)
                 .Throws(new Exception("Test"));
 

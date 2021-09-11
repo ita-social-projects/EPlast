@@ -77,10 +77,9 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
                 .Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>()));
 
             //Act
-            var result = await _governingBodyAnnouncementService.AddAnnouncementAsync(null);
+            bool result = await _governingBodyAnnouncementService.AddAnnouncementAsync(null);
 
             //Assert
-            Assert.IsNotNull(result);
             Assert.IsFalse(result);
         }
 
@@ -89,9 +88,11 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
         public async Task AddAnnouncementAsync_TextNotNull_ReturnsTrue(string text)
         {
             //Arrange
+            GoverningBodyAnnouncement governingBody = new GoverningBodyAnnouncement();
+
             _mapper
                 .Setup(m => m.Map<GoverningBodyAnnouncementDTO, GoverningBodyAnnouncement>(It.IsAny<GoverningBodyAnnouncementDTO>()))
-                .Returns(new GoverningBodyAnnouncement());
+                .Returns(governingBody);
             _repoWrapper
                 .Setup(x => x.GoverningBodyAnnouncement.CreateAsync(It.IsAny<GoverningBodyAnnouncement>()));
             _context
@@ -99,15 +100,14 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
                 .Returns(new ClaimsPrincipal());
 
             //Act
-            var result = await _governingBodyAnnouncementService.AddAnnouncementAsync(text);
+            bool result = await _governingBodyAnnouncementService.AddAnnouncementAsync(text);
 
             //Assert
             _userManager.Verify(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()));
             _mapper.Verify(x => x.Map<GoverningBodyAnnouncementDTO, GoverningBodyAnnouncement>(It.IsAny<GoverningBodyAnnouncementDTO>()));
-            _repoWrapper.Verify(x => x.GoverningBodyAnnouncement.CreateAsync(It.IsAny<GoverningBodyAnnouncement>()));
+            _repoWrapper.Verify(x => x.GoverningBodyAnnouncement.CreateAsync(governingBody));
             _repoWrapper.Verify(x => x.SaveAsync());
 
-            Assert.IsNotNull(result);
             Assert.IsTrue(result);
         }
 
