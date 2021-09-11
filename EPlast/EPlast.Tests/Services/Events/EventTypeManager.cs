@@ -33,7 +33,7 @@ namespace EPlast.Tests.Services.Events
         }
 
         [Test]
-        public void GetEventTypes_Valid()
+        public void GetEventTypesAsync_ReturnsEventTypesAsync_Valid()
         { 
             var eventToCheck = _mockRepoWrapper.Setup(x => x.EventType.GetAllAsync(
                     It.IsAny<Expression<Func<DataAccess.Entities.Event.EventType, bool>>>(),
@@ -45,24 +45,9 @@ namespace EPlast.Tests.Services.Events
             
             Assert.IsNotNull(result);
         }
-        
+      
         [Test]
-        public void GetTypeByIdAsync_Valid()
-        {
-            var eventType = _mockRepoWrapper.Setup(x => x.EventType.GetFirstAsync(
-                       It.IsAny<Expression<Func<DataAccess.Entities.Event.EventType, bool>>>(),
-                       It.IsAny<Func<IQueryable<DataAccess.Entities.Event.EventType>,
-                           IIncludableQueryable<DataAccess.Entities.Event.EventType, object>>>()))
-                    .ReturnsAsync(new DataAccess.Entities.Event.EventType());
-            
-            var result = _eventTypeManager.GetTypeByIdAsync(1);
-
-            Assert.IsAssignableFrom<Task<EventType>>(result);
-            Assert.IsNotNull(result);
-        }
-        
-        [Test]
-        public void GetTypeIdAsync_Valid()
+        public void GetTypeByIdAsync_ReturnsTypeAsync_Valid()
         {
             var eventType = _mockRepoWrapper.Setup(x => x.EventType.GetFirstAsync(
                     It.IsAny<Expression<Func<DataAccess.Entities.Event.EventType, bool>>>(),
@@ -77,7 +62,7 @@ namespace EPlast.Tests.Services.Events
         }
 
         [Test]
-        public void GetTypeIdAsync()
+        public void GetTypeIdAsync_ReturnsTypeIdAsync_Valid()
         {
             var type = _mockRepoWrapper.Setup(x => x.EventType.GetFirstAsync(
                     It.IsAny<Expression<Func<DataAccess.Entities.Event.EventType, bool>>>(),
