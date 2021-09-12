@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
@@ -14,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using System;
 
 namespace EPlast.Tests.Controllers
 {
@@ -58,7 +58,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<SectionDTO>(resultValue);
         }
         [Test]
-        public async Task GetAboutBaseSection_ById_returnsNotFoundResult()
+        public async Task GetAboutBaseSection_ById_returnResult()
         {
             //Arrange
             _sectionService
@@ -90,6 +90,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<List<SectionDTO>>(resultValue);
         }
+        
         [Test]
         public async Task GetAboutBaseSubsection_ById_ReturnsOkOdjectResult()
         {
@@ -107,6 +108,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(resultValue);
             Assert.IsInstanceOf<SubsectionDTO>(resultValue);
         }
+        
         [Test]
         public async Task GetAboutBaseSubsection_ById_ReturnsNotFoundResult()
         {
@@ -123,6 +125,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsNull(resultValue);
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
+        
         [Test]
         public async Task GetAboutBaseSubsections_ReturnsOkObjectResult()
         {
@@ -208,6 +211,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NoContentResult>(result);
         }
+        
         [Test]
         public async Task AddAboutBaseSection_ReturnsNoContentResult()
         {
@@ -223,13 +227,16 @@ namespace EPlast.Tests.Controllers
             _aboutbaseController.ControllerContext = context;
             _sectionService
                 .Setup(x => x.AddSection(It.IsAny<SectionDTO>(), It.IsAny<User>()));
+            
             //Act
             var result = await _aboutbaseController.AddAboutBaseSection(It.IsAny<SectionDTO>());
+            
             //Assert
             _sectionService.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NoContentResult>(result);
         }
+        
         [Test]
         public async Task AddAboutBaseSection_ReturnsBadRequestResult()
         {
@@ -246,13 +253,16 @@ namespace EPlast.Tests.Controllers
             _aboutbaseController.ModelState.AddModelError("Title", "title field is required");
             _sectionService
                 .Setup(x => x.AddSection(It.IsAny<SectionDTO>(), It.IsAny<User>()));
+            
             //Act
             var result = await _aboutbaseController.AddAboutBaseSection(It.IsAny<SectionDTO>());
+            
             //Assert
             _sectionService.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
+        
         [Test]
         public async Task AddAboutBaseSubsection_ReturnsNoContentResult()
         {
@@ -268,13 +278,16 @@ namespace EPlast.Tests.Controllers
             _aboutbaseController.ControllerContext = context;
             _subsectionSercive
                 .Setup(x=>x.AddSubsection(It.IsAny<SubsectionDTO>(),It.IsAny<User>()));
+            
             //Act
             var result = await _aboutbaseController.AddAboutBaseSubsection(It.IsAny<SubsectionDTO>());
+            
             //Assert
             _subsectionSercive.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NoContentResult>(result);
         }
+        
         [Test]
         public async Task AddAboutBaseSubsection_ReturnsBadRequestResult()
         {
@@ -291,13 +304,16 @@ namespace EPlast.Tests.Controllers
             _aboutbaseController.ModelState.AddModelError("Title", "Title field is required");
             _subsectionSercive
                 .Setup(x => x.AddSubsection(It.IsAny<SubsectionDTO>(), It.IsAny<User>()));
+            
             //Act
             var result = await _aboutbaseController.AddAboutBaseSubsection(It.IsAny<SubsectionDTO>());
+            
             //Assert
             _subsectionSercive.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
+        
         [Test]
         public async Task EditAboutBaseSection_ReturnsNoContentResult()
         {
@@ -313,13 +329,16 @@ namespace EPlast.Tests.Controllers
             _aboutbaseController.ControllerContext = context;
             _sectionService
                 .Setup(x => x.ChangeSection(It.IsAny<SectionDTO>(), It.IsAny<User>()));
+            
             //Act
             var result = await _aboutbaseController.EditAboutBaseSection(It.IsAny<SectionDTO>());
+            
             //Assert
             _sectionService.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NoContentResult>(result);
         }
+        
         [Test]
         public async Task EditAboutBaseSection_ReturnsBadRequestResult()
         {
@@ -336,8 +355,10 @@ namespace EPlast.Tests.Controllers
             _aboutbaseController.ModelState.AddModelError("Title", "Title field is required");
             _sectionService
                 .Setup(x => x.ChangeSection(It.IsAny<SectionDTO>(), It.IsAny<User>()));
+            
             //Act
             var result = await _aboutbaseController.EditAboutBaseSection(It.IsAny<SectionDTO>());
+            
             //Assert
             _sectionService.Verify();
             Assert.IsNotNull(result);
@@ -359,14 +380,16 @@ namespace EPlast.Tests.Controllers
             _aboutbaseController.ControllerContext = context;
             _subsectionSercive
                 .Setup(x => x.ChangeSubsection(It.IsAny<SubsectionDTO>(), It.IsAny<User>()));
+            
             //Act
             var result = await _aboutbaseController.EditAboutBaseSubsection(It.IsAny<SubsectionDTO>());
+            
             //Assert
             _subsectionSercive.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NoContentResult>(result);
         }
-
+      
         [Test]
         public async Task EditAboutBaseSubsection_ReturnsNotFoundResult()
         {
@@ -406,12 +429,104 @@ namespace EPlast.Tests.Controllers
             _aboutbaseController.ModelState.AddModelError("Title", "Title field is required");
             _subsectionSercive
                 .Setup(x => x.ChangeSubsection(It.IsAny<SubsectionDTO>(), It.IsAny<User>()));
+            
             //Act
             var result = await _aboutbaseController.EditAboutBaseSubsection(It.IsAny<SubsectionDTO>());
+            
             //Assert
             _subsectionSercive.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        }
+        
+        [Test]
+        public async Task DeleteAboutBaseSection_ThrowsNullReferenceException_ReturnsNotFound()
+        {
+            //Arrange
+            _sectionService
+                .Setup(x => x.DeleteSection(It.IsAny<int>(), It.IsAny<User>()))
+                .Throws( new NullReferenceException());
+
+            //Act 
+            var result = await _aboutbaseController.DeleteAboutBaseSection(0);
+
+            //Assert
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task DeleteAboutBaseSubsection_ThrowsNullReferenceException_ReturnsNotFound()
+        {
+            //Arrange
+            _subsectionSercive
+                .Setup(x => x.DeleteSubsection(It.IsAny<int>(), It.IsAny<User>()))
+                .Throws(new NullReferenceException());
+
+            //Act 
+            var result = await _aboutbaseController.DeleteAboutBaseSubsection(0);
+
+            //Assert
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task AddAboutBaseSection_ThrowsException_ReturnsNotFound()
+        {
+            //Arrange
+            _sectionService
+                .Setup(x => x.AddSection(It.IsAny<SectionDTO>(), It.IsAny<User>()))
+                .Throws(new Exception());
+
+            //Act 
+            var result = await _aboutbaseController.AddAboutBaseSection(new SectionDTO());
+
+            //Assert
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task AddAboutBaseSubsection_ThrowsException_ReturnsNotFound()
+        {
+            //Arrange
+            _subsectionSercive
+                .Setup(x => x.AddSubsection(It.IsAny<SubsectionDTO>(), It.IsAny<User>()))
+               .Throws(new Exception());
+
+            //Act 
+            var result = await _aboutbaseController.AddAboutBaseSubsection(new SubsectionDTO());
+
+            //Assert
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task EditAboutBaseSection_ThrowsNullReferenceException_ReturnsNotFound()
+        {
+            //Arrange
+            _sectionService
+                .Setup(x => x.ChangeSection(It.IsAny<SectionDTO>(), It.IsAny<User>()))
+                .Throws(new NullReferenceException());
+
+            //Act
+            var result = await _aboutbaseController.EditAboutBaseSection(new SectionDTO());
+
+            //Assert   
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+        
+        [Test]
+        public async Task EditAboutBaseSubsection_ThrowsNullReferenceException_ReturnsNotFound()
+        {
+            //Arrange
+            _subsectionSercive
+                .Setup(x => x.ChangeSubsection(It.IsAny<SubsectionDTO>(), It.IsAny<User>()))
+                .Throws(new NullReferenceException());
+
+            //Act
+            var result = await _aboutbaseController.EditAboutBaseSubsection(new SubsectionDTO());
+
+            //Assert   
+            Assert.IsInstanceOf<NotFoundResult>(result);
         }
     }
 }
