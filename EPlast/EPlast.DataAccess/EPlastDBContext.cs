@@ -133,7 +133,7 @@ namespace EPlast.DataAccess
                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<User>()
-               .HasMany(x => x.UserPlastDegrees)
+               .HasOne(x => x.UserPlastDegrees)
                .WithOne(x => x.User)
                .OnDelete(DeleteBehavior.Cascade);
 

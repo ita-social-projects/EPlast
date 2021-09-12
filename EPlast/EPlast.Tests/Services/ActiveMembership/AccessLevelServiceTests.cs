@@ -61,7 +61,7 @@ namespace EPlast.Tests.Services.ActiveMembership
                 .ReturnsAsync(UserDTO);
             _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
                 .ReturnsAsync(GetUserRolesWithNoRoles());
-            _plastDegreeService.Setup(pds => pds.GetUserPlastDegreesAsync(It.IsAny<string>()))
+            _plastDegreeService.Setup(pds => pds.GetUserPlastDegreeAsync(It.IsAny<string>()))
                 .ReturnsAsync(getUserPlastDegreeDtos());
 
             // Act
@@ -76,7 +76,7 @@ namespace EPlast.Tests.Services.ActiveMembership
         }
 
         [Test]
-        public async Task GetUserAccessLevelsAsync_UserIsFormer_ReturnsIEnumerableOfStringsWithPlastunRolesForActiveMembership()
+        public async Task GetUserAccessLevelsAsync_UserIsFormer_ReturnsIEnumerableOfStringsWithFormerRolesForActiveMembership()
         {
             // Arrange
             _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
@@ -136,7 +136,7 @@ namespace EPlast.Tests.Services.ActiveMembership
         }
 
         [Test]
-        public async Task GetUserAccessLevelsAsync_UserIsLeadershipMember_ReturnsIEnumerableOfStringsWithLeadershipMemberRolesForActiveMembership()
+        public async Task GetUserAccessLevelsAsync_UserIsGoverningBodyHead_ReturnsIEnumerableOfStringsWithGoverningBodyHeadRolesForActiveMembership()
         {
             // Arrange
             _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
@@ -153,7 +153,28 @@ namespace EPlast.Tests.Services.ActiveMembership
             Assert.IsInstanceOf<IEnumerable<string>>(result);
             Assert.AreEqual(GetUserRolesAsLeadershipMember().ToList().Count, listResult.Count);
             Assert.AreEqual(AccessLevelTypeDTO.PlastMember.GetDescription(), listResult[0]);
-            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMember.GetDescription(), listResult[1]);
+            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMemberForOkrugaHead.GetDescription(), listResult[1]);
+        }
+
+        [Test]
+        public async Task GetUserAccessLevelsAsync_UserHasAllRoles_ReturnsIEnumerableOfStringsWithAllRoles()
+        {
+            // Arrange
+            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(UserDTO);
+            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(Roles.ListOfRoles);
+
+            // Act
+            var result = await _accessLevelService.GetUserAccessLevelsAsync(UserId);
+            var listResult = result.ToList();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<string>>(result);
+            Assert.AreEqual(Roles.ListOfRoles.Count, listResult.Count);
+            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMemberForGoverningBodyHead.GetDescription(), listResult[0]);
+            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMemberForGoverningBodySectorHead.GetDescription(), listResult[1]);
         }
 
         private string UserId => _uniqueId.GetUniqueId().ToString();
@@ -163,21 +184,17 @@ namespace EPlast.Tests.Services.ActiveMembership
         {
             Id = UserId,
             RegistredOn = UserDateOfEntry,
-            UserPlastDegrees = new List<UserPlastDegreeDTO>
-            {
-                new UserPlastDegreeDTO()
-            }
+            UserPlastDegrees = new UserPlastDegreeDTO()
         };
 
-        private IEnumerable<UserPlastDegreeDTO> getUserPlastDegreeDtos()
+        private UserPlastDegreeDTO getUserPlastDegreeDtos()
         {
-            return new List<UserPlastDegreeDTO>
+
+            return new UserPlastDegreeDTO
             {
-                new UserPlastDegreeDTO
-                {
-                    PlastDegree = new PlastDegreeDTO { Name = "Пластприят" }
-                }
+                PlastDegree = new PlastDegreeDTO { Name = "Пластприят" }
             };
+            
         }
 
         private IEnumerable<string> GetUserRolesAsRegisteredUser()

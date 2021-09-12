@@ -45,7 +45,7 @@ namespace EPlast.XUnitTest.Services.Events
         {
             //Arrange
 
-            _eventWrapper.Setup(x => x.EventTypeManager.GetDTOAsync())
+            _eventWrapper.Setup(x => x.EventTypeManager.GetEventTypesDTOAsync())
                 .ReturnsAsync(new List<EventTypeDTO>());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);

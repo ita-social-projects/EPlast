@@ -320,5 +320,74 @@ namespace EPlast.Tests.Services.UserProfiles
             Assert.IsNotNull(result);
             Assert.IsFalse(result);
         }
+
+        [Test]
+        public void CheckOrAddPlastunRoleTest_Valid()
+        {
+            //Arrange
+            DateTime registeredOn = DateTime.MinValue;
+            var timeToJoinPlast = registeredOn.AddYears(1) - DateTime.Now;
+            _mockRepoWrapper.Setup(x => x.ConfirmedUser.FindByCondition(It.IsAny<Expression<Func<ConfirmedUser, bool>>>()))
+               .Returns(new List<ConfirmedUser>().AsQueryable());
+
+            // Act
+            var result = _userService.CheckOrAddPlastunRole("1", DateTime.MinValue);
+
+            // Assert
+            Assert.IsInstanceOf<TimeSpan>(result);
+        }
+    
+        [Test]
+        public void CheckOrAddPlastunRole_ReturnsTimeToJoinPlast()
+        {
+            //Arrange
+            _mockRepoWrapper
+                .Setup(x => (x.ConfirmedUser.FindByCondition(It.IsAny<Expression<Func<ConfirmedUser, bool>>>())))
+                .Returns(new List<ConfirmedUser>() { new ConfirmedUser() { isClubAdmin = false } }.AsQueryable());
+
+            var registeredOn = DateTime.Now - new TimeSpan(90, 0, 0, 0);
+
+            //Act
+            var res = _userService.CheckOrAddPlastunRole("0", registeredOn);
+
+
+            //Assert
+            Assert.IsTrue(res > TimeSpan.Zero);
+        }
+
+
+        [Test]
+        public void CheckOrAddPlastunRole_UserIsAdmin_ReturnsTimeToJoinPlast()
+        {
+            //Arrange
+            _mockRepoWrapper
+                .Setup(x => (x.ConfirmedUser.FindByCondition(It.IsAny<Expression<Func<ConfirmedUser, bool>>>())))
+                .Returns(new List<ConfirmedUser>() { new ConfirmedUser() { isClubAdmin = true } }.AsQueryable());
+
+            var registeredOn = DateTime.Now - new TimeSpan(160, 0, 0, 0);
+
+            //Act
+            var res = _userService.CheckOrAddPlastunRole("0", registeredOn);
+
+
+            //Assert
+            Assert.IsTrue(res > TimeSpan.Zero);
+        }
+
+        [Test]
+        public void CheckOrAddPlastunRole_ThrowsException_ReturnsTimeSpanZero()
+        {
+            //Arrange
+            _mockRepoWrapper
+                .Setup(x => (x.ConfirmedUser.FindByCondition(It.IsAny<Expression<Func<ConfirmedUser, bool>>>())))
+                .Throws(new Exception());
+
+            //Act
+            var res = _userService.CheckOrAddPlastunRole("0", DateTime.Now);
+
+
+            //Assert
+            Assert.AreEqual(res,TimeSpan.Zero);
+        }
     }
 }
