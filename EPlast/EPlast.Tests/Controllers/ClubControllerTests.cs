@@ -791,6 +791,28 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
+        [Test]
+        public async Task EditAdmin_Invalid_Test()
+        {
+            // Arrange
+            ClubAdministrationViewModel admin = new ClubAdministrationViewModel();
+            admin.EndDate = DateTime.MinValue;
+            _mapper
+                .Setup(m => m.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(It.IsAny<ClubAdministrationViewModel>()))
+                .Returns(new ClubAdministrationDTO());
+            _clubParticipantsService
+                .Setup(c => c.EditAdministratorAsync(It.IsAny<ClubAdministrationDTO>()));
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+            ClubController controller = CreateClubController;
+
+            // Act
+            var result = await controller.EditAdmin(admin);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<BadRequestResult>(result);
+        }
 
         [Test]
         public async Task ArchiveClub_valid_Test()
