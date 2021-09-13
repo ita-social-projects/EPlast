@@ -45,7 +45,7 @@ namespace EPlast.XUnitTest.Services.Events
                 .ReturnsAsync(GetEventTypes());
             //Act
             var eventTypeManager = new EventTypeManager(_repoWrapper.Object);
-            var methodResult = await eventTypeManager.GetDTOAsync();
+            var methodResult = await eventTypeManager.GetEventTypesDTOAsync();
             //Assert
             Assert.NotNull(methodResult);
             Assert.IsAssignableFrom<IEnumerable<EventTypeDTO>>(methodResult);
