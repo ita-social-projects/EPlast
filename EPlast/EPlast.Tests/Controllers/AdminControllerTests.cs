@@ -294,7 +294,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [TestCase("user")]
-        public async Task GetCityAndRegionAdminsOfUser_UserNotExists_BadRequest(string username)
+        public async Task GetCityAndRegionAdminsOfUser_UserNotExists_ReturnsBadRequest(string username)
         {
             //Arrange
             AdminController adminController = CreateAdminController;
