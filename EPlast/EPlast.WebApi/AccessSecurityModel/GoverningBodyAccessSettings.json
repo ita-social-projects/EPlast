@@ -17,8 +17,8 @@
   "Голова Керівного Органу": {
     "ViewInfo": true,
     "AddDecision": true,
-    "EditGB": false,
-    "DeleteGB": false,
+    "EditGB": true,
+    "DeleteGB": true,
     "CreateDirection": true,
     "AddGBSecretary": true,
     "GoToSecretaryProfile": true,
@@ -104,4 +104,5 @@
     "ManipulateDocument": false,
     "AddGBSector": false
   }
+
 }
