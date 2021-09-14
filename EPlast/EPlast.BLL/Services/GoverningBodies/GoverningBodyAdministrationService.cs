@@ -32,7 +32,7 @@ namespace EPlast.BLL.Services.GoverningBodies
         public async Task<GoverningBodyAdministrationDTO> AddGoverningBodyAdministratorAsync(GoverningBodyAdministrationDTO governingBodyAdministrationDto)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(governingBodyAdministrationDto.AdminType.AdminTypeName);
-            governingBodyAdministrationDto.Status = DateTime.Now < governingBodyAdministrationDto.EndDate || governingBodyAdministrationDto.EndDate == null;            
+            governingBodyAdministrationDto.Status = DateTime.Now < governingBodyAdministrationDto.EndDate || governingBodyAdministrationDto.EndDate == null;
             var governingBodyAdministration = new GoverningBodyAdministration
             {
                 StartDate = governingBodyAdministrationDto.StartDate ?? DateTime.Now,
