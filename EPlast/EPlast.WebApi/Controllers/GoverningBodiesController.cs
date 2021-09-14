@@ -51,7 +51,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("CreateGoverningBody")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodyHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
         public async Task<IActionResult> Create(GoverningBodyDTO governingBodyDTO)
         {
             if (!ModelState.IsValid)
@@ -67,7 +67,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPut("EditGoverningBody/{governingBodyId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodyHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
         public async Task<IActionResult> Edit(GoverningBodyDTO governingBody)
         {
             if (!ModelState.IsValid)
@@ -109,7 +109,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpDelete("RemoveGoverningBody/{governingBodyId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodyHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
         public async Task<IActionResult> Remove(int governingBodyId)
         {
             await _governingBodiesService.RemoveAsync(governingBodyId);
@@ -145,8 +145,8 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="newAdmin">An information about a new administrator</param>
         /// <returns>An information about a new administrator</returns>
-        [HttpPost("AddAdmin/{cityId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodyHead)]
+        [HttpPost("AddAdmin/{governingBodyId}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
         public async Task<IActionResult> AddAdmin(GoverningBodyAdministrationDTO newAdmin)
         {
             await _governingBodyAdministrationService.AddGoverningBodyAdministratorAsync(newAdmin);
@@ -163,7 +163,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="adminDto">An information about a new administrator</param>
         /// <returns>An information about a specific administrator</returns>
         [HttpPut("EditAdmin/{adminId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodyHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
         public async Task<IActionResult> EditAdmin(GoverningBodyAdministrationDTO adminDto)
         {
             await _governingBodyAdministrationService.EditGoverningBodyAdministratorAsync(adminDto);
@@ -177,7 +177,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="adminId">The id of the administrator</param>
         [HttpPut("RemoveAdmin/{adminId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodyHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
         public async Task<IActionResult> RemoveAdmin(int adminId)
         {
             await _governingBodyAdministrationService.RemoveAdministratorAsync(adminId);
@@ -214,7 +214,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="document">An information about a specific document</param>
         /// <returns>A newly created document</returns>
         [HttpPost("AddDocument/{governingBodyId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodyHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
         public async Task<IActionResult> AddDocument(GoverningBodyDocumentsDTO document)
         {
             await _governingBodyDocumentsService.AddGoverningBodyDocumentAsync(document);
@@ -242,7 +242,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="documentId">The id of a specific document</param>
         [HttpDelete("RemoveDocument/{documentId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodyHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
         public async Task<IActionResult> RemoveDocument(int documentId)
         {
             await _governingBodyDocumentsService.DeleteGoverningBodyDocumentAsync(documentId);

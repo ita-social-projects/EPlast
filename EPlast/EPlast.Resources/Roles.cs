@@ -27,8 +27,8 @@ namespace EPlast.Resources
         public const string GoverningBodySectorHead = "Голова Напряму Керівного Органу";
         public const string GoverningBodySectorSecretary = "Діловод Напряму Керівного Органу";
 
-        public const string AdminAndGoverningBodySectorHead = Admin + "," + GoverningBodySectorHead;
-        public const string AdminAndGoverningBodyHead = Admin + "," + GoverningBodyHead;
+        public const string AdminAndGBHeadAndGBSectorHead= Admin + "," + GoverningBodyHead + "," + GoverningBodySectorHead;
+        public const string AdminAndGBHead = Admin + "," + GoverningBodyHead;
         public const string DegreeAssignRoles = Admin + "," + PlastHead + "," + EventAdministrator + "," + KurinHead + "," + KurinHeadDeputy + "," + KurinSecretary + "," +
             OkrugaHead + "," + OkrugaHeadDeputy + "," + OkrugaSecretary + "," + CityHead + "," + CityHeadDeputy + "," + CitySecretary;
         public const string HeadsAndHeadDeputiesAndAdminAndPlastun = Admin + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + "," 
@@ -49,6 +49,8 @@ namespace EPlast.Resources
             + CityHead + "," + CityHeadDeputy;
         public const string AdminRegionBoardHeadOkrugaHeadAndDeputy = Admin + "," + RegionBoardHead + "," + OkrugaHead + "," + OkrugaHeadDeputy;
         public const string AdminAndCityHeadAndCityHeadDeputy = Admin + "," + CityHead + "," + CityHeadDeputy;
+        public const string HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead = Admin + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + ","
+            + KurinHead + "," + KurinHeadDeputy + "," + PlastMember + "," + GoverningBodyHead + "," + GoverningBodySectorHead;
         public static List<string> ListOfRoles = new List<string>
         {
             Roles.GoverningBodyHead,
