@@ -202,6 +202,12 @@ namespace EPlast.DataAccess
                 .WithOne(x => x.Distinction)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<Gender>(entity =>
+            {
+                entity.HasCheckConstraint("constraint_gender",
+                    "(Name = 'Чоловік' AND ID = 1) OR (Name = 'Жінка' AND ID = 2) OR (Name = 'Не маю бажання вказувати' AND ID = 7)");
+            });
+
             modelBuilder.Entity<AnnualReport>(annualReport =>
             {
                 annualReport.HasOne(a => a.Creator)
