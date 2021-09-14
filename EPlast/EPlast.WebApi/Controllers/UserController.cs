@@ -149,11 +149,13 @@ namespace EPlast.WebApi.Controllers
                      isUserAdmin ||
                      (isUserHeadOfCity && _userService.IsUserSameCity(currentUser, focusUser)) ||
                      (isUserHeadDeputyOfCity && _userService.IsUserSameCity(currentUser, focusUser)) ||
+                     (isCurrentUserPlastun && _userService.IsUserSameCity(currentUser, focusUser)) ||
                      (isUserHeadOfClub && _userService.IsUserSameClub(currentUser, focusUser)) ||
                      (isUserHeadDeputyOfClub && _userService.IsUserSameClub(currentUser, focusUser)) ||
+                     (isCurrentUserPlastun && _userService.IsUserSameClub(currentUser, focusUser)) ||
                      (isUserHeadOfRegion && _userService.IsUserSameRegion(currentUser, focusUser)) ||
-                     (isUserHeadDeputyOfRegion && _userService.IsUserSameRegion(currentUser, focusUser)) ||
-                     (isCurrentUserPlastun && _userService.IsUserSameCity(currentUser, focusUser)))
+                     (isUserHeadDeputyOfRegion && _userService.IsUserSameRegion(currentUser, focusUser))
+                     )
             {
                 model = new PersonalDataViewModel
                 {
