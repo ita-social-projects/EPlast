@@ -32,7 +32,7 @@ namespace EPlast.BLL.Services.GoverningBodies
         public async Task<GoverningBodyAdministrationDTO> AddGoverningBodyAdministratorAsync(GoverningBodyAdministrationDTO governingBodyAdministrationDto)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(governingBodyAdministrationDto.AdminType.AdminTypeName);
-            governingBodyAdministrationDto.Status = DateTime.Now < governingBodyAdministrationDto.EndDate || governingBodyAdministrationDto.EndDate == null;            
+            governingBodyAdministrationDto.Status = DateTime.Now < governingBodyAdministrationDto.EndDate || governingBodyAdministrationDto.EndDate == null;
             var governingBodyAdministration = new GoverningBodyAdministration
             {
                 StartDate = governingBodyAdministrationDto.StartDate ?? DateTime.Now,
@@ -58,7 +58,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
             if(roles.Intersect(lowerRoles).Any())
             {
-                throw new ArgumentException();
+                throw new ArgumentException("Can't add a lowrole user");
             }
             var adminRole = adminType.AdminTypeName == Roles.GoverningBodyHead ? Roles.GoverningBodyHead : Roles.GoverningBodySecretary;
             await _userManager.AddToRoleAsync(user, adminRole);
