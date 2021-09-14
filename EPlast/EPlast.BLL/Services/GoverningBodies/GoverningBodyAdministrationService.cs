@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities.GoverningBody;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace EPlast.BLL.Services.GoverningBodies
 {
@@ -30,7 +32,7 @@ namespace EPlast.BLL.Services.GoverningBodies
         public async Task<GoverningBodyAdministrationDTO> AddGoverningBodyAdministratorAsync(GoverningBodyAdministrationDTO governingBodyAdministrationDto)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(governingBodyAdministrationDto.AdminType.AdminTypeName);
-            governingBodyAdministrationDto.Status = DateTime.Now < governingBodyAdministrationDto.EndDate || governingBodyAdministrationDto.EndDate == null;
+            governingBodyAdministrationDto.Status = DateTime.Now < governingBodyAdministrationDto.EndDate || governingBodyAdministrationDto.EndDate == null;            
             var governingBodyAdministration = new GoverningBodyAdministration
             {
                 StartDate = governingBodyAdministrationDto.StartDate ?? DateTime.Now,
@@ -43,8 +45,23 @@ namespace EPlast.BLL.Services.GoverningBodies
             };
 
             var user = await _userManager.FindByIdAsync(governingBodyAdministrationDto.UserId);
-            var role = adminType.AdminTypeName == Roles.GoverningBodyHead ? Roles.GoverningBodyHead : Roles.GoverningBodySecretary;
-            await _userManager.AddToRoleAsync(user, role);
+
+            var lowerRoles = new List<string>
+            {
+                Roles.RegisteredUser,
+                Roles.Supporter,
+                Roles.FormerPlastMember,
+                Roles.Interested
+            };
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            if(roles.Intersect(lowerRoles).Any())
+            {
+                throw new ArgumentException();
+            }
+            var adminRole = adminType.AdminTypeName == Roles.GoverningBodyHead ? Roles.GoverningBodyHead : Roles.GoverningBodySecretary;
+            await _userManager.AddToRoleAsync(user, adminRole);
 
             await CheckGoverningBodyHasAdmin(governingBodyAdministrationDto.GoverningBodyId, adminType.AdminTypeName);
 
