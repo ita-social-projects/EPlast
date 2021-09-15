@@ -43,7 +43,7 @@ namespace EPlast.BLL.Services.GoverningBodies
             var existingGB = await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(x => x.OrganizationName == governingBodyDto.GoverningBodyName);
             if(existingGB != null)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("The organization with the same name already exists");
             }
             await UploadPhotoAsync(governingBodyDto);
             var governingBody = await CreateGoverningBodyAsync(governingBodyDto);
