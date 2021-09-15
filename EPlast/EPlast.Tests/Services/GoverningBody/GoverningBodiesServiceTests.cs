@@ -68,12 +68,13 @@ namespace EPlast.Tests.Services.GoverningBody
         }
 
         [Test]
-        public async Task CreateAsync_Test()
+        public void CreateAsync_GBWithSameNameExists_Test()
         {
             //Arrange
             var testDTO = CreateGoverningBodyDTO;
             _mapper
-                .Setup(x => x.Map<Organization>(It.IsAny<GoverningBodyDTO>())).Returns(new Organization() { ID = testDTO.Id, Logo = testDTO.Logo });
+                .Setup(x => x.Map<Organization>(It.IsAny<GoverningBodyDTO>()))
+                .Returns(new Organization() { ID = testDTO.Id, Logo = testDTO.Logo });
             _mapper
                 .Setup(x => x.Map<GoverningBodyDTO, Organization>(It.IsAny<GoverningBodyDTO>()))
                 .Returns(_mapper.Object.Map<Organization>(testDTO));
@@ -81,6 +82,26 @@ namespace EPlast.Tests.Services.GoverningBody
                 .Setup(x => x.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
                     It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>()))
                 .ReturnsAsync(_mapper.Object.Map<Organization>(testDTO));
+;
+            //Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _governingBodiesService.CreateAsync(testDTO));
+        }
+
+        [Test]
+        public async Task CreateAsync_Test()
+        {
+            //Arrange
+            var testDTO = CreateGoverningBodyDTO;
+            _mapper
+                .Setup(x => x.Map<Organization>(It.IsAny<GoverningBodyDTO>()))
+                .Returns(new Organization() { ID = testDTO.Id, Logo = testDTO.Logo });
+            _mapper
+                .Setup(x => x.Map<GoverningBodyDTO, Organization>(It.IsAny<GoverningBodyDTO>()))
+                .Returns(_mapper.Object.Map<Organization>(testDTO));
+            _repoWrapper
+                .Setup(x => x.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+                    It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>()))
+                .ReturnsAsync(null as Organization);
 
             //Act
             var result = await _governingBodiesService.CreateAsync(testDTO);
