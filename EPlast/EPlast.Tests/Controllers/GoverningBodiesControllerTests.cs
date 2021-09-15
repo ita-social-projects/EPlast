@@ -10,6 +10,7 @@ using EPlast.WebApi.Models.GoverningBody;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -583,6 +584,21 @@ namespace EPlast.Tests.Controllers
             //Assert
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task AddLowroleUser_ReturnsBadRequest()
+        {
+            //Arrange
+            _governingBodyAdministrationService
+                .Setup(x => x.AddGoverningBodyAdministratorAsync(It.IsAny<GoverningBodyAdministrationDTO>()))
+                .Throws(new ArgumentException());
+
+            //Act
+            var res = await _governingBodiesController.AddAdmin(new GoverningBodyAdministrationDTO());
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(res);
         }
 
         private const int TestId = 3;
