@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
 using Microsoft.AspNetCore.Identity;
@@ -38,6 +38,15 @@ namespace EPlast.Tests.Controllers
                 _sectionService.Object,
                 _subsectionSercive.Object,
                 _userManager.Object);
+            var httpContext = new Mock<HttpContext>();
+            httpContext
+                .Setup(u => u.User.IsInRole(Roles.Admin))
+                .Returns(true);
+            var context = new ControllerContext(
+                new ActionContext(
+                    httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+            _aboutbaseController.ControllerContext = context;
 
         }
         [Test]
@@ -58,7 +67,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<SectionDTO>(resultValue);
         }
         [Test]
-        public async Task GetAboutBaseSection_ById_returnsNotFoundResult()
+        public async Task GetAboutBaseSection_ById_ReturnNotFoundResult()
         {
             //Arrange
             _sectionService
@@ -143,20 +152,11 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<List<SubsectionDTO>>(resultValue);
         }
-        
+
         [Test]
         public async Task DeleteAboutBaseSubsection_ReturnsNoContentResult()
         {
             //Arrange
-            var httpContext = new Mock<HttpContext>();
-            httpContext
-                .Setup(u => u.User.IsInRole(Roles.Admin))
-                .Returns(true);
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            _aboutbaseController.ControllerContext = context;
             _subsectionSercive
                 .Setup(x=>x.DeleteSubsection(It.IsAny<int>(),It.IsAny<User>()));
             //Act
@@ -166,20 +166,25 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NoContentResult>(result);
         }
-        
+
+        [Test]
+        public async Task DeleteAboutBaseSubsection_ReturnsNotFound()
+        {
+            //Arrange
+            _subsectionSercive
+                .Setup(x => x.DeleteSubsection(It.IsAny<int>(), It.IsAny<User>())).ThrowsAsync(new NullReferenceException("Not found"));
+            //Act
+            var result = await _aboutbaseController.DeleteAboutBaseSubsection(It.IsAny<int>());
+            //Assert
+            _subsectionSercive.Verify();
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
         [Test]
         public async Task DeleteAboutBaseSection_ReturnsNoContentResult()
         {
             //Arrange
-            var httpContext = new Mock<HttpContext>();
-            httpContext
-                .Setup(u => u.User.IsInRole(Roles.Admin))
-                .Returns(true);
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            _aboutbaseController.ControllerContext = context;
+            
             _sectionService
                 .Setup(x => x.DeleteSection(It.IsAny<int>(), It.IsAny<User>()));
             //Act
@@ -194,15 +199,7 @@ namespace EPlast.Tests.Controllers
         public async Task AddAboutBaseSection_ReturnsNoContentResult()
         {
             //Arrange
-            var httpContext = new Mock<HttpContext>();
-            httpContext
-                .Setup(u => u.User.IsInRole(Roles.Admin))
-                .Returns(true);
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            _aboutbaseController.ControllerContext = context;
+            
             _sectionService
                 .Setup(x => x.AddSection(It.IsAny<SectionDTO>(), It.IsAny<User>()));
             
@@ -219,15 +216,6 @@ namespace EPlast.Tests.Controllers
         public async Task AddAboutBaseSection_ReturnsBadRequestResult()
         {
             //Arrange
-            var httpContext = new Mock<HttpContext>();
-            httpContext
-                .Setup(u => u.User.IsInRole(Roles.Admin))
-                .Returns(true);
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            _aboutbaseController.ControllerContext = context;
             _aboutbaseController.ModelState.AddModelError("Title", "title field is required");
             _sectionService
                 .Setup(x => x.AddSection(It.IsAny<SectionDTO>(), It.IsAny<User>()));
@@ -245,15 +233,6 @@ namespace EPlast.Tests.Controllers
         public async Task AddAboutBaseSubsection_ReturnsNoContentResult()
         {
             //Arrange
-            var httpContext = new Mock<HttpContext>();
-            httpContext
-                .Setup(u => u.User.IsInRole(Roles.Admin))
-                .Returns(true);
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            _aboutbaseController.ControllerContext = context;
             _subsectionSercive
                 .Setup(x=>x.AddSubsection(It.IsAny<SubsectionDTO>(),It.IsAny<User>()));
             
@@ -270,15 +249,6 @@ namespace EPlast.Tests.Controllers
         public async Task AddAboutBaseSubsection_ReturnsBadRequestResult()
         {
             //Arrange
-            var httpContext = new Mock<HttpContext>();
-            httpContext
-                .Setup(u => u.User.IsInRole(Roles.Admin))
-                .Returns(true);
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            _aboutbaseController.ControllerContext = context;
             _aboutbaseController.ModelState.AddModelError("Title", "Title field is required");
             _subsectionSercive
                 .Setup(x => x.AddSubsection(It.IsAny<SubsectionDTO>(), It.IsAny<User>()));
@@ -296,15 +266,6 @@ namespace EPlast.Tests.Controllers
         public async Task EditAboutBaseSection_ReturnsNoContentResult()
         {
             //Arrange
-            var httpContext = new Mock<HttpContext>();
-            httpContext
-                .Setup(u => u.User.IsInRole(Roles.Admin))
-                .Returns(true);
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            _aboutbaseController.ControllerContext = context;
             _sectionService
                 .Setup(x => x.ChangeSection(It.IsAny<SectionDTO>(), It.IsAny<User>()));
             
@@ -321,15 +282,6 @@ namespace EPlast.Tests.Controllers
         public async Task EditAboutBaseSection_ReturnsBadRequestResult()
         {
             //Arrange
-            var httpContext = new Mock<HttpContext>();
-            httpContext
-                .Setup(u => u.User.IsInRole(Roles.Admin))
-                .Returns(true);
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            _aboutbaseController.ControllerContext = context;
             _aboutbaseController.ModelState.AddModelError("Title", "Title field is required");
             _sectionService
                 .Setup(x => x.ChangeSection(It.IsAny<SectionDTO>(), It.IsAny<User>()));
@@ -342,20 +294,11 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
-        
+
         [Test]
         public async Task EditAboutBaseSubsection_ReturnsNoContentResult()
         {
             //Arrange
-            var httpContext = new Mock<HttpContext>();
-            httpContext
-                .Setup(u => u.User.IsInRole(Roles.Admin))
-                .Returns(true);
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            _aboutbaseController.ControllerContext = context;
             _subsectionSercive
                 .Setup(x => x.ChangeSubsection(It.IsAny<SubsectionDTO>(), It.IsAny<User>()));
             
@@ -367,20 +310,25 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NoContentResult>(result);
         }
-        
+      
+        [Test]
+        public async Task EditAboutBaseSubsection_ReturnsNotFoundResult()
+        {
+            //Arrange
+            _subsectionSercive
+                .Setup(x => x.ChangeSubsection(It.IsAny<SubsectionDTO>(), It.IsAny<User>())).ThrowsAsync(new NullReferenceException("Not found"));
+            //Act
+            var result = await _aboutbaseController.EditAboutBaseSubsection(It.IsAny<SubsectionDTO>());
+            //Assert
+            _subsectionSercive.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
         [Test]
         public async Task EditAboutBaseSubsection_ReturnsBadRequestResult()
         {
             //Arrange
-            var httpContext = new Mock<HttpContext>();
-            httpContext
-                .Setup(u => u.User.IsInRole(Roles.Admin))
-                .Returns(true);
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            _aboutbaseController.ControllerContext = context;
             _aboutbaseController.ModelState.AddModelError("Title", "Title field is required");
             _subsectionSercive
                 .Setup(x => x.ChangeSubsection(It.IsAny<SubsectionDTO>(), It.IsAny<User>()));

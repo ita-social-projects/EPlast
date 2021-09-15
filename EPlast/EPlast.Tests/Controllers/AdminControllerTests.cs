@@ -293,6 +293,18 @@ namespace EPlast.Tests.Controllers
             _adminService.Verify(x => x.GetCityRegionAdminsOfUserAsync(It.IsAny<string>()), Times.AtLeastOnce);
         }
 
+        [TestCase("user")]
+        public async Task GetCityAndRegionAdminsOfUser_UserNotExists_ReturnsBadRequest(string username)
+        {
+            //Arrange
+            AdminController adminController = CreateAdminController;
+            _userManagerService.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync((UserDTO) null);
+            //Act
+            var result = await adminController.GetCityAndRegionAdminsOfUser(username);
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
+        }
+
         [Test]
         public async Task RegionsAdmins_Invalid_Test()
         {

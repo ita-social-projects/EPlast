@@ -33,6 +33,10 @@
     <Compile Remove="Migrations\20210116201626_AddUserLinks.Designer.cs" />
     <Compile Remove="Migrations\20210703133142_test.cs" />
     <Compile Remove="Migrations\20210703133142_test.Designer.cs" />
+    <Compile Remove="Migrations\20210910085132_IncreasePlaceOfStudy.cs" />
+    <Compile Remove="Migrations\20210910085132_IncreasePlaceOfStudy.Designer.cs" />
+    <Compile Remove="Migrations\20210910085423_IncreaseMaxLenghtPlaceOfStudy.cs" />
+    <Compile Remove="Migrations\20210910085423_IncreaseMaxLenghtPlaceOfStudy.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
