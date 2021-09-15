@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using EPlast.Resources;
+using EPlast.BLL.Services.Interfaces;
 
 namespace EPlast.BLL.Services.UserProfiles
 {
@@ -22,6 +23,7 @@ namespace EPlast.BLL.Services.UserProfiles
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
+        private readonly IUserManagerService _userManagerService;
         private readonly IUserPersonalDataService _userPersonalDataService;
         private readonly IWebHostEnvironment _env;
         private readonly IUserBlobStorageRepository _userBlobStorage;
@@ -32,12 +34,14 @@ namespace EPlast.BLL.Services.UserProfiles
             IUserPersonalDataService userPersonalDataService,
             IUserBlobStorageRepository userBlobStorage,
             IWebHostEnvironment env,
+            IUserManagerService userManagerService,
             IUniqueIdService uniqueId)
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
             _userPersonalDataService = userPersonalDataService;
             _userBlobStorage = userBlobStorage;
+            _userManagerService = userManagerService;
             _env = env;
             _uniqueId = uniqueId;
         }
@@ -326,6 +330,12 @@ namespace EPlast.BLL.Services.UserProfiles
                  .GetFirstOrDefaultAsync(u => u.UserId == userId, m => m.Include(u => u.User));
             return cityMember != null && cityMember.IsApproved;
         }
+        public async Task<bool> IsApprovedCLubMember(string userId)
+        {
+            var clubMember = await _repoWrapper.ClubMembers
+                .GetFirstOrDefaultAsync(u => u.UserId == userId, m => m.Include(u => u.User));
+            return clubMember != null && clubMember.IsApproved;
+        }
 
         public async Task<string> GetUserGenderAsync(string userId)
         {
@@ -357,5 +367,34 @@ namespace EPlast.BLL.Services.UserProfiles
                    || currentUser.CityMembers.FirstOrDefault()?.City.RegionId
                        .Equals(focusUser.CityMembers.FirstOrDefault()?.City.RegionId) == true;
         }
+
+        public async Task<bool> IsUserInClubAsync(UserDTO currentUser, UserDTO focusUser)
+        {
+            var isUserHeadOfClub = await _userManagerService.IsInRoleAsync(currentUser, Roles.KurinHead);
+            var isUserHeadDeputyOfClub = await _userManagerService.IsInRoleAsync(currentUser, Roles.KurinHeadDeputy);
+            var isFocusUserPlastun = await _userManagerService.IsInRoleAsync(focusUser, Roles.PlastMember)
+                                     || !(await IsApprovedCLubMember(focusUser.Id));
+            bool sameClub = IsUserSameClub(currentUser, focusUser);
+            return ((isUserHeadDeputyOfClub && sameClub)||(isUserHeadOfClub && sameClub) || (isFocusUserPlastun && sameClub));
+        }
+
+        public async Task<bool> IsUserInCityAsync(UserDTO currentUser, UserDTO focusUser)
+        {
+            var isUserHeadOfCity = await _userManagerService.IsInRoleAsync(currentUser, Roles.CityHead);
+            var isUserHeadDeputyOfCity = await _userManagerService.IsInRoleAsync(currentUser, Roles.CityHeadDeputy);
+            var isFocusUserPlastun = await _userManagerService.IsInRoleAsync(focusUser, Roles.PlastMember)
+                                     || !(await IsApprovedCityMember(focusUser.Id));
+            bool sameCity = IsUserSameCity(currentUser, focusUser);
+            return ((isUserHeadDeputyOfCity && sameCity) || (isUserHeadOfCity && sameCity) || (isFocusUserPlastun && sameCity));
+        }
+
+        public async Task<bool> IsUserInRegionAsync(UserDTO currentUser, UserDTO focusUser)
+        {
+            var isUserHeadOfRegion = await _userManagerService.IsInRoleAsync(currentUser, Roles.OkrugaHead);
+            var isUserHeadDeputyOfRegion = await _userManagerService.IsInRoleAsync(currentUser, Roles.OkrugaHeadDeputy);
+            bool sameRegion = IsUserSameRegion(currentUser, focusUser);
+            return ((isUserHeadDeputyOfRegion && sameRegion) || (isUserHeadOfRegion && sameRegion));
+        }
+
     }
 }

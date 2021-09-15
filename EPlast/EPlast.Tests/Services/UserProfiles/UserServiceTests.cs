@@ -17,6 +17,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using EPlast.Resources;
+using EPlast.BLL.Services.Interfaces;
 
 namespace EPlast.Tests.Services.UserProfiles
 {
@@ -32,6 +33,7 @@ namespace EPlast.Tests.Services.UserProfiles
         private Mock<IUniqueIdService> _mockUniqueId;
         private UserDTO _userDTO;
         private ConfirmedUserDTO _confirmedUserDTO;
+        private Mock<IUserManagerService> _mockUserManageService;
 
         [SetUp]
         public void SetUp()
@@ -42,7 +44,8 @@ namespace EPlast.Tests.Services.UserProfiles
             _mockUserBlobStorage = new Mock<IUserBlobStorageRepository>();
             _mockEnv = new Mock<IWebHostEnvironment>();
             _mockUniqueId = new Mock<IUniqueIdService>();
-            _userService = new UserService(_mockRepoWrapper.Object, _mockMapper.Object, _mockUserPersonalDataService.Object, _mockUserBlobStorage.Object, _mockEnv.Object, _mockUniqueId.Object);
+            _mockUserManageService = new Mock<IUserManagerService>();
+            _userService = new UserService(_mockRepoWrapper.Object, _mockMapper.Object, _mockUserPersonalDataService.Object, _mockUserBlobStorage.Object, _mockEnv.Object,_mockUserManageService.Object , _mockUniqueId.Object);
             _confirmedUserDTO = new ConfirmedUserDTO();
             _userDTO = new UserDTO()
             {

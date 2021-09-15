@@ -792,7 +792,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
         [Test]
-        public async Task EditAdmin_Invalid_Test()
+        public async Task EditAdmin_DateIsEarlierThanToday_ReturnsBadRequest()
         {
             // Arrange
             ClubAdministrationViewModel admin = new ClubAdministrationViewModel();
