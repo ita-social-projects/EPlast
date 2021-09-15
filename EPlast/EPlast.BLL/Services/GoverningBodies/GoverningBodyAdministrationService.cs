@@ -58,7 +58,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
             if(roles.Intersect(lowerRoles).Any())
             {
-                throw new ArgumentException();
+                throw new ArgumentException("Can't add a lowrole user");
             }
             var adminRole = adminType.AdminTypeName == Roles.GoverningBodyHead ? Roles.GoverningBodyHead : Roles.GoverningBodySecretary;
             await _userManager.AddToRoleAsync(user, adminRole);
