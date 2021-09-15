@@ -139,21 +139,11 @@ namespace EPlast.WebApi.Controllers
             PersonalDataViewModel model;
             if(isThisUser ||
                      isUserAdmin ||
-<<<<<<< HEAD
+
                      await _userService.IsUserInClubAsync(currentUser,focusUser) ||
                      await _userService.IsUserInCityAsync(currentUser, focusUser) ||
                      await _userService.IsUserInRegionAsync(currentUser, focusUser)
-=======
-                     (isUserHeadOfCity && _userService.IsUserSameCity(currentUser, focusUser)) ||
-                     (isUserHeadDeputyOfCity && _userService.IsUserSameCity(currentUser, focusUser)) ||
-                     (isCurrentUserPlastun && _userService.IsUserSameCity(currentUser, focusUser)) ||
-                     (isUserHeadOfClub && _userService.IsUserSameClub(currentUser, focusUser)) ||
-                     (isUserHeadDeputyOfClub && _userService.IsUserSameClub(currentUser, focusUser)) ||
-                     (isCurrentUserPlastun && _userService.IsUserSameClub(currentUser, focusUser)) ||
-                     (isUserHeadOfRegion && _userService.IsUserSameRegion(currentUser, focusUser)) ||
-                     (isUserHeadDeputyOfRegion && _userService.IsUserSameRegion(currentUser, focusUser))
->>>>>>> 00a39bfce759e7538177b85cccf0944bebd8974a
-                     )
+            )
             {
                 model = new PersonalDataViewModel
                 {
