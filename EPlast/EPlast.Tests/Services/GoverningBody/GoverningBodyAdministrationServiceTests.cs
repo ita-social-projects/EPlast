@@ -48,6 +48,9 @@ namespace EPlast.Tests.Services.GoverningBody
             //Arrange
             _repoWrapper
                 .Setup(s => s.GoverningBodyAdministration.CreateAsync(GoverningBodyAdmin));
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string> { Roles.Admin });
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(new AdminTypeDTO());
@@ -66,6 +69,9 @@ namespace EPlast.Tests.Services.GoverningBody
             //Arrange
             _repoWrapper
                 .Setup(s => s.GoverningBodyAdministration.CreateAsync(GoverningBodyAdmin));
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string> { Roles.Admin });
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(new AdminTypeDTO());
@@ -113,6 +119,9 @@ namespace EPlast.Tests.Services.GoverningBody
                     It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
                         IIncludableQueryable<GoverningBodyAdministration, object>>>()))
                 .ReturnsAsync(new GoverningBodyAdministration());
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string> { Roles.Admin });
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(new AdminTypeDTO

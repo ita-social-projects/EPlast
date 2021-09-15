@@ -242,12 +242,20 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> EditBase64([FromBody] EditUserViewModel model)
         {
-            await _userService.UpdateAsyncForBase64(_mapper.Map<UserViewModel, UserDTO>(model.User),
-                model.ImageBase64, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID,
-                model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
-            _loggerService.LogInformation($"User was edited profile and saved in the database");
+            try
+            {
+                await _userService.UpdateAsyncForBase64(_mapper.Map<UserViewModel, UserDTO>(model.User),
+                    model.ImageBase64, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID,
+                    model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
+                _loggerService.LogInformation($"User was edited profile and saved in the database");
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _loggerService.LogInformation($"Cannot update user because: {ex.Message}");
+                return BadRequest();
+            }
         }
 
         /// <summary>
