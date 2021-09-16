@@ -56,9 +56,10 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
             //Arrange
             string oldImageName = "old image name";
             _repoWrapper
-                .Setup(x => x.GoverningBodySector.GetFirstOrDefaultAsync(
+                .SetupSequence(x => x.GoverningBodySector.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<GBSector, bool>>>(),
                     It.IsAny<Func<IQueryable<GBSector>, IIncludableQueryable<DataAccess.Entities.GoverningBody.Sector.Sector, object>>>()))
+                .ReturnsAsync(null as GBSector)
                 .ReturnsAsync(new GBSector() { Logo = oldImageName });
             var testSector = new GBSector() { Id = 1 };
             _mapper
@@ -87,9 +88,10 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
 
             string oldImageName = "old image name";
             _repoWrapper
-                .Setup(x => x.GoverningBodySector.GetFirstOrDefaultAsync(
+                .SetupSequence(x => x.GoverningBodySector.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<GBSector, bool>>>(),
                     It.IsAny<Func<IQueryable<GBSector>, IIncludableQueryable<GBSector, object>>>()))
+                .ReturnsAsync(null as GBSector)
                 .ReturnsAsync(new GBSector() { Logo = oldImageName });
 
             var testSector = new GBSector() { Id = 1 };
@@ -110,6 +112,21 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
             _repoWrapper.Verify(x => x.SaveAsync(), Times.Once);
             _blobStorage.Verify(x => x.DeleteBlobAsync(oldImageName));
             _blobStorage.Verify(x => x.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
+        }
+
+        [Test]
+        public void CreateAsync_SectorWithTheNameExists_ThrowsArgumentException()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(x => x.GoverningBodySector.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<GBSector, bool>>>(),
+                    It.IsAny<Func<IQueryable<GBSector>, IIncludableQueryable<GBSector, object>>>()))
+                .ReturnsAsync(new GBSector());
+            var testDto = new SectorDTO() { Id = 1 };
+
+            //Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _service.CreateAsync(testDto));
         }
 
         [TestCase(1)]

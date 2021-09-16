@@ -49,9 +49,14 @@ namespace EPlast.WebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            sectorDTO.Id = await _sectorService.CreateAsync(sectorDTO);
-
+            try
+            {
+                sectorDTO.Id = await _sectorService.CreateAsync(sectorDTO);
+            }
+            catch
+            {
+                return BadRequest();
+            }
             _logger.LogInformation($"Governing body sector {{{sectorDTO.Name}}} was created.");
 
             return Ok(sectorDTO.Id);

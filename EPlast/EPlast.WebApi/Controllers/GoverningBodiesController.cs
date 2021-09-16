@@ -58,8 +58,14 @@ namespace EPlast.WebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            governingBodyDTO.Id = await _governingBodiesService.CreateAsync(governingBodyDTO);
+            try
+            {
+                governingBodyDTO.Id = await _governingBodiesService.CreateAsync(governingBodyDTO);
+            }
+            catch
+            {
+                return BadRequest();
+            }
 
             _logger.LogInformation($"Governing body {{{governingBodyDTO.GoverningBodyName}}} was created.");
 
