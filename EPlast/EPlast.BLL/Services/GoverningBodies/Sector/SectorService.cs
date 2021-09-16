@@ -71,7 +71,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             var existingSector = await _repoWrapper.GoverningBodySector.GetFirstOrDefaultAsync(x => x.Name == sectorDto.Name);
             if (existingSector != null)
             {
-                throw new ArgumentException("The organization with the same name already exists");
+                throw new ArgumentException("The governing body sector with the same name already exists");
             }
             await UploadPhotoAsync(sectorDto);
             var newSector = await CreateSectorAsync(sectorDto);
