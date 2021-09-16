@@ -67,7 +67,6 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
 
         public async Task<int> CreateAsync(SectorDTO sectorDto)
         {
-
             var existingSector = await _repoWrapper.GoverningBodySector.GetFirstOrDefaultAsync(x => x.Name == sectorDto.Name);
             if (existingSector != null)
             {
