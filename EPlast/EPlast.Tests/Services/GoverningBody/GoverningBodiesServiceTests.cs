@@ -68,7 +68,7 @@ namespace EPlast.Tests.Services.GoverningBody
         }
 
         [Test]
-        public void CreateAsync_GBWithSameNameExists_Test()
+        public void CreateAsync_GBWithSameNameExists_ThrowsArgumentException()
         {
             //Arrange
             var testDTO = CreateGoverningBodyDTO;
