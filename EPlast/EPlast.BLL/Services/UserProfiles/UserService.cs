@@ -4,8 +4,10 @@ using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -14,8 +16,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.Resources;
-using EPlast.BLL.Services.Interfaces;
 
 namespace EPlast.BLL.Services.UserProfiles
 {

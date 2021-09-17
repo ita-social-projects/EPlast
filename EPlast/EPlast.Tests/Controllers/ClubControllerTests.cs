@@ -3,10 +3,11 @@ using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using EPlast.WebApi.Controllers;
 using EPlast.WebApi.Models.Club;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
@@ -17,7 +18,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using EPlast.Resources;
 
 namespace EPlast.Tests.Controllers
 {

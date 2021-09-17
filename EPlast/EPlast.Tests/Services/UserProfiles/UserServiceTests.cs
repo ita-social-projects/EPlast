@@ -33,7 +33,6 @@ namespace EPlast.Tests.Services.UserProfiles
         private Mock<IUserBlobStorageRepository> _mockUserBlobStorage;
         private Mock<IWebHostEnvironment> _mockEnv;
         private Mock<IUniqueIdService> _mockUniqueId;
-        private Mock<IClubMembersRepository> _mockClubMembersRepository;
         private UserDTO _userDTO;
         private ConfirmedUserDTO _confirmedUserDTO;
         private Mock<IUserManagerService> _mockUserManageService;
@@ -444,7 +443,6 @@ namespace EPlast.Tests.Services.UserProfiles
                 .Setup(x => x.User.GetFirstAsync(It.IsAny<Expression<Func<User, bool>>>(),
                     It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
                 .ReturnsAsync(user);
-            string userId = "Id";
             ClubMembers clubMembers = new ClubMembers() { IsApproved = true };
             _mockRepoWrapper
                 .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
@@ -492,7 +490,6 @@ namespace EPlast.Tests.Services.UserProfiles
                 .Setup(x => x.User.GetFirstAsync(It.IsAny<Expression<Func<User, bool>>>(),
                     It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
                 .ReturnsAsync(user);
-            string userId = "Id";
             ClubMembers clubMembers = new ClubMembers() { IsApproved = true };
             _mockRepoWrapper
                 .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
@@ -540,7 +537,6 @@ namespace EPlast.Tests.Services.UserProfiles
                 .Setup(x => x.User.GetFirstAsync(It.IsAny<Expression<Func<User, bool>>>(),
                     It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
                 .ReturnsAsync(user);
-            string userId = "Id";
             CityMembers cityMembers = new CityMembers() { IsApproved = true };
             _mockRepoWrapper
                 .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
@@ -588,7 +584,6 @@ namespace EPlast.Tests.Services.UserProfiles
                 .Setup(x => x.User.GetFirstAsync(It.IsAny<Expression<Func<User, bool>>>(),
                     It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
                 .ReturnsAsync(user);
-            string userId = "Id";
             CityMembers cityMembers = new CityMembers() { IsApproved = true };
             _mockRepoWrapper
                 .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
@@ -636,7 +631,6 @@ namespace EPlast.Tests.Services.UserProfiles
                 .Setup(x => x.User.GetFirstAsync(It.IsAny<Expression<Func<User, bool>>>(),
                     It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
                 .ReturnsAsync(user);
-            string userId = "Id";
             RegionFollowers regionFollowers = new RegionFollowers();
             _mockRepoWrapper
                 .Setup(x => x.RegionFollowers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionFollowers, bool>>>(),
@@ -684,7 +678,6 @@ namespace EPlast.Tests.Services.UserProfiles
                 .Setup(x => x.User.GetFirstAsync(It.IsAny<Expression<Func<User, bool>>>(),
                     It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
                 .ReturnsAsync(user);
-            string userId = "Id";
             RegionFollowers regionFollowers = new RegionFollowers();
             _mockRepoWrapper
                 .Setup(x => x.RegionFollowers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionFollowers, bool>>>(),

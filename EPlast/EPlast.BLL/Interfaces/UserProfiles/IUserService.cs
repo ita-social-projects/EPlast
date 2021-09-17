@@ -3,9 +3,7 @@ using EPlast.BLL.DTO.UserProfiles;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using EPlast.DataAccess.Entities;
 namespace EPlast.BLL.Interfaces.UserProfiles
 {
     public interface IUserService

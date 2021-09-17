@@ -4,20 +4,20 @@ using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
+using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using EPlast.WebApi.Models.Approver;
 using EPlast.WebApi.Models.User;
 using EPlast.WebApi.Models.UserModels;
 using EPlast.WebApi.Models.UserModels.UserProfileFields;
-using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.DataAccess.Entities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Http;
 
 namespace EPlast.WebApi.Controllers
 {
