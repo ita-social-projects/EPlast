@@ -175,7 +175,7 @@ namespace EPlast.BLL.Services.EventUser
             try
             {
                 var eventToApprove = await repoWrapper.Event.GetFirstAsync(r => r.ID == id);
-                eventToApprove.EventStatusID = await eventStatusManager.GetStatusIdAsync("Затверджений(-на)");
+                eventToApprove.EventStatusID = await eventStatusManager.GetStatusIdAsync("Затверджено");
 
                 repoWrapper.Event.Update(eventToApprove);
                 await repoWrapper.SaveAsync();
