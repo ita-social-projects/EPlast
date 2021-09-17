@@ -12,6 +12,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.BLL.Interfaces.GoverningBodies.Sector;
+using System;
 
 namespace EPlast.Tests.Controllers
 {
@@ -70,6 +71,21 @@ namespace EPlast.Tests.Controllers
 
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        }
+
+        [Test]
+        public async Task Create_ThrowsArgumentException_BadRequestResult()
+        {
+            //Arrange
+            _sectorService
+                .Setup(x => x.CreateAsync(It.IsAny<SectorDTO>()))
+                .ThrowsAsync(new ArgumentException());
+
+            //Act
+            var result = await _controller.Create(CreateSectorDto());
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
