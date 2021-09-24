@@ -87,5 +87,19 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
 
             return userIds;
         }
+        public async Task<int> EditAnnouncement(GoverningBodyAnnouncementUserDTO annoncement)
+        {
+            GoverningBodyAnnouncement updatedAnnouncement = new GoverningBodyAnnouncement()
+            {
+                Id = annoncement.Id,
+                Date = annoncement.Date,
+                UserId = annoncement.UserId,
+                User = _mapper.Map<UserDTO, User>(annoncement.User),
+                Text = annoncement.Text
+            };
+            _repoWrapper.GoverningBodyAnnouncement.Update(updatedAnnouncement);
+            await _repoWrapper.SaveAsync();
+            return updatedAnnouncement.Id;
+        }
     }
 }

@@ -311,6 +311,18 @@ namespace EPlast.WebApi.Controllers
             return BadRequest(ModelState);
         }
 
+        [HttpPut("EditAnnouncement/{id:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> EditAnnoncement(GoverningBodyAnnouncementUserDTO announcement)
+        {
+            if (ModelState.IsValid)
+            {
+                await _governingBodyAnnouncementService.EditAnnouncement(announcement);
+                return Ok();
+            }
+            return BadRequest();
+        }
+
         [HttpDelete("DeleteAnnouncement/{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
