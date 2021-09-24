@@ -217,7 +217,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
             var result = await _governingBodyAnnouncementService.EditAnnouncement(new GoverningBodyAnnouncementUserDTO(){Id = 1});
 
             //Assert
-            Assert.AreEqual(result,1);
+            Assert.AreEqual(1, result);
             _repoWrapper.Verify(x => x.GoverningBodyAnnouncement.Update(It.IsAny<GoverningBodyAnnouncement>()));
             _repoWrapper.Verify(x=> x.SaveAsync());
         }
