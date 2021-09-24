@@ -313,7 +313,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPut("EditAnnouncement/{id:int}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> EditAnnoncement(GoverningBodyAnnouncementUserDTO announcement)
+        public async Task<IActionResult> EditAnnouncement(GoverningBodyAnnouncementUserDTO announcement)
         {
             if (ModelState.IsValid)
             {

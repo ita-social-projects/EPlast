@@ -202,6 +202,26 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
             Assert.IsInstanceOf<List<string>>(result);
         }
 
+        [Test]
+        public async Task EditAnnouncement_ReturnsId()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(x => x.GoverningBodyAnnouncement.Update(It.IsAny<GoverningBodyAnnouncement>()))
+                .Callback(() => { });
+            _repoWrapper
+                .Setup(x => x.SaveAsync())
+                .Callback(() => { });
+
+            //Act
+            var result = await _governingBodyAnnouncementService.EditAnnouncement(new GoverningBodyAnnouncementUserDTO(){Id = 1});
+
+            //Assert
+            Assert.AreEqual(result,1);
+            _repoWrapper.Verify(x => x.GoverningBodyAnnouncement.Update(It.IsAny<GoverningBodyAnnouncement>()));
+            _repoWrapper.Verify(x=> x.SaveAsync());
+        }
+
         readonly GoverningBodyAnnouncement nullGoverningBodyAnnouncement = null;
 
         private IEnumerable<GoverningBodyAnnouncement> GetTestPlastAnnouncement()
