@@ -647,8 +647,6 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<BadRequestResult>(res);
         }
 
-
-
         private const int TestId = 3;
 
         private string GetStringTestId()
