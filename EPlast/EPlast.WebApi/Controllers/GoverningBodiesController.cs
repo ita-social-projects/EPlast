@@ -58,8 +58,14 @@ namespace EPlast.WebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            governingBodyDTO.Id = await _governingBodiesService.CreateAsync(governingBodyDTO);
+            try
+            {
+                governingBodyDTO.Id = await _governingBodiesService.CreateAsync(governingBodyDTO);
+            }
+            catch
+            {
+                return BadRequest();
+            }
 
             _logger.LogInformation($"Governing body {{{governingBodyDTO.GoverningBodyName}}} was created.");
 
@@ -303,6 +309,18 @@ namespace EPlast.WebApi.Controllers
                 return Ok();
             }
             return BadRequest(ModelState);
+        }
+
+        [HttpPut("EditAnnouncement/{id:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> EditAnnouncement(GoverningBodyAnnouncementUserDTO announcement)
+        {
+            if (ModelState.IsValid)
+            {
+                await _governingBodyAnnouncementService.EditAnnouncement(announcement);
+                return Ok();
+            }
+            return BadRequest();
         }
 
         [HttpDelete("DeleteAnnouncement/{id:int}")]

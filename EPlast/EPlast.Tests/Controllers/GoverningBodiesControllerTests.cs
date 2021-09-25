@@ -98,6 +98,22 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task Create_ThrowsArgumentException_ReturnsBadRequest()
+        {
+            // Arrange
+            var testDTO = CreateGoverningBodyDTO;
+            _governingBodiesService
+                .Setup(x => x.CreateAsync(It.IsAny<GoverningBodyDTO>()))
+                .ThrowsAsync(new ArgumentException());
+
+            // Act
+            var result = await _governingBodiesController.Create(testDTO);
+
+            // Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
+        }
+
+        [Test]
         public async Task Edit_ModelStateNotValid_Test()
         {
             // Arrange
@@ -584,6 +600,36 @@ namespace EPlast.Tests.Controllers
             //Assert
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+        [Test]
+        public async Task EditAnnouncement_ModelStateIsValid_ReturnsOk()
+        {
+            //Arrange
+            _governingBodyAnnouncementService
+                .Setup(x => x.EditAnnouncement(It.IsAny<GoverningBodyAnnouncementUserDTO>()))
+                .ReturnsAsync(1);
+
+            //Act
+            var res = await _governingBodiesController.EditAnnouncement(new GoverningBodyAnnouncementUserDTO());
+
+            //Assert
+            Assert.IsInstanceOf<OkResult>(res);
+        }
+
+        [Test]
+        public async Task EditAnnouncement_ModeStatIsNotValid_ReturnsBadRequest()
+        {
+            //Arrange
+            _governingBodiesController.ModelState.AddModelError("key", "error message");
+            _governingBodyAnnouncementService
+                .Setup(x => x.EditAnnouncement(It.IsAny<GoverningBodyAnnouncementUserDTO>()))
+                .ReturnsAsync(1);
+
+            //Act
+            var res = await _governingBodiesController.EditAnnouncement(new GoverningBodyAnnouncementUserDTO());
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(res);
         }
 
         [Test]

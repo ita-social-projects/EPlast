@@ -40,6 +40,11 @@ namespace EPlast.BLL.Services.GoverningBodies
 
         public async Task<int> CreateAsync(GoverningBodyDTO governingBodyDto)
         {
+            var existingGoverningBody = await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(x => x.OrganizationName == governingBodyDto.GoverningBodyName);
+            if(existingGoverningBody != null)
+            {
+                throw new ArgumentException("The governing body with the same name already exists");
+            }
             await UploadPhotoAsync(governingBodyDto);
             var governingBody = await CreateGoverningBodyAsync(governingBodyDto);
 
