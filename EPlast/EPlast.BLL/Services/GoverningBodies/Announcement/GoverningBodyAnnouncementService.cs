@@ -87,7 +87,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
 
             return userIds;
         }
-        public async Task<int> EditAnnouncement(GoverningBodyAnnouncementUserDTO annoncement)
+        public async Task<int> EditAnnouncement(GoverningBodyAnnouncementUserDTO announcement)
         {
             GoverningBodyAnnouncement updatedAnnouncement = new GoverningBodyAnnouncement()
             {
