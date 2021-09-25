@@ -91,11 +91,11 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
         {
             GoverningBodyAnnouncement updatedAnnouncement = new GoverningBodyAnnouncement()
             {
-                Id = annoncement.Id,
-                Date = annoncement.Date,
-                UserId = annoncement.UserId,
-                User = _mapper.Map<UserDTO, User>(annoncement.User),
-                Text = annoncement.Text
+                Id = announcement.Id,
+                Date = announcement.Date,
+                UserId = announcement.UserId,
+                User = _mapper.Map<UserDTO, User>(announcement.User),
+                Text = announcement.Text
             };
             _repoWrapper.GoverningBodyAnnouncement.Update(updatedAnnouncement);
             await _repoWrapper.SaveAsync();
