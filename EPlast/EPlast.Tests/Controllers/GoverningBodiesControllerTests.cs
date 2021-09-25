@@ -602,7 +602,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
         [Test]
-        public async Task EditAnnouncement_ModeStatIsValid_ReturnsOk()
+        public async Task EditAnnouncement_ModeStateIsValid_ReturnsOk()
         {
             //Arrange
             _governingBodyAnnouncementService
