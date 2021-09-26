@@ -346,7 +346,6 @@ namespace EPlast.WebApi.Controllers
 
         [HttpGet("GetAllAnnouncements")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
-
         public async Task<IActionResult> GetAllAnnouncement()
         {
             var announcements = await _governingBodyAnnouncementService.GetAllAnnouncementAsync();
