@@ -1,19 +1,19 @@
 {
   "Admin": {
-      "ViewInfo": true,
-      "AddDecision": true,
-      "EditGB": true,
-      "DeleteGB": true,
-      "CreateDirection": true,
-      "AddGBSecretary": true,
-      "GoToSecretaryProfile": true,
-      "EditRBMembers": true,
-      "DeleteGBMembers": true,
-      "BecomeRBMember": true,
-      "ManipulatePoster": true,
-      "ManipulateDocument": true,
-      "AddGBSector": true,
-      "ViewAnnouncements": true
+    "ViewInfo": true,
+    "AddDecision": true,
+    "EditGB": true,
+    "DeleteGB": true,
+    "CreateDirection": true,
+    "AddGBSecretary": true,
+    "GoToSecretaryProfile": true,
+    "EditRBMembers": true,
+    "DeleteGBMembers": true,
+    "BecomeRBMember": true,
+    "ManipulatePoster": true,
+    "ManipulateDocument": true,
+    "AddGBSector": true,
+    "ViewAnnouncements": true
   },
   "Голова Керівного Органу": {
       "ViewInfo": true,
