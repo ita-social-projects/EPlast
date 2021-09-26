@@ -1,75 +1,94 @@
 ﻿{
-  "Admin": {
-    "ViewInfo": true,
-    "EditSector": true,
-    "DeleteSector": true,
-    "AddSecretary": true,
-    "GoToSecretaryProfile": true,
-    "ManipulatePoster": true,
-    "ManipulateDocument": true
-  },
-  "Голова Керівного Органу": {
-    "ViewInfo": true,
-    "EditSector": true,
-    "DeleteSector": true,
-    "AddSecretary": true,
-    "GoToSecretaryProfile": true,
-    "ManipulatePoster": true,
-    "ManipulateDocument": true
-  },
-  "Голова Напряму Керівного Органу": {
-    "ViewInfo": true,
-    "EditSector": true,
-    "DeleteSector": true,
-    "AddSecretary": true,
-    "GoToSecretaryProfile": true,
-    "ManipulatePoster": true,
-    "ManipulateDocument": true
-  },
-  "Голова Округи": {
-    "ViewInfo": true,
-    "EditSector": false,
-    "DeleteSector": false,
-    "AddSecretary": false,
-    "GoToSecretaryProfile": true,
-    "ManipulatePoster": false,
-    "ManipulateDocument": false
-  },
-  "Голова Станиці": {
-    "ViewInfo": true,
-    "EditSector": false,
-    "DeleteSector": false,
-    "AddSecretary": false,
-    "GoToSecretaryProfile": true,
-    "ManipulatePoster": false,
-    "ManipulateDocument": false
-  },
-  "Голова Куреня": {
-    "ViewInfo": true,
-    "EditSector": false,
-    "DeleteSector": false,
-    "AddSecretary": false,
-    "GoToSecretaryProfile": true,
-    "ManipulatePoster": false,
-    "ManipulateDocument": false
-  },
-  "Прихильник": {
-    "ViewInfo": true,
-    "EditSector": false,
-    "DeleteSector": false,
-    "AddSecretary": false,
-    "GoToSecretaryProfile": true,
-    "ManipulatePoster": false,
-    "ManipulateDocument": false
-  },
-  "Дійсний член організації": {
-    "ViewInfo": true,
-    "EditSector": false,
-    "DeleteSector": false,
-    "AddSecretary": false,
-    "GoToSecretaryProfile": false,
-    "DeleteGBMembers": false,
-    "ManipulatePoster": false,
-    "ManipulateDocument": false
-  }
+    "Admin": {
+        "ViewInfo": true,
+        "EditSector": true,
+        "DeleteSector": true,
+        "AddSecretary": true,
+        "GoToSecretaryProfile": true,
+        "ManipulatePoster": true,
+        "ManipulateDocument": true,
+        "ViewAnnouncements": true
+    },
+    "Голова Керівного Органу": {
+        "ViewInfo": true,
+        "EditSector": true,
+        "DeleteSector": true,
+        "AddSecretary": true,
+        "GoToSecretaryProfile": true,
+        "ManipulatePoster": true,
+        "ManipulateDocument": true,
+        "ViewAnnouncements": true
+    },
+    "Голова Напряму Керівного Органу": {
+        "ViewInfo": true,
+        "EditSector": true,
+        "DeleteSector": true,
+        "AddSecretary": true,
+        "GoToSecretaryProfile": true,
+        "ManipulatePoster": true,
+        "ManipulateDocument": true,
+        "ViewAnnouncements": true
+    },
+    "Голова Округи": {
+        "ViewInfo": true,
+        "EditSector": false,
+        "DeleteSector": false,
+        "AddSecretary": false,
+        "GoToSecretaryProfile": true,
+        "ManipulatePoster": false,
+        "ManipulateDocument": false,
+        "ViewAnnouncements": true
+    },
+    "Голова Станиці": {
+        "ViewInfo": true,
+        "EditSector": false,
+        "DeleteSector": false,
+        "AddSecretary": false,
+        "GoToSecretaryProfile": true,
+        "ManipulatePoster": false,
+        "ManipulateDocument": false,
+        "ViewAnnouncements": true
+    },
+    "Голова Куреня": {
+        "ViewInfo": true,
+        "EditSector": false,
+        "DeleteSector": false,
+        "AddSecretary": false,
+        "GoToSecretaryProfile": true,
+        "ManipulatePoster": false,
+        "ManipulateDocument": false,
+        "ViewAnnouncements": true
+    },
+    "Прихильник": {
+        "ViewInfo": true,
+        "EditSector": false,
+        "DeleteSector": false,
+        "AddSecretary": false,
+        "GoToSecretaryProfile": true,
+        "ManipulatePoster": false,
+        "ManipulateDocument": false,
+        "ViewAnnouncements": true
+    },
+    "Дійсний член організації": {
+        "ViewInfo": true,
+        "EditSector": false,
+        "DeleteSector": false,
+        "AddSecretary": false,
+        "GoToSecretaryProfile": false,
+        "DeleteGBMembers": false,
+        "ManipulatePoster": false,
+        "ManipulateDocument": false,
+        "ViewAnnouncements": true
+    },
+    "Зареєстрований користувач": {
+        "ViewInfo": true,
+        "EditSector": false,
+        "DeleteSector": false,
+        "AddSecretary": false,
+        "GoToSecretaryProfile": false,
+        "DeleteGBMembers": false,
+        "ManipulatePoster": false,
+        "ManipulateDocument": false,
+        "ViewAnnouncements": false
+    }
 }

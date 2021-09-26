@@ -1,90 +1,123 @@
 {
-  "Admin": {
-    "CreateGB": true,
-    "ViewInfo": true,
-    "ViewDecisions": true,
-    "AddDecision": true,
-    "EditRB": true,
-    "ManipulateDocument": true
-  },
-  "Голова Керівного Органу": {
-    "CreateGB": true,
-    "ViewInfo": true,
-    "ViewDecisions": true,
-    "AddDecision": true,
-    "EditRB": true,
-    "ManipulateDocument": true
-  },
-  "Голова Округи": {
-    "CreateGB": false,
-    "ViewInfo": true,
-    "ViewDecisions": true,
-    "AddDecision": false,
-    "EditRB": false,
-    "ManipulateDocument": false
-  },
-  "Заступник Голови Округи": {
-    "CreateGB": false,
-    "ViewInfo": true,
-    "ViewDecisions": true,
-    "AddDecision": false,
-    "EditRB": false,
-    "ManipulateDocument": false
-  },
-  "Голова Станиці": {
-    "CreateGB": false,
-    "ViewInfo": true,
-    "ViewDecisions": true,
-    "AddDecision": false,
-    "EditRB": false,
-    "ManipulateDocument": false
-  },
-  "Заступник Голови Станиці": {
-    "CreateGB": false,
-    "ViewInfo": true,
-    "ViewDecisions": true,
-    "AddDecision": false,
-    "EditRB": false,
-    "ManipulateDocument": false
-  },
-  "Голова Куреня": {
-    "CreateGB": false,
-    "ViewInfo": true,
-    "ViewDecisions": true,
-    "AddDecision": false,
-    "EditRB": false,
-    "ManipulateDocument": false
-  },
-  "Заступник Голови Куреня": {
-    "CreateGB": false,
-    "ViewInfo": true,
-    "ViewDecisions": true,
-    "AddDecision": false,
-    "EditRB": false,
-    "ManipulateDocument": false
-  },
-  "Прихильник": {
-    "CreateGB": false,
-    "ViewInfo": true,
-    "ViewDecisions": false,
-    "AddDecision": false,
-    "EditRB": false,
-    "ManipulateDocument": false
-  },
-  "Дійсний член організації": {
-    "CreateGB": false,
-    "ViewInfo": true,
-    "ViewDecisions": true,
-    "AddDecision": false,
-    "EditRB": false,
-    "ManipulateDocument": false
-  },
-  "Зареєстрований користувач": {
-    "CreateGB": false,
-    "ViewInfo": true,
-    "ViewDecisions": false,
-    "AddDecision": false,
-    "EditRB": false,
-    "ManipulateDocument": false
-  }
+    "Admin": {
+        "CreateGB": true,
+        "ViewInfo": true,
+        "ViewDecisions": true,
+        "AddDecision": true,
+        "EditRB": true,
+        "ManipulateDocument": true,
+        "AddAnnouncement": true,
+        "DeleteAnnouncement": true,
+        "EditAnnouncement": true
+    },
+    "Голова Керівного Органу": {
+        "CreateGB": true,
+        "ViewInfo": true,
+        "ViewDecisions": true,
+        "AddDecision": true,
+        "EditRB": true,
+        "ManipulateDocument": true,
+        "AddAnnouncement": true,
+        "DeleteAnnouncement": true,
+        "EditAnnouncement": true
+    },
+    "Голова Округи": {
+        "CreateGB": false,
+        "ViewInfo": true,
+        "ViewDecisions": true,
+        "AddDecision": false,
+        "EditRB": false,
+        "ManipulateDocument": false,
+        "AddAnnouncement": false,
+        "DeleteAnnouncement": false,
+        "EditAnnouncement": false
+    },
+    "Заступник Голови Округи": {
+        "CreateGB": false,
+        "ViewInfo": true,
+        "ViewDecisions": true,
+        "AddDecision": false,
+        "EditRB": false,
+        "ManipulateDocument": false,
+        "AddAnnouncement": false,
+        "DeleteAnnouncement": false,
+        "EditAnnouncement": false
+    },
+    "Голова Станиці": {
+        "CreateGB": false,
+        "ViewInfo": true,
+        "ViewDecisions": true,
+        "AddDecision": false,
+        "EditRB": false,
+        "ManipulateDocument": false,
+        "AddAnnouncement": false,
+        "DeleteAnnouncement": false,
+        "EditAnnouncement": false
+    },
+    "Заступник Голови Станиці": {
+        "CreateGB": false,
+        "ViewInfo": true,
+        "ViewDecisions": true,
+        "AddDecision": false,
+        "EditRB": false,
+        "ManipulateDocument": false,
+        "AddAnnouncement": false,
+        "DeleteAnnouncement": false,
+        "EditAnnouncement": false
+    },
+    "Голова Куреня": {
+        "CreateGB": false,
+        "ViewInfo": true,
+        "ViewDecisions": true,
+        "AddDecision": false,
+        "EditRB": false,
+        "ManipulateDocument": false,
+        "AddAnnouncement": false,
+        "DeleteAnnouncement": false,
+        "EditAnnouncement": false
+    },
+    "Заступник Голови Куреня": {
+        "CreateGB": false,
+        "ViewInfo": true,
+        "ViewDecisions": true,
+        "AddDecision": false,
+        "EditRB": false,
+        "ManipulateDocument": false,
+        "AddAnnouncement": false,
+        "DeleteAnnouncement": false,
+        "EditAnnouncement": false
+    },
+    "Прихильник": {
+        "CreateGB": false,
+        "ViewInfo": true,
+        "ViewDecisions": false,
+        "AddDecision": false,
+        "EditRB": false,
+        "ManipulateDocument": false,
+        "AddAnnouncement": false,
+        "DeleteAnnouncement": false,
+        "EditAnnouncement": false
+    },
+    "Дійсний член організації": {
+        "CreateGB": false,
+        "ViewInfo": true,
+        "ViewDecisions": true,
+        "AddDecision": false,
+        "EditRB": false,
+        "ManipulateDocument": false,
+        "AddAnnouncement": false,
+        "DeleteAnnouncement": false,
+        "EditAnnouncement": false
+    },
+    "Зареєстрований користувач": {
+        "CreateGB": false,
+        "ViewInfo": true,
+        "ViewDecisions": false,
+        "AddDecision": false,
+        "EditRB": false,
+        "ManipulateDocument": false,
+        "AddAnnouncement": false,
+        "DeleteAnnouncement": false,
+        "EditAnnouncement": false
+    }
 }
