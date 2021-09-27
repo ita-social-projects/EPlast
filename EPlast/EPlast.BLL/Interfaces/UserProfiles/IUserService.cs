@@ -3,10 +3,7 @@ using EPlast.BLL.DTO.UserProfiles;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using EPlast.DataAccess.Entities;
-
 namespace EPlast.BLL.Interfaces.UserProfiles
 {
     public interface IUserService
@@ -78,7 +75,7 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         Task<string> GetImageBase64Async(string fileName);
 
         Task<bool> IsApprovedCityMember(string userId);
-
+        Task<bool> IsApprovedCLubMember(string userId);
         /// <summary>
         /// Get user gender
         /// </summary>
@@ -86,8 +83,12 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         /// <returns>User gender string</returns>
         Task<string> GetUserGenderAsync(string userId);
 
+        Task<bool> IsUserInClubAsync(UserDTO currentUser, UserDTO focusUser);
+        Task<bool> IsUserInCityAsync(UserDTO currentUser, UserDTO focusUser);
+        Task<bool> IsUserInRegionAsync(UserDTO currentUser, UserDTO focusUser);
         bool IsUserSameCity(UserDTO currentUser, UserDTO focusUser);
         bool IsUserSameClub(UserDTO currentUser, UserDTO focusUser);
         bool IsUserSameRegion(UserDTO currentUser, UserDTO focusUser);
+
     }
 }
