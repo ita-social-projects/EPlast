@@ -616,7 +616,7 @@ namespace EPlast.Tests.Controllers
         private LocalizedString GetLoginInCorrectPassword()
         {
             var localizedString = new LocalizedString("Login-InCorrectPassword",
-                "Ви ввели неправильний пароль, спробуйте ще раз");
+                "Невірний пароль. Спробуйте, будь ласка, ще раз");
             return localizedString;
         }
 
