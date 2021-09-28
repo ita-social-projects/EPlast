@@ -1,25 +1,27 @@
 ﻿using AutoMapper;
+using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
+using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using EPlast.WebApi.Controllers;
+using EPlast.WebApi.Models.Approver;
+using EPlast.WebApi.Models.User;
+using EPlast.WebApi.Models.UserModels;
+using EPlast.WebApi.Models.UserModels.UserProfileFields;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using EPlast.WebApi.Models.UserModels;
-using EPlast.WebApi.Models.UserModels.UserProfileFields;
-using EPlast.BLL.DTO;
 using System.Security.Claims;
-using EPlast.WebApi.Models.User;
-using EPlast.WebApi.Models.Approver;
-using Microsoft.AspNetCore.Identity;
-using EPlast.DataAccess.Entities;
-using EPlast.Resources;
-using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
+using ClubMembers = EPlast.DataAccess.Entities.ClubMembers;
+using StatusCodeResult = Microsoft.AspNetCore.Mvc.StatusCodeResult;
 
 namespace EPlast.Tests.Controllers
 {
@@ -645,10 +647,13 @@ namespace EPlast.Tests.Controllers
         public async Task EditBase64_ReturnsOkResult()
         {
             // Assert
+            var id = "1";
+            _userManager.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(id);
             _mapper
                 .Setup((x) => x.Map<UserViewModel, UserDTO>(It.IsAny<UserViewModel>()))
                 .Returns(CreateFakeUser());
 
+            _userManager.Setup(x => x.IsInRoleAsync(It.IsAny<User>(), Roles.Admin)).ReturnsAsync(true);
             _userService
                 .Setup((x) => x.UpdateAsyncForBase64(It.IsAny<UserDTO>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<int?>()));
 
@@ -659,8 +664,60 @@ namespace EPlast.Tests.Controllers
             _userService.Verify();
             _mapper.Verify();
             _loggerService.Verify((x) => x.LogInformation(It.IsAny<string>()), Times.Once);
-            Assert.IsInstanceOf<OkResult>(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
         }
+
+        [Test]
+        public async Task EditBase64_Returns403Forbidden()
+        {
+            // Assert
+            var expected = StatusCodes.Status403Forbidden;
+            _mapper
+                .Setup((x) => x.Map<UserViewModel, UserDTO>(It.IsAny<UserViewModel>()))
+                .Returns(CreateFakeUser());
+
+            _userManager.Setup(x => x.IsInRoleAsync(It.IsAny<User>(), Roles.Admin)).ReturnsAsync(false);
+            _userService
+                .Setup((x) => x.UpdateAsyncForBase64(It.IsAny<UserDTO>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<int?>()));
+
+            // Act
+            var result = await  _userController.EditBase64(CreateFakeEditUserViewModel());
+            var actual = (result as StatusCodeResult).StatusCode;
+            // Assert
+            _userService.Verify();
+            _mapper.Verify();
+            _loggerService.Verify((x) => x.LogInformation(It.IsAny<string>()), Times.Once);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public async Task EditBase64_ReturnsBadRequest()
+        {
+            // Assert
+            var id = "1";
+            _userManager.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(id);
+            _mapper
+                .Setup((x) => x.Map<UserViewModel, UserDTO>(It.IsAny<UserViewModel>()))
+                .Returns(CreateFakeUser());
+            _mapper
+                .Setup((x) => x.Map<UserViewModel, UserDTO>(It.IsAny<UserViewModel>()))
+                .Returns(CreateFakeUser());
+
+            _userManager.Setup(x => x.IsInRoleAsync(It.IsAny<User>(), Roles.Admin)).ReturnsAsync(true);
+            _userService
+                .Setup((x) => x.UpdateAsyncForBase64(It.IsAny<UserDTO>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<int?>()))
+                .ThrowsAsync(new ArgumentException("Wrong arguments!"));
+
+            // Act
+            var result = await _userController.EditBase64(CreateFakeEditUserViewModel());
+
+            // Assert
+            _userService.Verify();
+            _mapper.Verify();
+            _loggerService.Verify((x) => x.LogInformation(It.IsAny<string>()), Times.Once);
+            Assert.IsInstanceOf<BadRequestResult>(result);
+        }
+
 
         [Test]
         public async Task Approvers_NullUserIdString_ReturnsNotFoundResult()
