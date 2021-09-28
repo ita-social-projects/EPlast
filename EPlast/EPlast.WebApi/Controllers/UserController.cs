@@ -119,7 +119,7 @@ namespace EPlast.WebApi.Controllers
             var currentUser = await _userService.GetUserAsync(currentUserId);
             var focusUser = await _userService.GetUserAsync(focusUserId);
 
-            if (focusUser == null)
+            if(focusUser == null)
             {
                 _loggerService.LogError($"User not found. UserId:{focusUserId}");
                 return NotFound();
@@ -127,17 +127,9 @@ namespace EPlast.WebApi.Controllers
             var time = _userService.CheckOrAddPlastunRole(focusUser.Id, focusUser.RegistredOn);
             var isThisUser = currentUserId == focusUserId;
             var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
-            var isUserHeadOfCity = await _userManagerService.IsInRoleAsync(currentUser, Roles.CityHead);
-            var isUserHeadDeputyOfCity = await _userManagerService.IsInRoleAsync(currentUser, Roles.CityHeadDeputy);
-            var isUserHeadOfClub = await _userManagerService.IsInRoleAsync(currentUser, Roles.KurinHead);
-            var isUserHeadDeputyOfClub = await _userManagerService.IsInRoleAsync(currentUser, Roles.KurinHeadDeputy);
-            var isUserHeadOfRegion = await _userManagerService.IsInRoleAsync(currentUser, Roles.OkrugaHead);
-            var isUserHeadDeputyOfRegion = await _userManagerService.IsInRoleAsync(currentUser, Roles.OkrugaHeadDeputy);
-            var isCurrentUserPlastun = await _userManagerService.IsInRoleAsync(currentUser, Roles.PlastMember);
             var isFocusUserSupporter = await _userManagerService.IsInRoleAsync(focusUser, Roles.Supporter);
             var isFocusUserPlastun = await _userManagerService.IsInRoleAsync(focusUser, Roles.PlastMember)
-                || !(isFocusUserSupporter
-                && await _userService.IsApprovedCityMember(focusUserId));
+                || !(isFocusUserSupporter && (await _userService.IsApprovedCityMember(focusUserId) || await _userService.IsApprovedCLubMember(focusUserId)));
             if (await _userManagerService.IsInRoleAsync(currentUser, Roles.RegisteredUser) && !isThisUser)
             {
                 _loggerService.LogError($"User (id: {currentUserId}) hasn't access to profile (id: {focusUserId})");
@@ -145,15 +137,13 @@ namespace EPlast.WebApi.Controllers
             }
 
             PersonalDataViewModel model;
-            if (isThisUser ||
+            if(isThisUser ||
                      isUserAdmin ||
-                     (isUserHeadOfCity && _userService.IsUserSameCity(currentUser, focusUser)) ||
-                     (isUserHeadDeputyOfCity && _userService.IsUserSameCity(currentUser, focusUser)) ||
-                     (isUserHeadOfClub && _userService.IsUserSameClub(currentUser, focusUser)) ||
-                     (isUserHeadDeputyOfClub && _userService.IsUserSameClub(currentUser, focusUser)) ||
-                     (isUserHeadOfRegion && _userService.IsUserSameRegion(currentUser, focusUser)) ||
-                     (isUserHeadDeputyOfRegion && _userService.IsUserSameRegion(currentUser, focusUser)) ||
-                     (isCurrentUserPlastun && _userService.IsUserSameCity(currentUser, focusUser)))
+
+                     await _userService.IsUserInClubAsync(currentUser,focusUser) ||
+                     await _userService.IsUserInCityAsync(currentUser, focusUser) ||
+                     await _userService.IsUserInRegionAsync(currentUser, focusUser)
+            )
             {
                 model = new PersonalDataViewModel
                 {

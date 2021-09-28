@@ -299,7 +299,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("AddAnnouncement/{text}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
         public async Task<IActionResult> AddAnnouncement(string text)
         {
             if (ModelState.IsValid)
@@ -311,7 +311,20 @@ namespace EPlast.WebApi.Controllers
             return BadRequest(ModelState);
         }
 
+        [HttpPut("EditAnnouncement/{id:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
+        public async Task<IActionResult> EditAnnouncement(GoverningBodyAnnouncementUserDTO announcement)
+        {
+            if (ModelState.IsValid)
+            {
+                await _governingBodyAnnouncementService.EditAnnouncement(announcement);
+                return Ok();
+            }
+            return BadRequest();
+        }
+
         [HttpDelete("DeleteAnnouncement/{id:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
         public async Task<IActionResult> Delete(int id)
         {
             await _governingBodyAnnouncementService.DeleteAnnouncementAsync(id);
@@ -332,6 +345,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("GetAllAnnouncements")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetAllAnnouncement()
         {
             var announcements = await _governingBodyAnnouncementService.GetAllAnnouncementAsync();
