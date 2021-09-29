@@ -51,7 +51,7 @@ namespace EPlast.BLL.Services.Club
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
             var headType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.KurinHead);
             var headDeputyType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.KurinHeadDeputy);
-            adminDTO.Status = DateTime.Now < adminDTO.EndDate || adminDTO.EndDate == null;
+            adminDTO.Status = DateTime.Today < adminDTO.EndDate || adminDTO.EndDate == null;
             var newAdmin = new ClubAdministration()
             {
                 StartDate = adminDTO.StartDate ?? DateTime.Now,
@@ -189,7 +189,7 @@ namespace EPlast.BLL.Services.Club
 
         public async Task<IEnumerable<ClubAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string userId)
         {
-            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == userId && a.EndDate < DateTime.Now,
+            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == userId && !a.Status,
                  include:
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(c => c.Club)
                  );
