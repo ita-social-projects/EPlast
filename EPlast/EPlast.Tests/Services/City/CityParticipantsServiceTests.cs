@@ -262,7 +262,11 @@ namespace EPlast.Tests.Services.City
             _repoWrapper
                 .Setup(x => x.RegionAdministration.GetAllAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.RegionAdministration>, IIncludableQueryable<DataAccess.Entities.RegionAdministration, object>>>()))
-                .ReturnsAsync(value: new List<RegionAdministration>());
+                .ReturnsAsync(value: new List<RegionAdministration>()
+                {
+                    new RegionAdministration() { ID = fakeId, EndDate = new DateTime(2022, 7, 20) },
+                    new RegionAdministration() { ID = fakeId+1, EndDate = new DateTime(2022, 7, 20) }
+                });
 
             // Act
             var result = await _cityParticipantsService.AddFollowerAsync(It.IsAny<int>(), It.IsAny<string>());
@@ -313,7 +317,7 @@ namespace EPlast.Tests.Services.City
             _repoWrapper
                 .Setup(x => x.RegionAdministration.GetAllAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.RegionAdministration>, IIncludableQueryable<DataAccess.Entities.RegionAdministration, object>>>()))
-                .ReturnsAsync(value:new List<RegionAdministration>(1));
+                .ReturnsAsync(value:new List<RegionAdministration>());
             _repoWrapper
                 .Setup(x => x.RegionAdministration.Update(It.IsAny<RegionAdministration>()));
             // Act
@@ -323,6 +327,7 @@ namespace EPlast.Tests.Services.City
             _repoWrapper.Verify(x => x.SaveAsync());
             _repoWrapper.Verify(x => x.CityAdministration.Update(It.IsAny<CityAdministration>()));
             Assert.IsInstanceOf<CityMembersDTO>(result);
+            Assert.NotNull(result);
         }
 
 
