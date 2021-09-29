@@ -87,7 +87,7 @@ namespace EPlast.BLL.Services.Events
             int approvedStatus = await _participantStatusManager.GetStatusIdAsync("Учасник");
             int undeterminedStatus = await _participantStatusManager.GetStatusIdAsync("Розглядається");
             int rejectedStatus = await _participantStatusManager.GetStatusIdAsync("Відмовлено");
-            int finishedEvent = await _eventWrapper.EventStatusManager.GetStatusIdAsync("Завершений(-на)");
+            int finishedEvent = await _eventWrapper.EventStatusManager.GetStatusIdAsync("Завершено");
             var userRoles = await _userManager.GetRolesAsync(user);
             bool isUserGlobalEventAdmin = userRoles?.Contains(Roles.EventAdministrator) ?? false;
 
@@ -295,8 +295,8 @@ namespace EPlast.BLL.Services.Events
             int approvedStatus = await _participantStatusManager.GetStatusIdAsync("Учасник");
             int undeterminedStatus = await _participantStatusManager.GetStatusIdAsync("Розглядається");
             int rejectedStatus = await _participantStatusManager.GetStatusIdAsync("Відмовлено");
-            int approvedEvent = await _eventWrapper.EventStatusManager.GetStatusIdAsync("Затверджений(-на)");
-            int finishedEvent = await _eventWrapper.EventStatusManager.GetStatusIdAsync("Завершений(-на)");
+            int approvedEvent = await _eventWrapper.EventStatusManager.GetStatusIdAsync("Затверджено");
+            int finishedEvent = await _eventWrapper.EventStatusManager.GetStatusIdAsync("Завершено");
             int notApprovedEvent = await _eventWrapper.EventStatusManager.GetStatusIdAsync("Не затверджені");
             var userRoles = await _userManager.GetRolesAsync(user);
 
