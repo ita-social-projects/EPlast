@@ -120,10 +120,10 @@ namespace EPlast.BLL.Services.City
                 
             };
             await _repositoryWrapper.CityMembers.CreateAsync(cityMember);
-            var regId = _cityService.GetByIdAsync(cityId).Result.RegionId;
+            var regId = await _cityService.GetByIdAsync(cityId);
             var regionAdministrations =
                 await _repositoryWrapper.RegionAdministration.GetAllAsync(d =>
-                    d.UserId == userId && d.Status && d.RegionId != regId);
+                    d.UserId == userId && d.Status && d.RegionId != regId.RegionId);
             if (regionAdministrations != null)
             {
                 foreach (var elem in regionAdministrations)
