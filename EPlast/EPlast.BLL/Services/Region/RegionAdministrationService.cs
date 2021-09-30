@@ -103,7 +103,7 @@ namespace EPlast.BLL.Services.Region
             }
             else
             {
-                newRegionAdmin.Status = DateTime.Now < newRegionAdmin.EndDate || newRegionAdmin.EndDate == null;
+                newRegionAdmin.Status = DateTime.Today < newRegionAdmin.EndDate || newRegionAdmin.EndDate == null;
                 await _repoWrapper.SaveAsync();
                 await _repoWrapper.RegionAdministration.CreateAsync(newRegionAdmin);
                 await _repoWrapper.SaveAsync();
@@ -160,18 +160,20 @@ namespace EPlast.BLL.Services.Region
 
         public async Task<IEnumerable<RegionAdministrationDTO>> GetUsersAdministrations(string userId)
         {
+
             var secretaries = await _repoWrapper.RegionAdministration.GetAllAsync(a => a.UserId == userId && a.Status,
                 include: source => source
                  .Include(r => r.User)
                  .Include(r => r.Region)
                  .Include(r => r.AdminType));
+
             return _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(secretaries);
         }
 
 
         public async Task<IEnumerable<RegionAdministrationDTO>> GetUsersPreviousAdministrations(string userId)
         {
-            var secretaries = await _repoWrapper.RegionAdministration.GetAllAsync(a => a.UserId == userId && a.EndDate < DateTime.Now,
+            var secretaries = await _repoWrapper.RegionAdministration.GetAllAsync(a => a.UserId == userId && !a.Status,
                 include: source => source
                  .Include(r => r.User)
                  .Include(r => r.Region)
@@ -212,6 +214,7 @@ namespace EPlast.BLL.Services.Region
                     .Include(t => t.User)
                         .Include(t => t.Region)
                         .Include(t => t.AdminType));
+            
             return _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(admins);
         }
 
