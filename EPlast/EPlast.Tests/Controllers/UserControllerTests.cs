@@ -870,7 +870,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task ApproveUser_ForbiddenString_FormerPlastMember_ReturnsStatus403Forbidden()
         {
-            // Assert
+            // Arrange
             var idString = "1";
             
             _userManagerService.Setup(x => x.GetRolesAsync(It.IsAny<UserDTO>()))
@@ -891,7 +891,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task ApproveUser_ForbiddenString_RegisteredUser_ReturnsStatus403Forbidden()
         {
-            // Assert
+            // Arrange
             var idString = "1";
 
             _userManagerService.Setup(x => x.GetRolesAsync(It.IsAny<UserDTO>()))
@@ -924,7 +924,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task ApproveUser_ReturnsOkResult()
         {
-            // Assert
+            // Arrange
             var idString = "1";
 
             _confirmedUserService
@@ -954,7 +954,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task ApproverDelete_ReturnsOkResult()
         {
-            // Assert
+            // Arrange
             var confirmedId = 1;
 
             _confirmedUserService
