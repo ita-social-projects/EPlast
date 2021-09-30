@@ -599,7 +599,6 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             string id = "1";
-
             _userService
                 .Setup((x) => x.GetUserAsync(id))
                 .ReturnsAsync(It.IsAny<UserDTO>);
@@ -670,7 +669,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task EditBase64_Returns403Forbidden()
         {
-            // Assert
+            // Arrange
             var expected = StatusCodes.Status403Forbidden;
             _mapper
                 .Setup((x) => x.Map<UserViewModel, UserDTO>(It.IsAny<UserViewModel>()))
@@ -683,6 +682,7 @@ namespace EPlast.Tests.Controllers
             // Act
             var result = await  _userController.EditBase64(CreateFakeEditUserViewModel());
             var actual = (result as StatusCodeResult).StatusCode;
+
             // Assert
             _userService.Verify();
             _mapper.Verify();
@@ -693,7 +693,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task EditBase64_ReturnsBadRequest()
         {
-            // Assert
+            // Arrange
             var id = "1";
             _userManager.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(id);
             _mapper
@@ -717,7 +717,6 @@ namespace EPlast.Tests.Controllers
             _loggerService.Verify((x) => x.LogInformation(It.IsAny<string>()), Times.Once);
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
-
 
         [Test]
         public async Task Approvers_NullUserIdString_ReturnsNotFoundResult()
@@ -887,7 +886,6 @@ namespace EPlast.Tests.Controllers
             _loggerService.Verify((x) => x.LogError(It.IsAny<string>()), Times.Once);
             _userManagerService.Verify(x => x.GetRolesAsync(It.IsAny<UserDTO>()));
             Assert.AreEqual(expected, actual);
-            
         }
 
         [Test]
