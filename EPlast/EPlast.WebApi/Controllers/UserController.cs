@@ -238,6 +238,8 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="model">Edit model</param>
         /// <response code="200">Successful operation</response>
+        /// <response code="400">Bad request</response>
+        /// <response code="403">Access denied</response>
         [HttpPut("editbase64")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> EditBase64([FromBody] EditUserViewModel model)
@@ -354,6 +356,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="isClubAdmin">Confirm as an club Admin</param>
         /// <param name="isCityAdmin">Confirm as an city Admin</param>
         /// <response code="200">Successful operation</response>
+        /// <responce code="403">Access denied</responce>
         /// <response code="404">User not found</response>
         [HttpPost("approveUser/{userId}/{isClubAdmin}/{isCityAdmin}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
