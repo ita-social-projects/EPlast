@@ -33,6 +33,8 @@
     <Compile Remove="Migrations\20210116201626_AddUserLinks.Designer.cs" />
     <Compile Remove="Migrations\20210703133142_test.cs" />
     <Compile Remove="Migrations\20210703133142_test.Designer.cs" />
+    <Compile Remove="Migrations\20210818105200_cityReport.cs" />
+    <Compile Remove="Migrations\20210818105200_cityReport.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

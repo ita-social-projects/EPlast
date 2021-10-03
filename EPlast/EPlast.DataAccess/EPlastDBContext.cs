@@ -274,5 +274,6 @@ namespace EPlast.DataAccess
         public DbSet<ClubReportMember> ClubReportMember { get; set; }
         public DbSet<ClubReportAdmins> ClubReportAdmins { get; set; }
         public DbSet<ClubMemberHistory> ClubMemberHistory { get; set; }
+        public DbSet<ClubReportCities> ClubReportCities { get; set; }
     }
 }

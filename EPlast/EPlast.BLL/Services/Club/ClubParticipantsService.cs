@@ -324,7 +324,7 @@ namespace EPlast.BLL.Services.Club
 
             if (oldClubMember != null)
             {
-                await UpdateStatusFollowerInHistoryAsync(userId, true,true);
+                await UpdateStatusFollowerInHistoryAsync(userId, oldClubMember.IsFollower, true);
             }
 
             var clubHistoryUser = new ClubMemberHistory()
@@ -340,7 +340,30 @@ namespace EPlast.BLL.Services.Club
             await _repositoryWrapper.SaveAsync();
         }
 
-        public async Task UpdateStatusFollowerInHistoryAsync(string userId, bool isFollower,bool isDeleted)
+
+        public async Task AddMemberInHistoryAsync(int clubId, string userId)
+        {
+            var oldClubMember = await _repositoryWrapper.ClubMemberHistory
+               .GetFirstOrDefaultAsync(i => i.UserId == userId && !i.IsDeleted);
+
+            if (oldClubMember != null)
+            {
+                await UpdateStatusFollowerInHistoryAsync(userId, oldClubMember.IsFollower, true);
+            }
+
+            var clubHistoryUser = new ClubMemberHistory()
+            {
+                Date = DateTime.Now,
+                UserId = userId,
+                ClubId = clubId,
+                IsFollower = false,
+                IsDeleted = false
+            };
+
+            await _repositoryWrapper.ClubMemberHistory.CreateAsync(clubHistoryUser);
+            await _repositoryWrapper.SaveAsync();
+        }
+        public async Task UpdateStatusFollowerInHistoryAsync(string userId, bool isFollower, bool isDeleted)
         {
             var clubHistoryMembers = await _repositoryWrapper.ClubMemberHistory.GetFirstOrDefaultAsync(
                    predicate: c => c.UserId == userId && !c.IsDeleted);
@@ -349,7 +372,7 @@ namespace EPlast.BLL.Services.Club
             clubHistoryMembers.IsDeleted = isDeleted;
             clubHistoryMembers.Date = DateTime.Now;
 
-            _repositoryWrapper.ClubMemberHistory.Update(clubHistoryMembers);
+             _repositoryWrapper.ClubMemberHistory.Update(clubHistoryMembers);
             await _repositoryWrapper.SaveAsync();
         }
     }
