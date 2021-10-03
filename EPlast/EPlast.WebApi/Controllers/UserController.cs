@@ -150,6 +150,7 @@ namespace EPlast.WebApi.Controllers
                     User = _mapper.Map<UserDTO, UserViewModel>(focusUser),
                     TimeToJoinPlast = (int)time.TotalDays,
                     IsUserPlastun = isFocusUserPlastun,
+                    
                 };
 
                 return Ok(model);
@@ -161,7 +162,6 @@ namespace EPlast.WebApi.Controllers
                 TimeToJoinPlast = (int)time.TotalDays,
                 IsUserPlastun = isFocusUserPlastun,
             };
-
             return Ok(model);
         }
 

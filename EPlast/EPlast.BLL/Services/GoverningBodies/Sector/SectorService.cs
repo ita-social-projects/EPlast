@@ -3,6 +3,7 @@ using EPlast.BLL.DTO.GoverningBody.Sector;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.GoverningBodies.Sector;
+using EPlast.DataAccess.Entities.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
         private readonly IUniqueIdService _uniqueId;
         private readonly IGoverningBodySectorBlobStorageRepository _sectorBlobStorage;
         private readonly ISecurityModel _securityModel;
+        private readonly ISectorAdministrationService _sectorAdministrationService;
         private const string SecuritySettingsFile = "GoverningBodySectorAccessSettings.json";
         private const int TakingItemsCount = 6;
 
@@ -28,7 +30,8 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                              IMapper mapper,
                              IUniqueIdService uniqueId,
                              IGoverningBodySectorBlobStorageRepository sectorBlobStorage,
-                             ISecurityModel securityModel)
+                             ISecurityModel securityModel,
+                             ISectorAdministrationService sectorAdministrationService)
         {
             _securityModel = securityModel;
             _securityModel.SetSettingsFile(SecuritySettingsFile);
@@ -36,6 +39,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             _repoWrapper = repoWrapper;
             _mapper = mapper;
             _sectorBlobStorage = sectorBlobStorage;
+            _sectorAdministrationService = sectorAdministrationService;
         }
 
         private async Task UploadPhotoAsync(SectorDTO sectorDto)
@@ -193,6 +197,13 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             if (!string.IsNullOrWhiteSpace(sector.Logo))
             {
                 await _sectorBlobStorage.DeleteBlobAsync(sector.Logo);
+            }
+            var admins = (await _repoWrapper.GoverningBodySectorAdministration.GetAllAsync(x => x.SectorId == sectorId))
+                ?? new List<SectorAdministration>();
+            
+            foreach (var admin in admins)
+            {
+                await _sectorAdministrationService.RemoveAdministratorAsync(admin.Id);
             }
 
             _repoWrapper.GoverningBodySector.Delete(sector);
