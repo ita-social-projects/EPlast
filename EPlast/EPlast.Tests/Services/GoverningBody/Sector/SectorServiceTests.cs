@@ -331,6 +331,31 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
         }
 
         [TestCase(1)]
+        public async Task RemoveAsync_HasAdmins(int id)
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(x => x.GoverningBodySector.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<GBSector, bool>>>(),
+                    It.IsAny<Func<IQueryable<GBSector>, IIncludableQueryable<GBSector, object>>>()))
+                .ReturnsAsync(new GBSector());
+            _repoWrapper
+                .Setup(x => x.GoverningBodySectorAdministration.GetAllAsync(It.IsAny<Expression<Func<SectorAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<SectorAdministration>, IIncludableQueryable<SectorAdministration, object>>>()))
+                .ReturnsAsync(new List<SectorAdministration>() { new SectorAdministration() { Id = 1} });
+
+
+            //Act
+            var result = await _service.RemoveAsync(id);
+
+            //Assert
+            Assert.AreEqual(id, result);
+            _repoWrapper.Verify(x => x.GoverningBodySector.Delete(It.IsAny<GBSector>()));
+            _repoWrapper.Verify(x => x.SaveAsync());
+            _sectorAdministrationService.Verify(x => x.RemoveAdministratorAsync(It.IsAny<int>()), Times.Once);
+        }
+
+        [TestCase(1)]
         public async Task RemoveAsync_LogoNotNull(int id)
         {
             //Arrange
