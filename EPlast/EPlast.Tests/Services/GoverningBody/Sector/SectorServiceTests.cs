@@ -17,6 +17,8 @@ using System.Threading.Tasks;
 using EPlast.BLL.DTO.Admin;
 using EPlast.Resources;
 using GBSector = EPlast.DataAccess.Entities.GoverningBody.Sector.Sector;
+using EPlast.BLL.Interfaces.GoverningBodies.Sector;
+using EPlast.DataAccess.Entities.GoverningBody.Sector;
 
 namespace EPlast.Tests.Services.GoverningBody.Sector
 {
@@ -27,6 +29,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
         private SectorService _service;
         private Mock<IUniqueIdService> _uniqueIdService;
         private Mock<IGoverningBodySectorBlobStorageRepository> _blobStorage;
+        private Mock<ISectorAdministrationService> _sectorAdministrationService;
         private Mock<ISecurityModel> _securityModel;
         private protected Mock<UserManager<User>> _userManager;
 
@@ -38,6 +41,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
             _blobStorage = new Mock<IGoverningBodySectorBlobStorageRepository>();
             _uniqueIdService = new Mock<IUniqueIdService>();
             _securityModel = new Mock<ISecurityModel>();
+            _sectorAdministrationService = new Mock<ISectorAdministrationService>();
 
             var store = new Mock<Microsoft.AspNetCore.Identity.IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
@@ -47,7 +51,8 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
                 _mapper.Object,
                 _uniqueIdService.Object,
                 _blobStorage.Object,
-                _securityModel.Object);
+                _securityModel.Object,
+                _sectorAdministrationService.Object);
         }
 
         [Test]
@@ -311,6 +316,10 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
                     It.IsAny<Expression<Func<GBSector, bool>>>(),
                     It.IsAny<Func<IQueryable<GBSector>, IIncludableQueryable<GBSector, object>>>()))
                 .ReturnsAsync(new GBSector());
+            _repoWrapper
+                .Setup(x => x.GoverningBodySectorAdministration.GetAllAsync(It.IsAny<Expression<Func<SectorAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<SectorAdministration>, IIncludableQueryable<SectorAdministration, object>>>()))
+                .ReturnsAsync(null as IEnumerable<SectorAdministration>);
 
             //Act
             var result = await _service.RemoveAsync(id);
@@ -322,6 +331,31 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
         }
 
         [TestCase(1)]
+        public async Task RemoveAsync_HasAdmins(int id)
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(x => x.GoverningBodySector.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<GBSector, bool>>>(),
+                    It.IsAny<Func<IQueryable<GBSector>, IIncludableQueryable<GBSector, object>>>()))
+                .ReturnsAsync(new GBSector());
+            _repoWrapper
+                .Setup(x => x.GoverningBodySectorAdministration.GetAllAsync(It.IsAny<Expression<Func<SectorAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<SectorAdministration>, IIncludableQueryable<SectorAdministration, object>>>()))
+                .ReturnsAsync(new List<SectorAdministration>() { new SectorAdministration() { Id = 1} });
+
+
+            //Act
+            var result = await _service.RemoveAsync(id);
+
+            //Assert
+            Assert.AreEqual(id, result);
+            _repoWrapper.Verify(x => x.GoverningBodySector.Delete(It.IsAny<GBSector>()));
+            _repoWrapper.Verify(x => x.SaveAsync());
+            _sectorAdministrationService.Verify(x => x.RemoveAdministratorAsync(It.IsAny<int>()), Times.Once);
+        }
+
+        [TestCase(1)]
         public async Task RemoveAsync_LogoNotNull(int id)
         {
             //Arrange
@@ -330,6 +364,10 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
                     It.IsAny<Expression<Func<GBSector, bool>>>(),
                     It.IsAny<Func<IQueryable<GBSector>, IIncludableQueryable<GBSector, object>>>()))
                 .ReturnsAsync(new GBSector() { Logo = "some logo" });
+            _repoWrapper
+                .Setup(x => x.GoverningBodySectorAdministration.GetAllAsync(It.IsAny<Expression<Func<SectorAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<SectorAdministration>, IIncludableQueryable<SectorAdministration, object>>>()))
+                .ReturnsAsync(null as IEnumerable<SectorAdministration>);
 
             //Act
             var result = await _service.RemoveAsync(id);
