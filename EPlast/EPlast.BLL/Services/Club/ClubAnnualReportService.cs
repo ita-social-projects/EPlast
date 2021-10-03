@@ -121,7 +121,7 @@ namespace EPlast.BLL.Services.Club
                     {
                         ClubAnnualReportId = clubAnnualReportID,
                         UserId = clubHistoryMember.User.ID,
-                        CityId = clubHistoryMember.User.CityMembers.ToList().First().CityId
+                        CityId = clubHistoryMember.User.CityMembers.AsEnumerable().First().CityId
                     });
                 }
             }
