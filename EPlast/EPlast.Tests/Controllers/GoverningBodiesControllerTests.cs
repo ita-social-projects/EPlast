@@ -2,6 +2,7 @@
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.GoverningBody;
+using EPlast.BLL.DTO.GoverningBody.Announcement;
 using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.WebApi.Controllers;
@@ -9,7 +10,9 @@ using EPlast.WebApi.Models.GoverningBody;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
@@ -22,6 +25,7 @@ namespace EPlast.Tests.Controllers
         private Mock<IMapper> _mapper;
         private Mock<ILoggerService<GoverningBodiesController>> _logger;
         private GoverningBodiesController _governingBodiesController;
+        private Mock<IGoverningBodyAnnouncementService> _governingBodyAnnouncementService;
 
         [SetUp]
         public void SetUp()
@@ -31,12 +35,15 @@ namespace EPlast.Tests.Controllers
             _governingBodyDocumentsService = new Mock<IGoverningBodyDocumentsService>();
             _logger = new Mock<ILoggerService<GoverningBodiesController>>();
             _mapper = new Mock<IMapper>();
+            _governingBodyAnnouncementService = new Mock<IGoverningBodyAnnouncementService>();
             _governingBodiesController = new GoverningBodiesController(
                 _governingBodiesService.Object,
                 _logger.Object,
                 _governingBodyAdministrationService.Object,
+                _governingBodyAnnouncementService.Object,
                 _mapper.Object,
-                _governingBodyDocumentsService.Object);
+                _governingBodyDocumentsService.Object
+            );
         }
 
         [Test]
@@ -88,6 +95,22 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.AreEqual(resultObject?.Value, serviceReturnedId);
+        }
+
+        [Test]
+        public async Task Create_ThrowsArgumentException_ReturnsBadRequest()
+        {
+            // Arrange
+            var testDTO = CreateGoverningBodyDTO;
+            _governingBodiesService
+                .Setup(x => x.CreateAsync(It.IsAny<GoverningBodyDTO>()))
+                .ThrowsAsync(new ArgumentException());
+
+            // Act
+            var result = await _governingBodiesController.Create(testDTO);
+
+            // Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
@@ -470,6 +493,159 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
+        [Test]
+        public async Task AddAnnouncement_Valid_Test()
+        {
+            //Arrange
+            _governingBodyAnnouncementService
+                .Setup(c => c.AddAnnouncementAsync(It.IsAny<string>()));
+
+            //Act
+            var result = await _governingBodiesController.AddAnnouncement(It.IsAny<string>());
+
+            //Assert
+            Assert.IsInstanceOf<OkResult>(result);
+            _governingBodyAnnouncementService.Verify();
+        }
+
+        [Test]
+        public async Task AddAnnouncement_BadRequest()
+        {
+            //Arrange
+            _governingBodiesController.ModelState.AddModelError("text", "is required");
+            _governingBodyAnnouncementService
+                .Setup(c => c.AddAnnouncementAsync(It.IsAny<string>()));
+
+            //Act
+            var result = await _governingBodiesController.AddAnnouncement(It.IsAny<string>());
+
+            //Assert
+            _governingBodyAnnouncementService.Verify();
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        }
+
+        [Test]
+        public async Task DeleteAnnouncement_Valid()
+        {
+            //Arrange
+            _governingBodyAnnouncementService.Setup(d => d.DeleteAnnouncementAsync(It.IsAny<int>()));
+
+            //Act
+            var result = await _governingBodiesController.Delete(It.IsAny<int>());
+
+            //Assert
+            _governingBodiesService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<NoContentResult>(result);
+        }
+
+        [Test]
+        public async Task GetAllAnnouncement_Valid()
+        {
+            //Arrange
+            _governingBodyAnnouncementService.Setup(a => a.GetAllAnnouncementAsync())
+                .ReturnsAsync((new List<GoverningBodyAnnouncementUserDTO>()).AsEnumerable());
+
+            //Act
+            var result = await _governingBodiesController.GetAllAnnouncement();
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+        
+        [Test]
+        public async Task GetAllUsers_Valid()
+        {
+            //Arrange
+            _governingBodyAnnouncementService.Setup(a => a.GetAllUserAsync());
+
+            //Act
+            var result = await _governingBodiesController.GetAllUserId();
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetById_Valid()
+        {
+            //Arrange
+            _governingBodyAnnouncementService.Setup(g => g.GetAnnouncementByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new GoverningBodyAnnouncementUserDTO());
+
+            //Act
+            var result = await _governingBodiesController.GetById(It.IsAny<int>());
+            var resultValue = (result as ObjectResult).Value;
+
+            //Assert
+            _governingBodyAnnouncementService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(resultValue);
+            Assert.IsInstanceOf<GoverningBodyAnnouncementUserDTO>(resultValue);
+        }
+
+        [Test]
+        public async Task GetById_ReturnNoContent()
+        {
+            //Arrange
+            _governingBodyAnnouncementService.Setup(g => g.GetAnnouncementByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(null as GoverningBodyAnnouncementUserDTO);
+
+            //Act
+            var result = await _governingBodiesController.GetById(It.IsAny<int>());
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+        [Test]
+        public async Task EditAnnouncement_ModelStateIsValid_ReturnsOk()
+        {
+            //Arrange
+            _governingBodyAnnouncementService
+                .Setup(x => x.EditAnnouncement(It.IsAny<GoverningBodyAnnouncementUserDTO>()))
+                .ReturnsAsync(1);
+
+            //Act
+            var res = await _governingBodiesController.EditAnnouncement(new GoverningBodyAnnouncementUserDTO());
+
+            //Assert
+            Assert.IsInstanceOf<OkResult>(res);
+        }
+
+        [Test]
+        public async Task EditAnnouncement_ModeStatIsNotValid_ReturnsBadRequest()
+        {
+            //Arrange
+            _governingBodiesController.ModelState.AddModelError("key", "error message");
+            _governingBodyAnnouncementService
+                .Setup(x => x.EditAnnouncement(It.IsAny<GoverningBodyAnnouncementUserDTO>()))
+                .ReturnsAsync(1);
+
+            //Act
+            var res = await _governingBodiesController.EditAnnouncement(new GoverningBodyAnnouncementUserDTO());
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(res);
+        }
+
+        [Test]
+        public async Task AddLowroleUser_ReturnsBadRequest()
+        {
+            //Arrange
+            _governingBodyAdministrationService
+                .Setup(x => x.AddGoverningBodyAdministratorAsync(It.IsAny<GoverningBodyAdministrationDTO>()))
+                .Throws(new ArgumentException());
+
+            //Act
+            var res = await _governingBodiesController.AddAdmin(new GoverningBodyAdministrationDTO());
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(res);
+        }
 
         private const int TestId = 3;
 

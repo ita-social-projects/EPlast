@@ -18,6 +18,7 @@ namespace EPlast.DataAccess.Entities
         public Organization Organization { get; set; }
 
         [Required(ErrorMessage = "Опис документу не заповнено.")]
+        [MaxLength(200, ErrorMessage = "Short description cannot exceed 200 characters")]
         public string Description { get; set; }
 
         [Required(ErrorMessage = "Дата документу не заповнена.")]

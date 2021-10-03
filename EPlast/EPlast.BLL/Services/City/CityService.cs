@@ -64,7 +64,7 @@ namespace EPlast.BLL.Services
         /// <inheritdoc />
         public async Task<IEnumerable<CityDTO>> GetCitiesByRegionAsync(int regionId)
         {
-            var cities = await _repoWrapper.City.GetAllAsync(c => c.RegionId == regionId);
+            var cities = await _repoWrapper.City.GetAllAsync(c => c.RegionId == regionId && c.IsActive);
             foreach (var city in cities)
             {
                 var cityMembers = await _repoWrapper.CityMembers.GetAllAsync(
@@ -120,9 +120,7 @@ namespace EPlast.BLL.Services
         public List<CityAdministrationDTO> GetCityAdmins(CityDTO city)
         {
             var cityAdmins = city.CityAdministration
-                .Where(a => a.AdminType.AdminTypeName != Roles.CityHead
-                    && a.AdminType.AdminTypeName != Roles.CityHeadDeputy
-                    && a.Status)
+                .Where(a => a.Status)
                 .Take(6)
                 .ToList();
             return cityAdmins;

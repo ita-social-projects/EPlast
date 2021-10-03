@@ -50,7 +50,7 @@ namespace EPlast.BLL.DTO.UserProfiles
         public IEnumerable<RegionAdministration> RegionAdministrations { get; set; }
         public IEnumerable<UserDistinctionDTO> UserDistinctions { get; set; }
         public UserMembershipDatesDTO UserMembershipDates { get; set; }
-        public IEnumerable<UserPlastDegreeDTO> UserPlastDegrees { get; set; }
+        public UserPlastDegreeDTO UserPlastDegrees { get; set; }
         public string CityName { get; set; }
 
         public UserDTO()

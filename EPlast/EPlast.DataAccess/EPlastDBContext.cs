@@ -4,6 +4,7 @@ using EPlast.DataAccess.Entities.Decision;
 using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Entities.GoverningBody;
+using EPlast.DataAccess.Entities.GoverningBody.Announcement;
 using EPlast.DataAccess.Entities.GoverningBody.Sector;
 using EPlast.DataAccess.Entities.UserEntities;
 using Microsoft.AspNetCore.Identity;
@@ -51,6 +52,7 @@ namespace EPlast.DataAccess
         public DbSet<UserPrecautionsTableObject> UserPrecautionsTableObject { get; set; }
         public DbSet<DecisionTableObject> DecisionTableObject { get; set; }
         public DbSet<RegionMembersInfoTableObject> RegionMembersInfoTableObjects { get; set; }
+        public DbSet<GoverningBodyAnnouncement> GoverningBodyAnnouncement { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -131,7 +133,7 @@ namespace EPlast.DataAccess
                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<User>()
-               .HasMany(x => x.UserPlastDegrees)
+               .HasOne(x => x.UserPlastDegrees)
                .WithOne(x => x.User)
                .OnDelete(DeleteBehavior.Cascade);
 
@@ -199,6 +201,12 @@ namespace EPlast.DataAccess
                 .HasMany(x => x.UserDistinctions)
                 .WithOne(x => x.Distinction)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Gender>(entity =>
+            {
+                entity.HasCheckConstraint("constraint_gender",
+                    "(Name = 'Чоловік' AND ID = 1) OR (Name = 'Жінка' AND ID = 2) OR (Name = 'Не маю бажання вказувати' AND ID = 7)");
+            });
 
             modelBuilder.Entity<AnnualReport>(annualReport =>
             {

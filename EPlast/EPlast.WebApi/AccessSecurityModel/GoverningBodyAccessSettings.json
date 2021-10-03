@@ -12,13 +12,14 @@
     "BecomeRBMember": true,
     "ManipulatePoster": true,
     "ManipulateDocument": true,
-    "AddGBSector": true
+    "AddGBSector": true,
+    "ViewAnnouncements": true
   },
   "Голова Керівного Органу": {
     "ViewInfo": true,
     "AddDecision": true,
-    "EditGB": false,
-    "DeleteGB": false,
+    "EditGB": true,
+    "DeleteGB": true,
     "CreateDirection": true,
     "AddGBSecretary": true,
     "GoToSecretaryProfile": true,
@@ -27,7 +28,8 @@
     "BecomeRBMember": true,
     "ManipulatePoster": true,
     "ManipulateDocument": true,
-    "AddGBSector": true
+    "AddGBSector": true,
+    "ViewAnnouncements": true
   },
   "Голова Округи": {
     "ViewInfo": true,
@@ -42,7 +44,8 @@
     "BecomeRBMember": true,
     "ManipulatePoster": false,
     "ManipulateDocument": false,
-    "AddGBSector": false
+    "AddGBSector": false,
+    "ViewAnnouncements": true
   },
   "Голова Станиці": {
     "ViewInfo": true,
@@ -57,7 +60,8 @@
     "BecomeRBMember": true,
     "ManipulatePoster": false,
     "ManipulateDocument": false,
-    "AddGBSector": false
+    "AddGBSector": false,
+    "ViewAnnouncements": true
   },
   "Голова Куреня": {
     "ViewInfo": true,
@@ -72,7 +76,8 @@
     "BecomeRBMember": true,
     "ManipulatePoster": false,
     "ManipulateDocument": false,
-    "AddGBSector": false
+    "AddGBSector": false,
+    "ViewAnnouncements": true
   },
   "Прихильник": {
     "ViewInfo": true,
@@ -87,7 +92,8 @@
     "BecomeRBMember": false,
     "ManipulatePoster": false,
     "ManipulateDocument": false,
-    "AddGBSector": false
+    "AddGBSector": false,
+    "ViewAnnouncements": true
   },
   "Дійсний член організації": {
     "ViewInfo": true,
@@ -102,6 +108,23 @@
     "BecomeRBMember": true,
     "ManipulatePoster": false,
     "ManipulateDocument": false,
-    "AddGBSector": false
+    "AddGBSector": false,
+    "ViewAnnouncements": true
+  },
+  "Зареєстрований користувач": {
+    "ViewInfo": true,
+    "AddDecision": false,
+    "EditGB": false,
+    "DeleteGB": false,
+    "CreateDirection": false,
+    "AddGBSecretary": false,
+    "GoToSecretaryProfile": false,
+    "EditRBMembers": false,
+    "DeleteGBMembers": false,
+    "BecomeRBMember": false,
+    "ManipulatePoster": false,
+    "ManipulateDocument": false,
+    "AddGBSector": false,
+    "ViewAnnouncements": false
   }
 }

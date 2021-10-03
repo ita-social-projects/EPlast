@@ -9,9 +9,9 @@ namespace EPlast.DataAccess.Entities
         [Display(Name = "Місце навчання")]
         [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,51}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,51})*$",
             ErrorMessage = "Місце навчання має містити тільки літери")]
-        [StringLength(50, MinimumLength = 2, ErrorMessage = "Місце навчання повинне складати від 2 до 50 символів")]
-
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Місце навчання повинне складати від 2 до 100 символів")]
         public string PlaceOfStudy { get; set; }
+
         [Display(Name = "Спеціальність")]
         [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,51}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,51})*$",
             ErrorMessage = "Спеціальність має містити тільки літери")]

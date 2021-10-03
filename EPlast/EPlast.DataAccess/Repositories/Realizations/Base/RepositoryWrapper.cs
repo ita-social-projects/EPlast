@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories.Realizations.GoverningBody;
 using EPlast.DataAccess.Repositories.Realizations.GoverningBody.Sector;
+using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Announcement;
 
 namespace EPlast.DataAccess.Repositories.Realizations.Base
 {
@@ -87,7 +88,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IMembersStatisticsRepository _membersStatistics;
         private ICityLegalStatusesRepository _cityLegalStatuses;
         private IClubLegalStatusesRepository _clubLegalStatuses;
-        private IUserPlastDegreesRepository _userPlastDegrees;
+        private IUserPlastDegreeRepository _userPlastDegree;
         private IUserNotificationRepository _userNotifications;
         private INotificationTypeRepository _notificationTypes;
         private IUserMembershipDatesRepository _userMembershipDates;
@@ -102,6 +103,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IAchievementDocumentsRepository _achievementDocumentsRepository;
         private IExtractFromUPUDocumentsRepository _extractFromUPUDocumentsRepository;
         private IRegionAnnualReportsRepository _regionAnnualReports;
+        private IGoverningBodyAnnouncementRepository _governingBodyAnnouncement;
 
         private SectionRepository _sectionRepository;
         private SubsectionRepository _subsectionRepository;
@@ -279,6 +281,18 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 }
 
                 return _governingBodySectorDocuments;
+            }
+        }
+
+        public IGoverningBodyAnnouncementRepository GoverningBodyAnnouncement
+        {
+            get
+            {
+                if (_governingBodyAnnouncement == null)
+                {
+                    _governingBodyAnnouncement = new GoverningBodyAnnouncementRepository(_dbContext);
+                }
+                return _governingBodyAnnouncement;
             }
         }
 
@@ -950,15 +964,15 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             }
         }
 
-        public IUserPlastDegreesRepository UserPlastDegrees
+        public IUserPlastDegreeRepository UserPlastDegree
         {
             get
             {
-                if (_userPlastDegrees == null)
+                if (_userPlastDegree == null)
                 {
-                    _userPlastDegrees = new UserPlastDegreesRepository(_dbContext);
+                    _userPlastDegree = new UserPlastDegreeRepository(_dbContext);
                 }
-                return _userPlastDegrees;
+                return _userPlastDegree;
             }
         }
 

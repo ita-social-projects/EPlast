@@ -89,6 +89,7 @@ namespace EPlast.Tests.Services.City
         private Mock<IMapper> _mapper;
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IUserStore<User>> _user;
+        private Mock<ICityService> _cityService;
         private Mock<UserManager<User>> _userManager;
 
         [SetUp]
@@ -99,9 +100,10 @@ namespace EPlast.Tests.Services.City
             _adminTypeService = new Mock<IAdminTypeService>();
             _user = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(_user.Object, null, null, null, null, null, null, null, null);
+            _cityService = new Mock<ICityService>();
             _emailSendingService = new Mock<IEmailSendingService>();
             _emailContentService = new Mock<IEmailContentService>();
-            _cityParticipantsService = new CityParticipantsService(_repoWrapper.Object, _mapper.Object, _userManager.Object, _adminTypeService.Object, _emailSendingService.Object, _emailContentService.Object);
+            _cityParticipantsService = new CityParticipantsService(_repoWrapper.Object, _mapper.Object, _userManager.Object, _adminTypeService.Object, _emailSendingService.Object, _cityService.Object, _emailContentService.Object);
         }
 
         [Test]
@@ -253,6 +255,18 @@ namespace EPlast.Tests.Services.City
                 .Setup(x => x.GetCityAdminAboutNewFollowerEmailAsync(It.IsAny<string>(), It.IsAny<string>(),
                     It.IsAny<string>(), It.IsAny<bool>()))
                 .ReturnsAsync(new EmailModel());
+            CityDTO cityDto = new CityDTO() { RegionId = 1 };
+            _cityService
+                .Setup(x => x.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(cityDto); 
+            _repoWrapper
+                .Setup(x => x.RegionAdministration.GetAllAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.RegionAdministration>, IIncludableQueryable<DataAccess.Entities.RegionAdministration, object>>>()))
+                .ReturnsAsync(value: new List<RegionAdministration>()
+                {
+                    new RegionAdministration() { ID = fakeId, EndDate = new DateTime(2022, 7, 20) },
+                    new RegionAdministration() { ID = fakeId+1, EndDate = new DateTime(2022, 7, 20) }
+                });
 
             // Act
             var result = await _cityParticipantsService.AddFollowerAsync(It.IsAny<int>(), It.IsAny<string>());
@@ -296,13 +310,26 @@ namespace EPlast.Tests.Services.City
                 .Setup(x => x.SaveAsync());
             _mapper
                 .Setup(x => x.Map<CityMembers, CityMembersDTO>(It.IsAny<CityMembers>())).Returns(new CityMembersDTO());
-
+            CityDTO cityDto = new CityDTO() {RegionId = 1};
+            _cityService
+                .Setup(x => x.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(cityDto); ;
+            _repoWrapper
+                .Setup(x => x.RegionAdministration.GetAllAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.RegionAdministration>, IIncludableQueryable<DataAccess.Entities.RegionAdministration, object>>>()))
+                .ReturnsAsync(value:new List<RegionAdministration>());
+            _repoWrapper
+                .Setup(x => x.RegionAdministration.Update(It.IsAny<RegionAdministration>()));
             // Act
-            var result = await _cityParticipantsService.AddFollowerAsync(It.IsAny<int>(), It.IsAny<User>());
+            var result = await _cityParticipantsService.AddFollowerAsync(It.IsAny<int>(), "1");
 
             // Assert
+            _repoWrapper.Verify(x => x.SaveAsync());
+            _repoWrapper.Verify(x => x.CityAdministration.Update(It.IsAny<CityAdministration>()));
             Assert.IsInstanceOf<CityMembersDTO>(result);
+            Assert.NotNull(result);
         }
+
 
         [Test]
         public void ContinueAdminsDueToDate_EndDateEarlier_ReturnsCorrect()
@@ -373,6 +400,37 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
+        public async Task EditAdministratorAsync_ReturnsEditedAdministratorWithOtherId()
+        {
+            //Arrange
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AdminTypeDTO() { AdminTypeName = Roles.CityHead, ID = fakeId });
+            _repoWrapper
+                .Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>,
+                    IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new CityAdministration() { ID = 3 });
+            _repoWrapper
+                .Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>,
+                    IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new CityAdministration() { UserId = Roles.CityHead});
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
+               .ReturnsAsync(new AdminTypeDTO() { ID = fakeId });
+            _repoWrapper
+                .Setup(r => r.SaveAsync());
+
+            //Act
+            var result = await _cityParticipantsService.EditAdministratorAsync(cityAdmDTOEndDateToday);
+
+            //Assert
+            _repoWrapper.Verify();
+            Assert.IsInstanceOf<CityAdministrationDTO>(result);
+        }
+
+        [Test]
         public async Task EditAdministratorAsync_WhereStartTimeIsNull_ReturnsEditedAdministratorWithSameId()
         {
             //Arrange
@@ -415,6 +473,11 @@ namespace EPlast.Tests.Services.City
                    AdminTypeName = Roles.CityHead,
                    ID = fakeId
                });
+            _repoWrapper
+               .Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                   It.IsAny<Func<IQueryable<CityAdministration>,
+                   IIncludableQueryable<CityAdministration, object>>>()))
+               .ReturnsAsync(new CityAdministration() { UserId = Roles.CityHead });
             _adminTypeService
                .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
                .ReturnsAsync(new AdminTypeDTO
@@ -422,6 +485,9 @@ namespace EPlast.Tests.Services.City
                    AdminTypeName = Roles.CityHead,
                    ID = fakeId
                });
+            _userManager
+                .Setup(r => r.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(new User());
 
             //Act
             var result = await _cityParticipantsService.EditAdministratorAsync(cityAdmDTOEndDateToday);

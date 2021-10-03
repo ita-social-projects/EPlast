@@ -11,7 +11,6 @@ namespace EPlast.DataAccess.Entities.GoverningBody
         [Required, MaxLength(64)]
         public string BlobName { get; set; }
 
-        [Required, MaxLength(120)]
         public string FileName { get; set; }
 
         [Required]

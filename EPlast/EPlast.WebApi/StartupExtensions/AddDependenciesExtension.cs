@@ -40,6 +40,7 @@ using EPlast.BLL.Services.EmailSending;
 using EPlast.BLL.Services.Events;
 using EPlast.BLL.Services.EventUser;
 using EPlast.BLL.Services.GoverningBodies;
+using EPlast.BLL.Services.GoverningBodies.Announcement;
 using EPlast.BLL.Services.GoverningBodies.Sector;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.Jwt;
@@ -146,6 +147,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IPrecautionService, PrecautionService>();
             services.AddScoped<IRegionAccessService, RegionAccessService>();
             services.AddScoped<IRegionAdministrationService, RegionAdministrationService>();
+            services.AddScoped<IGoverningBodyAnnouncementService, GoverningBodyAnnouncementService>();
             services.AddScoped<IRegionAnnualReportService, RegionAnnualReportService>();
             services.AddScoped<IRegionBlobStorageRepository, RegionBlobStorageRepository>();
             services.AddScoped<IRegionFilesBlobStorageRepository, RegionFilesBlobStorageRepository>();
