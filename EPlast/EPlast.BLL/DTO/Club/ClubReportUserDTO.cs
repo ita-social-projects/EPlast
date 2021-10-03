@@ -14,7 +14,7 @@ namespace EPlast.BLL.DTO.Club
         public string ImagePath { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
-        public ICollection<UserPlastDegreeDTO> UserPlastDegrees { get; set; }
+        public UserPlastDegreeDTO UserPlastDegrees { get; set; }
         public ICollection<ClubReportCitiMembersDTO> CityMembers { get; set; }
         public ClubReportPlastDegreesDTO ClubReportPlastDegrees { get; set; }
         public ClubReportCitiesDTO ClubReportCities { get; set; }

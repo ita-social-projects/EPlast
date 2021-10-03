@@ -631,7 +631,7 @@ namespace EPlast.BLL.Services.Club
                 PhoneNumber = club.PhoneNumber,
                 Email = club.Email,
                 ClubURL = club.ClubURL,
-                Street = club.Street
+                Slogan = club.Slogan
             };
             return clubProfileDto;
         }

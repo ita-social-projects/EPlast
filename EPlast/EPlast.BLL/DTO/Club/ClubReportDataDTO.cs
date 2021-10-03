@@ -15,6 +15,6 @@ namespace EPlast.BLL.DTO.Club
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
         public string ClubURL { get; set; }
-        public string Street { get; set; }
+        public string Slogan { get; set; }
     }
 }

@@ -106,13 +106,13 @@ namespace EPlast.BLL.Services.Club
             {
                 reportUsers.Add(new ClubReportMember { ClubAnnualReportId = clubAnnualReportID, ClubMemberHistoryId = clubHistoryMember.ID });
 
-                if (clubHistoryMember.User.UserPlastDegrees.Count > 0)
+                if (clubHistoryMember.User.UserPlastDegrees != null)
                 {
                     reportUsersPlastDegrees.Add(new ClubReportPlastDegrees
                     {
                         ClubAnnualReportId = clubAnnualReportID,
                         UserId = clubHistoryMember.User.ID,
-                        PlastDegreeId = clubHistoryMember.User.UserPlastDegrees.ToList().First().PlastDegree.Id
+                        PlastDegreeId = clubHistoryMember.User.UserPlastDegrees.PlastDegree.Id
                     });
                 }
                 if (clubHistoryMember.User.CityMembers.Count > 0)
@@ -155,7 +155,7 @@ namespace EPlast.BLL.Services.Club
             var clubAnnualReport = _mapper.Map<ClubAnnualReportDTO, ClubAnnualReport>(clubAnnualReportDTO);
 
             await _repositoryWrapper.ClubAnnualReports.CreateAsync(clubAnnualReport);
-            await _repositoryWrapper.SaveAsync();//записую звіт 
+            await _repositoryWrapper.SaveAsync();
 
 
             List<ClubReportMember> reportUsers = new List<ClubReportMember>();
