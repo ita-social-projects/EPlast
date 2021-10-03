@@ -295,6 +295,47 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
+        public void CreateAsync_Tests()
+        {
+            // Arrange
+            ClubAnnualReport report = null;
+            ClubAnnualReportDTO reportDto = new ClubAnnualReportDTO { Members = new List<ClubMemberHistoryDTO>()
+                                                                        ,Followers=new List<ClubMemberHistoryDTO>()
+                                                                        ,Admins=new List<ClubReportAdministrationDTO>()
+                                                                     };
+            _repositoryWrapper
+                .Setup(x => x.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.Club, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.Club>,
+                        IIncludableQueryable<DataAccess.Entities.Club, object>>>())).ReturnsAsync(GetClub());
+            _repositoryWrapper
+                .Setup(x => x.ClubAnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAnnualReport, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubAnnualReport>,
+                        IIncludableQueryable<ClubAnnualReport, object>>>())).ReturnsAsync(report);
+            _clubAccessService
+                .Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(true);
+            _repositoryWrapper
+                .Setup(x => x.UserPlastDegree.GetAllAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
+                .ReturnsAsync(new List<UserPlastDegree>());
+            _mapper
+                .Setup(x => x.Map<ClubAnnualReportDTO, ClubAnnualReport>(It.IsAny<ClubAnnualReportDTO>()))
+                .Returns(new ClubAnnualReport());
+
+            _repositoryWrapper.Setup(x => x.CityMembers.GetFirstOrDefaultAsync(
+                It.IsAny<Expression<Func<CityMembers, bool>>>(), It.IsAny<Func<IQueryable<CityMembers>,
+                    IIncludableQueryable<CityMembers, object>>>())).ReturnsAsync(null as CityMembers);
+    
+            // Act  
+            var result = _service.CreateAsync(It.IsAny<User>(), reportDto);
+
+            // Assert
+            Assert.IsNotNull(result);
+            _repositoryWrapper.Verify(r => r.SaveAsync(), Times.AtLeastOnce());
+        }
+
+
+
+        [Test]
         public void ConfirmAsync_ReturnsUnauthorizedAccessException()
         {
             // Arrange
