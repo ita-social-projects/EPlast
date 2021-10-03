@@ -71,7 +71,8 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
 
         public async Task<int> CreateAsync(SectorDTO sectorDto)
         {
-            var existingSector = await _repoWrapper.GoverningBodySector.GetFirstOrDefaultAsync(x => x.Name == sectorDto.Name);
+            var existingSector = await _repoWrapper.GoverningBodySector.GetFirstOrDefaultAsync(x => x.Name == sectorDto.Name
+                && x.GoverningBodyId == sectorDto.GoverningBodyId);
             if (existingSector != null)
             {
                 throw new ArgumentException("The governing body sector with the same name already exists");
@@ -209,6 +210,42 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             _repoWrapper.GoverningBodySector.Delete(sector);
             await _repoWrapper.SaveAsync();
             return sectorId;
+        }
+
+        public async Task<IEnumerable<SectorAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId)
+        {
+            var admins = await _repoWrapper.GoverningBodySectorAdministration.GetAllAsync(a => a.UserId == UserId && a.Status,
+                 include:
+                 source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.Sector)
+                 );
+
+            foreach (var admin in admins)
+            {
+                if (admin.Sector != null)
+                {
+                    admin.Sector.Administration = null;
+                }
+            }
+
+            return _mapper.Map<IEnumerable<SectorAdministration>, IEnumerable<SectorAdministrationDTO>>(admins);
+        }
+
+        public async Task<IEnumerable<SectorAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string UserId)
+        {
+            var admins = await _repoWrapper.GoverningBodySectorAdministration.GetAllAsync(a => a.UserId == UserId && a.EndDate < DateTime.Now,
+                 include:
+                 source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.Sector)
+                 );
+
+            foreach (var admin in admins)
+            {
+                if (admin.Sector != null)
+                {
+                    admin.Sector.Administration = null;
+                }
+            }
+
+            return _mapper.Map<IEnumerable<SectorAdministration>, IEnumerable<SectorAdministrationDTO>>(admins).Reverse();
         }
     }
 }
