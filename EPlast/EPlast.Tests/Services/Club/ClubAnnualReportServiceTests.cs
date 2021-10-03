@@ -299,10 +299,25 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubAnnualReport report = null;
-            ClubAnnualReportDTO reportDto = new ClubAnnualReportDTO { Members = new List<ClubMemberHistoryDTO>()
-                                                                        ,Followers=new List<ClubMemberHistoryDTO>()
-                                                                        ,Admins=new List<ClubReportAdministrationDTO>()
-                                                                     };
+            ClubAnnualReportDTO reportDto = new ClubAnnualReportDTO
+            {
+                Members = new List<ClubMemberHistoryDTO> {new ClubMemberHistoryDTO {ID = 1
+                                                                                   ,User=new ClubReportUserDTO {ID="1",
+                                                                                            UserPlastDegrees=new BLL.DTO.ActiveMembership.UserPlastDegreeDTO { Id=1,
+                                                                                                      PlastDegree=new BLL.DTO.ActiveMembership.PlastDegreeDTO{
+                                                                                                          Id=1 }}
+                                                                                   ,CityMembers=new List<ClubReportCityMembersDTO>{ new ClubReportCityMembersDTO {CityId=1} 
+                                                                                   }}}},
+                Followers = new List<ClubMemberHistoryDTO> { new ClubMemberHistoryDTO {ID = 1
+                                                                                   ,User=new ClubReportUserDTO {ID="1",
+                                                                                            UserPlastDegrees=new BLL.DTO.ActiveMembership.UserPlastDegreeDTO { Id=1,
+                                                                                                      PlastDegree=new BLL.DTO.ActiveMembership.PlastDegreeDTO{
+                                                                                                          Id=1 }}
+                                                                                   ,CityMembers=new List<ClubReportCityMembersDTO>{ new ClubReportCityMembersDTO {CityId=1}
+                                                                                   }}} },
+                Admins = new List<ClubReportAdministrationDTO> { new ClubReportAdministrationDTO { ID = 1 } }
+            };
+
             _repositoryWrapper
                 .Setup(x => x.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.Club, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.Club>,
@@ -324,7 +339,15 @@ namespace EPlast.Tests.Services.Club
             _repositoryWrapper.Setup(x => x.CityMembers.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<CityMembers, bool>>>(), It.IsAny<Func<IQueryable<CityMembers>,
                     IIncludableQueryable<CityMembers, object>>>())).ReturnsAsync(null as CityMembers);
-    
+
+            _repositoryWrapper.Setup(x => x.ClubReportAdmins.CreateAsync(It.IsAny<ClubReportAdmins>()));
+            _repositoryWrapper.Setup(x => x.ClubReportMember.CreateAsync(It.IsAny<ClubReportMember>()));
+            _repositoryWrapper.Setup(x => x.ClubReportCities.CreateAsync(It.IsAny<ClubReportCities>()));
+            _repositoryWrapper.Setup(x => x.ClubReportPlastDegrees.CreateAsync(It.IsAny<ClubReportPlastDegrees>()));
+
+
+
+
             // Act  
             var result = _service.CreateAsync(It.IsAny<User>(), reportDto);
 

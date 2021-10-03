@@ -1,6 +1,6 @@
 ﻿namespace EPlast.BLL.DTO.Club
 {
-    public class ClubReportCitiMembersDTO
+    public class ClubReportCityMembersDTO
     {
         public int ID { get; set; }
         public int CityId { get; set; }
