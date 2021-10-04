@@ -379,6 +379,57 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
             _repoWrapper.Verify(x => x.SaveAsync());
         }
 
+        [Test]
+        public async Task GetAdministrationsOfUserAsync_ReturnsCorrectAdministrations()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(r => r.GoverningBodySectorAdministration.GetAllAsync(It.IsAny<Expression<Func<SectorAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<SectorAdministration>, IIncludableQueryable<SectorAdministration, object>>>()))
+                .ReturnsAsync(new List<SectorAdministration> { new SectorAdministration() { Id = 1 } });
+            _mapper
+                .Setup(m => m.Map<IEnumerable<SectorAdministration>, IEnumerable<SectorAdministrationDTO>>(It.IsAny<IEnumerable<SectorAdministration>>()))
+                .Returns(new List<SectorAdministrationDTO>() 
+                { 
+                    new SectorAdministrationDTO{UserId = Roles.GoverningBodySectorHead},
+                    new SectorAdministrationDTO{UserId = Roles.GoverningBodySectorHead}
+                });
+
+            //Act
+            var result = await _service.GetAdministrationsOfUserAsync(It.IsAny<string>());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<SectorAdministrationDTO>>(result);
+        }
+
+        [Test]
+        public async Task GetPreviousAdministrationsOfUserAsync_ReturnsCorrectAdministrations()
+        {
+            //Arrange
+            _ = _repoWrapper
+                .Setup(r => r.GoverningBodySectorAdministration.GetAllAsync(It.IsAny<Expression<Func<SectorAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<SectorAdministration>, IIncludableQueryable<SectorAdministration, object>>>()))
+                .ReturnsAsync(new List<SectorAdministration> { new SectorAdministration()
+                {
+                    Id = 1,
+                    Sector = new DataAccess.Entities.GoverningBody.Sector.Sector()
+                } });
+            _mapper
+                .Setup(m => m.Map<IEnumerable<SectorAdministration>, IEnumerable<SectorAdministrationDTO>>(It.IsAny<IEnumerable<SectorAdministration>>()))
+                 .Returns(new List<SectorAdministrationDTO>()
+                {
+                    new SectorAdministrationDTO{UserId = Roles.GoverningBodySectorHead},
+                    new SectorAdministrationDTO{UserId = Roles.GoverningBodySectorHead}
+                });
+            //Act
+            var result = await _service.GetPreviousAdministrationsOfUserAsync(It.IsAny<string>());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<SectorAdministrationDTO>>(result);
+        }
+
         private SectorDTO CreateSectorDTO()
         {
             return new SectorDTO()

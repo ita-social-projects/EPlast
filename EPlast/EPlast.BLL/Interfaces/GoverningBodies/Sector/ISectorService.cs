@@ -22,5 +22,9 @@ namespace EPlast.BLL.Interfaces.GoverningBodies.Sector
         Task<int> EditAsync(SectorDTO sector);
 
         Task<int> RemoveAsync(int sectorId);
+
+        Task<IEnumerable<SectorAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId);
+
+        Task<IEnumerable<SectorAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string UserId);
     }
 }

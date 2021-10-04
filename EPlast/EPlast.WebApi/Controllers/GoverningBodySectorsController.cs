@@ -217,5 +217,21 @@ namespace EPlast.WebApi.Controllers
         {
             return Ok(await _sectorService.GetUserAccessAsync(userId));
         }
+
+        [HttpGet("GetUserAdmins/{UserId}")]
+        public async Task<IActionResult> GetUserAdministrations(string UserId)
+        {
+            var userAdmins = await _sectorService.GetAdministrationsOfUserAsync(UserId);
+
+            return Ok(userAdmins);
+        }
+
+        [HttpGet("GetUserPreviousAdmins/{UserId}")]
+        public async Task<IActionResult> GetUserPreviousAdministrations(string UserId)
+        {
+            var userAdmins = await _sectorService.GetPreviousAdministrationsOfUserAsync(UserId);
+
+            return Ok(userAdmins);
+        }
     }
 }
