@@ -86,13 +86,13 @@ namespace EPlast.BLL.Services
                 await _regionService.DeleteAdminByIdAsync(regionAdmin.ID);
             }
 
-            var governingBodyAdmin = await _repoWrapper.GoverningBodyAdministration.GetFirstOrDefaultAsync(a => a.UserId == userId && a.Status == true);
+            var governingBodyAdmin = await _repoWrapper.GoverningBodyAdministration.GetFirstOrDefaultAsync(a => a.UserId == userId && a.Status);
             if (governingBodyAdmin != null)
             {
                 await _governingBodyAdministrationService.RemoveAdministratorAsync(governingBodyAdmin.Id);
             }
 
-            var sectorAdmin = await _repoWrapper.GoverningBodySectorAdministration.GetFirstOrDefaultAsync(a => a.UserId == userId && a.Status == true);
+            var sectorAdmin = await _repoWrapper.GoverningBodySectorAdministration.GetFirstOrDefaultAsync(a => a.UserId == userId && a.Status);
             if (sectorAdmin != null)
             {
                 await _sectorAdministrationService.RemoveAdministratorAsync(sectorAdmin.Id);
