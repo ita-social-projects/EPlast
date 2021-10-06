@@ -191,6 +191,40 @@ namespace EPlast.BLL.Services
             return citiesDTO;
         }
 
+        public async Task<IEnumerable<ShortUserInformationDTO>> GetUsersByAllRoles(string roles, bool include)
+        {
+            var users = await _repoWrapper.User.GetAllAsync();
+            var rolseArray = (roles.Split(",").ToList()).OrderByDescending(x => x);
+            List<ShortUserInformationDTO> filteredUsers = new List<ShortUserInformationDTO>();
+            foreach (var user in users)
+            {
+                var userRoles = await _userManager.GetRolesAsync(user);
+                var intersectedRoles = userRoles.Intersect(rolseArray).OrderByDescending(x => x);
+                if (intersectedRoles.SequenceEqual(rolseArray) == include)
+                {
+                    filteredUsers.Add(_mapper.Map<User, ShortUserInformationDTO>(user));
+                }
+            }
+            return filteredUsers.ToList();
+        }
+
+        public async Task<IEnumerable<ShortUserInformationDTO>> GetUsersByAnyRole(string roles, bool include)
+        {
+            var users = await _repoWrapper.User.GetAllAsync();
+            var rolseArray = (roles.Split(",").ToList()).OrderByDescending(x => x);
+            List<ShortUserInformationDTO> filteredUsers = new List<ShortUserInformationDTO>();
+            foreach (var user in users)
+            {
+                var userRoles = await _userManager.GetRolesAsync(user);
+                var intersectedRoles = userRoles.Intersect(rolseArray).OrderByDescending(x => x);
+                if (intersectedRoles.Any() == include)
+                {
+                    filteredUsers.Add(_mapper.Map<User, ShortUserInformationDTO>(user));
+                }
+            }
+            return filteredUsers.ToList();
+        }
+
         /// <inheritdoc />
         public IEnumerable<IdentityRole> GetRolesExceptAdmin()
         {

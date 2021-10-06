@@ -62,5 +62,9 @@ namespace EPlast.BLL.Services.Interfaces
         Task<IEnumerable<ShortUserInformationDTO>> GetUsersAsync();
 
         Task<int> GetUsersCountAsync();
+
+        Task<IEnumerable<ShortUserInformationDTO>> GetUsersByAllRoles(string roles, bool include);
+
+        Task<IEnumerable<ShortUserInformationDTO>> GetUsersByAnyRole(string roles, bool include);
     }
 }

@@ -81,6 +81,20 @@ namespace EPlast.WebApi.Controllers
             return NotFound();
         }
 
+        [HttpGet("GetUsersByAllRoles/{roles}/{include}")]
+        public async Task<IActionResult> GetUsersByAllRoles(string roles, bool include)
+        {
+            var users = await _adminService.GetUsersByAllRoles(roles, include);
+            return Ok(users);
+        }
+
+        [HttpGet("GetUsersByAnyRole/{roles}/{include}")]
+        public async Task<IActionResult> GetUsersByAnyRole(string roles, bool include)
+        {
+            var users = await _adminService.GetUsersByAnyRole(roles, include);
+            return Ok(users);
+        }
+
         /// <summary>
         /// Confirmation of delete a user
         /// </summary>
@@ -270,5 +284,7 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(model);
         }
+
+
     }
 }
