@@ -18,8 +18,8 @@ spec:
           image: ___containerRegistry___/eplastapi
           resources:
             limits:
-              cpu: "0.5"
-              memory: "700Mi"          
+              cpu: "0.4"
+              memory: "400Mi"          
           ports:
           - containerPort: 5000
           env:
