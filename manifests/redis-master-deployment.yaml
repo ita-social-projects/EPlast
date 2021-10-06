@@ -10,7 +10,6 @@ spec:
       app: redis
       role: master
       tier: backend
-  replicas: 1
   template:
     metadata:
       labels:
