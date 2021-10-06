@@ -1,6 +1,8 @@
 ﻿using EPlast.WebApi.Models.UserModels.UserProfileFields;
 using System;
 using System.ComponentModel.DataAnnotations;
+using EPlast.Resources;
+using EPlast.WebApi.Validators;
 
 namespace EPlast.WebApi.Models.UserModels
 {
@@ -27,6 +29,8 @@ namespace EPlast.WebApi.Models.UserModels
         public string FatherName { get; set; }
         //[StringLength(18, MinimumLength = 10, ErrorMessage = "Номер телефону повинен містити 10 цифр")]
         [Required(ErrorMessage = "Поле 'Номер телефону' є обов'язковим")]
+        [Phone]
+        [RegularExpression(@"^\+?3?8?(0\d{9})$", ErrorMessage = "Wrong format of phone number!")]
         public string PhoneNumber { get; set; }
         public DateTime RegistredOn { get; set; }
         public DateTime EmailSendedOnRegister { get; set; }
@@ -37,6 +41,7 @@ namespace EPlast.WebApi.Models.UserModels
         [DataType(DataType.Date)]
         [Display(Name = "Дата народження")]
         [Required(ErrorMessage = "Поле 'Дата народження' є обов'язковим")]
+        [BitrhdayDate(ErrorMessage = "Birthday must be greater than 01.01.1900")]
         public DateTime Birthday { get; set; }
         public EducationViewModel Education { get; set; }
         public DegreeViewModel Degree { get; set; }
