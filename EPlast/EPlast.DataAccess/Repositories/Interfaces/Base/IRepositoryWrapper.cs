@@ -26,11 +26,15 @@ namespace EPlast.DataAccess.Repositories
         IClubRepository Club { get; }
         IClubAdministrationRepository ClubAdministration { get; }
         IClubAnnualReportsRepository ClubAnnualReports { get; }
+        IClubReportMemberRepository ClubReportMember { get; }
+        IClubReportCitiesRepository ClubReportCities { get; }
+        IClubReportPlastDegreesRepository ClubReportPlastDegrees { get; }
         IClubDocumentsRepository ClubDocuments { get; }
         IClubDocumentTypeRepository ClubDocumentType { get; }
         IClubLegalStatusesRepository ClubLegalStatuses { get; }
         IClubMembersRepository ClubMembers { get; }
         IClubMemberHistoryRepository ClubMemberHistory { get; }
+        IClubReportAdminsRepository ClubReportAdmins { get; }
         IConfirmedUserRepository ConfirmedUser { get; }
         IDecesionRepository Decesion { get; }
         IDecesionTargetRepository DecesionTarget { get; }

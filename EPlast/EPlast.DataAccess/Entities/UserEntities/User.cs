@@ -56,7 +56,9 @@ namespace EPlast.DataAccess.Entities
         public ICollection<EducatorsStaff.EducatorsStaff> UsersKadras { get; set; }
         public ICollection<UserDistinction> UserDistinctions { get; set; }
         public ICollection<BlankBiographyDocuments> BlankBiographyDocuments { get; set; }
-     
+        public ClubReportPlastDegrees ClubReportPlastDegrees { get; set; }
+        public ClubReportCities ClubReportCities { get; set; }
+
         public User()
         {
             Approvers = new List<Approver>();

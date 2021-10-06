@@ -20,6 +20,7 @@ namespace EPlast.BLL.Services.GoverningBodies
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
         private readonly IUniqueIdService _uniqueId;
+        private readonly IGoverningBodyAdministrationService _governingBodyAdministrationService;
         private readonly IGoverningBodyBlobStorageRepository _governingBodyBlobStorage;
         private readonly ISecurityModel _securityModel;
         private const string SecuritySettingsFile = "GoverningBodyAccessSettings.json";
@@ -28,7 +29,8 @@ namespace EPlast.BLL.Services.GoverningBodies
                                       IMapper mapper,
                                       IUniqueIdService uniqueId,
                                       IGoverningBodyBlobStorageRepository governingBodyBlobStorage,
-                                      ISecurityModel securityModel)
+                                      ISecurityModel securityModel,
+                                      IGoverningBodyAdministrationService governingBodyAdministrationService)
         {
             _securityModel = securityModel;
             _securityModel.SetSettingsFile(SecuritySettingsFile);
@@ -36,6 +38,7 @@ namespace EPlast.BLL.Services.GoverningBodies
             _repoWrapper = repoWrapper;
             _mapper = mapper;
             _governingBodyBlobStorage = governingBodyBlobStorage;
+            _governingBodyAdministrationService = governingBodyAdministrationService;
         }
 
         public async Task<int> CreateAsync(GoverningBodyDTO governingBodyDto)
@@ -168,6 +171,13 @@ namespace EPlast.BLL.Services.GoverningBodies
             if (governingBody.Logo != null)
             {
                 await _governingBodyBlobStorage.DeleteBlobAsync(governingBody.Logo);
+            }
+
+            var admins = (await _repoWrapper.GoverningBodyAdministration.GetAllAsync(x => x.GoverningBodyId == governingBodyId))
+                ?? new List<GoverningBodyAdministration>();
+            foreach (var admin in admins)
+            {
+                await _governingBodyAdministrationService.RemoveAdministratorAsync(admin.Id);
             }
 
             _repoWrapper.GoverningBody.Delete(governingBody);

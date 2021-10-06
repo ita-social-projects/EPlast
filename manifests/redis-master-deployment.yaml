@@ -10,7 +10,6 @@ spec:
       app: redis
       role: master
       tier: backend
-  replicas: 1
   template:
     metadata:
       labels:
@@ -23,7 +22,32 @@ spec:
         image: redis
         resources:
           requests:
-            cpu: 100m
-            memory: 100Mi
+            cpu: "100m"
+            memory: "100Mi"
+          limits:
+            cpu: "200m"
+            memory: "200Mi"
         ports:
         - containerPort: 6379
+
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: redis-autoscaler
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: redis-master
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      targetAverageUtilization: 80

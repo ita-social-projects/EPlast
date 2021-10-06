@@ -914,6 +914,60 @@ namespace EPlast.Tests.Services.Club
             _repoWrapper.Verify(x => x.SaveAsync());
         }
 
+        [Test]
+        public async Task AddMemberInHistoryAsync_Valid_Tests()
+        {
+            // Arrange
+            int clubId = 1;
+            string userId = "1";
+            _repoWrapper
+                .Setup(r => r.ClubMemberHistory.CreateAsync(It.IsAny<ClubMemberHistory>()));
+            _repoWrapper
+                .Setup(r => r.SaveAsync());
+
+            // Act
+            await _clubParticipantsService.AddMemberInHistoryAsync(clubId, userId);
+
+            // Assert
+            _repoWrapper.Verify(r => r.ClubMemberHistory.CreateAsync(It.IsAny<ClubMemberHistory>()), Times.Once());
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once());
+        }
+        [Test]
+        public async Task AddMemberInHistoryAsync_ValidOldMember_Tests()
+        {
+            // Arrange
+            _repoWrapper
+               .Setup(s => s.ClubMemberHistory.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMemberHistory, bool>>>(),
+                   It.IsAny<Func<IQueryable<ClubMemberHistory>, IIncludableQueryable<ClubMemberHistory, object>>>()))
+               .ReturnsAsync(new ClubMemberHistory());
+
+
+            // Act
+            await _clubParticipantsService.AddMemberInHistoryAsync(It.IsAny<int>(), It.IsAny<string>());
+
+            // Assert
+            _repoWrapper.Verify(r => r.ClubMemberHistory.CreateAsync(It.IsAny<ClubMemberHistory>()), Times.Once());
+        }
+
+        [Test]
+        public async Task AddMemberInHistoryAsync_InvalidOldMember_Tests()
+        {
+            // Arrange
+            _repoWrapper
+               .Setup(s => s.ClubMemberHistory.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMemberHistory, bool>>>(),
+                   It.IsAny<Func<IQueryable<ClubMemberHistory>, IIncludableQueryable<ClubMemberHistory, object>>>()))
+               .ReturnsAsync(() => null);
+
+
+            // Act
+            await _clubParticipantsService.AddMemberInHistoryAsync(It.IsAny<int>(), It.IsAny<string>());
+
+            // Assert
+            _repoWrapper.Verify(r => r.ClubMemberHistory.CreateAsync(It.IsAny<ClubMemberHistory>()), Times.Once());
+            _repoWrapper.Verify(i => i.SaveAsync(), Times.Once());
+        }
+
+
         private IEnumerable<ClubAdministrationDTO> GetTestClubAdministration()
         {
             return new List<ClubAdministrationDTO>

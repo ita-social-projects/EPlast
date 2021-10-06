@@ -37,6 +37,8 @@
     <Compile Remove="Migrations\20210910085132_IncreasePlaceOfStudy.Designer.cs" />
     <Compile Remove="Migrations\20210910085423_IncreaseMaxLenghtPlaceOfStudy.cs" />
     <Compile Remove="Migrations\20210910085423_IncreaseMaxLenghtPlaceOfStudy.Designer.cs" />
+    <Compile Remove="Migrations\20210818105200_cityReport.cs" />
+    <Compile Remove="Migrations\20210818105200_cityReport.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

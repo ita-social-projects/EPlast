@@ -36,10 +36,20 @@ namespace EPlast.Tests.Services.UserProfiles
         private UserDTO _userDTO;
         private ConfirmedUserDTO _confirmedUserDTO;
         private Mock<IUserManagerService> _mockUserManageService;
+        Mock<UserDTO> _currentUser;
+        Mock<UserDTO> _focusUser;
 
         [SetUp]
         public void SetUp()
         {
+            _currentUser = new Mock<UserDTO>();
+            _focusUser = new Mock<UserDTO>();
+            _currentUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 1 }, };
+            _focusUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 2 }, };
+            _currentUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { City = new DataAccess.Entities.City() { RegionId = 1 } }, };
+            _focusUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { City = new DataAccess.Entities.City() { RegionId = 2 } }, };
+            _currentUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { Club = new DataAccess.Entities.Club(), UserId = "1", }, };
+            _focusUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { Club = new DataAccess.Entities.Club(), UserId = "1" }, };
             _mockRepoWrapper = new Mock<IRepositoryWrapper>();
             _mockMapper = new Mock<IMapper>();
             _mockUserPersonalDataService = new Mock<IUserPersonalDataService>();
@@ -449,17 +459,6 @@ namespace EPlast.Tests.Services.UserProfiles
                     It.IsAny<Func<IQueryable<ClubMembers>,
                         IIncludableQueryable<ClubMembers, object>>>()))
                 .ReturnsAsync(clubMembers);
-            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
-            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
-
-            _currentUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 1 }, };
-            _focusUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 2 }, };
-
-            _currentUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { City = new DataAccess.Entities.City() { RegionId = 1 } }, };
-            _focusUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { City = new DataAccess.Entities.City() { RegionId = 2 } }, };
-
-            _currentUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { Club = new DataAccess.Entities.Club(), UserId = "1", }, };
-            _focusUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { Club = new DataAccess.Entities.Club(), UserId = "1" }, };
             _currentUser.SetupGet(x => x.Id).Returns("1");
             _currentUser.SetupSet(s => s.Id = It.IsAny<string>());
             _focusUser.SetupGet(x => x.Id).Returns("2");
@@ -496,17 +495,6 @@ namespace EPlast.Tests.Services.UserProfiles
                     It.IsAny<Func<IQueryable<ClubMembers>,
                         IIncludableQueryable<ClubMembers, object>>>()))
                 .ReturnsAsync(clubMembers);
-            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
-            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
-
-            _currentUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 1 }, };
-            _focusUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 2 }, };
-
-            _currentUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { City = new DataAccess.Entities.City() { RegionId = 1 } }, };
-            _focusUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { City = new DataAccess.Entities.City() { RegionId = 2 } }, };
-
-            _currentUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { Club = new DataAccess.Entities.Club(), UserId = "1", }, };
-            _focusUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { Club = new DataAccess.Entities.Club(), UserId = "1" }, };
             _currentUser.SetupGet(x => x.Id).Returns("1");
             _currentUser.SetupSet(s => s.Id = It.IsAny<string>());
             _focusUser.SetupGet(x => x.Id).Returns("2");
@@ -543,17 +531,6 @@ namespace EPlast.Tests.Services.UserProfiles
                     It.IsAny<Func<IQueryable<CityMembers>,
                         IIncludableQueryable<CityMembers, object>>>()))
                 .ReturnsAsync(cityMembers);
-            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
-            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
-
-            _currentUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 1 }, };
-            _focusUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 2 }, };
-
-            _currentUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { City = new DataAccess.Entities.City() { RegionId = 1 } }, };
-            _focusUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { City = new DataAccess.Entities.City() { RegionId = 2 } }, };
-
-            _currentUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { Club = new DataAccess.Entities.Club(), UserId = "1", }, };
-            _focusUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { Club = new DataAccess.Entities.Club(), UserId = "1" }, };
             _currentUser.SetupGet(x => x.Id).Returns("1");
             _currentUser.SetupSet(s => s.Id = It.IsAny<string>());
             _focusUser.SetupGet(x => x.Id).Returns("2");
@@ -590,17 +567,6 @@ namespace EPlast.Tests.Services.UserProfiles
                     It.IsAny<Func<IQueryable<CityMembers>,
                         IIncludableQueryable<CityMembers, object>>>()))
                 .ReturnsAsync(cityMembers);
-            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
-            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
-
-            _currentUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 1 }, };
-            _focusUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 2 }, };
-
-            _currentUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { City = new DataAccess.Entities.City() { RegionId = 1 } }, };
-            _focusUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { City = new DataAccess.Entities.City() { RegionId = 2 } }, };
-
-            _currentUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { Club = new DataAccess.Entities.Club(), UserId = "1", }, };
-            _focusUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { Club = new DataAccess.Entities.Club(), UserId = "1" }, };
             _currentUser.SetupGet(x => x.Id).Returns("1");
             _currentUser.SetupSet(s => s.Id = It.IsAny<string>());
             _focusUser.SetupGet(x => x.Id).Returns("2");
@@ -637,17 +603,6 @@ namespace EPlast.Tests.Services.UserProfiles
                     It.IsAny<Func<IQueryable<RegionFollowers>,
                         IIncludableQueryable<RegionFollowers, object>>>()))
                 .ReturnsAsync(regionFollowers);
-            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
-            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
-
-            _currentUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 1 }, };
-            _focusUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 2 }, };
-
-            _currentUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { City = new DataAccess.Entities.City() { RegionId = 1 } }, };
-            _focusUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { City = new DataAccess.Entities.City() { RegionId = 2 } }, };
-
-            _currentUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { Club = new DataAccess.Entities.Club(), UserId = "1", }, };
-            _focusUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { Club = new DataAccess.Entities.Club(), UserId = "1" }, };
             _currentUser.SetupGet(x => x.Id).Returns("1");
             _currentUser.SetupSet(s => s.Id = It.IsAny<string>());
             _focusUser.SetupGet(x => x.Id).Returns("2");
@@ -684,17 +639,8 @@ namespace EPlast.Tests.Services.UserProfiles
                     It.IsAny<Func<IQueryable<RegionFollowers>,
                         IIncludableQueryable<RegionFollowers, object>>>()))
                 .ReturnsAsync(regionFollowers);
-            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
-            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
-
-            _currentUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 1 }, };
-            _focusUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 1 }, };
-
             _currentUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { City = new DataAccess.Entities.City() { RegionId = 1 } }, };
             _focusUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { City = new DataAccess.Entities.City() { RegionId = 1 } }, };
-
-            _currentUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { Club = new DataAccess.Entities.Club(), UserId = "1", }, };
-            _focusUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { Club = new DataAccess.Entities.Club(), UserId = "1" }, };
             _currentUser.SetupGet(x => x.Id).Returns("1");
             _currentUser.SetupSet(s => s.Id = It.IsAny<string>());
             _focusUser.SetupGet(x => x.Id).Returns("2");
