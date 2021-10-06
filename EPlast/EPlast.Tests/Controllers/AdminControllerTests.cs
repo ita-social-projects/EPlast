@@ -392,6 +392,35 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<List<ShortUserInformationDTO>>(resultValue);
         }
 
+        [Test]
+        public async Task GetUsersByAllRoles_ReturnsOkObjectResult()
+        {
+            //Arrange
+            _adminService.Setup(x => x.GetUsersByAllRoles(It.IsAny<string>(), It.IsAny<bool>()))
+                .ReturnsAsync(new List<ShortUserInformationDTO>() { new ShortUserInformationDTO() });
+            AdminController adminController = CreateAdminController;
+
+            //Act
+            var res = await adminController.GetUsersByAllRoles("Roles", true);
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(res);
+        }
+
+        [Test]
+        public async Task GetUsersByAnyRole_ReturnsOkObjectResult()
+        {
+            //Arrange
+            _adminService.Setup(x => x.GetUsersByAnyRole(It.IsAny<string>(), It.IsAny<bool>()))
+                .ReturnsAsync(new List<ShortUserInformationDTO>() { new ShortUserInformationDTO() });
+            AdminController adminController = CreateAdminController;
+
+            //Act
+            var res = await adminController.GetUsersByAnyRole("Roles", true);
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(res);
+        }
         private TableFilterParameters CreateTableFilterParameters => new TableFilterParameters()
         {
             Page = 1,

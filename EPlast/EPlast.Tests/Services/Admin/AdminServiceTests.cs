@@ -845,6 +845,51 @@ namespace EPlast.Tests.Services
             Assert.IsInstanceOf<int>(result);
         }
 
+        [Test]
+        public async Task GetUsersByAllRoles_ReturnsUsers()
+        {
+            //Arrange
+            string[] userRole = new string[] { "Role1", "Role2" };
+            string[] roles = new string[] { "Role2", "Role1" };
+            var user = new User() { Id = "1" };
+            _repoWrapper.Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                    It.IsAny<Func<IQueryable<User>,
+                        IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(new List<User>() { user });
+            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(userRole);
+            _mapper.Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDTO() { ID = "1" });
+
+            //Acts
+            var res = (await service.GetUsersByAllRoles(string.Join(",", roles), true)).ToList();
+
+            //Assert
+            Assert.AreEqual(res[0].ID, user.Id);
+        }
+
+        [Test]
+        public async Task GetUsersByAnyRole_ReturnsUsers()
+        {
+            //Arrange
+            string[] userRole = new string[] { "Role1", "Role2" };
+            string[] roles = new string[] { "Role2" };
+            var user = new User() { Id = "1" };
+            _repoWrapper.Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                    It.IsAny<Func<IQueryable<User>,
+                        IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(new List<User>() { user });
+            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(userRole);
+            _mapper.Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDTO() { ID = "1" });
+
+            //Acts
+            var res = (await service.GetUsersByAnyRole(string.Join(",", roles), true)).ToList();
+
+            //Assert
+            Assert.AreEqual(res[0].ID, user.Id);
+        }
         private IEnumerable<User> GetTestUsers()
         {
             return new List<User>
