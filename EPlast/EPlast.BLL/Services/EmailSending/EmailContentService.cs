@@ -113,7 +113,6 @@ namespace EPlast.BLL.Services.EmailSending
                 Message = "<h3>СКОБ!</h3>"
                           + $"<p>{friend}, повідомляємо, що користувач {vaucherUser.FirstName} {vaucherUser.LastName} "
                           + "скасував своє поручення за Тебе."
-                          + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>"
             };
         }
 
@@ -186,7 +185,6 @@ namespace EPlast.BLL.Services.EmailSending
                 Subject = "Зміна статусу членства у станиці",
                 Message = "<h3>СКОБ!</h3>"
                           + $"<p>{friend}, повідомляємо, що Тебе було виключено зі станиці <a href='{cityUrl}'>{cityName}</a>."
-                          + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>"
             };
         }
 

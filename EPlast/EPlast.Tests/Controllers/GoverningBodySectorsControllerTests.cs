@@ -421,6 +421,37 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(testAccesses, resultValue);
         }
 
+        [Test]
+        public async Task GetUserAdministrations_Valid_Test()
+        {
+            // Arrange
+            _sectorService
+                .Setup(c => c.GetAdministrationsOfUserAsync(It.IsAny<string>()))
+                .ReturnsAsync(It.IsAny<IEnumerable<SectorAdministrationDTO>>());
+
+            // Act
+            var result = await _controller.GetUserAdministrations("1");
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetUserPreviousAdministrations_Valid_Test()
+        {
+            // Arrange
+            _sectorService
+                .Setup(c => c.GetPreviousAdministrationsOfUserAsync(It.IsAny<string>()))
+                .ReturnsAsync(It.IsAny<IEnumerable<SectorAdministrationDTO>>());
+
+            // Act
+            var result = await _controller.GetUserPreviousAdministrations("1");
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
         private SectorDTO CreateSectorDto()
         {
             return new SectorDTO()

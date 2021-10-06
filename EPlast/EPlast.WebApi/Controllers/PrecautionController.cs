@@ -69,6 +69,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>List of UserPrecautionsTableObject</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("UsersPrecautionsForTable")]
+        [Authorize(Roles = Roles.AdminPlastMemberAndSupporter)]
         public IActionResult GetUsersPrecautionsForTable(string searchedData, int page, int pageSize)
         {
             var distinctions = _precautionService.GetUsersPrecautionsForTable(searchedData, page, pageSize);
@@ -83,6 +84,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">An instance of Precaution type</response>
         /// <response code="404">The Precaution type with this id does not exist</response>
         [HttpGet("{id}")]
+        [Authorize(Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetPrecaution(int id)
         {
             PrecautionDTO Precaution = await _precautionService.GetPrecautionAsync(id);
@@ -97,6 +99,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>All Precaution types</returns>
         /// <response code="200">Array of all Precaution types</response>
         [HttpGet("Precautions")]
+        [Authorize(Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetPrecaution()
         {
             return Ok(await _precautionService.GetAllPrecautionAsync());

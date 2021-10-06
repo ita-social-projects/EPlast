@@ -438,7 +438,6 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetRegionAdmins(int regionId)
         {
             var Admins = await _regionAdministrationService.GetAdministrationAsync(regionId);
-
             return Ok(Admins);
         }
 

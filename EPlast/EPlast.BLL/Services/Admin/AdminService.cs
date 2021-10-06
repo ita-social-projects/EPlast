@@ -17,6 +17,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.Admin;
+using EPlast.BLL.Interfaces.GoverningBodies;
+using EPlast.BLL.Interfaces.GoverningBodies.Sector;
 
 namespace EPlast.BLL.Services
 {
@@ -26,6 +28,8 @@ namespace EPlast.BLL.Services
         private readonly IClubParticipantsService _clubParticipants;
         private readonly IMapper _mapper;
         private readonly IRegionAdministrationService _regionService;
+        private readonly IGoverningBodyAdministrationService _governingBodyAdministrationService;
+        private readonly ISectorAdministrationService _sectorAdministrationService;
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<User> _userManager;
@@ -36,7 +40,9 @@ namespace EPlast.BLL.Services
                             RoleManager<IdentityRole> roleManager,
                             IClubParticipantsService clubParticipants,
                             IRegionAdministrationService regionService,
-                            ICityParticipantsService cityParticipants)
+                            ICityParticipantsService cityParticipants,
+                            IGoverningBodyAdministrationService governingBodyAdministrationService,
+                            ISectorAdministrationService sectorAdministrationService)
         {
             _repoWrapper = repoWrapper;
             _userManager = userManager;
@@ -45,6 +51,8 @@ namespace EPlast.BLL.Services
             _clubParticipants = clubParticipants;
             _regionService = regionService;
             _cityParticipants = cityParticipants;
+            _governingBodyAdministrationService = governingBodyAdministrationService;
+            _sectorAdministrationService = sectorAdministrationService;
         }
 
         /// <inheritdoc />
@@ -76,6 +84,18 @@ namespace EPlast.BLL.Services
             if (regionAdmin != null)
             {
                 await _regionService.DeleteAdminByIdAsync(regionAdmin.ID);
+            }
+
+            var governingBodyAdmin = await _repoWrapper.GoverningBodyAdministration.GetFirstOrDefaultAsync(a => a.UserId == userId && a.Status);
+            if (governingBodyAdmin != null)
+            {
+                await _governingBodyAdministrationService.RemoveAdministratorAsync(governingBodyAdmin.Id);
+            }
+
+            var sectorAdmin = await _repoWrapper.GoverningBodySectorAdministration.GetFirstOrDefaultAsync(a => a.UserId == userId && a.Status);
+            if (sectorAdmin != null)
+            {
+                await _sectorAdministrationService.RemoveAdministratorAsync(sectorAdmin.Id);
             }
 
             await _userManager.AddToRoleAsync(user, Roles.FormerPlastMember);
