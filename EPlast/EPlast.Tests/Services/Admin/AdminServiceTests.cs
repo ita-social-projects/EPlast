@@ -866,7 +866,7 @@ namespace EPlast.Tests.Services
         }
 
         [Test]
-        public async Task GetUsersByAllRoles_ReturnsUsers()
+        public async Task GetUsersByAllRolesAsync_ReturnsUsers()
         {
             //Arrange
             string[] userRole = new string[] { "Role1", "Role2" };
@@ -889,7 +889,7 @@ namespace EPlast.Tests.Services
         }
 
         [Test]
-        public async Task GetUsersByAnyRole_ReturnsUsers()
+        public async Task GetUsersByAnyRoleAsync_ReturnsUsers()
         {
             //Arrange
             string[] userRole = new string[] { "Role1", "Role2" };
