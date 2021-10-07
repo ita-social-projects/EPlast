@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -82,17 +83,26 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("GetUsersByAllRoles/{roles}/{include}")]
-        public async Task<IActionResult> GetUsersByAllRoles(string roles, bool include)
+        public async Task<IActionResult> GetUsersByAllRoles([Required(AllowEmptyStrings = false)] string roles, [Required] bool include)
         {
-            var users = await _adminService.GetUsersByAllRoles(roles, include);
-            return Ok(users);
+            if (ModelState.IsValid)
+            { 
+                var users = await _adminService.GetUsersByAllRoles(roles, include);
+                return Ok(users);
+            }
+            return BadRequest();
         }
 
         [HttpGet("GetUsersByAnyRole/{roles}/{include}")]
-        public async Task<IActionResult> GetUsersByAnyRole(string roles, bool include)
+        public async Task<IActionResult> GetUsersByAnyRole([Required(AllowEmptyStrings = false)] string roles, [Required] bool include)
         {
-            var users = await _adminService.GetUsersByAnyRole(roles, include);
-            return Ok(users);
+            if (ModelState.IsValid)
+            {
+                var users = await _adminService.GetUsersByAnyRole(roles, include);
+                return Ok(users);
+            }
+            return BadRequest();
+            
         }
 
         /// <summary>
