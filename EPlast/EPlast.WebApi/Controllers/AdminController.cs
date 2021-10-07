@@ -6,11 +6,12 @@ using EPlast.Resources;
 using EPlast.WebApi.Models.Admin;
 using EPlast.WebApi.Models.Role;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -87,7 +88,7 @@ namespace EPlast.WebApi.Controllers
         {
             if (ModelState.IsValid)
             { 
-                var users = await _adminService.GetUsersByAllRoles(roles, include);
+                var users = await _adminService.GetUsersByRolesAsync(roles, include, (x, y) => x.SequenceEqual(y));
                 return Ok(users);
             }
             return BadRequest();
@@ -98,11 +99,10 @@ namespace EPlast.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                var users = await _adminService.GetUsersByAnyRole(roles, include);
+                var users = await _adminService.GetUsersByRolesAsync(roles, include, (x, y) => x.Any());
                 return Ok(users);
             }
             return BadRequest();
-            
         }
 
         /// <summary>

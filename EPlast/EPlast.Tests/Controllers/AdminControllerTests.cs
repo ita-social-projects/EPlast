@@ -396,7 +396,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetUsersByAllRoles_ReturnsOkObjectResult()
         {
             //Arrange
-            _adminService.Setup(x => x.GetUsersByAllRoles(It.IsAny<string>(), It.IsAny<bool>()))
+            _adminService.Setup(x => x.GetUsersByRolesAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<Func<IEnumerable<string>, IEnumerable<string>, bool>>()))
                 .ReturnsAsync(new List<ShortUserInformationDTO>() { new ShortUserInformationDTO() });
             AdminController adminController = CreateAdminController;
 
@@ -411,7 +411,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetUsersByAnyRole_ReturnsOkObjectResult()
         {
             //Arrange
-            _adminService.Setup(x => x.GetUsersByAnyRole(It.IsAny<string>(), It.IsAny<bool>()))
+            _adminService.Setup(x => x.GetUsersByRolesAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<Func<IEnumerable<string>, IEnumerable<string>, bool>>()))
                 .ReturnsAsync(new List<ShortUserInformationDTO>() { new ShortUserInformationDTO() });
             AdminController adminController = CreateAdminController;
 
