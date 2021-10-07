@@ -1,6 +1,6 @@
-﻿using System;
+﻿using EPlast.Resources;
+using System;
 using System.ComponentModel.DataAnnotations;
-using EPlast.Resources;
 
 namespace EPlast.WebApi.Validators
 {
