@@ -214,7 +214,7 @@ namespace EPlast.BLL.Services
         public async Task<IEnumerable<ShortUserInformationDTO>> GetUsersByAllRoles(string roles, bool include)
         {
             var users = await _repoWrapper.User.GetAllAsync();
-            var rolseArray = (roles.Split(",").ToList()).OrderByDescending(x => x);
+            var rolseArray = roles.Split(",").OrderByDescending(x => x);
             List<ShortUserInformationDTO> filteredUsers = new List<ShortUserInformationDTO>();
             foreach (var user in users)
             {
@@ -231,7 +231,7 @@ namespace EPlast.BLL.Services
         public async Task<IEnumerable<ShortUserInformationDTO>> GetUsersByAnyRole(string roles, bool include)
         {
             var users = await _repoWrapper.User.GetAllAsync();
-            var rolseArray = (roles.Split(",").ToList()).OrderByDescending(x => x);
+            var rolseArray = roles.Split(",").OrderByDescending(x => x);
             List<ShortUserInformationDTO> filteredUsers = new List<ShortUserInformationDTO>();
             foreach (var user in users)
             {
