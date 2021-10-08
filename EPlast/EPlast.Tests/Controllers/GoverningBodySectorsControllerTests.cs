@@ -276,10 +276,10 @@ namespace EPlast.Tests.Controllers
                 .Throws(new ArgumentException());
 
             //Act
-            var res = await _controller.AddAdmin(new SectorAdministrationDTO());
+            var result = await _controller.AddAdmin(new SectorAdministrationDTO());
 
             //Assert
-            Assert.IsInstanceOf<BadRequestResult>(res);
+            Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
