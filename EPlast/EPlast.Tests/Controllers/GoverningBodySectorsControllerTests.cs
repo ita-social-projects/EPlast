@@ -12,6 +12,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.BLL.Interfaces.GoverningBodies.Sector;
+using System;
 
 namespace EPlast.Tests.Controllers
 {
@@ -70,6 +71,21 @@ namespace EPlast.Tests.Controllers
 
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        }
+
+        [Test]
+        public async Task Create_ThrowsArgumentException_BadRequestResult()
+        {
+            //Arrange
+            _sectorService
+                .Setup(x => x.CreateAsync(It.IsAny<SectorDTO>()))
+                .ThrowsAsync(new ArgumentException());
+
+            //Act
+            var result = await _controller.Create(CreateSectorDto());
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
@@ -405,6 +421,37 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(testAccesses, resultValue);
         }
 
+        [Test]
+        public async Task GetUserAdministrations_Valid_Test()
+        {
+            // Arrange
+            _sectorService
+                .Setup(c => c.GetAdministrationsOfUserAsync(It.IsAny<string>()))
+                .ReturnsAsync(It.IsAny<IEnumerable<SectorAdministrationDTO>>());
+
+            // Act
+            var result = await _controller.GetUserAdministrations("1");
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetUserPreviousAdministrations_Valid_Test()
+        {
+            // Arrange
+            _sectorService
+                .Setup(c => c.GetPreviousAdministrationsOfUserAsync(It.IsAny<string>()))
+                .ReturnsAsync(It.IsAny<IEnumerable<SectorAdministrationDTO>>());
+
+            // Act
+            var result = await _controller.GetUserPreviousAdministrations("1");
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
         private SectorDTO CreateSectorDto()
         {
             return new SectorDTO()

@@ -1,4 +1,6 @@
-﻿namespace EPlast.Resources
+﻿using System.Collections.Generic;
+
+namespace EPlast.Resources
 {
     public static class Roles
     {
@@ -25,8 +27,8 @@
         public const string GoverningBodySectorHead = "Голова Напряму Керівного Органу";
         public const string GoverningBodySectorSecretary = "Діловод Напряму Керівного Органу";
 
-        public const string AdminAndGoverningBodySectorHead = Admin + "," + GoverningBodySectorHead;
-        public const string AdminAndGoverningBodyHead = Admin + "," + GoverningBodyHead;
+        public const string AdminAndGBHeadAndGBSectorHead= Admin + "," + GoverningBodyHead + "," + GoverningBodySectorHead;
+        public const string AdminAndGBHead = Admin + "," + GoverningBodyHead;
         public const string DegreeAssignRoles = Admin + "," + PlastHead + "," + EventAdministrator + "," + KurinHead + "," + KurinHeadDeputy + "," + KurinSecretary + "," +
             OkrugaHead + "," + OkrugaHeadDeputy + "," + OkrugaSecretary + "," + CityHead + "," + CityHeadDeputy + "," + CitySecretary;
         public const string HeadsAndHeadDeputiesAndAdminAndPlastun = Admin + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + "," 
@@ -47,5 +49,27 @@
             + CityHead + "," + CityHeadDeputy;
         public const string AdminRegionBoardHeadOkrugaHeadAndDeputy = Admin + "," + RegionBoardHead + "," + OkrugaHead + "," + OkrugaHeadDeputy;
         public const string AdminAndCityHeadAndCityHeadDeputy = Admin + "," + CityHead + "," + CityHeadDeputy;
+        public const string HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead = Admin + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + ","
+            + KurinHead + "," + KurinHeadDeputy + "," + PlastMember + "," + GoverningBodyHead + "," + GoverningBodySectorHead;
+        public static List<string> ListOfRoles = new List<string>
+        {
+            Roles.GoverningBodyHead,
+            Roles.GoverningBodySectorHead,
+            Roles.GoverningBodySecretary,
+            Roles.KurinHead,
+            Roles.KurinHeadDeputy,
+            Roles.KurinSecretary,
+            Roles.CityHead,
+            Roles.CityHeadDeputy,
+            Roles.CitySecretary,
+            Roles.OkrugaHead,
+            Roles.OkrugaHeadDeputy,
+            Roles.OkrugaSecretary,
+            Roles.PlastMember,
+            Roles.FormerPlastMember,
+            Roles.Supporter,
+            Roles.RegisteredUser,
+            Roles.Admin
+        };
     }
 }

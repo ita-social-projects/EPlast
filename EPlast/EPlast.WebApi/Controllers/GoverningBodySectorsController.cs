@@ -42,23 +42,28 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("CreateSector")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodySectorHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHeadAndGBSectorHead)]
         public async Task<IActionResult> Create(SectorDTO sectorDTO)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            sectorDTO.Id = await _sectorService.CreateAsync(sectorDTO);
-
+            try
+            {
+                sectorDTO.Id = await _sectorService.CreateAsync(sectorDTO);
+            }
+            catch
+            {
+                return BadRequest();
+            }
             _logger.LogInformation($"Governing body sector {{{sectorDTO.Name}}} was created.");
 
             return Ok(sectorDTO.Id);
         }
 
         [HttpPut("EditSector/{sectorId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodySectorHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHeadAndGBSectorHead)]
         public async Task<IActionResult> Edit(SectorDTO sector)
         {
             if (!ModelState.IsValid)
@@ -99,7 +104,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpDelete("RemoveSector/{sectorId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodySectorHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHeadAndGBSectorHead)]
         public async Task<IActionResult> Remove(int sectorId)
         {
             await _sectorService.RemoveAsync(sectorId);
@@ -124,7 +129,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("AddAdmin/{sectorId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodySectorHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHeadAndGBSectorHead)]
         public async Task<IActionResult> AddAdmin(SectorAdministrationDTO newAdmin)
         {
             await _sectorAdministrationService.AddSectorAdministratorAsync(newAdmin);
@@ -136,7 +141,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPut("EditAdmin/{adminId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodySectorHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHeadAndGBSectorHead)]
         public async Task<IActionResult> EditAdmin(SectorAdministrationDTO adminDto)
         {
             await _sectorAdministrationService.EditSectorAdministratorAsync(adminDto);
@@ -146,7 +151,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPut("RemoveAdmin/{adminId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodySectorHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHeadAndGBSectorHead)]
         public async Task<IActionResult> RemoveAdmin(int adminId)
         {
             await _sectorAdministrationService.RemoveAdministratorAsync(adminId);
@@ -171,7 +176,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("AddDocument/{sectorId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodySectorHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHeadAndGBSectorHead)]
         public async Task<IActionResult> AddDocument(SectorDocumentsDTO document)
         {
             await _sectorDocumentsService.AddSectorDocumentAsync(document);
@@ -189,7 +194,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpDelete("RemoveDocument/{documentId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGoverningBodySectorHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHeadAndGBSectorHead)]
         public async Task<IActionResult> RemoveDocument(int documentId)
         {
             await _sectorDocumentsService.DeleteSectorDocumentAsync(documentId);
@@ -211,6 +216,22 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetUserAccess(string userId)
         {
             return Ok(await _sectorService.GetUserAccessAsync(userId));
+        }
+
+        [HttpGet("GetUserAdmins/{UserId}")]
+        public async Task<IActionResult> GetUserAdministrations(string UserId)
+        {
+            var userAdmins = await _sectorService.GetAdministrationsOfUserAsync(UserId);
+
+            return Ok(userAdmins);
+        }
+
+        [HttpGet("GetUserPreviousAdmins/{UserId}")]
+        public async Task<IActionResult> GetUserPreviousAdministrations(string UserId)
+        {
+            var userAdmins = await _sectorService.GetPreviousAdministrationsOfUserAsync(UserId);
+
+            return Ok(userAdmins);
         }
     }
 }

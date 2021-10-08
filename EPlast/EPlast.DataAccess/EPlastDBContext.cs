@@ -133,7 +133,7 @@ namespace EPlast.DataAccess
                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<User>()
-               .HasMany(x => x.UserPlastDegrees)
+               .HasOne(x => x.UserPlastDegrees)
                .WithOne(x => x.User)
                .OnDelete(DeleteBehavior.Cascade);
 
@@ -201,6 +201,12 @@ namespace EPlast.DataAccess
                 .HasMany(x => x.UserDistinctions)
                 .WithOne(x => x.Distinction)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Gender>(entity =>
+            {
+                entity.HasCheckConstraint("constraint_gender",
+                    "(Name = 'Чоловік' AND ID = 1) OR (Name = 'Жінка' AND ID = 2) OR (Name = 'Не маю бажання вказувати' AND ID = 7)");
+            });
 
             modelBuilder.Entity<AnnualReport>(annualReport =>
             {
@@ -276,5 +282,6 @@ namespace EPlast.DataAccess
         public DbSet<ClubReportMember> ClubReportMember { get; set; }
         public DbSet<ClubReportAdmins> ClubReportAdmins { get; set; }
         public DbSet<ClubMemberHistory> ClubMemberHistory { get; set; }
+        public DbSet<ClubReportCities> ClubReportCities { get; set; }
     }
 }

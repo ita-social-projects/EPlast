@@ -49,7 +49,7 @@ namespace EPlast.WebApi.Controllers
         {
             await _regionAdministrationService.AddRegionAdministrator(admin);
 
-            return NoContent();
+            return Ok(admin);
         }
 
         [HttpPost("AddDocument")]
@@ -71,7 +71,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("AddRegion")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> CreateRegion(RegionDTO region)
         {
             await _regionService.AddRegionAsync(region);
@@ -361,7 +361,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">Follower not found</response>
         [HttpGet("GetFollower/{followerId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> GetFollower(int followerId)
         {
             var follower = await _regionService.GetFollowerAsync(followerId);
@@ -393,7 +393,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="followerId">The id of the follower</param>
         [HttpDelete("RemoveFollower/{followerId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> RemoveFollower(int followerId)
         {
             await _regionService.RemoveFollowerAsync(followerId);
@@ -438,7 +438,6 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetRegionAdmins(int regionId)
         {
             var Admins = await _regionAdministrationService.GetAdministrationAsync(regionId);
-
             return Ok(Admins);
         }
 
@@ -668,6 +667,21 @@ namespace EPlast.WebApi.Controllers
         {
             await _regionService.UnArchiveRegionAsync(Id);
             return Ok();
+        }
+
+        /// <summary>
+        /// Checks if theres already a Region with such name
+        /// </summary>
+        /// <param name="name">Name which checking</param>
+        /// <returns>True if exist</returns>
+        /// <returns>False if doesn't exist</returns>
+        /// <response code="200">Check was successfull</response>
+        [HttpGet("CheckIfRegionNameExists/{name}")]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<IActionResult> CheckIfRegionNameExists(string name)
+        {
+            bool result = await _regionService.CheckIfRegionNameExistsAsync(name);
+            return Ok(result);
         }
     }
 }

@@ -5,6 +5,8 @@ using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Resources;
 using EPlast.BLL.Models;
+using EPlast.BLL.Services.Interfaces;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NLog.Extensions.Logging;
@@ -22,13 +24,15 @@ namespace EPlast.WebApi.Controllers
         private readonly ILoggerService<LoginController> _loggerService;
         private readonly IResources _resources;
         private readonly IUserDatesService _userDatesService;
+        private readonly IUserManagerService _userManagerService;
 
         public LoginController(
-                                                    IAuthService authService,
+            IAuthService authService,
             IResources resources,
             IJwtService jwtService,
             ILoggerService<LoginController> loggerService,
-            IUserDatesService userDatesService
+            IUserDatesService userDatesService,
+            IUserManagerService userManagerService
             )
         {
             _authService = authService;
@@ -36,6 +40,7 @@ namespace EPlast.WebApi.Controllers
             _jwtService = jwtService;
             _loggerService = loggerService;
             _userDatesService = userDatesService;
+            _userManagerService = userManagerService;
         }
 
         [HttpPost("signin/facebook")]
@@ -51,6 +56,12 @@ namespace EPlast.WebApi.Controllers
                 {
                     return BadRequest();
                 }
+
+                if (await _userManagerService.IsInRoleAsync(user, Roles.FormerPlastMember))
+                {
+                    return BadRequest(_resources.ResourceForErrors["User-FormerMember"]);
+                }
+
                 await AddEntryMembershipDateAsync(user.Id);
 
                 var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
@@ -89,6 +100,12 @@ namespace EPlast.WebApi.Controllers
                 {
                     return BadRequest();
                 }
+
+                if (await _userManagerService.IsInRoleAsync(user, Roles.FormerPlastMember))
+                {
+                    return BadRequest(_resources.ResourceForErrors["User-FormerMember"]);
+                }
+
                 await AddEntryMembershipDateAsync(user.Id);
                 var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
 
@@ -125,6 +142,11 @@ namespace EPlast.WebApi.Controllers
                     if (!await _authService.IsEmailConfirmedAsync(user))
                     {
                         return BadRequest(_resources.ResourceForErrors["Login-NotConfirmed"]);
+                    }
+
+                    if (await _userManagerService.IsInRoleAsync(user, Roles.FormerPlastMember))
+                    {
+                        return BadRequest(_resources.ResourceForErrors["User-FormerMember"]);
                     }
                 }
                 var result = await _authService.SignInAsync(loginDto);

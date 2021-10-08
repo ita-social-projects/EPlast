@@ -22,6 +22,7 @@ namespace EPlast.BLL.Services.City
         private readonly IEmailContentService _emailContentService;
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
+        private readonly ICityService _cityService;
         private readonly UserManager<User> _userManager;
 
         public CityParticipantsService(IRepositoryWrapper repositoryWrapper,
@@ -29,6 +30,7 @@ namespace EPlast.BLL.Services.City
                                        UserManager<User> userManager,
                                        IAdminTypeService adminTypeService,
                                        IEmailSendingService emailSendingService,
+                                       ICityService cityService,
                                        IEmailContentService emailContentService)
         {
             _repositoryWrapper = repositoryWrapper;
@@ -36,6 +38,7 @@ namespace EPlast.BLL.Services.City
             _userManager = userManager;
             _adminTypeService = adminTypeService;
             _emailSendingService = emailSendingService;
+            _cityService = cityService;
             _emailContentService = emailContentService;
         }
 
@@ -43,7 +46,9 @@ namespace EPlast.BLL.Services.City
         public async Task<CityAdministrationDTO> AddAdministratorAsync(CityAdministrationDTO adminDTO)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
-            adminDTO.Status = DateTime.Now < adminDTO.EndDate || adminDTO.EndDate == null;
+            var headType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.CityHead);
+            var headDeputyType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.CityHeadDeputy);
+            adminDTO.Status = DateTime.Today < adminDTO.EndDate || adminDTO.EndDate == null;
             var newAdmin = new CityAdministration()
             {
                 StartDate = adminDTO.StartDate ?? DateTime.Now,
@@ -69,6 +74,15 @@ namespace EPlast.BLL.Services.City
                     break;
             }
             await _userManager.AddToRoleAsync(user, role);
+            if (adminType.AdminTypeName == headType.AdminTypeName)
+            {
+                var headDeputy = await _repositoryWrapper.CityAdministration
+                    .GetFirstOrDefaultAsync(a => a.AdminTypeId == headDeputyType.ID && a.CityId == adminDTO.CityId && a.Status);
+                if (headDeputy != null && headDeputy.UserId == adminDTO.UserId)
+                {
+                    await RemoveAdministratorAsync(headDeputy.ID);
+                }
+            }
 
             await CheckCityHasAdminAsync(adminDTO.CityId, adminType.AdminTypeName, newAdmin);
 
@@ -105,8 +119,22 @@ namespace EPlast.BLL.Services.City
                 User = await _userManager.FindByIdAsync(userId)
                 
             };
-
             await _repositoryWrapper.CityMembers.CreateAsync(cityMember);
+            var regId = await _cityService.GetByIdAsync(cityId);
+            var regionAdministrations =
+                await _repositoryWrapper.RegionAdministration.GetAllAsync(d =>
+                    d.UserId == userId && d.Status && d.RegionId != regId.RegionId);
+            if (regionAdministrations != null)
+            {
+                foreach (var elem in regionAdministrations)
+                {
+                    elem.EndDate = DateTime.Now;
+                    elem.Status = false;
+                    _repositoryWrapper.RegionAdministration.Update(elem);
+                }
+
+            }
+
             await _repositoryWrapper.SaveAsync();
 
             if (await _userManager.IsInRoleAsync(cityMember.User, Roles.RegisteredUser))
@@ -143,8 +171,6 @@ namespace EPlast.BLL.Services.City
         {
             var admin = await _repositoryWrapper.CityAdministration.GetFirstOrDefaultAsync(a => a.ID == adminDTO.ID);
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
-            var headType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.CityHead);
-            var headDeputyType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.CityHeadDeputy);
 
             if (adminType.ID == admin.AdminTypeId)
             {
@@ -155,18 +181,6 @@ namespace EPlast.BLL.Services.City
                 _repositoryWrapper.CityAdministration.Update(admin);
                 await _repositoryWrapper.SaveAsync();
                 return adminDTO;
-            }
-            else if (adminType.AdminTypeName == headType.AdminTypeName && admin.AdminTypeId != headDeputyType.ID)
-            {
-                var headDeputy = await _repositoryWrapper.CityAdministration
-                    .GetFirstOrDefaultAsync(a => a.AdminTypeId == headDeputyType.ID && a.CityId == adminDTO.CityId && a.Status);
-                if (headDeputy != null && headDeputy.UserId == adminDTO.UserId)
-                {
-                    await RemoveAdministratorAsync(headDeputy.ID);
-                    await RemoveAdministratorAsync(adminDTO.ID);
-                    adminDTO = await AddAdministratorAsync(adminDTO);
-                    return adminDTO;    
-                }
             }
 
             await RemoveAdministratorAsync(adminDTO.ID);
@@ -225,7 +239,7 @@ namespace EPlast.BLL.Services.City
 
         public async Task<IEnumerable<CityAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string UserId)
         {
-            var admins = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.UserId == UserId && a.EndDate < DateTime.Now,
+            var admins = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.UserId == UserId && !a.Status,
                  include:
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.City)
                  );

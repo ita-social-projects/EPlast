@@ -14,7 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EPlast.BLL.Services.CityClub;
 using DataAccessClub = EPlast.DataAccess.Entities;
-using  EPlast.Resources;
+using EPlast.Resources;
 
 namespace EPlast.BLL.Services.Club
 {
@@ -134,8 +134,7 @@ namespace EPlast.BLL.Services.Club
             var clubHeadDeputy = club.ClubAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHeadDeputy && a.Status);
             var clubAdmins = club.ClubAdministration?
-                .Where(a => a.AdminType.AdminTypeName != Roles.KurinHead
-                            && a.AdminType.AdminTypeName != Roles.KurinHeadDeputy && a.Status)
+                .Where(a => a.Status)
                 .ToList();
             club.AdministrationCount = club.ClubAdministration == null ? 0
                 : club.ClubAdministration.Count(a => a.Status);
@@ -216,10 +215,10 @@ namespace EPlast.BLL.Services.Club
             {
                 var id = member.UserId;
 
-                var userPlastDegrees = await _repoWrapper.UserPlastDegrees.GetAllAsync(
+                var userPlastDegree = await _repoWrapper.UserPlastDegree.GetAllAsync(
                     upd => upd.UserId == id, 
                     include: pd => pd.Include(d => d.PlastDegree));
-                var userDegree = userPlastDegrees?.FirstOrDefault(u => u.UserId == id)?.PlastDegree;
+                var userDegree = userPlastDegree?.FirstOrDefault(u => u.UserId == id)?.PlastDegree;
 
                 member.User.PlastDegree = userDegree == null ? null : new DataAccessClub.PlastDegree
                 {
@@ -236,8 +235,8 @@ namespace EPlast.BLL.Services.Club
 
             foreach (var admin in admins)
             {
-                var userPlastDegrees = await _repoWrapper.UserPlastDegrees.GetAllAsync(upd => upd.UserId == admin.UserId, include: pd => pd.Include(d => d.PlastDegree));
-                var userDegree = userPlastDegrees?.FirstOrDefault(u => u.UserId == admin.UserId)?.PlastDegree;
+                var userPlastDegree = await _repoWrapper.UserPlastDegree.GetAllAsync(upd => upd.UserId == admin.UserId, include: pd => pd.Include(d => d.PlastDegree));
+                var userDegree = userPlastDegree?.FirstOrDefault(u => u.UserId == admin.UserId)?.PlastDegree;
                 admin.User.PlastDegree = userDegree == null ? null : new DataAccessClub.PlastDegree
                 {
                     Id = userDegree.Id,
@@ -247,8 +246,8 @@ namespace EPlast.BLL.Services.Club
 
             foreach (var follower in followers)
             {
-                var userPlastDegrees = await _repoWrapper.UserPlastDegrees.GetAllAsync(upd => upd.UserId == follower.UserId, include: pd => pd.Include(d => d.PlastDegree));
-                var userDegree = userPlastDegrees?.FirstOrDefault(u => u.UserId == follower.UserId)?.PlastDegree;
+                var userPlastDegree = await _repoWrapper.UserPlastDegree.GetAllAsync(upd => upd.UserId == follower.UserId, include: pd => pd.Include(d => d.PlastDegree));
+                var userDegree = userPlastDegree?.FirstOrDefault(u => u.UserId == follower.UserId)?.PlastDegree;
                 follower.User.PlastDegree = userDegree == null ? null : new DataAccessClub.PlastDegree
                 {
                     Id = userDegree.Id,
@@ -483,7 +482,7 @@ namespace EPlast.BLL.Services.Club
         /// <inheritdoc />
         public async Task<IEnumerable<ClubForAdministrationDTO>> GetClubs()
         {
-            var clubs = await _repoWrapper.Club.GetAllAsync();  
+            var clubs = await _repoWrapper.Club.GetAllAsync();
             var filteredClubs = clubs.Where(c => c.IsActive);
             return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubForAdministrationDTO>>(filteredClubs);
         }
@@ -548,7 +547,10 @@ namespace EPlast.BLL.Services.Club
                                                         c.IsFollower &&
                                                         !c.IsDeleted,
                                               include: source => source
-                                                       .Include(a => a.User));
+                                                     .Include(x => x.User).ThenInclude(x => x.UserPlastDegrees)
+                                                                          .ThenInclude(x => x.PlastDegree)
+                                                     .Include(d => d.User).ThenInclude(c => c.CityMembers)
+                                                                          .ThenInclude(c => c.City));
 
             return _mapper.Map<IEnumerable<DataAccessClub.ClubMemberHistory>, IEnumerable<ClubMemberHistoryDTO>>(clubHistoryFollowers);
         }
@@ -560,7 +562,10 @@ namespace EPlast.BLL.Services.Club
                                                      !c.IsFollower &&
                                                      !c.IsDeleted,
                                           include: source => source
-                                                     .Include(a => a.User));
+                                                     .Include(x => x.User).ThenInclude(x => x.UserPlastDegrees)
+                                                                          .ThenInclude(x => x.PlastDegree)
+                                                     .Include(d => d.User).ThenInclude(c => c.CityMembers)
+                                                                          .ThenInclude(c => c.City));
 
             return _mapper.Map<IEnumerable<DataAccessClub.ClubMemberHistory>, IEnumerable<ClubMemberHistoryDTO>>(clubHistoryMembers);
         }
@@ -571,11 +576,14 @@ namespace EPlast.BLL.Services.Club
                                      predicate: c => c.ClubId == clubId && c.Status,
                                      include: source => source
                                       .Include(t => t.AdminType)
-                                      .Include(a => a.User));
+                                      .Include(u => u.User).ThenInclude(u => u.CityMembers)
+                                                           .ThenInclude(u => u.City)
+                                      .Include(d => d.User).ThenInclude(d => d.UserPlastDegrees)
+                                                           .ThenInclude(d => d.PlastDegree));
             return clubAdminins;
         }
 
-        public async Task<int> GetCountUsersPerYear(int clubId) 
+        public async Task<int> GetCountUsersPerYear(int clubId)
         {
             var usersPerYear = await _repoWrapper.ClubMemberHistory.GetAllAsync(
                                        predicate: c => c.ClubId == clubId &&
@@ -585,7 +593,7 @@ namespace EPlast.BLL.Services.Club
         public async Task<int> GetCountDeletedUsersPerYear(int clubId)
         {
             var deletedUsersPerYear = await _repoWrapper.ClubMemberHistory.GetAllAsync(
-                                     predicate: c => c.ClubId == clubId &&
+                                     predicate: c => c.ClubId == clubId && !c.IsFollower &&
                                                 c.IsDeleted && c.Date.Year == DateTime.Now.Year);
 
             return deletedUsersPerYear.Count();
@@ -601,13 +609,12 @@ namespace EPlast.BLL.Services.Club
             }
 
             var clubAdmins = await GetClubAdministrations(clubId);
-            club.ClubAdministration = clubAdmins.ToList();
             var clubDto = _mapper.Map<DataAccessClub.Club, ClubDTO>(club);
-    
-            var clubHead = clubAdmins.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHead);
-            var head= _mapper.Map<DataAccessClub.ClubAdministration, ClubAdministrationDTO>(clubHead);
 
-  
+            var clubHead = clubAdmins.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHead);
+            var head = _mapper.Map<DataAccessClub.ClubAdministration, ClubReportAdministrationDTO>(clubHead);
+            var clubAdminsDto = _mapper.Map<IEnumerable<DataAccessClub.ClubAdministration>, IEnumerable<ClubReportAdministrationDTO>>(clubAdmins);
+
             var clubHistoryFollowersDTO = await GetClubHistoryFollowers(clubId);
             var clubHistoryMembersDTO = await GetClubHistoryMembers(clubId);
 
@@ -618,9 +625,13 @@ namespace EPlast.BLL.Services.Club
                 Head = head,
                 Members = clubHistoryMembersDTO.ToList(),
                 Followers = clubHistoryFollowersDTO.ToList(),
-                Admins = clubDto.ClubAdministration.ToList(),
-                CountUsersPerYear= await GetCountUsersPerYear(clubId),
-                CountDeletedUsersPerYear= await GetCountDeletedUsersPerYear(clubId),
+                Admins = clubAdminsDto.ToList(),
+                CountUsersPerYear = await GetCountUsersPerYear(clubId),
+                CountDeletedUsersPerYear = await GetCountDeletedUsersPerYear(clubId),
+                PhoneNumber = club.PhoneNumber,
+                Email = club.Email,
+                ClubURL = club.ClubURL,
+                Slogan = club.Slogan
             };
             return clubProfileDto;
         }
