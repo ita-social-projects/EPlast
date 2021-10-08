@@ -299,6 +299,21 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task AddAdmin_UserHasRestrictedRoles_ReturnsBadRequest()
+        {
+            //Arrange
+            _governingBodyAdministrationService
+                .Setup(x => x.AddGoverningBodyAdministratorAsync(It.IsAny<GoverningBodyAdministrationDTO>()))
+                .Throws(new ArgumentException());
+
+            //Act
+            var result = await _governingBodiesController.AddAdmin(new GoverningBodyAdministrationDTO());
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
+        }
+
+        [Test]
         public async Task EditAdmin_Valid_Test()
         {
             // Arrange
@@ -632,20 +647,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<BadRequestResult>(res);
         }
 
-        [Test]
-        public async Task AddLowroleUser_ReturnsBadRequest()
-        {
-            //Arrange
-            _governingBodyAdministrationService
-                .Setup(x => x.AddGoverningBodyAdministratorAsync(It.IsAny<GoverningBodyAdministrationDTO>()))
-                .Throws(new ArgumentException());
-
-            //Act
-            var res = await _governingBodiesController.AddAdmin(new GoverningBodyAdministrationDTO());
-
-            //Assert
-            Assert.IsInstanceOf<BadRequestResult>(res);
-        }
+   
 
         private const int TestId = 3;
 
