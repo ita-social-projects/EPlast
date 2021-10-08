@@ -211,6 +211,23 @@ namespace EPlast.BLL.Services
             return citiesDTO;
         }
 
+        public async Task<IEnumerable<ShortUserInformationDTO>> GetUsersByRolesAsync(string roles, bool include, Func<IEnumerable<string>, IEnumerable<string>, bool> checkIntersectedRoles)
+        {
+            var users = await _repoWrapper.User.GetAllAsync();
+            var rolesList = roles.Split(",").OrderByDescending(x => x);
+            var filteredUsers = new List<ShortUserInformationDTO>();
+            foreach (var user in users)
+            {
+                var userRoles = await _userManager.GetRolesAsync(user);
+                var intersectedRoles = userRoles.Intersect(rolesList).OrderByDescending(x => x);
+                if (checkIntersectedRoles(intersectedRoles, rolesList) == include)
+                {
+                    filteredUsers.Add(_mapper.Map<User, ShortUserInformationDTO>(user));
+                }
+            }
+            return filteredUsers.ToList();
+        }
+
         /// <inheritdoc />
         public IEnumerable<IdentityRole> GetRolesExceptAdmin()
         {
