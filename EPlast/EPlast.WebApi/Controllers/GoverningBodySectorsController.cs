@@ -132,8 +132,14 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHeadAndGBSectorHead)]
         public async Task<IActionResult> AddAdmin(SectorAdministrationDTO newAdmin)
         {
-            await _sectorAdministrationService.AddSectorAdministratorAsync(newAdmin);
-
+            try
+            {
+                await _sectorAdministrationService.AddSectorAdministratorAsync(newAdmin);
+            }
+            catch
+            {
+                return BadRequest();
+            }
             _logger.LogInformation($"User {{{newAdmin.UserId}}} became Admin for governing body sector {{{newAdmin.SectorId}}}" +
                                    $" with role {{{newAdmin.AdminType.AdminTypeName}}}.");
 

@@ -16,6 +16,8 @@ using System.Threading.Tasks;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.DataAccess.Entities.GoverningBody.Sector;
+using System.Collections.Generic;
+using EPlast.Resources;
 
 namespace EPlast.Tests.Services.GoverningBody.Sector
 {
@@ -62,6 +64,9 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
                 .ReturnsAsync(new AdminTypeDTO());
             _userManager
                 .Setup(x => x.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string> { Roles.Admin });
             var testSectorAdmin = new SectorAdministrationDTO()
             {
                 AdminType = new AdminTypeDTO() { AdminTypeName = "test" }
@@ -75,6 +80,23 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
                 It.IsAny<SectorAdministration>()), Times.Once);
             _repoWrapper.Verify(x => x.SaveAsync(), Times.Exactly(2));
             Assert.AreEqual(testSectorAdmin, result);
+        }
+
+        [Test]
+        public void AddSectorAdministratorAsync_UserHasRestrictedRoles_ThrowsArgumentException()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(s => s.GoverningBodySectorAdministration.CreateAsync(It.IsAny<SectorAdministration>()));
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string> { Roles.GoverningBodySectorHead });
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AdminTypeDTO());
+
+            //Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _service.AddSectorAdministratorAsync(new SectorAdministrationDTO() { AdminType = new AdminTypeDTO()}));
         }
 
         [Test]
@@ -126,6 +148,9 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
             _adminTypeService
                 .Setup(x => x.GetAdminTypeByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(new AdminTypeDTO() { ID = 2 });
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string> { Roles.Admin });
             var testSectorAdmin = new SectorAdministrationDTO()
             {
                 AdminType = new AdminTypeDTO() { AdminTypeName = "test" }

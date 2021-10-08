@@ -258,13 +258,28 @@ namespace EPlast.Tests.Controllers
             //Act
             var result = await _controller.AddAdmin(testAdmin);
             var resultValue = (result as OkObjectResult)?.Value;
-
+            
             //Assert
             _sectorAdministrationService.Verify(x => x.AddSectorAdministratorAsync(
                 It.IsAny<SectorAdministrationDTO>()), Times.Once);
             _logger.Verify(x => x.LogInformation(It.IsAny<string>()));
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.AreEqual(testAdmin, resultValue);
+        }
+
+        [Test]
+        public async Task AddAdmin_UserHasRestrictedRoles_ReturnsBadRequest()
+        {
+            //Arrange
+            _sectorAdministrationService
+                .Setup(x => x.AddSectorAdministratorAsync(It.IsAny<SectorAdministrationDTO>()))
+                .Throws(new ArgumentException());
+
+            //Act
+            var res = await _controller.AddAdmin(new SectorAdministrationDTO());
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(res);
         }
 
         [Test]
