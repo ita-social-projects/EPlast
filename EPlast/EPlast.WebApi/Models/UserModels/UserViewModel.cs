@@ -29,7 +29,7 @@ namespace EPlast.WebApi.Models.UserModels
         //[StringLength(18, MinimumLength = 10, ErrorMessage = "Номер телефону повинен містити 10 цифр")]
         [Required(ErrorMessage = "Поле 'Номер телефону' є обов'язковим")]
         [Phone]
-        [RegularExpression(@"^\+?3?8?(0\d{9})$", ErrorMessage = "Wrong format of phone number!")]
+        [RegularExpression(@"^((\+?3)?8)?((0\(\d{2}\)?)|(\(0\d{2}\))|(0\d{2}))-\d{3}-\d{2}-\d{2}$", ErrorMessage = "Wrong format of phone number!")]
         public string PhoneNumber { get; set; }
         public DateTime RegistredOn { get; set; }
         public DateTime EmailSendedOnRegister { get; set; }
