@@ -307,10 +307,10 @@ namespace EPlast.Tests.Controllers
                 .Throws(new ArgumentException());
 
             //Act
-            var res = await _governingBodiesController.AddAdmin(new GoverningBodyAdministrationDTO());
+            var result = await _governingBodiesController.AddAdmin(new GoverningBodyAdministrationDTO());
 
             //Assert
-            Assert.IsInstanceOf<BadRequestResult>(res);
+            Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
