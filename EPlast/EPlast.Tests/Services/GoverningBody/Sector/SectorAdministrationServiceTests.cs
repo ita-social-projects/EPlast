@@ -1,23 +1,20 @@
-﻿using AutoMapper;
+﻿using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.GoverningBody.Sector;
-using EPlast.BLL.Interfaces;
-using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Services.GoverningBodies.Sector;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using EPlast.BLL.DTO.Admin;
-using EPlast.BLL.Interfaces.Admin;
-using EPlast.DataAccess.Entities.GoverningBody.Sector;
-using System.Collections.Generic;
-using EPlast.Resources;
 
 namespace EPlast.Tests.Services.GoverningBody.Sector
 {
