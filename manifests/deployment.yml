@@ -18,8 +18,8 @@ spec:
           image: ___containerRegistry___/eplastapi
           resources:
             limits:
-              cpu: "0.3"
-              memory: "200Mi"          
+              cpu: "600m"
+              memory: "500Mi"          
           ports:
           - containerPort: 5000
           env:
@@ -55,7 +55,7 @@ spec:
     kind: Deployment
     name: eplastapi
   minReplicas: 1
-  maxReplicas: 2
+  maxReplicas: 3
   metrics:
   - type: Resource
     resource:
