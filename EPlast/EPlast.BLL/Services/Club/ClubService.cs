@@ -27,7 +27,7 @@ namespace EPlast.BLL.Services.Club
         private readonly IClubAccessService _clubAccessService;
         private readonly UserManager<DataAccessClub.User> _userManager;
         private readonly IUniqueIdService _uniqueId;
-
+        private readonly IClubAnnualReportService _annualReportService;
         private const int MembersDisplayCount = 9;
         private const int FollowersDisplayCount = 6;
         private const int DocumentsDisplayCount = 6;
@@ -39,7 +39,8 @@ namespace EPlast.BLL.Services.Club
             IClubBlobStorageRepository clubBlobStorage,
             IClubAccessService clubAccessService,
             UserManager<DataAccessClub.User> userManager,
-            IUniqueIdService uniqueId)
+            IUniqueIdService uniqueId,
+            IClubAnnualReportService annualReportService)
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
@@ -48,6 +49,7 @@ namespace EPlast.BLL.Services.Club
             _clubAccessService = clubAccessService;
             _userManager = userManager;
             _uniqueId = uniqueId;
+            _annualReportService = annualReportService;
         }
 
         public async Task ArchiveAsync(int clubId)
@@ -381,12 +383,11 @@ namespace EPlast.BLL.Services.Club
         public async Task RemoveAsync(int clubId)
         {
             var club = await _repoWrapper.Club.GetFirstOrDefaultAsync(c => c.ID == clubId);
-
             if (club.Logo != null)
             {
                 await _clubBlobStorage.DeleteBlobAsync(club.Logo);
             }
-
+            await DeleteClubMemberHistory(clubId);
             _repoWrapper.Club.Delete(club);
             await _repoWrapper.SaveAsync();
         }
@@ -554,6 +555,7 @@ namespace EPlast.BLL.Services.Club
 
         public async Task<IEnumerable<ClubMemberHistoryDTO>> GetClubHistoryMembers(int clubId)
         {
+            
             var clubHistoryMembers = await _repoWrapper.ClubMemberHistory.GetAllAsync(
                                           predicate: c => c.ClubId == clubId &&
                                                      !c.IsFollower &&
@@ -572,6 +574,16 @@ namespace EPlast.BLL.Services.Club
                                       .Include(t => t.AdminType)
                                       .Include(a => a.User));
             return clubAdminins;
+        }
+
+        public async Task DeleteClubMemberHistory(int id)
+        {
+            var members = await _repoWrapper.ClubMemberHistory.GetAllAsync(c => c.ClubId == id);
+            foreach (var VARIABLE in members)
+            {
+                _repoWrapper.ClubMemberHistory.Delete(VARIABLE);
+            }
+            await _repoWrapper.SaveAsync();
         }
 
         public async Task<int> GetCountUsersPerYear(int clubId) 

@@ -475,17 +475,12 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetActiveRegions(int page, int pageSize, string regionName)
         {
-            string recordKey = "ActiveRegions_" + DateTime.Now.ToString("yyyyMMdd_hhmm");
-            IEnumerable<RegionDTO> regions = await _cache.GetRecordAsync<IEnumerable<RegionDTO>>(recordKey);
+            bool isArchive = false;
+            var tuple = await _regionService.GetAllRegionsByPageAndIsArchiveAsync(page, pageSize, regionName, isArchive);
+            var regions = tuple.Item1;
+            var regionsCount = tuple.Item2;
 
-            if (regions is null)
-            {
-                regions = await _regionService.GetAllActiveRegionsAsync();
-                await _cache.SetRecordAsync(recordKey, regions);
-            }
-            var regionsViewModel = new RegionsViewModel(page, pageSize, regions, regionName, User.IsInRole(Roles.Admin));
-
-            return Ok(regionsViewModel);
+            return StatusCode(StatusCodes.Status200OK, new { regions = regions, total = regionsCount });
         }
 
 
@@ -497,17 +492,12 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetNotActiveRegions(int page, int pageSize, string regionName)
         {
-            string recordKey = "NotActiveRegions_" + DateTime.Now.ToString("yyyyMMdd_hhmm");
-            IEnumerable<RegionDTO> regions = await _cache.GetRecordAsync<IEnumerable<RegionDTO>>(recordKey);
-            if (regions is null)
-            {
-                regions = await _regionService.GetAllNotActiveRegionsAsync();
-                await _cache.SetRecordAsync(recordKey, regions);
-            }
+            bool isArchive = true;
+            var tuple = await _regionService.GetAllRegionsByPageAndIsArchiveAsync(page, pageSize, regionName, isArchive);
+            var regions = tuple.Item1;
+            var regionsCount = tuple.Item2;
 
-            var regionsViewModel = new RegionsViewModel(page, pageSize, regions, regionName, false);
-
-            return Ok(regionsViewModel);
+            return StatusCode(StatusCodes.Status200OK, new { regions = regions, total = regionsCount });
         }
 
         /// <summary>

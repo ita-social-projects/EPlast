@@ -35,6 +35,7 @@ namespace EPlast.Tests.Services.Club
         private Mock<IUniqueIdService> _uniqueId;
         private Mock<IUserStore<User>> _user;
         private Mock<UserManager<User>> _userManager;
+        private Mock<IClubAnnualReportService> _clubAnnualReportService;
         private string ClubName => "Club";
 
         private int Count => 2;
@@ -1131,9 +1132,10 @@ namespace EPlast.Tests.Services.Club
             _clubAccessService = new Mock<IClubAccessService>();
             _user = new Mock<IUserStore<User>>();
             _uniqueId = new Mock<IUniqueIdService>();
+            _clubAnnualReportService = new Mock<IClubAnnualReportService>();
             _userManager = new Mock<UserManager<User>>(_user.Object, null, null, null, null, null, null, null, null);
             _clubService = new ClubService(_repoWrapper.Object, _mapper.Object, _env.Object, _clubBlobStorage.Object,
-                   _clubAccessService.Object, _userManager.Object, _uniqueId.Object);
+                   _clubAccessService.Object, _userManager.Object, _uniqueId.Object, _clubAnnualReportService.Object);
         }
 
         private ClubService CreateClubService()
@@ -1171,7 +1173,7 @@ namespace EPlast.Tests.Services.Club
             _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
                 .ReturnsAsync(GetTestNewClub());
 
-            return new ClubService(_repoWrapper.Object, _mapper.Object, _env.Object, _clubBlobStorage.Object, _clubAccessService.Object, _userManager.Object, _uniqueId.Object);
+            return new ClubService(_repoWrapper.Object, _mapper.Object, _env.Object, _clubBlobStorage.Object, _clubAccessService.Object, _userManager.Object, _uniqueId.Object,  _clubAnnualReportService.Object);
         }
 
         private IQueryable<DataAccessClub.Club> CreateFakeCities(int count)

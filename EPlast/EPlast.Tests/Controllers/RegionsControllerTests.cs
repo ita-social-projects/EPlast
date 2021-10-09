@@ -928,105 +928,48 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual("{ message = Річний звіт округи не знайдено }", ((ObjectResult)result).Value.ToString());
         }
 
-
         [Test]
-        public async Task GetActiveeRegions_Ok()
+        public async Task GetActiveRegions_Valid_Test()
         {
             // Arrange
-            int page = 0;
-            int pageSize = 1;
+            int page = 1;
+            int pageSize = 2;
             string regionName = "Lviv";
-
-            var mockHttpContext = new Mock<HttpContext>();
-            mockHttpContext.Setup(m => m.User).Returns(new ClaimsPrincipal());
-
-            _regionController.ControllerContext.HttpContext = mockHttpContext.Object;
-        
-            byte[] bytes = Encoding.ASCII.GetBytes("[]");
-            _cache.Setup(x => x.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(bytes);
-
+            bool isArchive = false;
+            _regionService
+                .Setup(u => u.GetAllRegionsByPageAndIsArchiveAsync(page, pageSize, regionName, isArchive))
+                .ReturnsAsync(CreateTuple);
+            var expected = StatusCodes.Status200OK;
             // Act
             var result = await _regionController.GetActiveRegions(page, pageSize, regionName);
-            
+            var actual = (result as ObjectResult).StatusCode;
+
             // Assert
+            _regionService.Verify();
             Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-        }
-
-
-
-        [Test]
-        public async Task GetActiveRegions_regionsIsnull()
-        {
-            // Arrange
-            int page = 0;
-            int pageSize = 1;
-            string regionName = "Lviv";
-
-            var mockHttpContext = new Mock<HttpContext>();
-            mockHttpContext.Setup(m => m.User).Returns(new ClaimsPrincipal());
-
-            _regionController.ControllerContext.HttpContext = mockHttpContext.Object;
-
-            byte[] bytes = new byte[2];
-            _cache.Setup(x => x.GetAsync(It.IsAny<string>(), default)).ReturnsAsync((byte[])null);
-       
-            // Act
-            var result = await _regionController.GetActiveRegions(page, pageSize, regionName);
-            
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.AreEqual(expected, actual);
         }
 
         [Test]
-        public async Task GetNotActiveRegions_Ok()
+        public async Task GetNotActiveRegions_Valid_Test()
         {
             // Arrange
-            int page = 0;
-            int pageSize = 1;
+            int page = 1;
+            int pageSize = 2;
             string regionName = "Lviv";
-
-            var mockHttpContext = new Mock<HttpContext>();
-            mockHttpContext.Setup(m => m.User).Returns(new ClaimsPrincipal());
-
-            _regionController.ControllerContext.HttpContext = mockHttpContext.Object;
-
-            byte[] bytes = Encoding.ASCII.GetBytes("[]");
-            _cache.Setup(x => x.GetAsync(It.IsAny<string>(), default)).ReturnsAsync(bytes);
-
+            bool isArchive = true;
+            _regionService
+                .Setup(u => u.GetAllRegionsByPageAndIsArchiveAsync(page, pageSize, regionName, isArchive))
+                .ReturnsAsync(CreateTuple);
+            var expected = StatusCodes.Status200OK;
             // Act
             var result = await _regionController.GetNotActiveRegions(page, pageSize, regionName);
+            var actual = (result as ObjectResult).StatusCode;
 
             // Assert
+            _regionService.Verify();
             Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-        }
-
-
-
-        [Test]
-        public async Task GetNotActiveRegions_regionsIsnull()
-        {
-            // Arrange
-            int page = 0;
-            int pageSize = 1;
-            string regionName = "Lviv";
-
-            var mockHttpContext = new Mock<HttpContext>();
-            mockHttpContext.Setup(m => m.User).Returns(new ClaimsPrincipal());
-
-            _regionController.ControllerContext.HttpContext = mockHttpContext.Object;
-
-            byte[] bytes = new byte[2];
-            _cache.Setup(x => x.GetAsync(It.IsAny<string>(), default)).ReturnsAsync((byte[])null);
-
-            // Act
-            var result = await _regionController.GetNotActiveRegions(page, pageSize, regionName);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.AreEqual(expected, actual);
         }
 
         [SetUp]
@@ -1141,5 +1084,12 @@ namespace EPlast.Tests.Controllers
                 new RegionDTO(){ ID =5}
             };
         }
+        private Tuple<IEnumerable<RegionObjectsDTO>, int> CreateTuple => new Tuple<IEnumerable<RegionObjectsDTO>, int>(CreateRegionObjects, 100);
+
+        private IEnumerable<RegionObjectsDTO> CreateRegionObjects => new List<RegionObjectsDTO>()
+        {
+            new RegionObjectsDTO(),
+            new RegionObjectsDTO()
+        };
     }
 }
