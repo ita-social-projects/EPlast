@@ -27,7 +27,6 @@ namespace EPlast.BLL.Services.Club
         private readonly IClubAccessService _clubAccessService;
         private readonly UserManager<DataAccessClub.User> _userManager;
         private readonly IUniqueIdService _uniqueId;
-        private readonly IClubAnnualReportService _annualReportService;
         private const int MembersDisplayCount = 9;
         private const int FollowersDisplayCount = 6;
         private const int DocumentsDisplayCount = 6;
@@ -39,8 +38,7 @@ namespace EPlast.BLL.Services.Club
             IClubBlobStorageRepository clubBlobStorage,
             IClubAccessService clubAccessService,
             UserManager<DataAccessClub.User> userManager,
-            IUniqueIdService uniqueId,
-            IClubAnnualReportService annualReportService)
+            IUniqueIdService uniqueId)
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
@@ -49,7 +47,6 @@ namespace EPlast.BLL.Services.Club
             _clubAccessService = clubAccessService;
             _userManager = userManager;
             _uniqueId = uniqueId;
-            _annualReportService = annualReportService;
         }
 
         public async Task ArchiveAsync(int clubId)

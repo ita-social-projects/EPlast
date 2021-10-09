@@ -21,7 +21,6 @@ namespace EPlast.WebApi.Controllers
     [Authorize(AuthenticationSchemes = "Bearer")]
     public class RegionsController : ControllerBase
     {
-        private readonly IDistributedCache _cache;
         private readonly ILoggerService<CitiesController> _logger;
         private readonly IRegionAdministrationService _regionAdministrationService;
         private readonly IRegionAnnualReportService _RegionAnnualReportService;
@@ -32,15 +31,13 @@ namespace EPlast.WebApi.Controllers
             IRegionService regionService,
             IRegionAdministrationService regionAdministrationService,
             IRegionAnnualReportService RegionAnnualReportService,
-            UserManager<User> userManager,
-            IDistributedCache cache)
+            UserManager<User> userManager)
         {
             _logger = logger;
             _regionService = regionService;
             _regionAdministrationService = regionAdministrationService;
             _RegionAnnualReportService = RegionAnnualReportService;
             _userManager = userManager;
-            _cache = cache;
         }
 
         [HttpPost("AddAdministrator")]

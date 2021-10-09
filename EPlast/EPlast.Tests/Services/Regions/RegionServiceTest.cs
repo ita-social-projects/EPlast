@@ -95,7 +95,7 @@ namespace EPlast.Tests.Services.Regions
             _repoWrapper
                 .Setup(x => x.Region.GetRegionsObjects(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<bool>()))
                 .ReturnsAsync(CreateTuple);
-            var result = _regionService.GetAllRegionsByPageAndIsArchiveAsync(1, 2, null, false).Result;
+            var result = await _regionService.GetAllRegionsByPageAndIsArchiveAsync(1, 2, null, false);
             Assert.NotNull(result);
             Assert.IsInstanceOf<Tuple<IEnumerable<RegionObjectsDTO>, int>>(result);
         }

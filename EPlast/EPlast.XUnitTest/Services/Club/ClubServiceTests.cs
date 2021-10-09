@@ -74,7 +74,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
             _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.Club, bool>>>(), null))
                 .ReturnsAsync(GetTestClub());
 
-            return new ClubService(_repoWrapper.Object, _mapper.Object, _env.Object, _ClubBlobStorage.Object, _ClubAccessService.Object, null, _uniqueId.Object, _clubAnnualReportService.Object);
+            return new ClubService(_repoWrapper.Object, _mapper.Object, _env.Object, _ClubBlobStorage.Object, _ClubAccessService.Object, null, _uniqueId.Object);
         }
 
         [Fact]
