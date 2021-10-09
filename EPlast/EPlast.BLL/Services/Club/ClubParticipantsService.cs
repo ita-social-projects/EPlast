@@ -284,7 +284,7 @@ namespace EPlast.BLL.Services.Club
         /// <inheritdoc />
         public async Task<ClubMembersDTO> ToggleApproveStatusAsync(int memberId)
         {
-            var ClubMember =await _repositoryWrapper.ClubMembers
+            var ClubMember = await _repositoryWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(u => u.ID == memberId, m => m.Include(u => u.User));
 
             ClubMember.IsApproved = !ClubMember.IsApproved;
