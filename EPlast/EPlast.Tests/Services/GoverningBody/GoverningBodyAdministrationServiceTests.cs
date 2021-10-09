@@ -85,6 +85,23 @@ namespace EPlast.Tests.Services.GoverningBody
         }
 
         [Test]
+        public void AddGoverningBodyAdministratorAsync_UserHasRestrictedRoles_ThrowsArgumentException()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(s => s.GoverningBodyAdministration.CreateAsync(GoverningBodyAdmin));
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string> { Roles.GoverningBodyHead });
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AdminTypeDTO());
+
+            //Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _governingBodyAdministrationService.AddGoverningBodyAdministratorAsync(GoverningBodyAdministrationDtoEndDateNull));
+        }
+
+        [Test]
         public async Task EditGoverningBodyAdministratorAsync_ReturnsEditedAdministratorWithSameId()
         {
             //Arrange
