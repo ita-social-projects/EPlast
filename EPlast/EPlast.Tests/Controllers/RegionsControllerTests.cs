@@ -25,6 +25,7 @@ namespace EPlast.Tests.Controllers
 {
     internal class RegionsControllerTests
     {
+
         private Mock<ILoggerService<CitiesController>> _logger;
         private Mock<IRegionAdministrationService> _regionAdministrationService;
         private Mock<IRegionAnnualReportService> _regionAnnualReportService;
@@ -928,7 +929,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetActiveRegions_Valid_Test()
+        public async Task GetActiveRegions_PagePageSizeRegionName_StatusCodesStatus200OKAsync()
         {
             // Arrange
             int page = 1;
@@ -950,7 +951,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetNotActiveRegions_Valid_Test()
+        public async Task GetNotActiveRegions_PagePageSizeRegionName_StatusCodesStatus200OKAsync()
         {
             // Arrange
             int page = 1;

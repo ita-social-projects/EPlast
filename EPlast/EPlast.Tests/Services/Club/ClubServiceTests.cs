@@ -913,7 +913,7 @@ namespace EPlast.Tests.Services.Club
             Assert.AreEqual(LogoName, result);
         }
         [Test]
-        public async Task DeleteClubMemberHistory()
+        public async Task DeleteClubMemberHistory_SingleNumber_DeletesClubMember()
         {
             // Arrange
             _repoWrapper
@@ -931,7 +931,7 @@ namespace EPlast.Tests.Services.Club
             _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
         }
         [Test]
-        public async Task RemoveAsync()
+        public async Task RemoveAsync_SingleNumber_DeletesClub()
         {
             // Arrange
             ClubService clubService = CreateClubService();
@@ -967,7 +967,7 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
-        public async Task RemoveAsync_WithoutLogo()
+        public async Task RemoveAsyncWithoutLogo_SingleNumber_DeletesClubWithotLogo()
         {
             // Arrange
             ClubService clubService = CreateClubService();
