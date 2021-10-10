@@ -256,6 +256,12 @@ namespace EPlast.BLL.Services.Club
             _repositoryWrapper.ClubAnnualReports.Delete(clubAnnualReport);
             await _repositoryWrapper.SaveAsync();
         }
+        public async Task RemoveClubReportAsync(int id)
+        {
+            var clubAnnualReport = await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(a => a.ClubId == id);
+            _repositoryWrapper.ClubAnnualReports.Delete(clubAnnualReport);
+            await _repositoryWrapper.SaveAsync();
+        }
 
         ///<inheritdoc/>
         public async Task EditClubReportAsync(User user, ClubAnnualReportDTO clubAnnualReportDto)

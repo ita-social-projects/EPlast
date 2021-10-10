@@ -27,7 +27,6 @@ namespace EPlast.BLL.Services.Club
         private readonly IClubAccessService _clubAccessService;
         private readonly UserManager<DataAccessClub.User> _userManager;
         private readonly IUniqueIdService _uniqueId;
-
         private const int MembersDisplayCount = 9;
         private const int FollowersDisplayCount = 6;
         private const int DocumentsDisplayCount = 6;
@@ -381,12 +380,11 @@ namespace EPlast.BLL.Services.Club
         public async Task RemoveAsync(int clubId)
         {
             var club = await _repoWrapper.Club.GetFirstOrDefaultAsync(c => c.ID == clubId);
-
             if (club.Logo != null)
             {
                 await _clubBlobStorage.DeleteBlobAsync(club.Logo);
             }
-
+            await DeleteClubMemberHistory(clubId);
             _repoWrapper.Club.Delete(club);
             await _repoWrapper.SaveAsync();
         }
@@ -557,6 +555,7 @@ namespace EPlast.BLL.Services.Club
 
         public async Task<IEnumerable<ClubMemberHistoryDTO>> GetClubHistoryMembers(int clubId)
         {
+            
             var clubHistoryMembers = await _repoWrapper.ClubMemberHistory.GetAllAsync(
                                           predicate: c => c.ClubId == clubId &&
                                                      !c.IsFollower &&
@@ -581,6 +580,16 @@ namespace EPlast.BLL.Services.Club
                                       .Include(d => d.User).ThenInclude(d => d.UserPlastDegrees)
                                                            .ThenInclude(d => d.PlastDegree));
             return clubAdminins;
+        }
+
+        public async Task DeleteClubMemberHistory(int id)
+        {
+            var members = await _repoWrapper.ClubMemberHistory.GetAllAsync(c => c.ClubId == id);
+            foreach (var VARIABLE in members)
+            {
+                _repoWrapper.ClubMemberHistory.Delete(VARIABLE);
+            }
+            await _repoWrapper.SaveAsync();
         }
 
         public async Task<int> GetCountUsersPerYear(int clubId)

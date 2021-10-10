@@ -30,6 +30,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
         private readonly Mock<IClubBlobStorageRepository> _ClubBlobStorage;
         private readonly Mock<IClubAccessService> _ClubAccessService;
         private readonly Mock<IUniqueIdService> _uniqueId;
+        private readonly Mock<IClubAnnualReportService> _clubAnnualReportService;
 
         public ClubServiceTests()
         {
@@ -39,6 +40,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
             _ClubBlobStorage = new Mock<IClubBlobStorageRepository>();
             _ClubAccessService = new Mock<IClubAccessService>();
             _uniqueId = new Mock<IUniqueIdService>();
+            _clubAnnualReportService = new Mock<IClubAnnualReportService>();
         }
 
         private ClubService CreateClubService()

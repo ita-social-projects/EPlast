@@ -89,6 +89,16 @@ namespace EPlast.Tests.Services.Regions
             Assert.IsInstanceOf<IEnumerable<RegionDTO>>(result);
             Assert.IsNotNull(result);
         }
+        [TestCase]
+        public async Task UsersTableAsync_NullInput_ReturnsIEnumerableUserTableDTO()
+        {
+            _repoWrapper
+                .Setup(x => x.Region.GetRegionsObjects(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .ReturnsAsync(CreateTuple);
+            var result = await _regionService.GetAllRegionsByPageAndIsArchiveAsync(1, 2, null, false);
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<RegionObjectsDTO>, int>>(result);
+        }
 
         [Test]
         public async Task GetAllRegionsAsync_ReturnsIEnumerableRegionDTO()
@@ -725,5 +735,12 @@ namespace EPlast.Tests.Services.Regions
             new RegionAdministration { ID = 1, AdminTypeId = 1 },
             new RegionAdministration { ID = 2, AdminTypeId = 2 }
         };
+        private Tuple<IEnumerable<RegionObject>, int> CreateTuple => new Tuple<IEnumerable<RegionObject>, int>(CreateRegionObjects, 100);
+        private IEnumerable<RegionObject> CreateRegionObjects => new List<RegionObject>()
+        {
+            new RegionObject(),
+            new RegionObject()
+        };
     }
+
 }

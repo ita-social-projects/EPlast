@@ -139,7 +139,6 @@ namespace EPlast.WebApi.Controllers
             PersonalDataViewModel model;
             if(isThisUser ||
                      isUserAdmin ||
-
                      await _userService.IsUserInClubAsync(currentUser,focusUser) ||
                      await _userService.IsUserInCityAsync(currentUser, focusUser) ||
                      await _userService.IsUserInRegionAsync(currentUser, focusUser)
@@ -150,7 +149,6 @@ namespace EPlast.WebApi.Controllers
                     User = _mapper.Map<UserDTO, UserViewModel>(focusUser),
                     TimeToJoinPlast = (int)time.TotalDays,
                     IsUserPlastun = isFocusUserPlastun,
-                    
                 };
 
                 return Ok(model);
