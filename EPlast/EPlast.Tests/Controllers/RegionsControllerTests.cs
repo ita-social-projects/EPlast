@@ -929,7 +929,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetActiveRegions_PagePageSizeRegionName_StatusCodesStatus200OKAsync()
+        public async Task GetActiveRegions_PagePageSizeRegionName_ReturnsStatusCodeOKAsync()
         {
             // Arrange
             int page = 1;
