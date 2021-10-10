@@ -25,7 +25,6 @@ namespace EPlast.Tests.Controllers
 {
     internal class RegionsControllerTests
     {
-        private Mock<IDistributedCache> _cache;
         private Mock<ILoggerService<CitiesController>> _logger;
         private Mock<IRegionAdministrationService> _regionAdministrationService;
         private Mock<IRegionAnnualReportService> _regionAnnualReportService;
@@ -981,14 +980,12 @@ namespace EPlast.Tests.Controllers
             _regionAnnualReportService = new Mock<IRegionAnnualReportService>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
-            _cache = new Mock<IDistributedCache>();
             _regionController = new RegionsController(
                 _logger.Object,
                 _regionService.Object, 
                 _regionAdministrationService.Object,
                 _regionAnnualReportService.Object, 
-                _userManager.Object, 
-                _cache.Object);
+                _userManager.Object);
         }
 
         [Test]
