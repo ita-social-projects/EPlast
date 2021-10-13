@@ -477,7 +477,8 @@ namespace EPlast.WebApi.Controllers
             var regions = tuple.Item1;
             var regionsCount = tuple.Item2;
 
-            return StatusCode(StatusCodes.Status200OK, new { regions = regions, total = regionsCount });
+            return StatusCode(StatusCodes.Status200OK, new {page = page, pageSize = pageSize, regions = regions, total = regionsCount, canCreate = User.IsInRole(Roles.Admin)
+            });
         }
 
 
