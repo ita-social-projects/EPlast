@@ -210,50 +210,7 @@ namespace EPlast.BLL.Services.Club
             var members = clubProfileDto.Members.Where(m => m.IsApproved).ToList();
             var admins = clubProfileDto.Admins;
             var followers = clubProfileDto.Followers.Where(m => !m.IsApproved).ToList();
-            foreach (var member in members)
-            {
-                var id = member.UserId;
-
-                var userPlastDegrees = await _repoWrapper.UserPlastDegrees.GetAllAsync(
-                    upd => upd.UserId == id,
-                    include: pd => pd.Include(d => d.PlastDegree));
-                var userDegree = userPlastDegrees?.FirstOrDefault(u => u.UserId == id)?.PlastDegree;
-
-                member.User.PlastDegree = userDegree == null ? null : new DataAccessClub.PlastDegree
-                {
-                    Id = userDegree.Id,
-                    Name = userDegree.Name,
-                };
-                var cityMembers = await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(a => a.UserId == id);
-                if (cityMembers != null)
-                {
-                    var city = await _repoWrapper.City.GetFirstAsync(a => a.ID == cityMembers.CityId);
-                    member.User.CityName = city.Name.ToString();
-                }
-            }
-
-            foreach (var admin in admins)
-            {
-                var userPlastDegrees = await _repoWrapper.UserPlastDegrees.GetAllAsync(upd => upd.UserId == admin.UserId, include: pd => pd.Include(d => d.PlastDegree));
-                var userDegree = userPlastDegrees?.FirstOrDefault(u => u.UserId == admin.UserId)?.PlastDegree;
-                admin.User.PlastDegree = userDegree == null ? null : new DataAccessClub.PlastDegree
-                {
-                    Id = userDegree.Id,
-                    Name = userDegree.Name,
-                };
-            }
-
-            foreach (var follower in followers)
-            {
-                var userPlastDegrees = await _repoWrapper.UserPlastDegrees.GetAllAsync(upd => upd.UserId == follower.UserId, include: pd => pd.Include(d => d.PlastDegree));
-                var userDegree = userPlastDegrees?.FirstOrDefault(u => u.UserId == follower.UserId)?.PlastDegree;
-                follower.User.PlastDegree = userDegree == null ? null : new DataAccessClub.PlastDegree
-                {
-                    Id = userDegree.Id,
-                    Name = userDegree.Name,
-                };
-            }
-
+           
             clubProfileDto.Club.CanJoin = (await _repoWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(u => u.User.Id == userId && u.ClubId == clubId)) == null;
 
