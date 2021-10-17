@@ -315,7 +315,7 @@ namespace EPlast.BLL.Services.Club
         {
             var сlubMember = await _repositoryWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(u => u.ID == followerId);
-
+            await UpdateStatusFollowerInHistoryAsync(сlubMember.UserId, true, true);
             _repositoryWrapper.ClubMembers.Delete(сlubMember);
             await _repositoryWrapper.SaveAsync();
         }
@@ -374,6 +374,7 @@ namespace EPlast.BLL.Services.Club
         }
         public async Task UpdateStatusFollowerInHistoryAsync(string userId, bool isFollower, bool isDeleted)
         {
+
             var clubHistoryMembers = await _repositoryWrapper.ClubMemberHistory.GetFirstOrDefaultAsync(
                    predicate: c => c.UserId == userId && !c.IsDeleted);
 

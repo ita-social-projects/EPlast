@@ -805,12 +805,23 @@ namespace EPlast.Tests.Services.Club
                 .Setup(r => r.ClubMembers.Delete(It.IsAny<ClubMembers>()));
             _repoWrapper
                 .Setup(r => r.SaveAsync());
+            _repoWrapper
+                .Setup(s => s.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
+                .ReturnsAsync(new ClubMembers());
+            _repoWrapper
+                .Setup(s => s.ClubMemberHistory.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMemberHistory, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubMemberHistory>, IIncludableQueryable<ClubMemberHistory, object>>>()))
+                .ReturnsAsync(new ClubMemberHistory());
+
+            _repoWrapper
+                .Setup(s => s.ClubMemberHistory.Update(It.IsAny<ClubMemberHistory>()));
+
             // Act
             await _clubParticipantsService.RemoveFollowerAsync(It.IsAny<int>());
 
             // Assert
             _repoWrapper.Verify(r => r.ClubMembers.Delete(It.IsAny<ClubMembers>()), Times.Once());
-            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once());
         }
 
         [Test]
@@ -822,12 +833,14 @@ namespace EPlast.Tests.Services.Club
             _repoWrapper
                 .Setup(r => r.SaveAsync());
 
+
             // Act
             await _clubParticipantsService.RemoveMemberAsync(It.IsAny<ClubMembers>());
 
             // Assert
             _repoWrapper.Verify(r => r.ClubMembers.Delete(It.IsAny<ClubMembers>()), Times.Once());
             _repoWrapper.Verify(r => r.SaveAsync(), Times.Once());
+
         }
 
         [Test]
