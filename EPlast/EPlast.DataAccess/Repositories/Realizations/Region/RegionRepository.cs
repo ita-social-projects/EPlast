@@ -19,7 +19,6 @@ namespace EPlast.DataAccess.Repositories
             var items = EPlastDBContext.Set<RegionObject>().FromSqlRaw("dbo.sp_GetRegions @PageIndex = {0}, @PageSize = {1}, @IsArhivated = {2}, @searchData = {3}", pageNum, pageSize, isArchive, searchData);
             var num = items.Select(u => u.Count).ToList();
             int rowCount = num.Count > 0 ? num[0] : 0;
-
             return new Tuple<IEnumerable<RegionObject>, int>(items, rowCount);        
         }
     }
