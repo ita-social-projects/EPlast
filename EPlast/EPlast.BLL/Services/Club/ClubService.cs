@@ -24,7 +24,6 @@ namespace EPlast.BLL.Services.Club
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _env;
         private readonly IClubBlobStorageRepository _clubBlobStorage;
-        private readonly IClubAccessService _clubAccessService;
         private readonly UserManager<DataAccessClub.User> _userManager;
         private readonly IUniqueIdService _uniqueId;
 
@@ -45,7 +44,6 @@ namespace EPlast.BLL.Services.Club
             _mapper = mapper;
             _env = env;
             _clubBlobStorage = clubBlobStorage;
-            _clubAccessService = clubAccessService;
             _userManager = userManager;
             _uniqueId = uniqueId;
         }
@@ -205,11 +203,6 @@ namespace EPlast.BLL.Services.Club
         {
             var clubProfileDto = await GetClubProfileAsync(clubId);
             var userId = await _userManager.GetUserIdAsync(user);
-            var userRoles = await _userManager.GetRolesAsync(user);
-
-            var members = clubProfileDto.Members.Where(m => m.IsApproved).ToList();
-            var admins = clubProfileDto.Admins;
-            var followers = clubProfileDto.Followers.Where(m => !m.IsApproved).ToList();
            
             clubProfileDto.Club.CanJoin = (await _repoWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(u => u.User.Id == userId && u.ClubId == clubId)) == null;

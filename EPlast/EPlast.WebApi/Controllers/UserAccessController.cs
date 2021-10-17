@@ -15,7 +15,7 @@ namespace EPlast.WebApi.Controllers
     [ApiController]
     public class UserAccessController : ControllerBase
     {
-        private IUserAccessService _userAccessService;
+        private readonly IUserAccessService _userAccessService;
         private readonly UserManager<User> _userManager;
         public UserAccessController(IUserAccessService userAccessService, UserManager<User> userManager)
         {

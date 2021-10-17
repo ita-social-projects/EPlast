@@ -227,7 +227,6 @@ namespace EPlast.WebApi.Controllers
 
             var clubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(clubProfileDto);
 
-
             return Ok(new { clubProfile.Administration, clubProfile.Head, clubProfile.HeadDeputy, clubProfile.Name });
         }
 
