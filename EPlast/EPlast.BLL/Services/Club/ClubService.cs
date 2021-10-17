@@ -210,13 +210,12 @@ namespace EPlast.BLL.Services.Club
             var members = clubProfileDto.Members.Where(m => m.IsApproved).ToList();
             var admins = clubProfileDto.Admins;
             var followers = clubProfileDto.Followers.Where(m => !m.IsApproved).ToList();
-
             foreach (var member in members)
             {
                 var id = member.UserId;
 
                 var userPlastDegrees = await _repoWrapper.UserPlastDegrees.GetAllAsync(
-                    upd => upd.UserId == id, 
+                    upd => upd.UserId == id,
                     include: pd => pd.Include(d => d.PlastDegree));
                 var userDegree = userPlastDegrees?.FirstOrDefault(u => u.UserId == id)?.PlastDegree;
 
@@ -255,8 +254,6 @@ namespace EPlast.BLL.Services.Club
                 };
             }
 
-            clubProfileDto.Club.CanCreate = userRoles.Contains(Roles.Admin);
-            clubProfileDto.Club.CanEdit = await _clubAccessService.HasAccessAsync(user, clubId);
             clubProfileDto.Club.CanJoin = (await _repoWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(u => u.User.Id == userId && u.ClubId == clubId)) == null;
 

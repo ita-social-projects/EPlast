@@ -36,11 +36,11 @@ namespace EPlast.Tests.Services.UserAccess
             dict.Add("action", It.IsAny<bool>());
             _securityModel.Setup(x => x.GetUserAccessAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(dict);
 
-        //Act
-        var result = await _userAccessService.GetUserClubAccessAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<User>());
+            //Act
+            var result = await _userAccessService.GetUserClubAccessAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<User>());
 
-        //Assert
-        Assert.IsNotEmpty(result);
+            //Assert
+            Assert.IsNotEmpty(result);
             Assert.IsInstanceOf<Dictionary<string, bool>>(result);
         }
 }

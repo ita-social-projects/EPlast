@@ -15,11 +15,13 @@ namespace EPlast.BLL.Services.UserAccess
         private readonly IClubAccessService _clubAccessService;
         private readonly ISecurityModel _securityModel;
         private const string ClubSecuritySettingsFile = "ClubAccessSettings.json";
+
         public UserAccessService(IClubAccessService clubAccessService, ISecurityModel securityModel)
         {
             _clubAccessService = clubAccessService;
             _securityModel = securityModel;
         }
+
         public async Task<Dictionary<string, bool>> GetUserClubAccessAsync(int clubId, string userId, User user)
         {
             _securityModel.SetSettingsFile(ClubSecuritySettingsFile);
