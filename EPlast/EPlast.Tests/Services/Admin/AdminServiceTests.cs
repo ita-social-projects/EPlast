@@ -1,14 +1,20 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
+using EPlast.BLL.Interfaces.GoverningBodies;
+using EPlast.BLL.Interfaces.GoverningBodies.Sector;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.GoverningBody;
+using EPlast.DataAccess.Entities.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
@@ -19,9 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using EPlast.Resources;
 using System.Threading.Tasks;
-using EPlast.BLL.DTO.Admin;
 
 namespace EPlast.Tests.Services
 {
@@ -42,6 +46,8 @@ namespace EPlast.Tests.Services
         private Mock<IRoleStore<IdentityRole>> _store;
         private Mock<IUserStore<User>> _user;
         private Mock<UserManager<User>> _userManager;
+        private Mock<IGoverningBodyAdministrationService> _governingBodyAdministrationService;
+        private Mock<ISectorAdministrationService> _sectorAdministrationService;
         private AdminService service;
 
         [Test]
@@ -172,6 +178,16 @@ namespace EPlast.Tests.Services
                It.IsAny<Func<IQueryable<RegionAdministration>,
                IIncludableQueryable<RegionAdministration, object>>>()))
                .ReturnsAsync(new RegionAdministration());
+            _repoWrapper
+               .Setup(x => x.GoverningBodyAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+               It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
+               IIncludableQueryable<GoverningBodyAdministration, object>>>()))
+               .ReturnsAsync(new GoverningBodyAdministration());
+            _repoWrapper
+               .Setup(x => x.GoverningBodySectorAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<SectorAdministration, bool>>>(),
+               It.IsAny<Func<IQueryable<SectorAdministration>,
+               IIncludableQueryable<SectorAdministration, object>>>()))
+               .ReturnsAsync(new SectorAdministration());
             _regionService
                 .Setup(x => x.DeleteAdminByIdAsync(It.IsAny<int>()));
             _userManager
@@ -610,7 +626,8 @@ namespace EPlast.Tests.Services
             _cityParticipantsService = new Mock<ICityParticipantsService>();
             _clubParticipants = new Mock<IClubParticipantsService>();
             _regionService = new Mock<IRegionAdministrationService>();
-
+            _governingBodyAdministrationService = new Mock<IGoverningBodyAdministrationService>();
+            _sectorAdministrationService = new Mock<ISectorAdministrationService>();
             service = new AdminService(
                 _repoWrapper.Object,
                 _userManager.Object,
@@ -618,7 +635,10 @@ namespace EPlast.Tests.Services
                 _roleManager.Object,
                 _clubParticipants.Object,
                 _regionService.Object,
-                _cityParticipantsService.Object
+                _cityParticipantsService.Object,
+                _governingBodyAdministrationService.Object,
+                _sectorAdministrationService.Object
+
             );
         }
 
@@ -845,6 +865,51 @@ namespace EPlast.Tests.Services
             Assert.IsInstanceOf<int>(result);
         }
 
+        [Test]
+        public async Task GetUsersByAllRolesAsync_ReturnsUsers()
+        {
+            //Arrange
+            string[] userRole = new string[] { "Role1", "Role2" };
+            string[] roles = new string[] { "Role2", "Role1" };
+            var user = new User() { Id = "1" };
+            _repoWrapper.Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                    It.IsAny<Func<IQueryable<User>,
+                        IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(new List<User>() { user });
+            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(userRole);
+            _mapper.Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDTO() { ID = "1" });
+
+            //Acts
+            var res = (await service.GetUsersByRolesAsync(string.Join(",", roles), true, (x, y) => x.SequenceEqual(y))).ToList();
+
+            //Assert
+            Assert.AreEqual(res[0].ID, user.Id);
+        }
+
+        [Test]
+        public async Task GetUsersByAnyRoleAsync_ReturnsUsers()
+        {
+            //Arrange
+            string[] userRole = new string[] { "Role1", "Role2" };
+            string[] roles = new string[] { "Role2" };
+            var user = new User() { Id = "1" };
+            _repoWrapper.Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                    It.IsAny<Func<IQueryable<User>,
+                        IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(new List<User>() { user });
+            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(userRole);
+            _mapper.Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDTO() { ID = "1" });
+
+            //Acts
+            var res = (await service.GetUsersByRolesAsync(string.Join(",", roles), true, (x, y) => x.Any())).ToList();
+
+            //Assert
+            Assert.AreEqual(res[0].ID, user.Id);
+        }
         private IEnumerable<User> GetTestUsers()
         {
             return new List<User>

@@ -436,6 +436,6 @@ namespace EPlast.XUnitTest.Services.City
         }
 
         private List<CityForAdministrationDTO> _expected = new List<CityForAdministrationDTO>
-            {new CityForAdministrationDTO {ID = 1, Name = "TestCityName", HasReport = true}};
+            {new CityForAdministrationDTO {ID = 1, Name = "TestCityName", HasReport = true, IsActive = true}};
     }
 }

@@ -6,6 +6,7 @@ using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Resources;
 using EPlast.BLL.Models;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +27,7 @@ namespace EPlast.Tests.Controllers
             Mock<IJwtService>,
             Mock<ILoggerService<LoginController>>,
             Mock<IUserDatesService>,
+            Mock<IUserManagerService>,
             LoginController
             ) CreateLoginController()
         {
@@ -34,12 +36,14 @@ namespace EPlast.Tests.Controllers
             Mock<IJwtService> mockJwtService = new Mock<IJwtService>();
             Mock<ILoggerService<LoginController>> mockLoggerService = new Mock<ILoggerService<LoginController>>();
             Mock<IUserDatesService> mockUserDataServices = new Mock<IUserDatesService>();
+            Mock<IUserManagerService> mockUserManagerService = new Mock<IUserManagerService>();
             LoginController loginController = new LoginController(
                 mockAuthService.Object,
                 mockResources.Object,
                 mockJwtService.Object,
                 mockLoggerService.Object,
-                mockUserDataServices.Object);
+                mockUserDataServices.Object,
+                mockUserManagerService.Object);
 
             return (
                 mockAuthService,
@@ -47,6 +51,7 @@ namespace EPlast.Tests.Controllers
                 mockJwtService,
                 mockLoggerService,
                 mockUserDataServices,
+                mockUserManagerService,
                 loginController
                 );
         }
@@ -59,6 +64,7 @@ namespace EPlast.Tests.Controllers
                 mockResources,
                 _,
                 mockLoggerService,
+                _,
                 _,
                 loginController) = CreateLoginController();
             var userInfo = GetTestFacebookUserInfoWithSomeFields();
@@ -91,6 +97,7 @@ namespace EPlast.Tests.Controllers
                 _,
                 _,
                 _,
+                _,
                 loginController) = CreateLoginController();
             var userInfo = GetTestFacebookUserInfoWithSomeFields();
 
@@ -119,6 +126,7 @@ namespace EPlast.Tests.Controllers
                 _,
                 _,
                 mockUserDataServices,
+                _,
                 loginController) = CreateLoginController();
             var userInfo = GetTestFacebookUserInfoWithSomeFields();
 
@@ -155,6 +163,7 @@ namespace EPlast.Tests.Controllers
                 _,
                 _,
                 _,
+                _,
                 loginController) = CreateLoginController();
             string googleToken = It.IsAny<string>();
 
@@ -170,6 +179,44 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task GoogleLogin_BadRequestUserFormerMember()
+        {
+            // Arrange
+            var (mockAuthService,
+                mockResources,
+                _,
+                _,
+                _,
+                mockUserManagerService,
+                loginController) = CreateLoginController();
+
+            mockAuthService
+                .Setup(s => s.GetGoogleUserAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
+
+
+            mockUserManagerService
+                .Setup(s => s.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
+                .ReturnsAsync(true);
+
+            mockResources
+                .Setup(s => s.ResourceForErrors["User-FormerMember"])
+                .Returns(GetLoginUserFormerMember());
+
+
+            // Act
+            var result = await loginController.GoogleLogin(It.IsAny<string>()) as BadRequestObjectResult;
+
+            // Assert
+            mockAuthService.Verify(x => x.GetGoogleUserAsync(It.IsAny<string>()));
+            mockUserManagerService.Verify(x => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()));
+            mockResources.Verify(x => x.ResourceForErrors["User-FormerMember"]);
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.AreEqual(GetLoginUserFormerMember().ToString(), result.Value.ToString());
+        }
+
+        [Test]
         public async Task GoogleLogin_Invalid_Exception_Test()
         {
             // Arrange
@@ -177,6 +224,7 @@ namespace EPlast.Tests.Controllers
                 _,
                 _,
                 mockLoggerService,
+                _,
                 _,
                 loginController) = CreateLoginController();
             string googleToken = It.IsAny<string>();
@@ -208,6 +256,7 @@ namespace EPlast.Tests.Controllers
                 _,
                 _,
                 _,
+                _,
                 loginController) = CreateLoginController();
             mockAuthService
                 .Setup(s => s.SignOutAsync());
@@ -233,6 +282,7 @@ namespace EPlast.Tests.Controllers
                 _,
                 _,
                 mockUserDataServices,
+                _,
                 loginController) = CreateLoginController();
             string googleToken = It.IsAny<string>();
             mockAuthService
@@ -264,6 +314,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var (mockAuthService,
                 mockResources,
+                _,
                 _,
                 _,
                 _,
@@ -305,6 +356,7 @@ namespace EPlast.Tests.Controllers
                 _,
                 _,
                 _,
+                _,
                 loginController) = CreateLoginController();
 
             mockAuthService
@@ -331,11 +383,53 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task LoginPost_BadRequestUserFormerMember()
+        {
+            //Arrange
+            var (mockAuthService,
+                mockResources,
+                _,
+                _,
+                _,
+                mockUserManagerService,
+                loginController) = CreateLoginController();
+
+            mockAuthService
+                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
+
+            mockAuthService
+                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
+                .ReturnsAsync(true);
+
+            mockUserManagerService
+                .Setup(s => s.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
+                .ReturnsAsync(true);
+
+            mockResources
+                .Setup(s => s.ResourceForErrors["User-FormerMember"])
+                .Returns(GetLoginUserFormerMember());
+
+            //Act
+            var result = await loginController.Login(GetTestLoginDto()) as BadRequestObjectResult;
+
+            //Assert
+            mockAuthService.Verify(x => x.FindByEmailAsync(It.IsAny<string>()));
+            mockAuthService.Verify(x => x.IsEmailConfirmedAsync(It.IsAny<UserDTO>()));
+            mockUserManagerService.Verify(x => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()));
+            mockResources.Verify(x => x.ResourceForErrors["User-FormerMember"]);
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.AreEqual(GetLoginUserFormerMember().ToString(), result.Value.ToString());
+        }
+
+        [Test]
         public async Task Test_LoginPost_LoginInCorrectPassword()
         {
             //Arrange
             var (mockAuthService,
                 mockResources,
+                _,
                 _,
                 _,
                 _,
@@ -377,6 +471,7 @@ namespace EPlast.Tests.Controllers
                 _,
                 _,
                 _,
+                _,
                 loginController) = CreateLoginController();
             loginController.ModelState.AddModelError("NameError", "Required");
 
@@ -401,6 +496,7 @@ namespace EPlast.Tests.Controllers
             var (mockAuthService,
                 _,
                 mockJwtService,
+                _,
                 _,
                 _,
                 loginController) = CreateLoginController();
@@ -440,6 +536,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var (mockAuthService,
                 mockResources,
+                _,
                 _,
                 _,
                 _,
@@ -509,10 +606,17 @@ namespace EPlast.Tests.Controllers
             return localizedString;
         }
 
+        private LocalizedString GetLoginUserFormerMember()
+        {
+            var localizedString = new LocalizedString("User-FormerMember",
+                "User-FormerMember");
+            return localizedString;
+        }
+
         private LocalizedString GetLoginInCorrectPassword()
         {
             var localizedString = new LocalizedString("Login-InCorrectPassword",
-                "Ви ввели неправильний пароль, спробуйте ще раз");
+                "Невірний пароль. Спробуйте, будь ласка, ще раз");
             return localizedString;
         }
 

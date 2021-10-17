@@ -293,6 +293,18 @@ namespace EPlast.Tests.Controllers
             _adminService.Verify(x => x.GetCityRegionAdminsOfUserAsync(It.IsAny<string>()), Times.AtLeastOnce);
         }
 
+        [TestCase("user")]
+        public async Task GetCityAndRegionAdminsOfUser_UserNotExists_ReturnsBadRequest(string username)
+        {
+            //Arrange
+            AdminController adminController = CreateAdminController;
+            _userManagerService.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync((UserDTO) null);
+            //Act
+            var result = await adminController.GetCityAndRegionAdminsOfUser(username);
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
+        }
+
         [Test]
         public async Task RegionsAdmins_Invalid_Test()
         {
@@ -380,6 +392,35 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<List<ShortUserInformationDTO>>(resultValue);
         }
 
+        [Test]
+        public async Task GetUsersByAllRoles_ReturnsOkObjectResult()
+        {
+            //Arrange
+            _adminService.Setup(x => x.GetUsersByRolesAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<Func<IEnumerable<string>, IEnumerable<string>, bool>>()))
+                .ReturnsAsync(new List<ShortUserInformationDTO>() { new ShortUserInformationDTO() });
+            AdminController adminController = CreateAdminController;
+
+            //Act
+            var res = await adminController.GetUsersByAllRoles("Roles", true);
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(res);
+        }
+
+        [Test]
+        public async Task GetUsersByAnyRole_ReturnsOkObjectResult()
+        {
+            //Arrange
+            _adminService.Setup(x => x.GetUsersByRolesAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<Func<IEnumerable<string>, IEnumerable<string>, bool>>()))
+                .ReturnsAsync(new List<ShortUserInformationDTO>() { new ShortUserInformationDTO() });
+            AdminController adminController = CreateAdminController;
+
+            //Act
+            var res = await adminController.GetUsersByAnyRole("Roles", true);
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(res);
+        }
         private TableFilterParameters CreateTableFilterParameters => new TableFilterParameters()
         {
             Page = 1,

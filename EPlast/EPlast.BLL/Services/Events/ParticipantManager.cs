@@ -30,7 +30,7 @@ namespace EPlast.BLL.Services.Events
             try
             {
                 int undeterminedStatus = await _participantStatusManager.GetStatusIdAsync("Розглядається");
-                int finishedEvent = await _eventStatusManager.GetStatusIdAsync("Завершений(-на)");
+                int finishedEvent = await _eventStatusManager.GetStatusIdAsync("Завершено");
                 if (targetEvent.EventStatusID == finishedEvent)
                 {
                     return StatusCodes.Status409Conflict;
@@ -51,7 +51,7 @@ namespace EPlast.BLL.Services.Events
             try
             {
                 int rejectedStatus = await _participantStatusManager.GetStatusIdAsync("Відмовлено");
-                int finishedEvent = await _eventStatusManager.GetStatusIdAsync("Завершений(-на)");
+                int finishedEvent = await _eventStatusManager.GetStatusIdAsync("Завершено");
                 Participant participantToDelete = await _repoWrapper.Participant
                     .GetFirstAsync(predicate: p => p.EventId == targetEvent.ID && p.UserId == userId);
                 if (participantToDelete.ParticipantStatusId == rejectedStatus || targetEvent.EventStatusID == finishedEvent)
@@ -133,7 +133,7 @@ namespace EPlast.BLL.Services.Events
                     .GetFirstAsync(predicate: p => p.ID == id);
                 int rejectedStatus = await _participantStatusManager.GetStatusIdAsync("Відмовлено");
                 var targetEvent = await _repoWrapper.Event.GetFirstAsync(e => e.ID == participant.EventId);
-                int finishedEvent = await _eventStatusManager.GetStatusIdAsync("Завершений(-на)");
+                int finishedEvent = await _eventStatusManager.GetStatusIdAsync("Завершено");
                 
                 if (participant.ParticipantStatusId == rejectedStatus || targetEvent.EventStatusID == finishedEvent)
                 {

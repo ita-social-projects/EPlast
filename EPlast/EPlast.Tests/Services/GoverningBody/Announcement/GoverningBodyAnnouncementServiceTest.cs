@@ -65,6 +65,53 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
         }
 
         [Test]
+        public async Task AddAnnouncementAsync_TextIsNull_ReturnsFalse()
+        {
+            //Arrange
+            _mapper
+                .Setup(m => m.Map<GoverningBodyAnnouncementDTO>(It.IsAny<GoverningBodyAnnouncement>()))
+                .Returns(new GoverningBodyAnnouncementDTO());
+            _repoWrapper
+               .Setup(x => x.GoverningBodyAnnouncement.CreateAsync(It.IsAny<GoverningBodyAnnouncement>()));
+            _userManager
+                .Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>()));
+
+            //Act
+            bool result = await _governingBodyAnnouncementService.AddAnnouncementAsync(null);
+
+            //Assert
+            Assert.IsFalse(result);
+        }
+
+        [TestCase("aaa")]
+        [TestCase("string")]
+        public async Task AddAnnouncementAsync_TextNotNull_ReturnsTrue(string text)
+        {
+            //Arrange
+            GoverningBodyAnnouncement governingBody = new GoverningBodyAnnouncement();
+
+            _mapper
+                .Setup(m => m.Map<GoverningBodyAnnouncementDTO, GoverningBodyAnnouncement>(It.IsAny<GoverningBodyAnnouncementDTO>()))
+                .Returns(governingBody);
+            _repoWrapper
+                .Setup(x => x.GoverningBodyAnnouncement.CreateAsync(It.IsAny<GoverningBodyAnnouncement>()));
+            _context
+                .Setup(x => x.HttpContext.User)
+                .Returns(new ClaimsPrincipal());
+
+            //Act
+            bool result = await _governingBodyAnnouncementService.AddAnnouncementAsync(text);
+
+            //Assert
+            _userManager.Verify(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()));
+            _mapper.Verify(x => x.Map<GoverningBodyAnnouncementDTO, GoverningBodyAnnouncement>(It.IsAny<GoverningBodyAnnouncementDTO>()));
+            _repoWrapper.Verify(x => x.GoverningBodyAnnouncement.CreateAsync(governingBody));
+            _repoWrapper.Verify(x => x.SaveAsync());
+
+            Assert.IsTrue(result);
+        }
+
+        [Test]
         public void DeleteAnnouncement_Valid()
         {
             //Arrange
@@ -153,6 +200,26 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
             //Assert
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<List<string>>(result);
+        }
+
+        [Test]
+        public async Task EditAnnouncement_ReturnsId()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(x => x.GoverningBodyAnnouncement.Update(It.IsAny<GoverningBodyAnnouncement>()))
+                .Callback(() => { });
+            _repoWrapper
+                .Setup(x => x.SaveAsync())
+                .Callback(() => { });
+
+            //Act
+            var result = await _governingBodyAnnouncementService.EditAnnouncement(new GoverningBodyAnnouncementUserDTO(){Id = 1});
+
+            //Assert
+            Assert.AreEqual(1, result);
+            _repoWrapper.Verify(x => x.GoverningBodyAnnouncement.Update(It.IsAny<GoverningBodyAnnouncement>()));
+            _repoWrapper.Verify(x=> x.SaveAsync());
         }
 
         readonly GoverningBodyAnnouncement nullGoverningBodyAnnouncement = null;

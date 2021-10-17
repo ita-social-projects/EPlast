@@ -68,6 +68,9 @@ namespace EPlast.BLL.Interfaces.Club
 
         Task CancelAsync(User user, int id);
         Task DeleteClubReportAsync(User user, int id);
+        Task RemoveClubReportAsync(int id);
         Task EditClubReportAsync(User user, ClubAnnualReportDTO clubAnnualReportDto);
+        Task<IEnumerable<ClubReportAdministrationDTO>> GetClubReportAdminsAsync(int ClubAnnualReportID);
+        Task<IEnumerable<ClubMemberHistoryDTO>> GetClubReportMembersAsync(int ClubAnnualReportID);
     }
 }

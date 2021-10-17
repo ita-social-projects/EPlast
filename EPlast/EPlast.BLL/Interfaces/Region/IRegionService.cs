@@ -3,6 +3,7 @@ using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.DataAccess.Entities;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -23,6 +24,7 @@ namespace EPlast.BLL.Interfaces.Region
         Task<IEnumerable<CityDTO>> GetMembersAsync(int regionId);
         Task AddRegionAsync(RegionDTO region);
         Task EditRegionAsync(int regId, RegionDTO region);
+        Task<Tuple<IEnumerable<RegionObjectsDTO>, int>> GetAllRegionsByPageAndIsArchiveAsync(int page, int pageSize, string regionName, bool isArchive);
         Task<RegionDTO> GetRegionByNameAsync(string Name);
         Task<RegionProfileDTO> GetRegionByNameAsync(string Name, User user);
         Task<RegionDocumentDTO> AddDocumentAsync(RegionDocumentDTO documentDTO);

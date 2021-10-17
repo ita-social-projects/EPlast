@@ -10,6 +10,7 @@ using EPlast.WebApi.Models.GoverningBody;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -94,6 +95,22 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.AreEqual(resultObject?.Value, serviceReturnedId);
+        }
+
+        [Test]
+        public async Task Create_ThrowsArgumentException_ReturnsBadRequest()
+        {
+            // Arrange
+            var testDTO = CreateGoverningBodyDTO;
+            _governingBodiesService
+                .Setup(x => x.CreateAsync(It.IsAny<GoverningBodyDTO>()))
+                .ThrowsAsync(new ArgumentException());
+
+            // Act
+            var result = await _governingBodiesController.Create(testDTO);
+
+            // Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
@@ -279,6 +296,21 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(resultValue);
             Assert.IsInstanceOf<GoverningBodyAdministrationDTO>(resultValue);
+        }
+
+        [Test]
+        public async Task AddAdmin_UserHasRestrictedRoles_ReturnsBadRequest()
+        {
+            //Arrange
+            _governingBodyAdministrationService
+                .Setup(x => x.AddGoverningBodyAdministratorAsync(It.IsAny<GoverningBodyAdministrationDTO>()))
+                .Throws(new ArgumentException());
+
+            //Act
+            var result = await _governingBodiesController.AddAdmin(new GoverningBodyAdministrationDTO());
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
@@ -584,6 +616,38 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
+        [Test]
+        public async Task EditAnnouncement_ModelStateIsValid_ReturnsOk()
+        {
+            //Arrange
+            _governingBodyAnnouncementService
+                .Setup(x => x.EditAnnouncement(It.IsAny<GoverningBodyAnnouncementUserDTO>()))
+                .ReturnsAsync(1);
+
+            //Act
+            var res = await _governingBodiesController.EditAnnouncement(new GoverningBodyAnnouncementUserDTO());
+
+            //Assert
+            Assert.IsInstanceOf<OkResult>(res);
+        }
+
+        [Test]
+        public async Task EditAnnouncement_ModeStatIsNotValid_ReturnsBadRequest()
+        {
+            //Arrange
+            _governingBodiesController.ModelState.AddModelError("key", "error message");
+            _governingBodyAnnouncementService
+                .Setup(x => x.EditAnnouncement(It.IsAny<GoverningBodyAnnouncementUserDTO>()))
+                .ReturnsAsync(1);
+
+            //Act
+            var res = await _governingBodiesController.EditAnnouncement(new GoverningBodyAnnouncementUserDTO());
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(res);
+        }
+
+   
 
         private const int TestId = 3;
 

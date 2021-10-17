@@ -2,7 +2,7 @@
 
 namespace EPlast.DataAccess.Repositories.Contracts
 {
-    public interface IUserPlastDegreesRepository : IRepositoryBase<UserPlastDegree>
+    public interface IUserPlastDegreeRepository : IRepositoryBase<UserPlastDegree>
     {
     }
 }
