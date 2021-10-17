@@ -813,7 +813,6 @@ namespace EPlast.Tests.Services.Club
                 .Setup(s => s.ClubMemberHistory.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMemberHistory, bool>>>(),
                     It.IsAny<Func<IQueryable<ClubMemberHistory>, IIncludableQueryable<ClubMemberHistory, object>>>()))
                 .ReturnsAsync(new ClubMemberHistory());
-
             _repoWrapper
                 .Setup(s => s.ClubMemberHistory.Update(It.IsAny<ClubMemberHistory>()));
 
@@ -833,14 +832,12 @@ namespace EPlast.Tests.Services.Club
             _repoWrapper
                 .Setup(r => r.SaveAsync());
 
-
             // Act
             await _clubParticipantsService.RemoveMemberAsync(It.IsAny<ClubMembers>());
 
             // Assert
             _repoWrapper.Verify(r => r.ClubMembers.Delete(It.IsAny<ClubMembers>()), Times.Once());
             _repoWrapper.Verify(r => r.SaveAsync(), Times.Once());
-
         }
 
         [Test]
@@ -854,7 +851,6 @@ namespace EPlast.Tests.Services.Club
 
             _repoWrapper
              .Setup(s => s.ClubMemberHistory.Update(It.IsAny<ClubMemberHistory>()));
-
 
             //Act
             await _clubParticipantsService.UpdateStatusFollowerInHistoryAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>());
@@ -872,7 +868,6 @@ namespace EPlast.Tests.Services.Club
                .Setup(s => s.ClubMemberHistory.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMemberHistory, bool>>>(),
                    It.IsAny<Func<IQueryable<ClubMemberHistory>, IIncludableQueryable<ClubMemberHistory, object>>>()))
                .ReturnsAsync(new ClubMemberHistory());
-       
 
             // Act
             await _clubParticipantsService.AddFollowerInHistoryAsync(It.IsAny<int>(),It.IsAny<string>());
@@ -889,7 +884,6 @@ namespace EPlast.Tests.Services.Club
                .Setup(s => s.ClubMemberHistory.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMemberHistory, bool>>>(),
                    It.IsAny<Func<IQueryable<ClubMemberHistory>, IIncludableQueryable<ClubMemberHistory, object>>>()))
                .ReturnsAsync(() => null);
-
 
             // Act
             await _clubParticipantsService.AddFollowerInHistoryAsync(It.IsAny<int>(), It.IsAny<string>());
