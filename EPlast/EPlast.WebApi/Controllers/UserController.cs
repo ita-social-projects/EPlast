@@ -231,6 +231,35 @@ namespace EPlast.WebApi.Controllers
             return NotFound();
         }
 
+        [HttpPut("photo/{userid}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> EditProfilePhoto(string userid, [FromBody] string imageBase64)
+        {
+            try
+            {
+                var currentUserId = _userManager.GetUserId(User);
+                var currentUser = await _userService.GetUserAsync(currentUserId);
+                var userToUpdate = await _userManagerService.FindByIdAsync(userid);
+                var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
+                var isUserGoverningBodyHead = await _userManagerService.IsInRoleAsync(currentUser, Roles.GoverningBodyHead);
+
+                if (currentUserId == userid || isUserAdmin || isUserGoverningBodyHead)
+                {
+                    await _userService.UpdatePhotoAsyncForBase64(userToUpdate, imageBase64);
+                    _loggerService.LogInformation($"Photo of user {userid} was successfully updated");
+                    return Ok("Photo successfully updated");
+                }
+
+                _loggerService.LogInformation($"User {currentUserId} cannot update profile photo of user {userid}");
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
+            catch (Exception ex)
+            {
+                _loggerService.LogError($"Cannot update user photo because: {ex.Message}");
+                return BadRequest();
+            }
+        }
+
         /// <summary>
         /// Edit a user
         /// </summary>

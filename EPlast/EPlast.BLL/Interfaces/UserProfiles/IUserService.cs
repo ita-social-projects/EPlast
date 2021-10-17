@@ -74,6 +74,13 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         /// <returns>Image in format base64</returns>
         Task<string> GetImageBase64Async(string fileName);
 
+        /// <summary>
+        /// Update profile img
+        /// </summary>
+        /// <param name="userid">Id of user</param>
+        /// <param name="photoBase64">New photo</param>
+        Task UpdatePhotoAsyncForBase64(UserDTO user, string photoBase64);
+
         Task<bool> IsApprovedCityMember(string userId);
         Task<bool> IsApprovedCLubMember(string userId);
         /// <summary>

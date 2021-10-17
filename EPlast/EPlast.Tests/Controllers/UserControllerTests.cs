@@ -643,9 +643,59 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task EditProfilePhoto_ReturnsOkResult()
+        {
+            // Arrange
+            var id = "1";
+            _userManager.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(id);
+            // Act
+            var result = await _userController.EditProfilePhoto(id,It.IsAny<string>());
+
+            // Assert
+            _userService.Verify();
+            _mapper.Verify();
+            _loggerService.Verify();
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task EditProfilePhoto_Returns403Forbidden()
+        {
+            // Arrange
+            var id = "1";
+            var expected = StatusCodes.Status403Forbidden;
+            _userManager.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(id);
+            // Act
+            var result = await _userController.EditProfilePhoto(It.IsAny<string>(), It.IsAny<string>());
+            var actual = (result as StatusCodeResult).StatusCode;
+            // Assert
+            _userService.Verify();
+            _mapper.Verify();
+            _loggerService.Verify();
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public async Task EditProfilePhoto_ReturnsBadRequest()
+        {
+            // Arrange
+            var id = "1";
+            _userManager.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(id);
+            _userService.Setup(u => u.UpdatePhotoAsyncForBase64(It.IsAny<UserDTO>(), It.IsAny<string>()))
+                .ThrowsAsync(new Exception());
+            // Act
+            var result = await _userController.EditProfilePhoto(id, It.IsAny<string>());
+            // Assert
+            _userService.Verify();
+            _mapper.Verify();
+            _loggerService.Verify();
+            Assert.IsInstanceOf<BadRequestResult>(result);
+        }
+
+        [Test]
         public async Task EditBase64_ReturnsOkResult()
         {
-            // Assert
+            // Arrange
             var id = "1";
             _userManager.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(id);
             _mapper
