@@ -75,6 +75,11 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IClubMembersRepository _clubMembers;
         private IClubRepository _club;
         private IClubMemberHistoryRepository _clubMemberHistory;
+        private IClubReportMemberRepository _clubReportMember;
+        private IClubAnnualReportsRepository _clubAnnualReports;
+        private IClubReportAdminsRepository _clubReportAdmins;
+        private IClubReportCitiesRepository _clubReportCities;
+        private IClubReportPlastDegreesRepository _clubReportPlastDegrees;
 
         private IRegionRepository _region;
         private IRegionAdministrationRepository _regionAdministration;
@@ -83,7 +88,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IMembersStatisticsRepository _membersStatistics;
         private ICityLegalStatusesRepository _cityLegalStatuses;
         private IClubLegalStatusesRepository _clubLegalStatuses;
-        private IUserPlastDegreesRepository _userPlastDegrees;
+        private IUserPlastDegreeRepository _userPlastDegree;
         private IUserNotificationRepository _userNotifications;
         private INotificationTypeRepository _notificationTypes;
         private IUserMembershipDatesRepository _userMembershipDates;
@@ -97,7 +102,6 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IBlankBiographyDocumentsRepository _biographyDocumentsRepository;
         private IAchievementDocumentsRepository _achievementDocumentsRepository;
         private IExtractFromUPUDocumentsRepository _extractFromUPUDocumentsRepository;
-        private IClubAnnualReportsRepository _clubAnnualReports;
         private IRegionAnnualReportsRepository _regionAnnualReports;
         private IGoverningBodyAnnouncementRepository _governingBodyAnnouncement;
 
@@ -754,6 +758,59 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             }
         }
 
+        public IClubReportAdminsRepository ClubReportAdmins
+        {
+            get
+            {
+                if (_clubReportAdmins == null)
+                {
+                    _clubReportAdmins = new ClubReportAdminsRepository(_dbContext);
+                }
+
+                return _clubReportAdmins;
+            }
+        }
+
+        public IClubReportMemberRepository ClubReportMember
+        {
+            get
+            {
+                if (_clubReportMember == null)
+                {
+                    _clubReportMember = new ClubReportMemberRepository(_dbContext);
+                }
+
+                return _clubReportMember;
+            }
+        }
+
+
+        public IClubReportCitiesRepository ClubReportCities
+        {
+            get
+            {
+                if (_clubReportCities == null)
+                {
+                    _clubReportCities = new ClubReportCitiesRepository(_dbContext);
+                }
+
+                return _clubReportCities;
+            }
+         
+        }
+        public IClubReportPlastDegreesRepository ClubReportPlastDegrees
+        {
+            get
+            {
+                if (_clubReportPlastDegrees == null)
+                {
+                    _clubReportPlastDegrees = new ClubReportPlastDegreesRepository(_dbContext);
+                }
+                return _clubReportPlastDegrees;
+            }
+
+        }
+
         public IRegionRepository Region
         {
             get
@@ -907,15 +964,15 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             }
         }
 
-        public IUserPlastDegreesRepository UserPlastDegrees
+        public IUserPlastDegreeRepository UserPlastDegree
         {
             get
             {
-                if (_userPlastDegrees == null)
+                if (_userPlastDegree == null)
                 {
-                    _userPlastDegrees = new UserPlastDegreesRepository(_dbContext);
+                    _userPlastDegree = new UserPlastDegreeRepository(_dbContext);
                 }
-                return _userPlastDegrees;
+                return _userPlastDegree;
             }
         }
 

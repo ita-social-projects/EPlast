@@ -62,5 +62,7 @@ namespace EPlast.BLL.Services.Interfaces
         Task<IEnumerable<ShortUserInformationDTO>> GetUsersAsync();
 
         Task<int> GetUsersCountAsync();
+
+        Task<IEnumerable<ShortUserInformationDTO>> GetUsersByRolesAsync(string roles, bool include, Func<IEnumerable<string>, IEnumerable<string>, bool> checkIntersectedRoles);
     }
 }

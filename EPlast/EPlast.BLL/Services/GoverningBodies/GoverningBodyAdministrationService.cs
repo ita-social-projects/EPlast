@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities.GoverningBody;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace EPlast.BLL.Services.GoverningBodies
 {
@@ -43,8 +45,27 @@ namespace EPlast.BLL.Services.GoverningBodies
             };
 
             var user = await _userManager.FindByIdAsync(governingBodyAdministrationDto.UserId);
-            var role = adminType.AdminTypeName == Roles.GoverningBodyHead ? Roles.GoverningBodyHead : Roles.GoverningBodySecretary;
-            await _userManager.AddToRoleAsync(user, role);
+
+            var restrictedRoles = new List<string>
+            {
+                Roles.RegisteredUser,
+                Roles.Supporter,
+                Roles.FormerPlastMember,
+                Roles.Interested,
+                Roles.GoverningBodyHead,
+                Roles.GoverningBodySecretary
+            };
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            if (roles.Intersect(restrictedRoles).Any())
+            {
+                throw new ArgumentException("Can't add with the restricted roles");
+            }
+            var adminRole = adminType.AdminTypeName == Roles.GoverningBodyHead ? 
+                Roles.GoverningBodyHead : 
+                Roles.GoverningBodySecretary;
+            await _userManager.AddToRoleAsync(user, adminRole);
 
             await CheckGoverningBodyHasAdmin(governingBodyAdministrationDto.GoverningBodyId, adminType.AdminTypeName);
 

@@ -486,7 +486,7 @@ namespace EPlast.Tests.Services.Club
                 .Setup(r => r.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
                     It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
                 .ReturnsAsync(new ClubMembers());
-            _repoWrapper.Setup(x => x.UserPlastDegrees.GetAllAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
+            _repoWrapper.Setup(x => x.UserPlastDegree.GetAllAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
                 .ReturnsAsync(new List<UserPlastDegree>()
                     {new UserPlastDegree() { UserId = "12345", PlastDegree = new PlastDegree() {Id = 1, Name = ""}}});
@@ -521,7 +521,7 @@ namespace EPlast.Tests.Services.Club
                 .Setup(r => r.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
                     It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
                 .ReturnsAsync(new ClubMembers());
-            _repoWrapper.Setup(x => x.UserPlastDegrees.GetAllAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
+            _repoWrapper.Setup(x => x.UserPlastDegree.GetAllAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
                 .ReturnsAsync(new List<UserPlastDegree>()
                     {new UserPlastDegree()});
@@ -912,43 +912,94 @@ namespace EPlast.Tests.Services.Club
             Assert.NotNull(result);
             Assert.AreEqual(LogoName, result);
         }
-
         [Test]
-        public async Task RemoveAsync()
+        public async Task DeleteClubMemberHistory_SingleNumber_DeletesClubMember()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(u=>u.ClubMemberHistory.GetAllAsync(It.IsAny<Expression<Func<DataAccessClub.ClubMemberHistory, bool>>>(), null))
+                    .ReturnsAsync(new List<DataAccessClub.ClubMemberHistory>(){new ClubMemberHistory(){}});
+            _repoWrapper
+                .Setup(u => u.SaveAsync());
+            _repoWrapper
+                .Setup(u => u.ClubMemberHistory.Delete(It.IsAny<ClubMemberHistory>()));
+            // Act
+            await _clubService.DeleteClubMemberHistory(It.IsAny<int>());
+            // Assert
+            _repoWrapper.Verify(u=>u.ClubMemberHistory.GetAllAsync(It.IsAny<Expression<Func<DataAccessClub.ClubMemberHistory, bool>>>(), null), Times.Once);
+            _repoWrapper.Verify(u => u.ClubMemberHistory.Delete(It.IsAny<ClubMemberHistory>()), Times.Once);
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
+        }
+        [Test]
+        public async Task RemoveAsync_SingleNumber_DeletesClub()
         {
             // Arrange
             ClubService clubService = CreateClubService();
+            _repoWrapper
+                .Setup(
+                    u => u.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
+                .ReturnsAsync(new DataAccessClub.Club());
+
             _clubBlobStorage.Setup(c => c.DeleteBlobAsync(It.IsAny<string>()));
             _repoWrapper.Setup(r => r.Club.Delete(It.IsAny<DataAccessClub.Club>()));
+
+            _repoWrapper
+                .Setup(u => u.ClubMemberHistory.GetAllAsync(It.IsAny<Expression<Func<DataAccessClub.ClubMemberHistory, bool>>>(), null))
+                .ReturnsAsync(new List<DataAccessClub.ClubMemberHistory>() { new ClubMemberHistory() { } });
+            _repoWrapper
+                .Setup(u => u.SaveAsync());
+            _repoWrapper
+                .Setup(u => u.ClubMemberHistory.Delete(It.IsAny<ClubMemberHistory>()));
             _repoWrapper.Setup(r => r.SaveAsync());
 
             // Act
             await clubService.RemoveAsync(It.IsAny<int>());
 
             // Assert
-            _clubBlobStorage.Verify(c => c.DeleteBlobAsync(It.IsAny<string>()), Times.Once);
+            _repoWrapper.Verify(u => u.ClubMemberHistory.GetAllAsync(It.IsAny<Expression<Func<DataAccessClub.ClubMemberHistory, bool>>>(), null), Times.Once);
+            _repoWrapper.Verify(u => u.ClubMemberHistory.Delete(It.IsAny<ClubMemberHistory>()), Times.Once);
+            _repoWrapper.Verify(
+                u => u.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null),
+                Times.Once);
+            _clubBlobStorage.Verify(c => c.DeleteBlobAsync(It.IsAny<string>()), Times.Never);
             _repoWrapper.Verify(r => r.Club.Delete(It.IsAny<DataAccessClub.Club>()), Times.Once);
-            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.AtMost(2));
         }
 
         [Test]
-        public async Task RemoveAsync_WithoutLogo()
+        public async Task RemoveAsyncWithoutLogo_SingleNumber_DeletesClubWithotLogo()
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
-                .ReturnsAsync(GetTestClubWithoutLogo());
+            _repoWrapper
+                .Setup(
+                    u => u.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
+                .ReturnsAsync(GetTestNewClub());
+
             _clubBlobStorage.Setup(c => c.DeleteBlobAsync(It.IsAny<string>()));
             _repoWrapper.Setup(r => r.Club.Delete(It.IsAny<DataAccessClub.Club>()));
+
+            _repoWrapper
+                .Setup(u => u.ClubMemberHistory.GetAllAsync(It.IsAny<Expression<Func<DataAccessClub.ClubMemberHistory, bool>>>(), null))
+                .ReturnsAsync(new List<DataAccessClub.ClubMemberHistory>() { new ClubMemberHistory() { } });
+            _repoWrapper
+                .Setup(u => u.SaveAsync());
+            _repoWrapper
+                .Setup(u => u.ClubMemberHistory.Delete(It.IsAny<ClubMemberHistory>()));
             _repoWrapper.Setup(r => r.SaveAsync());
 
             // Act
             await clubService.RemoveAsync(It.IsAny<int>());
 
             // Assert
-            _clubBlobStorage.Verify(c => c.DeleteBlobAsync(It.IsAny<string>()), Times.Never);
+            _repoWrapper.Verify(u => u.ClubMemberHistory.GetAllAsync(It.IsAny<Expression<Func<DataAccessClub.ClubMemberHistory, bool>>>(), null), Times.Once);
+            _repoWrapper.Verify(u => u.ClubMemberHistory.Delete(It.IsAny<ClubMemberHistory>()), Times.Once);
+            _repoWrapper.Verify(
+                u => u.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null),
+                Times.Once);
+            _clubBlobStorage.Verify(c => c.DeleteBlobAsync(It.IsAny<string>()), Times.Once);
             _repoWrapper.Verify(r => r.Club.Delete(It.IsAny<DataAccessClub.Club>()), Times.Once);
-            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.AtMost(2));
         }
 
         [Test]

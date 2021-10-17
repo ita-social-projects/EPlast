@@ -403,13 +403,11 @@ namespace EPlast.WebApi.Controllers
             var member = await _clubParticipantsService.ToggleApproveStatusAsync(memberId);
             if (!member.IsApproved)
             {
-                await _clubParticipantsService.UpdateStatusFollowerInHistoryAsync(member.UserId, false, true);
-
                 await _clubParticipantsService.AddFollowerInHistoryAsync(Convert.ToInt32(member.ClubId), member.User.ID);
             }
             else
             {
-                await _clubParticipantsService.UpdateStatusFollowerInHistoryAsync(member.UserId, false, false);
+                  await _clubParticipantsService.AddMemberInHistoryAsync(Convert.ToInt32(member.ClubId), member.User.ID);
             }
             _logger.LogInformation($"Status of member with ID {{{memberId}}} was changed.");
 

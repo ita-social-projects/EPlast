@@ -18,6 +18,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities.GoverningBody;
+using EPlast.BLL.Interfaces.GoverningBodies;
 
 namespace EPlast.Tests.Services.GoverningBody
 {
@@ -27,6 +28,7 @@ namespace EPlast.Tests.Services.GoverningBody
         private Mock<IMapper> _mapper;
         private GoverningBodiesService _governingBodiesService;
         private Mock<IUniqueIdService> _uniqueIdService;
+        private Mock<IGoverningBodyAdministrationService> _governingBodyAdministrationService;
         private Mock<IGoverningBodyBlobStorageRepository> _blobStorage;
         private Mock<ISecurityModel> _securityModel;
         private protected Mock<UserManager<User>> _userManager;
@@ -39,6 +41,7 @@ namespace EPlast.Tests.Services.GoverningBody
             _mapper = new Mock<IMapper>();
             _blobStorage = new Mock<IGoverningBodyBlobStorageRepository>();
             _uniqueIdService = new Mock<IUniqueIdService>();
+            _governingBodyAdministrationService = new Mock<IGoverningBodyAdministrationService>();
             var store = new Mock<Microsoft.AspNetCore.Identity.IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _securityModel = new Mock<ISecurityModel>();
@@ -47,7 +50,8 @@ namespace EPlast.Tests.Services.GoverningBody
                 _mapper.Object,
                 _uniqueIdService.Object,
                 _blobStorage.Object,
-                _securityModel.Object);
+                _securityModel.Object,
+                _governingBodyAdministrationService.Object);
         }
 
         [Test]
@@ -68,12 +72,13 @@ namespace EPlast.Tests.Services.GoverningBody
         }
 
         [Test]
-        public async Task CreateAsync_Test()
+        public void CreateAsync_GBWithSameNameExists_ThrowsArgumentException()
         {
             //Arrange
             var testDTO = CreateGoverningBodyDTO;
             _mapper
-                .Setup(x => x.Map<Organization>(It.IsAny<GoverningBodyDTO>())).Returns(new Organization() { ID = testDTO.Id, Logo = testDTO.Logo });
+                .Setup(x => x.Map<Organization>(It.IsAny<GoverningBodyDTO>()))
+                .Returns(new Organization() { ID = testDTO.Id, Logo = testDTO.Logo });
             _mapper
                 .Setup(x => x.Map<GoverningBodyDTO, Organization>(It.IsAny<GoverningBodyDTO>()))
                 .Returns(_mapper.Object.Map<Organization>(testDTO));
@@ -81,6 +86,26 @@ namespace EPlast.Tests.Services.GoverningBody
                 .Setup(x => x.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
                     It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>()))
                 .ReturnsAsync(_mapper.Object.Map<Organization>(testDTO));
+;
+            //Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _governingBodiesService.CreateAsync(testDTO));
+        }
+
+        [Test]
+        public async Task CreateAsync_Test()
+        {
+            //Arrange
+            var testDTO = CreateGoverningBodyDTO;
+            _mapper
+                .Setup(x => x.Map<Organization>(It.IsAny<GoverningBodyDTO>()))
+                .Returns(new Organization() { ID = testDTO.Id, Logo = testDTO.Logo });
+            _mapper
+                .Setup(x => x.Map<GoverningBodyDTO, Organization>(It.IsAny<GoverningBodyDTO>()))
+                .Returns(_mapper.Object.Map<Organization>(testDTO));
+            _repoWrapper
+                .Setup(x => x.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+                    It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>()))
+                .ReturnsAsync(null as Organization);
 
             //Act
             var result = await _governingBodiesService.CreateAsync(testDTO);
@@ -185,6 +210,10 @@ namespace EPlast.Tests.Services.GoverningBody
             _blobStorage.Setup(c => c.DeleteBlobAsync(It.IsAny<string>()));
             _repoWrapper.Setup(r => r.GoverningBody.Delete(It.IsAny<Organization>()));
             _repoWrapper.Setup(r => r.SaveAsync());
+            _repoWrapper
+                .Setup(x => x.GoverningBodyAdministration.GetAllAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<GoverningBodyAdministration>, IIncludableQueryable<GoverningBodyAdministration, object>>>()))
+                .ReturnsAsync(null as IEnumerable<GoverningBodyAdministration>);
 
             // Act
             await _governingBodiesService.RemoveAsync(It.IsAny<int>());
@@ -196,6 +225,35 @@ namespace EPlast.Tests.Services.GoverningBody
         }
 
         [Test]
+        public async Task RemoveAsync_HasAdmins()
+        {
+            // Arrange
+            var testDTO = CreateGoverningBodyDTO;
+            _mapper
+                .Setup(x => x.Map<Organization>(It.IsAny<GoverningBodyDTO>())).Returns(new Organization() { ID = testDTO.Id, Logo = testDTO.Logo });
+            _repoWrapper
+                .Setup(x => x.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+                    It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>()))
+                .ReturnsAsync(_mapper.Object.Map<Organization>(testDTO));
+            _blobStorage.Setup(c => c.DeleteBlobAsync(It.IsAny<string>()));
+            _repoWrapper.Setup(r => r.GoverningBody.Delete(It.IsAny<Organization>()));
+            _repoWrapper.Setup(r => r.SaveAsync());
+            _repoWrapper
+                .Setup(x => x.GoverningBodyAdministration.GetAllAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<GoverningBodyAdministration>, IIncludableQueryable<GoverningBodyAdministration, object>>>()))
+                .ReturnsAsync(new List<GoverningBodyAdministration>() { new GoverningBodyAdministration() { Id = 1 } });
+
+            // Act
+            await _governingBodiesService.RemoveAsync(It.IsAny<int>());
+
+            // Assert
+            _blobStorage.Verify(c => c.DeleteBlobAsync(It.IsAny<string>()), Times.Once);
+            _repoWrapper.Verify(r => r.GoverningBody.Delete(It.IsAny<Organization>()), Times.Once);
+            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
+            _governingBodyAdministrationService.Verify(r => r.RemoveAdministratorAsync(It.IsAny<int>()),Times.Once);
+        }
+
+        [Test]
         public async Task RemoveAsync_WithoutLogo()
         {
             // Arrange
@@ -204,6 +262,10 @@ namespace EPlast.Tests.Services.GoverningBody
             _blobStorage.Setup(c => c.DeleteBlobAsync(It.IsAny<string>()));
             _repoWrapper.Setup(r => r.GoverningBody.Delete(It.IsAny<Organization>()));
             _repoWrapper.Setup(r => r.SaveAsync());
+            _repoWrapper
+              .Setup(x => x.GoverningBodyAdministration.GetAllAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+                  It.IsAny<Func<IQueryable<GoverningBodyAdministration>, IIncludableQueryable<GoverningBodyAdministration, object>>>()))
+              .ReturnsAsync(null as IEnumerable<GoverningBodyAdministration>);
 
             // Act
             await _governingBodiesService.RemoveAsync(It.IsAny<int>());

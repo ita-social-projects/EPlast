@@ -42,6 +42,7 @@ namespace EPlast.DataAccess
         public DbSet<EventAdministration> EventAdministration { get; set; }
         public DbSet<EventAdministrationType> EventAdministrationType { get; set; }
         public DbSet<UserTableObject> UserTableObjects { get; set; }
+        public DbSet<RegionObject> RegionObjects { get; set; }
         public DbSet<Section> Sections { get; set; }
         public DbSet<Subsection> Subsections { get; set; }
         public DbSet<AnnualReportTableObject> AnnualReportTableObjects { get; set; }
@@ -202,6 +203,12 @@ namespace EPlast.DataAccess
                 .WithOne(x => x.Distinction)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<Gender>(entity =>
+            {
+                entity.HasCheckConstraint("constraint_gender",
+                    "(Name = 'Чоловік' AND ID = 1) OR (Name = 'Жінка' AND ID = 2) OR (Name = 'Не маю бажання вказувати' AND ID = 7)");
+            });
+
             modelBuilder.Entity<AnnualReport>(annualReport =>
             {
                 annualReport.HasOne(a => a.Creator)
@@ -276,5 +283,6 @@ namespace EPlast.DataAccess
         public DbSet<ClubReportMember> ClubReportMember { get; set; }
         public DbSet<ClubReportAdmins> ClubReportAdmins { get; set; }
         public DbSet<ClubMemberHistory> ClubMemberHistory { get; set; }
+        public DbSet<ClubReportCities> ClubReportCities { get; set; }
     }
 }

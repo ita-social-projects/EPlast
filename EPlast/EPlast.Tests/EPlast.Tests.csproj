@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EPlast.BLL\EPlast.BLL.csproj" />
     <ProjectReference Include="..\EPlast.DataAccess\EPlast.DataAccess.csproj" />
     <ProjectReference Include="..\EPlast.WebApi\EPlast.WebApi.csproj" />
   </ItemGroup>

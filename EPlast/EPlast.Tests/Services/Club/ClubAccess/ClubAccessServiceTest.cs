@@ -340,6 +340,6 @@ namespace EPlast.Tests.Services.Club.ClubAccess
         private AdminType _adminType => new AdminType() { };
 
         private List<ClubForAdministrationDTO> _expected = new List<ClubForAdministrationDTO>
-            {new ClubForAdministrationDTO {ID = 1, Name = "TestClubName", HasReport = true}};
+            {new ClubForAdministrationDTO {ID = 1, Name = "TestClubName", HasReport = true, IsActive = true}};
     }
 }
