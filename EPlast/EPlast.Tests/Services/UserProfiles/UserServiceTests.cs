@@ -4,9 +4,11 @@ using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
@@ -16,10 +18,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using EPlast.Resources;
-using EPlast.BLL.Services.Interfaces;
-using EPlast.DataAccess.Repositories.Contracts;
-using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.Tests.Services.UserProfiles
 {
@@ -513,6 +511,29 @@ namespace EPlast.Tests.Services.UserProfiles
             Assert.IsNotNull(result);
             Assert.IsTrue(result);
         }
+
+        [Test]
+        public void UpdatePhotoAsync_Valid()
+        {
+            //Arrange
+            var user = new User
+            {
+                ImagePath = "Some path",
+                UserProfile = new UserProfile()
+            };
+            _mockRepoWrapper
+                .Setup(x => x.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(user);
+
+            //Act
+            _ = _userService.UpdatePhotoAsyncForBase64(_userDTO, _userDTO.ImagePath);
+
+            //Assert
+            _mockRepoWrapper.Verify(x => x.User.Update(It.IsAny<User>()),Times.Once);
+            _mockRepoWrapper.Verify(m => m.SaveAsync(),Times.Once);
+        }
+
         [Test]
         public async Task IsUserInCityAsync_ReturnsTrue()
         {
