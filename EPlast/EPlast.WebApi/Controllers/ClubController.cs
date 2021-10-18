@@ -138,8 +138,7 @@ namespace EPlast.WebApi.Controllers
             }
 
             var clubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(clubProfileDto);
-            clubProfile.CanEdit = User.IsInRole(Roles.Admin);
-            clubProfile.CanCreate = User.IsInRole(Roles.Admin);
+
             return Ok(clubProfile);
         }
 
@@ -183,9 +182,8 @@ namespace EPlast.WebApi.Controllers
             }
 
             var clubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(clubProfileDto);
-            clubProfile.CanEdit = await _clubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), clubId);
 
-            return Ok(new { clubProfile.Members, clubProfile.CanEdit, clubProfile.Name });
+            return Ok(new { clubProfile.Members, clubProfile.Name });
         }
 
         /// <summary>
@@ -206,9 +204,8 @@ namespace EPlast.WebApi.Controllers
             }
 
             var clubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(clubProfileDto);
-            clubProfile.CanEdit = await _clubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), clubId);
 
-            return Ok(new { clubProfile.Followers, clubProfile.CanEdit, clubProfile.Name });
+            return Ok(new { clubProfile.Followers, clubProfile.Name });
         }
 
         /// <summary>
@@ -229,9 +226,8 @@ namespace EPlast.WebApi.Controllers
             }
 
             var clubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(clubProfileDto);
-            clubProfile.CanEdit = await _clubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), clubId);
 
-            return Ok(new { clubProfile.Administration, clubProfile.Head, clubProfile.HeadDeputy, clubProfile.CanEdit, clubProfile.Name });
+            return Ok(new { clubProfile.Administration, clubProfile.Head, clubProfile.HeadDeputy, clubProfile.Name });
         }
 
         /// <summary>
@@ -252,9 +248,8 @@ namespace EPlast.WebApi.Controllers
             }
 
             var clubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(clubProfileDto);
-            clubProfile.CanEdit = await _clubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), clubId);
 
-            return Ok(new { clubProfile.Documents, clubProfile.CanEdit });
+            return Ok(new { clubProfile.Documents });
         }
 
         /// <summary>
