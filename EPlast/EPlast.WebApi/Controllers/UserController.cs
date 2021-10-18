@@ -233,7 +233,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPut("photo/{userid}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> EditProfilePhoto(string userid, [FromBody] string imageBase64)
+        public async Task<IActionResult> EditProfilePhotoAsync(string userid, [FromBody] string imageBase64)
         {
             try
             {

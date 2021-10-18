@@ -513,7 +513,7 @@ namespace EPlast.Tests.Services.UserProfiles
         }
 
         [Test]
-        public void UpdatePhotoAsync_Valid()
+        public async Task UpdatePhotoAsync_Valid()
         {
             //Arrange
             var user = new User
@@ -527,7 +527,7 @@ namespace EPlast.Tests.Services.UserProfiles
                 .ReturnsAsync(user);
 
             //Act
-            _ = _userService.UpdatePhotoAsyncForBase64(_userDTO, _userDTO.ImagePath);
+            await _userService.UpdatePhotoAsyncForBase64(_userDTO, _userDTO.ImagePath);
 
             //Assert
             _mockRepoWrapper.Verify(x => x.User.Update(It.IsAny<User>()),Times.Once);

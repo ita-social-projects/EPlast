@@ -649,7 +649,7 @@ namespace EPlast.Tests.Controllers
             var id = "1";
             _userManager.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(id);
             // Act
-            var result = await _userController.EditProfilePhoto(id,It.IsAny<string>());
+            var result = await _userController.EditProfilePhotoAsync(id,It.IsAny<string>());
 
             // Assert
             _userService.Verify();
@@ -666,8 +666,8 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status403Forbidden;
             _userManager.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(id);
             // Act
-            var result = await _userController.EditProfilePhoto(It.IsAny<string>(), It.IsAny<string>());
-            var actual = (result as StatusCodeResult).StatusCode;
+            var result = await _userController.EditProfilePhotoAsync(It.IsAny<string>(), It.IsAny<string>());
+            var actual = ((StatusCodeResult) result).StatusCode;
             // Assert
             _userService.Verify();
             _mapper.Verify();
@@ -684,7 +684,7 @@ namespace EPlast.Tests.Controllers
             _userService.Setup(u => u.UpdatePhotoAsyncForBase64(It.IsAny<UserDTO>(), It.IsAny<string>()))
                 .ThrowsAsync(new Exception());
             // Act
-            var result = await _userController.EditProfilePhoto(id, It.IsAny<string>());
+            var result = await _userController.EditProfilePhotoAsync(id, It.IsAny<string>());
             // Assert
             _userService.Verify();
             _mapper.Verify();
