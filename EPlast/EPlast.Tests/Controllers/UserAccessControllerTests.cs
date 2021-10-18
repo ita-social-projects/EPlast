@@ -18,7 +18,7 @@ namespace EPlast.Tests.Controllers
         private Mock<IUserAccessService> _userAccessService;
         private Mock<UserManager<User>> _userManager;
 
-        private UserAccessController _userAccessControler;
+        private UserAccessController _userAccessController;
 
         [SetUp]
         public void SetUp()
@@ -27,7 +27,7 @@ namespace EPlast.Tests.Controllers
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
 
-            _userAccessControler = new UserAccessController(_userAccessService.Object, _userManager.Object);
+            _userAccessController = new UserAccessController(_userAccessService.Object, _userManager.Object);
         }
 
         [Test]
@@ -41,7 +41,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(dict);
 
             //Act
-            var result = await _userAccessControler.GetUserClubAccess(It.IsAny<int>(), It.IsAny<string>());
+            var result = await _userAccessController.GetUserClubAccess(It.IsAny<int>(), It.IsAny<string>());
             var resultValue = (result as ObjectResult)?.Value;
 
             //Assert
