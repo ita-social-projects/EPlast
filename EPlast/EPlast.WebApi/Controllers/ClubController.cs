@@ -379,10 +379,6 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RemoveFollower(int followerId)
         {
-            User ItFollower = await _userManager.GetUserAsync(User);
-            await _clubParticipantsService.UpdateStatusFollowerInHistoryAsync(ItFollower.Id, true, true);
-
-
             await _clubParticipantsService.RemoveFollowerAsync(followerId);
             _logger.LogInformation($"Follower with ID {{{followerId}}} was removed.");
 
