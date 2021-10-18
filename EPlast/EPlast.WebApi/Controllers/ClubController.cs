@@ -128,7 +128,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">Club not found</response>
         [HttpGet("Profile/{ClubId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetProfile(int clubId)
         {
             var clubProfileDto = await _clubService.GetClubProfileAsync(clubId, await _userManager.GetUserAsync(User));
@@ -138,7 +138,8 @@ namespace EPlast.WebApi.Controllers
             }
 
             var clubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(clubProfileDto);
-
+            clubProfile.CanEdit = User.IsInRole(Roles.Admin);
+            clubProfile.CanCreate = User.IsInRole(Roles.Admin);
             return Ok(clubProfile);
         }
 
