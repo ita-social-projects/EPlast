@@ -67,7 +67,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">Events does not exist</response> 
         [HttpGet("types/{typeId:int}/categories/{page:int}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetCategoriesByPage(int typeId, int page, int pageSize)
+        public async Task<IActionResult> GetCategoriesByTypeAndPageAsync(int typeId, int page, int pageSize)
         {
             var categories = await _actionManager.GetCategoriesByTypeIdAsync(typeId);
             var categoriesViewModel = new EventsCategoryViewModel(page, pageSize, categories);

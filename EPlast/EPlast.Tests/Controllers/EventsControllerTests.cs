@@ -617,7 +617,7 @@ namespace EPlast.Tests.Controllers
 
         }
         [Test]
-        public async Task GetCategoriesByPage_ReturnOkObjectResult()
+        public async Task GetCategoriesByTypeAndPage_ReturnOkObjectResultTestAsync()
         {
             //Arrange
             var expectedCategories = 2;
@@ -625,7 +625,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(x => x.GetCategoriesByTypeIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(CreateListOfFakeEventCategories());
             //Act
-            var result = await _eventsController.GetCategoriesByPage(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>());
+            var result = await _eventsController.GetCategoriesByTypeAndPageAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>());
             var categories = (result as ObjectResult).Value as EventsCategoryViewModel;
             
             //Assert
