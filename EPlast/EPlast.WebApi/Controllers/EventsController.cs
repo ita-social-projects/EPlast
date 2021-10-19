@@ -59,6 +59,7 @@ namespace EPlast.WebApi.Controllers
         /// Get event categories of the appropriate event type.
         /// </summary>
         /// <returns>List of event categories of the appropriate event type.</returns>
+        /// <param name="typeId">The Id of event type</param>
         /// <param name="page">A number of the page</param>
         /// <param name="pageSize">A count of categories to display</param>
         /// <response code="200">List of event categories</response>
@@ -66,9 +67,9 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">Events does not exist</response> 
         [HttpGet("types/{typeId:int}/categories/{page:int}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetCategoriesByPage(int page, int pageSize)
+        public async Task<IActionResult> GetCategoriesByTypeAndPageAsync(int typeId, int page, int pageSize)
         {
-            var categories = await _actionManager.GetActionCategoriesAsync();
+            var categories = await _actionManager.GetCategoriesByTypeIdAsync(typeId);
             var categoriesViewModel = new EventsCategoryViewModel(page, pageSize, categories);
 
             return Ok(categoriesViewModel);
