@@ -7,7 +7,8 @@
     "GoToSecretaryProfile": true,
     "ManipulatePoster": true,
     "ManipulateDocument": true,
-    "ViewAnnouncements": true
+    "ViewAnnouncements": true, 
+    "ViewDocument": true
   },
   "Голова Керівного Органу": {
     "ViewInfo": true,
@@ -17,7 +18,8 @@
     "GoToSecretaryProfile": true,
     "ManipulatePoster": true,
     "ManipulateDocument": true,
-    "ViewAnnouncements": true
+    "ViewAnnouncements": true, 
+    "ViewDocument": true
   },
   "Голова Напряму Керівного Органу": {
     "ViewInfo": true,
@@ -27,7 +29,8 @@
     "GoToSecretaryProfile": true,
     "ManipulatePoster": true,
     "ManipulateDocument": true,
-    "ViewAnnouncements": true
+    "ViewAnnouncements": true, 
+    "ViewDocument": true
   },
   "Голова Округи": {
     "ViewInfo": true,
@@ -37,7 +40,8 @@
     "GoToSecretaryProfile": true,
     "ManipulatePoster": false,
     "ManipulateDocument": false,
-    "ViewAnnouncements": true
+    "ViewAnnouncements": true, 
+    "ViewDocument": true
   },
   "Голова Станиці": {
     "ViewInfo": true,
@@ -47,7 +51,8 @@
     "GoToSecretaryProfile": true,
     "ManipulatePoster": false,
     "ManipulateDocument": false,
-    "ViewAnnouncements": true
+    "ViewAnnouncements": true, 
+    "ViewDocument": true
   },
   "Голова Куреня": {
     "ViewInfo": true,
@@ -57,7 +62,8 @@
     "GoToSecretaryProfile": true,
     "ManipulatePoster": false,
     "ManipulateDocument": false,
-    "ViewAnnouncements": true
+    "ViewAnnouncements": true, 
+    "ViewDocument": true
   },
   "Прихильник": {
     "ViewInfo": true,
@@ -67,7 +73,8 @@
     "GoToSecretaryProfile": true,
     "ManipulatePoster": false,
     "ManipulateDocument": false,
-    "ViewAnnouncements": true
+    "ViewAnnouncements": true, 
+    "ViewDocument": true
   },
   "Дійсний член організації": {
     "ViewInfo": true,
@@ -78,7 +85,8 @@
     "DeleteGBMembers": false,
     "ManipulatePoster": false,
     "ManipulateDocument": false,
-    "ViewAnnouncements": true
+    "ViewAnnouncements": true, 
+    "ViewDocument": true
   },
   "Зареєстрований користувач": {
     "ViewInfo": true,
@@ -89,6 +97,7 @@
     "DeleteGBMembers": false,
     "ManipulatePoster": false,
     "ManipulateDocument": false,
-    "ViewAnnouncements": false
+    "ViewAnnouncements": false, 
+    "ViewDocument": false
   }
 }
