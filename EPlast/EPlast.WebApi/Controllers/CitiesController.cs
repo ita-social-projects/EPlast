@@ -132,9 +132,9 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetCityUsers(int cityId)
         {
-            var regionUsers = await _cityService.GetCityUsersAsync(cityId);
+            var cityUsers = await _cityService.GetCityUsersAsync(cityId);
 
-            return Ok(regionUsers);
+            return Ok(cityUsers);
         }
 
         /// <summary>

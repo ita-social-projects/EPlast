@@ -314,6 +314,15 @@ namespace EPlast.WebApi.Controllers
             return BadRequest(ModelState);
         }
 
+        [HttpGet("ClubUsers/{clubId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetCityUsers(int clubId)
+        {
+            var clubUsers = await _clubService.GetClubUsersAsync(clubId);
+
+            return Ok(clubUsers);
+        }
+
         /// <summary>
         /// Edit a specific Club
         /// </summary>

@@ -384,6 +384,18 @@ namespace EPlast.Tests.Services.City
             Assert.NotNull(result);
             Assert.IsInstanceOf<CityProfileDTO>(result);
         }
+        [Test]
+        public async Task GetCityUsersAsync_CityId_ReturnsCityUsers()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(u => u.CityMembers.GetAllAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(), null));
+            // Act
+            var result = await _cityService.GetCityUsersAsync(Id);
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<CityUserDTO[]>(result);
+        }
 
         [Test]
         public async Task GetCityProfileAsync_WhereCityIsNull_ReturnNull()
