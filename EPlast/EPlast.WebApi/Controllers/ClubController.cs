@@ -317,7 +317,7 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Get all users of a specific club
         /// </summary>
-        /// <param name="club">An information about an edited Club</param>
+        /// <param name="clubId">An information about an edited Club</param>
         /// <response code="200">Successful operation</response>
         [HttpGet("ClubUsers/{clubId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
