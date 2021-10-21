@@ -465,6 +465,21 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
+        public async Task GetClubUsersAsync_CityId_ReturnsCityUsers()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(u => u.ClubMembers.GetAllAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(), null));
+
+            // Act
+            var result = await _clubService.GetClubUsersAsync(Id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<ClubUserDTO[]>(result);
+        }
+
+        [Test]
         public async Task GetCityProfileAsync_WithUser_ReturnsCityProfile()
         {
             // Arrange
