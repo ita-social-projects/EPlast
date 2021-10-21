@@ -384,6 +384,7 @@ namespace EPlast.Tests.Services.City
             Assert.NotNull(result);
             Assert.IsInstanceOf<CityProfileDTO>(result);
         }
+
         [Test]
         public async Task GetCityUsersAsync_CityId_ReturnsCityUsers()
         {
