@@ -940,12 +940,17 @@ namespace EPlast.Tests.Controllers
                 .Setup(u => u.GetAllRegionsByPageAndIsArchiveAsync(page, pageSize, regionName, isArchive))
                 .ReturnsAsync(CreateTuple);
             var expected = StatusCodes.Status200OK;
+            var mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(m => m.User).Returns(new ClaimsPrincipal());
+
+            _regionController.ControllerContext.HttpContext = mockHttpContext.Object;
+
             // Act
             var result = await _regionController.GetActiveRegions(page, pageSize, regionName);
             var actual = (result as ObjectResult).StatusCode;
 
             // Assert
-            _regionService.Verify();
+            _regionService.Verify((u => u.GetAllRegionsByPageAndIsArchiveAsync(page, pageSize, regionName, isArchive)));
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
         }

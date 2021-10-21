@@ -176,12 +176,16 @@ namespace EPlast.Tests.Controllers
                 .Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
                 .Returns(new ClubViewModel());
             ClubController controller = CreateClubController;
+            var mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(m => m.User).Returns(new ClaimsPrincipal());
+
+            controller.ControllerContext.HttpContext = mockHttpContext.Object;
 
             // Act
             var result = await controller.GetProfile(id);
 
             // Assert
-            _mapper.Verify(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()));
+
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
