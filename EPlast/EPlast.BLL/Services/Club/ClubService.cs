@@ -126,7 +126,7 @@ namespace EPlast.BLL.Services.Club
             var clubMembers = await _repoWrapper.ClubMembers.GetAllAsync(d => d.ClubId == clubId,
                 include: source => source
                     .Include(t => t.User));
-            var users = club.Select(x => x.User);
+            var users = clubMembers.Select(x => x.User);
             return _mapper.Map<IEnumerable<DataAccessClub.User>, IEnumerable<ClubUserDTO>>(users);
         }
 
