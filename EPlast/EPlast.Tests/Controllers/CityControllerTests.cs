@@ -100,8 +100,10 @@ namespace EPlast.Tests.Controllers
             // Arrange
             _cityService.Setup(x => x.GetCityUsersAsync(It.IsAny<int>())).ReturnsAsync(new List<CityUserDTO>());
             int cityID = 1;
+
             // Act
             var result = await CreateCityController.GetCityUsers(cityID);
+
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<List<CityUserDTO>>((result as ObjectResult).Value);

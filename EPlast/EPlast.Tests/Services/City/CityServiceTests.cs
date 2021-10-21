@@ -390,8 +390,10 @@ namespace EPlast.Tests.Services.City
             // Arrange
             _repoWrapper
                 .Setup(u => u.CityMembers.GetAllAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(), null));
+            
             // Act
             var result = await _cityService.GetCityUsersAsync(Id);
+            
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<CityUserDTO[]>(result);

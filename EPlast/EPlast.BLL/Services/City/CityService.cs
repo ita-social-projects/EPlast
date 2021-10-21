@@ -159,6 +159,8 @@ namespace EPlast.BLL.Services
 
             return cityProfileDto;
         }
+
+        /// <inheritdoc />
         public async Task<IEnumerable<CityUserDTO>> GetCityUsersAsync(int cityId)
         {
             var city = await _repoWrapper.CityMembers.GetAllAsync(d => d.CityId == cityId,

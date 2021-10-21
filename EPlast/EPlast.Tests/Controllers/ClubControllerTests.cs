@@ -172,8 +172,10 @@ namespace EPlast.Tests.Controllers
             // Arrange
             _clubService.Setup(x => x.GetClubUsersAsync(It.IsAny<int>())).ReturnsAsync(new List<ClubUserDTO>());
             int cityID = 1;
+
             // Act
             var result = await CreateClubController.GetCityUsers(cityID);
+
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<List<ClubUserDTO>>((result as ObjectResult).Value);

@@ -212,7 +212,13 @@ namespace EPlast.BLL.Interfaces.Club
         /// </summary>
         /// <param name="clubId">The id of the club</param>
         Task UnArchiveAsync(int clubId);
+
+        /// <summary>
+        /// Get all users of a specific club
+        /// /// </summary>
+        /// <param name="clubId">The id of the club</param>
         Task<IEnumerable<ClubUserDTO>> GetClubUsersAsync(int clubId);
+
         Task DeleteClubMemberHistory(int id);
     }
 }
