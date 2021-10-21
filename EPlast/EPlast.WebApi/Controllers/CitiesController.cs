@@ -128,6 +128,14 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(cityProfile);
         }
+        [HttpGet("CityUsers/{cityId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetCityUsers(int cityId)
+        {
+            var regionUsers = await _cityService.GetCityUsersAsync(cityId);
+
+            return Ok(regionUsers);
+        }
 
         /// <summary>
         /// Get all members of a specific city
