@@ -178,6 +178,6 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="cityId">The id of the city</param>
         Task UnArchiveAsync(int cityId);
 
-        Task<IEnumerable<CityUserDTO>> GetCityUsersAsync(int regionId);
+        Task<IEnumerable<CityUserDTO>> GetCityUsersAsync(int cityId);
     }
 }

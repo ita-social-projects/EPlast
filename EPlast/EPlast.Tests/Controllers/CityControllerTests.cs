@@ -95,6 +95,19 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task GetCityUsers_CityId_ReturnsOk()
+        {
+            // Arrange
+            _cityService.Setup(x => x.GetCityUsersAsync(It.IsAny<int>())).ReturnsAsync(new List<CityUserDTO>());
+            int cityID = 1;
+            // Act
+            var result = await CreateCityController.GetCityUsers(cityID);
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsInstanceOf<List<CityUserDTO>>((result as ObjectResult).Value);
+        }
+
+        [Test]
         public async Task AddFollower_Valid_Test()
         {
             _cityParticipantsService.Setup(c => c.AddFollowerAsync(It.IsAny<int>(), It.IsAny<User>()))
