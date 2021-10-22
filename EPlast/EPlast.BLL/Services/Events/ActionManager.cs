@@ -71,7 +71,7 @@ namespace EPlast.BLL.Services.Events
         {
             var events = await _repoWrapper.Event
                 .GetAllAsync(
-                    e => e.EventCategoryID == categoryId && e.EventTypeID == eventTypeId,
+                    e => e.EventCategoryID == categoryId,
                     source => source
                         .Include(e => e.EventAdministrations)
                         .Include(e => e.Participants)
