@@ -977,10 +977,10 @@ namespace EPlast.Tests.Controllers
         {
             return new List<CityAdministrationGetDTO>()
             {
-                new CityAdministrationGetDTO(){ Id =2 },
-                new CityAdministrationGetDTO(){ Id =3 },
-                new CityAdministrationGetDTO(){ Id =4 },
-                new CityAdministrationGetDTO(){ Id =5 }
+                new CityAdministrationGetDTO(){ Id = 2 },
+                new CityAdministrationGetDTO(){ Id = 3 },
+                new CityAdministrationGetDTO(){ Id = 4 },
+                new CityAdministrationGetDTO(){ Id = 5 }
             };
         }
         
