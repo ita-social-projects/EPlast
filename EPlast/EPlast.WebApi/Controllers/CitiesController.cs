@@ -239,8 +239,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetDocuments(int cityId)
         {
-            var cityProfileDto = await _cityService.GetCityDocumentsAsync(cityId);
-            
+            var cityProfileDto = await _cityService.GetCityDocumentsAsync(cityId);      
             if (cityProfileDto == null)
             {
                 return NotFound();
