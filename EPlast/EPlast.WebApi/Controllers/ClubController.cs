@@ -498,7 +498,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="admin">An information about a new administrator</param>
         /// <returns>An information about a specific administrator</returns>
-        [HttpPut("EditAdmin/{adminId}")]
+        [HttpPut("EditAdmin/{clubId}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> EditAdmin(ClubAdministrationViewModel admin)
         {

@@ -110,6 +110,21 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task GetCityAdmins_Int_ReturnsOkObjResult()
+        {
+            // Arrange
+            int id = 2;
+            _cityService.Setup(x => x.GetAdministrationAsync(id)).ReturnsAsync(GetAdmins());
+
+            // Act
+            var result = await CreateCityController.GetAdministrations(id);
+
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsInstanceOf<List<CityAdministrationGetDTO>>((result as ObjectResult).Value);
+        }
+
+        [Test]
         public async Task AddFollower_Valid_Test()
         {
             _cityParticipantsService.Setup(c => c.AddFollowerAsync(It.IsAny<int>(), It.IsAny<User>()))
@@ -958,6 +973,16 @@ namespace EPlast.Tests.Controllers
             return 1;
         }
 
+        private IEnumerable<CityAdministrationGetDTO> GetAdmins()
+        {
+            return new List<CityAdministrationGetDTO>()
+            {
+                new CityAdministrationGetDTO(){ Id =2 },
+                new CityAdministrationGetDTO(){ Id =3 },
+                new CityAdministrationGetDTO(){ Id =4 },
+                new CityAdministrationGetDTO(){ Id =5 }
+            };
+        }
         private string GetStringFakeId()
         {
             return "1";
