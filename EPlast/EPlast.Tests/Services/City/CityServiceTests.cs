@@ -1276,6 +1276,7 @@ namespace EPlast.Tests.Services.City
 
             return city;
         }
+        
         private IEnumerable<CityAdministrationGetDTO> GetFakeAdminDTO()
         {
             return new List<CityAdministrationGetDTO>() {
