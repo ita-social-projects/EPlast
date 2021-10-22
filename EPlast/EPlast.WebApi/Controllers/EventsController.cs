@@ -101,10 +101,20 @@ namespace EPlast.WebApi.Controllers
         }
 
 
+        /// <summary>
+        /// Get events of the appropriate event type, event category and event status.
+        /// </summary>
+        /// <returns>List of events of the appropriate event type, event category and event status.</returns>
+        /// <param name="typeId">The Id of event type</param>
+        /// <param name="categoryId">The Id of event category</param>
+        /// <param name="status">The status of event</param>
+        /// <response code="200">List of events</response>
+        /// <response code="400">Server could not understand the request due to i
+        /// nvalid syntax</response> 
+        /// <response code="404">Events don't exist</response> 
 
         [HttpGet("~/api/types/{typeId:int}/categories/{categoryId:int}/events/{status}")]
-
-        public async Task<IActionResult> GetEventsByCategory(int typeId, int categoryId, int status)
+        public async Task<IActionResult> GetEventsByCategoryAndStatus(int typeId, int categoryId, int status)
         {
             return Ok(await _actionManager.GetEventsByStatusAsync(categoryId, typeId, status, await _userManager.GetUserAsync(User)));
         }
