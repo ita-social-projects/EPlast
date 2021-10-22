@@ -315,6 +315,20 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get all users of a specific club
+        /// </summary>
+        /// <param name="clubId">An information about an edited Club</param>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("ClubUsers/{clubId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetCityUsers(int clubId)
+        {
+            var clubUsers = await _clubService.GetClubUsersAsync(clubId);
+
+            return Ok(clubUsers);
+        }
+
+        /// <summary>
         /// Edit a specific Club
         /// </summary>
         /// <param name="club">An information about an edited Club</param>

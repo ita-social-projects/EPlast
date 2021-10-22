@@ -79,26 +79,17 @@ namespace EPlast.BLL.Services
         public async Task<CityDTO> GetByIdAsync(int cityId)
         {
             var city = await _repoWrapper.City.GetFirstOrDefaultAsync(
-                    predicate: c => c.ID == cityId,
-                    include: source => source
-                       .Include(l => l.CityDocuments)
-                           .ThenInclude(d => d.CityDocumentType)
-                       .Include(r => r.Region));
-            if (city != null)
-            {
-                var cityAdmins = await _repoWrapper.CityAdministration.GetAllAsync(
-                                 predicate: c => c.CityId == cityId && c.Status,
-                                 include: source => source
-                      .Include(t => t.AdminType)
-                      .Include(a => a.User));
-
-                var cityMembers = await _repoWrapper.CityMembers.GetAllAsync(
-                                  predicate: c => c.CityId == cityId,
-                                  include: source => source
-                        .Include(a => a.User));
-                city.CityAdministration = cityAdmins.ToList();
-                city.CityMembers = cityMembers.ToList();
-            }
+                predicate: c => c.ID == cityId,
+                include: source => source
+                    .Include(l => l.CityDocuments)
+                        .ThenInclude(d => d.CityDocumentType)
+                    .Include(r => r.Region)
+                    .Include(c => c.CityAdministration)
+                        .ThenInclude(t => t.AdminType)
+                    .Include(k => k.CityAdministration)
+                        .ThenInclude(a => a.User)
+                    .Include(m => m.CityMembers)
+                        .ThenInclude(u => u.User));
             return _mapper.Map<DataAccessCity.City, CityDTO>(city);
         }
 
@@ -167,6 +158,16 @@ namespace EPlast.BLL.Services
             };
 
             return cityProfileDto;
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<CityUserDTO>> GetCityUsersAsync(int cityId)
+        {
+            var cityMembers = await _repoWrapper.CityMembers.GetAllAsync(d => d.CityId == cityId,
+                include: source => source
+                    .Include(t => t.User));
+            var users = cityMembers.Select(x => x.User);
+            return _mapper.Map<IEnumerable<DataAccessCity.User>, IEnumerable<CityUserDTO>>(users);
         }
 
         /// <inheritdoc />

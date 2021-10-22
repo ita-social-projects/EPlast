@@ -130,6 +130,21 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get all users of a specific city
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        /// <returns>All users of a specific city</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("CityUsers/{cityId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetCityUsers(int cityId)
+        {
+            var cityUsers = await _cityService.GetCityUsersAsync(cityId);
+
+            return Ok(cityUsers);
+        }
+
+        /// <summary>
         /// Get all members of a specific city
         /// </summary>
         /// <param name="cityId">The id of the city</param>
