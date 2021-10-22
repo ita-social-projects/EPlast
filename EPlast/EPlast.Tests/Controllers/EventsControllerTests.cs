@@ -635,6 +635,26 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<EventsCategoryViewModel>(categories);
         }
 
+        [Test]
+        public async Task GetCategoriesByTypeAndPage_FirstType_ReturnOkObjectResultTestAsync()
+        {
+            //Arrange
+            var expectedCategories = 2;
+            int typeId = 1;
+            _actionManager
+                .Setup(x => x.GetActionCategoriesAsync())
+                .ReturnsAsync(CreateListOfFakeEventCategories());
+            //Act
+            var result = await _eventsController.GetCategoriesByTypeAndPageAsync(typeId, It.IsAny<int>(), It.IsAny<int>());
+            var categories = (result as ObjectResult).Value as EventsCategoryViewModel;
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(categories);
+            Assert.AreEqual(expectedCategories, categories.Total);
+            Assert.IsInstanceOf<EventsCategoryViewModel>(categories);
+        }
+
         private List<EventTypeDTO> CreateListOfFakeEventTypes()
             => new List<EventTypeDTO>()
             { 
