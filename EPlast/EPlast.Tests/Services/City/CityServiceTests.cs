@@ -569,9 +569,9 @@ namespace EPlast.Tests.Services.City
             var result = await _cityService.GetAdministrationAsync(It.IsAny<int>());
 
             // Assert
+            Assert.IsNotNull(result);
             Assert.IsInstanceOf<IEnumerable<CityAdministrationGetDTO>>(result);
             Assert.AreEqual(3, result.Count());
-            Assert.IsNotNull(result);
         }
 
         [Test]
