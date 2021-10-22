@@ -594,7 +594,7 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expectedCount, actual);
         }
         [Test]
-        public async Task GetEventsByCategory_ReturnOkObjectResult()
+        public async Task GetEventsByCategoryAndStatus_ReturnOkObjectResult()
         {
             // Arrange
             const int  expectedCount = 2;
@@ -603,7 +603,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(CreateListOfFakeGeneralEvents());
 
             // Act
-            var result = await _eventsController.GetEventsByCategory(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>());
+            var result = await _eventsController.GetEventsByCategoryAndStatus(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>());
             var okObject = result as ObjectResult;
             var category = okObject?.Value as IEnumerable<GeneralEventDTO>;
             var categoryList = category as List<GeneralEventDTO>;

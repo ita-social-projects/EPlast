@@ -71,9 +71,13 @@ namespace EPlast.WebApi.Controllers
         {
             IEnumerable<BLL.DTO.Events.EventCategoryDTO> categories;
             if (typeId == 1)
+            {
                 categories = await _actionManager.GetActionCategoriesAsync();
+            }
             else
+            {
                 categories = await _actionManager.GetCategoriesByTypeIdAsync(typeId);
+            }
             var categoriesViewModel = new EventsCategoryViewModel(page, pageSize, categories);
 
             return Ok(categoriesViewModel);
