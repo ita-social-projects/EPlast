@@ -110,7 +110,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetCityAdmins_Int_ReturnsOkObjResult()
+        public async Task GetCityAdmins_CityId_ReturnsOkObjResult()
         {
             // Arrange
             int id = 2;
