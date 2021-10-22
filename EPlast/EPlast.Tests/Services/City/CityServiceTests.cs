@@ -1280,9 +1280,9 @@ namespace EPlast.Tests.Services.City
         private IEnumerable<CityAdministrationGetDTO> GetFakeAdminDTO()
         {
             return new List<CityAdministrationGetDTO>() {
-                new CityAdministrationGetDTO(){Id=2, AdminTypeId=2, CityId=2 },
-                new CityAdministrationGetDTO(){Id=3, AdminTypeId=3, CityId=3 },
-                new CityAdministrationGetDTO(){Id=4, AdminTypeId=4, CityId=4 }
+                new CityAdministrationGetDTO(){ Id = 2, AdminTypeId = 2, CityId = 2 },
+                new CityAdministrationGetDTO(){ Id = 3, AdminTypeId = 3, CityId = 3 },
+                new CityAdministrationGetDTO(){ Id = 4, AdminTypeId = 4, CityId = 4 }
             };
         }
 
