@@ -253,6 +253,18 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
+        public async Task<IEnumerable<CityAdministrationGetDTO>> GetAdministrationAsync(int cityId)
+        {
+            var admins = await _repoWrapper.CityAdministration.GetAllAsync(d => d.CityId == cityId && d.Status,
+                include: source => source
+                    .Include(t => t.User)
+                    .Include(t => t.City)
+                    .Include(t => t.AdminType));
+            var admin = _mapper.Map<IEnumerable<DataAccessCity.CityAdministration>,IEnumerable<CityAdministrationGetDTO>>(admins);
+            return admin;
+        }
+
+        /// <inheritdoc />
         public async Task<CityProfileDTO> GetCityDocumentsAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
