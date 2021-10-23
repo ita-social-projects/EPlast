@@ -1,23 +1,21 @@
-﻿using System;
-using EPlast.BLL.DTO.Account;
+﻿using EPlast.BLL.DTO.Account;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
+using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Resources;
 using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Moq;
+using NLog.Extensions.Logging;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using EPlast.BLL.Interfaces.Logging;
-using Microsoft.Extensions.Configuration;
-using NLog;
-using NLog.Extensions.Logging;
 
 namespace EPlast.Tests.Controllers
 {
