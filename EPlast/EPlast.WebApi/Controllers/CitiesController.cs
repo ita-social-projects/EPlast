@@ -214,6 +214,21 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get all administrators of a specific city
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        /// <returns>All administrators of a specific city</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">City not found</response>
+        [HttpGet("GetAdministrations/{cityId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetAdministrations(int cityId)
+        {
+            var admins = await _cityService.GetAdministrationAsync(cityId);
+            return Ok(admins);
+        }
+
+        /// <summary>
         /// Get all documents of a specific city
         /// </summary>
         /// <param name="cityId">The id of the city</param>

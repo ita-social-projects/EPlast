@@ -183,5 +183,11 @@ namespace EPlast.BLL.Interfaces.City
         /// </summary>
         /// <param name="cityId">The id of the city</param>
         Task<IEnumerable<CityUserDTO>> GetCityUsersAsync(int cityId);
+
+        /// <summary>
+        /// Get all admins of a specific city
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        Task<IEnumerable<CityAdministrationGetDTO>> GetAdministrationAsync(int cityId);
     }
 }

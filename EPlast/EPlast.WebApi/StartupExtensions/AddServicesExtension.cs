@@ -39,7 +39,6 @@ namespace EPlast.WebApi.StartupExtensions
                 options.Configuration = Configuration.GetConnectionString("Redis");
                 options.InstanceName = "Redis_";
             });
-
             services.AddDependency();
 
             return services;
