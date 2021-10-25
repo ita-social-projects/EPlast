@@ -130,6 +130,21 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get all users of a specific city
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        /// <returns>All users of a specific city</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("CityUsers/{cityId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetCityUsers(int cityId)
+        {
+            var cityUsers = await _cityService.GetCityUsersAsync(cityId);
+
+            return Ok(cityUsers);
+        }
+
+        /// <summary>
         /// Get all members of a specific city
         /// </summary>
         /// <param name="cityId">The id of the city</param>
@@ -196,6 +211,21 @@ namespace EPlast.WebApi.Controllers
             cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), cityId);
 
             return Ok(new { cityProfile.Administration, cityProfile.Head, cityProfile.HeadDeputy, cityProfile.CanEdit, cityProfile.Name });
+        }
+
+        /// <summary>
+        /// Get all administrators of a specific city
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        /// <returns>All administrators of a specific city</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">City not found</response>
+        [HttpGet("GetAdministrations/{cityId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetAdministrations(int cityId)
+        {
+            var admins = await _cityService.GetAdministrationAsync(cityId);
+            return Ok(admins);
         }
 
         /// <summary>
