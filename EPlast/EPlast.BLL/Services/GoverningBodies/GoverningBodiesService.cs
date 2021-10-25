@@ -77,7 +77,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
         public async Task<IEnumerable<GoverningBodyDTO>> GetGoverningBodiesListAsync()
         {
-            return _mapper.Map<IEnumerable<GoverningBodyDTO>>((await _repoWrapper.GoverningBody.GetAllAsync(x => x.IsActive == true)));
+            return _mapper.Map<IEnumerable<GoverningBodyDTO>>((await _repoWrapper.GoverningBody.GetAllAsync(x => x.IsActive));
         }
 
         private async Task UploadPhotoAsync(GoverningBodyDTO governingBody)
