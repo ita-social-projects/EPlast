@@ -152,7 +152,7 @@ namespace EPlast.BLL.Services.GoverningBodies
         public async Task<GoverningBodyDTO> GetGoverningBodyByIdAsync(int id)
         {
             var governingBody = await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(
-                gb => gb.ID == id && gb.IsActive == true,
+                gb => gb.ID == id && gb.IsActive,
                 source => source
                     .Include(g => g.GoverningBodySectors)
                     .Include(g => g.GoverningBodyAdministration)
