@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Events;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Services.Events;
@@ -17,18 +18,23 @@ namespace EPlast.Tests.Services.Events
         private IEventCategoryManager _eventCategoryManager;
         private Mock<IRepositoryWrapper> _mockRepositoryWrapper;
         private Mock<IEventTypeManager> _mockEventTypeManager;
+        private Mock<IMapper> _mockMapper;
+
         [SetUp]
         public void SetUp()
         {
             _mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
             _mockEventTypeManager = new Mock<IEventTypeManager>();
+            _mockMapper = new Mock<IMapper>();
             _eventCategoryManager = new EventCategoryManager(
                 _mockRepositoryWrapper.Object,
-                _mockEventTypeManager.Object);
+                _mockEventTypeManager.Object,
+                _mockMapper.Object);
         }
         [Test]
         public void GetDTOByEventPageAsync_Valid()
         {
+
             //Arrange
             int testEventTypeId = 1;
             int testPage = 1;
@@ -43,7 +49,6 @@ namespace EPlast.Tests.Services.Events
             //Assert
             Assert.IsAssignableFrom<Task<IEnumerable<EventCategoryDTO>>>(result);
             Assert.IsNotNull(result);
-
         }
     }
 }

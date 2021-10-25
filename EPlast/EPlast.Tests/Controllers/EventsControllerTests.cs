@@ -23,6 +23,7 @@ namespace EPlast.Tests.Controllers
 
         private EventsController _eventsController;
         private Mock<UserManager<User>> _userManager;
+        private Mock<IEventCategoryManager> _mockEventCategoryManager;
 
         [SetUp]
         public void SetUp()
@@ -30,10 +31,11 @@ namespace EPlast.Tests.Controllers
             _actionManager = new Mock<IActionManager>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
-
+            _mockEventCategoryManager = new Mock<IEventCategoryManager>();
             _eventsController = new EventsController(
                 _actionManager.Object,
-                _userManager.Object);
+                _userManager.Object,
+                _mockEventCategoryManager.Object);
         }
 
         [Test]
@@ -676,12 +678,12 @@ namespace EPlast.Tests.Controllers
             {
                 new EventCategoryDTO()
                 { 
-                    EventCategoryId = 0,
+                    ID = 0,
                     EventCategoryName = "SomeEventCategoryName",
                 },
                 new EventCategoryDTO()
                 { 
-                    EventCategoryId = 1,
+                    ID = 1,
                     EventCategoryName = "AnotherEventCategoryName",
                 },
             };

@@ -4,6 +4,8 @@ using EPlast.DataAccess.Repositories;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using EPlast.DataAccess.Entities.Event;
 
 namespace EPlast.BLL.Services.Events
 {
@@ -11,11 +13,13 @@ namespace EPlast.BLL.Services.Events
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IEventTypeManager _eventTypeManager;
+        private readonly IMapper _mapper;
 
-        public EventCategoryManager(IRepositoryWrapper repoWrapper, IEventTypeManager eventTypeManager)
+        public EventCategoryManager(IRepositoryWrapper repoWrapper, IEventTypeManager eventTypeManager, IMapper mapper)
         {
             _repoWrapper = repoWrapper;
             _eventTypeManager = eventTypeManager;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<EventCategoryDTO>> GetDTOAsync()
@@ -24,7 +28,7 @@ namespace EPlast.BLL.Services.Events
             var dto = eventCategories
                 .Select(eventCategory => new EventCategoryDTO()
                 {
-                    EventCategoryId = eventCategory.ID,
+                    ID = eventCategory.ID,
                     EventCategoryName = eventCategory.EventCategoryName
                 });
 
@@ -38,7 +42,7 @@ namespace EPlast.BLL.Services.Events
             var dto = eventType.EventCategories
                 .Select(eventTypeCategory => new EventCategoryDTO()
                 {
-                    EventCategoryId = eventTypeCategory.EventCategoryId,
+                    ID = eventTypeCategory.EventCategoryId,
                     EventCategoryName = eventTypeCategory.EventCategory.EventCategoryName
                 });
 
@@ -52,11 +56,31 @@ namespace EPlast.BLL.Services.Events
             var dto = eventType.EventCategories
                 .Select(eventTypeCategory => new EventCategoryDTO()
                 {
-                    EventCategoryId = eventTypeCategory.EventCategoryId,
+                    ID = eventTypeCategory.EventCategoryId,
                     EventCategoryName = eventTypeCategory.EventCategory.EventCategoryName
                 });
 
             return dto;
+        }
+
+
+        public async Task<int> CreateEventCategoryAsync(EventCategoryCreateDTO model)
+        {
+            var eventCategoryToCreate = _mapper.Map<EventCategoryDTO, EventCategory>(model.EventCategory);
+            var section = await _repoWrapper.EventSection.GetFirstOrDefaultAsync(s => s.ID == eventCategoryToCreate.EventSectionId);
+
+            eventCategoryToCreate.EventSectionId = section.ID;
+
+            await _repoWrapper.EventCategory.CreateAsync(eventCategoryToCreate);
+            await _repoWrapper.EventCategoryType.CreateAsync(new EventCategoryType()
+            {
+                EventCategory = eventCategoryToCreate,
+                EventTypeId = model.EventTypeId
+            });
+
+            await _repoWrapper.SaveAsync();
+
+            return eventCategoryToCreate.ID;
         }
     }
 }

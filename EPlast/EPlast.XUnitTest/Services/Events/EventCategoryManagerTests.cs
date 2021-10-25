@@ -7,6 +7,7 @@ using Moq;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.Events
@@ -15,12 +16,14 @@ namespace EPlast.XUnitTest.Services.Events
     {
         private readonly Mock<IRepositoryWrapper> _repoWrapper;
         private readonly Mock<IEventTypeManager> _eventTypeManager;
+        private Mock<IMapper> _mockMapper;
 
 
         public EventCategoryManagerTests()
         {
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _eventTypeManager = new Mock<IEventTypeManager>();
+            _mockMapper = new Mock<IMapper>();
         }
 
         [Fact]
@@ -30,7 +33,7 @@ namespace EPlast.XUnitTest.Services.Events
             _repoWrapper.Setup(x => x.EventCategory.GetAllAsync(null, null))
                 .ReturnsAsync(GetEventCategories());
             //Act
-            var eventCategoryManager = new EventCategoryManager(_repoWrapper.Object, _eventTypeManager.Object);
+            var eventCategoryManager = new EventCategoryManager(_repoWrapper.Object, _eventTypeManager.Object, _mockMapper.Object);
             var methodResult = await eventCategoryManager.GetDTOAsync();
             //Assert
             Assert.NotNull(methodResult);
@@ -46,7 +49,7 @@ namespace EPlast.XUnitTest.Services.Events
                 .ReturnsAsync(GeEventType);
             var eventTypeId = 1;
             //Act
-            var eventCategoryManager = new EventCategoryManager(_repoWrapper.Object, _eventTypeManager.Object);
+            var eventCategoryManager = new EventCategoryManager(_repoWrapper.Object, _eventTypeManager.Object, _mockMapper.Object);
             var methodResult = await eventCategoryManager.GetDTOByEventTypeIdAsync(eventTypeId);
             //Assert
             Assert.NotNull(methodResult);

@@ -7,5 +7,6 @@ namespace EPlast.BLL.Interfaces.Events
         IEventTypeManager EventTypeManager { get; }
         IEventStatusManager EventStatusManager { get; }
         IEventGalleryManager EventGalleryManager { get; }
+        IEventSectionManager EventSectionManager { get; }
     }
 }

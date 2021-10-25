@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.Events;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
@@ -20,11 +21,13 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly IActionManager _actionManager;
         private readonly UserManager<User> _userManager;
+        private readonly IEventCategoryManager _eventCategoryManager;
 
-        public EventsController(IActionManager actionManager, UserManager<User> userManager)
+        public EventsController(IActionManager actionManager, UserManager<User> userManager, IEventCategoryManager eventCategoryManager)
         {
             _actionManager = actionManager;
             _userManager = userManager;
+            _eventCategoryManager = eventCategoryManager;
         }
 
         /// <summary>
@@ -56,6 +59,20 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get all event sections
+        /// </summary>
+        /// <returns>Array of data for creating event</returns>
+        /// <response code="200">Instance of EventCreateDTO</response>
+        /// <response code="400">When the EventCreateDTO is null or empty</response> 
+        [HttpGet("sections")]
+        public async Task<IActionResult> GetSections()
+        {
+            var eventSections = await _actionManager.GetEventSectionsAsync();
+
+            return Ok(eventSections);
+        }
+
+        /// <summary>
         /// Get event categories of the appropriate event type. If type is Акція - get all event categories.
         /// </summary>
         /// <returns>List of event categories of the appropriate event type.</returns>
@@ -81,6 +98,22 @@ namespace EPlast.WebApi.Controllers
             var categoriesViewModel = new EventsCategoryViewModel(page, pageSize, categories);
 
             return Ok(categoriesViewModel);
+        }
+
+        /// <summary>
+        /// Create a new category
+        /// </summary>
+        /// <returns>A newly created category</returns>
+        /// <param name="createDTO"></param>
+        /// <response code="201">Instance of EventCategoryCreateDTO</response>
+        /// <response code="400">When the EventCategoryCreateDTO is null or empty</response> 
+        [HttpPost("newCategory")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> EventCategoryCreate([FromBody] EventCategoryCreateDTO createDTO)
+        {
+            createDTO.EventCategory.ID = await _eventCategoryManager.CreateEventCategoryAsync(createDTO);
+
+            return Ok(createDTO);
         }
 
         /// <summary>

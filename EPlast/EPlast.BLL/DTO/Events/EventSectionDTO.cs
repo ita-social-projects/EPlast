@@ -3,10 +3,9 @@ using EPlast.DataAccess.Entities.Event;
 
 namespace EPlast.BLL.DTO.Events
 {
-    public class EventCategoryDTO
+    public class EventSectionDTO
     {
         public int ID { get; set; }
-        public string EventCategoryName { get; set; }
-        public int EventSectionId { get; set; }
+        public string EventSectionName { get; set; }
     }
 }

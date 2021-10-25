@@ -26,5 +26,7 @@ namespace EPlast.BLL.Interfaces.Events
         /// <param name="page">A number of the page</param>
         /// <param name="pageSize">A count of categories to display</param>
         Task<IEnumerable<EventCategoryDTO>> GetDTOByEventPageAsync(int eventTypeId, int page, int pageSize, string CategoryName = null);
+
+        Task<int> CreateEventCategoryAsync(EventCategoryCreateDTO model);
     }
 }

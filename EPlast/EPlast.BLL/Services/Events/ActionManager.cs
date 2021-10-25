@@ -50,6 +50,14 @@ namespace EPlast.BLL.Services.Events
             return dto;
         }
 
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<EventSectionDTO>> GetEventSectionsAsync()
+        {
+            var dto = await _eventWrapper.EventSectionManager.GetEventSectionsDTOAsync();
+            return dto;
+        }
+
         /// <inheritdoc />
         public async Task<IEnumerable<EventCategoryDTO>> GetCategoriesByTypeIdAsync(int eventTypeId)
         {
@@ -98,28 +106,35 @@ namespace EPlast.BLL.Services.Events
                         .Include(e => e.Participants)
                         .ThenInclude(p => p.User)
                         .Include(e => e.Participants)
-                            .ThenInclude(p => p.ParticipantStatus)
+                        .ThenInclude(p => p.ParticipantStatus)
                         .Include(e => e.EventStatus)
                         .Include(e => e.EventAdministrations)
-                            .ThenInclude(a => a.User)
+                        .ThenInclude(a => a.User)
                         .Include(e => e.EventAdministrations)
-                            .ThenInclude(a => a.EventAdministrationType)
+                        .ThenInclude(a => a.EventAdministrationType)
                         .Include(e => e.EventType)
                         .Include(e => e.EventCategory)
-                    );
+                );
 
             var dto = new EventDTO()
             {
                 Event = _mapper.Map<Event, EventInfoDTO>(targetEvent),
-                IsUserEventAdmin = (targetEvent.EventAdministrations.Any(evAdm => evAdm.UserID == _userManager.GetUserIdAsync(user).Result)) || isUserGlobalEventAdmin,
-                IsUserParticipant = targetEvent.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result),
-                IsUserApprovedParticipant = targetEvent.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == approvedStatus),
-                IsUserUndeterminedParticipant = targetEvent.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == undeterminedStatus),
-                IsUserRejectedParticipant = targetEvent.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == rejectedStatus),
+                IsUserEventAdmin =
+                    (targetEvent.EventAdministrations.Any(evAdm =>
+                        evAdm.UserID == _userManager.GetUserIdAsync(user).Result)) || isUserGlobalEventAdmin,
+                IsUserParticipant =
+                    targetEvent.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result),
+                IsUserApprovedParticipant = targetEvent.Participants.Any(p =>
+                    p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == approvedStatus),
+                IsUserUndeterminedParticipant = targetEvent.Participants.Any(p =>
+                    p.UserId == _userManager.GetUserIdAsync(user).Result &&
+                    p.ParticipantStatusId == undeterminedStatus),
+                IsUserRejectedParticipant = targetEvent.Participants.Any(p =>
+                    p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == rejectedStatus),
                 IsEventFinished = targetEvent.EventStatusID == finishedEvent
             };
 
-            if (!dto.IsUserEventAdmin && dto.ParticipantAssessment !=0)
+            if (!dto.IsUserEventAdmin && dto.ParticipantAssessment != 0)
             {
                 dto.Event.EventParticipants = dto.Event.EventParticipants.Where(p => p.StatusId == approvedStatus);
             }
@@ -129,7 +144,8 @@ namespace EPlast.BLL.Services.Events
                 && (DateTime.Now < targetEvent.EventDateEnd.Add(new TimeSpan(3, 0, 0, 0))))
             {
                 dto.CanEstimate = true;
-                dto.ParticipantAssessment = targetEvent.Participants.First(p => p.UserId == _userManager.GetUserIdAsync(user).Result).Estimate;
+                dto.ParticipantAssessment = targetEvent.Participants
+                    .First(p => p.UserId == _userManager.GetUserIdAsync(user).Result).Estimate;
             }
 
             return dto;
