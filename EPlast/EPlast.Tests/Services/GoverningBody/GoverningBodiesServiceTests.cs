@@ -220,7 +220,7 @@ namespace EPlast.Tests.Services.GoverningBody
 
             // Assert
             _blobStorage.Verify(c => c.DeleteBlobAsync(It.IsAny<string>()), Times.Once);
-            _repoWrapper.Verify(r => r.GoverningBody.Delete(It.IsAny<Organization>()), Times.Once);
+            _repoWrapper.Verify(r => r.GoverningBody.Update(It.IsAny<Organization>()), Times.Once);
             _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
         }
 
@@ -236,7 +236,7 @@ namespace EPlast.Tests.Services.GoverningBody
                     It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>()))
                 .ReturnsAsync(_mapper.Object.Map<Organization>(testDTO));
             _blobStorage.Setup(c => c.DeleteBlobAsync(It.IsAny<string>()));
-            _repoWrapper.Setup(r => r.GoverningBody.Delete(It.IsAny<Organization>()));
+            _repoWrapper.Setup(r => r.GoverningBody.Update(It.IsAny<Organization>()));
             _repoWrapper.Setup(r => r.SaveAsync());
             _repoWrapper
                 .Setup(x => x.GoverningBodyAdministration.GetAllAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
@@ -248,7 +248,7 @@ namespace EPlast.Tests.Services.GoverningBody
 
             // Assert
             _blobStorage.Verify(c => c.DeleteBlobAsync(It.IsAny<string>()), Times.Once);
-            _repoWrapper.Verify(r => r.GoverningBody.Delete(It.IsAny<Organization>()), Times.Once);
+            _repoWrapper.Verify(r => r.GoverningBody.Update(It.IsAny<Organization>()), Times.Once);
             _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
             _governingBodyAdministrationService.Verify(r => r.RemoveAdministratorAsync(It.IsAny<int>()),Times.Once);
         }
@@ -260,7 +260,7 @@ namespace EPlast.Tests.Services.GoverningBody
             _repoWrapper.Setup(r => r.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(), null))
                 .ReturnsAsync(CreateOrganizationWithoutLogo);
             _blobStorage.Setup(c => c.DeleteBlobAsync(It.IsAny<string>()));
-            _repoWrapper.Setup(r => r.GoverningBody.Delete(It.IsAny<Organization>()));
+            _repoWrapper.Setup(r => r.GoverningBody.Update(It.IsAny<Organization>()));
             _repoWrapper.Setup(r => r.SaveAsync());
             _repoWrapper
               .Setup(x => x.GoverningBodyAdministration.GetAllAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
@@ -272,7 +272,7 @@ namespace EPlast.Tests.Services.GoverningBody
 
             // Assert
             _blobStorage.Verify(c => c.DeleteBlobAsync(It.IsAny<string>()), Times.Never);
-            _repoWrapper.Verify(r => r.GoverningBody.Delete(It.IsAny<Organization>()), Times.Once);
+            _repoWrapper.Verify(r => r.GoverningBody.Update(It.IsAny<Organization>()), Times.Once);
             _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
         }
 
@@ -436,7 +436,8 @@ namespace EPlast.Tests.Services.GoverningBody
             GoverningBodyDocuments = new List<GoverningBodyDocumentsDTO>
             {
                 new GoverningBodyDocumentsDTO()
-            }
+            },
+            IsActive = true
         };
 
         private Organization CreateOrganizationWithoutLogo => new Organization()

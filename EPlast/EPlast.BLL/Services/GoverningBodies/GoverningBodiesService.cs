@@ -43,7 +43,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
         public async Task<int> CreateAsync(GoverningBodyDTO governingBodyDto)
         {
-            var existingGoverningBody = await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(x => x.OrganizationName == governingBodyDto.GoverningBodyName);
+            var existingGoverningBody = await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(x => x.OrganizationName == governingBodyDto.GoverningBodyName && x.IsActive == true);
             if(existingGoverningBody != null)
             {
                 throw new ArgumentException("The governing body with the same name already exists");
@@ -77,7 +77,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
         public async Task<IEnumerable<GoverningBodyDTO>> GetGoverningBodiesListAsync()
         {
-            return _mapper.Map<IEnumerable<GoverningBodyDTO>>((await _repoWrapper.GoverningBody.GetAllAsync()));
+            return _mapper.Map<IEnumerable<GoverningBodyDTO>>((await _repoWrapper.GoverningBody.GetAllAsync(x => x.IsActive == true)));
         }
 
         private async Task UploadPhotoAsync(GoverningBodyDTO governingBody)
@@ -119,7 +119,7 @@ namespace EPlast.BLL.Services.GoverningBodies
             {
                 return null;
             }
-
+            governingBody.GoverningBodySectors = governingBody.GoverningBodySectors?.Where(x => x.IsActive);
             var governingBodyHead = governingBody.GoverningBodyAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.GoverningBodyHead
                                      && (DateTime.Now < a.EndDate || a.EndDate == null));
@@ -152,7 +152,7 @@ namespace EPlast.BLL.Services.GoverningBodies
         public async Task<GoverningBodyDTO> GetGoverningBodyByIdAsync(int id)
         {
             var governingBody = await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(
-                gb => gb.ID == id,
+                gb => gb.ID == id && gb.IsActive == true,
                 source => source
                     .Include(g => g.GoverningBodySectors)
                     .Include(g => g.GoverningBodyAdministration)
@@ -167,7 +167,7 @@ namespace EPlast.BLL.Services.GoverningBodies
         public async Task<int> RemoveAsync(int governingBodyId)
         {
             var governingBody = await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(gb => gb.ID == governingBodyId);
-
+            governingBody.IsActive = false;
             if (governingBody.Logo != null)
             {
                 await _governingBodyBlobStorage.DeleteBlobAsync(governingBody.Logo);
@@ -180,7 +180,7 @@ namespace EPlast.BLL.Services.GoverningBodies
                 await _governingBodyAdministrationService.RemoveAdministratorAsync(admin.Id);
             }
 
-            _repoWrapper.GoverningBody.Delete(governingBody);
+            _repoWrapper.GoverningBody.Update(governingBody);
             await _repoWrapper.SaveAsync();
             return governingBodyId;
         }

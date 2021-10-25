@@ -16,5 +16,6 @@ namespace EPlast.BLL.DTO
         public IEnumerable<SectorDTO> GoverningBodySectors { get; set; }
         public IEnumerable<GoverningBodyDocumentsDTO> GoverningBodyDocuments { get; set; }
         public IEnumerable<GoverningBodyAdministrationDTO> GoverningBodyAdministration { get; set; }
+        public bool IsActive { get; set; }
     }
 }
