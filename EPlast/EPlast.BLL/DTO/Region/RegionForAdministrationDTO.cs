@@ -7,5 +7,6 @@ namespace EPlast.BLL.DTO.Region
         public int ID { get; set; }
         public string RegionName { get; set; }
         public IEnumerable<int> YearsHasReport { get; set; }
+        public bool IsActive { get; set; }
     }
 }

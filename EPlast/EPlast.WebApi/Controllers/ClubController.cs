@@ -129,7 +129,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">Club not found</response>
         [HttpGet("Profile/{ClubId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetProfile(int clubId)
         {
             var clubProfileDto = await _clubService.GetClubProfileAsync(clubId, await _userManager.GetUserAsync(User));
@@ -183,9 +183,8 @@ namespace EPlast.WebApi.Controllers
             }
 
             var clubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(clubProfileDto);
-            clubProfile.CanEdit = await _clubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), clubId);
 
-            return Ok(new { clubProfile.Members, clubProfile.CanEdit, clubProfile.Name });
+            return Ok(new { clubProfile.Members, clubProfile.Name });
         }
 
         /// <summary>
@@ -206,9 +205,8 @@ namespace EPlast.WebApi.Controllers
             }
 
             var clubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(clubProfileDto);
-            clubProfile.CanEdit = await _clubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), clubId);
 
-            return Ok(new { clubProfile.Followers, clubProfile.CanEdit, clubProfile.Name });
+            return Ok(new { clubProfile.Followers, clubProfile.Name });
         }
 
         /// <summary>
@@ -229,9 +227,8 @@ namespace EPlast.WebApi.Controllers
             }
 
             var clubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(clubProfileDto);
-            clubProfile.CanEdit = await _clubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), clubId);
 
-            return Ok(new { clubProfile.Administration, clubProfile.Head, clubProfile.HeadDeputy, clubProfile.CanEdit, clubProfile.Name });
+            return Ok(new { clubProfile.Administration, clubProfile.Head, clubProfile.HeadDeputy, clubProfile.Name });
         }
 
         /// <summary>
@@ -252,9 +249,8 @@ namespace EPlast.WebApi.Controllers
             }
 
             var clubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(clubProfileDto);
-            clubProfile.CanEdit = await _clubAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), clubId);
 
-            return Ok(new { clubProfile.Documents, clubProfile.CanEdit });
+            return Ok(new { clubProfile.Documents });
         }
 
         /// <summary>
@@ -317,6 +313,20 @@ namespace EPlast.WebApi.Controllers
                 }
             }
             return BadRequest(ModelState);
+        }
+
+        /// <summary>
+        /// Get all users of a specific club
+        /// </summary>
+        /// <param name="clubId">An information about an edited Club</param>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("ClubUsers/{clubId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetCityUsers(int clubId)
+        {
+            var clubUsers = await _clubService.GetClubUsersAsync(clubId);
+
+            return Ok(clubUsers);
         }
 
         /// <summary>
@@ -384,10 +394,6 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RemoveFollower(int followerId)
         {
-            User ItFollower = await _userManager.GetUserAsync(User);
-            await _clubParticipantsService.UpdateStatusFollowerInHistoryAsync(ItFollower.Id, true, true);
-
-
             await _clubParticipantsService.RemoveFollowerAsync(followerId);
             _logger.LogInformation($"Follower with ID {{{followerId}}} was removed.");
 
@@ -407,13 +413,11 @@ namespace EPlast.WebApi.Controllers
             var member = await _clubParticipantsService.ToggleApproveStatusAsync(memberId);
             if (!member.IsApproved)
             {
-                await _clubParticipantsService.UpdateStatusFollowerInHistoryAsync(member.UserId, false, true);
-
                 await _clubParticipantsService.AddFollowerInHistoryAsync(Convert.ToInt32(member.ClubId), member.User.ID);
             }
             else
             {
-                await _clubParticipantsService.UpdateStatusFollowerInHistoryAsync(member.UserId, false, false);
+                  await _clubParticipantsService.AddMemberInHistoryAsync(Convert.ToInt32(member.ClubId), member.User.ID);
             }
             _logger.LogInformation($"Status of member with ID {{{memberId}}} was changed.");
 
@@ -495,7 +499,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="admin">An information about a new administrator</param>
         /// <returns>An information about a specific administrator</returns>
-        [HttpPut("EditAdmin/{adminId}")]
+        [HttpPut("EditAdmin/{clubId}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> EditAdmin(ClubAdministrationViewModel admin)
         {

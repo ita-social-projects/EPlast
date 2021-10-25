@@ -54,11 +54,6 @@ namespace EPlast.BLL.Services.Region
 
         public async Task AddRegionAsync(RegionDTO region)
         {
-            if (await CheckCreated(region.RegionName))
-            {
-                throw new InvalidOperationException();
-            }
-
             await _repoWrapper.Region.CreateAsync(_mapper.Map<RegionDTO, DataAccessRegion.Region>(region));
 
             await _repoWrapper.SaveAsync();
@@ -87,6 +82,13 @@ namespace EPlast.BLL.Services.Region
                        .ThenInclude(t => t.AdminType));
             var filteredRegions = regions.Where(r => r.Status != RegionsStatusType.RegionBoard && r.IsActive);
             return _mapper.Map<IEnumerable<DataAccessRegion.Region>, IEnumerable<RegionDTO>>(filteredRegions);
+        }
+        public async Task<Tuple<IEnumerable<RegionObjectsDTO>, int>> GetAllRegionsByPageAndIsArchiveAsync(int page, int pageSize, string regionName, bool isArchive)
+        {
+            var tuple = await _repoWrapper.Region.GetRegionsObjects(page, pageSize, regionName, isArchive);
+            var regions = tuple.Item1;
+            var rows = tuple.Item2;
+            return new Tuple<IEnumerable<RegionObjectsDTO>, int>(_mapper.Map<IEnumerable<RegionObject>, IEnumerable<RegionObjectsDTO>>(regions), rows);
         }
 
         public async Task<IEnumerable<RegionDTO>> GetAllNotActiveRegionsAsync()

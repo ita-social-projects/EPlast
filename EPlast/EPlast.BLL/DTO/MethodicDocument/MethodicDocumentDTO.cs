@@ -13,7 +13,7 @@ namespace EPlast.BLL.DTO
         [Required]
         public GoverningBodyDTO GoverningBody { get; set; }
 
-        [Required]
+        [Required, MaxLength(200, ErrorMessage = "Короткий зміст(опис) не має перевищувати 200 символів")]
         public string Description { get; set; }
         [Required]
         public DateTime Date { get; set; }

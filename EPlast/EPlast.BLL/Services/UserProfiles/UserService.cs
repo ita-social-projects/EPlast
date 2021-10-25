@@ -4,8 +4,10 @@ using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +16,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.Resources;
 
 namespace EPlast.BLL.Services.UserProfiles
 {
@@ -22,6 +23,7 @@ namespace EPlast.BLL.Services.UserProfiles
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
+        private readonly IUserManagerService _userManagerService;
         private readonly IUserPersonalDataService _userPersonalDataService;
         private readonly IWebHostEnvironment _env;
         private readonly IUserBlobStorageRepository _userBlobStorage;
@@ -32,12 +34,14 @@ namespace EPlast.BLL.Services.UserProfiles
             IUserPersonalDataService userPersonalDataService,
             IUserBlobStorageRepository userBlobStorage,
             IWebHostEnvironment env,
+            IUserManagerService userManagerService,
             IUniqueIdService uniqueId)
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
             _userPersonalDataService = userPersonalDataService;
             _userBlobStorage = userBlobStorage;
+            _userManagerService = userManagerService;
             _env = env;
             _uniqueId = uniqueId;
         }
@@ -62,7 +66,7 @@ namespace EPlast.BLL.Services.UserProfiles
                         ThenInclude(g => g.Work).
                     Include(g => g.CityMembers).
                         ThenInclude(g => g.City).
-                        ThenInclude(g=>g.Region).
+                        ThenInclude(g => g.Region).
                     Include(g => g.ClubMembers).
                         ThenInclude(g => g.Club).
                     Include(g => g.UserProfile).
@@ -143,6 +147,15 @@ namespace EPlast.BLL.Services.UserProfiles
             user = SaveCorrectLinks(user);
             user.ImagePath ??= await UploadPhotoAsyncFromBase64(user.Id, base64);
             await UpdateAsync(user, placeOfStudyId, specialityId, placeOfWorkId, positionId);
+            await _repoWrapper.SaveAsync();
+        }
+
+        /// <inheritdoc />
+        public async Task UpdatePhotoAsyncForBase64(UserDTO user, string photoBase64)
+        {
+            user.ImagePath = await UploadPhotoAsyncFromBase64(user.Id, photoBase64);
+            var userForUpdate = _mapper.Map<UserDTO, User>(user);
+            _repoWrapper.User.Update(userForUpdate);
             await _repoWrapper.SaveAsync();
         }
 
@@ -326,6 +339,12 @@ namespace EPlast.BLL.Services.UserProfiles
                  .GetFirstOrDefaultAsync(u => u.UserId == userId, m => m.Include(u => u.User));
             return cityMember != null && cityMember.IsApproved;
         }
+        public async Task<bool> IsApprovedCLubMember(string userId)
+        {
+            var clubMember = await _repoWrapper.ClubMembers
+                .GetFirstOrDefaultAsync(u => u.UserId == userId, m => m.Include(u => u.User));
+            return clubMember != null && clubMember.IsApproved;
+        }
 
         public async Task<string> GetUserGenderAsync(string userId)
         {
@@ -357,5 +376,34 @@ namespace EPlast.BLL.Services.UserProfiles
                    || currentUser.CityMembers.FirstOrDefault()?.City.RegionId
                        .Equals(focusUser.CityMembers.FirstOrDefault()?.City.RegionId) == true;
         }
+
+        public async Task<bool> IsUserInClubAsync(UserDTO currentUser, UserDTO focusUser)
+        {
+            var isUserHeadOfClub = await _userManagerService.IsInRoleAsync(currentUser, Roles.KurinHead);
+            var isUserHeadDeputyOfClub = await _userManagerService.IsInRoleAsync(currentUser, Roles.KurinHeadDeputy);
+            var isFocusUserPlastun = await _userManagerService.IsInRoleAsync(focusUser, Roles.PlastMember)
+                                     || !(await IsApprovedCLubMember(focusUser.Id));
+            bool sameClub = IsUserSameClub(currentUser, focusUser);
+            return ((isUserHeadDeputyOfClub && sameClub) || (isUserHeadOfClub && sameClub) || (isFocusUserPlastun && sameClub));
+        }
+
+        public async Task<bool> IsUserInCityAsync(UserDTO currentUser, UserDTO focusUser)
+        {
+            var isUserHeadOfCity = await _userManagerService.IsInRoleAsync(currentUser, Roles.CityHead);
+            var isUserHeadDeputyOfCity = await _userManagerService.IsInRoleAsync(currentUser, Roles.CityHeadDeputy);
+            var isFocusUserPlastun = await _userManagerService.IsInRoleAsync(focusUser, Roles.PlastMember)
+                                     || !(await IsApprovedCityMember(focusUser.Id));
+            bool sameCity = IsUserSameCity(currentUser, focusUser);
+            return ((isUserHeadDeputyOfCity && sameCity) || (isUserHeadOfCity && sameCity) || (isFocusUserPlastun && sameCity));
+        }
+
+        public async Task<bool> IsUserInRegionAsync(UserDTO currentUser, UserDTO focusUser)
+        {
+            var isUserHeadOfRegion = await _userManagerService.IsInRoleAsync(currentUser, Roles.OkrugaHead);
+            var isUserHeadDeputyOfRegion = await _userManagerService.IsInRoleAsync(currentUser, Roles.OkrugaHeadDeputy);
+            bool sameRegion = IsUserSameRegion(currentUser, focusUser);
+            return ((isUserHeadDeputyOfRegion && sameRegion) || (isUserHeadOfRegion && sameRegion));
+        }
+
     }
 }

@@ -4,20 +4,20 @@ using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
+using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using EPlast.WebApi.Models.Approver;
 using EPlast.WebApi.Models.User;
 using EPlast.WebApi.Models.UserModels;
 using EPlast.WebApi.Models.UserModels.UserProfileFields;
-using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.DataAccess.Entities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Http;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -127,17 +127,9 @@ namespace EPlast.WebApi.Controllers
             var time = _userService.CheckOrAddPlastunRole(focusUser.Id, focusUser.RegistredOn);
             var isThisUser = currentUserId == focusUserId;
             var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
-            var isUserHeadOfCity = await _userManagerService.IsInRoleAsync(currentUser, Roles.CityHead);
-            var isUserHeadDeputyOfCity = await _userManagerService.IsInRoleAsync(currentUser, Roles.CityHeadDeputy);
-            var isUserHeadOfClub = await _userManagerService.IsInRoleAsync(currentUser, Roles.KurinHead);
-            var isUserHeadDeputyOfClub = await _userManagerService.IsInRoleAsync(currentUser, Roles.KurinHeadDeputy);
-            var isUserHeadOfRegion = await _userManagerService.IsInRoleAsync(currentUser, Roles.OkrugaHead);
-            var isUserHeadDeputyOfRegion = await _userManagerService.IsInRoleAsync(currentUser, Roles.OkrugaHeadDeputy);
-            var isCurrentUserPlastun = await _userManagerService.IsInRoleAsync(currentUser, Roles.PlastMember);
             var isFocusUserSupporter = await _userManagerService.IsInRoleAsync(focusUser, Roles.Supporter);
             var isFocusUserPlastun = await _userManagerService.IsInRoleAsync(focusUser, Roles.PlastMember)
-                || !(isFocusUserSupporter
-                && await _userService.IsApprovedCityMember(focusUserId));
+                || !(isFocusUserSupporter && (await _userService.IsApprovedCityMember(focusUserId) || await _userService.IsApprovedCLubMember(focusUserId)));
             if (await _userManagerService.IsInRoleAsync(currentUser, Roles.RegisteredUser) && !isThisUser)
             {
                 _loggerService.LogError($"User (id: {currentUserId}) hasn't access to profile (id: {focusUserId})");
@@ -147,13 +139,10 @@ namespace EPlast.WebApi.Controllers
             PersonalDataViewModel model;
             if (isThisUser ||
                      isUserAdmin ||
-                     (isUserHeadOfCity && _userService.IsUserSameCity(currentUser, focusUser)) ||
-                     (isUserHeadDeputyOfCity && _userService.IsUserSameCity(currentUser, focusUser)) ||
-                     (isUserHeadOfClub && _userService.IsUserSameClub(currentUser, focusUser)) ||
-                     (isUserHeadDeputyOfClub && _userService.IsUserSameClub(currentUser, focusUser)) ||
-                     (isUserHeadOfRegion && _userService.IsUserSameRegion(currentUser, focusUser)) ||
-                     (isUserHeadDeputyOfRegion && _userService.IsUserSameRegion(currentUser, focusUser)) ||
-                     (isCurrentUserPlastun && _userService.IsUserSameCity(currentUser, focusUser)))
+                     await _userService.IsUserInClubAsync(currentUser, focusUser) ||
+                     await _userService.IsUserInCityAsync(currentUser, focusUser) ||
+                     await _userService.IsUserInRegionAsync(currentUser, focusUser)
+            )
             {
                 model = new PersonalDataViewModel
                 {
@@ -171,7 +160,6 @@ namespace EPlast.WebApi.Controllers
                 TimeToJoinPlast = (int)time.TotalDays,
                 IsUserPlastun = isFocusUserPlastun,
             };
-
             return Ok(model);
         }
 
@@ -213,7 +201,7 @@ namespace EPlast.WebApi.Controllers
                 _loggerService.LogError($"User (id: {currentUserId}) hasn't access to edit profile (id: {userId})");
                 return StatusCode(StatusCodes.Status403Forbidden);
             }
-            
+
             if (user != null)
             {
                 var genders = _mapper.Map<IEnumerable<GenderDTO>, IEnumerable<GenderViewModel>>(await _userPersonalDataService.GetAllGendersAsync());
@@ -243,21 +231,72 @@ namespace EPlast.WebApi.Controllers
             return NotFound();
         }
 
+        [HttpPut("photo/{userid}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> EditProfilePhotoAsync(string userid, [FromBody] string imageBase64)
+        {
+            try
+            {
+                var currentUserId = _userManager.GetUserId(User);
+                var currentUser = await _userService.GetUserAsync(currentUserId);
+                var userToUpdate = await _userManagerService.FindByIdAsync(userid);
+                var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
+                var isUserGoverningBodyHead = await _userManagerService.IsInRoleAsync(currentUser, Roles.GoverningBodyHead);
+
+                if (currentUserId == userid || isUserAdmin || isUserGoverningBodyHead)
+                {
+                    await _userService.UpdatePhotoAsyncForBase64(userToUpdate, imageBase64);
+                    _loggerService.LogInformation($"Photo of user {userid} was successfully updated");
+                    return Ok("Photo successfully updated");
+                }
+
+                _loggerService.LogInformation($"User {currentUserId} cannot update profile photo of user {userid}");
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
+            catch (Exception ex)
+            {
+                _loggerService.LogError($"Cannot update user photo because: {ex.Message}");
+                return BadRequest();
+            }
+        }
+
         /// <summary>
         /// Edit a user
         /// </summary>
         /// <param name="model">Edit model</param>
         /// <response code="200">Successful operation</response>
+        /// <response code="400">Bad request</response>
+        /// <response code="403">Access denied</response>
         [HttpPut("editbase64")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> EditBase64([FromBody] EditUserViewModel model)
         {
-            await _userService.UpdateAsyncForBase64(_mapper.Map<UserViewModel, UserDTO>(model.User),
-                model.ImageBase64, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID,
-                model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
-            _loggerService.LogInformation($"User was edited profile and saved in the database");
+            try
+            {
+                var currentUserId = _userManager.GetUserId(User);
+                var currentUser = await _userService.GetUserAsync(currentUserId);
+                var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
+                var isUserGoverningBodyHead = await _userManagerService.IsInRoleAsync(currentUser, Roles.GoverningBodyHead);
 
-            return Ok();
+                if (currentUserId == model.User.ID || isUserAdmin || isUserGoverningBodyHead)
+                {
+                    await _userService.UpdateAsyncForBase64(_mapper.Map<UserViewModel, UserDTO>(model.User),
+                        model.ImageBase64, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID,
+                        model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
+                    _loggerService.LogInformation($"User profile {model.User.ID} was edited  and saved in the database");
+                    return Ok("Profile successfully edited");
+                }
+                else
+                {
+                    _loggerService.LogInformation($"User {currentUserId} cannot edit user profile of user {model.User.ID}");
+                    return StatusCode(StatusCodes.Status403Forbidden);
+                }
+            }
+            catch (Exception ex)
+            {
+                _loggerService.LogInformation($"Cannot update user because: {ex.Message}");
+                return BadRequest();
+            }
         }
 
         /// <summary>
@@ -299,20 +338,33 @@ namespace EPlast.WebApi.Controllers
             var time = _userService.CheckOrAddPlastunRole(user.Id, user.RegistredOn);
             var clubApprover = _userService.GetClubAdminConfirmedUser(user);
             var cityApprover = _userService.GetCityAdminConfirmedUser(user);
-
+            var userViewModel = _mapper.Map<UserDTO, UserInfoViewModel>(user);
+            var userApproverViewModel = _mapper.Map<UserDTO, UserInfoViewModel>(currentUser);
+            var isUserHeadOfClub =
+                await _userManagerService.IsInRoleAsync(
+                    _mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.KurinHead);
+            var isUserHeadDeputyOfClub =
+                await _userManagerService.IsInRoleAsync(
+                    _mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.KurinHeadDeputy);
+            var canApproveClubMember = ((clubApprover == null) && (userViewModel.ClubId == userApproverViewModel.ClubId
+                                                                   && canApprove && userId != currentUserId
+                                                                   && (isUserHeadOfClub ||
+                                                                       isUserHeadDeputyOfClub))) ||
+                                       await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
             var model = new UserApproversViewModel
             {
-                User = _mapper.Map<UserDTO, UserInfoViewModel>(user),
+                User = userViewModel,
+                CanApproveClubMember = canApproveClubMember,
                 CanApprove = canApprove,
                 CanApprovePlastMember = canApprovePlastMember,
                 TimeToJoinPlast = ((int)time.TotalDays),
                 ConfirmedUsers = _mapper.Map<IEnumerable<ConfirmedUserDTO>, IEnumerable<ConfirmedUserViewModel>>(confirmedUsers),
                 ClubApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(clubApprover),
                 CityApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(cityApprover),
-                IsUserHeadOfCity = await _userManagerService.IsInRoleAsync(_mapper.Map<User,UserDTO>(await _userManager.GetUserAsync(User)), Roles.CityHead),
+                IsUserHeadOfCity = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.CityHead),
                 IsUserHeadDeputyOfCity = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.CityHeadDeputy),
-                IsUserHeadOfClub = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.KurinHead),
-                IsUserHeadDeputyOfClub = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.KurinHeadDeputy),
+                IsUserHeadOfClub = isUserHeadOfClub,
+                IsUserHeadDeputyOfClub = isUserHeadDeputyOfClub,
                 IsUserHeadOfRegion = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.OkrugaHead),
                 IsUserHeadDeputyOfRegion = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.OkrugaHeadDeputy),
                 IsUserPlastun = await _userManagerService.IsInRoleAsync(user, Roles.PlastMember)
@@ -335,7 +387,7 @@ namespace EPlast.WebApi.Controllers
                 model.CityApprover.Approver.User.ImagePath = await _userService.GetImageBase64Async(model?.CityApprover?.Approver?.User.ImagePath);
             }
             return Ok(model);
-            
+
         }
         /// <summary>
         /// Approving user
@@ -344,6 +396,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="isClubAdmin">Confirm as an club Admin</param>
         /// <param name="isCityAdmin">Confirm as an city Admin</param>
         /// <response code="200">Successful operation</response>
+        /// <responce code="403">Access denied</responce>
         /// <response code="404">User not found</response>
         [HttpPost("approveUser/{userId}/{isClubAdmin}/{isCityAdmin}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]

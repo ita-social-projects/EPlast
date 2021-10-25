@@ -1,0 +1,92 @@
+{
+  "Admin": {
+    "IsAdmin": true,
+    "CreateClub": true,
+    "EditClub": true,
+    "DeleteClub": true,
+    "AddClubSecretary": true,
+    "AddClubHead": true,
+    "DownloadDocument": true
+  },
+  "Голова Округи": {
+    "IsAdmin": true,
+    "EditClub": false,
+    "CreateClub": false,
+    "DeleteClub": false,
+    "AddClubSecretary": false,
+    "AddClubHead": false,
+    "DownloadDocument": true
+  },
+  "Заступник Голови Округи": {
+    "IsAdmin": true,
+    "EditClub": false,
+    "CreateClub": false,
+    "DeleteClub": false,
+    "AddClubSecretary": false,
+    "AddClubHead": false,
+    "DownloadDocument": true
+  },
+  "Голова Станиці": {
+    "IsAdmin": true,
+    "EditClub": false,
+    "CreateClub": false,
+    "DeleteClub": false,
+    "AddClubSecretary": false,
+    "AddClubHead": false,
+    "DownloadDocument": true
+  },
+  "Заступник Голови Станиці": {
+    "IsAdmin": true,
+    "EditClub": false,
+    "CreateClub": false,
+    "DeleteClub": false,
+    "AddClubSecretary": false,
+    "AddClubHead": false,
+    "DownloadDocument": true
+  },
+  "Голова Куреня": {
+    "IsAdmin": true,
+    "EditClub": true,
+    "CreateClub": false,
+    "DeleteClub": false,
+    "AddClubSecretary": true,
+    "AddClubHead": true,
+    "DownloadDocument": true
+  },
+  "Заступник Голови Куреня": {
+    "IsAdmin": true,
+    "EditClub": true,
+    "CreateClub": false,
+    "DeleteClub": false,
+    "AddClubSecretary": true,
+    "AddClubHead": false,
+    "DownloadDocument": true
+  },
+  "Прихильник": {
+    "IsAdmin": false,
+    "EditClub": false,
+    "CreateClub": false,
+    "DeleteClub": false,
+    "AddClubSecretary": false,
+    "AddClubHead": false,
+    "DownloadDocument": true
+  },
+  "Дійсний член організації": {
+    "IsAdmin": false,
+    "EditClub": false,
+    "CreateClub": false,
+    "DeleteClub": false,
+    "AddClubSecretary": false,
+    "AddClubHead": false,
+    "DownloadDocument": true
+  },
+  "Зареєстрований користувач": {
+    "IsAdmin": false,
+    "EditClub": false,
+    "CreateClub": false,
+    "DeleteClub": false,
+    "AddClubSecretary": false,
+    "AddClubHead": false,
+    "DownloadDocument": false
+  }
+}

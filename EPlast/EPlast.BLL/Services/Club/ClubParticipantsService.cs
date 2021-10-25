@@ -51,7 +51,7 @@ namespace EPlast.BLL.Services.Club
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
             var headType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.KurinHead);
             var headDeputyType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.KurinHeadDeputy);
-            adminDTO.Status = DateTime.Now < adminDTO.EndDate || adminDTO.EndDate == null;
+            adminDTO.Status = DateTime.Today < adminDTO.EndDate || adminDTO.EndDate == null;
             var newAdmin = new ClubAdministration()
             {
                 StartDate = adminDTO.StartDate ?? DateTime.Now,
@@ -189,7 +189,7 @@ namespace EPlast.BLL.Services.Club
 
         public async Task<IEnumerable<ClubAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string userId)
         {
-            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == userId && a.EndDate < DateTime.Now,
+            var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == userId && !a.Status,
                  include:
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(c => c.Club)
                  );
@@ -315,7 +315,7 @@ namespace EPlast.BLL.Services.Club
         {
             var сlubMember = await _repositoryWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(u => u.ID == followerId);
-
+            await UpdateStatusFollowerInHistoryAsync(сlubMember.UserId, true, true);
             _repositoryWrapper.ClubMembers.Delete(сlubMember);
             await _repositoryWrapper.SaveAsync();
         }
@@ -333,7 +333,7 @@ namespace EPlast.BLL.Services.Club
 
             if (oldClubMember != null)
             {
-                await UpdateStatusFollowerInHistoryAsync(userId, true,true);
+                await UpdateStatusFollowerInHistoryAsync(userId, oldClubMember.IsFollower, true);
             }
 
             var clubHistoryUser = new ClubMemberHistory()
@@ -349,7 +349,30 @@ namespace EPlast.BLL.Services.Club
             await _repositoryWrapper.SaveAsync();
         }
 
-        public async Task UpdateStatusFollowerInHistoryAsync(string userId, bool isFollower,bool isDeleted)
+
+        public async Task AddMemberInHistoryAsync(int clubId, string userId)
+        {
+            var oldClubMember = await _repositoryWrapper.ClubMemberHistory
+               .GetFirstOrDefaultAsync(i => i.UserId == userId && !i.IsDeleted);
+
+            if (oldClubMember != null)
+            {
+                await UpdateStatusFollowerInHistoryAsync(userId, oldClubMember.IsFollower, true);
+            }
+
+            var clubHistoryUser = new ClubMemberHistory()
+            {
+                Date = DateTime.Now,
+                UserId = userId,
+                ClubId = clubId,
+                IsFollower = false,
+                IsDeleted = false
+            };
+
+            await _repositoryWrapper.ClubMemberHistory.CreateAsync(clubHistoryUser);
+            await _repositoryWrapper.SaveAsync();
+        }
+        public async Task UpdateStatusFollowerInHistoryAsync(string userId, bool isFollower, bool isDeleted)
         {
             var clubHistoryMembers = await _repositoryWrapper.ClubMemberHistory.GetFirstOrDefaultAsync(
                    predicate: c => c.UserId == userId && !c.IsDeleted);
@@ -358,7 +381,7 @@ namespace EPlast.BLL.Services.Club
             clubHistoryMembers.IsDeleted = isDeleted;
             clubHistoryMembers.Date = DateTime.Now;
 
-            _repositoryWrapper.ClubMemberHistory.Update(clubHistoryMembers);
+             _repositoryWrapper.ClubMemberHistory.Update(clubHistoryMembers);
             await _repositoryWrapper.SaveAsync();
         }
     }

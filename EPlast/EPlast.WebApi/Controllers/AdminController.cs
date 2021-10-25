@@ -6,17 +6,19 @@ using EPlast.Resources;
 using EPlast.WebApi.Models.Admin;
 using EPlast.WebApi.Models.Role;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 
 namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
+    [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead)]
     public class AdminController : ControllerBase
     {
         private readonly IAdminService _adminService;
@@ -79,6 +81,28 @@ namespace EPlast.WebApi.Controllers
             }
             _loggerService.LogError("User id is null");
             return NotFound();
+        }
+
+        [HttpGet("GetUsersByAllRoles/{roles}/{include}")]
+        public async Task<IActionResult> GetUsersByAllRoles([Required(AllowEmptyStrings = false)] string roles, [Required] bool include)
+        {
+            if (ModelState.IsValid)
+            { 
+                var users = await _adminService.GetUsersByRolesAsync(roles, include, (x, y) => x.SequenceEqual(y));
+                return Ok(users);
+            }
+            return BadRequest();
+        }
+
+        [HttpGet("GetUsersByAnyRole/{roles}/{include}")]
+        public async Task<IActionResult> GetUsersByAnyRole([Required(AllowEmptyStrings = false)] string roles, [Required] bool include)
+        {
+            if (ModelState.IsValid)
+            {
+                var users = await _adminService.GetUsersByRolesAsync(roles, include, (x, y) => x.Any());
+                return Ok(users);
+            }
+            return BadRequest();
         }
 
         /// <summary>

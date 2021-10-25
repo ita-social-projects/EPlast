@@ -3,10 +3,11 @@ using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using EPlast.WebApi.Controllers;
 using EPlast.WebApi.Models.Club;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
@@ -17,7 +18,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using EPlast.Resources;
 
 namespace EPlast.Tests.Controllers
 {
@@ -168,6 +168,21 @@ namespace EPlast.Tests.Controllers
                 .Where(n => n.Name.Equals("Курінь")));
         }
 
+        [Test]
+        public async Task GetClubUsers_CityId_ReturnsOk()
+        {
+            // Arrange
+            _clubService.Setup(x => x.GetClubUsersAsync(It.IsAny<int>())).ReturnsAsync(new List<ClubUserDTO>());
+            int cityID = 1;
+
+            // Act
+            var result = await CreateClubController.GetCityUsers(cityID);
+
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsInstanceOf<List<ClubUserDTO>>((result as ObjectResult).Value);
+        }
+
         [TestCase(2)]
         public async Task GetProfile_Valid_Test(int id)
         {
@@ -178,12 +193,16 @@ namespace EPlast.Tests.Controllers
                 .Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
                 .Returns(new ClubViewModel());
             ClubController controller = CreateClubController;
+            var mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(m => m.User).Returns(new ClaimsPrincipal());
+
+            controller.ControllerContext.HttpContext = mockHttpContext.Object;
 
             // Act
             var result = await controller.GetProfile(id);
 
             // Assert
-            _mapper.Verify(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()));
+
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
@@ -792,6 +811,28 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+        [Test]
+        public async Task EditAdmin_DateIsEarlierThanToday_ReturnsBadRequest()
+        {
+            // Arrange
+            ClubAdministrationViewModel admin = new ClubAdministrationViewModel();
+            admin.EndDate = DateTime.MinValue;
+            _mapper
+                .Setup(m => m.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(It.IsAny<ClubAdministrationViewModel>()))
+                .Returns(new ClubAdministrationDTO());
+            _clubParticipantsService
+                .Setup(c => c.EditAdministratorAsync(It.IsAny<ClubAdministrationDTO>()));
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+            ClubController controller = CreateClubController;
+
+            // Act
+            var result = await controller.EditAdmin(admin);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
