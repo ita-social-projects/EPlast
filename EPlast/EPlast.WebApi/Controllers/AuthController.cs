@@ -6,8 +6,8 @@ using EPlast.BLL.Interfaces.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NLog.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -71,7 +71,7 @@ namespace EPlast.WebApi.Controllers
                     return BadRequest();
                 }
                 _logger.LogInformation($"Executing method ConfirmEmailAsync in ConfirmingEmailAsync for user {userId}");
-                var result = await _authEmailServices.ConfirmEmailAsync(userDto.Id, HttpUtility.UrlDecode(token));
+                var result = await _authEmailServices.ConfirmEmailAsync(userDto.Id, token);
 
                 if (result.Succeeded)
                 {

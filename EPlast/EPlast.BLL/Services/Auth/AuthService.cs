@@ -17,7 +17,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace EPlast.BLL.Services
 {
@@ -51,7 +50,7 @@ namespace EPlast.BLL.Services
             var user = await _userManager.FindByEmailAsync(email);
             await _userManager.AddToRoleAsync(user, Roles.RegisteredUser);
             string code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            return HttpUtility.UrlEncode(code);
+            return code;
         }
 
         ///<inheritdoc/>
