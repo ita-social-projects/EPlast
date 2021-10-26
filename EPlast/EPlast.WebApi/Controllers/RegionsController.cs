@@ -511,9 +511,9 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Get all regions
+        /// Get all regions names
         /// </summary>
-        /// <returns>List of regions</returns>
+        /// <returns>List of regions names</returns>
         [HttpGet("RegionsNames")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public IActionResult GetRegionsNames()

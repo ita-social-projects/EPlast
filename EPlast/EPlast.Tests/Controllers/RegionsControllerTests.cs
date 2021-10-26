@@ -1074,10 +1074,10 @@ namespace EPlast.Tests.Controllers
         {
             return new List<RegionForAdministrationDTO>()
             {
-                new RegionForAdministrationDTO(){ ID =2, RegionName="Lviv"},
-                new RegionForAdministrationDTO(){ ID =3},
-                new RegionForAdministrationDTO(){ ID =4},
-                new RegionForAdministrationDTO(){ ID =5}
+                new RegionForAdministrationDTO(){ ID = 2, RegionName="Lviv"},
+                new RegionForAdministrationDTO(){ ID = 3 },
+                new RegionForAdministrationDTO(){ ID = 4 },
+                new RegionForAdministrationDTO(){ ID = 5 }
             };
         }
 
@@ -1085,10 +1085,10 @@ namespace EPlast.Tests.Controllers
         {
             return new List<RegionNamesDTO>()
             {
-                new RegionNamesDTO(){ ID =2, RegionName="Lviv"},
-                new RegionNamesDTO(){ ID =3},
-                new RegionNamesDTO(){ ID =4},
-                new RegionNamesDTO(){ ID =5}
+                new RegionNamesDTO(){ ID = 2, RegionName="Lviv"},
+                new RegionNamesDTO(){ ID = 3 },
+                new RegionNamesDTO(){ ID = 4 },
+                new RegionNamesDTO(){ ID = 5 }
             };
         }
 
@@ -1096,10 +1096,10 @@ namespace EPlast.Tests.Controllers
         {
             return new List<RegionAdministrationDTO>()
             {
-                new RegionAdministrationDTO(){ ID =2 },
-                new RegionAdministrationDTO(){ ID =3 },
-                new RegionAdministrationDTO(){ ID =4 },
-                new RegionAdministrationDTO(){ ID =5 }
+                new RegionAdministrationDTO(){ ID = 2 },
+                new RegionAdministrationDTO(){ ID = 3 },
+                new RegionAdministrationDTO(){ ID = 4 },
+                new RegionAdministrationDTO(){ ID = 5 }
             };
         }
 
@@ -1107,10 +1107,10 @@ namespace EPlast.Tests.Controllers
         {
             return new List<RegionDTO>()
             {
-                new RegionDTO(){ ID =2, RegionName="Lviv"},
-                new RegionDTO(){ ID =3},
-                new RegionDTO(){ ID =4},
-                new RegionDTO(){ ID =5}
+                new RegionDTO(){ ID = 2, RegionName="Lviv"},
+                new RegionDTO(){ ID = 3 },
+                new RegionDTO(){ ID = 4 },
+                new RegionDTO(){ ID = 5 }
             };
         }
         private Tuple<IEnumerable<RegionObjectsDTO>, int> CreateTuple => new Tuple<IEnumerable<RegionObjectsDTO>, int>(CreateRegionObjects, 100);

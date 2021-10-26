@@ -72,7 +72,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
         public async Task<int> CreateAsync(SectorDTO sectorDto)
         {
             var existingSector = await _repoWrapper.GoverningBodySector.GetFirstOrDefaultAsync(x => x.Name == sectorDto.Name
-                && x.GoverningBodyId == sectorDto.GoverningBodyId);
+                && x.GoverningBodyId == sectorDto.GoverningBodyId && x.IsActive);
             if (existingSector != null)
             {
                 throw new ArgumentException("The governing body sector with the same name already exists");
@@ -95,7 +95,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
         public async Task<IEnumerable<SectorDTO>> GetSectorsByGoverningBodyAsync(int governingBodyId)
         {
             var sectors = await _repoWrapper.GoverningBodySector.GetAllAsync(
-                s => s.GoverningBodyId == governingBodyId);
+                s => s.GoverningBodyId == governingBodyId && s.IsActive);
             return _mapper.Map<IEnumerable<GBSector>, IEnumerable <SectorDTO>>(sectors);
         }
 
@@ -144,7 +144,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
         public async Task<SectorDTO> GetSectorByIdAsync(int id)
         {
             var sector = await _repoWrapper.GoverningBodySector.GetFirstOrDefaultAsync(
-                s => s.Id == id,
+                s => s.Id == id && s.IsActive,
                 source => source
                     .Include(s => s.Administration)
                         .ThenInclude(a => a.AdminType)
@@ -194,11 +194,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
         public async Task<int> RemoveAsync(int sectorId)
         {
             var sector = await _repoWrapper.GoverningBodySector.GetFirstOrDefaultAsync(s => s.Id == sectorId);
-
-            if (!string.IsNullOrWhiteSpace(sector.Logo))
-            {
-                await _sectorBlobStorage.DeleteBlobAsync(sector.Logo);
-            }
+            sector.IsActive = false;
             var admins = (await _repoWrapper.GoverningBodySectorAdministration.GetAllAsync(x => x.SectorId == sectorId))
                 ?? new List<SectorAdministration>();
             
@@ -207,7 +203,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                 await _sectorAdministrationService.RemoveAdministratorAsync(admin.Id);
             }
 
-            _repoWrapper.GoverningBodySector.Delete(sector);
+            _repoWrapper.GoverningBodySector.Update(sector);
             await _repoWrapper.SaveAsync();
             return sectorId;
         }
