@@ -343,10 +343,14 @@ namespace EPlast.BLL.Services.City
             {
                 var userMembershipDates = await _repositoryWrapper.UserMembershipDates
                             .GetFirstOrDefaultAsync(umd => umd.UserId == userId);
-                userMembershipDates.DateEntry = isApproved ? DateTime.Now : default;
-                user.RegistredOn = DateTime.Now;
-                _repositoryWrapper.UserMembershipDates.Update(userMembershipDates);
-                await _repositoryWrapper.SaveAsync();
+                //Change entry date and register date only If the user enters the city for the first time
+                if (userMembershipDates.DateEntry == default)
+                {
+                    userMembershipDates.DateEntry = isApproved ? DateTime.Now : default;
+                    user.RegistredOn = DateTime.Now;
+                    _repositoryWrapper.UserMembershipDates.Update(userMembershipDates);
+                    await _repositoryWrapper.SaveAsync();
+                }
             }
         }
 

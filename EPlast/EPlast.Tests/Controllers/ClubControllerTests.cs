@@ -166,6 +166,21 @@ namespace EPlast.Tests.Controllers
                 .Where(n => n.Name.Equals("Курінь")));
         }
 
+        [Test]
+        public async Task GetClubUsers_CityId_ReturnsOk()
+        {
+            // Arrange
+            _clubService.Setup(x => x.GetClubUsersAsync(It.IsAny<int>())).ReturnsAsync(new List<ClubUserDTO>());
+            int cityID = 1;
+
+            // Act
+            var result = await CreateClubController.GetCityUsers(cityID);
+
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsInstanceOf<List<ClubUserDTO>>((result as ObjectResult).Value);
+        }
+
         [TestCase(2)]
         public async Task GetProfile_Valid_Test(int id)
         {
