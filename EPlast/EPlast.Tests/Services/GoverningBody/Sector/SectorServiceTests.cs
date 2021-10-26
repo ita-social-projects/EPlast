@@ -447,7 +447,6 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
                     new SectorDocumentsDTO()
                 },
                 IsActive = true
-                
             };
         }
     }
