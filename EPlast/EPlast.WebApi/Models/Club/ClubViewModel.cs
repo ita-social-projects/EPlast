@@ -14,8 +14,6 @@ namespace EPlast.WebApi.Models.Club
         public string Logo { get; set; }
         public bool isActive { get; set; }
         public string Region { get; set; }
-        public bool CanCreate { get; set; }
-        public bool CanEdit { get; set; }
         public bool CanJoin { get; set; }
         public int MemberCount { get; set; }
         public int FollowerCount { get; set; }

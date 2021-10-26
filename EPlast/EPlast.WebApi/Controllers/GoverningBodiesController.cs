@@ -241,7 +241,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="fileName">The name of a Governing Body document</param>
         /// <returns>A base64 string of the file</returns>
         [HttpGet("FileBase64/{fileName}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetFileBase64(string fileName)
         {
             var fileBase64 = await _governingBodyDocumentsService.DownloadGoverningBodyDocumentAsync(fileName);

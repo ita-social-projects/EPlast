@@ -43,7 +43,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
         public async Task<int> CreateAsync(GoverningBodyDTO governingBodyDto)
         {
-            var existingGoverningBody = await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(x => x.OrganizationName == governingBodyDto.GoverningBodyName && x.IsActive == true);
+            var existingGoverningBody = await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(x => x.OrganizationName == governingBodyDto.GoverningBodyName && x.IsActive);
             if(existingGoverningBody != null)
             {
                 throw new ArgumentException("The governing body with the same name already exists");
@@ -77,7 +77,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
         public async Task<IEnumerable<GoverningBodyDTO>> GetGoverningBodiesListAsync()
         {
-            return _mapper.Map<IEnumerable<GoverningBodyDTO>>((await _repoWrapper.GoverningBody.GetAllAsync(x => x.IsActive == true)));
+            return _mapper.Map<IEnumerable<GoverningBodyDTO>>((await _repoWrapper.GoverningBody.GetAllAsync(x => x.IsActive)));
         }
 
         private async Task UploadPhotoAsync(GoverningBodyDTO governingBody)
@@ -152,7 +152,7 @@ namespace EPlast.BLL.Services.GoverningBodies
         public async Task<GoverningBodyDTO> GetGoverningBodyByIdAsync(int id)
         {
             var governingBody = await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(
-                gb => gb.ID == id && gb.IsActive == true,
+                gb => gb.ID == id && gb.IsActive,
                 source => source
                     .Include(g => g.GoverningBodySectors)
                     .Include(g => g.GoverningBodyAdministration)

@@ -120,7 +120,7 @@ namespace EPlast.BLL.Interfaces
         /// </summary>
         /// <param name="userDto"></param>
         /// <returns>Time after registration</returns>
-        int GetTimeAfterRegistr(UserDTO userDto);
+        int GetTimeAfterRegister(UserDTO userDto);
 
         /// <summary>
         /// Returns time after reseting password

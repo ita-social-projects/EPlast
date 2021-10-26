@@ -238,7 +238,7 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public int GetTimeAfterRegistr(UserDTO userDto)
+        public int GetTimeAfterRegister(UserDTO userDto)
         {
             IDateTimeHelper dateTimeConfirming = new DateTimeHelper();
             var user = _mapper.Map<UserDTO, User>(userDto);
