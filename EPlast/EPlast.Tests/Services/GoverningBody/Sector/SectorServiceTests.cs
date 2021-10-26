@@ -179,7 +179,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
                 .Setup(x => x.GoverningBodySector.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<GBSector, bool>>>(),
                     It.IsAny<Func<IQueryable<GBSector>, IIncludableQueryable<GBSector, object>>>()))
-                .ReturnsAsync(new GBSector());
+                .ReturnsAsync(new GBSector() { IsActive = true });
 
             SectorDTO mappedSector = null;
             _mapper
@@ -201,7 +201,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
                 .Setup(x => x.GoverningBodySector.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<GBSector, bool>>>(),
                     It.IsAny<Func<IQueryable<GBSector>, IIncludableQueryable<GBSector, object>>>()))
-                .ReturnsAsync(new GBSector());
+                .ReturnsAsync(new GBSector() { IsActive = true });
 
             SectorDTO mappedSector = CreateSectorDTO();
             _mapper
@@ -227,7 +227,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
                 .Setup(x => x.GoverningBodySector.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<GBSector, bool>>>(),
                     It.IsAny<Func<IQueryable<GBSector>, IIncludableQueryable<GBSector, object>>>()))
-                .ReturnsAsync(new GBSector());
+                .ReturnsAsync(new GBSector() { IsActive = true });
 
             SectorDTO mappedSector = null;
             _mapper
@@ -249,7 +249,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
                 .Setup(x => x.GoverningBodySector.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<GBSector, bool>>>(),
                     It.IsAny<Func<IQueryable<GBSector>, IIncludableQueryable<GBSector, object>>>()))
-                .ReturnsAsync(new GBSector());
+                .ReturnsAsync(new GBSector() { IsActive = true });
 
             SectorDTO mappedSector = CreateSectorDTO();
             _mapper
@@ -326,7 +326,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
 
             //Assert
             Assert.AreEqual(id, result);
-            _repoWrapper.Verify(x => x.GoverningBodySector.Delete(It.IsAny<GBSector>()));
+            _repoWrapper.Verify(x => x.GoverningBodySector.Update(It.IsAny<GBSector>()));
             _repoWrapper.Verify(x => x.SaveAsync());
         }
 
@@ -350,7 +350,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
 
             //Assert
             Assert.AreEqual(id, result);
-            _repoWrapper.Verify(x => x.GoverningBodySector.Delete(It.IsAny<GBSector>()));
+            _repoWrapper.Verify(x => x.GoverningBodySector.Update(It.IsAny<GBSector>()));
             _repoWrapper.Verify(x => x.SaveAsync());
             _sectorAdministrationService.Verify(x => x.RemoveAdministratorAsync(It.IsAny<int>()), Times.Once);
         }
@@ -374,8 +374,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
 
             //Assert
             Assert.AreEqual(id, result);
-            _blobStorage.Verify(x => x.DeleteBlobAsync(It.IsAny<string>()));
-            _repoWrapper.Verify(x => x.GoverningBodySector.Delete(It.IsAny<GBSector>()));
+            _repoWrapper.Verify(x => x.GoverningBodySector.Update(It.IsAny<GBSector>()));
             _repoWrapper.Verify(x => x.SaveAsync());
         }
 
@@ -437,15 +436,16 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
                 Administration = new List<SectorAdministrationDTO>()
                 {
                     new SectorAdministrationDTO()
-                        { AdminType = new AdminTypeDTO() { AdminTypeName = Roles.GoverningBodySectorHead } },
+                    { AdminType = new AdminTypeDTO() { AdminTypeName = Roles.GoverningBodySectorHead } },
                     new SectorAdministrationDTO()
-                        { AdminType = new AdminTypeDTO() { AdminTypeName = Roles.GoverningBodySectorSecretary } }
+                    { AdminType = new AdminTypeDTO() { AdminTypeName = Roles.GoverningBodySectorSecretary } }
                 },
                 AdministrationCount = 2,
                 Documents = new List<SectorDocumentsDTO>()
                 {
                     new SectorDocumentsDTO()
-                }
+                },
+                IsActive = true
             };
         }
     }

@@ -1,6 +1,8 @@
 using AutoMapper;
 using EPlast.BLL;
 using EPlast.BLL.DTO;
+using EPlast.BLL.Interfaces.GoverningBodies;
+using EPlast.DataAccess.Entities.Decision;
 using EPlast.WebApi.Controllers;
 using EPlast.WebApi.Models.Decision;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +12,6 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.DataAccess.Entities.Decision;
 
 namespace EPlast.Tests.Controllers
 {
@@ -20,6 +21,7 @@ namespace EPlast.Tests.Controllers
         private Mock<IDecisionService> _decisionService;
         private Mock<IPdfService> _pdfService = new Mock<IPdfService>();
         private Mock<IMapper> _mapper;
+        private Mock<IGoverningBodiesService> _goverrningBodiesService;
 
         private DecisionsController _decisionsController;
 
@@ -29,19 +31,21 @@ namespace EPlast.Tests.Controllers
             _decisionService = new Mock<IDecisionService>();
             _pdfService = new Mock<IPdfService>();
             _mapper = new Mock<IMapper>();
+            _goverrningBodiesService = new Mock<IGoverningBodiesService>();
 
             _decisionsController = new DecisionsController(
                 _pdfService.Object,
                 _decisionService.Object,
-                _mapper.Object);
+                _mapper.Object,
+                _goverrningBodiesService.Object);
         }
 
         [Test]
         public async Task GetMetaData_DecisionById_ReturnsOkObjectResult()
         {
             //Arrange
-            _decisionService
-                .Setup(x => x.GetGoverningBodyListAsync())
+            _goverrningBodiesService
+                .Setup(x => x.GetGoverningBodiesListAsync())
                 .ReturnsAsync(new List<GoverningBodyDTO>().AsEnumerable());
             _decisionService
                 .Setup(x => x.GetDecisionTargetListAsync())
