@@ -219,7 +219,6 @@ namespace EPlast.Tests.Services.GoverningBody
             await _governingBodiesService.RemoveAsync(It.IsAny<int>());
 
             // Assert
-            _blobStorage.Verify(c => c.DeleteBlobAsync(It.IsAny<string>()), Times.Once);
             _repoWrapper.Verify(r => r.GoverningBody.Update(It.IsAny<Organization>()), Times.Once);
             _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
         }
@@ -247,7 +246,6 @@ namespace EPlast.Tests.Services.GoverningBody
             await _governingBodiesService.RemoveAsync(It.IsAny<int>());
 
             // Assert
-            _blobStorage.Verify(c => c.DeleteBlobAsync(It.IsAny<string>()), Times.Once);
             _repoWrapper.Verify(r => r.GoverningBody.Update(It.IsAny<Organization>()), Times.Once);
             _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
             _governingBodyAdministrationService.Verify(r => r.RemoveAdministratorAsync(It.IsAny<int>()),Times.Once);

@@ -374,7 +374,6 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
 
             //Assert
             Assert.AreEqual(id, result);
-            _blobStorage.Verify(x => x.DeleteBlobAsync(It.IsAny<string>()));
             _repoWrapper.Verify(x => x.GoverningBodySector.Update(It.IsAny<GBSector>()));
             _repoWrapper.Verify(x => x.SaveAsync());
         }

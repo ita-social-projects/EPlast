@@ -195,10 +195,6 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
         {
             var sector = await _repoWrapper.GoverningBodySector.GetFirstOrDefaultAsync(s => s.Id == sectorId);
             sector.IsActive = false;
-            if (!string.IsNullOrWhiteSpace(sector.Logo))
-            {
-                await _sectorBlobStorage.DeleteBlobAsync(sector.Logo);
-            }
             var admins = (await _repoWrapper.GoverningBodySectorAdministration.GetAllAsync(x => x.SectorId == sectorId))
                 ?? new List<SectorAdministration>();
             

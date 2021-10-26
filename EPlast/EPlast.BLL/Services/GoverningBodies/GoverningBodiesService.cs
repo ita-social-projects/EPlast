@@ -168,10 +168,6 @@ namespace EPlast.BLL.Services.GoverningBodies
         {
             var governingBody = await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(gb => gb.ID == governingBodyId);
             governingBody.IsActive = false;
-            if (governingBody.Logo != null)
-            {
-                await _governingBodyBlobStorage.DeleteBlobAsync(governingBody.Logo);
-            }
 
             var admins = (await _repoWrapper.GoverningBodyAdministration.GetAllAsync(x => x.GoverningBodyId == governingBodyId))
                 ?? new List<GoverningBodyAdministration>();
