@@ -57,7 +57,8 @@ namespace EPlast.BLL.Services.Events
                 .Select(eventTypeCategory => new EventCategoryDTO()
                 {
                     ID = eventTypeCategory.EventCategoryId,
-                    EventCategoryName = eventTypeCategory.EventCategory.EventCategoryName
+                    EventCategoryName = eventTypeCategory.EventCategory.EventCategoryName,
+                    EventSectionId = eventTypeCategory.EventCategory.EventSectionId
                 });
 
             return dto;
