@@ -14,5 +14,6 @@ namespace EPlast.BLL.DTO.GoverningBody.Sector
         public int AdministrationCount { get; set; }
         public IEnumerable<SectorDocumentsDTO> Documents { get; set; }
         public IEnumerable<SectorAdministrationDTO> Administration { get; set; }
+        public bool IsActive { get; set; }
     }
 }
