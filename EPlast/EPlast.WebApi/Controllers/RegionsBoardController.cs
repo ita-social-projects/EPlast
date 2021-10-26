@@ -1,9 +1,9 @@
 ﻿using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Interfaces.RegionBoard;
-using System.Threading.Tasks;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using EPlast.Resources;
+using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
