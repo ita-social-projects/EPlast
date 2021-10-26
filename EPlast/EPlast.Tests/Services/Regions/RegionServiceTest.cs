@@ -278,7 +278,10 @@ namespace EPlast.Tests.Services.Regions
                    .Setup(x => x.Region.GetFirstAsync(It.IsAny<Expression<Func<DataAccess.Entities.Region, bool>>>(),
                    It.IsAny<Func<IQueryable<DataAccess.Entities.Region>, IIncludableQueryable<DataAccess.Entities.Region, object>>>()))
                    .ReturnsAsync(new DataAccess.Entities.Region());
-
+            _repoWrapper
+                .Setup(x => x.RegionDocument.GetAllAsync(It.IsAny<Expression<Func<RegionDocuments, bool>>>(),
+              It.IsAny<Func<IQueryable<RegionDocuments>, IIncludableQueryable<RegionDocuments, object>>>()))
+                .ReturnsAsync(new List<RegionDocuments> { new RegionDocuments() });
             _mapper.Setup(x => x.Map<DataAccess.Entities.Region, RegionProfileDTO>(It.IsAny<DataAccess.Entities.Region>()))
                 .Returns(new RegionProfileDTO());
 
