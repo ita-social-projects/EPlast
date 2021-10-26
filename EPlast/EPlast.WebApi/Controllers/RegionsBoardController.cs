@@ -3,6 +3,7 @@ using EPlast.BLL.Interfaces.RegionBoard;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using EPlast.Resources;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -27,7 +28,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("getDocs/{regionId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetRegionDocs(int regionId)
         {
             var secretaries = await _regionService.GetRegionDocsAsync(regionId);
