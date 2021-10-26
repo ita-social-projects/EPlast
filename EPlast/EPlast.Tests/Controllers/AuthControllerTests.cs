@@ -2,14 +2,17 @@
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
+using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Resources;
 using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Moq;
+using NLog.Extensions.Logging;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -19,7 +22,77 @@ namespace EPlast.Tests.Controllers
     public class AuthControllerTestsAuth
     {
         [Test]
-        public async Task ConfirmingEmail_Inalid_ConfirmEmailAsyncReturnsFailed_Test()
+        public async Task ConfirmingEmail_Valid_ReturnRedirect()
+        {
+            //Arrange
+            var (mockAuthService,
+                _,
+                _,
+                _,
+                mockAuthEmailService,
+                AuthController) = CreateAuthController();
+            string userId = "userId";
+            string token = "token";
+            var expectedUrl = "Test url";
+            mockAuthService
+                .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
+            mockAuthEmailService
+                .Setup(s => s.ConfirmEmailAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(IdentityResult.Success);
+            mockAuthEmailService
+                .Setup(x => x.SendEmailGreetingAsync(It.IsAny<string>())).ReturnsAsync(true);
+
+            var memoryConfig = new Dictionary<string, string>
+            {
+                {"URLs:SignIn", expectedUrl}
+            };
+            ConfigSettingLayoutRenderer.DefaultConfiguration = new ConfigurationBuilder().AddInMemoryCollection(memoryConfig).Build();
+            //Act
+            var result = await AuthController.ConfirmingEmailAsync(userId, token);
+            var actual = (result as RedirectResult)?.Url;
+            //Assert
+            Assert.IsInstanceOf<RedirectResult>(result);
+            Assert.AreEqual(expectedUrl, actual);
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task ConfirmingEmail_GreetingsEmailError_ReturnBadRequest()
+        {
+            //Arrange
+            var (mockAuthService,
+                _,
+                _,
+                _,
+                mockAuthEmailService,
+                AuthController) = CreateAuthController();
+            string userId = "userId";
+            string token = "token";
+            mockAuthService
+                .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFields());
+            mockAuthEmailService
+                .Setup(s => s.ConfirmEmailAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(IdentityResult.Success);
+            mockAuthEmailService
+                .Setup(x => x.SendEmailGreetingAsync(It.IsAny<string>())).ReturnsAsync(false);
+            var memoryConfig = new Dictionary<string, string>
+            {
+                {"URLs:SignIn", "some url"}
+            };
+            ConfigSettingLayoutRenderer.DefaultConfiguration = new ConfigurationBuilder().AddInMemoryCollection(memoryConfig).Build();
+
+            //Act
+            var result = await AuthController.ConfirmingEmailAsync(userId, token);
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
+            Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task ConfirmingEmail_Invalid_ConfirmEmailAsyncReturnsFailed_Test()
         {
             //Arrange
             var (mockAuthService,
@@ -98,7 +171,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task ConfirmingEmail_Invalid_TotallTimeGreaterThan180_Test()
+        public async Task ConfirmingEmail_Invalid_TotalTimeGreaterThan180_Test()
         {
             // Arrange
             var (mockAuthService,
@@ -113,7 +186,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
             mockAuthService
-                .Setup(s => s.GetTimeAfterRegistr(It.IsAny<UserDTO>()))
+                .Setup(s => s.GetTimeAfterRegister(It.IsAny<UserDTO>()))
                 .Returns(1441);
             mockResources
                 .Setup(s => s.ResourceForErrors[It.IsAny<string>()])
@@ -142,7 +215,7 @@ namespace EPlast.Tests.Controllers
                 _,
                 _,
                 mockAuthEmailService,
-                AuthController) = CreateAuthController();
+                authController) = CreateAuthController();
             string userId = null;
             string token = null;
 
@@ -155,7 +228,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var expected = StatusCodes.Status400BadRequest;
-            var result = await AuthController.ConfirmingEmailAsync(userId, token);
+            var result = await authController.ConfirmingEmailAsync(userId, token);
             var actual = (result as BadRequestResult).StatusCode;
 
             //Assert
@@ -178,13 +251,15 @@ namespace EPlast.Tests.Controllers
             Mock<IHomeService> mockHomeService = new Mock<IHomeService>();
             Mock<IResources> mockResources = new Mock<IResources>();
             Mock<IAuthEmailService> mockAuthEmailService = new Mock<IAuthEmailService>();
+            Mock<ILoggerService<AuthController>> mockLoggerService = new Mock<ILoggerService<AuthController>>();
 
             AuthController AuthController = new AuthController(
                 mockAuthService.Object,
                 mockUserDataServices.Object,
                 mockHomeService.Object,
                 mockResources.Object,
-                mockAuthEmailService.Object
+                mockAuthEmailService.Object,
+                mockLoggerService.Object
                 );
 
             return (
@@ -205,7 +280,7 @@ namespace EPlast.Tests.Controllers
                 _,
                 mockResources,
                 mockAuthEmailService,
-                AuthController) = CreateAuthController();
+                authController) = CreateAuthController();
 
             RegisterDto registerDto = new RegisterDto();
             mockAuthService
@@ -235,12 +310,12 @@ namespace EPlast.Tests.Controllers
             mockUrlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>()))
                 .Returns("callbackUrl")
                 .Verifiable();
-            AuthController.Url = mockUrlHelper.Object;
-            AuthController.ControllerContext.HttpContext = new DefaultHttpContext();
+            authController.Url = mockUrlHelper.Object;
+            authController.ControllerContext.HttpContext = new DefaultHttpContext();
 
             // Act
             var expected = StatusCodes.Status400BadRequest;
-            var result = await AuthController.Register(registerDto);
+            var result = await authController.Register(registerDto);
             var actual = (result as BadRequestObjectResult).StatusCode;
 
             // Assert

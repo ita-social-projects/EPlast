@@ -120,6 +120,16 @@ namespace EPlast.BLL.Services.Club
             return _mapper.Map<DataAccessClub.Club, ClubDTO>(club);
         }
 
+        /// <inheritdoc />
+        public async Task<IEnumerable<ClubUserDTO>> GetClubUsersAsync(int clubId)
+        {
+            var clubMembers = await _repoWrapper.ClubMembers.GetAllAsync(d => d.ClubId == clubId,
+                include: source => source
+                    .Include(t => t.User));
+            var users = clubMembers.Select(x => x.User);
+            return _mapper.Map<IEnumerable<DataAccessClub.User>, IEnumerable<ClubUserDTO>>(users);
+        }
+
         private async Task<ClubProfileDTO> GetClubInfoAsync(int clubId)
         {
             var club = await GetByIdAsync(clubId);

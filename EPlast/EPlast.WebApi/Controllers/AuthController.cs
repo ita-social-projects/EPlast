@@ -1,11 +1,13 @@
 ﻿using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
+using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NLog.Extensions.Logging;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -18,19 +20,23 @@ namespace EPlast.WebApi.Controllers
         private readonly IHomeService _homeService;
         private readonly IResources _resources;
         private readonly IUserDatesService _userDatesService;
+        private readonly ILoggerService<AuthController> _logger;
+        private const int TotalMinutesInOneDay = 1440;
 
         public AuthController(
             IAuthService authService,
             IUserDatesService userDatesService,
             IHomeService homeService,
             IResources resources,
-            IAuthEmailService authEmailServices)
+            IAuthEmailService authEmailServices,
+            ILoggerService<AuthController> logger)
         {
             _authService = authService;
             _userDatesService = userDatesService;
             _homeService = homeService;
             _resources = resources;
             _authEmailServices = authEmailServices;
+            _logger = logger;
         }
 
         /// <summary>
@@ -45,38 +51,54 @@ namespace EPlast.WebApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmingEmailAsync(string userId, string token)
         {
+            _logger.LogInformation($"Executing method ConfirmingEmailAsync for user {userId} and token: {token}");
+            _logger.LogInformation($"Executing method FindByIdAsync in ConfirmingEmailAsync for user {userId}");
             var userDto = await _authService.FindByIdAsync(userId);
             if (userDto == null)
             {
+                _logger.LogInformation($"Method FindByIdAsync in ConfirmingEmailAsync can not find user {userId}");
                 return BadRequest();
             }
-            int totalTime = _authService.GetTimeAfterRegistr(userDto);
-            if (totalTime < 1440)
+            _logger.LogInformation($"Executing method GetTimeAfterRegister in ConfirmingEmailAsync for user {userId}");
+            int totalTime = _authService.GetTimeAfterRegister(userDto);
+            _logger.LogInformation($"Method GetTimeAfterRegister in ConfirmingEmailAsync for user {userId} returned time = {totalTime}");
+            if (totalTime < TotalMinutesInOneDay)
             {
+                _logger.LogInformation($"Total time {totalTime} is less when 1440 for user {userId} in method ConfirmingEmailAsync");
                 if (string.IsNullOrWhiteSpace(userId) && string.IsNullOrWhiteSpace(token))
                 {
+                    _logger.LogInformation($"User {userId} and {token} are null or empty in method ConfirmingEmailAsync");
                     return BadRequest();
                 }
-                var result = await _authEmailServices.ConfirmEmailAsync(userDto.Id, token);
+                _logger.LogInformation($"Executing method ConfirmEmailAsync in ConfirmingEmailAsync for user {userId}");
+                var result = await _authEmailServices.ConfirmEmailAsync(userDto.Id, HttpUtility.UrlDecode(token));
 
                 if (result.Succeeded)
                 {
-                    string signinurl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["SignIn"];
+                    _logger.LogInformation($"Method ConfirmEmailAsync is successfully executed in ConfirmingEmailAsync for user {userId}");
+                    string signInUrl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["SignIn"];
+                    _logger.LogInformation($"Executing method SendEmailGreetingAsync in ConfirmingEmailAsync for user {userId}");
                     var greetingSendResult = await _authEmailServices.SendEmailGreetingAsync(userDto.Email);
                     if (greetingSendResult)
-                        return Redirect(signinurl);
+                    {
+                        _logger.LogInformation($"Method SendEmailGreetingAsync is successfully executed in ConfirmingEmailAsync for user {userId}");
+                        return Redirect(signInUrl);
+                    }
                     else
                     {
+                        _logger.LogError($"Method SendEmailGreetingAsync is executed with errors in ConfirmingEmailAsync for user {userId}");
                         return BadRequest();
                     }
                 }
                 else
                 {
+                    _logger.LogError($"Method ConfirmEmailAsync is executed with errors in ConfirmingEmailAsync for user {userId}");
                     return BadRequest();
                 }
             }
             else
             {
+                _logger.LogInformation($"Total time {totalTime} in ConfirmingEmailAsync is greater when 1440 -> register not allowed");
                 return Ok(_resources.ResourceForErrors["ConfirmedEmailNotAllowed"]);
             }
         }

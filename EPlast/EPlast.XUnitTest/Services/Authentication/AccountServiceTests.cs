@@ -397,7 +397,7 @@ namespace EPlast.XUnitTest.Services
             var (mockSignInManager, mockUserManager, mockEmailConfirmation, mockEmailContentService, AuthService) = CreateAuthService();
 
             //Act
-            var result = AuthService.GetTimeAfterRegistr(GetTestUserDtoWithEmailsSendedTime());
+            var result = AuthService.GetTimeAfterRegister(GetTestUserDtoWithEmailsSendedTime());
 
             //Assert
             Assert.Equal(360, result);
