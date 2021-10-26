@@ -299,7 +299,7 @@ namespace EPlast.BLL.Services.Region
         /// <inheritdoc />
         public async Task<IEnumerable<RegionUserDTO>> GetRegionUsersAsync(int regionId)
         {
-            var city = await _repoWrapper.CityMembers.GetAllAsync(d => d.City.RegionId == regionId,
+            var city = await _repoWrapper.CityMembers.GetAllAsync(d => d.City.RegionId == regionId && d.IsApproved, 
                 include: source => source
                     .Include(t => t.User));
             var users = city.Select(x => x.User);
