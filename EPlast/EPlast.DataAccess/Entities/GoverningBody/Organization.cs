@@ -23,5 +23,6 @@ namespace EPlast.DataAccess.Entities.GoverningBody
         public ICollection<GoverningBodyAdministration> GoverningBodyAdministration { get; set; }
         public ICollection<GoverningBodyDocuments> GoverningBodyDocuments { get; set; }
         public ICollection<Sector.Sector> GoverningBodySectors { get; set; }
+        public bool IsActive { get; set; }
     }
 }
