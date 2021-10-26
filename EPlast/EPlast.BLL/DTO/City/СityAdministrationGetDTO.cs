@@ -1,7 +1,6 @@
 ﻿using EPlast.BLL.DTO.Admin;
 using System;
 
-
 namespace EPlast.BLL.DTO.City
 {
     public class CityAdministrationGetDTO

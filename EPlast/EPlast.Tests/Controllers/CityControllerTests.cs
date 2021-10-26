@@ -110,7 +110,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetCityAdmins_Int_ReturnsOkObjResult()
+        public async Task GetCityAdmins_CityId_ReturnsOkObjResult()
         {
             // Arrange
             int id = 2;
@@ -977,10 +977,10 @@ namespace EPlast.Tests.Controllers
         {
             return new List<CityAdministrationGetDTO>()
             {
-                new CityAdministrationGetDTO(){ Id =2 },
-                new CityAdministrationGetDTO(){ Id =3 },
-                new CityAdministrationGetDTO(){ Id =4 },
-                new CityAdministrationGetDTO(){ Id =5 }
+                new CityAdministrationGetDTO(){ Id = 2 },
+                new CityAdministrationGetDTO(){ Id = 3 },
+                new CityAdministrationGetDTO(){ Id = 4 },
+                new CityAdministrationGetDTO(){ Id = 5 }
             };
         }
         
