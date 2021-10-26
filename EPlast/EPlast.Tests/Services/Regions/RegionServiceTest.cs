@@ -381,6 +381,22 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
+        public void GetRegionsNames_ReturnsIEnumerableRegionNamesDTO()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.Region.GetRegionsNames());
+            _mapper.Setup(x => x.Map<IEnumerable<RegionNamesObject>, IEnumerable<RegionNamesDTO>>(It.IsAny<List<RegionNamesObject>>()))
+                .Returns(regionsNames);
+            // Act
+            var result = _regionService.GetRegionsNames();
+            // Assert
+            Assert.IsInstanceOf<IEnumerable<RegionNamesDTO>>(result);
+            Assert.IsNotNull(result);
+
+        }
+
+        [Test]
         public void DeleteRegionByIdAsync_ReturnsCorrect()
         {
             // Arrange
@@ -692,6 +708,12 @@ namespace EPlast.Tests.Services.Regions
         private readonly RegionDTO regionDTO = new RegionDTO
         {
             City = "city"
+        };
+
+        private readonly IEnumerable<RegionNamesDTO> regionsNames = new List<RegionNamesDTO>
+        {
+            new RegionNamesDTO { ID = 1, RegionName = "Львівський" },
+            new RegionNamesDTO { ID = 2, RegionName = "Тернопільський" }
         };
 
         private readonly IEnumerable<RegionForAdministrationDTO> regionsForAdmin = new List<RegionForAdministrationDTO>

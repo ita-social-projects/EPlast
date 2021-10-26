@@ -573,6 +573,21 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public void GetRegionsNames()
+        {
+            // Arrange
+            _regionService.Setup(x => x.GetRegionsNames()).Returns(GetRegionNames());
+            // Act
+            var result = _regionController.GetRegionsNames();
+            var actual = (result as ObjectResult).Value;
+            // Assert
+            _regionService.Verify();
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<RegionNamesDTO>>(actual);
+        }
+
+        [Test]
         public async Task GetRegionsBoardAsync_ReturnsRegionsBoard()
         {
             // Arrange
@@ -1063,6 +1078,17 @@ namespace EPlast.Tests.Controllers
                 new RegionForAdministrationDTO(){ ID =3},
                 new RegionForAdministrationDTO(){ ID =4},
                 new RegionForAdministrationDTO(){ ID =5}
+            };
+        }
+
+        private IEnumerable<RegionNamesDTO> GetRegionNames()
+        {
+            return new List<RegionNamesDTO>()
+            {
+                new RegionNamesDTO(){ ID =2, RegionName="Lviv"},
+                new RegionNamesDTO(){ ID =3},
+                new RegionNamesDTO(){ ID =4},
+                new RegionNamesDTO(){ ID =5}
             };
         }
 

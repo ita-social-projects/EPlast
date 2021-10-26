@@ -21,5 +21,10 @@ namespace EPlast.DataAccess.Repositories
             int rowCount = num.Count > 0 ? num[0] : 0;
             return new Tuple<IEnumerable<RegionObject>, int>(items, rowCount);        
         }
+
+        public IQueryable<RegionNamesObject> GetRegionsNames()
+        {
+            return EPlastDBContext.Set<RegionNamesObject>().FromSqlRaw("Select ID, RegionName FROM Regions WHERE Status != 1 AND IsActive = 1");
+        }
     }
 }
