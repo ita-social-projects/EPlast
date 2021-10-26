@@ -188,7 +188,9 @@ namespace EPlast.BLL.Services.Region
 
         public async Task<RegionProfileDTO> GetRegionByNameAsync(string Name, User user)
         {
-            var regionProfile = _mapper.Map<DataAccessRegion.Region, RegionProfileDTO>(await _repoWrapper.Region.GetFirstAsync(d => d.RegionName == Name));
+            var region = await _repoWrapper.Region.GetFirstAsync(d => d.RegionName == Name);
+            region.Documents = (await _repoWrapper.RegionDocument.GetAllAsync(d => d.RegionId == region.ID))?.ToList();
+            var regionProfile = _mapper.Map<DataAccessRegion.Region, RegionProfileDTO>(region);
             var userRoles = await _userManager.GetRolesAsync(user);
             regionProfile.CanEdit = userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.OkrugaHead) || userRoles.Contains(Roles.OkrugaHeadDeputy);
             return regionProfile;
