@@ -71,6 +71,16 @@ namespace EPlast.BLL.Interfaces.Region
         /// </summary>
         /// <param name="followerId">The id of the follower</param>
         Task RemoveFollowerAsync(int followerId);
+
+        /// <summary>
+        /// Get Active Regions Names
+        /// </summary>
+        IEnumerable<RegionNamesDTO> GetActiveRegionsNames();
+
+        /// <summary>
+        /// Get true if region name is exist
+        /// </summary>
+        /// <param name="name">The name of the region</param>
         Task<bool> CheckIfRegionNameExistsAsync(string name);
     }
 }
