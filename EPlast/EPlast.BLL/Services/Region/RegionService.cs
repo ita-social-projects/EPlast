@@ -188,7 +188,9 @@ namespace EPlast.BLL.Services.Region
 
         public async Task<RegionProfileDTO> GetRegionByNameAsync(string Name, User user)
         {
-            var regionProfile = _mapper.Map<DataAccessRegion.Region, RegionProfileDTO>(await _repoWrapper.Region.GetFirstAsync(d => d.RegionName == Name));
+            var region = await _repoWrapper.Region.GetFirstAsync(d => d.RegionName == Name);
+            region.Documents = (await _repoWrapper.RegionDocument.GetAllAsync(d => d.RegionId == region.ID))?.ToList();
+            var regionProfile = _mapper.Map<DataAccessRegion.Region, RegionProfileDTO>(region);
             var userRoles = await _userManager.GetRolesAsync(user);
             regionProfile.CanEdit = userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.OkrugaHead) || userRoles.Contains(Roles.OkrugaHeadDeputy);
             return regionProfile;
@@ -297,6 +299,14 @@ namespace EPlast.BLL.Services.Region
         }
 
         /// <inheritdoc />
+        public IEnumerable<RegionNamesDTO> GetActiveRegionsNames()
+        {
+            var regions = _repoWrapper.Region
+                .GetActiveRegionsNames();
+            return _mapper.Map<IQueryable<DataAccessRegion.RegionNamesObject>, IEnumerable<RegionNamesDTO>>(regions);
+        }
+
+        /// <inheritdoc />
         public async Task<IEnumerable<RegionUserDTO>> GetRegionUsersAsync(int regionId)
         {
             var city = await _repoWrapper.CityMembers.GetAllAsync(d => d.City.RegionId == regionId && d.IsApproved, 
@@ -314,6 +324,7 @@ namespace EPlast.BLL.Services.Region
 
         }
 
+        /// <inheritdoc />
         public async Task<bool> CheckIfRegionNameExistsAsync(string name)
         {
             var result = await _repoWrapper.Region.GetFirstOrDefaultAsync(x => x.RegionName == name);
