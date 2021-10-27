@@ -358,8 +358,10 @@ namespace EPlast.Tests.Services.Regions
             // Arrange
             string fname = "File";
             _regionFilesBlobStorageRepository.Setup(x=>x.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync(fname);
+            
             // Act
             var result = await _regionService.DownloadFileAsync(It.IsAny<string>());
+            
             // Assert
             Assert.AreEqual(fname,result);
             Assert.IsNotNull(result);
