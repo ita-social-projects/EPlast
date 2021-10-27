@@ -562,9 +562,11 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _regionService.Setup(x => x.GetRegions()).ReturnsAsync(GetAdminRegions());
+            
             // Act
             var result = await _regionController.GetRegions();
             var actual = (result as ObjectResult).Value;
+            
             // Assert
             _regionService.Verify();
             Assert.IsInstanceOf<OkObjectResult>(result);
@@ -577,9 +579,11 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _regionService.Setup(x => x.GetActiveRegionsNames()).Returns(GetRegionNames());
+            
             // Act
             var result = _regionController.GetActiveRegionsNames();
             var actual = (result as ObjectResult).Value;
+            
             // Assert
             _regionService.Verify();
             Assert.IsInstanceOf<OkObjectResult>(result);
