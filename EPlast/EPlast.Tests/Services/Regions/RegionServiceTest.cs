@@ -391,8 +391,10 @@ namespace EPlast.Tests.Services.Regions
                 .Setup(x => x.Region.GetActiveRegionsNames());
             _mapper.Setup(x => x.Map<IEnumerable<RegionNamesObject>, IEnumerable<RegionNamesDTO>>(It.IsAny<List<RegionNamesObject>>()))
                 .Returns(regionsNames);
+            
             // Act
             var result = _regionService.GetActiveRegionsNames();
+            
             // Assert
             Assert.IsInstanceOf<IEnumerable<RegionNamesDTO>>(result);
             Assert.IsNotNull(result);
