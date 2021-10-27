@@ -348,8 +348,8 @@ namespace EPlast.Tests.Services.Regions
             var result = await _regionService.GetRegionDocsAsync(It.IsAny<int>());
 
             // Assert
-            Assert.IsInstanceOf<IEnumerable<RegionDocumentDTO>>(result);
             Assert.IsNotNull(result);
+            Assert.IsInstanceOf<IEnumerable<RegionDocumentDTO>>(result);
         }
 
         [Test]
@@ -358,8 +358,10 @@ namespace EPlast.Tests.Services.Regions
             // Arrange
             string fname = "File";
             _regionFilesBlobStorageRepository.Setup(x=>x.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync(fname);
+            
             // Act
             var result = await _regionService.DownloadFileAsync(It.IsAny<string>());
+            
             // Assert
             Assert.AreEqual(fname,result);
             Assert.IsNotNull(result);
@@ -381,6 +383,23 @@ namespace EPlast.Tests.Services.Regions
             // Assert
             Assert.IsInstanceOf<IEnumerable<RegionForAdministrationDTO>>(result);
             Assert.IsNotNull(result);
+        }
+
+        [Test]
+        public void GetActiveRegionsNames_ReturnsIEnumerableRegionNamesDTO()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.Region.GetActiveRegionsNames());
+            _mapper.Setup(x => x.Map<IEnumerable<RegionNamesObject>, IEnumerable<RegionNamesDTO>>(It.IsAny<List<RegionNamesObject>>()))
+                .Returns(regionsNames);
+            
+            // Act
+            var result = _regionService.GetActiveRegionsNames();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<IEnumerable<RegionNamesDTO>>(result);
         }
 
         [Test]
@@ -695,6 +714,12 @@ namespace EPlast.Tests.Services.Regions
         private readonly RegionDTO regionDTO = new RegionDTO
         {
             City = "city"
+        };
+
+        private readonly IEnumerable<RegionNamesDTO> regionsNames = new List<RegionNamesDTO>
+        {
+            new RegionNamesDTO { ID = 1, RegionName = "Львівський" },
+            new RegionNamesDTO { ID = 2, RegionName = "Тернопільський" }
         };
 
         private readonly IEnumerable<RegionForAdministrationDTO> regionsForAdmin = new List<RegionForAdministrationDTO>

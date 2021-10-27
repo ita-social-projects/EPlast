@@ -299,6 +299,14 @@ namespace EPlast.BLL.Services.Region
         }
 
         /// <inheritdoc />
+        public IEnumerable<RegionNamesDTO> GetActiveRegionsNames()
+        {
+            var regions = _repoWrapper.Region
+                .GetActiveRegionsNames();
+            return _mapper.Map<IQueryable<DataAccessRegion.RegionNamesObject>, IEnumerable<RegionNamesDTO>>(regions);
+        }
+
+        /// <inheritdoc />
         public async Task<IEnumerable<RegionUserDTO>> GetRegionUsersAsync(int regionId)
         {
             var city = await _repoWrapper.CityMembers.GetAllAsync(d => d.City.RegionId == regionId && d.IsApproved, 
@@ -316,6 +324,7 @@ namespace EPlast.BLL.Services.Region
 
         }
 
+        /// <inheritdoc />
         public async Task<bool> CheckIfRegionNameExistsAsync(string name)
         {
             var result = await _repoWrapper.Region.GetFirstOrDefaultAsync(x => x.RegionName == name);
