@@ -4,8 +4,11 @@ using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.GoverningBody;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Interfaces.GoverningBodies;
+using EPlast.BLL.Interfaces.GoverningBodies.Sector;
 using EPlast.BLL.Services.GoverningBodies;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
@@ -17,9 +20,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using EPlast.DataAccess.Entities.GoverningBody;
-using EPlast.BLL.Interfaces.GoverningBodies;
-using EPlast.BLL.Interfaces.GoverningBodies.Sector;
 
 namespace EPlast.Tests.Services.GoverningBody
 {

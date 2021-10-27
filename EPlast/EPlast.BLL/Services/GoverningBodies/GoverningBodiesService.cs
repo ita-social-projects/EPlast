@@ -4,6 +4,8 @@ using EPlast.BLL.DTO.GoverningBody;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.GoverningBodies;
+using EPlast.BLL.Interfaces.GoverningBodies.Sector;
+using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.EntityFrameworkCore;
@@ -11,8 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.DataAccess.Entities.GoverningBody;
-using EPlast.BLL.Interfaces.GoverningBodies.Sector;
 
 namespace EPlast.BLL.Services.GoverningBodies
 {
