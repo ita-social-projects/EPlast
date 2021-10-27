@@ -302,7 +302,6 @@ namespace EPlast.BLL.Services.Region
         {
             var regions = _repoWrapper.Region
                 .GetRegionsNames();
-            var names = new List<DataAccessRegion.Region>();
             return _mapper.Map<IQueryable<DataAccessRegion.RegionNamesObject>, IEnumerable<RegionNamesDTO>>(regions);
         }
 
