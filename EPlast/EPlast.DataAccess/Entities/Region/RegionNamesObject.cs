@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EPlast.DataAccess.Entities
+﻿namespace EPlast.DataAccess.Entities
 {
     public class RegionNamesObject
     {

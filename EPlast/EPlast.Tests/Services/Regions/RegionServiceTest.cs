@@ -396,11 +396,10 @@ namespace EPlast.Tests.Services.Regions
             
             // Act
             var result = _regionService.GetActiveRegionsNames();
-            
-            // Assert
-            Assert.IsInstanceOf<IEnumerable<RegionNamesDTO>>(result);
-            Assert.IsNotNull(result);
 
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<IEnumerable<RegionNamesDTO>>(result);
         }
 
         [Test]

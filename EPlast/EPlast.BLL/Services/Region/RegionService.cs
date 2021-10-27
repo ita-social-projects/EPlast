@@ -297,6 +297,7 @@ namespace EPlast.BLL.Services.Region
             return _mapper.Map<IEnumerable<DataAccessRegion.Region>, IEnumerable<RegionForAdministrationDTO>>((await _repoWrapper.Region
                 .GetAllAsync()).Where(r => r.Status != RegionsStatusType.RegionBoard && r.IsActive));
         }
+
         /// <inheritdoc />
         public IEnumerable<RegionNamesDTO> GetActiveRegionsNames()
         {
@@ -323,6 +324,7 @@ namespace EPlast.BLL.Services.Region
 
         }
 
+        /// <inheritdoc />
         public async Task<bool> CheckIfRegionNameExistsAsync(string name)
         {
             var result = await _repoWrapper.Region.GetFirstOrDefaultAsync(x => x.RegionName == name);

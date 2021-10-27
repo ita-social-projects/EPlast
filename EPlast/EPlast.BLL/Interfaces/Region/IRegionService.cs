@@ -77,6 +77,10 @@ namespace EPlast.BLL.Interfaces.Region
         /// </summary>
         IEnumerable<RegionNamesDTO> GetActiveRegionsNames();
 
+        /// <summary>
+        /// Get true if region name is exist
+        /// </summary>
+        /// <param name="name">The name of the region</param>
         Task<bool> CheckIfRegionNameExistsAsync(string name);
     }
 }
