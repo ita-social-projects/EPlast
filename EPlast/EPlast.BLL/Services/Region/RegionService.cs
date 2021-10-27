@@ -298,10 +298,10 @@ namespace EPlast.BLL.Services.Region
                 .GetAllAsync()).Where(r => r.Status != RegionsStatusType.RegionBoard && r.IsActive));
         }
         /// <inheritdoc />
-        public IEnumerable<RegionNamesDTO> GetRegionsNames()
+        public IEnumerable<RegionNamesDTO> GetActiveRegionsNames()
         {
             var regions = _repoWrapper.Region
-                .GetRegionsNames();
+                .GetActiveRegionsNames();
             var names = new List<DataAccessRegion.Region>();
             return _mapper.Map<IQueryable<DataAccessRegion.RegionNamesObject>, IEnumerable<RegionNamesDTO>>(regions);
         }

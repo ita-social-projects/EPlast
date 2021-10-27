@@ -384,15 +384,15 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
-        public void GetRegionsNames_ReturnsIEnumerableRegionNamesDTO()
+        public void GetActiveRegionsNames_ReturnsIEnumerableRegionNamesDTO()
         {
             // Arrange
             _repoWrapper
-                .Setup(x => x.Region.GetRegionsNames());
+                .Setup(x => x.Region.GetActiveRegionsNames());
             _mapper.Setup(x => x.Map<IEnumerable<RegionNamesObject>, IEnumerable<RegionNamesDTO>>(It.IsAny<List<RegionNamesObject>>()))
                 .Returns(regionsNames);
             // Act
-            var result = _regionService.GetRegionsNames();
+            var result = _regionService.GetActiveRegionsNames();
             // Assert
             Assert.IsInstanceOf<IEnumerable<RegionNamesDTO>>(result);
             Assert.IsNotNull(result);

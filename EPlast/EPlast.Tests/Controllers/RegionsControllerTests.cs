@@ -573,12 +573,12 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public void GetRegionsNames()
+        public void GetActiveRegionsNames_ReturnsActiveRegionsNames()
         {
             // Arrange
-            _regionService.Setup(x => x.GetRegionsNames()).Returns(GetRegionNames());
+            _regionService.Setup(x => x.GetActiveRegionsNames()).Returns(GetRegionNames());
             // Act
-            var result = _regionController.GetRegionsNames();
+            var result = _regionController.GetActiveRegionsNames();
             var actual = (result as ObjectResult).Value;
             // Assert
             _regionService.Verify();

@@ -73,9 +73,9 @@ namespace EPlast.BLL.Interfaces.Region
         Task RemoveFollowerAsync(int followerId);
 
         /// <summary>
-        /// Get Regions Names
+        /// Get Active Regions Names
         /// </summary>
-        IEnumerable<RegionNamesDTO> GetRegionsNames();
+        IEnumerable<RegionNamesDTO> GetActiveRegionsNames();
 
         Task<bool> CheckIfRegionNameExistsAsync(string name);
     }

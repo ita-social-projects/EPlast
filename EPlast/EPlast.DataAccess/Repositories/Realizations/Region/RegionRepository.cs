@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -22,9 +23,12 @@ namespace EPlast.DataAccess.Repositories
             return new Tuple<IEnumerable<RegionObject>, int>(items, rowCount);        
         }
 
-        public IQueryable<RegionNamesObject> GetRegionsNames()
+        public IQueryable<RegionNamesObject> GetActiveRegionsNames()
         {
-            return EPlastDBContext.Set<RegionNamesObject>().FromSqlRaw("Select ID, RegionName FROM Regions WHERE Status != 1 AND IsActive = 1");
+            var regions = EPlastDBContext.Regions
+                .Where(x => x.IsActive && x.Status != RegionsStatusType.RegionBoard)
+                .Select(s =>new RegionNamesObject(){ ID = s.ID, RegionName = s.RegionName });
+            return regions; 
         }
     }
 }

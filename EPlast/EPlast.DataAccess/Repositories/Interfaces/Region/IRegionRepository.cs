@@ -9,6 +9,6 @@ namespace EPlast.DataAccess.Repositories.Contracts
     public interface IRegionRepository : IRepositoryBase<Region>
     {
         Task<Tuple<IEnumerable<RegionObject>, int>> GetRegionsObjects(int pageNum, int pageSize, string searchData, bool isArchive);
-        IQueryable<RegionNamesObject> GetRegionsNames();
+        IQueryable<RegionNamesObject> GetActiveRegionsNames();
     }
 }
