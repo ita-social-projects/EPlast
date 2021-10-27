@@ -594,7 +594,7 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expectedCount, actual);
         }
         [Test]
-        public async Task GetEventsByCategory_ReturnOkObjectResult()
+        public async Task GetEventsByCategoryAndStatus_ReturnOkObjectResult()
         {
             // Arrange
             const int  expectedCount = 2;
@@ -603,7 +603,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(CreateListOfFakeGeneralEvents());
 
             // Act
-            var result = await _eventsController.GetEventsByCategory(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>());
+            var result = await _eventsController.GetEventsByCategoryAndStatus(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>());
             var okObject = result as ObjectResult;
             var category = okObject?.Value as IEnumerable<GeneralEventDTO>;
             var categoryList = category as List<GeneralEventDTO>;
@@ -624,10 +624,31 @@ namespace EPlast.Tests.Controllers
             _actionManager
                 .Setup(x => x.GetCategoriesByTypeIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(CreateListOfFakeEventCategories());
+            
             //Act
             var result = await _eventsController.GetCategoriesByTypeAndPageAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>());
             var categories = (result as ObjectResult).Value as EventsCategoryViewModel;
             
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(categories);
+            Assert.AreEqual(expectedCategories, categories.Total);
+            Assert.IsInstanceOf<EventsCategoryViewModel>(categories);
+        }
+
+        [Test]
+        public async Task GetCategoriesByTypeAndPage_FirstType_ReturnOkObjectResultTestAsync()
+        {
+            //Arrange
+            var expectedCategories = 2;
+            int typeId = 1;
+            _actionManager
+                .Setup(x => x.GetActionCategoriesAsync())
+                .ReturnsAsync(CreateListOfFakeEventCategories());
+            //Act
+            var result = await _eventsController.GetCategoriesByTypeAndPageAsync(typeId, It.IsAny<int>(), It.IsAny<int>());
+            var categories = (result as ObjectResult).Value as EventsCategoryViewModel;
+
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(categories);

@@ -56,7 +56,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Get event categories of the appropriate event type.
+        /// Get event categories of the appropriate event type. If type is Акція - get all event categories.
         /// </summary>
         /// <returns>List of event categories of the appropriate event type.</returns>
         /// <param name="typeId">The Id of event type</param>
@@ -69,7 +69,15 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetCategoriesByTypeAndPageAsync(int typeId, int page, int pageSize)
         {
-            var categories = await _actionManager.GetCategoriesByTypeIdAsync(typeId);
+            IEnumerable<BLL.DTO.Events.EventCategoryDTO> categories;
+            if (typeId == 1)
+            {
+                categories = await _actionManager.GetActionCategoriesAsync();
+            }
+            else
+            {
+                categories = await _actionManager.GetCategoriesByTypeIdAsync(typeId);
+            }
             var categoriesViewModel = new EventsCategoryViewModel(page, pageSize, categories);
 
             return Ok(categoriesViewModel);
@@ -93,10 +101,20 @@ namespace EPlast.WebApi.Controllers
         }
 
 
+        /// <summary>
+        /// Get events of the appropriate event type, event category and event status.
+        /// </summary>
+        /// <returns>List of events of the appropriate event type, event category and event status.</returns>
+        /// <param name="typeId">The Id of event type</param>
+        /// <param name="categoryId">The Id of event category</param>
+        /// <param name="status">The status of event</param>
+        /// <response code="200">List of events</response>
+        /// <response code="400">Server could not understand the request due to i
+        /// nvalid syntax</response> 
+        /// <response code="404">Events don't exist</response> 
 
         [HttpGet("~/api/types/{typeId:int}/categories/{categoryId:int}/events/{status}")]
-       
-        public async Task<IActionResult> GetEventsByCategory(int typeId, int categoryId, int status)
+        public async Task<IActionResult> GetEventsByCategoryAndStatus(int typeId, int categoryId, int status)
         {
             return Ok(await _actionManager.GetEventsByStatusAsync(categoryId, typeId, status, await _userManager.GetUserAsync(User)));
         }
@@ -146,7 +164,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetPictures(int eventId)
         {
             var pictures = await _actionManager.GetPicturesAsync(eventId);
-            
+
             return Ok(pictures);
         }
 
@@ -263,7 +281,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> FillEventGallery(int eventId, [FromForm] IList<IFormFile> files)
         {
-                return Ok(await _actionManager.FillEventGalleryAsync(eventId, files));      
+            return Ok(await _actionManager.FillEventGalleryAsync(eventId, files));
         }
 
 
