@@ -220,8 +220,6 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expected, actual.Count);
         }
 
-
-
         [Test]
         public async Task GetEventDetail_ReturnsOkObjectResult()
         {
