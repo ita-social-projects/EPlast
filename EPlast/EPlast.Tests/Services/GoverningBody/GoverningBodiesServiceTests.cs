@@ -4,8 +4,11 @@ using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.GoverningBody;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Interfaces.GoverningBodies;
+using EPlast.BLL.Interfaces.GoverningBodies.Sector;
 using EPlast.BLL.Services.GoverningBodies;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
@@ -17,8 +20,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using EPlast.DataAccess.Entities.GoverningBody;
-using EPlast.BLL.Interfaces.GoverningBodies;
 
 namespace EPlast.Tests.Services.GoverningBody
 {
@@ -29,6 +30,7 @@ namespace EPlast.Tests.Services.GoverningBody
         private GoverningBodiesService _governingBodiesService;
         private Mock<IUniqueIdService> _uniqueIdService;
         private Mock<IGoverningBodyAdministrationService> _governingBodyAdministrationService;
+        private Mock<ISectorService> _sectorService;
         private Mock<IGoverningBodyBlobStorageRepository> _blobStorage;
         private Mock<ISecurityModel> _securityModel;
         private protected Mock<UserManager<User>> _userManager;
@@ -42,6 +44,7 @@ namespace EPlast.Tests.Services.GoverningBody
             _blobStorage = new Mock<IGoverningBodyBlobStorageRepository>();
             _uniqueIdService = new Mock<IUniqueIdService>();
             _governingBodyAdministrationService = new Mock<IGoverningBodyAdministrationService>();
+            _sectorService = new Mock<ISectorService>();
             var store = new Mock<Microsoft.AspNetCore.Identity.IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _securityModel = new Mock<ISecurityModel>();
@@ -51,7 +54,8 @@ namespace EPlast.Tests.Services.GoverningBody
                 _uniqueIdService.Object,
                 _blobStorage.Object,
                 _securityModel.Object,
-                _governingBodyAdministrationService.Object);
+                _governingBodyAdministrationService.Object,
+                _sectorService.Object);
         }
 
         [Test]
