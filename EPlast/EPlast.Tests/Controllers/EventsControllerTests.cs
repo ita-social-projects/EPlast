@@ -677,13 +677,13 @@ namespace EPlast.Tests.Controllers
             => new List<EventCategoryDTO>()
             {
                 new EventCategoryDTO()
-                { 
-                    ID = 0,
+                {
+                    EventCategoryId = 0,
                     EventCategoryName = "SomeEventCategoryName",
                 },
                 new EventCategoryDTO()
-                { 
-                    ID = 1,
+                {
+                    EventCategoryId = 1,
                     EventCategoryName = "AnotherEventCategoryName",
                 },
             };

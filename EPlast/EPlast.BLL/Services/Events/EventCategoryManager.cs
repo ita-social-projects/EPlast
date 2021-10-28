@@ -28,7 +28,7 @@ namespace EPlast.BLL.Services.Events
             var dto = eventCategories
                 .Select(eventCategory => new EventCategoryDTO()
                 {
-                    ID = eventCategory.ID,
+                    EventCategoryId = eventCategory.ID,
                     EventCategoryName = eventCategory.EventCategoryName
                 });
 
@@ -42,7 +42,7 @@ namespace EPlast.BLL.Services.Events
             var dto = eventType.EventCategories
                 .Select(eventTypeCategory => new EventCategoryDTO()
                 {
-                    ID = eventTypeCategory.EventCategoryId,
+                    EventCategoryId = eventTypeCategory.EventCategoryId,
                     EventCategoryName = eventTypeCategory.EventCategory.EventCategoryName
                 });
 
@@ -56,7 +56,7 @@ namespace EPlast.BLL.Services.Events
             var dto = eventType.EventCategories
                 .Select(eventTypeCategory => new EventCategoryDTO()
                 {
-                    ID = eventTypeCategory.EventCategoryId,
+                    EventCategoryId = eventTypeCategory.EventCategoryId,
                     EventCategoryName = eventTypeCategory.EventCategory.EventCategoryName,
                     EventSectionId = eventTypeCategory.EventCategory.EventSectionId
                 });

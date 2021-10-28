@@ -109,9 +109,9 @@ namespace EPlast.WebApi.Controllers
         /// <response code="400">When the EventCategoryCreateDTO is null or empty</response> 
         [HttpPost("newCategory")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> EventCategoryCreate([FromBody] EventCategoryCreateDTO createDTO)
+        public async Task<IActionResult> CreateEventCategory([FromBody] EventCategoryCreateDTO createDTO)
         {
-            createDTO.EventCategory.ID = await _eventCategoryManager.CreateEventCategoryAsync(createDTO);
+            createDTO.EventCategory.EventCategoryId = await _eventCategoryManager.CreateEventCategoryAsync(createDTO);
 
             return Ok(createDTO);
         }

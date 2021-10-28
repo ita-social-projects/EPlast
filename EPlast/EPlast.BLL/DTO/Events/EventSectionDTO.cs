@@ -5,7 +5,7 @@ namespace EPlast.BLL.DTO.Events
 {
     public class EventSectionDTO
     {
-        public int ID { get; set; }
+        public int EventSectionId { get; set; }
         public string EventSectionName { get; set; }
     }
 }

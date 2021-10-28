@@ -20,39 +20,17 @@ namespace EPlast.BLL.Services.Events
         }
 
         /// <inheritdoc />
-        public async Task<int> GetSectionIdAsync(string sectionName)
-        {
-            var section = await _repoWrapper.EventSection
-                .GetFirstAsync(predicate: es => es.EventSectionName == sectionName);
-
-            return section.ID;
-        }
-
-        /// <inheritdoc />
         public async Task<IEnumerable<EventSectionDTO>> GetEventSectionsDTOAsync()
         {
             var eventSections = await _repoWrapper.EventSection.GetAllAsync();
             var dto = eventSections
                 .Select(eventSection => new EventSectionDTO()
                 {
-                    ID = eventSection.ID,
+                    EventSectionId = eventSection.ID,
                     EventSectionName = eventSection.EventSectionName
                 });
 
             return dto;
-        }
-
-        /// <inheritdoc />
-        public async Task<EventSection> GetSectionByIdAsync(int id)
-        {
-            var eventSection = await _repoWrapper.EventSection
-                .GetFirstAsync(
-                    es => es.ID == id,
-                    source => source
-                        .Include(es => es.EventCategories)
-                );
-
-            return eventSection;
         }
     }
 }
