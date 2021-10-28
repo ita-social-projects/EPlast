@@ -1,10 +1,9 @@
 ﻿using EPlast.BLL.DTO.Events;
 using EPlast.BLL.DTO.EventUser;
+using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using EPlast.DataAccess.Entities;
-using EPlast.DataAccess.Entities.Event;
 
 namespace EPlast.BLL.Interfaces.Events
 {
@@ -19,6 +18,10 @@ namespace EPlast.BLL.Interfaces.Events
         /// <returns>List of all event types.</returns>
         Task<IEnumerable<EventTypeDTO>> GetEventTypesAsync();
 
+        /// <summary>
+        /// Get all event categories.
+        /// </summary>
+        /// <returns>List of all event categories.</returns>
         Task<IEnumerable<EventCategoryDTO>> GetActionCategoriesAsync();
 
         /// <summary>
@@ -57,7 +60,6 @@ namespace EPlast.BLL.Interfaces.Events
         /// <returns>List of pictures in Base64 format.</returns>
         /// <param name="id">The Id of event</param>
         Task<IEnumerable<EventGalleryDTO>> GetPicturesAsync(int id);
-
 
         /// <summary>
         /// Delete event by Id.

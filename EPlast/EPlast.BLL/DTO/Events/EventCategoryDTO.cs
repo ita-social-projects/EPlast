@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using EPlast.DataAccess.Entities.Event;
-
-namespace EPlast.BLL.DTO.Events
+﻿namespace EPlast.BLL.DTO.Events
 {
     public class EventCategoryDTO
     {

@@ -5,6 +5,7 @@ using EPlast.BLL.Interfaces.Events;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.Resources;
 
 namespace EPlast.BLL.Services.Events
 {
@@ -43,11 +43,11 @@ namespace EPlast.BLL.Services.Events
             return await _eventWrapper.EventTypeManager.GetEventTypesDTOAsync();
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<EventCategoryDTO>> GetActionCategoriesAsync()
         {
             return await _eventWrapper.EventCategoryManager.GetDTOAsync();
         }
-
 
         /// <inheritdoc />
         public async Task<IEnumerable<EventSectionDTO>> GetEventSectionsAsync()

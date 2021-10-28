@@ -1,14 +1,14 @@
-﻿using EPlast.BLL.Interfaces.Events;
+﻿using EPlast.BLL.DTO.Events;
+using EPlast.BLL.Interfaces.Events;
+using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using EPlast.WebApi.Models.Events;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using EPlast.BLL.DTO.Events;
-using EPlast.DataAccess.Entities;
-using EPlast.Resources;
-using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.WebApi.Controllers
 {

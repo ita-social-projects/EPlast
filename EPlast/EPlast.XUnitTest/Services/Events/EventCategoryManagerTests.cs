@@ -1,4 +1,5 @@
-﻿using EPlast.BLL.DTO.Events;
+﻿using AutoMapper;
+using EPlast.BLL.DTO.Events;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Services.Events;
 using EPlast.DataAccess.Entities.Event;
@@ -7,7 +8,6 @@ using Moq;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.Events

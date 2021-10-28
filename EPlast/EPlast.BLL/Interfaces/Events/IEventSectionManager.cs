@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using EPlast.BLL.DTO.Events;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using EPlast.BLL.DTO.Events;
-using EPlast.DataAccess.Entities.Event;
 
 namespace EPlast.BLL.Interfaces.Events
 {

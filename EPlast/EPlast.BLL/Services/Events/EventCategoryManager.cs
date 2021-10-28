@@ -1,11 +1,11 @@
-﻿using EPlast.BLL.DTO.Events;
+﻿using AutoMapper;
+using EPlast.BLL.DTO.Events;
 using EPlast.BLL.Interfaces.Events;
+using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
-using EPlast.DataAccess.Entities.Event;
 
 namespace EPlast.BLL.Services.Events
 {
@@ -64,7 +64,7 @@ namespace EPlast.BLL.Services.Events
             return dto;
         }
 
-
+        /// <inheritdoc />
         public async Task<int> CreateEventCategoryAsync(EventCategoryCreateDTO model)
         {
             var eventCategoryToCreate = _mapper.Map<EventCategoryDTO, EventCategory>(model.EventCategory);

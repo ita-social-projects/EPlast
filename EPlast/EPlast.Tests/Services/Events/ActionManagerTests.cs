@@ -132,7 +132,6 @@ namespace EPlast.Tests.Services.Events
             Assert.IsNotNull(result);
         }
 
-
         [Test]
         public async Task GetEventSectionsTestAsync()
         {

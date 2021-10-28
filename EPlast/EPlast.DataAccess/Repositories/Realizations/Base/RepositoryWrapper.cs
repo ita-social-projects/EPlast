@@ -487,7 +487,6 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             }
         }
 
-
         public IEventAdminRepository EventAdmin
         {
             get

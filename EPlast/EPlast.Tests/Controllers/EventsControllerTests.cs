@@ -657,6 +657,7 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.AreEqual(expectedCount, actual);
         }
+
         [Test]
         public async Task GetEventsByCategoryAndStatus_ReturnOkObjectResult()
         {
@@ -680,6 +681,7 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expectedCount, categoryList.Count);
 
         }
+
         [Test]
         public async Task GetCategoriesByTypeAndPage_ReturnOkObjectResultTestAsync()
         {
@@ -820,6 +822,6 @@ namespace EPlast.Tests.Controllers
                 },
 
             };
-
+        
     }
 }
