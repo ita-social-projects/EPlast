@@ -68,9 +68,6 @@ namespace EPlast.BLL.Services.Events
         public async Task<int> CreateEventCategoryAsync(EventCategoryCreateDTO model)
         {
             var eventCategoryToCreate = _mapper.Map<EventCategoryDTO, EventCategory>(model.EventCategory);
-            var section = await _repoWrapper.EventSection.GetFirstOrDefaultAsync(s => s.ID == eventCategoryToCreate.EventSectionId);
-
-            eventCategoryToCreate.EventSectionId = section.ID;
 
             await _repoWrapper.EventCategory.CreateAsync(eventCategoryToCreate);
             await _repoWrapper.EventCategoryType.CreateAsync(new EventCategoryType()

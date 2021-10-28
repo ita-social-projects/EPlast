@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.Events;
@@ -50,5 +48,35 @@ namespace EPlast.Tests.Services.Events
             Assert.IsAssignableFrom<Task<IEnumerable<EventCategoryDTO>>>(result);
             Assert.IsNotNull(result);
         }
+
+        [Test]
+        public async Task CreateEventCategoryAsync_ReturnsIntIdOfCreatedCategory()
+        {
+            //Arrange
+            _mockMapper.Setup(m => m.Map<EventCategoryDTO, EventCategory>(It.IsAny<EventCategoryDTO>()))
+                       .Returns(new EventCategory());
+            _mockRepositoryWrapper.Setup(r => r.EventCategory.CreateAsync(It.IsAny<EventCategory>()));
+            _mockRepositoryWrapper.Setup(r => r.EventCategoryType.CreateAsync(It.IsAny<EventCategoryType>()));
+            _mockRepositoryWrapper.Setup(r => r.SaveAsync());
+
+            //Act
+            var methodResult = await _eventCategoryManager.CreateEventCategoryAsync(CreateFakeEventCategory());
+
+            //Assert
+            Assert.IsNotNull(methodResult);
+            Assert.IsInstanceOf<int>(methodResult);
+        }
+
+        private EventCategoryCreateDTO CreateFakeEventCategory()
+            => new EventCategoryCreateDTO()
+            {
+                EventCategory = new EventCategoryDTO()
+                {
+                    EventCategoryId = 1,
+                    EventCategoryName = "new category",
+                    EventSectionId = 2
+                },
+                EventTypeId = 3
+            };
     }
 }

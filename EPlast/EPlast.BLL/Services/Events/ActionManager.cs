@@ -40,38 +40,31 @@ namespace EPlast.BLL.Services.Events
         /// <inheritdoc />
         public async Task<IEnumerable<EventTypeDTO>> GetEventTypesAsync()
         {
-            var dto = await _eventWrapper.EventTypeManager.GetEventTypesDTOAsync();
-            return dto;
+            return await _eventWrapper.EventTypeManager.GetEventTypesDTOAsync();
         }
 
         public async Task<IEnumerable<EventCategoryDTO>> GetActionCategoriesAsync()
         {
-            var dto = await _eventWrapper.EventCategoryManager.GetDTOAsync();
-            return dto;
+            return await _eventWrapper.EventCategoryManager.GetDTOAsync();
         }
 
 
         /// <inheritdoc />
         public async Task<IEnumerable<EventSectionDTO>> GetEventSectionsAsync()
         {
-            var dto = await _eventWrapper.EventSectionManager.GetEventSectionsDTOAsync();
-            return dto;
+            return await _eventWrapper.EventSectionManager.GetEventSectionsDTOAsync();
         }
 
         /// <inheritdoc />
         public async Task<IEnumerable<EventCategoryDTO>> GetCategoriesByTypeIdAsync(int eventTypeId)
         {
-            var dto = await _eventWrapper.EventCategoryManager.GetDTOByEventTypeIdAsync(eventTypeId);
-
-            return dto;
+            return await _eventWrapper.EventCategoryManager.GetDTOByEventTypeIdAsync(eventTypeId);
         }
 
         /// <inheritdoc />
         public async Task<IEnumerable<EventCategoryDTO>> GetCategoriesByPageAsync(int eventTypeId, int page, int pageSize, string CategoryName = null)
         {
-            var dto = await _eventWrapper.EventCategoryManager.GetDTOByEventPageAsync(eventTypeId, page, pageSize);
-
-            return dto;
+            return await _eventWrapper.EventCategoryManager.GetDTOByEventPageAsync(eventTypeId, page, pageSize);
         }
 
         /// <inheritdoc />
@@ -84,9 +77,8 @@ namespace EPlast.BLL.Services.Events
                         .Include(e => e.EventAdministrations)
                         .Include(e => e.Participants)
                 );
-
-            var dto = await GetEventDtosAsync(events, user);
-            return dto;
+            
+            return await GetEventDtosAsync(events, user);
         }
 
         /// <inheritdoc />
@@ -230,36 +222,31 @@ namespace EPlast.BLL.Services.Events
         /// <inheritdoc />
         public async Task<int> ApproveParticipantAsync(int id)
         {
-            int result = await _participantManager.ChangeStatusToApprovedAsync(id);
-            return result;
+            return await _participantManager.ChangeStatusToApprovedAsync(id);
         }
 
         /// <inheritdoc />
         public async Task<int> UnderReviewParticipantAsync(int id)
         {
-            int result = await _participantManager.ChangeStatusToUnderReviewAsync(id);
-            return result;
+            return await _participantManager.ChangeStatusToUnderReviewAsync(id);
         }
 
         /// <inheritdoc />
         public async Task<int> RejectParticipantAsync(int id)
         {
-            int result = await _participantManager.ChangeStatusToRejectedAsync(id);
-            return result;
+            return await _participantManager.ChangeStatusToRejectedAsync(id);
         }
 
         /// <inheritdoc />
         public async Task<IEnumerable<EventGalleryDTO>> FillEventGalleryAsync(int id, IList<IFormFile> files)
         {
-            var uploadedPictures = await _eventWrapper.EventGalleryManager.AddPicturesAsync(id, files);
-            return uploadedPictures;
+            return await _eventWrapper.EventGalleryManager.AddPicturesAsync(id, files);
         }
 
         /// <inheritdoc />
         public async Task<int> DeletePictureAsync(int id)
         {
-            int result = await _eventWrapper.EventGalleryManager.DeletePictureAsync(id);
-            return result;
+            return await _eventWrapper.EventGalleryManager.DeletePictureAsync(id);
         }
 
         public async Task CheckEventsStatusesAsync()
