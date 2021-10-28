@@ -12,13 +12,16 @@ namespace EPlast.BLL.Services.Events
 
         public IEventGalleryManager EventGalleryManager { get; }
 
+        public IEventSectionManager EventSectionManager { get; }
+
         public EventWrapper(IEventCategoryManager eventCategoryManager, IEventTypeManager eventTypeManager,
-            IEventStatusManager eventStatusManager, IEventGalleryManager eventGalleryManager)
+            IEventStatusManager eventStatusManager, IEventGalleryManager eventGalleryManager, IEventSectionManager eventSectionManager)
         {
             EventCategoryManager = eventCategoryManager;
             EventTypeManager = eventTypeManager;
             EventStatusManager = eventStatusManager;
             EventGalleryManager = eventGalleryManager;
+            EventSectionManager = eventSectionManager;
         }
     }
 }

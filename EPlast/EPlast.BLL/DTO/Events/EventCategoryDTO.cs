@@ -4,6 +4,6 @@
     {
         public int EventCategoryId { get; set; }
         public string EventCategoryName { get; set; }
-
+        public int EventSectionId { get; set; }
     }
 }
