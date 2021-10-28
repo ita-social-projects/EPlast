@@ -4,6 +4,8 @@ using EPlast.BLL.DTO.GoverningBody;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.GoverningBodies;
+using EPlast.BLL.Interfaces.GoverningBodies.Sector;
+using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.DataAccess.Entities.GoverningBody;
 
 namespace EPlast.BLL.Services.GoverningBodies
 {
@@ -22,6 +23,7 @@ namespace EPlast.BLL.Services.GoverningBodies
         private readonly IUniqueIdService _uniqueId;
         private readonly IGoverningBodyAdministrationService _governingBodyAdministrationService;
         private readonly IGoverningBodyBlobStorageRepository _governingBodyBlobStorage;
+        private readonly ISectorService _sectorService;
         private readonly ISecurityModel _securityModel;
         private const string SecuritySettingsFile = "GoverningBodyAccessSettings.json";
 
@@ -30,7 +32,8 @@ namespace EPlast.BLL.Services.GoverningBodies
                                       IUniqueIdService uniqueId,
                                       IGoverningBodyBlobStorageRepository governingBodyBlobStorage,
                                       ISecurityModel securityModel,
-                                      IGoverningBodyAdministrationService governingBodyAdministrationService)
+                                      IGoverningBodyAdministrationService governingBodyAdministrationService,
+                                      ISectorService sectorService)
         {
             _securityModel = securityModel;
             _securityModel.SetSettingsFile(SecuritySettingsFile);
@@ -39,6 +42,7 @@ namespace EPlast.BLL.Services.GoverningBodies
             _mapper = mapper;
             _governingBodyBlobStorage = governingBodyBlobStorage;
             _governingBodyAdministrationService = governingBodyAdministrationService;
+            _sectorService = sectorService;
         }
 
         public async Task<int> CreateAsync(GoverningBodyDTO governingBodyDto)
@@ -168,6 +172,12 @@ namespace EPlast.BLL.Services.GoverningBodies
         {
             var governingBody = await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(gb => gb.ID == governingBodyId);
             governingBody.IsActive = false;
+
+            var sectors = await _sectorService.GetSectorsByGoverningBodyAsync(governingBodyId);
+            foreach(var sector in sectors)
+            {
+                await _sectorService.RemoveAsync(sector.Id);
+            }
 
             var admins = (await _repoWrapper.GoverningBodyAdministration.GetAllAsync(x => x.GoverningBodyId == governingBodyId))
                 ?? new List<GoverningBodyAdministration>();
