@@ -133,7 +133,6 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _actionManager.GetEventsAsync(categoryId, typeId, await _userManager.GetUserAsync(User)));
         }
 
-
         /// <summary>
         /// Get events of the appropriate event type, event category and event status.
         /// </summary>
@@ -151,8 +150,6 @@ namespace EPlast.WebApi.Controllers
         {
             return Ok(await _actionManager.GetEventsByStatusAsync(categoryId, typeId, status, await _userManager.GetUserAsync(User)));
         }
-
-
 
         /// <summary>
         /// Get detailed information about specific event.
@@ -317,9 +314,5 @@ namespace EPlast.WebApi.Controllers
         {
             return Ok(await _actionManager.FillEventGalleryAsync(eventId, files));
         }
-
-
-
-
     }
 }
