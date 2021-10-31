@@ -309,7 +309,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="400">Server could not understand the request due to invalid syntax</response> 
         [HttpPost("{eventId:int}/eventGallery")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        [DisableRequestSizeLimit]
+        [RequestSizeLimit(314572800)]
         public async Task<IActionResult> FillEventGallery(int eventId, [FromForm] IList<IFormFile> files)
         {
             return Ok(await _actionManager.FillEventGalleryAsync(eventId, files));
